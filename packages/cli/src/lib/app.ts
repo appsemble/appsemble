@@ -240,7 +240,9 @@ export async function traverseAppDirectory(
   discoveredContext.icon = discoveredContext.icon
     ? resolve(path, discoveredContext.icon)
     : iconPath;
-  discoveredContext.maskableIcon ||= maskableIconPath;
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon
+    ? resolve(path, discoveredContext.maskableIcon)
+    : maskableIconPath;
   return [discoveredContext, rc, yaml];
 }
 
@@ -528,8 +530,8 @@ export async function updateApp({
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
-    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('icon', realIcon);
+    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('maskableIcon', realIcon);
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
@@ -607,8 +609,8 @@ export async function createApp({
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
-    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('icon', realIcon);
+    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('maskableIcon', realIcon);
   }
 
   await authenticate(
@@ -626,7 +628,7 @@ export async function createApp({
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response.data as { message: string }).message !== 'App validation failed') {
+    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
       throw error;
     }
     throw new AppsembleError(

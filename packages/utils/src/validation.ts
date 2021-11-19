@@ -1,4 +1,9 @@
-import { AppDefinition, BlockManifest, RoleDefinition } from '@appsemble/types';
+import {
+  AppDefinition,
+  BlockManifest,
+  ResourceGetActionDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { parseExpression } from 'cron-parser';
 import { ValidationError, Validator, ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
@@ -305,6 +310,103 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (action.type.startsWith('user.') && !definition.security) {
+        report(
+          action.type,
+          'refers to a user action but the app doesn’t have a security definition',
+          [...path, 'type'],
+        );
+        return;
+      }
+
+      if (action.type.startsWith('resource.')) {
+        // All of the actions starting with `resource.` contain a property called `resource`.
+        const { resource: resourceName } = action as ResourceGetActionDefinition;
+        const resource = definition.resources?.[resourceName];
+
+        if (!resource) {
+          report(action.type, 'refers to a resource that doesn’t exist', [...path, 'resource']);
+          return;
+        }
+
+        if (!action.type.startsWith('resource.subscription.')) {
+          const type = action.type.split('.')[1] as
+            | 'count'
+            | 'create'
+            | 'delete'
+            | 'get'
+            | 'query'
+            | 'update';
+          const roles = resource?.[type]?.roles ?? resource?.roles;
+          if (!roles) {
+            report(action.type, 'refers to a resource action that is currently set to private', [
+              ...path,
+              'resource',
+            ]);
+            return;
+          }
+
+          if (roles && !roles.length && !definition.security) {
+            report(
+              action.type,
+              'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+              [...path, 'resource'],
+            );
+            return;
+          }
+        }
+      }
+
+      if (action.type.startsWith('flow.')) {
+        const page = definition.pages?.[Number(path[1])];
+        if (page?.type !== 'flow') {
+          report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (action.type === 'flow.cancel' && !page.actions?.onFlowCancel) {
+          report(action.type, 'was defined but ‘onFlowCancel’ page action wasn’t defined', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (action.type === 'flow.finish' && !page.actions?.onFlowFinish) {
+          report(action.type, 'was defined but ‘onFlowFinish’ page action wasn’t defined', [
+            ...path,
+            'type',
+          ]);
+          return;
+        }
+
+        if (action.type === 'flow.back' && path[3] === 0) {
+          report(action.type, 'is not allowed on the first step in the flow', [...path, 'type']);
+          return;
+        }
+
+        if (
+          action.type === 'flow.next' &&
+          Number(path[3]) === page.steps.length - 1 &&
+          !page.actions?.onFlowFinish
+        ) {
+          report(
+            action.type,
+            'was defined on the last step but ‘onFlowFinish’ page action wasn’t defined',
+            [...path, 'type'],
+          );
+          return;
+        }
+
+        if (action.type === 'flow.to' && !page.steps.some((step) => step.name === action.step)) {
+          report(action.type, 'refers to a step that doesn’t exist', [...path, 'step']);
+          return;
+        }
+      }
+
       if (action.type === 'link') {
         const { to } = action;
         if (typeof to === 'string' && urlRegex.test(to)) {
