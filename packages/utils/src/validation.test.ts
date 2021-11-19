@@ -1091,19 +1091,19 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'refers to an user action but the app doesn’t have a security definition',
+        'refers to a user action but the app doesn’t have a security definition',
         'user.login',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
-        'refers to an user action but the app doesn’t have a security definition',
+        'refers to a user action but the app doesn’t have a security definition',
         'user.register',
         undefined,
         ['pages', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
-        'refers to an user action but the app doesn’t have a security definition',
+        'refers to a user action but the app doesn’t have a security definition',
         'user.update',
         undefined,
         ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],

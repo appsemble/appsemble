@@ -319,7 +319,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         return;
       }
 
-      if (action.type.startsWith('resource')) {
+      if (action.type.startsWith('resource.')) {
         // All of the actions starting with `resource.` contain a property called `resource`.
         const { resource } = action as ResourceGetActionDefinition;
         if (!definition.resources[resource]) {
