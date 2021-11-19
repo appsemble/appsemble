@@ -8,8 +8,10 @@ export function PageTracker(): null {
 
   useEffect(() => {
     if (typeof gtag !== 'undefined') {
-      gtag('set', 'page', pathname);
-      gtag('send', 'pageview');
+      setTimeout(() => {
+        gtag('set', 'page', pathname);
+        gtag('send', 'pageview');
+      }, 300);
     }
   }, [pathname]);
 
