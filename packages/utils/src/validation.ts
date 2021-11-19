@@ -338,18 +338,6 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (
-          page.steps.length === 1 &&
-          (action.type === 'flow.back' || action.type === 'flow.next' || action.type === 'flow.to')
-        ) {
-          report(
-            action.type,
-            'this page only has one step, use ‘flow.finish’ or ‘flow.cancel’ instead',
-            [...path, 'type'],
-          );
-          return;
-        }
-
         if (action.type === 'flow.cancel' && !page.actions?.onFlowCancel) {
           report(action.type, 'was defined but ‘onFlowCancel’ page action wasn’t defined', [
             ...path,
