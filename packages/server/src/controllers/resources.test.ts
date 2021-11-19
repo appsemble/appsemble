@@ -243,15 +243,21 @@ describe('getResourceById', () => {
     });
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 96
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should be able to fetch a resource you are a team member of', async () => {
@@ -275,15 +281,25 @@ describe('getResourceById', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 164
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "$author": {
+          "id": "b5e0ae43-0695-45e5-a71b-f10d07f81337",
+          "name": null,
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not be able to fetch a resource you are not a team member of', async () => {
@@ -307,12 +323,20 @@ describe('getResourceById', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'Resource not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 69
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
@@ -331,8 +355,34 @@ describe('getResourceById', () => {
       `/api/apps/${appB.id}/resources/testResourceB/${resource.id}`,
     );
 
-    expect(responseA).toMatchObject({ status: 404 });
-    expect(responseB).toMatchObject({ status: 404 });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 69
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 69
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
@@ -346,17 +396,29 @@ describe('getResourceById', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $author: { id: user.id, name: user.name },
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+        HTTP/1.1 200 OK
+        Accept-Ranges: bytes
+        Connection: close
+        Content-Length: 179
+        Content-Type: application/json; charset=utf-8
+        Vary: Origin
+
+        {
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": 1,
+          "foo": "foo",
+          "id": 1,
+        }
+      `,
+    );
   });
 
   it('should ignore id in the data fields', async () => {

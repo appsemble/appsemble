@@ -11,6 +11,7 @@ module.exports = (rootDir) => {
   const { compilerOptions: { lib = [], types = [] } = {} } = readJSON('tsconfig.json');
 
   const setupFilesAfterEnv = [];
+  const snapshotSerializers = [];
   const moduleNameMapper = { [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src' };
   const transform = {};
 
@@ -35,6 +36,10 @@ module.exports = (rootDir) => {
     transform[/\/[A-Z]\w+\/messages\.ts$/.source] = 'babel-jest';
   }
 
+  if ('jest-axios-snapshot' in pkg.dependencies || 'jest-axios-snapshot' in pkg.devDependencies) {
+    snapshotSerializers.push('jest-axios-snapshot');
+  }
+
   return {
     coveragePathIgnorePatterns: ['.d.ts$'],
     clearMocks: true,
@@ -48,6 +53,7 @@ module.exports = (rootDir) => {
     snapshotFormat: {
       printBasicPrototype: false,
     },
+    snapshotSerializers,
     // Use the jsdom environment if the project uses dom or webworker types. Otherwise default to
     // node.
     testEnvironment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',
