@@ -1,4 +1,4 @@
-import { AppDefinition, BasicPageDefinition } from '@appsemble/types';
+import { AppDefinition, BasicPageDefinition, FlowPageDefinition } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
 
 import { validateAppDefinition } from './validation';
@@ -35,6 +35,14 @@ function createTestApp(): AppDefinition {
         name: 'Page with tabs',
         type: 'tabs',
         tabs: [{ name: 'Tab A', blocks: [] }],
+      },
+      {
+        name: 'Page with steps',
+        type: 'flow',
+        steps: [
+          { name: 'Step A', blocks: [] },
+          { name: 'Step B', blocks: [] },
+        ],
       },
     ],
   };
@@ -1029,6 +1037,401 @@ describe('validateAppDefinition', () => {
         'to',
         1,
       ]),
+    ]);
+  });
+
+  it('should report an error if user actions are used without a security definition', async () => {
+    const { security, ...app } = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.login',
+          email: 'example@example.com',
+          password: 'password',
+        },
+      },
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.register',
+          email: 'example@example.com',
+          password: 'password',
+          displayName: 'Test User',
+        },
+      },
+    });
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'user.update',
+          email: 'example@example.com',
+          password: 'password',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a user action but the app doesn’t have a security definition',
+        'user.login',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'refers to a user action but the app doesn’t have a security definition',
+        'user.register',
+        undefined,
+        ['pages', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
+      ),
+      new ValidationError(
+        'refers to a user action but the app doesn’t have a security definition',
+        'user.update',
+        undefined,
+        ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow actions are used on a non-flow page', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.next',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'flow actions can only be used on pages with the type ‘flow’',
+        'flow.next',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.back is used on the first step', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.back',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is not allowed on the first step in the flow', 'flow.back', undefined, [
+        'pages',
+        3,
+        'steps',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'type',
+      ]),
+    ]);
+  });
+
+  it('should report an error if flow.to refers to a step that doesn’t exist', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[0].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.to',
+          step: 'Some Step',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a step that doesn’t exist', 'flow.to', undefined, [
+        'pages',
+        3,
+        'steps',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'step',
+      ]),
+    ]);
+  });
+
+  it('should report an error if flow.next is called on the last step without onFlowFinish', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.next',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined on the last step but ‘onFlowFinish’ page action wasn’t defined',
+        'flow.next',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.finish is called without onFlowFinish', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.finish',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined but ‘onFlowFinish’ page action wasn’t defined',
+        'flow.finish',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if flow.cancel is called without onFlowCancel', async () => {
+    const app = createTestApp();
+    (app.pages[3] as FlowPageDefinition).steps[1].blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'flow.cancel',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'was defined but ‘onFlowCancel’ page action wasn’t defined',
+        'flow.cancel',
+        undefined,
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a resource action refers to a non-existent resource', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'Nonexistent',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a resource that doesn’t exist', 'resource.get', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onWhatever',
+        'resource',
+      ]),
+    ]);
+  });
+
+  it('should report an error if a resource action refers to a private resource action', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is currently set to private',
+        'resource.get',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a resource action refers is private action without a security definition', async () => {
+    const { security, ...app } = createTestApp();
+    app.resources.person.roles = [];
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    });
+
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onWhatever: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+        'resource.get',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+      ),
     ]);
   });
 
