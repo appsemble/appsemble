@@ -75,5 +75,11 @@ The long desciption will be rendered on the app details page. Markdown content i
       description: 'If this is specified, Google analytics will be applied to the app',
       pattern: googleAnalyticsIDPattern.source,
     },
+    sentryDsn: {
+      type: 'string',
+      description:
+        'If this is specified, Sentry monitoring and error tracking will be applied to the app',
+      format: 'url',
+    },
   },
 };

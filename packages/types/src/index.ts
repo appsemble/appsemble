@@ -1277,6 +1277,11 @@ export interface App {
   showAppsembleOAuth2Login: boolean;
 
   /**
+   * The Sentry DSN of the app.
+   */
+  sentryDsn: string;
+
+  /**
    * The app definition.
    */
   definition: AppDefinition;

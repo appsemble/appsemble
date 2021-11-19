@@ -78,6 +78,7 @@ export function SettingsPage(): ReactElement {
       maskableIcon: null,
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
+      sentryDsn: app.sentryDsn || '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
@@ -258,6 +259,14 @@ export function SettingsPage(): ReactElement {
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.googleAnalyticsError} />,
             }}
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.sentryDsnLabel} />}
+            label={<FormattedMessage {...messages.sentryDsnDescription} />}
+            maxLength={15}
+            name="sentryDsn"
+            type="url"
           />
           <FormButtons>
             <SimpleSubmit color="primary" disabled={app.locked} type="submit">
