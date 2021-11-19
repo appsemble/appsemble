@@ -22,7 +22,7 @@ interface CreateAppParams {
   /**
    * The OAuth2 client credentials to use.
    */
-  clientCredentials: string;
+  clientCredentials?: string;
 
   /**
    * If specified, the context matching this name is used, overriding command line flags.

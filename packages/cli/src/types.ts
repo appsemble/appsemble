@@ -77,7 +77,7 @@ export interface AppsembleContext {
   /**
    * If `visibility` is specified, this will override `--visibility` passed on the command line.
    */
-  visibility: AppVisibility;
+  visibility?: AppVisibility;
 
   /**
    * If `template` is specified, this will override `--template` passed on the command line.
