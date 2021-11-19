@@ -108,6 +108,9 @@ export class App extends Model {
   @Column
   googleAnalyticsID: string;
 
+  @Column
+  sentryDsn: string;
+
   @UpdatedAt
   updated: Date;
 
