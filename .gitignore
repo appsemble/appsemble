@@ -37,3 +37,6 @@ junit.xml
 
 # Helm charts hosted on GitLab pages
 public/
+
+# JetBrains IDE 
+.idea/
