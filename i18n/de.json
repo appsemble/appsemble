@@ -568,6 +568,8 @@
   "studio.src.pages.apps.app.settings.privateDescription": "Wenn diese Option aktiviert ist, wird diese App nicht in der App-Liste angezeigt, wenn der Benutzer nicht Teil der Organisation dieser App ist.",
   "studio.src.pages.apps.app.settings.privateLabel": "App-Sichtbarkeit",
   "studio.src.pages.apps.app.settings.saveChanges": "Änderungen speichern",
+  "studio.src.pages.apps.app.settings.sentryDsnDescription": "",
+  "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "",
   "studio.src.pages.apps.app.settings.sslMissing": "",
   "studio.src.pages.apps.app.settings.sslPending": "",

@@ -568,6 +568,8 @@
   "studio.src.pages.apps.app.settings.privateDescription": "",
   "studio.src.pages.apps.app.settings.privateLabel": "",
   "studio.src.pages.apps.app.settings.saveChanges": "",
+  "studio.src.pages.apps.app.settings.sentryDsnDescription": "",
+  "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "",
   "studio.src.pages.apps.app.settings.sslMissing": "",
   "studio.src.pages.apps.app.settings.sslPending": "",

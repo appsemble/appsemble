@@ -568,6 +568,8 @@
   "studio.src.pages.apps.app.settings.privateDescription": "Hvis dette er markeret, skal du forhindre, at denne app vises på applisten, hvis brugeren ikke er en del af appens organisation.",
   "studio.src.pages.apps.app.settings.privateLabel": "App synlighed",
   "studio.src.pages.apps.app.settings.saveChanges": "Gem ændringer",
+  "studio.src.pages.apps.app.settings.sentryDsnDescription": "",
+  "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "",
   "studio.src.pages.apps.app.settings.sslMissing": "",
   "studio.src.pages.apps.app.settings.sslPending": "",
