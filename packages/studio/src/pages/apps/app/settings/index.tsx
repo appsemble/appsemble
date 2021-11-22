@@ -93,6 +93,7 @@ export function SettingsPage(): ReactElement {
     const form = new FormData();
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
+    form.set('sentryDsn', values.sentryDsn);
     form.set('path', values.path);
     form.set('private', String(values.private));
     form.set('iconBackground', values.iconBackground);
@@ -262,9 +263,8 @@ export function SettingsPage(): ReactElement {
           />
           <SimpleFormField
             disabled={app.locked}
-            help={<FormattedMessage {...messages.sentryDsnLabel} />}
-            label={<FormattedMessage {...messages.sentryDsnDescription} />}
-            maxLength={15}
+            help={<FormattedMessage {...messages.sentryDsnDescription} />}
+            label={<FormattedMessage {...messages.sentryDsnLabel} />}
             name="sentryDsn"
             type="url"
           />
