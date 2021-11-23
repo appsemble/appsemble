@@ -63,10 +63,12 @@ export function builder(yargs: Argv): Argv {
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
       type: 'boolean',
+      default: false,
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',
       type: 'boolean',
+      default: false,
     })
     .option('google-analytics-id', {
       describe: 'The ID for Google Analytics for the app.',

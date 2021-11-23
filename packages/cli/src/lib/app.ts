@@ -84,7 +84,23 @@ interface CreateAppParams {
    * modify it for the current context to include the id of the created app.
    */
   modifyContext: boolean;
+
+  /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
 }
+
 interface UpdateAppParams {
   /**
    * The OAuth2 client credentials to use.
@@ -618,6 +634,9 @@ export async function createApp({
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
+  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
+  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
+  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -642,6 +661,19 @@ export async function createApp({
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
     logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('maskableIcon', realIcon);
+  }
+  if (sentryDsn) {
+    logger.info(
+      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
+    );
+    formData.append('sentryDsn', sentryDsn);
+    if (sentryEnvironment) {
+      formData.append('sentryEnvironment', sentryEnvironment);
+    }
+  }
+  if (googleAnalyticsId) {
+    logger.info('Using Google Analytics');
+    formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
   await authenticate(
