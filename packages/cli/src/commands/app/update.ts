@@ -78,6 +78,7 @@ export function builder(yargs: Argv): Argv {
     })
     .option('sentry-environment', {
       describe: 'The environment for the custom Sentry DSN for the app.',
+      demandOption: 'sentry-dsn',
     });
 }
 
