@@ -773,23 +773,26 @@ export async function resolveAppIdAndRemote(
   defaultRemote: string,
   defaultAppId: number,
 ): Promise<[number, string]> {
-  let id: number;
+  let id = defaultAppId;
   let resolvedRemote = defaultRemote;
 
   if (appPath) {
     const rcPath = join(appPath, '.appsemblerc.yaml');
     const [rc] = await readData<AppsembleRC>(rcPath);
     const context = rc.context?.[name];
-    id = context?.id;
+
+    if (!defaultAppId) {
+      id = context?.id;
+    }
 
     if (context.remote) {
       resolvedRemote = context.remote;
     }
   }
 
-  if (id == null && defaultAppId == null) {
+  if (id == null) {
     throw new AppsembleError(`App ID was not found in context.${name}.id nor in --app-id`);
   }
 
-  return [id ?? defaultAppId, coerceRemote(resolvedRemote)];
+  return [id, coerceRemote(resolvedRemote)];
 }
