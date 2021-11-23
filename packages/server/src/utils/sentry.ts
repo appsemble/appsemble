@@ -33,9 +33,14 @@ interface SentrySettings {
  *
  * @param domain - The domain name to check.
  * @param sentryDsn - The custom Sentry DSN to use.
+ * @param sentryEnvironment - The custom Sentry environment to use.
  * @returns Sentry DSN and environment if it matches the `--sentry-allowed-domains` option.
  */
-export function getSentryClientSettings(domain: string, sentryDsn?: string): SentrySettings {
+export function getSentryClientSettings(
+  domain: string,
+  sentryDsn?: string,
+  sentryEnvironment?: string,
+): SentrySettings {
   if (
     !sentryDsn &&
     (!argv.sentryDsn ||
@@ -48,7 +53,9 @@ export function getSentryClientSettings(domain: string, sentryDsn?: string): Sen
   const { origin, pathname, username } = new URL(dsn);
   return {
     sentryDsn: dsn,
-    sentryEnvironment: argv.sentryEnvironment,
+    sentryEnvironment: sentryDsn
+      ? sentryEnvironment || undefined
+      : argv.sentryEnvironment || undefined,
     sentryOrigin: origin,
     reportUri: `${origin}/api${pathname}/security/?sentry_key=${username}`,
   };

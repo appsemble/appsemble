@@ -134,7 +134,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
       showAppsembleLogin: app.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: app.showAppsembleOAuth2Login ?? true,
       sentryDsn,
-      sentryEnvironment: (app.sentryDsn && app.sentryEnvironment) || sentryEnvironment,
+      sentryEnvironment,
       appUpdated: app.updated.toISOString(),
     },
     app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
