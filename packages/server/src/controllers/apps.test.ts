@@ -117,7 +117,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 964
+      Content-Length: 1048
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -141,6 +141,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -164,6 +166,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -212,7 +216,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 478
+      Content-Length: 520
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -236,6 +240,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -300,7 +306,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 1516
+      Content-Length: 1642
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -328,6 +334,8 @@ describe('queryApps', () => {
             "average": 4.5,
             "count": 2,
           },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -355,6 +363,8 @@ describe('queryApps', () => {
             "average": 3,
             "count": 1,
           },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -378,6 +388,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -424,7 +436,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 548
+      Content-Length: 590
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -448,6 +460,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -475,7 +489,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 549
+      Content-Length: 591
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -499,6 +513,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -524,7 +540,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 612
+      Content-Length: 654
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -548,6 +564,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -578,7 +596,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 658
+      Content-Length: 700
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -602,6 +620,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -628,7 +648,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 548
+      Content-Length: 590
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -652,6 +672,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -702,7 +724,7 @@ describe('queryMyApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 480
+      Content-Length: 522
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -726,6 +748,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -736,7 +760,7 @@ describe('queryMyApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 966
+      Content-Length: 1050
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -760,6 +784,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -783,6 +809,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app-b",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -816,7 +844,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 784
+      Content-Length: 826
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -851,6 +879,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -893,7 +923,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 811
+      Content-Length: 853
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -930,6 +960,8 @@ describe('createApp', () => {
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
         ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1467,7 +1499,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 722
+      Content-Length: 764
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1502,6 +1534,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1551,7 +1585,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 732
+      Content-Length: 774
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1586,6 +1620,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1628,7 +1664,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 712
+      Content-Length: 754
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1663,6 +1699,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2102,7 +2140,7 @@ describe('createApp', () => {
         HTTP/1.1 201 Created
         Accept-Ranges: bytes
         Connection: close
-        Content-Length: 730
+        Content-Length: 772
         Content-Type: application/json; charset=utf-8
         Vary: Origin
 
@@ -2137,6 +2175,8 @@ describe('createApp', () => {
           "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -2434,7 +2474,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 715
+      Content-Length: 757
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2469,6 +2509,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "private",
@@ -2591,7 +2633,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 542
+      Content-Length: 584
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2615,6 +2657,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2644,7 +2688,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 554
+      Content-Length: 596
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2668,6 +2712,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2697,7 +2743,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 543
+      Content-Length: 585
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2721,6 +2767,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -3280,7 +3328,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 543
+      Content-Length: 585
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -3304,6 +3352,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",

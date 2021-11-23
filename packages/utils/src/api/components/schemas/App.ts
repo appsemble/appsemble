@@ -84,5 +84,20 @@ The long desciption will be rendered on the app details page. Markdown content i
       description: 'If this is specified, Google analytics will be applied to the app',
       pattern: googleAnalyticsIDPattern.source,
     },
+    sentryDsn: {
+      type: 'string',
+      description: `The Sentry DSN to use for this app.
+
+If this is specified, the given Sentry DSN will be used for error tracking. Apps without a custom
+domain fall back to use the Appsemble server Sentry DSN.
+`,
+      format: 'url',
+    },
+    sentryEnvironment: {
+      type: 'string',
+      description: `The name that should be used as the sentry environment.
+
+  This is only applied when \`sentryDsn\` is specified.`,
+    },
   },
 };
