@@ -75,6 +75,16 @@ export interface AppsembleContext {
   id?: number;
 
   /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
+
+  /**
    * If `visibility` is specified, this will override `--visibility` passed on the command line.
    */
   visibility?: AppVisibility;

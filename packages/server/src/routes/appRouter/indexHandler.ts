@@ -103,6 +103,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
   const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } = getSentryClientSettings(
     hostname,
     app.sentryDsn,
+    app.sentryEnvironment,
   );
 
   const [settingsHash, settings] = createSettings(

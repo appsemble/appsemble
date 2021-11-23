@@ -140,6 +140,16 @@ interface UpdateAppParams {
    * The maskable icon to upload.
    */
   maskableIcon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
 }
 
 /**
@@ -480,7 +490,7 @@ This block version is not used in the app`,
 }
 
 /**
- * Create a new App.
+ * Update an existing app.
  *
  * @param argv - The command line options used for updating the app.
  */
@@ -509,6 +519,8 @@ export async function updateApp({
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
+  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
+  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -532,6 +544,15 @@ export async function updateApp({
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
     logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('maskableIcon', realIcon);
+  }
+  if (sentryDsn) {
+    logger.info(
+      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
+    );
+    formData.append('sentryDsn', sentryDsn);
+    if (sentryEnvironment) {
+      formData.append('sentryEnvironment', sentryEnvironment);
+    }
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);

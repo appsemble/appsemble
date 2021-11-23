@@ -21,6 +21,8 @@ interface UpdateAppArguments extends BaseArguments {
   template: boolean;
   force: boolean;
   visibility: AppVisibility;
+  sentryDsn: string;
+  sentryEnvironment: string;
 }
 
 export const command = 'update <paths...>';
@@ -64,6 +66,12 @@ export function builder(yargs: Argv): Argv {
     .option('force', {
       describe: 'Whether the lock property should be ignored.',
       type: 'boolean',
+    })
+    .option('sentry-dsn', {
+      describe: 'The custom Sentry DSN for the app.',
+    })
+    .option('sentry-environment', {
+      describe: 'The environment for the custom Sentry DSN for the app.',
     });
 }
 
