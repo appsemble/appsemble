@@ -38,6 +38,8 @@ export async function indexHandler(ctx: Context): Promise<void> {
     attributes: [
       'definition',
       'googleAnalyticsID',
+      'sentryDsn',
+      'sentryEnvironment',
       'id',
       'sharedStyle',
       'coreStyle',
@@ -98,8 +100,11 @@ export async function indexHandler(ctx: Context): Promise<void> {
     },
   });
   const nonce = randomBytes(16).toString('base64');
-  const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
-    getSentryClientSettings(hostname);
+  const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } = getSentryClientSettings(
+    hostname,
+    app.sentryDsn,
+  );
+
   const [settingsHash, settings] = createSettings(
     {
       apiUrl: host,
