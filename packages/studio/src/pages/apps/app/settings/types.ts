@@ -1,3 +1,5 @@
+import { AppVisibility } from 'types/src/app';
+
 export interface FormValues {
   googleAnalyticsID: string;
   sentryDsn: string;
@@ -5,7 +7,7 @@ export interface FormValues {
   maskableIcon?: File;
   iconBackground: string;
   path: string;
-  private: boolean;
+  visibility: AppVisibility;
   domain: string;
   locked: boolean;
   longDescription: string;

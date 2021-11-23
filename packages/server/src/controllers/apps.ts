@@ -106,10 +106,10 @@ export async function createApp(ctx: Context): Promise<void> {
         iconBackground,
         longDescription,
         maskableIcon,
-        private: isPrivate = true,
         screenshots,
         sharedStyle,
         template = false,
+        visibility,
         yaml,
       },
       query: { dryRun },
@@ -145,7 +145,7 @@ export async function createApp(ctx: Context): Promise<void> {
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
-      private: Boolean(isPrivate),
+      visibility,
       template: Boolean(template),
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
@@ -276,6 +276,10 @@ export async function getAppById(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
+  if (app.visibility === 'private') {
+    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+  }
+
   const rating = await AppRating.findOne({
     attributes: [
       'AppId',
@@ -307,7 +311,7 @@ export async function queryApps(ctx: Context): Promise<void> {
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
     },
-    where: { private: false },
+    where: { visibility: 'public' },
     include: [
       {
         model: Organization,
@@ -431,13 +435,13 @@ export async function patchApp(ctx: Context): Promise<void> {
         longDescription,
         maskableIcon,
         path,
-        private: isPrivate,
         screenshots,
         sentryDsn,
         sharedStyle,
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         template,
+        visibility,
         yaml,
       },
     },
@@ -495,8 +499,8 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.path = path;
     }
 
-    if (isPrivate !== undefined) {
-      result.private = isPrivate;
+    if (visibility !== undefined) {
+      result.visibility = visibility;
     }
 
     if (template !== undefined) {
@@ -550,7 +554,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (
       domain !== undefined ||
       path !== undefined ||
-      isPrivate !== undefined ||
+      visibility !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||

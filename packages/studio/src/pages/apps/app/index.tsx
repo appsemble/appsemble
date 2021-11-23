@@ -171,6 +171,8 @@ export function AppRoutes(): ReactElement {
       <Message color="danger">
         {error.response?.status === 404 ? (
           <FormattedMessage {...messages.notFound} />
+        ) : error.response?.status === 401 ? (
+          <FormattedMessage {...messages.permissionError} />
         ) : (
           <FormattedMessage {...messages.uncaughtError} />
         )}
