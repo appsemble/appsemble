@@ -12,6 +12,8 @@ export const messages = defineMessages({
   public: 'Public',
   unlisted: 'Unlisted',
   private: 'Private',
+  showAppDefinitionDescription: 'If checked, other people may view the app definition of this app.',
+  showAppDefinitionLabel: 'Show app definition',
   appLock: 'App lock',
   lockApp: 'Lock app',
   unlockApp: 'Unlock app',

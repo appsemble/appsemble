@@ -74,6 +74,11 @@ export class App extends Model {
   @AllowNull(false)
   @Default(false)
   @Column
+  showAppDefinition: boolean;
+
+  @AllowNull(false)
+  @Default(false)
+  @Column
   template: boolean;
 
   @Column(DataType.TEXT)

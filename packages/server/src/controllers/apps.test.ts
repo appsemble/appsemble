@@ -117,7 +117,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 964
+      Content-Length: 1016
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -141,6 +141,7 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -164,6 +165,7 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -212,7 +214,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 478
+      Content-Length: 504
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -236,6 +238,7 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -300,7 +303,7 @@ describe('queryApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 1516
+      Content-Length: 1594
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -328,6 +331,7 @@ describe('queryApps', () => {
             "average": 4.5,
             "count": 2,
           },
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -355,6 +359,7 @@ describe('queryApps', () => {
             "average": 3,
             "count": 1,
           },
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -378,6 +383,7 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -424,7 +430,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 548
+      Content-Length: 524
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -448,12 +454,10 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -475,7 +479,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 549
+      Content-Length: 524
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -499,10 +503,10 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "{ name: Test App, defaultPage Test Page }",
       }
     `);
   });
@@ -524,7 +528,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 612
+      Content-Length: 588
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -548,12 +552,10 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -578,7 +580,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 658
+      Content-Length: 634
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -602,12 +604,10 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -628,7 +628,7 @@ describe('getAppById', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 548
+      Content-Length: 524
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -652,6 +652,106 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
+  });
+
+  it('should show the app definition of showAppDefinition is true', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 573
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should show the app yaml for organization members with view permissions', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Accept-Ranges: bytes
+      Connection: close
+      Content-Length: 573
+      Content-Type: application/json; charset=utf-8
+      Vary: Origin
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -702,7 +802,7 @@ describe('queryMyApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 480
+      Content-Length: 506
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -726,6 +826,7 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -736,7 +837,7 @@ describe('queryMyApps', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 966
+      Content-Length: 1018
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -760,6 +861,7 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -783,6 +885,7 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app-b",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -816,7 +919,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 784
+      Content-Length: 809
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -851,6 +954,7 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -893,7 +997,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 811
+      Content-Length: 836
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -930,6 +1034,7 @@ describe('createApp', () => {
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
         ],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1467,7 +1572,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 722
+      Content-Length: 747
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1502,6 +1607,7 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1551,7 +1657,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 732
+      Content-Length: 757
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1586,6 +1692,7 @@ describe('createApp', () => {
         "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1628,7 +1735,7 @@ describe('createApp', () => {
       HTTP/1.1 201 Created
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 712
+      Content-Length: 737
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -1663,6 +1770,7 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2102,7 +2210,7 @@ describe('createApp', () => {
         HTTP/1.1 201 Created
         Accept-Ranges: bytes
         Connection: close
-        Content-Length: 730
+        Content-Length: 755
         Content-Type: application/json; charset=utf-8
         Vary: Origin
 
@@ -2137,6 +2245,7 @@ describe('createApp', () => {
           "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
+          "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -2434,7 +2543,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 715
+      Content-Length: 741
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2469,6 +2578,7 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "private",
@@ -2591,7 +2701,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 542
+      Content-Length: 568
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2615,6 +2725,7 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2644,7 +2755,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 554
+      Content-Length: 580
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2668,6 +2779,7 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2697,7 +2809,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 543
+      Content-Length: 569
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -2721,6 +2833,7 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -3280,7 +3393,7 @@ describe('patchApp', () => {
       HTTP/1.1 200 OK
       Accept-Ranges: bytes
       Connection: close
-      Content-Length: 543
+      Content-Length: 569
       Content-Type: application/json; charset=utf-8
       Vary: Origin
 
@@ -3304,6 +3417,7 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",

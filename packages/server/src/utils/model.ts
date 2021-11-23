@@ -66,9 +66,10 @@ export function getAppFromRecord(
     iconUrl: resolveIconUrl(record),
     longDescription: record.longDescription,
     definition,
-    yaml:
-      record.AppSnapshots?.[0]?.yaml ??
-      (!omittedValues.includes('yaml') && stringify(record.definition)),
+    yaml: omittedValues.includes('yaml')
+      ? undefined
+      : record.AppSnapshots?.[0]?.yaml || stringify(record.definition),
+    showAppDefinition: record.showAppDefinition,
     showAppsembleLogin: record.showAppsembleLogin ?? false,
     showAppsembleOAuth2Login: record.showAppsembleOAuth2Login ?? true,
     rating:
