@@ -75,6 +75,11 @@ export interface AppsembleContext {
   id?: number;
 
   /**
+   * The Google Analytics ID that should be used for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;

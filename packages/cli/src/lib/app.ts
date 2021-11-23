@@ -142,6 +142,11 @@ interface UpdateAppParams {
   maskableIcon: NodeJS.ReadStream | ReadStream;
 
   /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
    * The custom Sentry DSN for the app.
    */
   sentryDsn?: string;
@@ -521,6 +526,7 @@ export async function updateApp({
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
+  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
@@ -553,6 +559,10 @@ export async function updateApp({
     if (sentryEnvironment) {
       formData.append('sentryEnvironment', sentryEnvironment);
     }
+  }
+  if (googleAnalyticsId) {
+    logger.info('Using Google Analytics');
+    formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);

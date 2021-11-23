@@ -23,6 +23,7 @@ interface UpdateAppArguments extends BaseArguments {
   visibility: AppVisibility;
   sentryDsn: string;
   sentryEnvironment: string;
+  googleAnalyticsId: string;
 }
 
 export const command = 'update <paths...>';
@@ -66,6 +67,9 @@ export function builder(yargs: Argv): Argv {
     .option('force', {
       describe: 'Whether the lock property should be ignored.',
       type: 'boolean',
+    })
+    .option('google-analytics-id', {
+      describe: 'The ID for Google Analytics for the app.',
     })
     .option('sentry-dsn', {
       describe: 'The custom Sentry DSN for the app.',
