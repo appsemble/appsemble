@@ -1285,6 +1285,11 @@ export interface App {
   sentryDsn: string;
 
   /**
+   * The Sentry environment associated with the Sentry DSN.
+   */
+  sentryEnvironment: string;
+
+  /**
    * The app definition.
    */
   definition: AppDefinition;

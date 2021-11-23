@@ -437,6 +437,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         path,
         screenshots,
         sentryDsn,
+        sentryEnvironment,
         sharedStyle,
         showAppsembleLogin,
         showAppsembleOAuth2Login,
@@ -521,6 +522,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (sentryDsn !== undefined) {
       result.sentryDsn = sentryDsn;
+    }
+
+    if (sentryEnvironment !== undefined) {
+      result.sentryEnvironment = sentryEnvironment;
     }
 
     if (showAppsembleLogin !== undefined) {

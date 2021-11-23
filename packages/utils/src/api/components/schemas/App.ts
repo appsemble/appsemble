@@ -93,5 +93,11 @@ domain fall back to use the Appsemble server Sentry DSN.
 `,
       format: 'url',
     },
+    sentryEnvironment: {
+      type: 'string',
+      description: `The name that should be used as the sentry environment.
+
+  This is only applied when \`sentryDsn\` is specified.`,
+    },
   },
 };

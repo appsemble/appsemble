@@ -576,6 +576,8 @@
   "studio.src.pages.apps.app.settings.saveChanges": "Save changes",
   "studio.src.pages.apps.app.settings.sentryDsnDescription": "If this is specified, Sentry monitoring and error tracking will be applied to your app.",
   "studio.src.pages.apps.app.settings.sentryDsnLabel": "Sentry DSN",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentDescription": "The environment that should be passed to Sentry when using a custom Sentry DSN.",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentLabel": "Sentry environment",
   "studio.src.pages.apps.app.settings.sslError": "There was a problem generating an SSL certificate for this domain",
   "studio.src.pages.apps.app.settings.sslMissing": "The SSL certificate is missing. If this persists, try updating this field an changing it back.",
   "studio.src.pages.apps.app.settings.sslPending": "Your SSL certificate is being generated. This may take up to 24 hours, but it’s usually faster.",

@@ -576,6 +576,8 @@
   "studio.src.pages.apps.app.settings.saveChanges": "Spremi promjene",
   "studio.src.pages.apps.app.settings.sentryDsnDescription": "",
   "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentDescription": "",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "Dogodila se greška tijekom generiranja SSL certifikata za ovu domenu",
   "studio.src.pages.apps.app.settings.sslMissing": "Nedostaje SSL certifikat. Ako problem ustraje, pokušaj aktualizirati ovo polje i vratiti ga natrag.",
   "studio.src.pages.apps.app.settings.sslPending": "Tvoj SSL certifikat se generira. To može potrajati do 24 sata, ali obično je brže.",

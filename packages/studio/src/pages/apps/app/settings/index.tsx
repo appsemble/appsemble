@@ -79,6 +79,7 @@ export function SettingsPage(): ReactElement {
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
       sentryDsn: app.sentryDsn || '',
+      sentryEnvironment: app.sentryEnvironment || '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
@@ -94,6 +95,7 @@ export function SettingsPage(): ReactElement {
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('sentryDsn', values.sentryDsn);
+    form.set('sentryEnvironment', values.sentryEnvironment);
     form.set('path', values.path);
     form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
@@ -270,6 +272,12 @@ export function SettingsPage(): ReactElement {
             label={<FormattedMessage {...messages.sentryDsnLabel} />}
             name="sentryDsn"
             type="url"
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.sentryEnvironmentDescription} />}
+            label={<FormattedMessage {...messages.sentryEnvironmentLabel} />}
+            name="sentryEnvironment"
           />
           <FormButtons>
             <SimpleSubmit color="primary" disabled={app.locked} type="submit">

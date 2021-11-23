@@ -5,7 +5,8 @@ export const key = '0.19.8';
 
 /**
  * Summary:
- * - Add sentryDSN field to table App
+ * - Add column `sentryDSN` to table `App`
+ * - Add column `sentryEnvironment` to table `App`
  * - Add column `visibility` to `App`
  * - Remove column `private` from `App`
  *
@@ -15,6 +16,11 @@ export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.info('Adding column `sentryDsn` to `App`');
   await queryInterface.addColumn('App', 'sentryDsn', {
+    type: DataTypes.STRING,
+  });
+
+  logger.info('Adding column `sentryEnvironment` to `App`');
+  await queryInterface.addColumn('App', 'sentryEnvironment', {
     type: DataTypes.STRING,
   });
 
@@ -32,7 +38,8 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Remove sentryDSN field to table App
+ * - Remove column `sentryDSN` from table `App`
+ * - Remove column `sentryEnvironment` from table `App`
  * - Add column `private` to `App`
  * - Remove column `visibility` from `App`
  *
@@ -42,6 +49,9 @@ export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.warning('Removing column `sentryDsn` from `App`');
   await queryInterface.removeColumn('App', 'sentryDsn');
+
+  logger.warning('Removing column `sentryEnvironment` from `App`');
+  await queryInterface.removeColumn('App', 'sentryEnvironment');
 
   logger.info('Adding column `private` to `App');
   await queryInterface.addColumn('App', 'private', {

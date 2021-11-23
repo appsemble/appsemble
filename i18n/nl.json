@@ -576,6 +576,8 @@
   "studio.src.pages.apps.app.settings.saveChanges": "Wijzigingen opslaan",
   "studio.src.pages.apps.app.settings.sentryDsnDescription": "Als dit is ingevuld, wordt Sentry-monitoring en foutopsporing toegepast op je app.",
   "studio.src.pages.apps.app.settings.sentryDsnLabel": "Sentry DSN",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentDescription": "",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "Er is een probleem opgetreden met het genereten van een SSL certificaat voor deze domeinnaam",
   "studio.src.pages.apps.app.settings.sslMissing": "Het SSL certificaat ontbreekt. Als dit probleem zich blijft voordoen, Probeer dan om de domeinnaam te wijzigen en weer terug te wijzigen/",
   "studio.src.pages.apps.app.settings.sslPending": "Het SSL certificaat wordt gegenereerd. Dit kan tot 24 uur duren, maar is normaal sneller.",

@@ -111,6 +111,9 @@ export class App extends Model {
   @Column
   sentryDsn: string;
 
+  @Column
+  sentryEnvironment: string;
+
   @UpdatedAt
   updated: Date;
 

@@ -576,6 +576,8 @@
   "studio.src.pages.apps.app.settings.saveChanges": "Änderungen speichern",
   "studio.src.pages.apps.app.settings.sentryDsnDescription": "",
   "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentDescription": "",
+  "studio.src.pages.apps.app.settings.sentryEnvironmentLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "",
   "studio.src.pages.apps.app.settings.sslMissing": "",
   "studio.src.pages.apps.app.settings.sslPending": "",
