@@ -622,7 +622,7 @@ export async function createApp({
   try {
     ({ data } = await axios.post<App>('/api/apps', formData, {
       baseURL: remote,
-      params: { dryRun },
+      params: { dryRun: dryRun || undefined },
     }));
   } catch (error) {
     if (!axios.isAxiosError(error)) {
