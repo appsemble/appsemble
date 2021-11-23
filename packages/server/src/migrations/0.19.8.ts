@@ -11,7 +11,7 @@ export const key = '0.19.8';
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Adding column table');
+  logger.info('Adding column `sentryDsn` to `App`');
   await queryInterface.addColumn('App', 'sentryDsn', {
     type: DataTypes.STRING,
   });
@@ -25,6 +25,6 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.info('Deleting table Theme');
+  logger.warning('Removing column `sentryDsn` from `App`');
   await queryInterface.removeColumn('App', 'sentryDsn');
 }

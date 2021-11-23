@@ -78,7 +78,11 @@ The long desciption will be rendered on the app details page. Markdown content i
     sentryDsn: {
       type: 'string',
       description:
-        'If this is specified, Sentry monitoring and error tracking will be applied to the app',
+      description: `The Sentry DSN to use for this app.
+
+If this is specified, the given Sentry DSN will be used for error tracking. Apps without a custom
+domain fall back to use the Appsemble server Sentry DSN.
+`
       format: 'url',
     },
   },
