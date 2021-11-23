@@ -6,10 +6,12 @@ export const messages = defineMessages({
   noFile: 'No file chosen',
   icon: 'Icon',
   iconDescription: 'The icon that will be shown to the user.',
-  privateLabel: 'App Visibility',
+  visibilityLabel: 'Visibility',
+  visibilityDescription:
+    'Public apps are available in the app store. Unlisted apps aren’t listed publicly, but they are accessible using a direct link. Private apps are only visible to organization members.',
+  public: 'Public',
+  unlisted: 'Unlisted',
   private: 'Private',
-  privateDescription:
-    'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
   appLock: 'App lock',
   lockApp: 'Lock app',
   unlockApp: 'Unlock app',

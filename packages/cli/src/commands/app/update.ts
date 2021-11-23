@@ -1,6 +1,7 @@
 import { ReadStream } from 'fs';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppVisibility } from '@appsemble/types';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
@@ -17,9 +18,9 @@ interface UpdateAppArguments extends BaseArguments {
   iconBackground: string;
   maskableIcon: NodeJS.ReadStream | ReadStream;
   id: number;
-  private: boolean;
   template: boolean;
   force: boolean;
+  visibility: AppVisibility;
 }
 
 export const command = 'update <paths...>';
@@ -51,35 +52,27 @@ export function builder(yargs: Argv): Argv {
         'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
       coerce: coerceFile,
     })
-    .option('private', {
-      describe: 'Whether the app should be marked as private.',
-      default: true,
-      type: 'boolean',
+    .option('visibility', {
+      describe: 'Visibility of the app in the public app store.',
+      default: 'unlisted',
+      choices: ['public', 'unlisted', 'private'],
     })
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
-      default: false,
       type: 'boolean',
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',
-      default: false,
       type: 'boolean',
     });
 }
 
 export async function handler({
   clientCredentials,
-  context,
-  force,
-  icon,
-  iconBackground,
   id,
-  maskableIcon,
   paths,
-  private: isPrivate,
   remote,
-  template,
+  ...args
 }: UpdateAppArguments): Promise<void> {
   if (id != null && paths.length > 1) {
     throw new AppsembleError('Only one path may be specified when specifying an app id');
@@ -93,17 +86,11 @@ export async function handler({
   logger.info(`Updating ${directories.length} apps`);
   for (const dir of directories) {
     await updateApp({
+      ...args,
       clientCredentials,
-      context,
       id,
       path: dir,
-      maskableIcon,
-      private: isPrivate,
       remote,
-      icon,
-      iconBackground,
-      template,
-      force,
     });
   }
 }

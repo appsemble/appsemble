@@ -7,8 +7,12 @@ export const messages = defineMessages({
   nameDescription: 'The name of the app',
   description: 'Description',
   descriptionDescription: 'A short description of what the app can do.',
+  visibilityLabel: 'Visibility',
+  visibilityDescription:
+    'Public apps are available in the app store. Unlisted apps aren’t listed publicly, but they are accessible using a direct link. Private apps are only visible to organization members.',
+  public: 'Public',
+  unlisted: 'Unlisted',
   private: 'Private',
-  privateDescription: 'Hide this app from the public app list',
   organization: 'Organization',
   resources: 'Resources',
   resourcesDescription: 'Copy any resources that are allowed to be cloned.',

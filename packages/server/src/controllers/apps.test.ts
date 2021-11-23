@@ -88,6 +88,7 @@ describe('queryApps', () => {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
+        visibility: 'public',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -98,6 +99,7 @@ describe('queryApps', () => {
         definition: { name: 'Another App', defaultPage: 'Another Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
+        visibility: 'public',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -113,36 +115,37 @@ describe('queryApps', () => {
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'test-app',
           iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
+          visibility: 'public',
         },
         {
           id: appB.id,
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'another-app',
           iconUrl: null,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization',
+          visibility: 'public',
         },
       ],
     });
   });
 
-  it('should not include private apps when fetching all apps', async () => {
+  it('should only include public apps when fetching all apps', async () => {
     const appA = await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
+        visibility: 'public',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -150,10 +153,21 @@ describe('queryApps', () => {
     await App.create(
       {
         path: 'another-app',
-        private: true,
         definition: { name: 'Another App', defaultPage: 'Another Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
+        visibility: 'unlisted',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        path: 'yet-another-app',
+        definition: { name: 'Yet Another App', defaultPage: 'Yet Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'private',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -168,12 +182,12 @@ describe('queryApps', () => {
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'test-app',
           iconUrl: null,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
+          visibility: 'public',
         },
       ],
     });
@@ -186,6 +200,7 @@ describe('queryApps', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+      visibility: 'public',
       OrganizationId: organization.id,
     });
     await AppRating.create({
@@ -193,12 +208,14 @@ describe('queryApps', () => {
       UserId: user.id,
       rating: 5,
       description: 'This is a test rating',
+      visibility: 'public',
     });
     await AppRating.create({
       AppId: appA.id,
       UserId: userB.id,
       rating: 4,
       description: 'This is also a test rating',
+      visibility: 'public',
     });
 
     const appB = await App.create({
@@ -207,6 +224,7 @@ describe('queryApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
+      visibility: 'public',
     });
 
     const appC = await App.create({
@@ -215,12 +233,14 @@ describe('queryApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
+      visibility: 'public',
     });
     await AppRating.create({
       AppId: appC.id,
       UserId: user.id,
       rating: 3,
       description: 'This is a test rating',
+      visibility: 'public',
     });
 
     const response = await request.get('/api/apps');
@@ -268,12 +288,12 @@ describe('getAppById', () => {
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
-        private: false,
         path: 'test-app',
         iconUrl: null,
         definition: appA.definition,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
+        visibility: 'unlisted',
         yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -301,12 +321,12 @@ defaultPage: Test Page
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
-        private: false,
         path: 'test-app',
         iconUrl: null,
         definition: app.definition,
         OrganizationId: organization.id,
         OrganizationName: 'Test Organization',
+        visibility: 'unlisted',
         yaml: '{ name: Test App, defaultPage Test Page }',
       },
     });
@@ -422,10 +442,10 @@ describe('queryMyApps', () => {
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'test-app',
           iconUrl: null,
           definition: appA.definition,
+          visibility: 'unlisted',
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
         },
@@ -439,10 +459,10 @@ describe('queryMyApps', () => {
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'test-app',
           iconUrl: null,
           definition: appA.definition,
+          visibility: 'unlisted',
           OrganizationId: appA.OrganizationId,
           OrganizationName: 'Test Organization',
         },
@@ -451,10 +471,10 @@ describe('queryMyApps', () => {
           $created: '1970-01-01T00:00:00.000Z',
           $updated: '1970-01-01T00:00:00.000Z',
           domain: null,
-          private: false,
           path: 'test-app-b',
           iconUrl: null,
           definition: appB.definition,
+          visibility: 'unlisted',
           OrganizationId: appB.OrganizationId,
           OrganizationName: 'Test Organization B',
         },
@@ -490,7 +510,7 @@ describe('createApp', () => {
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
-        private: true,
+        visibility: 'unlisted',
         path: 'test-app',
         iconUrl: expect.stringMatching(/\/api\/apps\/\d+\/icon/),
         definition: {
@@ -553,7 +573,7 @@ describe('createApp', () => {
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
-        private: true,
+        visibility: 'unlisted',
         path: 'test-app',
         iconUrl: expect.stringMatching(/\/api\/apps\/\d+\/icon/),
         definition: {
@@ -652,8 +672,8 @@ describe('createApp', () => {
                 path: {
                   $ref: '#/components/schemas/App/properties/path',
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
+                visibility: {
+                  $ref: '#/components/schemas/App/properties/visibility',
                 },
                 screenshots: {
                   description: 'Screenshots to showcase in the store',
@@ -722,8 +742,8 @@ describe('createApp', () => {
                 path: {
                   $ref: '#/components/schemas/App/properties/path',
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
+                visibility: {
+                  $ref: '#/components/schemas/App/properties/visibility',
                 },
                 screenshots: {
                   description: 'Screenshots to showcase in the store',
@@ -827,9 +847,6 @@ describe('createApp', () => {
                 path: {
                   $ref: '#/components/schemas/App/properties/path',
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
-                },
                 screenshots: {
                   description: 'Screenshots to showcase in the store',
                   items: {
@@ -844,6 +861,9 @@ describe('createApp', () => {
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
+                },
+                visibility: {
+                  $ref: '#/components/schemas/App/properties/visibility',
                 },
                 yaml: {
                   description: 'The original YAML definition used to define the app.',
@@ -1570,7 +1590,7 @@ describe('patchApp', () => {
     const response = await request.patch(
       `/api/apps/${app.id}`,
       createFormData({
-        private: 'true',
+        visibility: 'private',
         yaml: stripIndent(`
           name: Foobar
           defaultPage: Test Page
@@ -1590,7 +1610,7 @@ describe('patchApp', () => {
         $created: '1970-01-01T00:00:00.000Z',
         $updated: '1970-01-01T00:00:00.000Z',
         domain: null,
-        private: true,
+        visibility: 'private',
         path: 'test-app',
         iconUrl: null,
         OrganizationId: organization.id,
@@ -2608,10 +2628,10 @@ describe('setAppBlockStyle', () => {
 
     const { id } = await App.create({
       path: 'b',
-      private: false,
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+      visibility: 'unlisted',
       OrganizationId: organization.id,
     });
 
