@@ -245,11 +245,7 @@ describe('getResourceById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -285,11 +281,7 @@ describe('getResourceById', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 164
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -328,11 +320,7 @@ describe('getResourceById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -360,11 +348,7 @@ describe('getResourceById', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -374,11 +358,7 @@ describe('getResourceById', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -402,25 +382,21 @@ describe('getResourceById', () => {
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
       `
-        HTTP/1.1 200 OK
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 179
-        Content-Type: application/json; charset=utf-8
-        Vary: Origin
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-        {
-          "$author": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "bar": 1,
-          "foo": "foo",
-          "id": 1,
-        }
-      `,
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": 1,
+        "foo": "foo",
+        "id": 1,
+      }
+    `,
     );
   });
 
@@ -439,11 +415,7 @@ describe('getResourceById', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 179
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -481,11 +453,7 @@ describe('getResourceById', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 135
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -497,11 +465,7 @@ describe('getResourceById', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -524,11 +488,7 @@ describe('getResourceById', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -555,11 +515,7 @@ describe('getResourceById', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -582,11 +538,7 @@ describe('getResourceById', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -613,11 +565,7 @@ describe('getResourceById', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -647,28 +595,24 @@ describe('queryResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(`
-        HTTP/1.1 200 OK
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 195
-        Content-Type: application/json; charset=utf-8
-        Vary: Origin
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-        [
-          {
-            "$created": "1970-01-01T00:00:00.000Z",
-            "$updated": "1970-01-01T00:00:00.000Z",
-            "foo": "bar",
-            "id": 1,
-          },
-          {
-            "$created": "1970-01-01T00:00:00.000Z",
-            "$updated": "1970-01-01T00:00:00.000Z",
-            "foo": "baz",
-            "id": 2,
-          },
-        ]
-      `);
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
+        },
+      ]
+    `);
   });
 
   it('should be possible to filter properties using $select', async () => {
@@ -691,11 +635,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 68
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -732,11 +672,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 56
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -771,11 +707,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 7
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {},
@@ -798,11 +730,7 @@ describe('queryResources', () => {
       { data: [{ $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 173
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -847,11 +775,7 @@ describe('queryResources', () => {
       { data: [{ $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 173
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -903,36 +827,32 @@ describe('queryResources', () => {
     expect(response).toMatchInlineSnapshot(
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
-        HTTP/1.1 200 OK
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 338
-        Content-Type: application/json; charset=utf-8
-        Vary: Origin
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-        [
-          {
-            "$author": {
-              "id": Any<String>,
-              "name": "Test User",
-            },
-            "$created": "1970-01-01T00:00:00.000Z",
-            "$updated": "1970-01-01T00:00:00.000Z",
-            "foo": "bar",
-            "id": 1,
+      [
+        {
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
           },
-          {
-            "$author": {
-              "id": Any<String>,
-              "name": null,
-            },
-            "$created": "1970-01-01T00:00:00.000Z",
-            "$updated": "1970-01-01T00:00:00.000Z",
-            "foo": "baz",
-            "id": 2,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$author": {
+            "id": Any<String>,
+            "name": null,
           },
-        ]
-      `,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
+        },
+      ]
+    `,
     );
   });
 
@@ -994,11 +914,7 @@ describe('queryResources', () => {
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 338
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1040,11 +956,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 98
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1077,11 +989,7 @@ describe('queryResources', () => {
     );
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 195
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1104,11 +1012,7 @@ describe('queryResources', () => {
     );
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 195
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1131,11 +1035,7 @@ describe('queryResources', () => {
     );
     expect(responseC).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 195
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1158,11 +1058,7 @@ describe('queryResources', () => {
     );
     expect(responseD).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 195
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1196,11 +1092,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 98
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1228,11 +1120,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 106
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1270,11 +1158,7 @@ describe('queryResources', () => {
       { data: [{ $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 174
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1313,11 +1197,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 211
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1353,11 +1233,7 @@ describe('queryResources', () => {
       { data: [{ $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 181
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1395,11 +1271,7 @@ describe('queryResources', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 272
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1420,11 +1292,7 @@ describe('queryResources', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 136
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1450,11 +1318,7 @@ describe('queryResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 98
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1481,11 +1345,7 @@ describe('queryResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -1506,11 +1366,7 @@ describe('queryResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 98
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -1537,11 +1393,7 @@ describe('queryResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -1561,11 +1413,7 @@ describe('queryResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 74
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -1598,21 +1446,13 @@ describe('countResources', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       0
     `);
@@ -1643,11 +1483,7 @@ describe('countResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
@@ -1676,11 +1512,7 @@ describe('countResources', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       1
     `);
@@ -1719,11 +1551,7 @@ describe('countResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
@@ -1764,11 +1592,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
@@ -1809,11 +1633,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
@@ -1853,11 +1673,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       0
     `);
@@ -1898,11 +1714,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       0
     `);
@@ -1943,11 +1755,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       2
     `);
@@ -1963,11 +1771,7 @@ describe('countResources', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       1
     `);
@@ -2007,11 +1811,7 @@ describe('countResources', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       0
     `);
@@ -2027,11 +1827,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2050,11 +1846,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 445
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2103,11 +1895,7 @@ describe('createResource', () => {
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 102
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2129,11 +1917,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 90
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2151,11 +1935,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 135
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2176,11 +1956,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 135
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2204,11 +1980,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 88
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Bad Request",
@@ -2232,11 +2004,7 @@ describe('createResource', () => {
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 130
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2276,11 +2044,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 335
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2317,11 +2081,7 @@ describe('createResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 380
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2360,11 +2120,7 @@ describe('createResource', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 171
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -2391,11 +2147,7 @@ describe('createResource', () => {
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -2415,11 +2167,7 @@ describe('createResource', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 171
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -2446,11 +2194,7 @@ describe('createResource', () => {
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -2480,11 +2224,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 106
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2500,11 +2240,7 @@ describe('updateResource', () => {
 
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 106
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2540,11 +2276,7 @@ describe('updateResource', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 174
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -2582,11 +2314,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2612,11 +2340,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2644,11 +2368,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2667,11 +2387,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2697,11 +2413,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 664
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2780,11 +2492,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 106
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2818,11 +2526,7 @@ describe('updateResource', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 138
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2835,11 +2539,7 @@ describe('updateResource', () => {
 
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 138
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2871,11 +2571,7 @@ describe('updateResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 88
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Bad Request",
@@ -2900,11 +2596,7 @@ describe('updateResource', () => {
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 130
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2945,11 +2637,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 335
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2987,11 +2675,7 @@ describe('updateResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 380
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -3037,11 +2721,7 @@ describe('updateResource', () => {
       { data: { file: expect.any(String) } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 130
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3076,11 +2756,7 @@ describe('updateResource', () => {
       { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 130
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3109,11 +2785,7 @@ describe('updateResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3141,11 +2813,7 @@ describe('updateResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3169,11 +2837,7 @@ describe('updateResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 96
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3201,11 +2865,7 @@ describe('updateResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3231,11 +2891,7 @@ describe('deleteResource', () => {
 
     expect(responseGetA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 102
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3250,12 +2906,7 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseGetB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
@@ -3263,11 +2914,7 @@ describe('deleteResource', () => {
 
     expect(responseGetB).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3297,12 +2944,7 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete resources if not part of the same team', async () => {
@@ -3326,11 +2968,7 @@ describe('deleteResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3347,11 +2985,7 @@ describe('deleteResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3376,11 +3010,7 @@ describe('deleteResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3395,11 +3025,7 @@ describe('deleteResource', () => {
 
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 102
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3426,11 +3052,7 @@ describe('deleteResource', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3445,11 +3067,7 @@ describe('deleteResource', () => {
 
     expect(responseGet).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 102
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3471,12 +3089,7 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not allow organization members to delete resources using Studio', async () => {
@@ -3495,11 +3108,7 @@ describe('deleteResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3520,12 +3129,7 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not allow organization members to delete resources using client credentials', async () => {
@@ -3544,11 +3148,7 @@ describe('deleteResource', () => {
     );
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3585,11 +3185,7 @@ describe('verifyAppRole', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 195
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -3628,24 +3224,20 @@ describe('verifyAppRole', () => {
     expect(response).toMatchInlineSnapshot(
       { data: { $author: { id: expect.any(String) } } },
       `
-        HTTP/1.1 200 OK
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 171
-        Content-Type: application/json; charset=utf-8
-        Vary: Origin
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-        {
-          "$author": {
-            "id": Any<String>,
-            "name": "Test User",
-          },
-          "$created": "1970-01-01T00:00:00.000Z",
-          "$updated": "1970-01-01T00:00:00.000Z",
-          "foo": "bar",
-          "id": 1,
-        }
-      `,
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
     );
   });
 
@@ -3656,11 +3248,7 @@ describe('verifyAppRole', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 401 Unauthorized
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 76
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Unauthorized",
@@ -3678,11 +3266,7 @@ describe('verifyAppRole', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 83
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3702,11 +3286,7 @@ describe('verifyAppRole', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3747,11 +3327,7 @@ describe('getResourceSubscription', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 37
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "delete": false,
@@ -3783,11 +3359,7 @@ describe('getResourceSubscription', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 38
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "delete": false,
@@ -3814,11 +3386,7 @@ describe('getResourceSubscription', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 70
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3843,11 +3411,7 @@ describe('getResourceSubscription', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 38
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "delete": false,

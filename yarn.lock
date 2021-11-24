@@ -8025,9 +8025,9 @@ istanbul-reports@^3.0.2:
     istanbul-lib-report "^3.0.0"
 
 jest-axios-snapshot@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/jest-axios-snapshot/-/jest-axios-snapshot-1.0.0.tgz#c6637d571cfea98a84fe4cccf32a446be4d3325b"
-  integrity sha512-jC5AEuf6eXGJWYMtBXG2Cips8UXoYgA0nbaIhPvBEpHbzFoGrAJSYlPK1n0r6zmjuUkrJOH8fWBQ1esP90u2gw==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/jest-axios-snapshot/-/jest-axios-snapshot-1.0.1.tgz#7c44089d210c53686744da59ba9113d40f9051b4"
+  integrity sha512-QIO0HPR9S//6hggVJ5II22fpeQkzbpDTTTegtt9LF92NgZXkzBblOJ8R3FsGoodOkMxvOoPoNzQqmccvgSiKgQ==
 
 jest-changed-files@^27.3.0:
   version "27.3.0"
