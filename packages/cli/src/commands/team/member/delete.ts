@@ -25,7 +25,6 @@ export function builder(yargs: Argv): Argv {
     .option('app-id', {
       describe: 'The ID of the app of the team',
       type: 'number',
-      conflicts: 'app',
     })
     .positional('user', {
       describe: 'The ID or email address of the user you want to delete.',

@@ -48,6 +48,12 @@ export const messages = defineMessages({
   longDescription: 'Long description',
   longDescriptionDescription:
     'This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
+  sentryDsnLabel: 'Sentry DSN',
+  sentryDsnDescription:
+    'If this is specified, Sentry monitoring and error tracking will be applied to your app.',
+  sentryEnvironmentLabel: 'Sentry environment',
+  sentryEnvironmentDescription:
+    'The environment that should be passed to Sentry when using a custom Sentry DSN.',
   sslError: 'There was a problem generating an SSL certificate for this domain',
   sslUnknown: 'The current status of the SSL certificate is unknown',
   sslMissing:

@@ -22,6 +22,9 @@ interface CreateAppArguments extends BaseArguments {
   resources: boolean;
   modifyContext: boolean;
   visibility: AppVisibility;
+  sentryDsn: string;
+  sentryEnvironment: string;
+  googleAnalyticsId: string;
 }
 
 export const command = 'create <paths...>';
@@ -73,6 +76,16 @@ export function builder(yargs: Argv): Argv {
       describe:
         'If the app context is specified, modify it for the current context to include the id of the created app.',
       type: 'boolean',
+    })
+    .option('google-analytics-id', {
+      describe: 'The ID for Google Analytics for the app.',
+    })
+    .option('sentry-dsn', {
+      describe: 'The custom Sentry DSN for the app.',
+    })
+    .option('sentry-environment', {
+      describe: 'The environment for the custom Sentry DSN for the app.',
+      implies: ['sentry-dsn'],
     });
 }
 

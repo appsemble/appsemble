@@ -70,6 +70,8 @@ export function getAppFromRecord(
       ? undefined
       : record.AppSnapshots?.[0]?.yaml || stringify(record.definition),
     showAppDefinition: record.showAppDefinition,
+    sentryDsn: record.sentryDsn,
+    sentryEnvironment: record.sentryEnvironment,
     showAppsembleLogin: record.showAppsembleLogin ?? false,
     showAppsembleOAuth2Login: record.showAppsembleOAuth2Login ?? true,
     rating:

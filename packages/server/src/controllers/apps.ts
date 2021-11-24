@@ -107,6 +107,8 @@ export async function createApp(ctx: Context): Promise<void> {
         longDescription,
         maskableIcon,
         screenshots,
+        sentryDsn,
+        sentryEnvironment,
         sharedStyle,
         showAppDefinition = true,
         template = false,
@@ -149,6 +151,8 @@ export async function createApp(ctx: Context): Promise<void> {
       showAppDefinition,
       visibility,
       template: Boolean(template),
+      sentryDsn,
+      sentryEnvironment,
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
       vapidPublicKey: keys.publicKey,
@@ -446,6 +450,8 @@ export async function patchApp(ctx: Context): Promise<void> {
         maskableIcon,
         path,
         screenshots,
+        sentryDsn,
+        sentryEnvironment,
         sharedStyle,
         showAppDefinition,
         showAppsembleLogin,
@@ -531,6 +537,14 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (showAppDefinition !== undefined) {
       result.showAppDefinition = showAppDefinition;
+    }
+
+    if (sentryDsn !== undefined) {
+      result.sentryDsn = sentryDsn;
+    }
+
+    if (sentryEnvironment !== undefined) {
+      result.sentryEnvironment = sentryEnvironment;
     }
 
     if (showAppsembleLogin !== undefined) {

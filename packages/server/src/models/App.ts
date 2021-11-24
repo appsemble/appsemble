@@ -113,6 +113,12 @@ export class App extends Model {
   @Column
   googleAnalyticsID: string;
 
+  @Column
+  sentryDsn: string;
+
+  @Column
+  sentryEnvironment: string;
+
   @UpdatedAt
   updated: Date;
 

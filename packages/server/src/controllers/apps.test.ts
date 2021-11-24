@@ -77,11 +77,7 @@ describe('queryApps', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 2
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       []
     `);
@@ -115,11 +111,7 @@ describe('queryApps', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1016
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -141,6 +133,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -165,6 +159,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -212,11 +208,7 @@ describe('queryApps', () => {
     const response = await request.get('/api/apps');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 504
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -238,6 +230,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -301,11 +295,7 @@ describe('queryApps', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1594
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -331,6 +321,8 @@ describe('queryApps', () => {
             "average": 4.5,
             "count": 2,
           },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -359,6 +351,8 @@ describe('queryApps', () => {
             "average": 3,
             "count": 1,
           },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -383,6 +377,8 @@ describe('queryApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -399,11 +395,7 @@ describe('getAppById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -428,11 +420,7 @@ describe('getAppById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 524
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -454,6 +442,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -477,11 +467,7 @@ describe('getAppById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 524
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -503,6 +489,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -526,11 +514,7 @@ describe('getAppById', () => {
     const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 588
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -552,6 +536,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -578,11 +564,7 @@ describe('getAppById', () => {
     const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 634
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -604,6 +586,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -626,11 +610,7 @@ describe('getAppById', () => {
     const response = await request.get(`/api/apps/${app.id}`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 524
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -652,6 +632,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -674,11 +656,7 @@ describe('getAppById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 573
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -700,6 +678,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -725,11 +705,7 @@ describe('getAppById', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 573
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -751,6 +727,8 @@ describe('getAppById', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -800,11 +778,7 @@ describe('queryMyApps', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 506
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -826,6 +800,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -835,11 +811,7 @@ describe('queryMyApps', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1018
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -861,6 +833,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -885,6 +859,8 @@ describe('queryMyApps', () => {
           "locked": false,
           "longDescription": null,
           "path": "test-app-b",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -917,11 +893,7 @@ describe('createApp', () => {
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 809
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -954,6 +926,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -995,11 +969,7 @@ describe('createApp', () => {
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 836
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1034,6 +1004,8 @@ describe('createApp', () => {
         "screenshotUrls": [
           "/api/apps/1/screenshots/1",
         ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -1072,11 +1044,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 2864
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -1251,11 +1219,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1572
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -1364,11 +1328,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 89
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -1398,11 +1358,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 313
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -1449,11 +1405,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 304
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -1502,11 +1454,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 341
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -1570,11 +1518,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 747
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1607,6 +1551,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "test-app-2",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -1655,11 +1601,7 @@ describe('createApp', () => {
       { data: { path: expect.stringMatching(/test-app-(\w){10}/) } },
       `
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 757
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1692,6 +1634,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -1733,11 +1677,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 737
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -1770,6 +1710,8 @@ describe('createApp', () => {
         "longDescription": null,
         "path": "foobar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -1787,21 +1729,13 @@ describe('createApp', () => {
     `);
     expect(coreStyle).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 21
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
 
       body { color: blue; }
     `);
     expect(sharedStyle).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 34
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
 
       :root { --primary-color: purple; }
     `);
@@ -1827,11 +1761,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1639
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -1937,11 +1867,7 @@ describe('createApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 1639
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -2066,11 +1992,7 @@ describe('createApp', () => {
       );
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 400 Bad Request
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 308
         Content-Type: application/json; charset=utf-8
-        Vary: Origin
 
         {
           "data": {
@@ -2124,11 +2046,7 @@ describe('createApp', () => {
       );
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 400 Bad Request
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 308
         Content-Type: application/json; charset=utf-8
-        Vary: Origin
 
         {
           "data": {
@@ -2208,11 +2126,7 @@ describe('createApp', () => {
       );
       expect(response).toMatchInlineSnapshot(`
         HTTP/1.1 201 Created
-        Accept-Ranges: bytes
-        Connection: close
-        Content-Length: 755
         Content-Type: application/json; charset=utf-8
-        Vary: Origin
 
         {
           "$created": "1970-01-01T00:00:00.000Z",
@@ -2245,6 +2159,8 @@ describe('createApp', () => {
           "longDescription": null,
           "path": "test-app",
           "screenshotUrls": [],
+          "sentryDsn": null,
+          "sentryEnvironment": null,
           "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
@@ -2313,12 +2229,7 @@ describe('createApp', () => {
     );
 
     const appCount = await App.count();
-    expect(createdResponse).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(createdResponse).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(appCount).toBe(0);
   });
 
@@ -2344,11 +2255,7 @@ describe('createApp', () => {
     const appCount = await App.count();
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 3327
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -2541,11 +2448,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 741
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2578,6 +2481,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "test-app",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -2615,11 +2520,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -2656,11 +2557,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 75
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -2699,11 +2596,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 568
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2725,6 +2618,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -2753,11 +2648,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 580
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2779,6 +2670,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -2807,11 +2700,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 569
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -2833,6 +2722,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "foo",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -2873,11 +2764,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 89
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -2893,11 +2780,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 2818
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -3074,11 +2957,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 6406
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -3391,11 +3270,7 @@ describe('patchApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 569
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
@@ -3417,6 +3292,8 @@ describe('patchApp', () => {
         "longDescription": null,
         "path": "bar",
         "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -3428,21 +3305,13 @@ describe('patchApp', () => {
     `);
     expect(coreStyle).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 23
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
 
       body { color: yellow; }
     `);
     expect(sharedStyle).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 21
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
 
       body { color: blue; }
     `);
@@ -3499,11 +3368,7 @@ describe('patchApp', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 78
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Bad Request",
@@ -3513,11 +3378,7 @@ describe('patchApp', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 287
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -3578,11 +3439,7 @@ describe('patchApp', () => {
 
     expect(responseA).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 848
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -3632,11 +3489,7 @@ describe('patchApp', () => {
     `);
     expect(responseB).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 848
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -3700,12 +3553,7 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
     await app.reload();
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe(true);
   });
 
@@ -3722,12 +3570,7 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
     await app.reload();
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe(false);
   });
 
@@ -3747,11 +3590,7 @@ describe('setAppLock', () => {
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 93
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3785,12 +3624,7 @@ describe('deleteApp', () => {
 
     const response = await request.delete(`/api/apps/${id}`);
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete non-existent apps', async () => {
@@ -3799,11 +3633,7 @@ describe('deleteApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -3828,11 +3658,7 @@ describe('deleteApp', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 89
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -3872,11 +3698,7 @@ describe('getAppSnapshots', () => {
       { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 245
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         {
@@ -3931,11 +3753,7 @@ describe('getAppSnapshot', () => {
       { data: { $author: { id: expect.any(String) } } },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 173
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "$author": {
@@ -3971,11 +3789,7 @@ describe('getAppSnapshot', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 69
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4001,11 +3815,7 @@ describe('getAppIcon', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 7916
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4030,11 +3840,7 @@ describe('getAppIcon', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 4016
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4059,11 +3865,7 @@ describe('getAppIcon', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 538
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4089,11 +3891,7 @@ describe('getAppIcon', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 671
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4118,11 +3916,7 @@ describe('getAppIcon', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 8176
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4144,12 +3938,7 @@ describe('deleteAppIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/icon`);
     await app.reload();
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.maskableIcon).toBeNull();
   });
 
@@ -4158,11 +3947,7 @@ describe('deleteAppIcon', () => {
     const response = await request.delete('/api/apps/0/icon');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4184,11 +3969,7 @@ describe('deleteAppIcon', () => {
     const response = await request.delete(`/api/apps/${app.id}/icon`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 66
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4212,12 +3993,7 @@ describe('deleteAppMaskableIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
     await app.reload();
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.maskableIcon).toBeNull();
   });
 
@@ -4226,11 +4002,7 @@ describe('deleteAppMaskableIcon', () => {
     const response = await request.delete('/api/apps/0/maskableIcon');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4252,11 +4024,7 @@ describe('deleteAppMaskableIcon', () => {
     const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 75
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4272,11 +4040,7 @@ describe('getAppScreenshots', () => {
     const response = await request.get('/api/apps/1/screenshots/1');
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 64
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4296,11 +4060,7 @@ describe('getAppScreenshots', () => {
     const response = await request.get(`/api/apps/${app.id}/screenshots/1`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 71
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4332,11 +4092,7 @@ describe('getAppScreenshots', () => {
       { data: expect.any(Buffer) },
       `
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 15040
       Content-Type: image/png
-      Vary: Origin
 
       Any<Buffer>
     `,
@@ -4362,11 +4118,7 @@ describe('createAppScreenshot', () => {
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 3
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         1,
@@ -4390,11 +4142,7 @@ describe('createAppScreenshot', () => {
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 201 Created
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 5
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       [
         1,
@@ -4435,11 +4183,7 @@ describe('createAppScreenshot', () => {
 
     expect(createdResponse).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 327
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "errors": [
@@ -4487,11 +4231,7 @@ describe('deleteAppScreenshot', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 2
       Content-Type: text/plain; charset=utf-8
-      Vary: Origin
 
       OK
     `);
@@ -4510,11 +4250,7 @@ describe('deleteAppScreenshot', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 71
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4556,19 +4292,10 @@ describe('setAppBlockStyle', () => {
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(style).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 23
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
 
       body { color: yellow; }
     `);
@@ -4597,24 +4324,14 @@ describe('setAppBlockStyle', () => {
     const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: 'body { color: blue; }',
     });
-    expect(responseA).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     authorizeStudio();
     const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: ' ',
     });
 
-    expect(responseB).toMatchInlineSnapshot(`
-      HTTP/1.1 204 No Content
-      Accept-Ranges: bytes
-      Connection: close
-      Vary: Origin
-    `);
+    expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const style = await AppBlockStyle.findOne({
       where: { AppId: id, block: '@appsemble/testblock' },
@@ -4653,11 +4370,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 403 Forbidden
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 75
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Forbidden",
@@ -4691,11 +4404,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 78
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Bad Request",
@@ -4720,11 +4429,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 65
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4750,11 +4455,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 67
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "error": "Not Found",
@@ -4777,11 +4478,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 0
       Content-Type: text/css; charset=utf-8
-      Vary: Origin
     `);
   });
 
@@ -4812,11 +4509,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 871
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
@@ -4893,11 +4586,7 @@ describe('setAppBlockStyle', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Accept-Ranges: bytes
-      Connection: close
-      Content-Length: 304
       Content-Type: application/json; charset=utf-8
-      Vary: Origin
 
       {
         "data": {
