@@ -32,7 +32,7 @@ export async function up(db: Sequelize): Promise<void> {
   });
   await db.query('UPDATE "App" SET visibility = \'public\' WHERE private = false');
 
-  logger.warning('Removing column `private` from `App`');
+  logger.warn('Removing column `private` from `App`');
   await queryInterface.removeColumn('App', 'private');
 
   logger.info('Adding column `showAppDefinition` to `App');
@@ -54,13 +54,13 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
-  logger.warning('Removing column `showAppDefinition` from `App`');
+  logger.warn('Removing column `showAppDefinition` from `App`');
   await queryInterface.removeColumn('App', 'showAppDefinition');
 
-  logger.warning('Removing column `sentryDsn` from `App`');
+  logger.warn('Removing column `sentryDsn` from `App`');
   await queryInterface.removeColumn('App', 'sentryDsn');
 
-  logger.warning('Removing column `sentryEnvironment` from `App`');
+  logger.warn('Removing column `sentryEnvironment` from `App`');
   await queryInterface.removeColumn('App', 'sentryEnvironment');
 
   logger.info('Adding column `private` to `App');

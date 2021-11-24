@@ -48,7 +48,7 @@ export async function up(db: Sequelize): Promise<void> {
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 
-  logger.warning('Removing column `googleAnalyticsID` from `App`');
+  logger.warn('Removing column `googleAnalyticsID` from `App`');
   await queryInterface.removeColumn('App', 'googleAnalyticsID');
 
   logger.info('Removing column `properties` from `AppMember`');
