@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { App as AppType, BlockManifest } from '@appsemble/types';
 import {
   IdentifiableBlock,
   normalize,
@@ -110,6 +110,7 @@ export async function createApp(ctx: Context): Promise<void> {
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
+        showAppDefinition = true,
         template = false,
         visibility,
         yaml,
@@ -147,6 +148,7 @@ export async function createApp(ctx: Context): Promise<void> {
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
+      showAppDefinition,
       visibility,
       template: Boolean(template),
       sentryDsn,
@@ -280,8 +282,16 @@ export async function getAppById(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (app.visibility === 'private') {
-    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+  const propertyFilters: (keyof AppType)[] = [];
+  if (app.visibility === 'private' || !app.showAppDefinition) {
+    try {
+      await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+    } catch (error) {
+      if (app.visibility === 'private') {
+        throw error;
+      }
+      propertyFilters.push('yaml');
+    }
   }
 
   const rating = await AppRating.findOne({
@@ -301,7 +311,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
-  ctx.body = getAppFromRecord(app);
+  ctx.body = getAppFromRecord(app, propertyFilters);
 }
 
 export async function queryApps(ctx: Context): Promise<void> {
@@ -443,6 +453,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         sentryDsn,
         sentryEnvironment,
         sharedStyle,
+        showAppDefinition,
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         template,
@@ -522,6 +533,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (longDescription !== undefined) {
       result.longDescription = longDescription;
+    }
+
+    if (showAppDefinition !== undefined) {
+      result.showAppDefinition = showAppDefinition;
     }
 
     if (sentryDsn !== undefined) {

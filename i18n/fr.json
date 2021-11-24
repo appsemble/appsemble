@@ -578,6 +578,8 @@
   "studio.src.pages.apps.app.settings.sentryDsnLabel": "",
   "studio.src.pages.apps.app.settings.sentryEnvironmentDescription": "",
   "studio.src.pages.apps.app.settings.sentryEnvironmentLabel": "",
+  "studio.src.pages.apps.app.settings.showAppDefinitionDescription": "",
+  "studio.src.pages.apps.app.settings.showAppDefinitionLabel": "",
   "studio.src.pages.apps.app.settings.sslError": "Un problème est survenu lors de la génération d'un certificat SSL pour ce domaine",
   "studio.src.pages.apps.app.settings.sslMissing": "Le certificat SSL est manquant. Si cela persiste, essayez de modifier ce champ puis de le remettre à la valeur actuelle.",
   "studio.src.pages.apps.app.settings.sslPending": "Votre certificat SSL est en cours de génération. Cela peut prendre jusqu'à 24 heures, mais c'est généralement plus rapide.",

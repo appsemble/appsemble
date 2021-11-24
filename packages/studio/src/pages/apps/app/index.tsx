@@ -103,11 +103,11 @@ export function AppRoutes(): ReactElement {
           <MenuItem icon="edit" to={`${url}/edit`}>
             <FormattedMessage {...messages.editor} />
           </MenuItem>
-        ) : (
+        ) : app.yaml ? (
           <MenuItem icon="code" to={`${url}/definition`}>
             <FormattedMessage {...messages.definition} />
           </MenuItem>
-        )}
+        ) : null}
         {editPermission && (
           <MenuItem icon="layer-group" to={`${url}/assets`}>
             <FormattedMessage {...messages.assets} />
@@ -203,9 +203,11 @@ export function AppRoutes(): ReactElement {
             <EditPage />
           </Suspense>
         </ProtectedRoute>
-        <Route path={`${path}/definition`}>
-          <DefinitionPage />
-        </Route>
+        {app.yaml ? (
+          <Route path={`${path}/definition`}>
+            <DefinitionPage />
+          </Route>
+        ) : null}
         <ProtectedRoute
           organization={organization}
           path={`${path}/assets`}

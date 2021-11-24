@@ -135,6 +135,7 @@ describe('queryApps', () => {
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -160,6 +161,7 @@ describe('queryApps', () => {
           "path": "another-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -230,6 +232,7 @@ describe('queryApps', () => {
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -320,6 +323,7 @@ describe('queryApps', () => {
           },
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -349,6 +353,7 @@ describe('queryApps', () => {
           },
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -374,6 +379,7 @@ describe('queryApps', () => {
           "path": "another-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "public",
@@ -438,12 +444,10 @@ describe('getAppById', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -487,10 +491,10 @@ describe('getAppById', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "{ name: Test App, defaultPage Test Page }",
       }
     `);
   });
@@ -534,12 +538,10 @@ describe('getAppById', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -586,12 +588,10 @@ describe('getAppById', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
-        "yaml": "name: Test App
-      defaultPage: Test Page
-      ",
       }
     `);
   });
@@ -634,6 +634,102 @@ describe('getAppById', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
+  });
+
+  it('should show the app definition of showAppDefinition is true', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should show the app yaml for organization members with view permissions', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -706,6 +802,7 @@ describe('queryMyApps', () => {
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -738,6 +835,7 @@ describe('queryMyApps', () => {
           "path": "test-app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -763,6 +861,7 @@ describe('queryMyApps', () => {
           "path": "test-app-b",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -829,6 +928,7 @@ describe('createApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -906,6 +1006,7 @@ describe('createApp', () => {
         ],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1452,6 +1553,7 @@ describe('createApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1534,6 +1636,7 @@ describe('createApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -1609,6 +1712,7 @@ describe('createApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2057,6 +2161,7 @@ describe('createApp', () => {
           "screenshotUrls": [],
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": true,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
           "visibility": "unlisted",
@@ -2378,6 +2483,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "private",
@@ -2514,6 +2620,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2565,6 +2672,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -2616,6 +2724,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",
@@ -3185,6 +3294,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
         "visibility": "unlisted",

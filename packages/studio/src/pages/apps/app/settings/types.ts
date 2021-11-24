@@ -12,4 +12,5 @@ export interface FormValues {
   domain: string;
   locked: boolean;
   longDescription: string;
+  showAppDefinition: boolean;
 }

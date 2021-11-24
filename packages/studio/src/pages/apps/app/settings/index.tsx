@@ -1,5 +1,6 @@
 import {
   Button,
+  CheckboxField,
   Content,
   FormButtons,
   Message,
@@ -86,6 +87,7 @@ export function SettingsPage(): ReactElement {
       visibility: app.visibility,
       locked: app.locked,
       longDescription: app.longDescription || '',
+      showAppDefinition: app.showAppDefinition,
     }),
     [app],
   );
@@ -100,6 +102,7 @@ export function SettingsPage(): ReactElement {
     form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
     form.set('longDescription', values.longDescription);
+    form.set('showAppDefinition', String(values.showAppDefinition));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -184,6 +187,13 @@ export function SettingsPage(): ReactElement {
             <option value="unlisted">{formatMessage(messages.unlisted)}</option>
             <option value="private">{formatMessage(messages.private)}</option>
           </SimpleFormField>
+          <SimpleFormField
+            component={CheckboxField}
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.showAppDefinitionDescription} />}
+            label={<FormattedMessage {...messages.showAppDefinitionLabel} />}
+            name="showAppDefinition"
+          />
           <SimpleFormField
             addonLeft={
               <Button

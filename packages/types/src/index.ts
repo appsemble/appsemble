@@ -1260,6 +1260,11 @@ export interface App {
   visibility: AppVisibility;
 
   /**
+   * Whether or not the app definition is exposed for display in Appsemble Studio.
+   */
+  showAppDefinition: boolean;
+
+  /**
    * The Google analytics ID of the app.
    */
   googleAnalyticsID?: string;

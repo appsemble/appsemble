@@ -66,9 +66,10 @@ export function getAppFromRecord(
     iconUrl: resolveIconUrl(record),
     longDescription: record.longDescription,
     definition,
-    yaml:
-      record.AppSnapshots?.[0]?.yaml ??
-      (!omittedValues.includes('yaml') && stringify(record.definition)),
+    yaml: omittedValues.includes('yaml')
+      ? undefined
+      : record.AppSnapshots?.[0]?.yaml || stringify(record.definition),
+    showAppDefinition: record.showAppDefinition,
     sentryDsn: record.sentryDsn,
     sentryEnvironment: record.sentryEnvironment,
     showAppsembleLogin: record.showAppsembleLogin ?? false,
