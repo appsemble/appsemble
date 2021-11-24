@@ -31,9 +31,8 @@ export async function up(db: Sequelize): Promise<void> {
     defaultValue: 'unlisted',
   });
   await db.query('UPDATE "App" SET visibility = \'public\' WHERE private = false');
-  logger.warning('Removing column `private` from `App`');
 
-  logger.info('Removing column `private` from `App`');
+  logger.warning('Removing column `private` from `App`');
   await queryInterface.removeColumn('App', 'private');
 
   logger.info('Adding column `showAppDefinition` to `App');
