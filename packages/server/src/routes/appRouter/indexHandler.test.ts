@@ -1,6 +1,6 @@
 import { URL } from 'url';
 
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
@@ -12,7 +12,7 @@ import { useTestDatabase } from '../../utils/test/testSchema';
 let templateName: string;
 let templateParams: any;
 let requestURL: URL;
-let clock: Clock;
+let clock: InstalledClock;
 
 useTestDatabase('approuter');
 

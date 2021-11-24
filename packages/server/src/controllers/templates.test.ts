@@ -1,5 +1,5 @@
 import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { parse } from 'yaml';
 
@@ -18,7 +18,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let templates: App[];
-let clock: Clock;
+let clock: InstalledClock;
 
 useTestDatabase('templates');
 
