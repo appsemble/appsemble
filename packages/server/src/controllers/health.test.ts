@@ -3,19 +3,15 @@ import { request, setTestApp } from 'axios-test-instance';
 import { getDB } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
-beforeAll(createTestSchema('health'));
+useTestDatabase('health');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('checkHealth', () => {
   it('should return status ok if all services are connected properly', async () => {

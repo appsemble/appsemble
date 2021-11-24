@@ -7,20 +7,18 @@ import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import * as oauth2 from '../utils/oauth2';
 import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
 let member: Member;
 
-beforeAll(createTestSchema('appnotifications'));
+useTestDatabase('appnotifications');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
-
-afterEach(truncate);
 
 beforeEach(async () => {
   const user = await createTestUser();
@@ -44,8 +42,6 @@ beforeEach(async () => {
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
-
-afterAll(closeTestSchema);
 
 describe('createAppOAuth2Secret', () => {
   it('should be possible to create an app secret', async () => {

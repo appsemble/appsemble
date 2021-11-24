@@ -2,7 +2,7 @@ import { AppsembleError } from '@appsemble/node-utils';
 
 import { getDB, Meta } from '../models';
 import { migrate, Migration } from './migrate';
-import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
+import { useTestDatabase } from './test/testSchema';
 
 let m000: Migration;
 let m001: Migration;
@@ -12,7 +12,7 @@ let m010: Migration;
 let m100: Migration;
 let migrations: Migration[];
 
-beforeAll(createTestSchema('migrate'));
+useTestDatabase('migrate');
 
 beforeEach(() => {
   m000 = { key: '0.0.0', up: jest.fn(), down: jest.fn() };
@@ -23,10 +23,6 @@ beforeEach(() => {
   m100 = { key: '1.0.0', up: jest.fn(), down: jest.fn() };
   migrations = [m000, m001, m002, m003, m010, m100];
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 it('should fail if multiple meta entries are found', async () => {
   await Meta.create({ version: '0.0.0' });

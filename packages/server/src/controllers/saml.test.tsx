@@ -13,7 +13,7 @@ import { App, AppSamlSecret, Organization, SamlLoginRequest, User } from '../mod
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
 let clock: Clock;
@@ -177,7 +177,7 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-beforeAll(createTestSchema('saml'));
+useTestDatabase('saml');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -214,13 +214,9 @@ beforeEach(async () => {
   });
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('createAuthnRequest', () => {
   it('should generate SAML parameters', async () => {

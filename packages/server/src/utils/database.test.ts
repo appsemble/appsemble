@@ -1,12 +1,8 @@
 import { User } from '../models';
 import { iterTable } from './database';
-import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
+import { useTestDatabase } from './test/testSchema';
 
-beforeAll(createTestSchema('apps'));
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
+useTestDatabase('apps');
 
 describe('iterTable', () => {
   it('should iterate if the length is not divisible by chunk size', async () => {

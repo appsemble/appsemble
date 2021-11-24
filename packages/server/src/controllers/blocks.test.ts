@@ -9,9 +9,9 @@ import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '.
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
-beforeAll(createTestSchema('blocks'));
+useTestDatabase('blocks');
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -24,10 +24,6 @@ beforeEach(async () => {
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   await setTestApp(server);
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('getBlock', () => {
   it('should be possible to retrieve a block definition', async () => {

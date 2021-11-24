@@ -7,12 +7,12 @@ import { EmailAuthorization, OAuthAuthorization, User } from '../models';
 import { argv, setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 const mock = new MockAdapter(axios);
 let user: User;
 
-beforeAll(createTestSchema('oauth2login'));
+useTestDatabase('oauth2login');
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -24,10 +24,6 @@ beforeEach(async () => {
 afterEach(() => {
   mock.reset();
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('registerOAuth2Connection', () => {
   it('should throw if the referer header is missing', async () => {

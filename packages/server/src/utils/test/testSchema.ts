@@ -1,29 +1,21 @@
 import { Sequelize } from 'sequelize';
 
-import { getDB, initDB, InitDBParams } from '../../models';
-
-let dbName: string;
-let rootDB: Sequelize;
+import { initDB, InitDBParams } from '../../models';
 
 /**
- * Create a temporary test database.
+ * Create a temporary test database for each test in a test module or describe block.
  *
- * The database will be deleted when it is closed.
+ * The database will be truncated after each test. It will be deleted after all tests have run.
  *
- * @example
- * ```ts
- * beforeAll(createTestSchema('testfile'));
- *
- * afterEach(truncate);
- *
- * afterAll(closeTestSchema);
- * ```
  * @param spec - The name of the test case.
  * @param options - Additional sequelize options.
- * @returns A function to pass into `beforeAll()`.
  */
-export function createTestSchema(spec: string, options: InitDBParams = {}): () => Promise<void> {
-  return async () => {
+export function useTestDatabase(spec: string, options: InitDBParams = {}): void {
+  let dbName: string;
+  let rootDB: Sequelize;
+  let db: Sequelize;
+
+  beforeAll(async () => {
     const database =
       process.env.DATABASE_URL || 'postgres://admin:password@localhost:54321/appsemble';
     rootDB = new Sequelize(database, {
@@ -40,31 +32,21 @@ export function createTestSchema(spec: string, options: InitDBParams = {}): () =
       .toLowerCase();
 
     await rootDB.query(`CREATE DATABASE ${dbName}`);
-    const db = initDB({
+    db = initDB({
       ...options,
       uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
     });
     await db.sync();
-  };
-}
+  });
 
-/**
- * Close the created test schema.
- */
-export async function closeTestSchema(): Promise<void> {
-  const db = getDB();
-  await db.close();
-  await rootDB.query(`DROP DATABASE ${dbName}`);
-  await rootDB.close();
-}
+  afterEach(async () => {
+    const tables = Object.values(db.models).map(({ tableName }) => `"${tableName}"`);
+    await db.query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY`);
+  });
 
-/**
- * Truncate the entire database and reset id generators.
- *
- * This is ~50% faster than `db.truncate()` and resets id generators.
- */
-export async function truncate(): Promise<void> {
-  const db = getDB();
-  const tables = Object.values(db.models).map(({ tableName }) => `"${tableName}"`);
-  await db.query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY`);
+  afterAll(async () => {
+    await db.close();
+    await rootDB.query(`DROP DATABASE ${dbName}`);
+    await rootDB.close();
+  });
 }

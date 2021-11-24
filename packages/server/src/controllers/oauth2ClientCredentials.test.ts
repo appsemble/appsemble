@@ -7,12 +7,12 @@ import { OAuth2ClientCredentials, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let clock: Clock;
 let user: User;
 
-beforeAll(createTestSchema('oauth2clientcredentials'));
+useTestDatabase('oauth2clientcredentials');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -26,13 +26,9 @@ beforeEach(async () => {
   user = await createTestUser();
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('registerOAuth2ClientCredentials', () => {
   it('should register OAuth2 client credentials', async () => {
