@@ -1,4 +1,5 @@
-import { LoginCodeResponse } from '@appsemble/types';
+import { LoginCodeResponse, OAuth2ClientCredentials } from '@appsemble/types';
+import { Clock, install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
@@ -10,6 +11,7 @@ import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/auth
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
+let clock: Clock;
 let member: Member;
 
 useTestDatabase('appnotifications');
@@ -18,6 +20,14 @@ beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
+});
+
+beforeEach(() => {
+  clock = install();
+});
+
+afterEach(() => {
+  clock.uninstall();
 });
 
 beforeEach(async () => {
@@ -56,21 +66,26 @@ describe('createAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        AppId: app.id,
-        authorizationUrl: 'https://example.com/oauth/authorize',
-        clientId: 'example_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'example',
-        id: expect.any(Number),
-        name: 'Example',
-        scope: 'email openid profile',
-        tokenUrl: 'https://example.com/oauth/token',
-        userInfoUrl: 'https://example.com/oauth/userinfo',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "AppId": 1,
+        "authorizationUrl": "https://example.com/oauth/authorize",
+        "clientId": "example_client_id",
+        "clientSecret": "example_client_secret",
+        "created": "2021-11-24T13:23:48.016Z",
+        "icon": "example",
+        "id": 1,
+        "name": "Example",
+        "remapper": null,
+        "scope": "email openid profile",
+        "tokenUrl": "https://example.com/oauth/token",
+        "updated": "2021-11-24T13:23:48.016Z",
+        "userInfoUrl": "https://example.com/oauth/userinfo",
+      }
+    `);
   });
 
   it('should throw 404 if no app is found', async () => {
@@ -85,10 +100,16 @@ describe('createAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require a login with Appsemble Studio', async () => {
@@ -102,10 +123,12 @@ describe('createAppOAuth2Secret', () => {
       tokenUrl: 'https://example.com/oauth/token',
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 401,
-      data: 'Unauthorized',
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: text/plain; charset=utf-8
+
+      Unauthorized
+    `);
   });
 });
 
@@ -123,40 +146,56 @@ describe('getAppOAuth2Secrets', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    const response = await request.get<OAuth2ClientCredentials[]>(
+      `/api/apps/${app.id}/secrets/oauth2`,
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          authorizationUrl: 'https://example.com/oauth/authorize',
-          clientId: 'example_client_id',
-          clientSecret: 'example_client_secret',
-          icon: 'example',
-          id: secret.id,
-          name: 'Example',
-          scope: 'email openid profile',
-          tokenUrl: 'https://example.com/oauth/token',
-          userInfoUrl: 'https://example.com/oauth/userinfo',
+          "authorizationUrl": "https://example.com/oauth/authorize",
+          "clientId": "example_client_id",
+          "clientSecret": "example_client_secret",
+          "created": "2021-11-24T13:23:48.255Z",
+          "icon": "example",
+          "id": 1,
+          "name": "Example",
+          "remapper": null,
+          "scope": "email openid profile",
+          "tokenUrl": "https://example.com/oauth/token",
+          "updated": "2021-11-24T13:23:48.255Z",
+          "userInfoUrl": "https://example.com/oauth/userinfo",
         },
-      ],
-    });
+      ]
+    `);
+    expect(response.data[0].id).toBe(secret.id);
   });
 
   it('should throw 404 if no app is found', async () => {
     authorizeStudio();
     const response = await request.get('/api/apps/99999/secrets/oauth2');
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require a login with Appsemble Studio', async () => {
     const response = await request.get(`/api/apps/${app.id}/secrets/oauth2`);
-    expect(response).toMatchObject({
-      status: 401,
-      data: 'Unauthorized',
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: text/plain; charset=utf-8
+
+      Unauthorized
+    `);
   });
 });
 
@@ -174,14 +213,16 @@ describe('getAppOAuth2Secret', () => {
       userInfoUrl: 'https://example.com/oauth/userinfo',
     });
     const response = await request.get(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        authorizationUrl: 'https://example.com/oauth/authorize',
-        clientId: 'example_client_id',
-        scope: 'email openid profile',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "authorizationUrl": "https://example.com/oauth/authorize",
+        "clientId": "example_client_id",
+        "scope": "email openid profile",
+      }
+    `);
   });
 });
 
@@ -209,19 +250,25 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        authorizationUrl: 'https://other.example/oauth/authorize',
-        clientId: 'other_client_id',
-        clientSecret: 'example_client_secret',
-        icon: 'updated',
-        name: 'Updated Example',
-        scope: 'custom',
-        tokenUrl: 'https://other.example/oauth/token',
-        userInfoUrl: 'https://other.example/oauth/userinfo',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "authorizationUrl": "https://other.example/oauth/authorize",
+        "clientId": "other_client_id",
+        "clientSecret": "example_client_secret",
+        "created": "2021-11-24T13:23:48.554Z",
+        "icon": "updated",
+        "id": 1,
+        "name": "Updated Example",
+        "remapper": null,
+        "scope": "custom",
+        "tokenUrl": "https://other.example/oauth/token",
+        "updated": "2021-11-24T13:23:48.562Z",
+        "userInfoUrl": "https://other.example/oauth/userinfo",
+      }
+    `);
     await secret.reload();
     expect(secret).toMatchObject({
       authorizationUrl: 'https://other.example/oauth/authorize',
@@ -247,10 +294,16 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should handle if the secret id is invalid', async () => {
@@ -265,10 +318,16 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'OAuth2 secret not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "OAuth2 secret not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require the user to have correct permissions', async () => {
@@ -295,14 +354,16 @@ describe('updateAppOAuth2Secret', () => {
       tokenUrl: 'https://other.example/oauth/token',
       userInfoUrl: 'https://other.example/oauth/userinfo',
     });
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -330,10 +391,16 @@ describe('verifyAppOAuth2SecretCode', () => {
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
     });
-    expect(response).toMatchObject({
-      status: 400,
-      data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The referer header is invalid",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should throw 400 if the referer is invalid', async () => {
@@ -343,10 +410,16 @@ describe('verifyAppOAuth2SecretCode', () => {
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
     });
-    expect(response).toMatchObject({
-      status: 400,
-      data: { error: 'Bad Request', message: 'The referer header is invalid', statusCode: 400 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "The referer header is invalid",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should throw 404 if no app is found', async () => {
@@ -356,10 +429,16 @@ describe('verifyAppOAuth2SecretCode', () => {
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
       { headers: { referer: 'http://localhost' } },
     );
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should throw 404 if no secret is found', async () => {
@@ -369,10 +448,16 @@ describe('verifyAppOAuth2SecretCode', () => {
       { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
       { headers: { referer: 'http://localhost' } },
     );
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'OAuth2 secret not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "OAuth2 secret not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should trade the authorization code for an Appsemble authorization code', async () => {
@@ -404,10 +489,17 @@ describe('verifyAppOAuth2SecretCode', () => {
       },
       { headers: { referer: 'http://localhost' } },
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: { code: expect.any(String) },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { code: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "code": Any<String>,
+      }
+    `,
+    );
 
     const auth = await OAuth2AuthorizationCode.findOne({
       where: { code: response.data.code },
