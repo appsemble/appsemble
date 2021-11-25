@@ -113,14 +113,23 @@ describe('getOrganizationApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
-      private: true,
+      visibility: 'private',
     });
-    const app = await App.create({
+    await App.create({
       path: 'test-app-2',
       definition: { name: 'Test App 2', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
+      visibility: 'unlisted',
+    });
+    const app = await App.create({
+      path: 'test-app-3',
+      definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      visibility: 'public',
     });
 
     const response = await request.get('/api/organizations/testorganization/apps');
@@ -133,15 +142,14 @@ describe('getOrganizationApps', () => {
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
           id: app.id,
-          locked: false,
-          path: 'test-app-2',
-          private: false,
+          path: 'test-app-3',
+          visibility: 'public',
         },
       ],
     });
   });
 
-  it('should include private organization apps if the user is part of the organization', async () => {
+  it('should include unlisted and private organization apps if the user is part of the organization', async () => {
     authorizeStudio(user);
     const appA = await App.create({
       path: 'test-app',
@@ -149,7 +157,7 @@ describe('getOrganizationApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
-      private: true,
+      visibility: 'private',
     });
     const appB = await App.create({
       path: 'test-app-2',
@@ -157,6 +165,15 @@ describe('getOrganizationApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: 'testorganization',
+      visibility: 'unlisted',
+    });
+    const appC = await App.create({
+      path: 'test-app-3',
+      definition: { name: 'Test App 3', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'testorganization',
+      visibility: 'public',
     });
 
     const response = await request.get('/api/organizations/testorganization/apps');
@@ -171,7 +188,7 @@ describe('getOrganizationApps', () => {
           id: appA.id,
           locked: false,
           path: 'test-app',
-          private: true,
+          visibility: 'private',
         },
         {
           OrganizationId: 'testorganization',
@@ -181,7 +198,17 @@ describe('getOrganizationApps', () => {
           id: appB.id,
           locked: false,
           path: 'test-app-2',
-          private: false,
+          visibility: 'unlisted',
+        },
+        {
+          OrganizationId: 'testorganization',
+          definition: appC.definition,
+          iconUrl:
+            '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
+          id: appC.id,
+          locked: false,
+          path: 'test-app-3',
+          visibility: 'public',
         },
       ],
     });

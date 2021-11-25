@@ -43,15 +43,12 @@ export function builder(yargs: Argv): Argv {
     .option('app-id', {
       describe: 'The ID of the app to create the resources for.',
       type: 'number',
-      conflicts: 'app',
     })
     .option('app', {
       describe: 'The path to the app.',
-      conflicts: 'app-id',
     })
     .option('context', {
       describe: 'If specified, use the specified context from .appsemblerc.yaml',
-      conflicts: 'app-id',
     });
 }
 

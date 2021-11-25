@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.6
-appVersion: 0.19.6
+version: 0.19.8
+appVersion: 0.19.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,19 +24,21 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Cli: Add support for sentry-dsn, sentry-environment, and
+        google-analytics-id when creating or updating apps."
+    - kind: added
+      description: "Server: Add additional validation for link, flow, resource., and
+        user actions."
+    - kind: added
+      description: "Studio: Add app setting showAppDefinition."
     - kind: changed
-      description: "Server: The Block styles API now use application/json instead of
-        multipart/form-data."
+      description: "Cli: Change behavior of --app-id combined with --app for various
+        commands. app-id now takes precedence over context.environment.id."
     - kind: changed
-      description: "Server: The fields yaml, coreStyle, and sharedStyle are now
-        accepted as strings instead of binary strings."
+      description: "Server: Change minimum amount of steps for flow pages to 2."
     - kind: changed
-      description: "Studio: The API no longer accepts the definition field for
-        updating apps. Instead use the yaml field."
-    - kind: fixed
-      description: "App: Fix navigation bar close button reopening the side menu."
-    - kind: fixed
-      description: "App: Fix profile picture scaling in the navigation bar dropdown."
+      description: "Studio: Replace app setting private with visibility."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

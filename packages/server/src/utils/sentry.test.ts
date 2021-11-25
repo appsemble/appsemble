@@ -81,4 +81,41 @@ describe('getSentryClientSettings', () => {
     const result = getSentryClientSettings('foo.bar.example');
     expect(result).toStrictEqual({});
   });
+
+  it('should ignore domain checks if a custom sentry DSN is used', () => {
+    setArgv({
+      sentryAllowedDomains: '*.foo.example',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+    });
+    const result = getSentryClientSettings(
+      'foo.bar.example',
+      'https://0123456789abcdef@sentry.io/43',
+      'test-2',
+    );
+    expect(result).toStrictEqual({
+      reportUri: 'https://sentry.io/api/43/security/?sentry_key=0123456789abcdef',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/43',
+      sentryEnvironment: 'test-2',
+      sentryOrigin: 'https://sentry.io',
+    });
+  });
+
+  it('should set the environment to undefined if a custom sentry DSN is used without a custom environment', () => {
+    setArgv({
+      sentryAllowedDomains: '*.foo.example',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/42',
+      sentryEnvironment: 'test',
+    });
+    const result = getSentryClientSettings(
+      'foo.bar.example',
+      'https://0123456789abcdef@sentry.io/43',
+    );
+    expect(result).toStrictEqual({
+      reportUri: 'https://sentry.io/api/43/security/?sentry_key=0123456789abcdef',
+      sentryDsn: 'https://0123456789abcdef@sentry.io/43',
+      sentryEnvironment: undefined,
+      sentryOrigin: 'https://sentry.io',
+    });
+  });
 });

@@ -1,4 +1,4 @@
-import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
+import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
@@ -17,6 +17,8 @@ import { messages } from './messages';
  * Handle the OAuth2 callback.
  */
 export function OpenIDCallback(): ReactElement {
+  useMeta(messages.login);
+
   const query = useQuery();
   const code = query.get('code');
   const errorMessage = query.get('error');

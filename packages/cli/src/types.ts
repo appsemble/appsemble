@@ -1,3 +1,4 @@
+import { AppVisibility } from '@appsemble/types';
 import { PackageJson } from 'read-pkg-up';
 import { JsonObject } from 'type-fest';
 
@@ -30,9 +31,9 @@ export interface UpdateAppArguments extends BaseArguments {
   path: string;
 
   /**
-   * Whether the app should be marked as private.
+   * Visibility of the app in the public app store.
    */
-  private: boolean;
+  visibility: AppVisibility;
 
   /**
    * Whether the app should be marked as a template.
@@ -74,9 +75,24 @@ export interface AppsembleContext {
   id?: number;
 
   /**
-   * If `private` is specified, this will override `--private` passed on the command line.
+   * The Google Analytics ID that should be used for the app.
    */
-  private?: boolean;
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
+
+  /**
+   * If `visibility` is specified, this will override `--visibility` passed on the command line.
+   */
+  visibility?: AppVisibility;
 
   /**
    * If `template` is specified, this will override `--template` passed on the command line.

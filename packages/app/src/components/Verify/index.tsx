@@ -1,4 +1,4 @@
-import { Loader, Message, useQuery } from '@appsemble/react-components';
+import { Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,6 +9,8 @@ import styles from './index.module.css';
 import { messages } from './messages';
 
 export function Verify(): ReactElement {
+  useMeta(messages.title);
+
   const [submitting, setSubmitting] = useState(true);
   const [success, setSuccess] = useState(false);
   const qs = useQuery();

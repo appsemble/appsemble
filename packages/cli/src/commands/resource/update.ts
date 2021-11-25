@@ -34,7 +34,6 @@ export function builder(yargs: Argv): Argv {
     .option('app-id', {
       describe: 'The ID of the app to create the resources for.',
       type: 'number',
-      conflicts: 'app',
     })
     .option('app', {
       describe: 'The path to the app.',

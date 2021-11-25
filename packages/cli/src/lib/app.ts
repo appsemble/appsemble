@@ -4,7 +4,7 @@ import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { App, AppDefinition, AppsembleMessages, Messages } from '@appsemble/types';
+import { App, AppDefinition, AppsembleMessages, AppVisibility, Messages } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -22,7 +22,7 @@ interface CreateAppParams {
   /**
    * The OAuth2 client credentials to use.
    */
-  clientCredentials: string;
+  clientCredentials?: string;
 
   /**
    * If specified, the context matching this name is used, overriding command line flags.
@@ -40,9 +40,9 @@ interface CreateAppParams {
   path: string;
 
   /**
-   * Whether the App should be marked as private.
+   * Visibility of the app in the public app store.
    */
-  private: boolean;
+  visibility: AppVisibility;
 
   /**
    * The remote server to create the app on.
@@ -84,7 +84,23 @@ interface CreateAppParams {
    * modify it for the current context to include the id of the created app.
    */
   modifyContext: boolean;
+
+  /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
 }
+
 interface UpdateAppParams {
   /**
    * The OAuth2 client credentials to use.
@@ -107,9 +123,9 @@ interface UpdateAppParams {
   path: string;
 
   /**
-   * Whether the App should be marked as private.
+   * Visibility of the app in the public app store.
    */
-  private: boolean;
+  visibility: AppVisibility;
 
   /**
    * The remote server to create the app on.
@@ -140,6 +156,21 @@ interface UpdateAppParams {
    * The maskable icon to upload.
    */
   maskableIcon: NodeJS.ReadStream | ReadStream;
+
+  /**
+   * The ID to use for Google Analytics for the app.
+   */
+  googleAnalyticsId?: string;
+
+  /**
+   * The custom Sentry DSN for the app.
+   */
+  sentryDsn?: string;
+
+  /**
+   * The environment for the custom Sentry DSN for the app.
+   */
+  sentryEnvironment?: string;
 }
 
 /**
@@ -240,7 +271,9 @@ export async function traverseAppDirectory(
   discoveredContext.icon = discoveredContext.icon
     ? resolve(path, discoveredContext.icon)
     : iconPath;
-  discoveredContext.maskableIcon ||= maskableIconPath;
+  discoveredContext.maskableIcon = discoveredContext.maskableIcon
+    ? resolve(path, discoveredContext.maskableIcon)
+    : maskableIconPath;
   return [discoveredContext, rc, yaml];
 }
 
@@ -478,7 +511,7 @@ This block version is not used in the app`,
 }
 
 /**
- * Create a new App.
+ * Update an existing app.
  *
  * @param argv - The command line options used for updating the app.
  */
@@ -503,14 +536,17 @@ export async function updateApp({
   const remote = appsembleContext.remote ?? options.remote;
   const id = appsembleContext.id ?? options.id;
   const template = appsembleContext.template ?? options.template ?? false;
-  const isPrivate = appsembleContext.private ?? options.private;
+  const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
+  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
+  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
+  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   logger.info(`App id: ${id}`);
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   logger.verbose(`Force update: ${inspect(force, { colors: true })}`);
   if (!id) {
@@ -518,7 +554,7 @@ export async function updateApp({
   }
   formData.append('force', String(force));
   formData.append('template', String(template));
-  formData.append('private', String(isPrivate));
+  formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
@@ -528,8 +564,21 @@ export async function updateApp({
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
-    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('icon', realIcon);
+    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('maskableIcon', realIcon);
+  }
+  if (sentryDsn) {
+    logger.info(
+      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
+    );
+    formData.append('sentryDsn', sentryDsn);
+    if (sentryEnvironment) {
+      formData.append('sentryEnvironment', sentryEnvironment);
+    }
+  }
+  if (googleAnalyticsId) {
+    logger.info('Using Google Analytics');
+    formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
   await authenticate(remote, 'apps:write', clientCredentials);
@@ -581,14 +630,17 @@ export async function createApp({
   const remote = appsembleContext.remote ?? options.remote;
   const organizationId = appsembleContext.organization ?? options.organization;
   const template = appsembleContext.template ?? options.template ?? false;
-  const isPrivate = appsembleContext.private ?? options.private;
+  const visibility = appsembleContext.visibility ?? options.visibility;
   const iconBackground = appsembleContext.iconBackground ?? options.iconBackground;
   const icon = options.icon ?? appsembleContext.icon;
   const maskableIcon = options.maskableIcon ?? appsembleContext.maskableIcon;
+  const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
+  const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
+  const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organzation: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
-  logger.verbose(`App is private: ${inspect(isPrivate, { colors: true })}`);
+  logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
   if (!organizationId) {
     throw new AppsembleError(
@@ -597,7 +649,7 @@ export async function createApp({
   }
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
-  formData.append('private', String(isPrivate));
+  formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
@@ -607,8 +659,21 @@ export async function createApp({
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
-    logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
-    formData.append('icon', realIcon);
+    logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
+    formData.append('maskableIcon', realIcon);
+  }
+  if (sentryDsn) {
+    logger.info(
+      `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
+    );
+    formData.append('sentryDsn', sentryDsn);
+    if (sentryEnvironment) {
+      formData.append('sentryEnvironment', sentryEnvironment);
+    }
+  }
+  if (googleAnalyticsId) {
+    logger.info('Using Google Analytics');
+    formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
   await authenticate(
@@ -620,13 +685,13 @@ export async function createApp({
   try {
     ({ data } = await axios.post<App>('/api/apps', formData, {
       baseURL: remote,
-      params: { dryRun },
+      params: { dryRun: dryRun || undefined },
     }));
   } catch (error) {
     if (!axios.isAxiosError(error)) {
       throw error;
     }
-    if ((error.response.data as { message: string }).message !== 'App validation failed') {
+    if ((error.response?.data as { message?: string })?.message !== 'App validation failed') {
       throw error;
     }
     throw new AppsembleError(
@@ -708,17 +773,16 @@ export async function resolveAppIdAndRemote(
   defaultRemote: string,
   defaultAppId: number,
 ): Promise<[number, string]> {
-  let id: number;
+  let id = defaultAppId;
   let resolvedRemote = defaultRemote;
 
   if (appPath) {
     const rcPath = join(appPath, '.appsemblerc.yaml');
     const [rc] = await readData<AppsembleRC>(rcPath);
     const context = rc.context?.[name];
-    id = context?.id;
 
-    if (id == null) {
-      throw new AppsembleError(`App ID was not found in ${rcPath} context.${name}.id`);
+    if (!defaultAppId) {
+      id = context?.id;
     }
 
     if (context.remote) {
@@ -726,5 +790,9 @@ export async function resolveAppIdAndRemote(
     }
   }
 
-  return [id ?? defaultAppId, coerceRemote(resolvedRemote)];
+  if (id == null) {
+    throw new AppsembleError(`App ID was not found in context.${name}.id nor in --app-id`);
+  }
+
+  return [id, coerceRemote(resolvedRemote)];
 }

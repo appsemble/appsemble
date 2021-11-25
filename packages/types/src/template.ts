@@ -1,3 +1,5 @@
+import { AppVisibility } from './app';
+
 export interface Template {
   /**
    * The id of the app to clone.
@@ -20,9 +22,9 @@ export interface Template {
   organizationId: string;
 
   /**
-   * Whether or not the cloned app should be marked as private.
+   * Whether or not the cloned app may be listed in the app store.
    */
-  private: boolean;
+  visibility: AppVisibility;
 
   /**
    * Whether or not clonable resources should be cloned from the template app.

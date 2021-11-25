@@ -1,5 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { AppDefinition, AppsembleMessages, App as AppType } from '@appsemble/types';
+import type {
+  AppDefinition,
+  AppsembleMessages,
+  App as AppType,
+  AppVisibility,
+} from '@appsemble/types';
 import { omit } from 'lodash';
 import {
   AllowNull,
@@ -70,9 +75,14 @@ export class App extends Model {
   path: string;
 
   @AllowNull(false)
+  @Default('unlisted')
+  @Column(DataType.STRING)
+  visibility: AppVisibility;
+
+  @AllowNull(false)
   @Default(false)
   @Column
-  private: boolean;
+  showAppDefinition: boolean;
 
   @AllowNull(false)
   @Default(false)
@@ -110,6 +120,12 @@ export class App extends Model {
 
   @Column
   googleAnalyticsID: string;
+
+  @Column
+  sentryDsn: string;
+
+  @Column
+  sentryEnvironment: string;
 
   @UpdatedAt
   updated: Date;
@@ -187,7 +203,7 @@ export class App extends Model {
       domain: this.domain || null,
       googleAnalyticsID: this.googleAnalyticsID,
       path: this.path,
-      private: Boolean(this.private),
+      visibility: this.visibility,
       locked: Boolean(this.locked),
       hasIcon: this.get('hasIcon') ?? Boolean(this.icon),
       hasMaskableIcon: this.get('hasMaskableIcon') ?? Boolean(this.maskableIcon),
@@ -195,9 +211,12 @@ export class App extends Model {
       iconUrl: resolveIconUrl(this),
       longDescription: this.longDescription,
       definition,
-      yaml:
-        this.AppSnapshots?.[0]?.yaml ??
-        (!omittedValues.includes('yaml') && stringify(this.definition)),
+      yaml: omittedValues.includes('yaml')
+        ? undefined
+        : this.AppSnapshots?.[0]?.yaml || stringify(this.definition),
+      showAppDefinition: this.showAppDefinition,
+      sentryDsn: this.sentryDsn,
+      sentryEnvironment: this.sentryEnvironment,
       showAppsembleLogin: this.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
       rating:

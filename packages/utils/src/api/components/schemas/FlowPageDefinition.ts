@@ -12,7 +12,7 @@ export const FlowPageDefinition = extendJSONSchema(BasePageDefinition, {
     },
     steps: {
       type: 'array',
-      minItems: 1,
+      minItems: 2,
       description: "Steps belonging to this page's flow.",
       items: {
         $ref: '#/components/schemas/SubPage',

@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.8](https://gitlab.com/appsemble/appsemble/-/releases/0.19.8)] - 2021-11-24
+
+### Added
+
+- Cli: Add support for `sentry-dsn`, `sentry-environment`, and `google-analytics-id` when creating
+  or updating apps.
+- Server: Add additional validation for `link`, `flow`, `resource.`, and `user` actions.
+- Studio: Add app setting `showAppDefinition`.
+
+### Changed
+
+- Cli: Change behavior of `--app-id` combined with `--app` for various commands. `app-id` now takes
+  precedence over `context.environment.id`.
+- Server: Change minimum amount of steps for flow pages to 2.
+- Studio: Replace app setting `private` with `visibility`.
+
+## \[[0.19.7](https://gitlab.com/appsemble/appsemble/-/releases/0.19.7)] - 2021-11-18
+
+### Added
+
+- App: Add support for `link` action validation.
+- App: Track page views using Google Analytics if configured.
+- App: Update the document title to the current page.
+- Studio: App CSS is now validated in the editor.
+- Studio: The app editor now shows inline validation errors.
+
+### Changed
+
+- Studio: Rename Roles page for apps in Studio to Users.
+
+### Fixed
+
+- Cli: Fix authentication headers not correctly being passed through for Team CLI commands.
+
 ## \[[0.19.6](https://gitlab.com/appsemble/appsemble/-/releases/0.19.6)] - 2021-11-09
 
 ### Changed

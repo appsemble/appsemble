@@ -108,7 +108,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   });
 
   const filteredApps =
-    user && organization.Users.length ? apps : apps.filter((app) => !app.private);
+    user && organization.Users.length ? apps : apps.filter((app) => app.visibility === 'public');
 
   const ratings = await AppRating.findAll({
     attributes: [

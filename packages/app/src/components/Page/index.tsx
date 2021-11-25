@@ -1,12 +1,18 @@
 import { EventEmitter } from 'events';
 
-import { Button, Content, Message, useLocationString } from '@appsemble/react-components';
+import {
+  Button,
+  Content,
+  Message,
+  MetaSwitch,
+  useLocationString,
+} from '@appsemble/react-components';
 import { PageDefinition, Remapper } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogParams, ShowShareDialog } from '../../types';
 import { getDefaultPageName } from '../../utils/getDefaultPageName';
@@ -133,8 +139,8 @@ export function Page(): ReactElement {
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
-    const msg = getAppMessage({ id: prefix, defaultMessage: page.name });
-    const normalizedPageName = normalize(msg.format() as string);
+    const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
+    const normalizedPageName = normalize(pageName);
 
     if (pageId !== normalize(normalizedPageName)) {
       // Redirect to page with untranslated page name
@@ -148,7 +154,7 @@ export function Page(): ReactElement {
         })}
         data-path={prefix}
       >
-        <TitleBar>{msg.format() as string}</TitleBar>
+        <TitleBar>{pageName}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
             data={data}
@@ -159,11 +165,10 @@ export function Page(): ReactElement {
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
-            tabs={page.tabs}
           />
         ) : (
           // The switch is used to enforce an exact path.
-          <Switch>
+          <MetaSwitch title={pageName}>
             <Route exact path={`${path}${(page.parameters || []).map((param) => `/:${param}`)}`}>
               {page.type === 'flow' ? (
                 <FlowPage
@@ -194,7 +199,7 @@ export function Page(): ReactElement {
             </Route>
             {/* Redirect from a matching sub URL to the actual URL */}
             {!page.parameters && <Redirect to={url} />}
-          </Switch>
+          </MetaSwitch>
         )}
         <PageDialog
           dialog={dialog}

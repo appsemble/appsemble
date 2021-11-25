@@ -4,6 +4,9 @@ import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
+import { AppVisibility } from './app';
+
+export * from './app';
 export * from './appMember';
 export * from './asset';
 export * from './authentication';
@@ -1252,9 +1255,14 @@ export interface App {
   path: string;
 
   /**
-   * Whether the app should be visible for users outside of the app’s organization.
+   * Visibility of the app in the public app store.
    */
-  private: boolean;
+  visibility: AppVisibility;
+
+  /**
+   * Whether or not the app definition is exposed for display in Appsemble Studio.
+   */
+  showAppDefinition: boolean;
 
   /**
    * The Google analytics ID of the app.
@@ -1275,6 +1283,16 @@ export interface App {
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login: boolean;
+
+  /**
+   * The Sentry DSN of the app.
+   */
+  sentryDsn: string;
+
+  /**
+   * The Sentry environment associated with the Sentry DSN.
+   */
+  sentryEnvironment: string;
 
   /**
    * The app definition.

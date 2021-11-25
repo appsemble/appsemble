@@ -4,6 +4,7 @@ import {
   Content,
   FormButtons,
   Message,
+  SelectField,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
@@ -78,12 +79,15 @@ export function SettingsPage(): ReactElement {
       maskableIcon: null,
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
+      sentryDsn: app.sentryDsn || '',
+      sentryEnvironment: app.sentryEnvironment || '',
       icon: null,
       iconBackground: app.iconBackground,
       path: app.path,
-      private: app.private,
+      visibility: app.visibility,
       locked: app.locked,
       longDescription: app.longDescription || '',
+      showAppDefinition: app.showAppDefinition,
     }),
     [app],
   );
@@ -92,10 +96,13 @@ export function SettingsPage(): ReactElement {
     const form = new FormData();
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
+    form.set('sentryDsn', values.sentryDsn);
+    form.set('sentryEnvironment', values.sentryEnvironment);
     form.set('path', values.path);
-    form.set('private', String(values.private));
+    form.set('visibility', values.visibility);
     form.set('iconBackground', values.iconBackground);
     form.set('longDescription', values.longDescription);
+    form.set('showAppDefinition', String(values.showAppDefinition));
     if (values.icon !== app.iconUrl) {
       form.set('icon', values.icon);
     }
@@ -170,12 +177,22 @@ export function SettingsPage(): ReactElement {
             name="longDescription"
           />
           <SimpleFormField
+            component={SelectField}
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.visibilityDescription} />}
+            label={<FormattedMessage {...messages.visibilityLabel} />}
+            name="visibility"
+          >
+            <option value="public">{formatMessage(messages.public)}</option>
+            <option value="unlisted">{formatMessage(messages.unlisted)}</option>
+            <option value="private">{formatMessage(messages.private)}</option>
+          </SimpleFormField>
+          <SimpleFormField
             component={CheckboxField}
             disabled={app.locked}
-            help={<FormattedMessage {...messages.privateDescription} />}
-            label={<FormattedMessage {...messages.privateLabel} />}
-            name="private"
-            title={<FormattedMessage {...messages.private} />}
+            help={<FormattedMessage {...messages.showAppDefinitionDescription} />}
+            label={<FormattedMessage {...messages.showAppDefinitionLabel} />}
+            name="showAppDefinition"
           />
           <SimpleFormField
             addonLeft={
@@ -258,6 +275,19 @@ export function SettingsPage(): ReactElement {
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.googleAnalyticsError} />,
             }}
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.sentryDsnDescription} />}
+            label={<FormattedMessage {...messages.sentryDsnLabel} />}
+            name="sentryDsn"
+            type="url"
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.sentryEnvironmentDescription} />}
+            label={<FormattedMessage {...messages.sentryEnvironmentLabel} />}
+            name="sentryEnvironment"
           />
           <FormButtons>
             <SimpleSubmit color="primary" disabled={app.locked} type="submit">

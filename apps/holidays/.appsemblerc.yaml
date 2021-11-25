@@ -1,20 +1,20 @@
 context:
   development:
     organization: appsemble
-    private: false
     remote: http://localhost:9999
     template: true
+    visibility: public
   production:
     id: 10
-    private: false
     remote: https://appsemble.app
     template: true
+    visibility: public
   review:
     organization: appsemble
-    private: false
     template: true
+    visibility: public
   staging:
     organization: appsemble
-    private: false
     remote: https://staging.appsemble.review
     template: true
+    visibility: public
