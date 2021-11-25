@@ -2,27 +2,19 @@ import './index.css';
 
 import { bootstrap } from '@appsemble/sdk';
 
-bootstrap(({ actions, data, parameters: { icon }, utils: { fa } }) => {
-  let node;
-  const iconNode = document.createElement('i');
-  iconNode.className = fa(icon);
-  if (actions.onClick.type === 'link') {
-    node = document.createElement('a');
-    node.href = actions.onClick.href(data);
-  } else {
-    node = document.createElement('button');
-    node.type = 'button';
+bootstrap(() => {
+  const video = document.createElement('video');
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        String(err);
+      });
   }
-  node.classList.add('button', 'is-paddingless', 'is-primary', 'is-rounded');
-  node.addEventListener(
-    'click',
-    (event) => {
-      event.preventDefault();
-      actions.onClick(data);
-    },
-    true,
-  );
+  video.autoplay = true;
 
-  node.append(iconNode);
-  return node;
+  return video;
 });
