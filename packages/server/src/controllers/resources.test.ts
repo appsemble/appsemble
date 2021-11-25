@@ -243,15 +243,17 @@ describe('getResourceById', () => {
     });
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should be able to fetch a resource you are a team member of', async () => {
@@ -275,15 +277,24 @@ describe('getResourceById', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": null,
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should not be able to fetch a resource you are not a team member of', async () => {
@@ -307,12 +318,16 @@ describe('getResourceById', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'Resource not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
@@ -331,8 +346,26 @@ describe('getResourceById', () => {
       `/api/apps/${appB.id}/resources/testResourceB/${resource.id}`,
     );
 
-    expect(responseA).toMatchObject({ status: 404 });
-    expect(responseB).toMatchObject({ status: 404 });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
@@ -346,17 +379,25 @@ describe('getResourceById', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $author: { id: user.id, name: user.name },
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": 1,
+        "foo": "foo",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should ignore id in the data fields', async () => {
@@ -370,17 +411,25 @@ describe('getResourceById', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $author: { id: user.id, name: user.name },
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "bar": 1,
+        "foo": "foo",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should not fetch expired resources', async () => {
@@ -402,15 +451,28 @@ describe('getResourceById', () => {
       `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
     );
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'test',
-      },
-    });
-    expect(responseB).toMatchObject({
-      status: 404,
-    });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:10:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "test",
+        "id": 1,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should allow organization app editors to get resources using Studio', async () => {
@@ -424,15 +486,17 @@ describe('getResourceById', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'bar',
-        id: resource.id,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not allow organization members to get resources using Studio', async () => {
@@ -449,14 +513,16 @@ describe('getResourceById', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow organization app editors to get resources using client credentials', async () => {
@@ -470,15 +536,17 @@ describe('getResourceById', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'bar',
-        id: resource.id,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not allow organization members to get resources using client credentials', async () => {
@@ -495,14 +563,16 @@ describe('getResourceById', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -510,12 +580,12 @@ describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
     const app = await exampleApp(organization.id);
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
@@ -524,34 +594,36 @@ describe('queryResources', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
         {
-          id: resourceB.id,
-          foo: 'baz',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should be possible to filter properties using $select', async () => {
     const app = await exampleApp(organization.id);
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 'foo', fooz: 'baz', baz: 'fooz' },
     });
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz', bar: 'fooz', fooz: 'bar', baz: 'foo' },
@@ -561,11 +633,23 @@ describe('queryResources', () => {
       params: { $select: 'id,foo,bar' },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data).toStrictEqual([
-      { id: resourceA.id, bar: 'foo', foo: 'bar' },
-      { id: resourceB.id, bar: 'fooz', foo: 'baz' },
-    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "bar": "foo",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "bar": "fooz",
+          "foo": "baz",
+          "id": 2,
+        },
+      ]
+    `);
   });
 
   it('should trim spaces in $select properties', async () => {
@@ -586,11 +670,21 @@ describe('queryResources', () => {
       params: { $select: '  fooz ,    baz     ' },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data).toStrictEqual([
-      { fooz: 'baz', baz: 'fooz' },
-      { fooz: 'bar', baz: 'foo' },
-    ]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "baz": "fooz",
+          "fooz": "baz",
+        },
+        {
+          "baz": "foo",
+          "fooz": "bar",
+        },
+      ]
+    `);
   });
 
   it('should ignore unknown properties in $select', async () => {
@@ -611,13 +705,20 @@ describe('queryResources', () => {
       params: { $select: 'unknown' },
     });
 
-    expect(response.status).toBe(200);
-    expect(response.data).toStrictEqual([{}, {}]);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {},
+        {},
+      ]
+    `);
   });
 
   it('should be possible to query resources without credentials with the $none role', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       UserId: user.id,
       type: 'testResourceNone',
@@ -625,7 +726,26 @@ describe('queryResources', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceNone`);
-    expect(response.data).toMatchObject([{ id: resource.id }]);
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": "bar",
+          "id": 1,
+        },
+      ]
+    `,
+    );
   });
 
   it('should be possible to query resources as author', async () => {
@@ -634,7 +754,7 @@ describe('queryResources', () => {
     const userB = await User.create();
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       UserId: user.id,
       type: 'testResourceAuthorOnly',
@@ -651,17 +771,26 @@ describe('queryResources', () => {
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should only fetch resources from team members', async () => {
@@ -674,13 +803,13 @@ describe('queryResources', () => {
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
       UserId: user.id,
     });
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'baz' },
@@ -695,23 +824,36 @@ describe('queryResources', () => {
 
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
         {
-          id: resourceB.id,
-          foo: 'baz',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$author": {
+            "id": Any<String>,
+            "name": null,
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should only fetch resources as an author or team manager', async () => {
@@ -734,7 +876,7 @@ describe('queryResources', () => {
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'bar' },
@@ -746,7 +888,7 @@ describe('queryResources', () => {
       data: { foo: 'baz' },
       UserId: userB.id,
     });
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'foo' },
@@ -768,29 +910,42 @@ describe('queryResources', () => {
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeamManager`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
         {
-          id: resourceB.id,
-          foo: 'foo',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$author": {
+            "id": Any<String>,
+            "name": null,
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "foo",
+          "id": 3,
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should be able to limit the amount of resources', async () => {
     const app = await exampleApp(organization.id);
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
@@ -799,29 +954,31 @@ describe('queryResources', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should be able to sort fetched resources', async () => {
     const app = await exampleApp(organization.id);
 
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
     clock.tick(20e3);
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
@@ -830,59 +987,99 @@ describe('queryResources', () => {
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
     );
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: [
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
         {
-          id: resourceB.id,
-          foo: 'baz',
-          $created: '1970-01-01T00:00:20.000Z',
-          $updated: '1970-01-01T00:00:20.000Z',
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "baz",
+          "id": 2,
         },
-      ],
-    });
+      ]
+    `);
 
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
     );
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceB.id,
-          foo: 'baz',
-          $created: '1970-01-01T00:00:20.000Z',
-          $updated: '1970-01-01T00:00:20.000Z',
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "baz",
+          "id": 2,
         },
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
 
     const responseC = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
     );
-    expect(responseC).toMatchObject({ status: 200, data: responseA.data });
+    expect(responseC).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "baz",
+          "id": 2,
+        },
+      ]
+    `);
 
     const responseD = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
     );
-    expect(responseD).toMatchObject({ status: 200, data: responseB.data });
+    expect(responseD).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "foo": "baz",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+      ]
+    `);
   });
 
   it('should be able to filter fields when fetching resources', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
@@ -893,17 +1090,19 @@ describe('queryResources', () => {
       `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resource.id,
-          ...resource.data,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "foo",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
@@ -919,17 +1118,20 @@ describe('queryResources', () => {
       params: { $filter: `contains(foo, 'oo') and id le ${resource.id}` },
     });
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resource.id,
-          ...resource.data,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": 1,
+          "foo": "foo",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should be able to filter by author', async () => {
@@ -941,7 +1143,7 @@ describe('queryResources', () => {
       data: { foo: 'foo', bar: 1 },
       UserId: user.id,
     });
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
@@ -952,27 +1154,38 @@ describe('queryResources', () => {
       params: { $filter: `$author/id eq ${userB.id}` },
     });
 
-    expect(response.data).toMatchObject([
-      {
-        id: resource.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'bar',
-        bar: 2,
-        $author: { id: userB.id },
-      },
-    ]);
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$author": {
+            "id": Any<String>,
+            "name": null,
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": 2,
+          "foo": "bar",
+          "id": 2,
+        },
+      ]
+    `,
+    );
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
     clock.tick(20e3);
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
@@ -982,30 +1195,32 @@ describe('queryResources', () => {
       params: { $filter: "contains(foo, 'oo') or foo eq 'bar'", $orderby: '$updated desc' },
     });
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceB.id,
-          $created: '1970-01-01T00:00:20.000Z',
-          $updated: '1970-01-01T00:00:20.000Z',
-          foo: 'bar',
-          bar: 2,
+          "$created": "1970-01-01T00:00:20.000Z",
+          "$updated": "1970-01-01T00:00:20.000Z",
+          "bar": 2,
+          "foo": "bar",
+          "id": 2,
         },
         {
-          id: resource.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          foo: 'foo',
-          bar: 1,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": 1,
+          "foo": "foo",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should return the resource author if it has one', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
@@ -1014,32 +1229,36 @@ describe('queryResources', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resource.id,
-          foo: 'foo',
-          bar: 1,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          $author: { id: user.id, name: user.name },
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": 1,
+          "foo": "foo",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should not fetch expired resources', async () => {
     const app = await exampleApp(organization.id);
-    const {
-      data: { id: idA },
-    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
     });
-    const {
-      data: { id: idB },
-    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+    await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'bar',
     });
 
@@ -1050,44 +1269,66 @@ describe('queryResources', () => {
 
     const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: [
-        { id: idA, foo: 'test', $expires: '1970-01-01T00:05:00.000Z' },
-        { id: idB, foo: 'bar', $expires: '1970-01-01T00:10:00.000Z' },
-      ],
-    });
-    expect(responseB.data).toStrictEqual([
-      {
-        id: idB,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $expires: '1970-01-01T00:10:00.000Z',
-      },
-    ]);
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$expires": "1970-01-01T00:05:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "test",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$expires": "1970-01-01T00:10:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        },
+      ]
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$expires": "1970-01-01T00:10:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 2,
+        },
+      ]
+    `);
   });
 
   it('should allow organization app editors to query resources using Studio', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          foo: 'bar',
-          id: resource.id,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should not allow organization members to query resources using Studio', async () => {
@@ -1102,36 +1343,40 @@ describe('queryResources', () => {
     });
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow organization app editors to query resources using client credentials', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
     await authorizeClientCredentials('resources:read');
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          foo: 'bar',
-          id: resource.id,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should not allow organization members to query resources using client credentials', async () => {
@@ -1146,14 +1391,16 @@ describe('queryResources', () => {
     });
     await authorizeClientCredentials('resources:read');
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`);
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should make actions private by default', async () => {
@@ -1164,14 +1411,16 @@ describe('queryResources', () => {
       data: { foo: 'bar' },
     });
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource`);
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'This action is private.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "This action is private.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -1195,8 +1444,18 @@ describe('countResources', () => {
       `/api/apps/${app.id}/resources/testExpirableResource/$count`,
     );
 
-    expect(responseA).toMatchObject({ status: 200, data: 2 });
-    expect(responseB).toMatchObject({ status: 200, data: 0 });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      0
+    `);
   });
 
   it('should apply filters', async () => {
@@ -1222,7 +1481,12 @@ describe('countResources', () => {
       `/api/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
     );
 
-    expect(response).toMatchObject({ status: 200, data: 2 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
   });
 
   it('should only count resources the user has access to', async () => {
@@ -1246,7 +1510,12 @@ describe('countResources', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/$count`,
     );
 
-    expect(response).toMatchObject({ status: 200, data: 1 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      1
+    `);
   });
 
   it('should only count resources from team members', async () => {
@@ -1280,10 +1549,12 @@ describe('countResources', () => {
 
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResourceTeam/$count`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: 2,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
   });
 
   it('should only count resources from team members based on the member team filter as a member', async () => {
@@ -1319,10 +1590,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 2,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
   });
 
   it('should only count resources from team members based on the member team filter as a manager', async () => {
@@ -1358,10 +1631,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 2,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
   });
 
   it('should not count resources from team members based on the member team filter as not a member', async () => {
@@ -1396,10 +1671,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=member`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 0,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      0
+    `);
   });
 
   it('should only count resources from team members based on the manager team filter as a member', async () => {
@@ -1435,10 +1712,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 0,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      0
+    `);
   });
 
   it('should only count resources from team members based on the manager team filter as a manager', async () => {
@@ -1474,10 +1753,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 2,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
   });
 
   it('should override general action roles', async () => {
@@ -1488,10 +1769,12 @@ describe('countResources', () => {
       data: { foo: 'bar' },
     });
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: 1,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      1
+    `);
   });
 
   it('should not count resources from team members based on the manager team filter as not a team member', async () => {
@@ -1526,10 +1809,12 @@ describe('countResources', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$team=manager`,
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: 0,
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      0
+    `);
   });
 });
 
@@ -1540,13 +1825,17 @@ describe('createResource', () => {
     const resource = { foo: 'bar' };
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        foo: 'bar',
-        id: expect.any(Number),
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `);
   });
 
   it('should validate resources', async () => {
@@ -1555,47 +1844,65 @@ describe('createResource', () => {
     const resource = {};
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Validation failed for resource type testResource',
-        data: {
-          errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
             {
-              argument: 'foo',
-              instance: {},
-              message: 'requires property "foo"',
-              name: 'required',
-              path: [],
-              property: 'instance',
-              schema: {
-                type: 'object',
-                required: ['foo'],
-                properties: {
-                  bar: { type: 'string' },
-                  baz: { type: 'string' },
-                  foo: { type: 'string' },
-                  fooz: { type: 'string' },
+              "argument": "foo",
+              "instance": {},
+              "message": "requires property \\"foo\\"",
+              "name": "required",
+              "path": [],
+              "property": "instance",
+              "schema": {
+                "properties": {
+                  "bar": {
+                    "type": "string",
+                  },
+                  "baz": {
+                    "type": "string",
+                  },
+                  "foo": {
+                    "type": "string",
+                  },
+                  "fooz": {
+                    "type": "string",
+                  },
                 },
+                "required": [
+                  "foo",
+                ],
+                "type": "object",
               },
-              stack: 'instance requires property "foo"',
+              "stack": "instance requires property \\"foo\\"",
             },
           ],
         },
-      },
-    });
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testResource",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should check if an app has a specific resource definition', async () => {
     const app = await exampleApp(organization.id);
 
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
-    expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'App does not have resources called thisDoesNotExist' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App does not have resources called thisDoesNotExist",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should check if an app has any resource definitions', async () => {
@@ -1608,10 +1915,16 @@ describe('createResource', () => {
     });
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'App does not have any resources defined' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App does not have any resources defined",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should calculate resource expiration', async () => {
@@ -1620,15 +1933,18 @@ describe('createResource', () => {
       foo: 'test',
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        foo: 'test',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $expires: '1970-01-01T00:10:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:10:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "test",
+        "id": 1,
+      }
+    `);
   });
 
   it('should set resource expiration', async () => {
@@ -1638,15 +1954,18 @@ describe('createResource', () => {
       $expires: '1970-01-01T00:05:00.000Z',
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        foo: 'test',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $expires: '1970-01-01T00:05:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:05:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "test",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not set resource expiration if given date has already passed', async () => {
@@ -1659,12 +1978,16 @@ describe('createResource', () => {
       $expires: '1970-01-01T00:05:00.000Z',
     });
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        message: 'Expiration date has already passed.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Expiration date has already passed.",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should accept assets as form data', async () => {
@@ -1677,13 +2000,20 @@ describe('createResource', () => {
       }),
     );
 
-    expect(response.status).toBe(201);
-    expect(response.data).toStrictEqual({
-      $created: '1970-01-01T00:00:00.000Z',
-      $updated: '1970-01-01T00:00:00.000Z',
-      file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-      id: 1,
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       {
@@ -1712,25 +2042,32 @@ describe('createResource', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(response.data).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Validation failed for resource type testAssets',
-      statusCode: 400,
-      data: {
-        errors: [
-          {
-            argument: 'format',
-            instance: 0,
-            message: 'is not referenced from the resource',
-            name: 'binary',
-            path: ['assets', 0],
-            property: 'instance.assets[0]',
-            stack: 'instance.assets[0] is not referenced from the resource',
-          },
-        ],
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "format",
+              "instance": 0,
+              "message": "is not referenced from the resource",
+              "name": "binary",
+              "path": [
+                "assets",
+                0,
+              ],
+              "property": "instance.assets[0]",
+              "stack": "instance.assets[0] is not referenced from the resource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testAssets",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should block unknown asset references', async () => {
@@ -1742,26 +2079,35 @@ describe('createResource', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(response.data).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Validation failed for resource type testAssets',
-      statusCode: 400,
-      data: {
-        errors: [
-          {
-            argument: 'binary',
-            instance: '1',
-            message: 'does not conform to the "binary" format',
-            name: 'format',
-            path: ['file'],
-            property: 'instance.file',
-            schema: { format: 'binary', type: 'string' },
-            stack: 'instance.file does not conform to the "binary" format',
-          },
-        ],
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "binary",
+              "instance": "1",
+              "message": "does not conform to the \\"binary\\" format",
+              "name": "format",
+              "path": [
+                "file",
+              ],
+              "property": "instance.file",
+              "schema": {
+                "format": "binary",
+                "type": "string",
+              },
+              "stack": "instance.file does not conform to the \\"binary\\" format",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testAssets",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should allow organization app editors to create resources using Studio', async () => {
@@ -1770,16 +2116,24 @@ describe('createResource', () => {
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
     });
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        $author: { id: user.id, name: 'Test User' },
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'bar',
-        id: expect.any(Number),
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should not allow organization members to create resources using Studio', async () => {
@@ -1791,14 +2145,16 @@ describe('createResource', () => {
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
     });
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow organization app editors to create resources using client credentials', async () => {
@@ -1807,16 +2163,24 @@ describe('createResource', () => {
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
     });
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        $author: { id: user.id, name: 'Test User' },
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'bar',
-        id: expect.any(Number),
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should not allow organization members to create resources using client credentials', async () => {
@@ -1828,14 +2192,16 @@ describe('createResource', () => {
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
     });
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -1856,27 +2222,33 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am not Foo.',
-        id: resource.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:20.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:20.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `);
 
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am not Foo.',
-        id: resource.id,
-      },
-    });
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:20.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `);
   });
 
   it('should be able to update an existing resource from another team', async () => {
@@ -1900,15 +2272,24 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am not Foo.',
-        id: resource.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": null,
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should not be able to update an existing resource from another team if not part of the team', async () => {
@@ -1931,12 +2312,16 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'Resource not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
@@ -1953,7 +2338,16 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchObject({ status: 404 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be possible to update an existing resource through another app', async () => {
@@ -1972,7 +2366,16 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchObject({ status: 404 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be possible to update a non-existent resource', async () => {
@@ -1982,14 +2385,16 @@ describe('updateResource', () => {
       foo: 'I am not Foo.',
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'Resource not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should validate resources', async () => {
@@ -2006,10 +2411,67 @@ describe('updateResource', () => {
       { bar: 123 },
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "foo",
+              "instance": {
+                "bar": 123,
+              },
+              "message": "requires property \\"foo\\"",
+              "name": "required",
+              "path": [],
+              "property": "instance",
+              "schema": {
+                "properties": {
+                  "bar": {
+                    "type": "string",
+                  },
+                  "baz": {
+                    "type": "string",
+                  },
+                  "foo": {
+                    "type": "string",
+                  },
+                  "fooz": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "foo",
+                ],
+                "type": "object",
+              },
+              "stack": "instance requires property \\"foo\\"",
+            },
+            {
+              "argument": [
+                "string",
+              ],
+              "instance": 123,
+              "message": "is not of a type(s) string",
+              "name": "type",
+              "path": [
+                "bar",
+              ],
+              "property": "instance.bar",
+              "schema": {
+                "type": "string",
+              },
+              "stack": "instance.bar is not of a type(s) string",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testResource",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should set clonable if specified in the request', async () => {
@@ -2028,7 +2490,17 @@ describe('updateResource', () => {
 
     await resource.reload();
 
-    expect(response.status).toBe(200);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `);
     expect(resource.clonable).toBe(true);
   });
 
@@ -2052,25 +2524,31 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
     );
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'updated',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $expires: '1970-01-01T00:07:00.000Z',
-      },
-    });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'updated',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $expires: '1970-01-01T00:07:00.000Z',
-      },
-    });
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:07:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
+
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:07:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not set $expires if the date has already passed', async () => {
@@ -2091,12 +2569,16 @@ describe('updateResource', () => {
         $expires: '1970-01-01T00:07:00.000Z',
       },
     );
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        message: 'Expiration date has already passed.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Expiration date has already passed.",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should accept assets as form data', async () => {
@@ -2110,13 +2592,20 @@ describe('updateResource', () => {
       }),
     );
 
-    expect(response.data).toStrictEqual({
-      $created: '1970-01-01T00:00:00.000Z',
-      $updated: '1970-01-01T00:00:00.000Z',
-      file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-      id: 1,
-    });
-    expect(response.status).toBe(200);
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
     const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
     expect(assets).toStrictEqual([
       {
@@ -2146,25 +2635,32 @@ describe('updateResource', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(response.data).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Validation failed for resource type testAssets',
-      statusCode: 400,
-      data: {
-        errors: [
-          {
-            argument: 'format',
-            instance: 0,
-            message: 'is not referenced from the resource',
-            name: 'binary',
-            path: ['assets', 0],
-            property: 'instance.assets[0]',
-            stack: 'instance.assets[0] is not referenced from the resource',
-          },
-        ],
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "format",
+              "instance": 0,
+              "message": "is not referenced from the resource",
+              "name": "binary",
+              "path": [
+                "assets",
+                0,
+              ],
+              "property": "instance.assets[0]",
+              "stack": "instance.assets[0] is not referenced from the resource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testAssets",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should block unuknown asset references', async () => {
@@ -2177,26 +2673,35 @@ describe('updateResource', () => {
       }),
     );
 
-    expect(response.status).toBe(400);
-    expect(response.data).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Validation failed for resource type testAssets',
-      statusCode: 400,
-      data: {
-        errors: [
-          {
-            argument: 'binary',
-            instance: '1',
-            message: 'does not conform to the "binary" format',
-            name: 'format',
-            path: ['file'],
-            property: 'instance.file',
-            schema: { format: 'binary', type: 'string' },
-            stack: 'instance.file does not conform to the "binary" format',
-          },
-        ],
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "binary",
+              "instance": "1",
+              "message": "does not conform to the \\"binary\\" format",
+              "name": "format",
+              "path": [
+                "file",
+              ],
+              "property": "instance.file",
+              "schema": {
+                "format": "binary",
+                "type": "string",
+              },
+              "stack": "instance.file does not conform to the \\"binary\\" format",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for resource type testAssets",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should allow referencing existing assets', async () => {
@@ -2207,18 +2712,26 @@ describe('updateResource', () => {
       AppId: app.id,
       data: Buffer.alloc(0),
     });
-    const response = await request.put(
+    const response = await request.put<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({ resource: { file: asset.id } }),
     );
 
-    expect(response.status).toBe(200);
-    expect(response.data).toStrictEqual({
-      $created: '1970-01-01T00:00:00.000Z',
-      $updated: '1970-01-01T00:00:00.000Z',
-      file: asset.id,
-      id: resource.id,
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": Any<String>,
+        "id": 1,
+      }
+    `,
+    );
+    expect(response.data.file).toBe(asset.id);
   });
 
   it('should delete dereferenced assets', async () => {
@@ -2239,13 +2752,20 @@ describe('updateResource', () => {
       createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
     );
 
-    expect(response.status).toBe(200);
-    expect(response.data).toStrictEqual({
-      $created: '1970-01-01T00:00:00.000Z',
-      $updated: '1970-01-01T00:00:00.000Z',
-      file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/),
-      id: resource.id,
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
     await expect(() => asset.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
@@ -2263,15 +2783,17 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'baz',
-        id: resource.id,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "baz",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not allow organization members to update resources using Studio', async () => {
@@ -2289,14 +2811,16 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow organization app editors to update resources using client credentials', async () => {
@@ -2311,15 +2835,17 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        foo: 'baz',
-        id: resource.id,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "baz",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not allow organization members to update resources using client credentials', async () => {
@@ -2337,14 +2863,16 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -2361,33 +2889,39 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGetA).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am Foo.',
-        id: resource.id,
-      },
-    });
+    expect(responseGetA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
 
     authorizeStudio();
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(response).toMatchObject({ status: 204 });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const responseGetB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGetB).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'Resource not found',
-        statusCode: 404,
-      },
-    });
+    expect(responseGetB).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should delete another team member’s resource', async () => {
@@ -2410,7 +2944,7 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({ status: 204 });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete resources if not part of the same team', async () => {
@@ -2432,7 +2966,16 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
     );
 
-    expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be able to delete a non-existent resource', async () => {
@@ -2440,14 +2983,16 @@ describe('deleteResource', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`);
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'Resource not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not be possible to delete an existing resource through another resource', async () => {
@@ -2463,19 +3008,32 @@ describe('deleteResource', () => {
       `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
     );
 
-    expect(response).toMatchObject({ status: 404 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
 
     const responseGet = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGet).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am Foo.',
-        id: resource.id,
-      },
-    });
+    expect(responseGet).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
@@ -2492,19 +3050,32 @@ describe('deleteResource', () => {
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(response).toMatchObject({ status: 404 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
 
     const responseGet = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGet).toMatchObject({
-      status: 200,
-      data: {
-        foo: 'I am Foo.',
-        id: resource.id,
-      },
-    });
+    expect(responseGet).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
   });
 
   it('should allow organization app editors to delete resources using Studio', async () => {
@@ -2518,9 +3089,7 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 204,
-    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not allow organization members to delete resources using Studio', async () => {
@@ -2537,14 +3106,16 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow organization app editors to delete resources using client credentials', async () => {
@@ -2558,9 +3129,7 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 204,
-    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not allow organization members to delete resources using client credentials', async () => {
@@ -2577,14 +3146,16 @@ describe('deleteResource', () => {
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
     );
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -2597,12 +3168,12 @@ describe('verifyAppRole', () => {
     };
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
-    const resourceA = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    const resourceB = await Resource.create({
+    await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
@@ -2612,23 +3183,25 @@ describe('verifyAppRole', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: resourceA.id,
-          foo: 'bar',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
         },
         {
-          id: resourceB.id,
-          foo: 'baz',
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should return normally on secured actions if user is the resource author', async () => {
@@ -2648,19 +3221,24 @@ describe('verifyAppRole', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'bar',
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        $author: {
-          id: user.id,
-          name: 'Test User',
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
         },
-      },
-    });
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
   });
 
   it('should return a 401 on unauthorized requests if roles are present', async () => {
@@ -2668,14 +3246,16 @@ describe('verifyAppRole', () => {
 
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
-    expect(response).toMatchObject({
-      status: 401,
-      data: {
-        error: 'Unauthorized',
-        message: 'User is not logged in.',
-        statusCode: 401,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "User is not logged in.",
+        "statusCode": 401,
+      }
+    `);
   });
 
   it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
@@ -2684,14 +3264,16 @@ describe('verifyAppRole', () => {
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User is not a member of the app.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not a member of the app.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
@@ -2702,14 +3284,16 @@ describe('verifyAppRole', () => {
     authorizeApp(app);
     const response = await request.post(`/api/apps/${app.id}/resources/secured`, {});
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -2741,10 +3325,16 @@ describe('getResourceSubscription', () => {
       { params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: { id: resource.id, update: true, delete: false },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "delete": false,
+        "id": 1,
+        "update": true,
+      }
+    `);
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
@@ -2767,10 +3357,16 @@ describe('getResourceSubscription', () => {
       { params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: { id: resource.id, update: false, delete: false },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "delete": false,
+        "id": 1,
+        "update": false,
+      }
+    `);
   });
 
   it('should 404 if resource is not found', async () => {
@@ -2788,7 +3384,16 @@ describe('getResourceSubscription', () => {
       { params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found.",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return 200 if user is not subscribed', async () => {
@@ -2804,9 +3409,15 @@ describe('getResourceSubscription', () => {
       { params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: { id: app.id, update: false, delete: false },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "delete": false,
+        "id": 1,
+        "update": false,
+      }
+    `);
   });
 });

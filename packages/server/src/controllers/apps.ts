@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { App as AppType, BlockManifest } from '@appsemble/types';
 import {
   IdentifiableBlock,
   normalize,
@@ -42,7 +42,6 @@ import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
 import { handleValidatorResult } from '../utils/jsonschema';
-import { getAppFromRecord } from '../utils/model';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
@@ -106,10 +105,13 @@ export async function createApp(ctx: Context): Promise<void> {
         iconBackground,
         longDescription,
         maskableIcon,
-        private: isPrivate = true,
         screenshots,
+        sentryDsn,
+        sentryEnvironment,
         sharedStyle,
+        showAppDefinition = true,
         template = false,
+        visibility,
         yaml,
       },
       query: { dryRun },
@@ -145,8 +147,11 @@ export async function createApp(ctx: Context): Promise<void> {
       iconBackground: iconBackground || '#ffffff',
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
-      private: Boolean(isPrivate),
+      showAppDefinition,
+      visibility,
       template: Boolean(template),
+      sentryDsn,
+      sentryEnvironment,
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
       vapidPublicKey: keys.publicKey,
@@ -231,7 +236,7 @@ export async function createApp(ctx: Context): Promise<void> {
         include: ['id', 'name', 'updated', [literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       },
     });
-    ctx.body = getAppFromRecord(record);
+    ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
@@ -276,6 +281,18 @@ export async function getAppById(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
+  const propertyFilters: (keyof AppType)[] = [];
+  if (app.visibility === 'private' || !app.showAppDefinition) {
+    try {
+      await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+    } catch (error) {
+      if (app.visibility === 'private') {
+        throw error;
+      }
+      propertyFilters.push('yaml');
+    }
+  }
+
   const rating = await AppRating.findOne({
     attributes: [
       'AppId',
@@ -293,7 +310,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
-  ctx.body = getAppFromRecord(app);
+  ctx.body = app.toJSON(propertyFilters);
 }
 
 export async function queryApps(ctx: Context): Promise<void> {
@@ -307,7 +324,7 @@ export async function queryApps(ctx: Context): Promise<void> {
         [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
       ],
     },
-    where: { private: false },
+    where: { visibility: 'public' },
     include: [
       {
         model: Organization,
@@ -350,7 +367,7 @@ export async function queryApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => getAppFromRecord(app, ['yaml']));
+    .map((app) => app.toJSON(['yaml']));
 }
 
 export async function queryMyApps(ctx: Context): Promise<void> {
@@ -414,7 +431,7 @@ export async function queryMyApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => getAppFromRecord(app, ['yaml']));
+    .map((app) => app.toJSON(['yaml']));
 }
 
 export async function patchApp(ctx: Context): Promise<void> {
@@ -431,12 +448,15 @@ export async function patchApp(ctx: Context): Promise<void> {
         longDescription,
         maskableIcon,
         path,
-        private: isPrivate,
         screenshots,
+        sentryDsn,
+        sentryEnvironment,
         sharedStyle,
+        showAppDefinition,
         showAppsembleLogin,
         showAppsembleOAuth2Login,
         template,
+        visibility,
         yaml,
       },
     },
@@ -494,8 +514,8 @@ export async function patchApp(ctx: Context): Promise<void> {
       result.path = path;
     }
 
-    if (isPrivate !== undefined) {
-      result.private = isPrivate;
+    if (visibility !== undefined) {
+      result.visibility = visibility;
     }
 
     if (template !== undefined) {
@@ -512,6 +532,18 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (longDescription !== undefined) {
       result.longDescription = longDescription;
+    }
+
+    if (showAppDefinition !== undefined) {
+      result.showAppDefinition = showAppDefinition;
+    }
+
+    if (sentryDsn !== undefined) {
+      result.sentryDsn = sentryDsn;
+    }
+
+    if (sentryEnvironment !== undefined) {
+      result.sentryEnvironment = sentryEnvironment;
     }
 
     if (showAppsembleLogin !== undefined) {
@@ -545,7 +577,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (
       domain !== undefined ||
       path !== undefined ||
-      isPrivate !== undefined ||
+      visibility !== undefined ||
       template !== undefined ||
       icon !== undefined ||
       maskableIcon !== undefined ||
@@ -595,7 +627,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       }
     });
 
-    ctx.body = getAppFromRecord(dbApp);
+    ctx.body = dbApp.toJSON();
   } catch (error: unknown) {
     handleAppValidationError(error as Error, result);
   }

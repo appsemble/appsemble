@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.19.7",
+  "version": "0.19.8",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.19.7",
-    "@appsemble/types": "0.19.7",
-    "@appsemble/utils": "0.19.7",
+    "@appsemble/node-utils": "0.19.8",
+    "@appsemble/types": "0.19.8",
+    "@appsemble/utils": "0.19.8",
     "@fortawesome/fontawesome-common-types": "^0.2.0",
     "@fortawesome/fontawesome-free": "^5.0.0",
     "@hapi/boom": "^9.0.0",
@@ -142,6 +142,7 @@
     "axios-mock-adapter": "^1.0.0",
     "axios-test-instance": "^5.0.0",
     "express-to-koa": "^2.0.0",
+    "jest-axios-snapshot": "^1.0.0",
     "jest-image-snapshot": "^4.0.0",
     "memfs": "^3.0.0",
     "strip-indent": "^3.0.0"

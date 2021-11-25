@@ -1,5 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { App as AppType } from '@appsemble/types';
+import { App as AppType, Snapshot } from '@appsemble/types';
 import { Clock, install } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -75,74 +75,22 @@ describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
     const response = await request.get('/api/apps');
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [],
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      []
+    `);
   });
 
   it('should return an array of apps', async () => {
-    const appA = await App.create(
+    await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-    const appB = await App.create(
-      {
-        path: 'another-app',
-        definition: { name: 'Another App', defaultPage: 'Another Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
-
-    const response = await request.get('/api/apps');
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
-        {
-          id: appA.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'test-app',
-          iconUrl: null,
-          definition: appA.definition,
-          OrganizationId: appA.OrganizationId,
-          OrganizationName: 'Test Organization',
-        },
-        {
-          id: appB.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'another-app',
-          iconUrl: null,
-          definition: appB.definition,
-          OrganizationId: appB.OrganizationId,
-          OrganizationName: 'Test Organization',
-        },
-      ],
-    });
-  });
-
-  it('should not include private apps when fetching all apps', async () => {
-    const appA = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
+        visibility: 'public',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -150,33 +98,147 @@ describe('queryApps', () => {
     await App.create(
       {
         path: 'another-app',
-        private: true,
         definition: { name: 'Another App', defaultPage: 'Another Page' },
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
+        visibility: 'public',
         OrganizationId: organization.id,
       },
       { raw: true },
     );
 
     const response = await request.get('/api/apps');
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: appA.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'test-app',
-          iconUrl: null,
-          definition: appA.definition,
-          OrganizationId: appA.OrganizationId,
-          OrganizationName: 'Test Organization',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
         },
-      ],
-    });
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Another Page",
+            "name": "Another App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 2,
+          "locked": false,
+          "longDescription": null,
+          "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
+        },
+      ]
+    `);
+  });
+
+  it('should only include public apps when fetching all apps', async () => {
+    await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'public',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        path: 'another-app',
+        definition: { name: 'Another App', defaultPage: 'Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'unlisted',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        path: 'yet-another-app',
+        definition: { name: 'Yet Another App', defaultPage: 'Yet Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        visibility: 'private',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    const response = await request.get('/api/apps');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
+        },
+      ]
+    `);
   });
 
   it('should sort apps by its rating', async () => {
@@ -186,6 +248,7 @@ describe('queryApps', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+      visibility: 'public',
       OrganizationId: organization.id,
     });
     await AppRating.create({
@@ -193,20 +256,23 @@ describe('queryApps', () => {
       UserId: user.id,
       rating: 5,
       description: 'This is a test rating',
+      visibility: 'public',
     });
     await AppRating.create({
       AppId: appA.id,
       UserId: userB.id,
       rating: 4,
       description: 'This is also a test rating',
+      visibility: 'public',
     });
 
-    const appB = await App.create({
+    await App.create({
       path: 'another-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
+      visibility: 'public',
     });
 
     const appC = await App.create({
@@ -215,24 +281,111 @@ describe('queryApps', () => {
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
+      visibility: 'public',
     });
     await AppRating.create({
       AppId: appC.id,
       UserId: user.id,
       rating: 3,
       description: 'This is a test rating',
+      visibility: 'public',
     });
 
     const response = await request.get('/api/apps');
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
-        expect.objectContaining({ id: appA.id, rating: { count: 2, average: 4.5 } }),
-        expect.objectContaining({ id: appC.id, rating: { count: 1, average: 3 } }),
-        expect.objectContaining({ id: appB.id }),
-      ],
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "rating": {
+            "average": 4.5,
+            "count": 2,
+          },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Another Page",
+            "name": "Another App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 3,
+          "locked": false,
+          "longDescription": null,
+          "path": "yet-another-app",
+          "rating": {
+            "average": 3,
+            "count": 1,
+          },
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 2,
+          "locked": false,
+          "longDescription": null,
+          "path": "another-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "public",
+        },
+      ]
+    `);
   });
 });
 
@@ -240,12 +393,16 @@ describe('getAppById', () => {
   it('should return 404 when fetching a non-existent app', async () => {
     const response = await request.get('/api/apps/1');
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'App not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should fetch an existing app', async () => {
@@ -261,24 +418,38 @@ describe('getAppById', () => {
     );
     const response = await request.get(`/api/apps/${appA.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: appA.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: false,
-        path: 'test-app',
-        iconUrl: null,
-        definition: appA.definition,
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        yaml: `name: Test App
-defaultPage: Test Page
-`,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
   });
 
   it('should fetch the most recent snapshot', async () => {
@@ -294,22 +465,38 @@ defaultPage: Test Page
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
     const response = await request.get(`/api/apps/${app.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: app.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: false,
-        path: 'test-app',
-        iconUrl: null,
-        definition: app.definition,
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        yaml: '{ name: Test App, defaultPage Test Page }',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
   });
 
   it('should resolve an icon url for an app with an icon', async () => {
@@ -325,12 +512,38 @@ defaultPage: Test Page
       { raw: true },
     );
     const response = await request.get(`/api/apps/${app.id}`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        iconUrl: `/api/apps/${app.id}/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z`,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
   });
 
   it('should resolve an icon url for an app with an organization icon fallback', async () => {
@@ -349,13 +562,38 @@ defaultPage: Test Page
       { raw: true },
     );
     const response = await request.get(`/api/apps/${app.id}`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        iconUrl:
-          '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
   });
 
   it('should resolve an icon url for an app without an icon as null', async () => {
@@ -370,18 +608,142 @@ defaultPage: Test Page
       { raw: true },
     );
     const response = await request.get(`/api/apps/${app.id}`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        iconUrl: null,
-      },
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+      }
+    `);
+  });
+
+  it('should show the app definition of showAppDefinition is true', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
     });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should show the app yaml for organization members with view permissions', async () => {
+    const app = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      showAppDefinition: true,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
   });
 });
 
 describe('queryMyApps', () => {
   it('should be able to fetch filtered apps', async () => {
-    const appA = await App.create(
+    await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
@@ -396,7 +758,7 @@ describe('queryMyApps', () => {
       id: 'testorganizationb',
       name: 'Test Organization B',
     });
-    const appB = await App.create(
+    await App.create(
       {
         path: 'test-app-b',
         definition: { name: 'Test App B', defaultPage: 'Test Page' },
@@ -414,52 +776,98 @@ describe('queryMyApps', () => {
 
     const responseB = await request.get('/api/user/apps');
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: [
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: appA.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'test-app',
-          iconUrl: null,
-          definition: appA.definition,
-          OrganizationId: appA.OrganizationId,
-          OrganizationName: 'Test Organization',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
         },
-      ],
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [
+      ]
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: appA.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'test-app',
-          iconUrl: null,
-          definition: appA.definition,
-          OrganizationId: appA.OrganizationId,
-          OrganizationName: 'Test Organization',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
         },
         {
-          id: appB.id,
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          domain: null,
-          private: false,
-          path: 'test-app-b',
-          iconUrl: null,
-          definition: appB.definition,
-          OrganizationId: appB.OrganizationId,
-          OrganizationName: 'Test Organization B',
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganizationb",
+          "OrganizationName": "Test Organization B",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App B",
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 2,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app-b",
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
         },
-      ],
-    });
+      ]
+    `);
   });
 });
 
@@ -483,45 +891,58 @@ describe('createApp', () => {
       }),
     );
 
-    expect(createdResponse).toMatchObject({
-      status: 201,
-      data: {
-        id: expect.any(Number),
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: true,
-        path: 'test-app',
-        iconUrl: expect.stringMatching(/\/api\/apps\/\d+\/icon/),
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
             {
-              name: 'Test Page',
-              blocks: [
+              "blocks": [
                 {
-                  type: 'test',
-                  version: '0.0.0',
+                  "type": "test",
+                  "version": "0.0.0",
                 },
               ],
+              "name": "Test Page",
             },
           ],
         },
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        yaml: stripIndent(`
-          name: Test App
-          defaultPage: Test Page
-          pages:
-            - name: Test Page
-              blocks:
-                - type: test
-                  version: 0.0.0
-        `),
-        screenshotUrls: [],
-      },
-    });
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
     expect(retrieved).toStrictEqual(createdResponse.data);
   });
@@ -546,45 +967,60 @@ describe('createApp', () => {
       }),
     );
 
-    expect(createdResponse).toMatchObject({
-      status: 201,
-      data: {
-        id: expect.any(Number),
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: true,
-        path: 'test-app',
-        iconUrl: expect.stringMatching(/\/api\/apps\/\d+\/icon/),
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
             {
-              name: 'Test Page',
-              blocks: [
+              "blocks": [
                 {
-                  type: 'test',
-                  version: '0.0.0',
+                  "type": "test",
+                  "version": "0.0.0",
                 },
               ],
+              "name": "Test Page",
             },
           ],
         },
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        yaml: stripIndent(`
-          name: Test App
-          defaultPage: Test Page
-          pages:
-            - name: Test Page
-              blocks:
-                - type: test
-                  version: 0.0.0
-        `),
-        screenshotUrls: ['/api/apps/1/screenshots/1'],
-      },
-    });
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [
+          "/api/apps/1/screenshots/1",
+        ],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
 
     const screenshot = await AppScreenshot.findOne();
     expect(screenshot.toJSON()).toStrictEqual({
@@ -606,154 +1042,162 @@ describe('createApp', () => {
       createFormData({ coreStyle: 'body { color: red; }' }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
           {
-            argument: 'OrganizationId',
-            instance: {
-              coreStyle: 'body { color: red; }',
+            "argument": "OrganizationId",
+            "instance": {
+              "coreStyle": "body { color: red; }",
             },
-            message: 'requires property "OrganizationId"',
-            name: 'required',
-            path: [],
-            property: 'instance',
-            schema: {
-              properties: {
-                OrganizationId: {
-                  $ref: '#/components/schemas/Organization/properties/id',
+            "message": "requires property \\"OrganizationId\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
                 },
-                coreStyle: {
-                  description: 'The custom style to apply to the core app.',
-                  type: 'string',
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
                 },
-                domain: {
-                  $ref: '#/components/schemas/App/properties/domain',
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
                 },
-                icon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                iconBackground: {
-                  description: 'The background color to use for the maskable icon.',
-                  pattern: '^#[\\dA-Fa-f]{6}$',
-                  type: 'string',
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
                 },
-                longDescription: {
-                  $ref: '#/components/schemas/App/properties/longDescription',
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
                 },
-                maskableIcon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                path: {
-                  $ref: '#/components/schemas/App/properties/path',
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
-                },
-                screenshots: {
-                  description: 'Screenshots to showcase in the store',
-                  items: {
-                    format: 'binary',
-                    type: 'string',
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
                   },
-                  type: 'array',
+                  "type": "array",
                 },
-                sharedStyle: {
-                  description: 'The custom style to apply to all parts of app.',
-                  type: 'string',
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
                 },
-                template: {
-                  $ref: '#/components/schemas/App/properties/template',
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
                 },
-                yaml: {
-                  description: 'The original YAML definition used to define the app.',
-                  type: 'string',
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
                 },
               },
-              required: ['OrganizationId', 'yaml'],
-              type: 'object',
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
             },
-            stack: 'instance requires property "OrganizationId"',
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
           {
-            argument: 'yaml',
-            instance: {
-              coreStyle: 'body { color: red; }',
+            "argument": "yaml",
+            "instance": {
+              "coreStyle": "body { color: red; }",
             },
-            message: 'requires property "yaml"',
-            name: 'required',
-            path: [],
-            property: 'instance',
-            schema: {
-              properties: {
-                OrganizationId: {
-                  $ref: '#/components/schemas/Organization/properties/id',
+            "message": "requires property \\"yaml\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
                 },
-                coreStyle: {
-                  description: 'The custom style to apply to the core app.',
-                  type: 'string',
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
                 },
-                domain: {
-                  $ref: '#/components/schemas/App/properties/domain',
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
                 },
-                icon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                iconBackground: {
-                  description: 'The background color to use for the maskable icon.',
-                  pattern: '^#[\\dA-Fa-f]{6}$',
-                  type: 'string',
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
                 },
-                longDescription: {
-                  $ref: '#/components/schemas/App/properties/longDescription',
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
                 },
-                maskableIcon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                path: {
-                  $ref: '#/components/schemas/App/properties/path',
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
-                },
-                screenshots: {
-                  description: 'Screenshots to showcase in the store',
-                  items: {
-                    format: 'binary',
-                    type: 'string',
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
                   },
-                  type: 'array',
+                  "type": "array",
                 },
-                sharedStyle: {
-                  description: 'The custom style to apply to all parts of app.',
-                  type: 'string',
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
                 },
-                template: {
-                  $ref: '#/components/schemas/App/properties/template',
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
                 },
-                yaml: {
-                  description: 'The original YAML definition used to define the app.',
-                  type: 'string',
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
                 },
               },
-              required: ['OrganizationId', 'yaml'],
-              type: 'object',
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
             },
-            stack: 'instance requires property "yaml"',
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
-        message: 'Invalid content types found',
-      },
-    });
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should not allow apps to be created without an organization.id', async () => {
@@ -773,92 +1217,95 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
           {
-            argument: 'OrganizationId',
-            instance: {
-              yaml: stripIndent(`
-                name: Test App
-                defaultPage: Test Page
-                pages:
-                  - name: Test Page
-                    blocks:
-                      - type: test
-                        version: 0.0.1
-              `).trim(),
+            "argument": "OrganizationId",
+            "instance": {
+              "yaml": "name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.1",
             },
-            message: 'requires property "OrganizationId"',
-            name: 'required',
-            path: [],
-            property: 'instance',
-            schema: {
-              properties: {
-                OrganizationId: {
-                  $ref: '#/components/schemas/Organization/properties/id',
+            "message": "requires property \\"OrganizationId\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
                 },
-                coreStyle: {
-                  description: 'The custom style to apply to the core app.',
-                  type: 'string',
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
                 },
-                domain: {
-                  $ref: '#/components/schemas/App/properties/domain',
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
                 },
-                icon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                iconBackground: {
-                  description: 'The background color to use for the maskable icon.',
-                  pattern: '^#[\\dA-Fa-f]{6}$',
-                  type: 'string',
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
                 },
-                longDescription: {
-                  $ref: '#/components/schemas/App/properties/longDescription',
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
                 },
-                maskableIcon: {
-                  description: 'The app icon.',
-                  format: 'binary',
-                  type: 'string',
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
                 },
-                path: {
-                  $ref: '#/components/schemas/App/properties/path',
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
                 },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
-                },
-                screenshots: {
-                  description: 'Screenshots to showcase in the store',
-                  items: {
-                    format: 'binary',
-                    type: 'string',
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
                   },
-                  type: 'array',
+                  "type": "array",
                 },
-                sharedStyle: {
-                  description: 'The custom style to apply to all parts of app.',
-                  type: 'string',
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
                 },
-                template: {
-                  $ref: '#/components/schemas/App/properties/template',
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
                 },
-                yaml: {
-                  description: 'The original YAML definition used to define the app.',
-                  type: 'string',
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
                 },
               },
-              required: ['OrganizationId', 'yaml'],
-              type: 'object',
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
             },
-            stack: 'instance requires property "OrganizationId"',
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
         ],
-        message: 'Invalid content types found',
-      },
-    });
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should not allow apps to be created for organizations the user does not belong to', async () => {
@@ -879,14 +1326,16 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User is not part of this organization.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should not allow to create an app using non-existent blocks', async () => {
@@ -907,25 +1356,33 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        data: {
-          errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
             {
-              instance: '@non/existent',
-              message: 'is not a known block type',
-              path: ['pages', 0, 'blocks', 0, 'type'],
-              property: 'instance.pages[0].blocks[0].type',
-              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              "instance": "@non/existent",
+              "message": "is not a known block type",
+              "path": [
+                "pages",
+                0,
+                "blocks",
+                0,
+                "type",
+              ],
+              "property": "instance.pages[0].blocks[0].type",
+              "stack": "instance.pages[0].blocks[0].type is not a known block type",
             },
           ],
         },
-        error: 'Bad Request',
-        message: 'App validation failed',
-        statusCode: 400,
-      },
-    });
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should not allow to create an app using non-existent block versions', async () => {
@@ -946,25 +1403,33 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        data: {
-          errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
             {
-              instance: 'test',
-              message: 'is not a known block type',
-              path: ['pages', 0, 'blocks', 0, 'type'],
-              property: 'instance.pages[0].blocks[0].type',
-              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              "instance": "test",
+              "message": "is not a known block type",
+              "path": [
+                "pages",
+                0,
+                "blocks",
+                0,
+                "type",
+              ],
+              "property": "instance.pages[0].blocks[0].type",
+              "stack": "instance.pages[0].blocks[0].type is not a known block type",
             },
           ],
         },
-        error: 'Bad Request',
-        message: 'App validation failed',
-        statusCode: 400,
-      },
-    });
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should not allow to create an app using invalid block parameters', async () => {
@@ -987,25 +1452,34 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        data: {
-          errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
             {
-              instance: 'invalid',
-              message: 'is not of a type(s) number',
-              path: ['pages', 0, 'blocks', 0, 'parameters', 'foo'],
-              property: 'instance.pages[0].blocks[0].parameters.foo',
-              stack: 'instance.pages[0].blocks[0].parameters.foo is not of a type(s) number',
+              "instance": "invalid",
+              "message": "is not of a type(s) number",
+              "path": [
+                "pages",
+                0,
+                "blocks",
+                0,
+                "parameters",
+                "foo",
+              ],
+              "property": "instance.pages[0].blocks[0].parameters.foo",
+              "stack": "instance.pages[0].blocks[0].parameters.foo is not of a type(s) number",
             },
           ],
         },
-        error: 'Bad Request',
-        message: 'App validation failed',
-        statusCode: 400,
-      },
-    });
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should handle app path conflicts on create', async () => {
@@ -1042,22 +1516,58 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        path: 'test-app-2',
-        definition: {
-          name: 'Test App',
-          defaultPage: 'Test Page',
-          pages: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
             {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
             },
           ],
         },
-      },
-    });
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 2,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app-2",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
   });
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
@@ -1087,12 +1597,61 @@ describe('createApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: expect.objectContaining({
-        path: expect.stringMatching(/test-app-(\w){10}/),
-      }),
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { path: expect.stringMatching(/test-app-(\w){10}/) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 12,
+        "locked": false,
+        "longDescription": null,
+        "path": StringMatching /test-app-\\(\\\\w\\)\\{10\\}/,
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `,
+    );
   });
 
   it('should allow stylesheets to be included when creating an app', async () => {
@@ -1116,9 +1675,70 @@ describe('createApp', () => {
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
-    expect(response).toMatchObject({ status: 201 });
-    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
-    expect(sharedStyle).toMatchObject({ status: 200, data: ':root { --primary-color: purple; }' });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Foobar",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "foobar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Foobar
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+            ",
+      }
+    `);
+    expect(coreStyle).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+
+      body { color: blue; }
+    `);
+    expect(sharedStyle).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+
+      :root { --primary-color: purple; }
+    `);
   });
 
   it('should not allow invalid core stylesheets when creating an app', async () => {
@@ -1139,7 +1759,91 @@ describe('createApp', () => {
     authorizeStudio();
     const response = await request.post('/api/apps', form);
 
-    expect(response.status).toBe(400);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "yaml",
+            "instance": {
+              "OrganizationId": "testorganization",
+              "coreStyle": "this is invalid css",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"test\\",\\"version\\":\\"0.0.0\\"}]}]}",
+            },
+            "message": "requires property \\"yaml\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
+                },
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
+                },
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
+                },
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
+                },
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
+                },
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
+                },
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
+                },
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
+            },
+            "stack": "instance requires property \\"yaml\\"",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should not allow invalid shared stylesheets when creating an app', async () => {
@@ -1161,10 +1865,91 @@ describe('createApp', () => {
     authorizeStudio();
     const response = await request.post('/api/apps', form);
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "yaml",
+            "instance": {
+              "OrganizationId": "testorganization",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"path\\":\\"a\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"testblock\\"}]}]}",
+              "sharedStyle": "this is invalid css",
+            },
+            "message": "requires property \\"yaml\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
+                },
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
+                },
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
+                },
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
+                },
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
+                },
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
+                },
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
+                },
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
+            },
+            "stack": "instance requires property \\"yaml\\"",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   describe('block synchronization', () => {
@@ -1205,25 +1990,33 @@ describe('createApp', () => {
           `),
         }),
       );
-      expect(response).toMatchObject({
-        status: 400,
-        data: {
-          data: {
-            errors: [
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "data": {
+            "errors": [
               {
-                instance: 'upstream',
-                message: 'is not a known block type',
-                path: ['pages', 0, 'blocks', 0, 'type'],
-                property: 'instance.pages[0].blocks[0].type',
-                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+                "instance": "upstream",
+                "message": "is not a known block type",
+                "path": [
+                  "pages",
+                  0,
+                  "blocks",
+                  0,
+                  "type",
+                ],
+                "property": "instance.pages[0].blocks[0].type",
+                "stack": "instance.pages[0].blocks[0].type is not a known block type",
               },
             ],
           },
-          error: 'Bad Request',
-          message: 'App validation failed',
-          statusCode: 400,
-        },
-      });
+          "error": "Bad Request",
+          "message": "App validation failed",
+          "statusCode": 400,
+        }
+      `);
     });
 
     it('should not synchronize if the remote returns an invalid block version', async () => {
@@ -1251,25 +2044,33 @@ describe('createApp', () => {
           `),
         }),
       );
-      expect(response).toMatchObject({
-        status: 400,
-        data: {
-          data: {
-            errors: [
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "data": {
+            "errors": [
               {
-                instance: 'upstream',
-                message: 'is not a known block type',
-                path: ['pages', 0, 'blocks', 0, 'type'],
-                property: 'instance.pages[0].blocks[0].type',
-                stack: 'instance.pages[0].blocks[0].type is not a known block type',
+                "instance": "upstream",
+                "message": "is not a known block type",
+                "path": [
+                  "pages",
+                  0,
+                  "blocks",
+                  0,
+                  "type",
+                ],
+                "property": "instance.pages[0].blocks[0].type",
+                "stack": "instance.pages[0].blocks[0].type is not a known block type",
               },
             ],
           },
-          error: 'Bad Request',
-          message: 'App validation failed',
-          statusCode: 400,
-        },
-      });
+          "error": "Bad Request",
+          "message": "App validation failed",
+          "statusCode": 400,
+        }
+      `);
     });
 
     it('should store the remote block in the local database', async () => {
@@ -1323,7 +2124,58 @@ describe('createApp', () => {
           `),
         }),
       );
-      expect(response).toMatchObject({ status: 201 });
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {
+            "defaultPage": "Test Page",
+            "name": "Test App",
+            "pages": [
+              {
+                "blocks": [
+                  {
+                    "type": "upstream",
+                    "version": "1.2.3",
+                  },
+                ],
+                "name": "Test Page",
+              },
+            ],
+          },
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": "test-app",
+          "screenshotUrls": [],
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": true,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
+          "yaml": "
+        name: Test App
+        defaultPage: Test Page
+        pages:
+          - name: Test Page
+            blocks:
+              - type: upstream
+                version: 1.2.3
+                  ",
+        }
+      `);
       const block = await BlockVersion.findOne({
         where: { OrganizationId: 'appsemble', name: 'upstream' },
         include: [BlockAsset, BlockMessages],
@@ -1377,7 +2229,7 @@ describe('createApp', () => {
     );
 
     const appCount = await App.count();
-    expect(createdResponse.status).toBe(204);
+    expect(createdResponse).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(appCount).toBe(0);
   });
 
@@ -1401,154 +2253,165 @@ describe('createApp', () => {
     );
 
     const appCount = await App.count();
-    expect(createdResponse.status).toBe(400);
-    expect(createdResponse.data).toStrictEqual({
-      data: {
-        errors: [
-          {
-            argument: 'name',
-            instance: {
-              defaultPage: 'Test Page',
-              pages: [
-                {
-                  blocks: [
-                    {
-                      type: 'test',
-                      version: '0.0.0',
-                    },
-                  ],
-                  name: 'Test Page',
-                },
-              ],
-            },
-            message: 'requires property "name"',
-            name: 'required',
-            path: [],
-            property: 'instance',
-            schema: {
-              additionalProperties: false,
-              description: 'An app definition describes what an Appsemble app looks like.',
-              properties: {
-                anchors: {
-                  description: 'Helper property that can be used to store YAML anchors.',
-                  items: {},
-                  minItems: 1,
-                  type: 'array',
-                },
-                cron: {
-                  additionalProperties: {
-                    $ref: '#/components/schemas/CronDefinition',
-                  },
-                  description: 'A list of cron jobs that are associated with this app.',
-                  minProperties: 1,
-                  type: 'object',
-                },
-                defaultLanguage: {
-                  default: 'en',
-                  description: 'The default language for the app.',
-                  minLength: 2,
-                  type: 'string',
-                },
-                defaultPage: {
-                  description: `The name of the page that should be displayed when the app is initially loaded.
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
 
-This **must** match the name of a page defined for the app.
-`,
-                  type: 'string',
-                },
-                description: {
-                  description: `A short description describing the app.
-
-This will be displayed on the app store.
-`,
-                  maxLength: 80,
-                  type: 'string',
-                },
-                layout: {
-                  $ref: '#/components/schemas/AppLayoutDefinition',
-                  description: 'Properties related to the layout of the app.',
-                },
-                name: {
-                  description: `The human readable name of the app.
-
-This will be displayed for example on the home screen or in the browser tab.
-`,
-                  maxLength: 30,
-                  minLength: 1,
-                  type: 'string',
-                },
-                notifications: {
-                  description: `The strategy to use for apps to subscribe to push notifications.
-
-If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
-app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
-receiving push notifications by pressing the subscribe button in the App settings page. Setting this
-to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
-
-> **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
-`,
-                  enum: ['opt-in', 'startup'],
-                },
-                pages: {
-                  description: 'The pages of the app.',
-                  items: {
-                    anyOf: [
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "name",
+              "instance": {
+                "defaultPage": "Test Page",
+                "pages": [
+                  {
+                    "blocks": [
                       {
-                        $ref: '#/components/schemas/PageDefinition',
-                      },
-                      {
-                        $ref: '#/components/schemas/TabsPageDefinition',
-                      },
-                      {
-                        $ref: '#/components/schemas/FlowPageDefinition',
+                        "type": "test",
+                        "version": "0.0.0",
                       },
                     ],
+                    "name": "Test Page",
                   },
-                  minItems: 1,
-                  type: 'array',
-                },
-                resources: {
-                  additionalProperties: {
-                    $ref: '#/components/schemas/ResourceDefinition',
-                    description: 'A single resource definition.',
-                  },
-                  description: `Resources define how Appsemble can store data for an app.
-
-The most basic resource has a \`schema\` property and defines the minimal security rules.
-`,
-                  type: 'object',
-                },
-                roles: {
-                  description: `The list of roles that are allowed to view this app.
-
-This list is used as the default roles for the roles property on pages and blocks, which can be
-overridden by defining them for a specific page or block. Note that these roles must be defined in
-\`security.roles\`.
-`,
-                  items: {
-                    type: 'string',
-                  },
-                  type: 'array',
-                },
-                security: {
-                  $ref: '#/components/schemas/SecurityDefinition',
-                  description: 'Role definitions that may be used by the app.',
-                },
-                theme: {
-                  $ref: '#/components/schemas/Theme',
-                },
+                ],
               },
-              required: ['name', 'defaultPage', 'pages'],
-              type: 'object',
+              "message": "requires property \\"name\\"",
+              "name": "required",
+              "path": [],
+              "property": "instance",
+              "schema": {
+                "additionalProperties": false,
+                "description": "An app definition describes what an Appsemble app looks like.",
+                "properties": {
+                  "anchors": {
+                    "description": "Helper property that can be used to store YAML anchors.",
+                    "items": {},
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "cron": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/CronDefinition",
+                    },
+                    "description": "A list of cron jobs that are associated with this app.",
+                    "minProperties": 1,
+                    "type": "object",
+                  },
+                  "defaultLanguage": {
+                    "default": "en",
+                    "description": "The default language for the app.",
+                    "minLength": 2,
+                    "type": "string",
+                  },
+                  "defaultPage": {
+                    "description": "The name of the page that should be displayed when the app is initially loaded.
+
+      This **must** match the name of a page defined for the app.
+      ",
+                    "type": "string",
+                  },
+                  "description": {
+                    "description": "A short description describing the app.
+
+      This will be displayed on the app store.
+      ",
+                    "maxLength": 80,
+                    "type": "string",
+                  },
+                  "layout": {
+                    "$ref": "#/components/schemas/AppLayoutDefinition",
+                    "description": "Properties related to the layout of the app.",
+                  },
+                  "name": {
+                    "description": "The human readable name of the app.
+
+      This will be displayed for example on the home screen or in the browser tab.
+      ",
+                    "maxLength": 30,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "notifications": {
+                    "description": "The strategy to use for apps to subscribe to push notifications.
+
+      If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
+      app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
+      receiving push notifications by pressing the subscribe button in the App settings page. Setting this
+      to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+
+      > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
+      ",
+                    "enum": [
+                      "opt-in",
+                      "startup",
+                    ],
+                  },
+                  "pages": {
+                    "description": "The pages of the app.",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/PageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/TabsPageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/FlowPageDefinition",
+                        },
+                      ],
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "resources": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ResourceDefinition",
+                      "description": "A single resource definition.",
+                    },
+                    "description": "Resources define how Appsemble can store data for an app.
+
+      The most basic resource has a \`schema\` property and defines the minimal security rules.
+      ",
+                    "type": "object",
+                  },
+                  "roles": {
+                    "description": "The list of roles that are allowed to view this app.
+
+      This list is used as the default roles for the roles property on pages and blocks, which can be
+      overridden by defining them for a specific page or block. Note that these roles must be defined in
+      \`security.roles\`.
+      ",
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                  "security": {
+                    "$ref": "#/components/schemas/SecurityDefinition",
+                    "description": "Role definitions that may be used by the app.",
+                  },
+                  "theme": {
+                    "$ref": "#/components/schemas/Theme",
+                  },
+                },
+                "required": [
+                  "name",
+                  "defaultPage",
+                  "pages",
+                ],
+                "type": "object",
+              },
+              "stack": "instance requires property \\"name\\"",
             },
-            stack: 'instance requires property "name"',
-          },
-        ],
-      },
-      error: 'Bad Request',
-      message: 'App validation failed',
-      statusCode: 400,
-    });
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
     expect(appCount).toBe(0);
   });
 });
@@ -1570,7 +2433,7 @@ describe('patchApp', () => {
     const response = await request.patch(
       `/api/apps/${app.id}`,
       createFormData({
-        private: 'true',
+        visibility: 'private',
         yaml: stripIndent(`
           name: Foobar
           defaultPage: Test Page
@@ -1583,39 +2446,58 @@ describe('patchApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: app.id,
-        $created: '1970-01-01T00:00:00.000Z',
-        $updated: '1970-01-01T00:00:00.000Z',
-        domain: null,
-        private: true,
-        path: 'test-app',
-        iconUrl: null,
-        OrganizationId: organization.id,
-        OrganizationName: 'Test Organization',
-        definition: {
-          name: 'Foobar',
-          defaultPage: app.definition.defaultPage,
-          pages: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Foobar",
+          "pages": [
             {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
             },
           ],
         },
-        yaml: stripIndent(`
-          name: Foobar
-          defaultPage: Test Page
-          pages:
-            - name: Test Page
-              blocks:
-                - type: test
-                  version: 0.0.0
-        `),
-      },
-    });
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "private",
+        "yaml": "
+      name: Foobar
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
   });
 
   it('should not update a non-existent app', async () => {
@@ -1636,12 +2518,16 @@ describe('patchApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'App not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not update an app if it is currently locked', async () => {
@@ -1669,7 +2555,16 @@ describe('patchApp', () => {
     authorizeStudio();
     const response = await request.patch(`/api/apps/${app.id}`, form);
 
-    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "App is currently locked.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should ignore the lock if force is set to true', async () => {
@@ -1699,7 +2594,41 @@ describe('patchApp', () => {
     authorizeStudio();
     const response = await request.patch(`/api/apps/${app.id}`, form);
 
-    expect(response).toMatchObject({ status: 200 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": true,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
   });
 
   it('should update the app domain', async () => {
@@ -1717,12 +2646,41 @@ describe('patchApp', () => {
       createFormData({ domain: 'appsemble.app' }),
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: expect.objectContaining({
-        domain: 'appsemble.app',
-      }),
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": "appsemble.app",
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "foo",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
   });
 
   it('should set the app domain to null', async () => {
@@ -1740,12 +2698,41 @@ describe('patchApp', () => {
     authorizeStudio();
     const response = await request.patch(`/api/apps/${app.id}`, createFormData({ domain: '' }));
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: expect.objectContaining({
-        domain: null,
-      }),
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "foo",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
   });
 
   it('should not update an app of another organization', async () => {
@@ -1775,24 +2762,178 @@ describe('patchApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'User is not part of this organization.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should validate an app on creation', async () => {
     authorizeStudio();
     const response = await request.post('/api/apps', createFormData({ foo: 'bar' }));
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "OrganizationId",
+            "instance": {
+              "foo": "bar",
+            },
+            "message": "requires property \\"OrganizationId\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
+                },
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
+                },
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
+                },
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
+                },
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
+                },
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
+                },
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
+                },
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
+            },
+            "stack": "instance requires property \\"OrganizationId\\"",
+          },
+          {
+            "argument": "yaml",
+            "instance": {
+              "foo": "bar",
+            },
+            "message": "requires property \\"yaml\\"",
+            "name": "required",
+            "path": [],
+            "property": "instance",
+            "schema": {
+              "properties": {
+                "OrganizationId": {
+                  "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "coreStyle": {
+                  "description": "The custom style to apply to the core app.",
+                  "type": "string",
+                },
+                "domain": {
+                  "$ref": "#/components/schemas/App/properties/domain",
+                },
+                "icon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "iconBackground": {
+                  "description": "The background color to use for the maskable icon.",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
+                  "type": "string",
+                },
+                "longDescription": {
+                  "$ref": "#/components/schemas/App/properties/longDescription",
+                },
+                "maskableIcon": {
+                  "description": "The app icon.",
+                  "format": "binary",
+                  "type": "string",
+                },
+                "path": {
+                  "$ref": "#/components/schemas/App/properties/path",
+                },
+                "screenshots": {
+                  "description": "Screenshots to showcase in the store",
+                  "items": {
+                    "format": "binary",
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+                "sharedStyle": {
+                  "description": "The custom style to apply to all parts of app.",
+                  "type": "string",
+                },
+                "template": {
+                  "$ref": "#/components/schemas/App/properties/template",
+                },
+                "visibility": {
+                  "$ref": "#/components/schemas/App/properties/visibility",
+                },
+                "yaml": {
+                  "description": "The original YAML definition used to define the app.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "OrganizationId",
+                "yaml",
+              ],
+              "type": "object",
+            },
+            "stack": "instance requires property \\"yaml\\"",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should validate an app on update', async () => {
@@ -1814,10 +2955,288 @@ describe('patchApp', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "defaultPage",
+              "instance": {
+                "name": "Foo",
+              },
+              "message": "requires property \\"defaultPage\\"",
+              "name": "required",
+              "path": [],
+              "property": "instance",
+              "schema": {
+                "additionalProperties": false,
+                "description": "An app definition describes what an Appsemble app looks like.",
+                "properties": {
+                  "anchors": {
+                    "description": "Helper property that can be used to store YAML anchors.",
+                    "items": {},
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "cron": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/CronDefinition",
+                    },
+                    "description": "A list of cron jobs that are associated with this app.",
+                    "minProperties": 1,
+                    "type": "object",
+                  },
+                  "defaultLanguage": {
+                    "default": "en",
+                    "description": "The default language for the app.",
+                    "minLength": 2,
+                    "type": "string",
+                  },
+                  "defaultPage": {
+                    "description": "The name of the page that should be displayed when the app is initially loaded.
+
+      This **must** match the name of a page defined for the app.
+      ",
+                    "type": "string",
+                  },
+                  "description": {
+                    "description": "A short description describing the app.
+
+      This will be displayed on the app store.
+      ",
+                    "maxLength": 80,
+                    "type": "string",
+                  },
+                  "layout": {
+                    "$ref": "#/components/schemas/AppLayoutDefinition",
+                    "description": "Properties related to the layout of the app.",
+                  },
+                  "name": {
+                    "description": "The human readable name of the app.
+
+      This will be displayed for example on the home screen or in the browser tab.
+      ",
+                    "maxLength": 30,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "notifications": {
+                    "description": "The strategy to use for apps to subscribe to push notifications.
+
+      If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
+      app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
+      receiving push notifications by pressing the subscribe button in the App settings page. Setting this
+      to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+
+      > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
+      ",
+                    "enum": [
+                      "opt-in",
+                      "startup",
+                    ],
+                  },
+                  "pages": {
+                    "description": "The pages of the app.",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/PageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/TabsPageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/FlowPageDefinition",
+                        },
+                      ],
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "resources": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ResourceDefinition",
+                      "description": "A single resource definition.",
+                    },
+                    "description": "Resources define how Appsemble can store data for an app.
+
+      The most basic resource has a \`schema\` property and defines the minimal security rules.
+      ",
+                    "type": "object",
+                  },
+                  "roles": {
+                    "description": "The list of roles that are allowed to view this app.
+
+      This list is used as the default roles for the roles property on pages and blocks, which can be
+      overridden by defining them for a specific page or block. Note that these roles must be defined in
+      \`security.roles\`.
+      ",
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                  "security": {
+                    "$ref": "#/components/schemas/SecurityDefinition",
+                    "description": "Role definitions that may be used by the app.",
+                  },
+                  "theme": {
+                    "$ref": "#/components/schemas/Theme",
+                  },
+                },
+                "required": [
+                  "name",
+                  "defaultPage",
+                  "pages",
+                ],
+                "type": "object",
+              },
+              "stack": "instance requires property \\"defaultPage\\"",
+            },
+            {
+              "argument": "pages",
+              "instance": {
+                "name": "Foo",
+              },
+              "message": "requires property \\"pages\\"",
+              "name": "required",
+              "path": [],
+              "property": "instance",
+              "schema": {
+                "additionalProperties": false,
+                "description": "An app definition describes what an Appsemble app looks like.",
+                "properties": {
+                  "anchors": {
+                    "description": "Helper property that can be used to store YAML anchors.",
+                    "items": {},
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "cron": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/CronDefinition",
+                    },
+                    "description": "A list of cron jobs that are associated with this app.",
+                    "minProperties": 1,
+                    "type": "object",
+                  },
+                  "defaultLanguage": {
+                    "default": "en",
+                    "description": "The default language for the app.",
+                    "minLength": 2,
+                    "type": "string",
+                  },
+                  "defaultPage": {
+                    "description": "The name of the page that should be displayed when the app is initially loaded.
+
+      This **must** match the name of a page defined for the app.
+      ",
+                    "type": "string",
+                  },
+                  "description": {
+                    "description": "A short description describing the app.
+
+      This will be displayed on the app store.
+      ",
+                    "maxLength": 80,
+                    "type": "string",
+                  },
+                  "layout": {
+                    "$ref": "#/components/schemas/AppLayoutDefinition",
+                    "description": "Properties related to the layout of the app.",
+                  },
+                  "name": {
+                    "description": "The human readable name of the app.
+
+      This will be displayed for example on the home screen or in the browser tab.
+      ",
+                    "maxLength": 30,
+                    "minLength": 1,
+                    "type": "string",
+                  },
+                  "notifications": {
+                    "description": "The strategy to use for apps to subscribe to push notifications.
+
+      If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
+      app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
+      receiving push notifications by pressing the subscribe button in the App settings page. Setting this
+      to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+
+      > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
+      ",
+                    "enum": [
+                      "opt-in",
+                      "startup",
+                    ],
+                  },
+                  "pages": {
+                    "description": "The pages of the app.",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/PageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/TabsPageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/FlowPageDefinition",
+                        },
+                      ],
+                    },
+                    "minItems": 1,
+                    "type": "array",
+                  },
+                  "resources": {
+                    "additionalProperties": {
+                      "$ref": "#/components/schemas/ResourceDefinition",
+                      "description": "A single resource definition.",
+                    },
+                    "description": "Resources define how Appsemble can store data for an app.
+
+      The most basic resource has a \`schema\` property and defines the minimal security rules.
+      ",
+                    "type": "object",
+                  },
+                  "roles": {
+                    "description": "The list of roles that are allowed to view this app.
+
+      This list is used as the default roles for the roles property on pages and blocks, which can be
+      overridden by defining them for a specific page or block. Note that these roles must be defined in
+      \`security.roles\`.
+      ",
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                  "security": {
+                    "$ref": "#/components/schemas/SecurityDefinition",
+                    "description": "Role definitions that may be used by the app.",
+                  },
+                  "theme": {
+                    "$ref": "#/components/schemas/Theme",
+                  },
+                },
+                "required": [
+                  "name",
+                  "defaultPage",
+                  "pages",
+                ],
+                "type": "object",
+              },
+              "stack": "instance requires property \\"pages\\"",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should validate and update css when updating an app', async () => {
@@ -1849,9 +3268,53 @@ describe('patchApp', () => {
     const coreStyle = await request.get(`/api/apps/${response.data.id}/style/core`);
     const sharedStyle = await request.get(`/api/apps/${response.data.id}/style/shared`);
 
-    expect(response).toMatchObject({ status: 200 });
-    expect(coreStyle).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
-    expect(sharedStyle).toMatchObject({ status: 200, data: 'body { color: blue; }' });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+    expect(coreStyle).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+
+      body { color: yellow; }
+    `);
+    expect(sharedStyle).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+
+      body { color: blue; }
+    `);
   });
 
   it('should not allow invalid core stylesheets when updating an app', async () => {
@@ -1903,8 +3366,38 @@ describe('patchApp', () => {
     authorizeStudio();
     const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
-    expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(400);
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Provided CSS was invalid.",
+        "statusCode": 400,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "text/css",
+            "instance": ".foo { margin: 0 auto; }",
+            "message": "has an invalid content type",
+            "name": "contentType",
+            "path": [
+              "coreStyle",
+            ],
+            "property": "instance.coreStyle",
+            "schema": {},
+            "stack": "instance has an invalid content type",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should not allow invalid shared stylesheets when updating an app', async () => {
@@ -1944,8 +3437,106 @@ describe('patchApp', () => {
     authorizeStudio();
     const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
-    expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(400);
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": [
+                "<#/components/schemas/PageDefinition>",
+                "<#/components/schemas/TabsPageDefinition>",
+                "<#/components/schemas/FlowPageDefinition>",
+              ],
+              "instance": {
+                "blocks": [
+                  {
+                    "type": "testblock",
+                  },
+                ],
+                "name": "Test Page",
+              },
+              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+              "name": "anyOf",
+              "path": [
+                "pages",
+                0,
+              ],
+              "property": "instance.pages[0]",
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TabsPageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowPageDefinition",
+                  },
+                ],
+              },
+              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": [
+                "<#/components/schemas/PageDefinition>",
+                "<#/components/schemas/TabsPageDefinition>",
+                "<#/components/schemas/FlowPageDefinition>",
+              ],
+              "instance": {
+                "blocks": [
+                  {
+                    "type": "testblock",
+                  },
+                ],
+                "name": "Test Page",
+              },
+              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+              "name": "anyOf",
+              "path": [
+                "pages",
+                0,
+              ],
+              "property": "instance.pages[0]",
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TabsPageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowPageDefinition",
+                  },
+                ],
+              },
+              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 });
 
@@ -1962,7 +3553,7 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: true });
     await app.reload();
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe(true);
   });
 
@@ -1979,7 +3570,7 @@ describe('setAppLock', () => {
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
     await app.reload();
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.locked).toBe(false);
   });
 
@@ -1997,10 +3588,16 @@ describe('setAppLock', () => {
     });
 
     const response = await request.post(`/api/apps/${app.id}/lock`, { locked: false });
-    expect(response).toMatchObject({
-      status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -2027,20 +3624,23 @@ describe('deleteApp', () => {
 
     const response = await request.delete(`/api/apps/${id}`);
 
-    expect(response).toMatchObject({
-      status: 204,
-      data: '',
-    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should not delete non-existent apps', async () => {
     authorizeStudio();
     const response = await request.delete('/api/apps/0');
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not delete apps from other organizations', async () => {
@@ -2056,10 +3656,16 @@ describe('deleteApp', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}`);
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -2086,23 +3692,36 @@ describe('getAppSnapshots', () => {
     });
 
     authorizeStudio(user);
-    const response = await request.get(`/api/apps/${app.id}/snapshots`);
+    const response = await request.get<Snapshot[]>(`/api/apps/${app.id}/snapshots`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ $author: { id: expect.any(String) } }, { $author: { id: expect.any(String) } }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: expect.any(Number),
-          $created: '1970-01-01T00:01:00.000Z',
-          $author: { name: user.name, id: user.id },
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:01:00.000Z",
+          "id": 2,
         },
         {
-          id: expect.any(Number),
-          $created: '1970-01-01T00:00:00.000Z',
-          $author: { name: user.name, id: user.id },
+          "$author": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
+          "$created": "1970-01-01T00:00:00.000Z",
+          "id": 1,
         },
-      ],
-    });
+      ]
+    `,
+    );
+    expect(response.data[0].$author.id).toBe(user.id);
+    expect(response.data[1].$author.id).toBe(user.id);
   });
 });
 
@@ -2130,15 +3749,24 @@ describe('getAppSnapshot', () => {
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/snapshots/${snapshot.id}`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: expect.any(Number),
-        $created: '1970-01-01T00:00:00.000Z',
-        $author: { name: user.name, id: user.id },
-        yaml: snapshot.yaml,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "yaml": "name: Test App
+      defaultPage: 'Test Page 1'",
+      }
+    `,
+    );
   });
 
   it('should not return an snapshot for a snapshot that doesn’t exist', async () => {
@@ -2159,12 +3787,16 @@ describe('getAppSnapshot', () => {
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/snapshots/1000`);
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: 'Snapshot not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Snapshot not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -2179,7 +3811,15 @@ describe('getAppIcon', () => {
       OrganizationId: organization.id,
     });
     const response = await request.get(`/api/apps/${app.id}/icon`, { responseType: 'arraybuffer' });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toMatchImageSnapshot();
   });
 
@@ -2196,7 +3836,15 @@ describe('getAppIcon', () => {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toMatchImageSnapshot();
   });
 
@@ -2213,7 +3861,15 @@ describe('getAppIcon', () => {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toMatchImageSnapshot();
   });
 
@@ -2231,7 +3887,15 @@ describe('getAppIcon', () => {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toMatchImageSnapshot();
   });
 
@@ -2248,7 +3912,15 @@ describe('getAppIcon', () => {
       params: { maskable: 'true' },
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toMatchImageSnapshot();
   });
 });
@@ -2266,14 +3938,23 @@ describe('deleteAppIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/icon`);
     await app.reload();
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.maskableIcon).toBeNull();
   });
 
   it('should not delete icons from non-existent apps', async () => {
     authorizeStudio();
     const response = await request.delete('/api/apps/0/icon');
-    expect(response).toMatchObject({ status: 404, data: { message: 'App not found' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not delete non-existent icons from apps', async () => {
@@ -2286,7 +3967,16 @@ describe('deleteAppIcon', () => {
     });
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/icon`);
-    expect(response).toMatchObject({ status: 404, data: { message: 'App has no icon' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App has no icon",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -2303,14 +3993,23 @@ describe('deleteAppMaskableIcon', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
     await app.reload();
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(app.maskableIcon).toBeNull();
   });
 
   it('should not delete maskable icons from non-existent apps', async () => {
     authorizeStudio();
     const response = await request.delete('/api/apps/0/maskableIcon');
-    expect(response).toMatchObject({ status: 404, data: { message: 'App not found' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not delete non-existent maskable icons from apps', async () => {
@@ -2323,17 +4022,32 @@ describe('deleteAppMaskableIcon', () => {
     });
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/maskableIcon`);
-    expect(response).toMatchObject({ status: 404, data: { message: 'App has no maskable icon' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App has no maskable icon",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
 describe('getAppScreenshots', () => {
   it('should throw a 404 if the app doesn’t exist', async () => {
     const response = await request.get('/api/apps/1/screenshots/1');
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should throw a 404 if the screenshot doesn’t exist', async () => {
@@ -2344,10 +4058,16 @@ describe('getAppScreenshots', () => {
       vapidPublicKey: '',
     });
     const response = await request.get(`/api/apps/${app.id}/screenshots/1`);
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'Screenshot not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Screenshot not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return the screenshot', async () => {
@@ -2368,7 +4088,15 @@ describe('getAppScreenshots', () => {
     const response = await request.get(`/api/apps/${app.id}/screenshots/${screenshot.id}`, {
       responseType: 'arraybuffer',
     });
-    expect(response).toMatchObject({ status: 200, headers: { 'content-type': 'image/png' } });
+    expect(response).toMatchInlineSnapshot(
+      { data: expect.any(Buffer) },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: image/png
+
+      Any<Buffer>
+    `,
+    );
     expect(response.data).toStrictEqual(buffer);
   });
 });
@@ -2388,7 +4116,14 @@ describe('createAppScreenshot', () => {
     authorizeStudio();
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
-    expect(createdResponse).toMatchObject({ status: 201, data: [expect.any(Number)] });
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        1,
+      ]
+    `);
   });
 
   it('should create multiple screenshots', async () => {
@@ -2405,10 +4140,15 @@ describe('createAppScreenshot', () => {
     authorizeStudio();
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
-    expect(createdResponse).toMatchObject({
-      status: 201,
-      data: [expect.any(Number), expect.any(Number)],
-    });
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        1,
+        2,
+      ]
+    `);
   });
 
   // XXX: Re-enable this test when updating Koas 🧀
@@ -2425,7 +4165,8 @@ describe('createAppScreenshot', () => {
     authorizeStudio();
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
-    expect(createdResponse.status).toBe(400);
+    expect(createdResponse).toMatchInlineSnapshot(`
+        `);
   });
 
   it('should not accept files that aren’t images', async () => {
@@ -2440,10 +4181,29 @@ describe('createAppScreenshot', () => {
     authorizeStudio();
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
-    expect(createdResponse).toMatchObject({
-      status: 400,
-      data: { message: 'Invalid content types found' },
-    });
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "image/png,image/jpeg,image/tiff,image/webp",
+            "instance": "I am not a screenshot",
+            "message": "has an invalid content type",
+            "name": "contentType",
+            "path": [
+              "screenshots",
+              0,
+            ],
+            "property": "instance.screenshots[0]",
+            "schema": {},
+            "stack": "instance has an invalid content type",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 });
 
@@ -2469,7 +4229,12 @@ describe('deleteAppScreenshot', () => {
 
     const screenshots = await AppScreenshot.count();
 
-    expect(response.status).toBe(200);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/plain; charset=utf-8
+
+      OK
+    `);
     expect(screenshots).toBe(0);
   });
 
@@ -2483,7 +4248,16 @@ describe('deleteAppScreenshot', () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/screenshots/0`);
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Screenshot not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -2518,8 +4292,13 @@ describe('setAppBlockStyle', () => {
 
     const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
 
-    expect(response).toMatchObject({ status: 204 });
-    expect(style).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(style).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+
+      body { color: yellow; }
+    `);
   });
 
   it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
@@ -2545,20 +4324,14 @@ describe('setAppBlockStyle', () => {
     const responseA = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: 'body { color: blue; }',
     });
-    expect(responseA).toMatchObject({
-      status: 204,
-      data: '',
-    });
+    expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     authorizeStudio();
     const responseB = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, {
       style: ' ',
     });
 
-    expect(responseB).toMatchObject({
-      status: 204,
-      data: '',
-    });
+    expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
 
     const style = await AppBlockStyle.findOne({
       where: { AppId: id, block: '@appsemble/testblock' },
@@ -2595,7 +4368,16 @@ describe('setAppBlockStyle', () => {
       style: 'body { color: yellow; }',
     });
 
-    expect(response).toMatchObject({ status: 403, data: { message: 'App is currently locked.' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "App is currently locked.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {
@@ -2608,10 +4390,10 @@ describe('setAppBlockStyle', () => {
 
     const { id } = await App.create({
       path: 'b',
-      private: false,
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
+      visibility: 'unlisted',
       OrganizationId: organization.id,
     });
 
@@ -2620,14 +4402,16 @@ describe('setAppBlockStyle', () => {
       style: 'invalidCss',
     });
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Provided CSS was invalid.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Provided CSS was invalid.",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should not allow uploading block stylesheets to non-existent apps', async () => {
@@ -2643,14 +4427,16 @@ describe('setAppBlockStyle', () => {
       style: 'body { color: red; }',
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found.",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not allow uploading block stylesheets for non-existent blocks', async () => {
@@ -2667,14 +4453,16 @@ describe('setAppBlockStyle', () => {
       style: 'body { color: red; }',
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Block not found.',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Block not found.",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return an empty response on non-existent block stylesheets', async () => {
@@ -2688,13 +4476,10 @@ describe('setAppBlockStyle', () => {
 
     const response = await request.get(`/api/apps/${id}/style/block/@appsemble/doesntexist`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      headers: expect.objectContaining({
-        'content-type': 'text/css; charset=utf-8',
-      }),
-      data: '',
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/css; charset=utf-8
+    `);
   });
 
   it('should not allow to update an app using non-existent blocks', async () => {
@@ -2722,10 +4507,57 @@ describe('setAppBlockStyle', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": [
+                "<#/components/schemas/PageDefinition>",
+                "<#/components/schemas/TabsPageDefinition>",
+                "<#/components/schemas/FlowPageDefinition>",
+              ],
+              "instance": {
+                "blocks": [
+                  {
+                    "type": "@non/existent",
+                    "version": "0.0.0'",
+                  },
+                ],
+                "name": "Test Page",
+              },
+              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+              "name": "anyOf",
+              "path": [
+                "pages",
+                0,
+              ],
+              "property": "instance.pages[0]",
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TabsPageDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowPageDefinition",
+                  },
+                ],
+              },
+              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should not allow to update an app using non-existent block versions', async () => {
@@ -2752,24 +4584,32 @@ describe('setAppBlockStyle', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        data: {
-          errors: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
             {
-              instance: 'test',
-              message: 'is not a known block type',
-              path: ['pages', 0, 'blocks', 0, 'type'],
-              property: 'instance.pages[0].blocks[0].type',
-              stack: 'instance.pages[0].blocks[0].type is not a known block type',
+              "instance": "test",
+              "message": "is not a known block type",
+              "path": [
+                "pages",
+                0,
+                "blocks",
+                0,
+                "type",
+              ],
+              "property": "instance.pages[0].blocks[0].type",
+              "stack": "instance.pages[0].blocks[0].type is not a known block type",
             },
           ],
         },
-        error: 'Bad Request',
-        message: 'App validation failed',
-        statusCode: 400,
-      },
-    });
+        "error": "Bad Request",
+        "message": "App validation failed",
+        "statusCode": 400,
+      }
+    `);
   });
 });

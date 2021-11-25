@@ -9,7 +9,6 @@ import { parseDocument } from 'yaml';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
-import { getAppFromRecord } from '../utils/model';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
   const templates = await App.findAll({
@@ -32,7 +31,7 @@ export async function getAppTemplates(ctx: Context): Promise<void> {
 export async function createTemplateApp(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { description, name, organizationId, private: isPrivate, resources, templateId },
+      body: { description, name, organizationId, resources, templateId, visibility },
     },
     user,
   } = ctx;
@@ -57,8 +56,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     throw notFound(`Template with ID ${templateId} does not exist.`);
   }
 
-  if (!template.template && template.private) {
-    // Only allow cloning of private apps if the user is part of the template’s organization.
+  if (!template.template && template.visibility !== 'public') {
+    // Only allow cloning of unlisted apps if the user is part of the template’s organization.
     await checkRole(ctx, template.OrganizationId, Permission.ViewApps);
   }
 
@@ -71,7 +70,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
         description,
         name: name || template.definition.name,
       },
-      private: Boolean(isPrivate),
+      visibility,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       coreStyle: template.coreStyle,
@@ -117,7 +116,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       );
     }
 
-    ctx.body = getAppFromRecord(record);
+    ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {

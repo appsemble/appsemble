@@ -20,7 +20,6 @@ import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { serveIcon } from '../utils/icon';
-import { getAppFromRecord } from '../utils/model';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
 
 export async function getOrganizations(ctx: Context): Promise<void> {
@@ -109,7 +108,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
   });
 
   const filteredApps =
-    user && organization.Users.length ? apps : apps.filter((app) => !app.private);
+    user && organization.Users.length ? apps : apps.filter((app) => app.visibility === 'public');
 
   const ratings = await AppRating.findAll({
     attributes: [
@@ -137,7 +136,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
       return app;
     })
     .sort(compareApps)
-    .map((app) => getAppFromRecord(app, ['yaml']));
+    .map((app) => app.toJSON(['yaml']));
 }
 
 export async function getOrganizationBlocks(ctx: Context): Promise<void> {

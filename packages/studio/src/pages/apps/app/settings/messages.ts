@@ -6,10 +6,14 @@ export const messages = defineMessages({
   noFile: 'No file chosen',
   icon: 'Icon',
   iconDescription: 'The icon that will be shown to the user.',
-  privateLabel: 'App Visibility',
+  visibilityLabel: 'Visibility',
+  visibilityDescription:
+    'Public apps are available in the app store. Unlisted apps aren’t listed publicly, but they are accessible using a direct link. Private apps are only visible to organization members.',
+  public: 'Public',
+  unlisted: 'Unlisted',
   private: 'Private',
-  privateDescription:
-    'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
+  showAppDefinitionDescription: 'If checked, other people may view the app definition of this app.',
+  showAppDefinitionLabel: 'Show app definition',
   appLock: 'App lock',
   lockApp: 'Lock app',
   unlockApp: 'Unlock app',
@@ -44,6 +48,12 @@ export const messages = defineMessages({
   longDescription: 'Long description',
   longDescriptionDescription:
     'This field can be used to describe the app in more detail than the app’s description. Supports Markdown syntax.',
+  sentryDsnLabel: 'Sentry DSN',
+  sentryDsnDescription:
+    'If this is specified, Sentry monitoring and error tracking will be applied to your app.',
+  sentryEnvironmentLabel: 'Sentry environment',
+  sentryEnvironmentDescription:
+    'The environment that should be passed to Sentry when using a custom Sentry DSN.',
   sslError: 'There was a problem generating an SSL certificate for this domain',
   sslUnknown: 'The current status of the SSL certificate is unknown',
   sslMissing:

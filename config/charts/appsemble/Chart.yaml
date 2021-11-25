@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.7
-appVersion: 0.19.7
+version: 0.19.8
+appVersion: 0.19.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,20 +25,20 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add support for link action validation."
+      description: "Cli: Add support for sentry-dsn, sentry-environment, and
+        google-analytics-id when creating or updating apps."
     - kind: added
-      description: "App: Track page views using Google Analytics if configured."
+      description: "Server: Add additional validation for link, flow, resource., and
+        user actions."
     - kind: added
-      description: "App: Update the document title to the current page."
-    - kind: added
-      description: "Studio: App CSS is now validated in the editor."
-    - kind: added
-      description: "Studio: The app editor now shows inline validation errors."
+      description: "Studio: Add app setting showAppDefinition."
     - kind: changed
-      description: "Studio: Rename Roles page for apps in Studio to Users."
-    - kind: fixed
-      description: "Cli: Fix authentication headers not correctly being passed through
-        for Team CLI commands."
+      description: "Cli: Change behavior of --app-id combined with --app for various
+        commands. app-id now takes precedence over context.environment.id."
+    - kind: changed
+      description: "Server: Change minimum amount of steps for flow pages to 2."
+    - kind: changed
+      description: "Studio: Replace app setting private with visibility."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

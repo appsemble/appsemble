@@ -120,10 +120,10 @@
             "type": "integer",
             "minimum": 1
           },
-          "private": {
-            "description": "If private is specified, this will override --private passed on the command line.",
-            "type": "boolean",
-            "default": true
+          "visibility": {
+            "description": "Determine the app visibility of the app in the Appsemble app store.\n\nThis doesn’t affect whether or not the app can be accessed on its own domain.\n\n- **public**: The app is publicly listed in the Appsemble app store.,\n- **unlisted**: The app store page can be accessed, but the app isn’t listed publicly in the Appsemble app store.\n- **private**: The app is only visible to people who are part of the organization.",
+            "default": "unlisted",
+            "enum": ["public", "unlisted", "private"]
           },
           "template": {
             "description": "If template is specified, this will override --template passed on the command line.",
