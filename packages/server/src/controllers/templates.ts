@@ -9,7 +9,6 @@ import { parseDocument } from 'yaml';
 
 import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
 import { checkRole } from '../utils/checkRole';
-import { getAppFromRecord } from '../utils/model';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
   const templates = await App.findAll({
@@ -117,7 +116,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       );
     }
 
-    ctx.body = getAppFromRecord(record);
+    ctx.body = record.toJSON();
     ctx.status = 201;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {

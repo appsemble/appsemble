@@ -3,7 +3,6 @@ import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast } from 'date-fns';
 import { Context } from 'koa';
-import { pick } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
@@ -261,7 +260,7 @@ async function verifyPermission(
 export async function queryResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    query: { $select, $top },
+    queryParams: { $select, $top },
     user,
   } = ctx;
 
@@ -285,7 +284,7 @@ export async function queryResources(ctx: Context): Promise<void> {
 
   const resources = await Resource.findAll({
     include: [{ model: User, attributes: ['id', 'name'], required: false }],
-    limit: $top && Number.parseInt($top as string),
+    limit: $top,
     order,
     where: {
       [Op.and]: [
@@ -300,24 +299,9 @@ export async function queryResources(ctx: Context): Promise<void> {
     },
   });
 
-  let response = resources.map((resource) => ({
-    ...resource.data,
-    id: resource.id,
-    $created: resource.created,
-    $updated: resource.updated,
-    $clonable: app.template ? resource.clonable : undefined,
-    ...(resource.expires != null && {
-      $expires: resource.expires,
-    }),
-    ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
-  }));
-
-  if ($select) {
-    const select = ($select as string).split(',').map((s) => s.trim());
-    response = response.map((resource) => pick(resource, select));
-  }
-
-  ctx.body = response;
+  const exclude: string[] = app.template ? [] : undefined;
+  const include = $select?.split(',').map((s) => s.trim());
+  ctx.body = resources.map((resource) => resource.toJSON({ exclude, include }));
 }
 
 export async function countResources(ctx: Context): Promise<void> {
@@ -391,25 +375,14 @@ export async function getResourceById(ctx: Context): Promise<void> {
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
       ...userQuery,
     },
-    include: [{ model: User, attributes: ['name'], required: false }],
+    include: [{ model: User, attributes: ['id', 'name'], required: false }],
   });
 
   if (!resource) {
     throw notFound('Resource not found');
   }
 
-  ctx.body = {
-    ...resource.data,
-    id: resource.id,
-    $created: resource.created,
-    $updated: resource.updated,
-    ...(resource.expires != null && {
-      $expires: resource.expires,
-    }),
-    ...(resource.UserId != null && {
-      $author: { id: resource.UserId, name: resource.User.name },
-    }),
-  };
+  ctx.body = resource;
 }
 
 export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
@@ -581,6 +554,7 @@ export async function createResource(ctx: Context): Promise<void> {
       { AppId: app.id, type: resourceType, data: resource, UserId: user?.id, expires: expireDate },
       { transaction },
     );
+    createdResource.User = user;
     await Asset.bulkCreate(
       preparedAssets.map((asset) => ({
         ...asset,
@@ -592,14 +566,7 @@ export async function createResource(ctx: Context): Promise<void> {
     );
   });
 
-  ctx.body = {
-    ...resource,
-    id: createdResource.id,
-    $created: createdResource.created,
-    $updated: createdResource.updated,
-    $expires: createdResource.expires ?? undefined,
-    $author: user ? { id: user.id, name: user.name } : undefined,
-  };
+  ctx.body = createdResource;
 
   processReferenceHooks(user, app, createdResource, action);
   processHooks(user, app, createdResource, action);
@@ -676,15 +643,7 @@ export async function updateResource(ctx: Context): Promise<void> {
     ]),
   );
 
-  ctx.body = {
-    ...resource.data,
-    id: resourceId,
-    $clonable: app.template ? clonable : undefined,
-    $created: resource.created,
-    $updated: resource.updated,
-    $expires: resource.expires ?? undefined,
-    $author: resource.UserId ? { id: resource.UserId, name: resource.User.name } : undefined,
-  };
+  ctx.body = resource;
 
   processReferenceHooks(user, app, resource, action);
   processHooks(user, app, resource, action);
