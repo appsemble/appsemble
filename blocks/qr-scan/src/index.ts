@@ -3,14 +3,16 @@ import './index.css';
 import { bootstrap } from '@appsemble/sdk';
 
 bootstrap(() => {
-  const div = document.createElement('div');
   const video = document.createElement('video');
+  const div = document.createElement('div');
 
-  navigator.mediaDevices.getUserMedia().then((stream) => {
-    video.srcObject = stream;
-  });
+  video.autoplay = true;
+  window.onload = function capture() {
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      video.srcObject = stream;
+    });
+  };
 
   div.append(video);
-
   return div;
 });
