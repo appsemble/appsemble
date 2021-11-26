@@ -8,12 +8,12 @@ import { App, Asset, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { readPackageJson } from '../utils/readPackageJson';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 const { version } = readPackageJson();
 let server: Koa;
 
-beforeAll(createTestSchema('apps'));
+useTestDatabase('apps');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -21,10 +21,6 @@ beforeAll(async () => {
 
   await setTestApp(server);
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 it('should handle if the app doesn’t exist', async () => {
   const response = await request.get('/api/apps/1337/action/valid?data={}');

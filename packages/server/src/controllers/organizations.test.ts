@@ -19,14 +19,14 @@ import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let server: Koa;
 let user: User;
 let clock: Clock;
 
-beforeAll(createTestSchema('organizations'));
+useTestDatabase('organizations');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -51,11 +51,8 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  truncate();
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('getOrganizations', () => {
   it('should fetch all organizations', async () => {

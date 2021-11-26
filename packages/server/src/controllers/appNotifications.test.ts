@@ -13,7 +13,7 @@ import {
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let clock: Clock;
 let organization: Organization;
@@ -62,15 +62,13 @@ const defaultApp = (OrganizationId: string): Promise<App> =>
     OrganizationId,
   });
 
-beforeAll(createTestSchema('appnotifications'));
+useTestDatabase('appnotifications');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
-
-afterEach(truncate);
 
 beforeEach(async () => {
   clock = install();
@@ -86,8 +84,6 @@ beforeEach(async () => {
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('getSubscription', () => {
   it('should subscription statuses to resources', async () => {

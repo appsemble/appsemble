@@ -15,12 +15,12 @@ import {
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let templates: App[];
 let clock: Clock;
 
-beforeAll(createTestSchema('templates'));
+useTestDatabase('templates');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -102,13 +102,9 @@ beforeEach(async () => {
   templates = [t1, t2];
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {

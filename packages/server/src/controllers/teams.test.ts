@@ -5,13 +5,13 @@ import { App, AppMember, Member, Organization, Team, TeamMember, User } from '..
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let app: App;
 let user: User;
 
-beforeAll(createTestSchema('teams'));
+useTestDatabase('teams');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -47,10 +47,6 @@ beforeEach(async () => {
 
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('getTeams', () => {
   it('should return an empty array', async () => {

@@ -7,14 +7,14 @@ import { App, BlockAsset, BlockVersion, Organization } from '../../models';
 import { setArgv } from '../../utils/argv';
 import { createServer } from '../../utils/createServer';
 import * as render from '../../utils/render';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
 let templateName: string;
 let templateParams: any;
 let requestURL: URL;
 let clock: Clock;
 
-beforeAll(createTestSchema('approuter'));
+useTestDatabase('approuter');
 
 beforeAll(async () => {
   await Organization.create({ id: 'test' });
@@ -158,11 +158,8 @@ afterEach(() => {
 });
 
 afterEach(() => {
-  truncate();
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 it('should render the index page', async () => {
   await App.create({

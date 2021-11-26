@@ -6,13 +6,13 @@ import { App, Asset, Member, Organization, Resource, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let user: User;
 let app: App;
 
-beforeAll(createTestSchema('assets'));
+useTestDatabase('assets');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -48,10 +48,6 @@ beforeEach(async () => {
     OrganizationId: organization.id,
   });
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('getAssets', () => {
   it('should return an empty array if no assets exist', async () => {
