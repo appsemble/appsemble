@@ -25,6 +25,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@appsemble/node-utils": "0.19.8",
     "@appsemble/utils": "0.19.8",
     "@fortawesome/fontawesome-free": "^5.0.0",
     "@mdx-js/loader": "^2.0.0-rc.1",
@@ -32,6 +33,7 @@
     "@types/css-minimizer-webpack-plugin": "^3.0.0",
     "@types/mdast": "^3.0.0",
     "@types/mini-css-extract-plugin": "^2.0.0",
+    "@types/sass": "^1.0.0",
     "@types/unused-webpack-plugin": "^2.0.0",
     "@types/workbox-webpack-plugin": "^5.0.0",
     "babel-loader": "^8.0.0",
@@ -51,6 +53,7 @@
     "remark-mdx-frontmatter": "^1.0.0",
     "remark-mdx-images": "1.0.3",
     "remark-mermaidjs": "^2.0.0",
+    "sass": "^1.0.0",
     "sass-loader": "^12.0.0",
     "svgo-loader": "^3.0.0",
     "ts-loader": "^9.0.0",
