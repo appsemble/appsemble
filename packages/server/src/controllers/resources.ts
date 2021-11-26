@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
+import { ResourceDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { addMilliseconds, isPast } from 'date-fns';
 import { Context } from 'koa';
-import { OpenAPIV3 } from 'openapi-types';
 import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
 
@@ -37,24 +37,18 @@ const specialRoles = new Set([
   ...Object.values(TeamRole).map((r) => `$team:${r}`),
 ]);
 
-function verifyResourceDefinition(app: App, resourceType: string): OpenAPIV3.SchemaObject {
+function verifyResourceDefinition(app: App, resourceType: string): ResourceDefinition {
   if (!app) {
     throw notFound('App not found');
   }
 
-  if (!app.definition.resources) {
-    throw notFound('App does not have any resources defined');
-  }
+  const definition = app.definition.resources?.[resourceType];
 
-  if (!app.definition.resources[resourceType]) {
+  if (!definition) {
     throw notFound(`App does not have resources called ${resourceType}`);
   }
 
-  if (!app.definition.resources[resourceType].schema) {
-    throw notFound(`App does not have a schema for resources called ${resourceType}`);
-  }
-
-  return app.definition.resources[resourceType].schema;
+  return definition;
 }
 
 /**
@@ -115,9 +109,7 @@ async function verifyPermission(
   resourceType: string,
   action: 'count' | 'create' | 'delete' | 'get' | 'query' | 'update',
 ): Promise<WhereOptions> {
-  if (!app.definition.resources[resourceType] && !app.definition.resources[resourceType][action]) {
-    return;
-  }
+  const resourceDefinition = app.definition.resources[resourceType];
 
   const {
     query: { $team },
@@ -126,16 +118,17 @@ async function verifyPermission(
   } = ctx;
 
   if ('studio' in users || 'cli' in users) {
-    await (action === 'count' || action === 'get' || action === 'query'
-      ? checkRole(ctx, app.OrganizationId, Permission.ReadResources)
-      : checkRole(ctx, app.OrganizationId, Permission.ManageResources));
+    await checkRole(
+      ctx,
+      app.OrganizationId,
+      action === 'count' || action === 'get' || action === 'query'
+        ? Permission.ReadResources
+        : Permission.ManageResources,
+    );
     return;
   }
 
-  let roles =
-    app.definition.resources?.[resourceType]?.[action]?.roles ??
-    app.definition.resources?.[resourceType]?.roles ??
-    [];
+  let roles = resourceDefinition[action]?.roles ?? resourceDefinition.roles ?? [];
 
   if ((!roles || !roles.length) && app.definition.roles?.length) {
     ({ roles } = app.definition);
@@ -526,10 +519,9 @@ export async function createResource(ctx: Context): Promise<void> {
     },
   );
 
-  verifyResourceDefinition(app, resourceType);
+  const { expires, schema } = verifyResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
 
-  const { expires, schema } = app.definition.resources[resourceType];
   const [preparedAssets] = verifyResourceBody(resourceType, schema, resource, assets);
 
   let expireDate: Date;
@@ -595,7 +587,7 @@ export async function updateResource(ctx: Context): Promise<void> {
     },
   );
 
-  verifyResourceDefinition(app, resourceType);
+  const { schema } = verifyResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
   const resource = await Resource.findOne({
@@ -610,7 +602,6 @@ export async function updateResource(ctx: Context): Promise<void> {
     throw notFound('Resource not found');
   }
 
-  const { schema } = app.definition.resources[resourceType];
   const [preparedAssets, deletedAssetIds] = verifyResourceBody(
     resourceType,
     schema,

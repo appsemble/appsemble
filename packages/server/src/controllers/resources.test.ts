@@ -1814,7 +1814,7 @@ describe('countResources', () => {
   });
 });
 
-describe('createResource', () => {
+describe.only('createResource', () => {
   it('should be able to create a new resource', async () => {
     const app = await exampleApp(organization.id);
 
@@ -1917,7 +1917,7 @@ describe('createResource', () => {
 
       {
         "error": "Not Found",
-        "message": "App does not have any resources defined",
+        "message": "App does not have resources called thisDoesNotExist",
         "statusCode": 404,
       }
     `);
