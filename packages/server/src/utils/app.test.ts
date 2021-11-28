@@ -3,9 +3,9 @@ import { UserInfo } from '@appsemble/types';
 import { App, AppMessages, Organization } from '../models';
 import { compareApps, getApp, getRemapperContext } from './app';
 import { setArgv } from './argv';
-import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
+import { useTestDatabase } from './test/testSchema';
 
-beforeAll(createTestSchema('getapp'));
+useTestDatabase('getapp');
 
 beforeEach(async () => {
   await Organization.create({
@@ -13,10 +13,6 @@ beforeEach(async () => {
     name: 'Test Organization',
   });
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('getApp', () => {
   beforeEach(() => {

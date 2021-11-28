@@ -5,9 +5,9 @@ import { appRouter } from '.';
 import { boomMiddleware } from '../../middleware/boom';
 import { App, AppBlockStyle, Organization } from '../../models';
 import { setArgv } from '../../utils/argv';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
-beforeAll(createTestSchema('blockcsshandler'));
+useTestDatabase('blockcsshandler');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost' });
@@ -21,10 +21,6 @@ beforeAll(async () => {
       .use(appRouter),
   );
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 it('should serve app block CSS', async () => {
   await Organization.create({ id: 'org' });

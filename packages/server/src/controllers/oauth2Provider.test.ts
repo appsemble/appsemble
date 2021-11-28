@@ -6,12 +6,12 @@ import { App, AppMember, Member, OAuth2AuthorizationCode, Organization, User } f
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let clock: Clock;
 let user: User;
 
-beforeAll(createTestSchema('oauth2provider'));
+useTestDatabase('oauth2provider');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -20,19 +20,14 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await truncate();
   clock = install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   user = await createTestUser();
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('getUserInfo', () => {
   it('should return userinfo formatted as defined by OpenID', async () => {

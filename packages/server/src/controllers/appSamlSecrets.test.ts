@@ -5,21 +5,19 @@ import { App, AppSamlSecret, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
 let member: Member;
 let organization: Organization;
 
-beforeAll(createTestSchema('appsamlsecrets'));
+useTestDatabase('appsamlsecrets');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
-
-afterEach(truncate);
 
 beforeEach(async () => {
   const user = await createTestUser();
@@ -35,8 +33,6 @@ beforeEach(async () => {
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
-
-afterAll(closeTestSchema);
 
 describe('createSamlSecret', () => {
   it('should generate SAML parameters', async () => {

@@ -4,19 +4,15 @@ import { compare } from 'bcrypt';
 import { EmailAuthorization, ResetPasswordToken, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
-beforeAll(createTestSchema('auth'));
+useTestDatabase('auth');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('registerEmail', () => {
   it('should register valid email addresses', async () => {

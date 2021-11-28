@@ -6,7 +6,7 @@ import { vol } from 'memfs';
 
 import { App, Organization } from '../../models';
 import { setArgv } from '../argv';
-import { closeTestSchema, createTestSchema, truncate } from '../test/testSchema';
+import { useTestDatabase } from '../test/testSchema';
 import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
 
 const mock = new MockAdapter(axios);
@@ -15,7 +15,7 @@ const ca = `-----BEGIN CERTIFICATE-----
 
 jest.mock('fs');
 
-beforeAll(createTestSchema('kubernetes'));
+useTestDatabase('kubernetes');
 
 beforeEach(() => {
   vol.fromJSON({
@@ -30,10 +30,6 @@ afterEach(() => {
   App.removeHook('afterSave', 'dns');
   Organization.removeHook('afterCreate', 'dns');
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('configureDNS', () => {
   it('should create a wildcard ingress when an organization is created', async () => {

@@ -5,17 +5,13 @@ import Koa from 'koa';
 import { appRouter } from '.';
 import { boomMiddleware } from '../../middleware/boom';
 import { BlockAsset, BlockVersion, Organization } from '../../models';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
-beforeAll(createTestSchema('blockassethandler'));
+useTestDatabase('blockassethandler');
 
 beforeAll(async () => {
   await setTestApp(new Koa().use(boomMiddleware()).use(appRouter));
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 it('should download a block asset', async () => {
   await Organization.create({ id: 'linux', name: 'Linux' });

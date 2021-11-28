@@ -18,7 +18,7 @@ import {
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let clock: Clock;
@@ -48,7 +48,7 @@ function createDefaultApp(org: Organization): Promise<App> {
   });
 }
 
-beforeAll(createTestSchema('appmembers'));
+useTestDatabase('appmembers');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -82,13 +82,9 @@ beforeEach(async () => {
   });
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('getAppMembers', () => {
   it('should fetch app members', async () => {

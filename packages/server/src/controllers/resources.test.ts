@@ -25,7 +25,7 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let clock: Clock;
@@ -197,7 +197,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
     OrganizationId: orgId,
   });
 
-beforeAll(createTestSchema('resources'));
+useTestDatabase('resources');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -220,8 +220,6 @@ beforeEach(async () => {
   clock = install();
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
@@ -229,8 +227,6 @@ afterEach(() => {
 afterAll(() => {
   webpush.sendNotification = originalSendNotification;
 });
-
-afterAll(closeTestSchema);
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {

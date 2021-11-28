@@ -5,11 +5,13 @@ import { Transporter } from 'nodemailer';
 import { App, AppMessages, Organization } from '../../models';
 import { setArgv } from '../argv';
 import { createServer } from '../createServer';
-import { closeTestSchema, createTestSchema, truncate } from '../test/testSchema';
+import { useTestDatabase } from '../test/testSchema';
 import { Mailer } from './Mailer';
 import * as RenderEmail from './renderEmail';
 
 let mailer: Mailer;
+
+useTestDatabase('mailer');
 
 beforeEach(() => {
   setArgv({ host: '' });
@@ -144,10 +146,6 @@ describe('sendTranslatedEmail', () => {
     ],
   };
 
-  beforeAll(async () => {
-    await createTestSchema('Mailer')();
-  });
-
   beforeEach(async () => {
     const server = await createServer();
     await setTestApp(server);
@@ -177,12 +175,6 @@ describe('sendTranslatedEmail', () => {
       OrganizationId: organization.id,
     });
   });
-
-  afterEach(() => {
-    truncate();
-  });
-
-  afterAll(closeTestSchema);
 
   it('should send emails in the default language', async () => {
     await mailer.sendTranslatedEmail({

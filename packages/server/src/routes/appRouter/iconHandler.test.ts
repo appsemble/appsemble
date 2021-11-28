@@ -5,16 +5,14 @@ import Koa from 'koa';
 import { appRouter } from '.';
 import { App, Organization } from '../../models';
 import * as appUtils from '../../utils/app';
-import { closeTestSchema, createTestSchema } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
-beforeAll(createTestSchema('iconHandler'));
+useTestDatabase('iconHandler');
 
 beforeAll(async () => {
   request.defaults.responseType = 'arraybuffer';
   await setTestApp(new Koa().use(appRouter));
 });
-
-afterAll(closeTestSchema);
 
 it('should scale and serve the app icon', async () => {
   jest.spyOn(appUtils, 'getApp').mockResolvedValue({

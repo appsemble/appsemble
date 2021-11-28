@@ -9,9 +9,9 @@ import { appRouter } from '.';
 import { boomMiddleware } from '../../middleware/boom';
 import { Theme } from '../../models';
 import { setArgv } from '../../utils/argv';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
-beforeAll(createTestSchema('bulmahandler'));
+useTestDatabase('bulmahandler');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost' });
@@ -25,10 +25,6 @@ beforeAll(async () => {
       .use(appRouter),
   );
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 it('should generate and save cache the Bulma styles', async () => {
   const spy = jest.spyOn(sass, 'renderSync');

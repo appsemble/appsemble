@@ -12,12 +12,12 @@ import { setArgv } from '../../utils/argv';
 import { createJWTResponse } from '../../utils/createJWTResponse';
 import { createServer } from '../../utils/createServer';
 import { createTestUser } from '../../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { useTestDatabase } from '../../utils/test/testSchema';
 
 let clock: Clock;
 let user: User;
 
-beforeAll(createTestSchema('tokenhandler'));
+useTestDatabase('tokenhandler');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -28,17 +28,12 @@ beforeAll(async () => {
 beforeEach(async () => {
   clock = install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  await truncate();
   user = await createTestUser();
 });
-
-afterEach(truncate);
 
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 it('should not accept invalid content types', async () => {
   const response = await request.post('/oauth2/token', {});

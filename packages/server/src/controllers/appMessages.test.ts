@@ -19,12 +19,12 @@ import {
   authorizeStudio,
   createTestUser,
 } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
 let user: User;
 
-beforeAll(createTestSchema('messages'));
+useTestDatabase('messages');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -51,10 +51,6 @@ beforeEach(async () => {
     },
   });
 });
-
-afterEach(truncate);
-
-afterAll(closeTestSchema);
 
 describe('getMessages', () => {
   it('should return the messages for an existing language', async () => {

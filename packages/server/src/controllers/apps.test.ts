@@ -22,13 +22,13 @@ import {
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let clock: Clock;
 let user: User;
 
-beforeAll(createTestSchema('apps'));
+useTestDatabase('apps');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -63,13 +63,9 @@ beforeEach(async () => {
   });
 });
 
-afterEach(truncate);
-
 afterEach(() => {
   clock.uninstall();
 });
-
-afterAll(closeTestSchema);
 
 describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
