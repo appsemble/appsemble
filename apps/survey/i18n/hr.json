@@ -3,6 +3,15 @@
     "description": "Program koji zahtijeva da korisnik odgovori na neka pitanja.",
     "name": "Anketa",
     "pages.0": "Anketa",
+    "pages.0.steps.0": "",
+    "pages.0.steps.1": "",
+    "pages.0.steps.2": "",
+    "pages.0.steps.3": "",
+    "pages.0.steps.4": "",
+    "pages.0.steps.5": "",
+    "pages.0.steps.6": "",
+    "pages.0.steps.7": "",
+    "pages.0.steps.8": "",
     "pages.1": "Završeno"
   },
   "blocks": {
