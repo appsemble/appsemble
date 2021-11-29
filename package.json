@@ -31,6 +31,9 @@
       "eslint"
     ]
   },
+  "dependencies": {
+    "jsqr": "^1.4.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-transform-modules-commonjs": "^7.0.0",
