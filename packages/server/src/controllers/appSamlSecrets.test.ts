@@ -1,5 +1,5 @@
 import { AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, AppSamlSecret, Member, Organization } from '../models';
@@ -9,7 +9,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 let organization: Organization;
 

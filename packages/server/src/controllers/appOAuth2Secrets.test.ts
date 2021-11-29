@@ -1,5 +1,5 @@
 import { LoginCodeResponse, OAuth2ClientCredentials } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
@@ -11,7 +11,7 @@ import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/auth
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 
 useTestDatabase('appnotifications');
