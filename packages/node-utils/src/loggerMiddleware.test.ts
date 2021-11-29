@@ -1,4 +1,4 @@
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { bold, cyan, green, red, white, yellow } from 'chalk';
 import Koa from 'koa';
@@ -14,7 +14,7 @@ class TestError extends Error {
 }
 
 let app: Koa;
-let clock: Clock;
+let clock: InstalledClock;
 
 beforeEach(async () => {
   jest.spyOn(logger, 'info').mockImplementation(() => logger);

@@ -141,7 +141,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                     debug(message) {
                       logger.silly(message);
                     },
-                    // @ts-expect-error https://github.com/DefinitelyTyped/DefinitelyTyped/pull/57366
                     warn(message, { deprecation }) {
                       if (!deprecation) {
                         logger.verbose(message);

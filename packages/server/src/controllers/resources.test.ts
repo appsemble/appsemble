@@ -1,7 +1,7 @@
 import { createFormData } from '@appsemble/node-utils';
 import { Resource as ResourceType } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
@@ -28,7 +28,7 @@ import {
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;

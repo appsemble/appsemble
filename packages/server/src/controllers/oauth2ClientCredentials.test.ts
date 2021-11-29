@@ -1,5 +1,5 @@
 import { OAuth2ClientCredentials as OAuth2ClientCredentialsType } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
@@ -9,7 +9,7 @@ import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
-let clock: Clock;
+let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('oauth2clientcredentials');

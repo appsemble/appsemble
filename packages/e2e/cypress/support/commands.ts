@@ -32,11 +32,7 @@ declare global {
       /**
        * Visit an app and wait for it to have been cached.
        */
-      visitApp: (
-        cached: boolean,
-        appPath: string,
-        options?: Partial<Cypress.VisitOptions>,
-      ) => boolean;
+      visitApp: (cached: boolean, appPath: string, options?: Partial<Cypress.VisitOptions>) => void;
 
       /**
        * Login to an Appsemble app.
