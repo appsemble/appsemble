@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -24,7 +24,7 @@ import { useTestDatabase } from '../utils/test/testSchema';
 let organization: Organization;
 let server: Koa;
 let user: User;
-let clock: Clock;
+let clock: InstalledClock;
 
 useTestDatabase('organizations');
 

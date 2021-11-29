@@ -1,3 +1,4 @@
+import { logger } from '@appsemble/node-utils';
 import { Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json';
@@ -112,6 +113,16 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
         sass.renderSync({
           data: processStyle(theme),
           outputStyle: 'compressed',
+          logger: {
+            debug(message) {
+              logger.silly(message);
+            },
+            warn(message, { deprecation }) {
+              if (!deprecation) {
+                logger.verbose(message);
+              }
+            },
+          },
         }).css,
       ),
     );

@@ -1,12 +1,7 @@
 import { randomBytes } from 'crypto';
 
 import { logger } from '@appsemble/node-utils';
-import {
-  AppAccount,
-  AppMember as AppMemberType,
-  App as AppType,
-  SSOConfiguration,
-} from '@appsemble/types';
+import { AppAccount, AppMember as AppMemberType, SSOConfiguration } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
@@ -37,7 +32,6 @@ import { checkRole } from '../utils/checkRole';
 import { createJWTResponse } from '../utils/createJWTResponse';
 import { getGravatarUrl } from '../utils/gravatar';
 import { serveIcon } from '../utils/icon';
-import { getAppFromRecord } from '../utils/model';
 
 /**
  * Create an app member as JSON output from an app.
@@ -77,7 +71,7 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
   }
 
   return {
-    app: getAppFromRecord(app) as AppType,
+    app: app.toJSON(),
     id: member.id,
     email: member.email,
     emailVerified: member.emailVerified,

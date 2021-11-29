@@ -1,7 +1,7 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { AppAccount, AppMember as AppMemberType } from '@appsemble/types';
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
@@ -23,7 +23,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 let user: User;
 

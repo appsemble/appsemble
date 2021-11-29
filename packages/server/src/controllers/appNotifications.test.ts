@@ -1,4 +1,4 @@
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import {
@@ -15,7 +15,7 @@ import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
-let clock: Clock;
+let clock: InstalledClock;
 let organization: Organization;
 let user: User;
 

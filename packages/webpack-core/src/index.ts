@@ -1,5 +1,6 @@
 import { dirname, join } from 'path';
 
+import { logger } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import bulmaPkg from 'bulma/package.json';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
@@ -15,6 +16,7 @@ import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
 import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
 import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
+import { Options } from 'sass';
 import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration, EnvironmentPlugin } from 'webpack';
@@ -131,7 +133,23 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { importLoaders: 1 } },
-            'sass-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                sassOptions: {
+                  logger: {
+                    debug(message) {
+                      logger.silly(message);
+                    },
+                    warn(message, { deprecation }) {
+                      if (!deprecation) {
+                        logger.verbose(message);
+                      }
+                    },
+                  },
+                } as Options,
+              },
+            },
           ],
         },
         {

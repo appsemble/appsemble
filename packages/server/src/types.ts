@@ -55,5 +55,7 @@ declare module 'koas-parameters' {
 
   interface QueryParams {
     domains: string[];
+    $select: string;
+    $top: number;
   }
 }
