@@ -24,14 +24,16 @@ beforeAll(async () => {
 
 it('should handle if the app doesn’t exist', async () => {
   const response = await request.get('/api/apps/1337/action/valid?data={}');
-  expect(response).toMatchObject({
-    status: 404,
-    data: {
-      error: 'Not Found',
-      message: 'App not found',
-      statusCode: 404,
-    },
-  });
+  expect(response).toMatchInlineSnapshot(`
+    HTTP/1.1 404 Not Found
+    Content-Type: application/json; charset=utf-8
+
+    {
+      "error": "Not Found",
+      "message": "App not found",
+      "statusCode": 404,
+    }
+  `);
 });
 
 it('should handle if the path doesn’t point to an action', async () => {
@@ -52,14 +54,16 @@ it('should handle if the path doesn’t point to an action', async () => {
     },
   } as Partial<App>);
   const response = await request.get('/api/apps/1/action/invalid?data={}');
-  expect(response).toMatchObject({
-    status: 400,
-    data: {
-      error: 'Bad Request',
-      message: 'path does not point to a proxyable action',
-      statusCode: 400,
-    },
-  });
+  expect(response).toMatchInlineSnapshot(`
+    HTTP/1.1 400 Bad Request
+    Content-Type: application/json; charset=utf-8
+
+    {
+      "error": "Bad Request",
+      "message": "path does not point to a proxyable action",
+      "statusCode": 400,
+    }
+  `);
 });
 
 describe('handleRequestProxy', () => {
@@ -143,7 +147,14 @@ describe('handleRequestProxy', () => {
 
   it('should proxy simple GET request actions', async () => {
     const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('GET');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
@@ -158,7 +169,14 @@ describe('handleRequestProxy', () => {
     const response = await request.delete(
       '/api/apps/1/action/pages.0.blocks.0.actions.delete?data={}',
     );
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('DELETE');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
@@ -171,7 +189,14 @@ describe('handleRequestProxy', () => {
 
   it('should proxy simple PATCH request actions', async () => {
     const response = await request.patch('/api/apps/1/action/pages.0.blocks.0.actions.patch', {});
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('PATCH');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
@@ -186,7 +211,14 @@ describe('handleRequestProxy', () => {
 
   it('should proxy simple POST request actions', async () => {
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('POST');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
@@ -201,7 +233,14 @@ describe('handleRequestProxy', () => {
 
   it('should proxy simple PUT request actions', async () => {
     const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.put', {});
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('PUT');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
@@ -216,19 +255,28 @@ describe('handleRequestProxy', () => {
 
   it('should throw if the method doesn’t match the action method', async () => {
     const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.post', {});
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        error: 'Bad Request',
-        message: 'Method does match the request action method',
-        statusCode: 400,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Method does match the request action method",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should proxy request paths', async () => {
     const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.path?data={}');
-    expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
     expect(proxiedContext.method).toBe('GET');
     expect(proxiedContext.path).toBe('/pour');
     expect(proxiedContext.querystring).toBe('drink=coffee');
@@ -238,14 +286,16 @@ describe('handleRequestProxy', () => {
     const response = await request.get(
       '/api/apps/1/action/pages.0.blocks.0.actions.invalidHost?data={}',
     );
-    expect(response).toMatchObject({
-      status: 502,
-      data: {
-        error: 'Bad Gateway',
-        message: 'Bad Gateway',
-        statusCode: 502,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 502 Bad Gateway
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Gateway",
+        "message": "Bad Gateway",
+        "statusCode": 502,
+      }
+    `);
   });
 });
 
@@ -292,7 +342,7 @@ describe('handleEmail', () => {
       to: 'test@example.com',
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
       subject: 'Test title',
@@ -320,7 +370,7 @@ describe('handleEmail', () => {
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
       subject: 'Test title',
@@ -348,7 +398,7 @@ describe('handleEmail', () => {
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
       subject: 'Test title',
@@ -389,18 +439,10 @@ describe('handleEmail', () => {
       body: 'Test',
     });
 
-    expect(responseA).toMatchObject({
-      status: 204,
-    });
-    expect(responseB).toMatchObject({
-      status: 204,
-    });
-    expect(responseC).toMatchObject({
-      status: 204,
-    });
-    expect(responseD).toMatchObject({
-      status: 204,
-    });
+    expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseC).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseD).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should attach URLs', async () => {
@@ -411,7 +453,7 @@ describe('handleEmail', () => {
       attachments: ['https://via.placeholder.com/150'],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
       subject: 'Test title',
@@ -450,7 +492,7 @@ describe('handleEmail', () => {
       ],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
       subject: 'Test title',
@@ -493,7 +535,7 @@ describe('handleEmail', () => {
       attachments: [asset.id],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
       subject: 'Test title',
@@ -522,7 +564,7 @@ describe('handleEmail', () => {
       attachments: [100],
     });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
       subject: 'Test title',
@@ -548,10 +590,16 @@ describe('handleEmail', () => {
       to: 'test@example.com',
     });
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: { message: 'Fields “subject” and “body” must be a valid string' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Fields “subject” and “body” must be a valid string",
+        "statusCode": 400,
+      }
+    `);
   });
 
   it('should only send emails if requests are POST', async () => {
@@ -559,9 +607,15 @@ describe('handleEmail', () => {
       body: 'Body',
     });
 
-    expect(response).toMatchObject({
-      status: 405,
-      data: { message: 'Method must be POST for email actions' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 405 Method Not Allowed
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Method Not Allowed",
+        "message": "Method must be POST for email actions",
+        "statusCode": 405,
+      }
+    `);
   });
 });

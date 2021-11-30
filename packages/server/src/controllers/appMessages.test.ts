@@ -60,21 +60,43 @@ describe('getMessages', () => {
       messages: { messageIds: { test: 'Test.' } },
     });
 
-    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
-    expect(data).toMatchObject({
-      language: 'en-gb',
-      messages: {
-        core: {},
-        blocks: {},
-        app: { name: 'Test App', description: 'Description' },
-        messageIds: { test: 'Test.' },
-      },
-    });
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB`);
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en-gb",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+          },
+          "blocks": {},
+          "core": Any<Object>,
+          "messageIds": {
+            "test": "Test.",
+          },
+        },
+      }
+    `,
+    );
   });
 
   it('should return a 404 if a language is not supported', async () => {
-    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB`);
-    expect(data).toMatchObject({ statusCode: 404, message: 'Language “en-GB” could not be found' });
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Language “en-GB” could not be found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return a 200 if a language is not supported, but is the default language', async () => {
@@ -85,12 +107,50 @@ describe('getMessages', () => {
       },
     });
     const response = await request.get(`/api/apps/${app.id}/messages/nl-nl`);
-    expect(response).toMatchObject({ status: 200, data: { language: 'nl-nl', messages: {} } });
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "nl-nl",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+          },
+          "blocks": {},
+          "core": Any<Object>,
+          "messageIds": {},
+        },
+      }
+    `,
+    );
   });
 
   it('should return a 200 if a en is not supported and is default language unset', async () => {
     const response = await request.get(`/api/apps/${app.id}/messages/en`);
-    expect(response).toMatchObject({ status: 200, data: { language: 'en', messages: {} } });
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+          },
+          "blocks": {},
+          "core": Any<Object>,
+          "messageIds": {},
+        },
+      }
+    `,
+    );
   });
 
   it('should merge messages with the base language if merge is enabled', async () => {
@@ -105,12 +165,31 @@ describe('getMessages', () => {
       messages: { messageIds: { bla: 'blah' } },
     });
 
-    const { data } = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
+    const response = await request.get(`/api/apps/${app.id}/messages/en-GB?merge=true`);
 
-    expect(data).toMatchObject({
-      language: 'en-gb',
-      messages: { messageIds: { test: 'Test.', bla: 'blah' } },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en-gb",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+          },
+          "blocks": {},
+          "core": Any<Object>,
+          "messageIds": {
+            "bla": "blah",
+            "test": "Test.",
+          },
+        },
+      }
+    `,
+    );
   });
 
   it('should include translated block messages', async () => {
@@ -167,23 +246,44 @@ describe('getMessages', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/messages/en`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        language: 'en',
-        messages: {
-          app: {},
-          core: {},
-          blocks: {
-            '@appsemble/form': { '0.0.0': { form: 'form' } },
-            '@testorganization/test': {
-              '0.0.0': { foo: 'bar', bla: 'bla' },
-              '0.0.1': { foo: 'bar', test: 'test', bla: 'blablabla' },
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+            "pages.0": "test",
+          },
+          "blocks": {
+            "@appsemble/form": {
+              "0.0.0": {
+                "form": "form",
+              },
+            },
+            "@testorganization/test": {
+              "0.0.0": {
+                "bla": "bla",
+                "foo": "bar",
+              },
+              "0.0.1": {
+                "bla": "blablabla",
+                "foo": "bar",
+                "test": "test",
+              },
             },
           },
+          "core": Any<Object>,
+          "messageIds": {},
         },
-      },
-    });
+      }
+    `,
+    );
   });
 
   it('should merge translations if other language’s translations are incomplete', async () => {
@@ -222,21 +322,36 @@ describe('getMessages', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/messages/nl`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        language: 'nl',
-        messages: {
-          messageIds: { test: 'test translation' },
-          core: {},
-          blocks: {
-            '@testorganization/test': {
-              '0.0.0': { foo: 'foo but dutch', bla: 'bla' },
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "nl",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+            "pages.0": "test",
+          },
+          "blocks": {
+            "@testorganization/test": {
+              "0.0.0": {
+                "bla": "bla",
+                "foo": "foo but dutch",
+              },
             },
           },
+          "core": Any<Object>,
+          "messageIds": {
+            "test": "test translation",
+          },
         },
-      },
-    });
+      }
+    `,
+    );
   });
 
   it('should merge block translations with the base language', async () => {
@@ -275,20 +390,36 @@ describe('getMessages', () => {
     });
 
     const response = await request.get(`/api/apps/${app.id}/messages/en-gb`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        language: 'en-gb',
-        messages: {
-          messageIds: { test: 'test translation' },
-          blocks: {
-            '@testorganization/test': {
-              '0.0.0': { foo: 'bar', bla: 'blah' },
+    expect(response).toMatchInlineSnapshot(
+      { data: { messages: { core: expect.any(Object) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en-gb",
+        "messages": {
+          "app": {
+            "description": "Description",
+            "name": "Test App",
+            "pages.0": "test",
+          },
+          "blocks": {
+            "@testorganization/test": {
+              "0.0.0": {
+                "bla": "blah",
+                "foo": "bar",
+              },
             },
           },
+          "core": Any<Object>,
+          "messageIds": {
+            "test": "test translation",
+          },
         },
-      },
-    });
+      }
+    `,
+    );
   });
 
   it('should include dutch core translations', async () => {
@@ -497,10 +628,19 @@ describe('createMessages', () => {
     });
     const translation = await AppMessages.findOne({ where: { AppId: app.id, language: 'en' } });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: { language: 'en', messages: { messageIds: { test: 'Test.' } } },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "language": "en",
+        "messages": {
+          "messageIds": {
+            "test": "Test.",
+          },
+        },
+      }
+    `);
     expect(translation.messages).toStrictEqual({ messageIds: { test: 'Test.' } });
   });
 
@@ -511,10 +651,16 @@ describe('createMessages', () => {
       messages: { messageIds: { test: 'Test.' } },
     });
 
-    expect(response).toMatchObject({
-      status: 400,
-      data: { message: 'Language “english” is invalid' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Language “english” is invalid",
+        "statusCode": 400,
+      }
+    `);
   });
 });
 
@@ -528,16 +674,23 @@ describe('deleteMessages', () => {
 
     const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 
   it('should return 404 when deleting non-existant messages', async () => {
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/messages/en`);
 
-    expect(response).toMatchObject({
-      data: { statusCode: 404, message: 'App does not have messages for “en”' },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App does not have messages for “en”",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -549,13 +702,27 @@ describe('getLanguages', () => {
         defaultLanguage: 'nl-nl',
       },
     });
-    const { data } = await request.get(`/api/apps/${app.id}/messages`);
-    expect(data).toStrictEqual(['nl-nl']);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        "nl-nl",
+      ]
+    `);
   });
 
   it('should fallback to the default value of defaultLanguage', async () => {
-    const { data } = await request.get(`/api/apps/${app.id}/messages`);
-    expect(data).toStrictEqual(['en']);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        "en",
+      ]
+    `);
   });
 
   it('should return a list of available languages', async () => {
@@ -573,8 +740,17 @@ describe('getLanguages', () => {
       messages: { messageIds: { test: 'Passed with flying colours' } },
     });
 
-    const { data } = await request.get(`/api/apps/${app.id}/messages`);
+    const response = await request.get(`/api/apps/${app.id}/messages`);
 
-    expect(data).toStrictEqual(['en', 'en-gb', 'nl']);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        "en",
+        "en-gb",
+        "nl",
+      ]
+    `);
   });
 });
