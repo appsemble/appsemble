@@ -2,9 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { ResourceDefinition } from '@appsemble/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
-import { addMilliseconds, isPast } from 'date-fns';
 import { Context } from 'koa';
-import parseDuration from 'parse-duration';
 import { Op, Order, WhereOptions } from 'sequelize';
 
 import {
@@ -27,7 +25,6 @@ import {
   processReferenceHooks,
   processResourceBody,
   renameOData,
-  verifyResourceBody,
 } from '../utils/resource';
 
 const specialRoles = new Set([
@@ -37,7 +34,16 @@ const specialRoles = new Set([
   ...Object.values(TeamRole).map((r) => `$team:${r}`),
 ]);
 
-function verifyResourceDefinition(app: App, resourceType: string): ResourceDefinition {
+/**
+ * Get the resource definition of an app by name.
+ *
+ * If there is no match, a 404 HTTP error is thrown.
+ *
+ * @param app - The app to get the resource definition of
+ * @param resourceType - The name of the resource definition to get.
+ * @returns The matching resource definition.
+ */
+function getResourceDefinition(app: App, resourceType: string): ResourceDefinition {
   if (!app) {
     throw notFound('App not found');
   }
@@ -271,7 +277,7 @@ export async function queryResources(ctx: Context): Promise<void> {
     }),
   });
 
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
   const { order, query } = generateQuery(ctx);
 
@@ -317,7 +323,7 @@ export async function countResources(ctx: Context): Promise<void> {
     }),
   });
 
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
   const { query } = generateQuery(ctx);
 
@@ -357,7 +363,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
       ],
     }),
   });
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'get');
 
   const resource = await Resource.findOne({
@@ -408,7 +414,7 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
 
   if (!app.Resources.length) {
     throw notFound('Resource not found.');
@@ -480,7 +486,7 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
 
   if (!app.Resources.length) {
     throw notFound('Resource not found.');
@@ -501,7 +507,7 @@ export async function createResource(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     user,
   } = ctx;
-  const [resource, assets, $expires] = processResourceBody(ctx);
+  // Const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
   const app = await App.findByPk(
@@ -519,49 +525,47 @@ export async function createResource(ctx: Context): Promise<void> {
     },
   );
 
-  const { expires, schema } = verifyResourceDefinition(app, resourceType);
+  const definition = getResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
 
-  const [preparedAssets] = verifyResourceBody(resourceType, schema, resource, assets);
-
-  let expireDate: Date;
-  // Manual $expire takes precedence over the default calculated expiration date
-  if ($expires) {
-    if (isPast($expires)) {
-      throw badRequest('Expiration date has already passed.');
-    }
-    expireDate = $expires;
-  } else if (expires) {
-    const expireDuration = parseDuration(expires);
-
-    if (expireDuration && expireDuration > 0) {
-      expireDate = addMilliseconds(new Date(), expireDuration);
-    }
-  }
+  const [resource, preparedAssets] = processResourceBody(ctx, definition);
 
   await user?.reload({ attributes: ['name'] });
-  let createdResource: Resource;
+  let createdResources: Resource[];
   await transactional(async (transaction) => {
-    createdResource = await Resource.create(
-      { AppId: app.id, type: resourceType, data: resource, UserId: user?.id, expires: expireDate },
-      { transaction },
-    );
-    createdResource.User = user;
-    await Asset.bulkCreate(
-      preparedAssets.map((asset) => ({
-        ...asset,
+    const resources = Array.isArray(resource) ? resource : [resource];
+    createdResources = await Resource.bulkCreate(
+      resources.map(({ $expires, ...data }) => ({
         AppId: app.id,
-        ResourceId: createdResource.id,
+        type: resourceType,
+        data,
         UserId: user?.id,
+        expires: $expires,
       })),
+      { logging: false, transaction },
+    );
+    for (const createdResource of createdResources) {
+      createdResource.User = user;
+    }
+    await Asset.bulkCreate(
+      preparedAssets.map((asset) => {
+        const index = resources.indexOf(asset.resource);
+        const { id: ResourceId } = createdResources[index];
+        return {
+          ...asset,
+          AppId: app.id,
+          ResourceId,
+          UserId: user?.id,
+        };
+      }),
       { logging: false, transaction },
     );
   });
 
-  ctx.body = createdResource;
+  ctx.body = Array.isArray(resource) ? createdResources : createdResources[0];
 
-  processReferenceHooks(user, app, createdResource, action);
-  processHooks(user, app, createdResource, action);
+  processReferenceHooks(user, app, createdResources[0], action);
+  processHooks(user, app, createdResources[0], action);
 }
 
 export async function updateResource(ctx: Context): Promise<void> {
@@ -569,7 +573,6 @@ export async function updateResource(ctx: Context): Promise<void> {
     pathParams: { appId, resourceId, resourceType },
     user,
   } = ctx;
-  const [updatedResource, assets, $expires, clonable] = processResourceBody(ctx);
   const action = 'update';
 
   const app = await App.findByPk(
@@ -587,7 +590,7 @@ export async function updateResource(ctx: Context): Promise<void> {
     },
   );
 
-  const { schema } = verifyResourceDefinition(app, resourceType);
+  const definition = getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
   const resource = await Resource.findOne({
@@ -602,25 +605,21 @@ export async function updateResource(ctx: Context): Promise<void> {
     throw notFound('Resource not found');
   }
 
-  const [preparedAssets, deletedAssetIds] = verifyResourceBody(
-    resourceType,
-    schema,
-    updatedResource,
-    assets,
+  const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
+    ctx,
+    definition,
     resource.Assets.map((asset) => asset.id),
+    resource.expires,
   );
-
-  let { expires } = resource;
-  if ($expires) {
-    if (isPast($expires)) {
-      throw badRequest('Expiration date has already passed.');
-    }
-    expires = $expires;
-  }
+  const {
+    $clonable: clonable,
+    $expires: expires,
+    ...data
+  } = updatedResource as Record<string, unknown>;
 
   await transactional((transaction) =>
     Promise.all([
-      resource.update({ data: updatedResource, clonable, expires }, { transaction }),
+      resource.update({ data, clonable, expires }, { transaction }),
       Asset.bulkCreate(
         preparedAssets.map((asset) => ({
           ...asset,
@@ -661,7 +660,7 @@ export async function deleteResource(ctx: Context): Promise<void> {
     }),
   });
 
-  verifyResourceDefinition(app, resourceType);
+  getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
   const resource = await Resource.findOne({

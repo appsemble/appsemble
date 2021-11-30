@@ -27,6 +27,10 @@ declare module 'jsonschema' {
      */
     multiline?: boolean;
   }
+
+  interface SchemaContext {
+    path: (number | string)[];
+  }
 }
 
 /**
