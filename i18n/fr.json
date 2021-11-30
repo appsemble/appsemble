@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "Toutes les organisations",
   "studio.src.pages.organizations.IndexPage.createButton": "Créer une nouvelle organisation",
   "studio.src.pages.organizations.IndexPage.createTitle": "Création d'une nouvelle organisation",
+  "studio.src.pages.organizations.IndexPage.createVerify": "Afin de créer une nouvelle organisation, vous devez d'abord vérifier votre adresse e-mail. Actualisez la page une fois que vous avez vérifié votre e-mail.",
   "studio.src.pages.organizations.IndexPage.empty": "Aucune organisation disponible.",
   "studio.src.pages.organizations.IndexPage.error": "Une erreur s'est produite lors de la tentative de récupération de la liste des organisations",
   "studio.src.pages.organizations.IndexPage.loading": "Chargement des organisations…",

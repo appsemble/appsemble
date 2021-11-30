@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "",
   "studio.src.pages.organizations.IndexPage.createButton": "Organisation erstellen",
   "studio.src.pages.organizations.IndexPage.createTitle": "",
+  "studio.src.pages.organizations.IndexPage.createVerify": "",
   "studio.src.pages.organizations.IndexPage.empty": "",
   "studio.src.pages.organizations.IndexPage.error": "",
   "studio.src.pages.organizations.IndexPage.loading": "",
