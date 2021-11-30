@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "Alle organisationer",
   "studio.src.pages.organizations.IndexPage.createButton": "Organisation erstellen",
   "studio.src.pages.organizations.IndexPage.createTitle": "Opretter ny organisation",
+  "studio.src.pages.organizations.IndexPage.createVerify": "For at oprette en ny organisation skal du først bekræfte din e-mailadresse. Opdater siden, når du har bekræftet din e-mailadresse.",
   "studio.src.pages.organizations.IndexPage.empty": "Der er ingen tilgængelige organisationer.",
   "studio.src.pages.organizations.IndexPage.error": "Noget gik galt i forsøget på at hente listen over organisationer",
   "studio.src.pages.organizations.IndexPage.loading": "Indlæser organisationer…",

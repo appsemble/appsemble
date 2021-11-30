@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "Sve organizacije",
   "studio.src.pages.organizations.IndexPage.createButton": "Stvori novu organizaciju",
   "studio.src.pages.organizations.IndexPage.createTitle": "Stvaranje nove organizacije",
+  "studio.src.pages.organizations.IndexPage.createVerify": "Za stvaranje nove organizacije najprije moraš potvrditi svoju e-mail adresu. Aktualiziraj stranicu nakon što potvrdiš svoju e-mail adresu.",
   "studio.src.pages.organizations.IndexPage.empty": "Nema organizacija.",
   "studio.src.pages.organizations.IndexPage.error": "Dogodila se greška tijekom dohvaćanja popisa organizacije",
   "studio.src.pages.organizations.IndexPage.loading": "Učitavanje organizacija …",

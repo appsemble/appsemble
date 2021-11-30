@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "Alle organisaties",
   "studio.src.pages.organizations.IndexPage.createButton": "Nieuwe organisatie",
   "studio.src.pages.organizations.IndexPage.createTitle": "Nieuwe organisatie aanmaken",
+  "studio.src.pages.organizations.IndexPage.createVerify": "Om een organisatie aan te kunnen maken moet je eerst je e-mailadres verifiëren. Ververs de pagina wanneer je e-mailadres is geverifieerd.",
   "studio.src.pages.organizations.IndexPage.empty": "Er zijn momenteel geen organisaties beschikbaar.",
   "studio.src.pages.organizations.IndexPage.error": "Er is iets misgegaan bij het inladen van de organisaties.",
   "studio.src.pages.organizations.IndexPage.loading": "Organisaties inladen…",

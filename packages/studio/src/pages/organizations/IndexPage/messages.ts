@@ -11,4 +11,6 @@ export const messages = defineMessages({
   noOrganizations: 'There are currently no organizations available.',
   createButton: 'Create new organization',
   createTitle: 'Creating new organization',
+  createVerify:
+    'In order to create a new organization you must first verify your email address. Refresh the page once you have verified your email.',
 });

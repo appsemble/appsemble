@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "All organizations",
   "studio.src.pages.organizations.IndexPage.createButton": "Create new organization",
   "studio.src.pages.organizations.IndexPage.createTitle": "Creating new organization",
+  "studio.src.pages.organizations.IndexPage.createVerify": "In order to create a new organization you must first verify your email address. Refresh the page once you have verified your email.",
   "studio.src.pages.organizations.IndexPage.empty": "There are no organizations available.",
   "studio.src.pages.organizations.IndexPage.error": "Something went wrong trying to fetch the list of organizations",
   "studio.src.pages.organizations.IndexPage.loading": "Loading organizations…",

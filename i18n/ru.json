@@ -761,6 +761,7 @@
   "studio.src.pages.organizations.IndexPage.allOrganizations": "",
   "studio.src.pages.organizations.IndexPage.createButton": "",
   "studio.src.pages.organizations.IndexPage.createTitle": "",
+  "studio.src.pages.organizations.IndexPage.createVerify": "Чтобы создать новую организацию, вы должны сначала подтвердить свой адрес электронной почты. Обновите страницу, как только подтвердите свой адрес электронной почты.",
   "studio.src.pages.organizations.IndexPage.empty": "",
   "studio.src.pages.organizations.IndexPage.error": "",
   "studio.src.pages.organizations.IndexPage.loading": "",
