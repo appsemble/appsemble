@@ -34,6 +34,10 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
+  await Organization.create({
+    id: 'test-organization-2',
+    name: 'Test Organization 2',
+  });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   clock = install();
 
@@ -60,6 +64,13 @@ beforeEach(async () => {
     resources: {
       test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
+  });
+  const t3 = await App.create({
+    ...template,
+    template: false,
+    OrganizationId: 'test-organization-2',
+    path: 'test-template-3',
+    visibility: 'unlisted',
   });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
@@ -98,8 +109,16 @@ beforeEach(async () => {
       yaml: yaml2,
     }),
   ];
+  t3.AppSnapshots = [
+    snapshot1,
+    await AppSnapshot.create({
+      AppId: t3.id,
+      UserId: user.id,
+      yaml: yaml1,
+    }),
+  ];
 
-  templates = [t1, t2];
+  templates = [t1, t2, t3];
 });
 
 afterEach(() => {
@@ -269,6 +288,38 @@ describe('createTemplateApp', () => {
       data: {
         path: expect.stringMatching(/test-app-(\w){10}/),
       },
+    });
+  });
+
+  it('should not allow for cloning unlisted apps if the user is not in the same organization as the app', async () => {
+    authorizeStudio();
+
+    const response = await request.post('/api/templates', {
+      templateId: templates[2].id,
+      name: 'Test app',
+      description: 'This is also a test app',
+      organizationId: 'testorganization',
+    });
+
+    expect(response.data).toMatchObject({
+      statusCode: 403,
+      message: 'User is not part of this organization.',
+    });
+  });
+
+  it('should not allow for cloning apps with hidden app definitions if the user is not in the same organization as the app', async () => {
+    await templates[2].update({ showAppDefinition: false, visibility: 'public' });
+    authorizeStudio();
+    const response = await request.post('/api/templates', {
+      templateId: templates[2].id,
+      name: 'Test app',
+      description: 'This is also a test app',
+      organizationId: 'testorganization',
+    });
+
+    expect(response.data).toMatchObject({
+      statusCode: 403,
+      message: 'User is not part of this organization.',
     });
   });
 });
