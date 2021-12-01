@@ -507,7 +507,6 @@ export async function createResource(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     user,
   } = ctx;
-  // Const [resource, assets, $expires] = processResourceBody(ctx);
   const action = 'create';
 
   const app = await App.findByPk(
