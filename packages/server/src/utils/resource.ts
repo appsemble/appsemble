@@ -5,7 +5,7 @@ import {
 } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
-import { ValidationError, Validator } from 'jsonschema';
+import { PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
@@ -22,6 +22,7 @@ import {
   User,
 } from '../models';
 import { getRemapperContext } from './app';
+import { preProcessCSV } from './csv';
 import { handleValidatorResult } from './jsonschema';
 import { sendNotification, SendNotificationOptions } from './sendNotification';
 
@@ -252,12 +253,16 @@ export function processResourceBody(
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
   let body: ResourceType | ResourceType[];
   let assets: File[];
+  let preValidateProperty: PreValidatePropertyFunction;
   if (ctx.is('multipart/form-data')) {
     ({ assets = [], resource: body } = ctx.request.body);
     if (Array.isArray(body) && body.length === 1) {
       [body] = body;
     }
   } else {
+    if (ctx.is('text/csv')) {
+      preValidateProperty = preProcessCSV;
+    }
     ({ body } = ctx.request);
     assets = [];
   }
@@ -303,6 +308,7 @@ export function processResourceBody(
     Array.isArray(resource) ? { type: 'array', items: patchedSchema } : patchedSchema,
     {
       base: '#',
+      preValidateProperty,
       rewrite(value, { format }, options, { path }) {
         if (
           Array.isArray(resource)
