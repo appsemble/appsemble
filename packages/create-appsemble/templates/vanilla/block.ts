@@ -1,5 +1,3 @@
-export {};
-
 declare module '@appsemble/sdk' {
   interface Actions {
     /**
@@ -8,3 +6,5 @@ declare module '@appsemble/sdk' {
     onClick: {};
   }
 }
+
+export {};
