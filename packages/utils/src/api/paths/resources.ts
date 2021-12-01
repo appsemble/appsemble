@@ -45,7 +45,39 @@ export const paths: OpenAPIV3.PathsObject = {
       operationId: 'createResource',
       requestBody: {
         required: true,
-        $ref: '#/components/requestBodies/resource',
+        description: 'The resource to create',
+        content: {
+          'application/json': {
+            schema: {
+              anyOf: [
+                { $ref: '#/components/schemas/Resource' },
+                { type: 'array', items: { $ref: '#/components/schemas/Resource' } },
+              ],
+            },
+          },
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['resource'],
+              description: 'A `multipart/form-data` representation of a resource.',
+              additionalProperties: false,
+              properties: {
+                resource: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Resource' },
+                },
+                assets: {
+                  type: 'array',
+                  description: 'A list of assets that should be linked to the resource.',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       responses: {
         201: {
