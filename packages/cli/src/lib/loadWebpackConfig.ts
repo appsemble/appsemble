@@ -41,7 +41,7 @@ export async function loadWebpackConfig(
     }
   }
   logger.info(`Using webpack config from ${configPath}`);
-  const publicPath = `/api/blocks/${block.name}/versions/${block.version}`;
+  const publicPath = `/api/blocks/${block.name}/versions/${block.version}/`;
   let config = await import(configPath);
   config = await (config.default || config);
   config = config instanceof Function ? await config(block, { mode, publicPath }) : config;
