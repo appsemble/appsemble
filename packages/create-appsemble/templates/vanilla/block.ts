@@ -3,7 +3,7 @@ declare module '@appsemble/sdk' {
     /**
      * What happens if the button is clicked.
      */
-    onClick: {};
+    onClick: never;
   }
 }
 

@@ -5,10 +5,23 @@ bootstrap(({ events, parameters: { fields } }) => {
   const [data, setData] = useState<any[]>(null);
   const [error, setError] = useState(false);
 
-  events.on.data((newData: any[], eventError) => {
-    setData(newData);
-    setError(Boolean(eventError));
-  });
+  useEffect(() => {
+    const onData = (newData: unknown[], newError: unknown): void => {
+      if (newError) {
+        setError(true);
+        setData(null);
+      } else {
+        setError(false);
+        setData(newData);
+      }
+    }
+
+    events.on.data(onData);
+
+    return () => {
+      events.off.data(onData);
+    };
+  }, [events]);
 
   if (error) {
     return <p>Error loading data.</p>;
