@@ -112,8 +112,6 @@ export function ResourceDetailsPage(): ReactElement {
     setResource,
   ]);
 
-  const schema = app.definition.resources?.[resourceName]?.schema;
-
   return (
     <>
       <HeaderControl
@@ -166,7 +164,7 @@ export function ResourceDetailsPage(): ReactElement {
                 <JSONSchemaEditor
                   name="resource"
                   onChange={onEditChange}
-                  schema={schema}
+                  schema={app.definition.resources[resourceName].schema}
                   value={editingResource}
                 />
                 <div className="is-flex is-justify-content-flex-end">

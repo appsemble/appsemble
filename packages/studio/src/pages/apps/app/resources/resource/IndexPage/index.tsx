@@ -4,7 +4,6 @@ import {
   Checkbox,
   Form,
   Icon,
-  Loader,
   ModalCard,
   SimpleForm,
   SimpleFormField,
@@ -27,13 +26,13 @@ import {
   SyntheticEvent,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../../..';
+import { AsyncDataView } from '../../../../../../components/AsyncDataView';
 import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import styles from './index.module.css';
@@ -63,28 +62,24 @@ export function IndexPage(): ReactElement {
   );
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [creatingResource, setCreatingResource] = useState<Resource>();
-  const {
-    data: resources,
-    error,
-    loading,
-    setData: setResources,
-  } = useData<Resource[]>(
+  const result = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
+  const setResources = result.setData;
 
   const { schema } = app.definition.resources[resourceName];
-  const keys = useMemo(() => [...Object.keys(schema?.properties || {})], [schema?.properties]);
+  const keys = Object.keys(schema.properties);
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(`${app.id}.${resourceName}.hiddenProperties`);
+      const saved = localStorage.getItem(`${appId}.${resourceName}.hiddenProperties`);
       if (saved) {
         setHiddenProperties(new Set(JSON.parse(saved)));
       }
     } catch {
-      localStorage.removeItem(`${app.id}.${resourceName}.hiddenProperties`);
+      localStorage.removeItem(`${appId}.${resourceName}.hiddenProperties`);
     }
-  }, [app, resourceName]);
+  }, [appId, resourceName]);
 
   const closeCreateModal = useCallback(() => {
     createModal.disable();
@@ -98,9 +93,9 @@ export function IndexPage(): ReactElement {
 
   const onEditResource = useCallback(
     (resource: Resource) => {
-      setResources(resources.map((r) => (r.id === resource.id ? resource : r)));
+      setResources((resources) => resources.map((r) => (r.id === resource.id ? resource : r)));
     },
-    [resources, setResources],
+    [setResources],
   );
 
   const onDeleteResource = useCallback(
@@ -117,7 +112,7 @@ export function IndexPage(): ReactElement {
           axios.delete(`/api/apps/${appId}/resources/${resourceName}/${resource}`),
         ),
       );
-      setResources(
+      setResources((resources) =>
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );
       setSelectedResources([]);
@@ -128,7 +123,7 @@ export function IndexPage(): ReactElement {
     } catch {
       push(formatMessage(messages.deleteError));
     }
-  }, [appId, formatMessage, push, resourceName, resources, selectedResources, setResources]);
+  }, [appId, formatMessage, push, resourceName, selectedResources, setResources]);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -175,14 +170,17 @@ export function IndexPage(): ReactElement {
 
   const onHideProperties = useCallback(
     (values: Record<string, boolean>) => {
-      const result = Object.entries(values)
+      const newHiddenProperties = Object.entries(values)
         .filter(([, value]) => value)
         .map(([key]) => key);
-      setHiddenProperties(new Set(result));
-      localStorage.setItem(`${app.id}.${resourceName}.hiddenProperties`, JSON.stringify(result));
+      setHiddenProperties(new Set(newHiddenProperties));
+      localStorage.setItem(
+        `${appId}.${resourceName}.hiddenProperties`,
+        JSON.stringify(newHiddenProperties),
+      );
       hideModal.disable();
     },
-    [app, hideModal, resourceName],
+    [appId, hideModal, resourceName],
   );
 
   const submitCreate = useCallback(
@@ -195,7 +193,7 @@ export function IndexPage(): ReactElement {
           serializeResource(creatingResource),
         );
 
-        setResources([...resources, data]);
+        setResources((resources) => [...resources, data]);
         closeCreateModal();
 
         push({
@@ -206,21 +204,12 @@ export function IndexPage(): ReactElement {
         push(formatMessage(messages.createError));
       }
     },
-    [
-      appId,
-      closeCreateModal,
-      creatingResource,
-      formatMessage,
-      push,
-      resourceName,
-      resources,
-      setResources,
-    ],
+    [appId, closeCreateModal, creatingResource, formatMessage, push, resourceName, setResources],
   );
 
   const downloadCsv = useCallback(async () => {
     await download(
-      `/api/apps/${app.id}/resources/${resourceName}?$select=${[
+      `/api/apps/${appId}/resources/${resourceName}?$select=${[
         'id',
         '$created',
         '$updated',
@@ -232,36 +221,7 @@ export function IndexPage(): ReactElement {
       `${resourceName}.csv`,
       'text/csv',
     );
-  }, [app, hiddenProperties, keys, resourceName]);
-
-  if (!app || loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <FormattedMessage {...messages.loadError} />;
-  }
-
-  if (!loading && resources === undefined) {
-    if (!has(app.definition.resources, resourceName)) {
-      return <FormattedMessage {...messages.notFound} />;
-    }
-
-    const { url } = app.definition.resources[resourceName];
-
-    return (
-      <FormattedMessage
-        {...messages.notManaged}
-        values={{
-          link: (
-            <a href={url} rel="noopener noreferrer" target="_blank">
-              {url}
-            </a>
-          ),
-        }}
-      />
-    );
-  }
+  }, [appId, hiddenProperties, keys, resourceName]);
 
   return (
     <>
@@ -297,79 +257,94 @@ export function IndexPage(): ReactElement {
           <FormattedMessage {...messages.delete} values={{ amount: selectedResources.length }} />
         </Button>
       </div>
-      <Table className="is-flex-grow-1 is-flex-shrink-1">
-        <thead>
-          <tr>
-            <th>
-              <FormattedMessage {...messages.actions} />
-            </th>
-            {!hiddenProperties.has('id') && (
-              <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
-                <span>
-                  <FormattedMessage {...messages.id} />
-                </span>
-                {sortedProperty === 'id' && (
-                  <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
-                )}
-              </th>
-            )}
-            {!hiddenProperties.has('$author') && (
-              <th>
-                <FormattedMessage {...messages.author} />
-              </th>
-            )}
-            {!hiddenProperties.has('$created') && (
-              <th>
-                <FormattedMessage {...messages.created} />
-              </th>
-            )}
-            {!hiddenProperties.has('$updated') && (
-              <th>
-                <FormattedMessage {...messages.updated} />
-              </th>
-            )}
-            {has(app, 'resources') && !hiddenProperties.has('$clonable') && (
-              <th>
-                <FormattedMessage {...messages.clonable} />
-              </th>
-            )}
-            {keys
-              .filter((key) => !hiddenProperties.has(key))
-              .map((property) => {
-                const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
-                const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
-                return (
-                  <th
-                    className={sortable ? styles.clickable : ''}
-                    data-property={property}
-                    key={property}
-                    onClick={sortable ? onSortProperty : null}
-                  >
-                    <span>{propSchema?.title || property}</span>
-                    {sortedProperty === property && (
+      <AsyncDataView
+        emptyMessage={
+          <p className="pt-6">
+            <FormattedMessage {...messages.empty} values={{ type: resourceName }} />
+          </p>
+        }
+        errorMessage={<FormattedMessage {...messages.loadError} />}
+        loadingMessage={<FormattedMessage {...messages.loading} values={{ type: resourceName }} />}
+        result={result}
+      >
+        {(resources) => (
+          <Table className="is-flex-grow-1 is-flex-shrink-1">
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.actions} />
+                </th>
+                {!hiddenProperties.has('id') && (
+                  <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
+                    <span>
+                      <FormattedMessage {...messages.id} />
+                    </span>
+                    {sortedProperty === 'id' && (
                       <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
                     )}
                   </th>
-                );
-              })}
-          </tr>
-        </thead>
-        <tbody>
-          {resources.map((resource, index) => (
-            <ResourceRow
-              dropdownUp={resources.length > 2 && index >= resources.length - 2}
-              filter={hiddenProperties}
-              key={resource.id}
-              onDelete={onDeleteResource}
-              onEdit={onEditResource}
-              onSelected={onCheckboxClick}
-              resource={resource}
-              schema={schema}
-              selected={selectedResources.includes(resource.id)}
-            />
-          ))}
-        </tbody>
-      </Table>
+                )}
+                {!hiddenProperties.has('$author') && (
+                  <th>
+                    <FormattedMessage {...messages.author} />
+                  </th>
+                )}
+                {!hiddenProperties.has('$created') && (
+                  <th>
+                    <FormattedMessage {...messages.created} />
+                  </th>
+                )}
+                {!hiddenProperties.has('$updated') && (
+                  <th>
+                    <FormattedMessage {...messages.updated} />
+                  </th>
+                )}
+                {has(app, 'resources') && !hiddenProperties.has('$clonable') && (
+                  <th>
+                    <FormattedMessage {...messages.clonable} />
+                  </th>
+                )}
+                {keys
+                  .filter((key) => !hiddenProperties.has(key))
+                  .map((property) => {
+                    const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
+                    const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
+                    return (
+                      <th
+                        className={sortable ? styles.clickable : ''}
+                        data-property={property}
+                        key={property}
+                        onClick={sortable ? onSortProperty : null}
+                      >
+                        <span>{propSchema?.title || property}</span>
+                        {sortedProperty === property && (
+                          <Icon
+                            icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
+                          />
+                        )}
+                      </th>
+                    );
+                  })}
+              </tr>
+            </thead>
+            <tbody>
+              {resources.map((resource, index) => (
+                <ResourceRow
+                  dropdownUp={resources.length > 2 && index >= resources.length - 2}
+                  filter={hiddenProperties}
+                  key={resource.id}
+                  onDelete={onDeleteResource}
+                  onEdit={onEditResource}
+                  onSelected={onCheckboxClick}
+                  resource={resource}
+                  schema={schema}
+                  selected={selectedResources.includes(resource.id)}
+                />
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </AsyncDataView>
       <ModalCard
         cardClassName={styles.modal}
         component={Form}
@@ -446,7 +421,7 @@ export function IndexPage(): ReactElement {
             <SimpleFormField
               component={Checkbox}
               key={key}
-              label={(schema?.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
+              label={(schema.properties[key] as OpenAPIV3.SchemaObject).title ?? key}
               name={key}
             />
           ))}
