@@ -70,7 +70,7 @@ beforeEach(async () => {
     template: false,
     OrganizationId: 'test-organization-2',
     path: 'test-template-3',
-    visibility: 'unlisted',
+    visibility: 'private',
   });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' }, clonable: true });
   await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'bar' } });
