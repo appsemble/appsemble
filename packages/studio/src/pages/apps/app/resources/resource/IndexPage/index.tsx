@@ -1,8 +1,6 @@
 import {
   Button,
-  CardFooterButton,
   Checkbox,
-  Form,
   Icon,
   ModalCard,
   SimpleForm,
@@ -21,11 +19,11 @@ import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import {
   ChangeEvent,
-  FormEvent,
   ReactElement,
   SyntheticEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -61,7 +59,6 @@ export function IndexPage(): ReactElement {
     new Set(['$created', '$updated']),
   );
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
-  const [creatingResource, setCreatingResource] = useState<Resource>();
   const result = useData<Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
@@ -81,15 +78,7 @@ export function IndexPage(): ReactElement {
     }
   }, [appId, resourceName]);
 
-  const closeCreateModal = useCallback(() => {
-    createModal.disable();
-    setCreatingResource(null);
-  }, [createModal]);
-
-  const openCreateModal = useCallback(() => {
-    setCreatingResource(generateDataFromSchema(schema) as Resource);
-    createModal.enable();
-  }, [createModal, schema]);
+  const defaultResourceValues = useMemo(() => generateDataFromSchema(schema) as Resource, [schema]);
 
   const onEditResource = useCallback(
     (resource: Resource) => {
@@ -151,10 +140,6 @@ export function IndexPage(): ReactElement {
     [selectedResources],
   );
 
-  const onChange = useCallback((event, value: Resource) => {
-    setCreatingResource(value);
-  }, []);
-
   const onSortProperty = useCallback(
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
       const { property } = event.currentTarget.dataset;
@@ -184,27 +169,22 @@ export function IndexPage(): ReactElement {
   );
 
   const submitCreate = useCallback(
-    async (event: FormEvent) => {
-      event.preventDefault();
+    async (values: Record<string, Resource>) => {
+      const { data } = await axios.post<Resource>(
+        `/api/apps/${appId}/resources/${resourceName}`,
+        serializeResource(values[resourceName]),
+      );
 
-      try {
-        const { data } = await axios.post<Resource>(
-          `/api/apps/${appId}/resources/${resourceName}`,
-          serializeResource(creatingResource),
-        );
+      setResources((resources) => [...resources, data]);
 
-        setResources((resources) => [...resources, data]);
-        closeCreateModal();
-
-        push({
-          body: formatMessage(messages.createSuccess, { id: data.id }),
-          color: 'primary',
-        });
-      } catch {
-        push(formatMessage(messages.createError));
-      }
+      createModal.disable();
+      push({
+        body: formatMessage(messages.createSuccess, { id: data.id }),
+        color: 'primary',
+      });
+      // Push(formatMessage(messages.createError));
     },
-    [appId, closeCreateModal, creatingResource, formatMessage, push, resourceName, setResources],
+    [appId, createModal, formatMessage, push, resourceName, setResources],
   );
 
   const downloadCsv = useCallback(async () => {
@@ -236,7 +216,7 @@ export function IndexPage(): ReactElement {
       </HeaderControl>
 
       <div className="buttons">
-        <Button className="is-primary" icon="plus-square" onClick={openCreateModal}>
+        <Button className="is-primary" icon="plus-square" onClick={createModal.enable}>
           <FormattedMessage {...messages.createButton} />
         </Button>
         <Button icon="eye-slash" onClick={hideModal.enable}>
@@ -347,27 +327,25 @@ export function IndexPage(): ReactElement {
       </AsyncDataView>
       <ModalCard
         cardClassName={styles.modal}
-        component={Form}
+        component={SimpleForm}
+        defaultValues={defaultResourceValues}
         footer={
-          <>
-            <CardFooterButton onClick={closeCreateModal}>
-              <FormattedMessage {...messages.cancelButton} />
-            </CardFooterButton>
-            <CardFooterButton color="primary" type="submit">
-              <FormattedMessage {...messages.createButton} />
-            </CardFooterButton>
-          </>
+          <SimpleModalFooter
+            cancelLabel={<FormattedMessage {...messages.cancelButton} />}
+            onClose={createModal.disable}
+            submitLabel={<FormattedMessage {...messages.createButton} />}
+          />
         }
         isActive={createModal.enabled}
-        onClose={closeCreateModal}
+        onClose={createModal.disable}
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
-        <JSONSchemaEditor
-          name="resource"
-          onChange={onChange}
+        <SimpleFormField
+          // @ts-expect-error This is working as expected.
+          component={JSONSchemaEditor}
+          name={resourceName}
           schema={schema}
-          value={creatingResource}
         />
       </ModalCard>
       <ModalCard
