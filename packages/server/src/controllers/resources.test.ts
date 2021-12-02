@@ -1870,11 +1870,17 @@ describe('createResource', () => {
                     "format": "date-time",
                     "type": "string",
                   },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
+                  },
+                  "boolan": {
+                    "type": "boolean",
                   },
                   "foo": {
                     "type": "string",
@@ -1884,6 +1890,15 @@ describe('createResource', () => {
                   },
                   "id": {
                     "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
@@ -2645,11 +2660,17 @@ describe('updateResource', () => {
                     "format": "date-time",
                     "type": "string",
                   },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
+                  },
+                  "boolan": {
+                    "type": "boolean",
                   },
                   "foo": {
                     "type": "string",
@@ -2659,6 +2680,15 @@ describe('updateResource', () => {
                   },
                   "id": {
                     "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
