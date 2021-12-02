@@ -50,7 +50,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
               fooz: { type: 'string' },
               baz: { type: 'string' },
               number: { type: 'number' },
-              boolan: { type: 'boolean' },
+              boolean: { type: 'boolean' },
               integer: { type: 'integer' },
               object: { type: 'object' },
               array: { type: 'array' },
@@ -1879,7 +1879,7 @@ describe('createResource', () => {
                   "baz": {
                     "type": "string",
                   },
-                  "boolan": {
+                  "boolean": {
                     "type": "boolean",
                   },
                   "foo": {
@@ -2669,7 +2669,7 @@ describe('updateResource', () => {
                   "baz": {
                     "type": "string",
                   },
-                  "boolan": {
+                  "boolean": {
                     "type": "boolean",
                   },
                   "foo": {
