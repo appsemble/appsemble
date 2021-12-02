@@ -203,6 +203,31 @@ export function IndexPage(): ReactElement {
     );
   }, [appId, hiddenProperties, keys, resourceName]);
 
+  const uploadCsv = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'text/csv';
+    input.click();
+    input.addEventListener('change', () => {
+      const [csv] = input.files;
+      axios
+        .post<Resource[]>(`/api/apps/${appId}/resources/${resourceName}`, csv, {
+          headers: { 'content-type': 'text/csv' },
+        })
+        .then(
+          ({ data }) => {
+            setResources((oldResources) => [...oldResources, ...data]);
+          },
+          () => {
+            push({
+              body: formatMessage(messages.csvError),
+              color: 'danger',
+            });
+          },
+        );
+    });
+  }, [appId, formatMessage, push, resourceName, setResources]);
+
   return (
     <>
       <HeaderControl
@@ -227,6 +252,9 @@ export function IndexPage(): ReactElement {
         </Button>
         <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
+        </Button>
+        <Button icon="upload" onClick={uploadCsv}>
+          <FormattedMessage {...messages.import} />
         </Button>
         <Button
           color="danger"
