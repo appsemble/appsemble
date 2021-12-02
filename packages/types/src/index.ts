@@ -301,8 +301,10 @@ export interface Remappers {
 
   /**
    * Get a property from an object.
+   *
+   * If the prop is an array, nested properties will be retrieved in sequence.
    */
-  prop: number | string;
+  prop: number[] | string[] | number | string;
 
   /**
    * Recursively strip all nullish values from an object or array.

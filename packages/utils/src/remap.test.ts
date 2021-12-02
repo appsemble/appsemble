@@ -416,6 +416,11 @@ describe('prop', () => {
     },
     'get a nested property': {
       input: { address: { town: 'Bikini Bottom' } },
+      mappers: { prop: ['address', 'town'] },
+      expected: 'Bikini Bottom',
+    },
+    'get a property with a . in the key': {
+      input: { 'address.town': 'Bikini Bottom' },
       mappers: { prop: 'address.town' },
       expected: 'Bikini Bottom',
     },
