@@ -78,7 +78,10 @@ export const paths: OpenAPIV3.PathsObject = {
             },
           },
           'text/csv': {
-            schema: { type: 'array', items: { $ref: '#/components/schemas/Resource' } },
+            schema: {
+              type: 'array',
+              items: { type: 'object', additionalProperties: { type: 'string' } },
+            },
           },
         },
       },
