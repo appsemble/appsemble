@@ -75,6 +75,11 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
     history.replace({ hash: null });
   }, [history]);
 
+  // YAML is not included if app.showAppDefinition is true and the user doesn’t have permissions.
+  if (!app.yaml) {
+    return null;
+  }
+
   return (
     <>
       <Button className="mb-3 ml-4" onClick={openCloneDialog}>
