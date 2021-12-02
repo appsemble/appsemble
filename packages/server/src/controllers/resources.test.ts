@@ -2417,7 +2417,7 @@ describe('createResource', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "array": [],
           "bar": "B",
-          "boolean": "false",
+          "boolean": false,
           "foo": "A",
           "id": 2,
           "integer": 1337,
