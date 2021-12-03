@@ -42,6 +42,8 @@ export interface RouteParams {
   resourceName: string;
 }
 
+const defaultHiddenProperties = new Set(['$created', '$updated']);
+
 export function IndexPage(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
@@ -52,15 +54,16 @@ export function IndexPage(): ReactElement {
   const createModal = useToggle();
   const hideModal = useToggle();
 
+  const resourceURL = `/api/apps/${appId}/resources/${resourceName}`;
+  const hiddenPropertiesKey = `${appId}.${resourceName}.hiddenProperties`;
+
   const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
     [string, 'ASC' | 'DESC']
   >(['id', 'DESC']);
-  const [hiddenProperties, setHiddenProperties] = useState<Set<string>>(
-    new Set(['$created', '$updated']),
-  );
+  const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const result = useData<Resource[]>(
-    `/api/apps/${appId}/resources/${resourceName}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
+    `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
   const setResources = result.setData;
 
@@ -69,14 +72,14 @@ export function IndexPage(): ReactElement {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(`${appId}.${resourceName}.hiddenProperties`);
+      const saved = localStorage.getItem(hiddenPropertiesKey);
       if (saved) {
         setHiddenProperties(new Set(JSON.parse(saved)));
       }
     } catch {
-      localStorage.removeItem(`${appId}.${resourceName}.hiddenProperties`);
+      localStorage.removeItem(hiddenPropertiesKey);
     }
-  }, [appId, resourceName]);
+  }, [hiddenPropertiesKey]);
 
   const defaultResourceValues = useMemo(() => generateDataFromSchema(schema) as Resource, [schema]);
 
@@ -96,11 +99,7 @@ export function IndexPage(): ReactElement {
 
   const onConfirmDelete = useCallback(async () => {
     try {
-      await Promise.all(
-        selectedResources.map((resource) =>
-          axios.delete(`/api/apps/${appId}/resources/${resourceName}/${resource}`),
-        ),
-      );
+      await Promise.all(selectedResources.map((id) => axios.delete(`${resourceURL}/${id}`)));
       setResources((resources) =>
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );
@@ -112,7 +111,7 @@ export function IndexPage(): ReactElement {
     } catch {
       push(formatMessage(messages.deleteError));
     }
-  }, [appId, formatMessage, push, resourceName, selectedResources, setResources]);
+  }, [formatMessage, push, resourceURL, selectedResources, setResources]);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -159,19 +158,16 @@ export function IndexPage(): ReactElement {
         .filter(([, value]) => value)
         .map(([key]) => key);
       setHiddenProperties(new Set(newHiddenProperties));
-      localStorage.setItem(
-        `${appId}.${resourceName}.hiddenProperties`,
-        JSON.stringify(newHiddenProperties),
-      );
+      localStorage.setItem(hiddenPropertiesKey, JSON.stringify(newHiddenProperties));
       hideModal.disable();
     },
-    [appId, hideModal, resourceName],
+    [hiddenPropertiesKey, hideModal],
   );
 
   const submitCreate = useCallback(
     async (values: Record<string, Resource>) => {
       const { data } = await axios.post<Resource>(
-        `/api/apps/${appId}/resources/${resourceName}`,
+        resourceURL,
         serializeResource(values[resourceName]),
       );
 
@@ -182,26 +178,20 @@ export function IndexPage(): ReactElement {
         body: formatMessage(messages.createSuccess, { id: data.id }),
         color: 'primary',
       });
-      // Push(formatMessage(messages.createError));
     },
-    [appId, createModal, formatMessage, push, resourceName, setResources],
+    [createModal, formatMessage, push, resourceName, resourceURL, setResources],
   );
 
   const downloadCsv = useCallback(async () => {
-    await download(
-      `/api/apps/${appId}/resources/${resourceName}?$select=${[
-        'id',
-        '$created',
-        '$updated',
-        '$author',
-        ...keys,
-      ]
+    const url = new URL(resourceURL);
+    url.searchParams.set(
+      '$select',
+      ['id', '$created', '$updated', '$author', ...keys]
         .filter((key) => !hiddenProperties.has(key))
-        .join(',')}`,
-      `${resourceName}.csv`,
-      'text/csv',
+        .join(','),
     );
-  }, [appId, hiddenProperties, keys, resourceName]);
+    await download(String(url), `${resourceName}.csv`, 'text/csv');
+  }, [hiddenProperties, keys, resourceName, resourceURL]);
 
   const uploadCsv = useCallback(() => {
     const input = document.createElement('input');
@@ -211,7 +201,7 @@ export function IndexPage(): ReactElement {
     input.addEventListener('change', () => {
       const [csv] = input.files;
       axios
-        .post<Resource[]>(`/api/apps/${appId}/resources/${resourceName}`, csv, {
+        .post<Resource[]>(resourceURL, csv, {
           headers: { 'content-type': 'text/csv' },
         })
         .then(
@@ -226,7 +216,7 @@ export function IndexPage(): ReactElement {
           },
         );
     });
-  }, [appId, formatMessage, push, resourceName, setResources]);
+  }, [formatMessage, push, resourceURL, setResources]);
 
   return (
     <>
