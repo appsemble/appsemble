@@ -68,7 +68,7 @@ export function ShareDialog({
           href={createUrl('mailto:', {
             subject: title,
             body: text && url ? `${text}\n${url}` : text || url,
-          }).replaceAll('+', '%20')}
+          }).replace(/\+/g, '%20')}
           icon="envelope"
           onClick={resolveShareDialog}
         >
