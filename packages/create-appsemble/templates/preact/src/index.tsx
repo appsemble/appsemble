@@ -14,7 +14,7 @@ bootstrap(({ events, parameters: { fields } }) => {
         setError(false);
         setData(newData);
       }
-    }
+    };
 
     events.on.data(onData);
 
