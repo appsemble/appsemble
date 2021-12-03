@@ -3,6 +3,7 @@ import { Resource as ResourceType } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import stripIndent from 'strip-indent';
 import webpush from 'web-push';
 
 import {
@@ -48,6 +49,11 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
               bar: { type: 'string' },
               fooz: { type: 'string' },
               baz: { type: 'string' },
+              number: { type: 'number' },
+              boolean: { type: 'boolean' },
+              integer: { type: 'integer' },
+              object: { type: 'object' },
+              array: { type: 'array' },
             },
           },
           roles: ['$public'],
@@ -1864,11 +1870,17 @@ describe('createResource', () => {
                     "format": "date-time",
                     "type": "string",
                   },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
+                  },
+                  "boolean": {
+                    "type": "boolean",
                   },
                   "foo": {
                     "type": "string",
@@ -1878,6 +1890,15 @@ describe('createResource', () => {
                   },
                   "id": {
                     "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
@@ -2359,6 +2380,53 @@ describe('createResource', () => {
       }
     `);
   });
+
+  it('should accept text/csv', async () => {
+    const app = await exampleApp(organization.id);
+
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testResource`,
+      stripIndent(`
+        foo,bar,integer,boolean,number,object,array\r
+        a,b,42,true,3.14,{},[]\r
+        A,B,1337,false,9.8,{},[]\r
+      `)
+        .replace(/^\s+/, '')
+        .replace(/ +$/g, ''),
+      { headers: { 'content-type': 'text/csv' } },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "b",
+          "boolean": true,
+          "foo": "a",
+          "id": 1,
+          "integer": 42,
+          "number": 3.14,
+          "object": {},
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "B",
+          "boolean": false,
+          "foo": "A",
+          "id": 2,
+          "integer": 1337,
+          "number": 9.8,
+          "object": {},
+        },
+      ]
+    `);
+  });
 });
 
 describe('updateResource', () => {
@@ -2592,11 +2660,17 @@ describe('updateResource', () => {
                     "format": "date-time",
                     "type": "string",
                   },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
+                  },
+                  "boolean": {
+                    "type": "boolean",
                   },
                   "foo": {
                     "type": "string",
@@ -2606,6 +2680,15 @@ describe('updateResource', () => {
                   },
                   "id": {
                     "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
