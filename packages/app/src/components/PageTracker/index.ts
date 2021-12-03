@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-declare function gtag(command: string, ...args: unknown[]): void;
-
 export function PageTracker(): null {
   const { pathname } = useLocation();
 
@@ -10,6 +8,7 @@ export function PageTracker(): null {
     if (typeof gtag !== 'undefined') {
       setTimeout(() => {
         gtag('set', 'page', pathname);
+        // @ts-expect-error XXX Investigate if this is necessary.
         gtag('send', 'pageview');
       }, 300);
     }
