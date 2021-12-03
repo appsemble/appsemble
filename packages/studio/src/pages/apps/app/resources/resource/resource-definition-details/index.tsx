@@ -22,7 +22,7 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
   const { formatMessage } = useIntl();
   useMeta(formatMessage(messages.pageTitle));
 
-  const resource = app.definition.resources?.[resourceName];
+  const resource = app.definition.resources[resourceName];
   const yaml = useMemo(() => stringify(resource), [resource]);
 
   return (
