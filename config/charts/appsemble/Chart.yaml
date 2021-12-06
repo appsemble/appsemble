@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.8
-appVersion: 0.19.8
+version: 0.19.9
+appVersion: 0.19.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,20 +25,20 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Cli: Add support for sentry-dsn, sentry-environment, and
-        google-analytics-id when creating or updating apps."
+      description: "App: Add analytics action."
     - kind: added
-      description: "Server: Add additional validation for link, flow, resource., and
-        user actions."
+      description: "App: Add support for arrays of strings or numbers for prop remapper."
     - kind: added
-      description: "Studio: Add app setting showAppDefinition."
+      description: "App: Add support for translated flow page steps."
+    - kind: added
+      description: "Server: Add support for creating resources from CSV data."
+    - kind: added
+      description: "Studio: Add support for translating flow page steps."
     - kind: changed
-      description: "Cli: Change behavior of --app-id combined with --app for various
-        commands. app-id now takes precedence over context.environment.id."
-    - kind: changed
-      description: "Server: Change minimum amount of steps for flow pages to 2."
-    - kind: changed
-      description: "Studio: Replace app setting private with visibility."
+      description: "Cli: Update to postcss 8."
+    - kind: removed
+      description: "App: Remove support for accessing properties using dot notation in
+        prop remapper."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

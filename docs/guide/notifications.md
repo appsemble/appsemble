@@ -100,7 +100,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.19.8
+        version: 0.19.9
         actions:
           onLoad:
             type: resource.query
@@ -109,7 +109,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.19.8
+        version: 0.19.9
         parameters:
           fields:
             - name:
