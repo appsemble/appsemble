@@ -1,8 +1,0 @@
-{
-  "name": "@appsemble/video-stream",
-  "version": "0.19.12",
-  "private": false,
-  "dependencies": {
-    "@appsemble/sdk": "0.19.7"
-  }
-}
