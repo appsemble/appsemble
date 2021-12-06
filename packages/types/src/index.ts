@@ -301,8 +301,10 @@ export interface Remappers {
 
   /**
    * Get a property from an object.
+   *
+   * If the prop is an array, nested properties will be retrieved in sequence.
    */
-  prop: number | string;
+  prop: number[] | string[] | number | string;
 
   /**
    * Recursively strip all nullish values from an object or array.
@@ -550,6 +552,18 @@ export interface BaseActionDefinition<T extends Action['type']> {
    * Another action that is dispatched when the action has failed to dispatch successfully.
    */
   onError?: ActionDefinition;
+}
+
+export interface AnalyticsAction extends BaseActionDefinition<'analytics'> {
+  /**
+   * The analytics event target name.
+   */
+  target: string;
+
+  /**
+   * Additional config to pass to analytics.
+   */
+  config?: Remapper;
 }
 
 export interface ConditionActionDefinition extends BaseActionDefinition<'condition'> {
@@ -870,6 +884,7 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | AnalyticsAction
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'flow.back'>

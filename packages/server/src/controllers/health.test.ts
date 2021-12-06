@@ -17,26 +17,32 @@ describe('checkHealth', () => {
   it('should return status ok if all services are connected properly', async () => {
     const response = await request.get('/api/health');
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: { database: true },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "database": true,
+      }
+    `);
   });
 
   it('should fail if the database is disconnected', async () => {
     jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
     const response = await request.get('/api/health');
 
-    expect(response).toMatchObject({
-      status: 503,
-      data: {
-        statusCode: 503,
-        message: 'API unhealthy',
-        error: 'Service Unavailable',
-        data: {
-          database: false,
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 503 Service Unavailable
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "database": false,
         },
-      },
-    });
+        "error": "Service Unavailable",
+        "message": "API unhealthy",
+        "statusCode": 503,
+      }
+    `);
   });
 });

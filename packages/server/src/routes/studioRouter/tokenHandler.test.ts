@@ -2,7 +2,7 @@ import { URLSearchParams } from 'url';
 
 import { basicAuth } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { decode } from 'jsonwebtoken';
@@ -14,7 +14,7 @@ import { createServer } from '../../utils/createServer';
 import { createTestUser } from '../../utils/test/authorization';
 import { useTestDatabase } from '../../utils/test/testSchema';
 
-let clock: Clock;
+let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('tokenhandler');

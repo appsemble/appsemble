@@ -1,5 +1,7 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { AppAccount, AppMember as AppMemberType } from '@appsemble/types';
+import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
@@ -21,7 +23,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 let user: User;
 
@@ -119,17 +121,23 @@ describe('getAppMembers', () => {
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: user.id,
-          name: 'Test Member',
-          primaryEmail: 'member@example.com',
-          role: 'Admin',
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "name": "Test Member",
+          "primaryEmail": "member@example.com",
+          "properties": null,
+          "role": "Admin",
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should include organization members with the default role if policy is not invite', async () => {
@@ -156,17 +164,22 @@ describe('getAppMembers', () => {
 
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/members`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: user.id,
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
-          role: 'Reader',
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "name": "Test User",
+          "primaryEmail": "test@example.com",
+          "role": "Reader",
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 
   it('should only return invited members if policy is set to invite', async () => {
@@ -205,14 +218,16 @@ describe('getAppMember', () => {
     const response = await request.get(
       '/api/apps/123/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37',
     );
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return 404 if the app doesn’t have a security definition', async () => {
@@ -230,14 +245,16 @@ describe('getAppMember', () => {
     const response = await request.get(
       `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
     );
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App does not have a security definition',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App does not have a security definition",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return 404 if no app member was found', async () => {
@@ -256,14 +273,16 @@ describe('getAppMember', () => {
     const response = await request.get(
       `/api/apps/${app.id}/members/67ab4ea6-ce98-4f08-b599-d8fc4b460d37`,
     );
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App member not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App member not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should return an app member if it is found', async () => {
@@ -295,11 +314,22 @@ describe('getAppMember', () => {
       role: 'Reader',
     });
     authorizeStudio();
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: { id: user.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
-    });
+    const response = await request.get<AppMemberType>(`/api/apps/${app.id}/members/${user.id}`);
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "name": "Foo",
+        "primaryEmail": "foo@example.com",
+        "role": "Reader",
+      }
+    `,
+    );
+    expect(response.data.id).toBe(user.id);
   });
 });
 
@@ -329,20 +359,28 @@ describe('setAppMember', () => {
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
 
     authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/members/${userB.id}`, {
+    const response = await request.post<AppMember>(`/api/apps/${app.id}/members/${userB.id}`, {
       role: 'Admin',
       properties: { test: 'Property' },
     });
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: userB.id,
-        name: null,
-        primaryEmail: null,
-        role: 'Admin',
-        properties: { test: 'Property' },
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "name": null,
+        "primaryEmail": null,
+        "properties": {
+          "test": "Property",
+        },
+        "role": "Admin",
+      }
+    `,
+    );
+    expect(response.data.id).toBe(userB.id);
   });
 });
 
@@ -353,14 +391,16 @@ describe('deleteAppMember', () => {
       '/api/apps/253/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624',
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should throw 404 if the app member doesn’t exist', async () => {
@@ -389,14 +429,16 @@ describe('deleteAppMember', () => {
       `/api/apps/${app.id}/members/e1f0eda6-b2cd-4e66-ae8d-f9dee33d1624`,
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App member not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App member not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should verify the app role if the user id and member id don’t match', async () => {
@@ -426,14 +468,16 @@ describe('deleteAppMember', () => {
     await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 
   it('should allow app owners to delete an app member', async () => {
@@ -462,10 +506,7 @@ describe('deleteAppMember', () => {
     const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
-    expect(response).toMatchObject({
-      status: 204,
-      data: '',
-    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(() => appMember.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
@@ -497,10 +538,7 @@ describe('deleteAppMember', () => {
     authorizeStudio(userB);
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
-    expect(response).toMatchObject({
-      status: 204,
-      data: '',
-    });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     await expect(() => appMember.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
@@ -605,57 +643,89 @@ describe('getAppAccounts', () => {
 
     const response = await request.get('/api/user/apps/accounts');
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          { id: expect.stringMatching(uuid4Pattern) },
+          { id: expect.stringMatching(uuid4Pattern) },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          app: {
-            $created: '1970-01-01T00:00:00.000Z',
-            $updated: '1970-01-01T00:00:00.000Z',
-            OrganizationId: 'testorganization',
-            OrganizationName: 'Test Organization',
-            definition: {},
-            domain: null,
-            hasIcon: false,
-            hasMaskableIcon: false,
-            iconBackground: '#ffffff',
-            iconUrl: null,
-            id: 1,
-            locked: false,
-            longDescription: null,
-            path: null,
-            showAppsembleLogin: false,
-            showAppsembleOAuth2Login: true,
-            visibility: 'unlisted',
-            yaml: '{}\n',
+          "app": {
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "OrganizationId": "testorganization",
+            "OrganizationName": "Test Organization",
+            "definition": {},
+            "domain": null,
+            "googleAnalyticsID": null,
+            "hasIcon": false,
+            "hasMaskableIcon": false,
+            "iconBackground": "#ffffff",
+            "iconUrl": null,
+            "id": 1,
+            "locked": false,
+            "longDescription": null,
+            "path": null,
+            "sentryDsn": null,
+            "sentryEnvironment": null,
+            "showAppDefinition": false,
+            "showAppsembleLogin": false,
+            "showAppsembleOAuth2Login": true,
+            "visibility": "unlisted",
+            "yaml": "{}
+      ",
           },
-          role: 'Admin',
+          "email": null,
+          "emailVerified": false,
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "name": null,
+          "properties": {},
+          "role": "Admin",
+          "sso": [],
         },
         {
-          app: {
-            $created: '1970-01-01T00:00:00.000Z',
-            $updated: '1970-01-01T00:00:00.000Z',
-            OrganizationId: 'testorganization',
-            OrganizationName: 'Test Organization',
-            definition: {},
-            domain: null,
-            hasIcon: false,
-            hasMaskableIcon: false,
-            iconBackground: '#ffffff',
-            iconUrl: null,
-            id: 2,
-            locked: false,
-            longDescription: null,
-            path: null,
-            showAppsembleLogin: false,
-            showAppsembleOAuth2Login: true,
-            visibility: 'unlisted',
-            yaml: '{}\n',
+          "app": {
+            "$created": "1970-01-01T00:00:00.000Z",
+            "$updated": "1970-01-01T00:00:00.000Z",
+            "OrganizationId": "testorganization",
+            "OrganizationName": "Test Organization",
+            "definition": {},
+            "domain": null,
+            "googleAnalyticsID": null,
+            "hasIcon": false,
+            "hasMaskableIcon": false,
+            "iconBackground": "#ffffff",
+            "iconUrl": null,
+            "id": 2,
+            "locked": false,
+            "longDescription": null,
+            "path": null,
+            "sentryDsn": null,
+            "sentryEnvironment": null,
+            "showAppDefinition": false,
+            "showAppsembleLogin": false,
+            "showAppsembleOAuth2Login": true,
+            "visibility": "unlisted",
+            "yaml": "{}
+      ",
           },
-          role: 'Member',
+          "email": null,
+          "emailVerified": false,
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "name": null,
+          "properties": {},
+          "role": "Member",
+          "sso": [],
         },
-      ],
-    });
+      ]
+    `,
+    );
   });
 });
 
@@ -678,33 +748,50 @@ describe('getAppAccount', () => {
 
     const response = await request.get(`/api/user/apps/${app.id}/account`);
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        app: {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          OrganizationId: 'testorganization',
-          OrganizationName: 'Test Organization',
-          definition: {},
-          domain: null,
-          hasIcon: false,
-          hasMaskableIcon: false,
-          iconBackground: '#ffffff',
-          iconUrl: null,
-          id: 1,
-          locked: false,
-          longDescription: null,
-          path: null,
-          showAppsembleLogin: false,
-          showAppsembleOAuth2Login: true,
-          visibility: 'unlisted',
-          yaml: '{}\n',
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "app": {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {},
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": null,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
+          "yaml": "{}
+      ",
         },
-        role: 'Member',
-        properties: { test: 'Property' },
-      },
-    });
+        "email": null,
+        "emailVerified": false,
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "name": null,
+        "properties": {
+          "test": "Property",
+        },
+        "role": "Member",
+        "sso": [],
+      }
+    `,
+    );
   });
 
   it('should throw 404 if the app account doesn’t exist', async () => {
@@ -719,14 +806,16 @@ describe('getAppAccount', () => {
 
     const response = await request.get(`/api/user/apps/${app.id}/account`);
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App account not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App account not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {
@@ -734,14 +823,16 @@ describe('getAppAccount', () => {
 
     const response = await request.get('/api/user/apps/404/account');
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App account not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App account not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -762,36 +853,51 @@ describe('patchAppAccount', () => {
       createFormData({ email: 'user@example.com', name: 'Me', properties: { test: 'Property' } }),
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        app: {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          OrganizationId: 'testorganization',
-          OrganizationName: 'Test Organization',
-          definition: {},
-          domain: null,
-          hasIcon: false,
-          hasMaskableIcon: false,
-          iconBackground: '#ffffff',
-          iconUrl: null,
-          id: 1,
-          locked: false,
-          longDescription: null,
-          path: null,
-          showAppsembleLogin: false,
-          showAppsembleOAuth2Login: true,
-          visibility: 'unlisted',
-          yaml: '{}\n',
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "app": {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {},
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": null,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
+          "yaml": "{}
+      ",
         },
-        name: 'Me',
-        email: 'user@example.com',
-        role: 'Member',
-        picture: 'https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af?s=128&d=mp',
-        properties: { test: 'Property' },
-      },
-    });
+        "email": "user@example.com",
+        "emailVerified": false,
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "name": "Me",
+        "picture": "https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af?s=128&d=mp",
+        "properties": {
+          "test": "Property",
+        },
+        "role": "Member",
+        "sso": [],
+      }
+    `,
+    );
     await appMember.reload();
     expect(appMember.name).toBe('Me');
     expect(appMember.email).toBe('user@example.com');
@@ -808,7 +914,7 @@ describe('patchAppAccount', () => {
     });
     const appMember = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
-    const response = await request.patch(
+    const response = await request.patch<AppAccount>(
       `/api/user/apps/${app.id}/account`,
       createFormData({
         email: 'user@example.com',
@@ -817,35 +923,52 @@ describe('patchAppAccount', () => {
       }),
     );
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        app: {
-          $created: '1970-01-01T00:00:00.000Z',
-          $updated: '1970-01-01T00:00:00.000Z',
-          OrganizationId: 'testorganization',
-          OrganizationName: 'Test Organization',
-          definition: {},
-          domain: null,
-          hasIcon: false,
-          hasMaskableIcon: false,
-          iconBackground: '#ffffff',
-          iconUrl: null,
-          id: 1,
-          locked: false,
-          longDescription: null,
-          path: null,
-          showAppsembleLogin: false,
-          showAppsembleOAuth2Login: true,
-          visibility: 'unlisted',
-          yaml: '{}\n',
+    expect(response).toMatchInlineSnapshot(
+      { data: { id: expect.stringMatching(uuid4Pattern), picture: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "app": {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "OrganizationId": "testorganization",
+          "OrganizationName": "Test Organization",
+          "definition": {},
+          "domain": null,
+          "googleAnalyticsID": null,
+          "hasIcon": false,
+          "hasMaskableIcon": false,
+          "iconBackground": "#ffffff",
+          "iconUrl": null,
+          "id": 1,
+          "locked": false,
+          "longDescription": null,
+          "path": null,
+          "sentryDsn": null,
+          "sentryEnvironment": null,
+          "showAppDefinition": false,
+          "showAppsembleLogin": false,
+          "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
+          "yaml": "{}
+      ",
         },
-        name: 'Me',
-        email: 'user@example.com',
-        role: 'Member',
-        picture: `http://localhost/api/apps/${app.id}/members/${user.id}/picture?updated=0`,
-      },
-    });
+        "email": "user@example.com",
+        "emailVerified": false,
+        "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "name": "Me",
+        "picture": Any<String>,
+        "properties": {},
+        "role": "Member",
+        "sso": [],
+      }
+    `,
+    );
+    expect(response.data.picture).toBe(
+      `http://localhost/api/apps/1/members/${user.id}/picture?updated=0`,
+    );
     await appMember.reload();
     expect(appMember.picture).toStrictEqual(await readFixture('tux.png'));
   });
@@ -865,14 +988,16 @@ describe('patchAppAccount', () => {
       createFormData({ email: 'user@example.com', name: '' }),
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App account not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App account not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should throw 404 if the app doesn’t exist', async () => {
@@ -883,14 +1008,16 @@ describe('patchAppAccount', () => {
       createFormData({ email: 'user@example.com', name: '' }),
     );
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        message: 'App account not found',
-        statusCode: 404,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App account not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -903,10 +1030,25 @@ describe('registerMemberEmail', () => {
       createFormData({ email: 'test@example.com', password: 'password' }),
     );
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
 
@@ -922,10 +1064,25 @@ describe('registerMemberEmail', () => {
       createFormData({ email: 'test@example.com', name: 'Me', password: 'password' }),
     );
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {},
-    });
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
     expect(m.name).toBe('Me');
@@ -952,7 +1109,25 @@ describe('registerMemberEmail', () => {
     const responseC = await request.get(`/api/apps/${app.id}/members/${m.UserId}/picture`, {
       responseType: 'arraybuffer',
     });
-    expect(response.status).toBe(201);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
     expect(m.picture).toStrictEqual(await readFixture('tux.png'));
     expect(responseB.data).toStrictEqual(await readFixture('tux.png'));
     expect(responseC.data).toStrictEqual(await readFixture('tux.png'));
@@ -966,7 +1141,46 @@ describe('registerMemberEmail', () => {
       createFormData({ email: 'foo', password: 'bar' }),
     );
 
-    expect(response).toMatchObject({ status: 400 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "email",
+            "instance": "foo",
+            "message": "does not conform to the \\"email\\" format",
+            "name": "format",
+            "path": [
+              "email",
+            ],
+            "property": "instance.email",
+            "schema": {
+              "format": "email",
+              "type": "string",
+            },
+            "stack": "instance.email does not conform to the \\"email\\" format",
+          },
+          {
+            "argument": 8,
+            "instance": "bar",
+            "message": "does not meet minimum length of 8",
+            "name": "minLength",
+            "path": [
+              "password",
+            ],
+            "property": "instance.password",
+            "schema": {
+              "minLength": 8,
+              "type": "string",
+            },
+            "stack": "instance.password does not meet minimum length of 8",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
   });
 
   it('should not register duplicate email addresses', async () => {
@@ -984,7 +1198,16 @@ describe('registerMemberEmail', () => {
       createFormData({ email: 'test@example.com', password: 'password' }),
     );
 
-    expect(response).toMatchObject({ status: 409 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "User with this email address already exists.",
+        "statusCode": 409,
+      }
+    `);
   });
 });
 
@@ -1005,7 +1228,12 @@ describe('verifyMemberEmail', () => {
     const response = await request.post(`/api/user/apps/${app.id}/account/verify`, {
       token: m.emailKey,
     });
-    expect(response).toMatchObject({ status: 200 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: text/plain; charset=utf-8
+
+      OK
+    `);
 
     await m.reload();
     expect(m.emailVerified).toBe(true);
@@ -1023,9 +1251,48 @@ describe('verifyMemberEmail', () => {
       token: 'invalidkey',
     });
 
-    expect(responseA).toMatchObject({ status: 415 });
-    expect(responseB).toMatchObject({ status: 400 });
-    expect(responseC).toMatchObject({ status: 404 });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 415 Unsupported Media Type
+      Content-Type: text/plain; charset=utf-8
+
+      Unsupported Media Type
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": [
+              "string",
+            ],
+            "instance": null,
+            "message": "is not of a type(s) string",
+            "name": "type",
+            "path": [
+              "token",
+            ],
+            "property": "instance.token",
+            "schema": {
+              "type": "string",
+            },
+            "stack": "instance.token is not of a type(s) string",
+          },
+        ],
+        "message": "JSON schema validation failed",
+      }
+    `);
+    expect(responseC).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Unable to verify this token.",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -1048,8 +1315,8 @@ describe('requestMemberResetPassword', () => {
 
     await m.reload();
 
-    expect(responseA).toMatchObject({ status: 204 });
-    expect(responseB).toMatchObject({ status: 204 });
+    expect(responseA).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(await compare('newPassword', m.password)).toBe(true);
     expect(m.resetKey).toBeNull();
   });
@@ -1061,7 +1328,7 @@ describe('requestMemberResetPassword', () => {
       email: 'idonotexist@example.com',
     });
 
-    expect(response).toMatchObject({ status: 204 });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
   });
 });
 
@@ -1074,7 +1341,16 @@ describe('resetMemberPassword', () => {
       password: 'whatever',
     });
 
-    expect(response).toMatchObject({ status: 404 });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "URL not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -1108,9 +1384,15 @@ describe('getAppMemberPicture', () => {
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
     const response = await request.get(`/api/apps/${app.id}/members/${m.id}/picture`);
 
-    expect(response.data).toMatchObject({
-      statusCode: 404,
-      message: 'This member has no profile picture set.',
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "This member has no profile picture set.",
+        "statusCode": 404,
+      }
+    `);
   });
 });

@@ -27,11 +27,9 @@ export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
     params: { id, resourceName },
   } = useRouteMatch<{ id: string; resourceName: string }>();
   const resource = app.definition.resources[resourceName];
-  const roles = (
-    resource?.[type === '$count' ? 'count' : type]?.roles ??
-    resource?.roles ??
-    []
-  ).map((role) => app.messages?.app[`app.roles.${role}`] || role);
+  const roles = (resource[type === '$count' ? 'count' : type]?.roles ?? resource.roles ?? []).map(
+    (role) => app.messages?.app[`app.roles.${role}`] || role,
+  );
   const [method, postfix] = methods[type];
 
   return (

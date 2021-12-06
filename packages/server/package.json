@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.19.8",
+  "version": "0.19.9",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.19.8",
-    "@appsemble/types": "0.19.8",
-    "@appsemble/utils": "0.19.8",
+    "@appsemble/node-utils": "0.19.9",
+    "@appsemble/types": "0.19.9",
+    "@appsemble/utils": "0.19.9",
     "@fortawesome/fontawesome-common-types": "^0.2.0",
     "@fortawesome/fontawesome-free": "^5.0.0",
     "@hapi/boom": "^9.0.0",
@@ -50,6 +50,7 @@
     "bulma-switch": "^2.0.0",
     "cli-highlight": "^2.0.0",
     "cron-parser": "^4.0.0",
+    "csv-parse": "^5.0.0",
     "date-fns": "^2.0.0",
     "form-data": "^4.0.0",
     "intl-format-cache": "^4.0.0",
@@ -84,7 +85,7 @@
     "parse-duration": "^1.0.0",
     "pg": "^8.0.0",
     "pg-hstore": "^2.0.0",
-    "postcss": "^7.0.0",
+    "postcss": "^8.0.0",
     "qs": "^6.0.0",
     "raw-body": "^2.0.0",
     "reflect-metadata": "^0.1.0",
@@ -113,7 +114,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^7.0.0",
+    "@sinonjs/fake-timers": "^8.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
     "@types/jest-image-snapshot": "^4.0.0",
@@ -134,6 +135,7 @@
     "@types/sass": "^1.0.0",
     "@types/semver": "^7.0.0",
     "@types/sharp": "^0.29.0",
+    "@types/sinonjs__fake-timers": "^8.0.0",
     "@types/uuid": "^8.0.0",
     "@types/validator": "^13.0.0",
     "@types/web-push": "^3.0.0",

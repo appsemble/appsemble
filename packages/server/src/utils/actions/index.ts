@@ -18,6 +18,7 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
 }
 
 export const actions = {
+  analytics: noop,
   condition,
   dialog: noop,
   'dialog.error': noop,

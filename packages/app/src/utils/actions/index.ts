@@ -2,6 +2,7 @@ import { Action } from '@appsemble/sdk';
 import { ActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
+import { analytics } from './analytics';
 import { condition } from './condition';
 import { dialog } from './dialog';
 import { email } from './email';
@@ -46,6 +47,7 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
+  analytics,
   condition,
   link,
   'link.back': back,

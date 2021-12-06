@@ -137,7 +137,7 @@ export function MessagesForm({
                     <SimpleFormField
                       component={TextAreaField}
                       disabled={app.locked}
-                      key={blockId}
+                      key={`${blockId}.${version}.${messageId}`}
                       label={`${blockId}/${version}/${messageId}`}
                       name={messageId}
                       placeholder={defaultMessage}

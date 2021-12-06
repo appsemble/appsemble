@@ -229,10 +229,7 @@ const mapperImplementations: MapperImplementations = {
 
   static: (input) => input,
 
-  prop: (prop, obj: Record<string, unknown>) =>
-    String(prop)
-      .split('.')
-      .reduce((acc, p) => acc?.[p], obj),
+  prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),

@@ -8,6 +8,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types';
 import { makeActions } from '../../utils/makeActions';
+import { useAppMessages } from '../AppMessagesProvider';
 import { BlockList } from '../BlockList';
 import { DotProgressBar } from '../DotProgressBar';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
@@ -42,8 +43,14 @@ export function FlowPage({
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const { getAppMessage } = useAppMessages();
   const step = page.steps[currentStep];
-  useMeta(step.name);
+  useMeta(
+    getAppMessage({
+      id: `${prefix}.steps.${currentStep}`,
+      defaultMessage: step.name,
+    }).format() as string,
+  );
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const

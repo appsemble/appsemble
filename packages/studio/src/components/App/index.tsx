@@ -29,7 +29,6 @@ export function App(): ReactElement {
     <BrowserRouter>
       <Route path="/:lang?">
         <StudioMessagesProvider>
-          {/* @ts-expect-error https://github.com/mdx-js/mdx/pull/1762 */}
           <MDXProvider
             components={{
               a: MDXAnchor,

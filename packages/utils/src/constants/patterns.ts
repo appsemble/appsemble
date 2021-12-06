@@ -36,3 +36,13 @@ export const domainPattern = new RegExp(`^(${partialNormalized.source}+\\.)+[a-z
  * A pattern to match a Google Analytics ID or an empty string.
  */
 export const googleAnalyticsIDPattern = /^(|UA-\d{4,10}-\d{1,4}|G-[\dA-Z]{4,})$/;
+
+/**
+ * A pattern which matches a UUID 4.
+ */
+export const uuid4Pattern = /^[\d[a-f]{8}-[\da-f]{4}-4[\da-f]{3}-[\da-f]{4}-[\d[a-f]{12}$/;
+
+/**
+ * A pattern which matches a JSON web token.
+ */
+export const jwtPattern = /^[\w-]+(?:\.[\w-]+){2}$/;

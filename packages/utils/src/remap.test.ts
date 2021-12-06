@@ -1,5 +1,5 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap';
@@ -131,7 +131,7 @@ describe('context', () => {
 });
 
 describe('date.now', () => {
-  let clock: Clock;
+  let clock: InstalledClock;
 
   beforeEach(() => {
     clock = install();
@@ -151,7 +151,7 @@ describe('date.now', () => {
 });
 
 describe('date.add', () => {
-  let clock: Clock;
+  let clock: InstalledClock;
 
   beforeEach(() => {
     clock = install();
@@ -416,6 +416,11 @@ describe('prop', () => {
     },
     'get a nested property': {
       input: { address: { town: 'Bikini Bottom' } },
+      mappers: { prop: ['address', 'town'] },
+      expected: 'Bikini Bottom',
+    },
+    'get a property with a . in the key': {
+      input: { 'address.town': 'Bikini Bottom' },
       mappers: { prop: 'address.town' },
       expected: 'Bikini Bottom',
     },

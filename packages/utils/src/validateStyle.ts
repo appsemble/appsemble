@@ -7,7 +7,7 @@ export class StyleValidationError extends Error {
   }
 }
 
-export function validateStyle(css: postcss.ParserInput): string {
+export function validateStyle(css: unknown): string {
   if (!css) {
     return null;
   }

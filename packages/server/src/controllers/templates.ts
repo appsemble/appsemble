@@ -56,7 +56,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     throw notFound(`Template with ID ${templateId} does not exist.`);
   }
 
-  if (!template.template && template.visibility !== 'public') {
+  if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
     await checkRole(ctx, template.OrganizationId, Permission.ViewApps);
   }

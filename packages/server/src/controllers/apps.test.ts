@@ -1,6 +1,6 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { App as AppType, Snapshot } from '@appsemble/types';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -25,7 +25,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: Clock;
+let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('apps');

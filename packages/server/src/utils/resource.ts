@@ -1,11 +1,15 @@
-import { NotificationDefinition } from '@appsemble/types';
+import {
+  NotificationDefinition,
+  ResourceDefinition,
+  Resource as ResourceType,
+} from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { parseISO } from 'date-fns';
-import { Schema, ValidationError, Validator } from 'jsonschema';
+import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
+import parseDuration from 'parse-duration';
 import { Op } from 'sequelize';
-import { JsonObject } from 'type-fest';
 import { v4 } from 'uuid';
 
 import {
@@ -18,6 +22,7 @@ import {
   User,
 } from '../models';
 import { getRemapperContext } from './app';
+import { preProcessCSV } from './csv';
 import { handleValidatorResult } from './jsonschema';
 import { sendNotification, SendNotificationOptions } from './sendNotification';
 
@@ -212,31 +217,61 @@ export async function processReferenceHooks(
   );
 }
 
-export function processResourceBody(ctx: Context): [JsonObject, File[], Date, boolean] {
-  let body;
+function stripResource({
+  $author,
+  $created,
+  $updated,
+  ...data
+}: ResourceType): Record<string, unknown> {
+  return data;
+}
+
+interface PreparedAsset extends Pick<Asset, 'data' | 'data' | 'filename' | 'id' | 'mime'> {
+  resource?: Record<string, unknown>;
+}
+
+/**
+ * Process an incoming resource request body.
+ *
+ * This handles JSON schema validation, resource expiration, and asset linking and validation.
+ *
+ * @param ctx - The Koa context to process.
+ * @param definition - The resource definition to use for processing the request body.
+ * @param knownAssetIds - A list of asset IDs that are already known to be linked to the resource.
+ * @param knownExpires - A previously known expires value.
+ * @returns A tuple which consists of:
+ *
+ * 1. One or more resources processed from the request body.
+ * 2. A list of newly uploaded assets which should be linked to the resources.
+ * 3. Asset IDs from the `knownAssetIds` array which are no longer used.
+ */
+export function processResourceBody(
+  ctx: Context,
+  definition: ResourceDefinition,
+  knownAssetIds: string[] = [],
+  knownExpires?: Date,
+): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
+  let body: ResourceType | ResourceType[];
   let assets: File[];
+  let preValidateProperty: PreValidatePropertyFunction;
   if (ctx.is('multipart/form-data')) {
-    ({ assets, resource: body } = ctx.request.body);
+    ({ assets = [], resource: body } = ctx.request.body);
+    if (Array.isArray(body) && body.length === 1) {
+      [body] = body;
+    }
   } else {
+    if (ctx.is('text/csv')) {
+      preValidateProperty = preProcessCSV;
+    }
     ({ body } = ctx.request);
     assets = [];
   }
-  const { $clonable, $expires, id, ...resource } = body;
-  return [resource, assets, $expires ? parseISO($expires) : null, Boolean($clonable)];
-}
-
-export function verifyResourceBody(
-  type: string,
-  schema: Schema,
-  resource: any,
-  assets: File[] = [],
-  knownAssetIds: string[] = [],
-): [Pick<Asset, 'data' | 'data' | 'filename' | 'mime'>[], string[]] {
+  const resource = Array.isArray(body) ? body.map(stripResource) : stripResource(body);
   const validator = new Validator();
   const assetIdMap = new Map<number, string>();
   const assetUsedMap = new Map<number, boolean>();
   const reusedAssets = new Set<string>();
-  const preparedAssets = assets.map(({ contents, filename, mime }, index) => {
+  const preparedAssets = assets.map<PreparedAsset>(({ contents, filename, mime }, index) => {
     const id = v4();
     assetIdMap.set(index, id);
     assetUsedMap.set(index, false);
@@ -251,22 +286,72 @@ export function verifyResourceBody(
       return false;
     }
     const num = Number(input);
+    if (assetUsedMap.get(num)) {
+      return false;
+    }
     return num >= 0 && num < assets.length;
   };
 
-  const result = validator.validate(resource, schema, {
-    base: '#',
-    rewrite(value, { format }) {
-      if (format !== 'binary') {
-        return value;
-      }
-      if (knownAssetIds.includes(value)) {
-        return value;
-      }
-      assetUsedMap.set(Number(value), true);
-      return assetIdMap.get(Number(value));
+  const patchedSchema = {
+    ...definition.schema,
+    properties: {
+      ...definition.schema.properties,
+      id: { type: 'integer' },
+      $expires: { type: 'string', format: 'date-time' },
+      $clonable: { type: 'boolean' },
     },
-  });
+  };
+  const customErrors: ValidationError[] = [];
+  const expiresDuration = definition.expires ? parseDuration(definition.expires) : undefined;
+  const result = validator.validate(
+    resource,
+    Array.isArray(resource) ? { type: 'array', items: patchedSchema } : patchedSchema,
+    {
+      base: '#',
+      preValidateProperty,
+      rewrite(value, { format }, options, { path }) {
+        if (
+          Array.isArray(resource)
+            ? path.length === 2 && typeof path[0] === 'number' && path[1] === '$expires'
+            : path.length === 1 && path[0] === '$expires'
+        ) {
+          if (value !== undefined) {
+            const date = parseISO(value);
+            if (isPast(date)) {
+              customErrors.push(new ValidationError('has already passed', value, null, path));
+            }
+            return date;
+          }
+          if (knownExpires) {
+            return knownExpires;
+          }
+          if (expiresDuration) {
+            return addMilliseconds(new Date(), expiresDuration);
+          }
+        }
+        if (value === undefined) {
+          return;
+        }
+        if (format !== 'binary') {
+          return value;
+        }
+        if (knownAssetIds.includes(value)) {
+          return value;
+        }
+        const num = Number(value);
+        if (!assetIdMap.has(num)) {
+          return value;
+        }
+        const uuid = assetIdMap.get(num);
+        const currentResource = Array.isArray(resource) ? resource[path[0] as number] : resource;
+        preparedAssets.find((asset) => asset.id === uuid).resource = currentResource;
+        assetUsedMap.set(num, true);
+        return uuid;
+      },
+    },
+  );
+
+  result.errors.push(...customErrors);
 
   for (const [assetId, used] of assetUsedMap.entries()) {
     if (!used) {
@@ -283,7 +368,7 @@ export function verifyResourceBody(
     }
   }
 
-  handleValidatorResult(result, `Validation failed for resource type ${type}`);
+  handleValidatorResult(result, 'Resource validation failed');
 
-  return [preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
+  return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }

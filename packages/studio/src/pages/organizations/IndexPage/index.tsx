@@ -32,7 +32,11 @@ export function IndexPage(): ReactElement {
       <HeaderControl
         control={
           userInfo && (
-            <Button onClick={modal.enable}>
+            <Button
+              disabled={!userInfo?.email_verified}
+              onClick={modal.enable}
+              title={userInfo?.email_verified ? null : formatMessage(messages.createVerify)}
+            >
               <FormattedMessage {...messages.createButton} />
             </Button>
           )

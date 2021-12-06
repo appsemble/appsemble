@@ -1,16 +1,27 @@
 import { bootstrap } from '@appsemble/preact';
-import { h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 
-bootstrap(({ actions, parameters: { fields } }) => {
+bootstrap(({ events, parameters: { fields } }) => {
   const [data, setData] = useState<any[]>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    actions.onLoad.dispatch().then(setData, () => {
-      setError(true);
-    });
-  }, [actions]);
+    const onData = (newData: unknown[], newError: unknown): void => {
+      if (newError) {
+        setError(true);
+        setData(null);
+      } else {
+        setError(false);
+        setData(newData);
+      }
+    };
+
+    events.on.data(onData);
+
+    return () => {
+      events.off.data(onData);
+    };
+  }, [events]);
 
   if (error) {
     return <p>Error loading data.</p>;

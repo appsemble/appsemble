@@ -127,6 +127,12 @@ export function extractAppMessages(
           messages.app[`${prefix.join('.')}.tabs.${index}`] = tab.name ?? '';
         }
       }
+
+      if (page.type === 'flow') {
+        for (const [index, step] of page.steps.entries()) {
+          messages.app[`${prefix.join('.')}.steps.${index}`] = step.name ?? '';
+        }
+      }
     },
   });
 

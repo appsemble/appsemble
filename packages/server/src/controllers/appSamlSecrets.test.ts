@@ -1,4 +1,5 @@
 import { AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, AppSamlSecret, Member, Organization } from '../models';
@@ -8,6 +9,7 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let app: App;
+let clock: InstalledClock;
 let member: Member;
 let organization: Organization;
 
@@ -20,6 +22,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  clock = install();
   const user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -34,6 +37,10 @@ beforeEach(async () => {
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
 });
 
+afterEach(() => {
+  clock.uninstall();
+});
+
 describe('createSamlSecret', () => {
   it('should generate SAML parameters', async () => {
     authorizeStudio();
@@ -44,18 +51,25 @@ describe('createSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        entityId: 'https://example.com/saml/metadata.xml',
-        icon: '',
-        id: 1,
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-        name: '',
-        spCertificate: expect.any(String),
-        ssoUrl: 'https://example.com/saml/login',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { spCertificate: expect.any(String) } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "entityId": "https://example.com/saml/metadata.xml",
+        "icon": "",
+        "id": 1,
+        "idpCertificate": "-----BEGIN CERTIFICATE-----
+      IDP
+      -----END CERTIFICATE-----",
+        "name": "",
+        "spCertificate": Any<String>,
+        "ssoUrl": "https://example.com/saml/login",
+      }
+    `,
+    );
   });
 
   it('should not throw status 404 for unknown apps', async () => {
@@ -67,10 +81,16 @@ describe('createSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
@@ -83,21 +103,23 @@ describe('createSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
 describe('getAppSamlSecrets', () => {
   it('should get SAML secrets for an app', async () => {
     authorizeStudio();
-    const secret = await AppSamlSecret.create({
+    await AppSamlSecret.create({
       AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
@@ -109,20 +131,28 @@ describe('getAppSamlSecrets', () => {
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
     });
     const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: secret.id,
-          entityId: 'https://example.com/saml/metadata.xml',
-          ssoUrl: 'https://example.com/saml/login',
-          idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-          icon: '',
-          name: '',
-          spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+          "emailAttribute": null,
+          "entityId": "https://example.com/saml/metadata.xml",
+          "icon": "",
+          "id": 1,
+          "idpCertificate": "-----BEGIN CERTIFICATE-----
+      IDP
+      -----END CERTIFICATE-----",
+          "name": "",
+          "nameAttribute": null,
+          "spCertificate": "-----BEGIN CERTIFICATE-----
+      SP
+      -----END CERTIFICATE-----",
+          "ssoUrl": "https://example.com/saml/login",
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should only include SAML secrets for the specified app', async () => {
@@ -133,7 +163,7 @@ describe('getAppSamlSecrets', () => {
       vapidPrivateKey: '',
       definition: {},
     });
-    const secret = await AppSamlSecret.create({
+    await AppSamlSecret.create({
       AppId: app.id,
       entityId: 'https://example.com/saml/metadata.xml',
       ssoUrl: 'https://example.com/saml/login',
@@ -156,43 +186,59 @@ describe('getAppSamlSecrets', () => {
       spPublicKey: '-----BEGIN PUBLIC KEY-----\nOTHER_SP\n-----END PUBLIC KEY-----',
     });
     const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
         {
-          id: secret.id,
-          entityId: 'https://example.com/saml/metadata.xml',
-          ssoUrl: 'https://example.com/saml/login',
-          idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
-          icon: '',
-          name: '',
-          spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+          "emailAttribute": null,
+          "entityId": "https://example.com/saml/metadata.xml",
+          "icon": "",
+          "id": 1,
+          "idpCertificate": "-----BEGIN CERTIFICATE-----
+      IDP
+      -----END CERTIFICATE-----",
+          "name": "",
+          "nameAttribute": null,
+          "spCertificate": "-----BEGIN CERTIFICATE-----
+      SP
+      -----END CERTIFICATE-----",
+          "ssoUrl": "https://example.com/saml/login",
         },
-      ],
-    });
+      ]
+    `);
   });
 
   it('should not throw status 404 for unknown apps', async () => {
     authorizeStudio();
     const response = await request.get('/api/apps/53/secrets/saml');
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
     authorizeStudio();
     await member.update({ role: 'Member' });
     const response = await request.get(`/api/apps/${app.id}/secrets/saml`);
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });
 
@@ -220,18 +266,28 @@ describe('updateAppSamlSecret', () => {
         name: 'Updated',
       },
     );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        entityId: 'https://updated.example/saml/metadata.xml',
-        ssoUrl: 'https://updated.example/saml/login',
-        idpCertificate: '-----BEGIN CERTIFICATE-----\nUPDATED\n-----END CERTIFICATE-----',
-        icon: 'updated',
-        name: 'Updated',
-        id: 1,
-        spCertificate: expect.any(String),
-      },
-    });
+    expect(response).toMatchInlineSnapshot(
+      { data: { spCertificate: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "emailAttribute": null,
+        "entityId": "https://updated.example/saml/metadata.xml",
+        "icon": "updated",
+        "id": 1,
+        "idpCertificate": "-----BEGIN CERTIFICATE-----
+      UPDATED
+      -----END CERTIFICATE-----",
+        "name": "Updated",
+        "nameAttribute": null,
+        "spCertificate": Any<String>,
+        "ssoUrl": "https://updated.example/saml/login",
+        "updated": "1970-01-01T00:00:00.000Z",
+      }
+    `,
+    );
     await secret.reload();
     const { updated, ...data } = response.data;
     expect(secret).toMatchObject(data);
@@ -246,10 +302,16 @@ describe('updateAppSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'SAML secret not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "SAML secret not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not throw status 404 for unknown secrets', async () => {
@@ -261,10 +323,16 @@ describe('updateAppSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 404,
-      data: { error: 'Not Found', message: 'App not found', statusCode: 404 },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should require the EditApps and EditAppSettings permissions', async () => {
@@ -277,13 +345,15 @@ describe('updateAppSamlSecret', () => {
       icon: '',
       name: '',
     });
-    expect(response).toMatchObject({
-      status: 403,
-      data: {
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-        statusCode: 403,
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
   });
 });

@@ -24,7 +24,7 @@
     height: 20em;
     max-height: 40vw;
     max-width: 40vw;
-    opacity: 50%;
+    opacity: 0.5;
     width: 20em;
   }
 }

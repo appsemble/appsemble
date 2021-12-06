@@ -1,8 +1,9 @@
 import { createFormData } from '@appsemble/node-utils';
 import { Resource as ResourceType } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
+import stripIndent from 'strip-indent';
 import webpush from 'web-push';
 
 import {
@@ -28,7 +29,7 @@ import {
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
-let clock: Clock;
+let clock: InstalledClock;
 let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -48,6 +49,11 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
               bar: { type: 'string' },
               fooz: { type: 'string' },
               baz: { type: 'string' },
+              number: { type: 'number' },
+              boolean: { type: 'boolean' },
+              integer: { type: 'integer' },
+              object: { type: 'object' },
+              array: { type: 'array' },
             },
           },
           roles: ['$public'],
@@ -172,6 +178,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             type: 'object',
             properties: {
               file: { type: 'string', format: 'binary' },
+              file2: { type: 'string', format: 'binary' },
               string: { type: 'string' },
             },
           },
@@ -1856,17 +1863,42 @@ describe('createResource', () => {
               "property": "instance",
               "schema": {
                 "properties": {
+                  "$clonable": {
+                    "type": "boolean",
+                  },
+                  "$expires": {
+                    "format": "date-time",
+                    "type": "string",
+                  },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
                   },
+                  "boolean": {
+                    "type": "boolean",
+                  },
                   "foo": {
                     "type": "string",
                   },
                   "fooz": {
                     "type": "string",
+                  },
+                  "id": {
+                    "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
@@ -1879,7 +1911,7 @@ describe('createResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testResource",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -1917,7 +1949,7 @@ describe('createResource', () => {
 
       {
         "error": "Not Found",
-        "message": "App does not have any resources defined",
+        "message": "App does not have resources called thisDoesNotExist",
         "statusCode": 404,
       }
     `);
@@ -1979,8 +2011,21 @@ describe('createResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "errors": [
+            {
+              "instance": "1970-01-01T00:05:00.000Z",
+              "message": "has already passed",
+              "path": [
+                "$expires",
+              ],
+              "property": "instance.$expires",
+              "stack": "instance.$expires has already passed",
+            },
+          ],
+        },
         "error": "Bad Request",
-        "message": "Expiration date has already passed.",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -2060,10 +2105,146 @@ describe('createResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testAssets",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
+  });
+
+  it('should disallow duplicate file references', async () => {
+    const app = await exampleApp(organization.id);
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: { file: '0', file2: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "binary",
+              "instance": "0",
+              "message": "does not conform to the \\"binary\\" format",
+              "name": "format",
+              "path": [
+                "file2",
+              ],
+              "property": "instance.file2",
+              "schema": {
+                "format": "binary",
+                "type": "string",
+              },
+              "stack": "instance.file2 does not conform to the \\"binary\\" format",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should accept an array of resources', async () => {
+    const app = await exampleApp(organization.id);
+    const response = await request.post<ResourceType>(
+      `/api/apps/${app.id}/resources/testResource`,
+      [{ foo: 'bar' }, { foo: 'baz' }],
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
+        },
+      ]
+    `);
+  });
+
+  it('should accept assets as form data with multiple resources', async () => {
+    const app = await exampleApp(organization.id);
+    const response = await request.post<ResourceType[]>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: [{ file: '0' }, { file: '1' }],
+        assets: [Buffer.from('Test resource a'), Buffer.from('Test resource b')],
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) },
+          { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) },
+        ],
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "id": 2,
+        },
+      ]
+    `,
+    );
+    const assets = await Asset.findAll({ raw: true });
+    expect(assets).toStrictEqual([
+      {
+        AppId: app.id,
+        ResourceId: 1,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: Buffer.from('Test resource a'),
+        filename: null,
+        id: response.data[0].file,
+        mime: 'application/octet-stream',
+        name: null,
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+      {
+        AppId: app.id,
+        ResourceId: 2,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: Buffer.from('Test resource b'),
+        filename: null,
+        id: response.data[1].file,
+        mime: 'application/octet-stream',
+        name: null,
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+    ]);
+    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
   });
 
   it('should block unknown asset references', async () => {
@@ -2100,7 +2281,7 @@ describe('createResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testAssets",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -2197,6 +2378,53 @@ describe('createResource', () => {
         "message": "User does not have sufficient permissions.",
         "statusCode": 403,
       }
+    `);
+  });
+
+  it('should accept text/csv', async () => {
+    const app = await exampleApp(organization.id);
+
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/testResource`,
+      stripIndent(`
+        foo,bar,integer,boolean,number,object,array\r
+        a,b,42,true,3.14,{},[]\r
+        A,B,1337,false,9.8,{},[]\r
+      `)
+        .replace(/^\s+/, '')
+        .replace(/ +$/g, ''),
+      { headers: { 'content-type': 'text/csv' } },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "b",
+          "boolean": true,
+          "foo": "a",
+          "id": 1,
+          "integer": 42,
+          "number": 3.14,
+          "object": {},
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "bar": "B",
+          "boolean": false,
+          "foo": "A",
+          "id": 2,
+          "integer": 1337,
+          "number": 9.8,
+          "object": {},
+        },
+      ]
     `);
   });
 });
@@ -2425,17 +2653,42 @@ describe('updateResource', () => {
               "property": "instance",
               "schema": {
                 "properties": {
+                  "$clonable": {
+                    "type": "boolean",
+                  },
+                  "$expires": {
+                    "format": "date-time",
+                    "type": "string",
+                  },
+                  "array": {
+                    "type": "array",
+                  },
                   "bar": {
                     "type": "string",
                   },
                   "baz": {
                     "type": "string",
                   },
+                  "boolean": {
+                    "type": "boolean",
+                  },
                   "foo": {
                     "type": "string",
                   },
                   "fooz": {
                     "type": "string",
+                  },
+                  "id": {
+                    "type": "integer",
+                  },
+                  "integer": {
+                    "type": "integer",
+                  },
+                  "number": {
+                    "type": "number",
+                  },
+                  "object": {
+                    "type": "object",
                   },
                 },
                 "required": [
@@ -2464,7 +2717,7 @@ describe('updateResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testResource",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -2570,8 +2823,21 @@ describe('updateResource', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": {
+          "errors": [
+            {
+              "instance": "1970-01-01T00:07:00.000Z",
+              "message": "has already passed",
+              "path": [
+                "$expires",
+              ],
+              "property": "instance.$expires",
+              "stack": "instance.$expires has already passed",
+            },
+          ],
+        },
         "error": "Bad Request",
-        "message": "Expiration date has already passed.",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -2653,7 +2919,7 @@ describe('updateResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testAssets",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);
@@ -2694,7 +2960,7 @@ describe('updateResource', () => {
           ],
         },
         "error": "Bad Request",
-        "message": "Validation failed for resource type testAssets",
+        "message": "Resource validation failed",
         "statusCode": 400,
       }
     `);

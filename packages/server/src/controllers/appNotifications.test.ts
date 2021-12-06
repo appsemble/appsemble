@@ -1,4 +1,4 @@
-import { Clock, install } from '@sinonjs/fake-timers';
+import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import {
@@ -15,7 +15,7 @@ import { createServer } from '../utils/createServer';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
-let clock: Clock;
+let clock: InstalledClock;
 let organization: Organization;
 let user: User;
 
@@ -115,22 +115,29 @@ describe('getSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
-          subscriptions: { [resource.id]: { update: true, delete: false } },
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "subscriptions": {
+            "1": {
+              "delete": false,
+              "update": true,
+            },
+          },
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
   });
 
   it('should 404 on non-existent subscriptions', async () => {
@@ -139,14 +146,16 @@ describe('getSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Subscription not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Subscription not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });
 
@@ -165,7 +174,7 @@ describe('addSubscription', () => {
       raw: true,
     });
 
-    expect(response).toMatchObject({ status: 204, data: {} });
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(subscription).toMatchObject({
       endpoint: 'https://example.com',
       p256dh: 'abc',
@@ -204,22 +213,24 @@ describe('updateSubscription', () => {
       where: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({ status: 204, data: {} });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: true,
-          update: false,
-          delete: false,
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": true,
+          "delete": false,
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
     expect(subscription.UserId).toStrictEqual(user.id);
   });
 
@@ -250,25 +261,30 @@ describe('updateSubscription', () => {
       where: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({ status: 204, data: {} });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
-          subscriptions: {
-            [id]: { update: true, delete: false },
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "subscriptions": {
+            "1": {
+              "delete": false,
+              "update": true,
+            },
           },
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
     expect(subscription.UserId).toStrictEqual(user.id);
   });
 
@@ -297,22 +313,24 @@ describe('updateSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({ status: 204, data: {} });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
   });
 
   it('should remove individual resource subscription settings if set to false', async () => {
@@ -348,38 +366,47 @@ describe('updateSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(response).toMatchObject({ status: 204, data: {} });
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
-          subscriptions: { [id]: { update: true, delete: false } },
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "subscriptions": {
+            "1": {
+              "delete": false,
+              "update": true,
+            },
+          },
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
+      }
+    `);
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
   });
 
   it('should toggle resource type subscriptions if value isn’t set', async () => {
@@ -409,37 +436,41 @@ describe('updateSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: true,
-          update: false,
-          delete: false,
-        },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
-        },
-      },
-    });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
+      {
+        "person": {
+          "create": true,
+          "delete": false,
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
+
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "update": false,
+        },
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
+        },
+      }
+    `);
   });
 
   it('should toggle individual resource subscriptions if value isn’t set', async () => {
@@ -473,40 +504,47 @@ describe('updateSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    expect(responseA).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
-          subscriptions: {
-            [id]: { update: true, delete: false },
-          },
-        },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
-        },
-      },
-    });
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
 
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: {
-        person: {
-          create: false,
-          update: false,
-          delete: false,
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "subscriptions": {
+            "1": {
+              "delete": false,
+              "update": true,
+            },
+          },
+          "update": false,
         },
-        pet: {
-          create: false,
-          update: false,
-          delete: false,
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
         },
-      },
-    });
+      }
+    `);
+
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "person": {
+          "create": false,
+          "delete": false,
+          "update": false,
+        },
+        "pet": {
+          "create": false,
+          "delete": false,
+          "update": false,
+        },
+      }
+    `);
   });
 
   it('should 404 on non-existent subscriptions', async () => {
@@ -518,13 +556,15 @@ describe('updateSubscription', () => {
       value: true,
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Subscription not found',
-      },
-    });
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Subscription not found",
+        "statusCode": 404,
+      }
+    `);
   });
 });

@@ -3,11 +3,20 @@
     "description": "An app which asks the user to fill out some questions.",
     "name": "Survey",
     "pages.0": "Survey",
+    "pages.0.steps.0": "Introduction",
+    "pages.0.steps.1": "Familiarity",
+    "pages.0.steps.2": "Appsemble Ratings",
+    "pages.0.steps.3": "Appsemble Feedback",
+    "pages.0.steps.4": "Feature Ratings",
+    "pages.0.steps.5": "Next App With Appsemble",
+    "pages.0.steps.6": "Your Next app",
+    "pages.0.steps.7": "Why Not Appsemble",
+    "pages.0.steps.8": "Anything Else",
     "pages.1": "Finished"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.19.8": {
+      "0.19.9": {
         "submitLabel": "Next"
       }
     }

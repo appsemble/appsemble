@@ -29,9 +29,6 @@ junit.xml
 # Any kind of certificate used for using SSL locally
 /*.pem
 
-# Docz output directory
-/.docz/
-
 # Lighthouse reports
 /.lighthouseci/
 

@@ -4,6 +4,7 @@ import { loggerMiddleware } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
+import { parse as parseCSV } from 'csv-parse';
 import Koa, { Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -36,6 +37,19 @@ const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, 
   const data = parse(String(buffer));
   return data;
 };
+
+const csvParser: Parser<unknown[]> = (body) =>
+  new Promise((resolve, reject) => {
+    body.pipe(
+      parseCSV({ bom: true, columns: true }, (error, records) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(records);
+        }
+      }),
+    );
+  });
 
 interface CreateServerOptions {
   /**
@@ -86,6 +100,7 @@ export async function createServer({
           bodyParser({
             parsers: {
               'application/x-www-form-urlencoded': xWwwFormUrlencodedParser,
+              'text/csv': csvParser,
               '*/*': bufferParser,
             },
           }),

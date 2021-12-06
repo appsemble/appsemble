@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.9](https://gitlab.com/appsemble/appsemble/-/releases/0.19.9)] - 2021-12-06
+
+### Added
+
+- App: Add `analytics` action.
+- App: Add support for arrays of strings or numbers for `prop` remapper.
+- App: Add support for translated flow page steps.
+- Server: Add support for creating resources from CSV data.
+- Studio: Add support for translating flow page steps.
+
+### Changed
+
+- Cli: Update to `postcss` 8.
+
+### Removed
+
+- App: Remove support for accessing properties using dot notation in `prop` remapper.
+
 ## \[[0.19.8](https://gitlab.com/appsemble/appsemble/-/releases/0.19.8)] - 2021-11-24
 
 ### Added
