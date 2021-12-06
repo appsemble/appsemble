@@ -50,12 +50,16 @@ DSN
 dropdown
 ESLint
 falsy
+foundQr
+Fontys
 GitLab
 Gravatar
 IDP
+ICT
 JSON
 JSX
 JWT
+jsQR
 Koa
 Kubernetes
 localhost
@@ -74,6 +78,8 @@ PEM
 Preact
 prerelease/release
 PWA
+qr-scan_res
+qr-scan_res2
 remapper/mapper
 Redux
 SDK
