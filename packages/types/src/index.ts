@@ -554,6 +554,18 @@ export interface BaseActionDefinition<T extends Action['type']> {
   onError?: ActionDefinition;
 }
 
+export interface AnalyticsAction extends BaseActionDefinition<'analytics'> {
+  /**
+   * The analytics event target name.
+   */
+  target: string;
+
+  /**
+   * Additional config to pass to analytics.
+   */
+  config?: Remapper;
+}
+
 export interface ConditionActionDefinition extends BaseActionDefinition<'condition'> {
   /**
    * The condition to check for.
@@ -872,6 +884,7 @@ export type MessageActionDefinition = BaseActionDefinition<'message'> &
   };
 
 export type ActionDefinition =
+  | AnalyticsAction
   | BaseActionDefinition<'dialog.error'>
   | BaseActionDefinition<'dialog.ok'>
   | BaseActionDefinition<'flow.back'>

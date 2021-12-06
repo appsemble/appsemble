@@ -1,4 +1,5 @@
 export * from './ActionDefinition';
+export * from './AnalyticsActionDefinition';
 export * from './App';
 export * from './AppAccount';
 export * from './AppDefinition';
