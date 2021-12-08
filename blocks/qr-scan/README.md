@@ -4,16 +4,6 @@ A simple block that creates a video element, which streams the camera, and allow
 detection within this video element. Once a QR-code has been detected. Emits event `foundQr` which
 holds only the QR URL as data.
 
-## Parameters:
-
-- `drawQr` (optional true/false) Whether detected QR-codes are highlighted with a red square.
-- `height` (optional number) Height of the video that displays the camera-stream.
-- `width` (optional number) Width of the video that displays the camera-stream.
-
-## Events:
-
-- Emits `foundQr` event upon detected a QR-code. foundQr event holds the QR URL as data.
-
 ## Dependencies
 
 Relies on [jsQR](https://github.com/cozmo/jsQR) by `Cosmo Wolfe`.
