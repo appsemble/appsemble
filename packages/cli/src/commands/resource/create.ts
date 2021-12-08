@@ -62,7 +62,7 @@ export async function handler({
   );
 
   if (!files.length) {
-    throw new AppsembleError('No JSON or CSV files found.');
+    throw new AppsembleError('No .json or .csv files found.');
   }
 
   logger.info(`Creating resources based on ${files.length} files`);
