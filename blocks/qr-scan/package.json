@@ -1,7 +1,7 @@
 {
   "name": "@appsemble/qr-scan",
-  "version": "0.21.0",
-  "private": false,
+  "version": "0.19.9",
+  "private": true,
   "dependencies": {
     "@appsemble/sdk": "0.19.7",
     "jsqr": "^1.4.0"

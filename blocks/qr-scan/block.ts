@@ -11,12 +11,12 @@ declare module '@appsemble/sdk' {
     /**
      * Video Element Height
      */
-    videoHeight?: number;
+    height?: number;
 
     /**
      * Video Element Width
      */
-    videoWidth?: number;
+    width?: number;
   }
 
   interface EventEmitters {

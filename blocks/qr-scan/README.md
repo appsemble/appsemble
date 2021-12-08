@@ -7,8 +7,8 @@ holds only the QR URL as data.
 ## Parameters:
 
 - `drawQr` (optional true/false) Whether detected QR-codes are highlighted with a red square.
-- `videoHeight` (optional number) Height of the video that displays the camera-stream.
-- `videoWidth` (optional number) Width of the video that displays the camera-stream.
+- `height` (optional number) Height of the video that displays the camera-stream.
+- `width` (optional number) Width of the video that displays the camera-stream.
 
 ## Events:
 
