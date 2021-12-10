@@ -211,6 +211,7 @@ describe('getAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
+        'cache-control': 'max-age=31536000,immutable',
       }),
       data,
     });
@@ -218,7 +219,7 @@ describe('getAssetById', () => {
 
   it('should be able to fetch an by name', async () => {
     const data = Buffer.from('buffer');
-    await Asset.create({
+    const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
@@ -233,8 +234,10 @@ describe('getAssetById', () => {
     expect(response).toMatchObject({
       status: 200,
       headers: expect.objectContaining({
+        location: `/api/app/1/assets/${asset.id}`,
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
+        'cache-control': 'max-age=31536000,immutable',
       }),
       data,
     });
