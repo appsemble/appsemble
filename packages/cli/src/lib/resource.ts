@@ -56,10 +56,10 @@ export async function createResource({
   resourceName,
 }: CreateResourceParams): Promise<void> {
   const csv = path.endsWith('.csv');
-  let resources: Resource[] | string;
+  let resources: Buffer | Resource[];
 
   if (csv) {
-    resources = await readFile(path, 'utf8');
+    resources = await readFile(path);
   } else {
     const [file] = await readData<Resource>(path);
 
