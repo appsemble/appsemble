@@ -45,12 +45,12 @@ export function FlowPage({
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
   const { getAppMessage } = useAppMessages();
   const step = page.steps[currentStep];
-  useMeta(
-    getAppMessage({
-      id: `${prefix}.steps.${currentStep}`,
-      defaultMessage: step.name,
-    }).format() as string,
-  );
+  const id = `${prefix}.steps.${currentStep}`;
+  const name = getAppMessage({
+    id,
+    defaultMessage: step.name,
+  }).format() as string;
+  useMeta(name === id ? null : name);
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const
