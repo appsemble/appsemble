@@ -57,10 +57,12 @@ export async function handler({
   await authenticate(resolvedRemote, 'resources:write', clientCredentials);
 
   const normalizedPaths = paths.map((path) => normalizePath(path));
-  const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
+  const files = (await fg(normalizedPaths, { absolute: true, onlyFiles: true })).filter(
+    (file) => file.endsWith('.json') || file.endsWith('.csv'),
+  );
 
   if (!files.length) {
-    throw new AppsembleError('No JSON files found.');
+    throw new AppsembleError('No .json or .csv files found.');
   }
 
   logger.info(`Creating resources based on ${files.length} files`);

@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises';
 import { URL } from 'url';
 
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
@@ -54,29 +55,37 @@ export async function createResource({
   remote,
   resourceName,
 }: CreateResourceParams): Promise<void> {
-  const [file] = await readData<Resource>(path);
+  const csv = path.endsWith('.csv');
+  let resources: Buffer | Resource[];
 
-  if (typeof file !== 'object') {
-    throw new AppsembleError(`File at ${path} does not contain an object or array of objects`);
+  if (csv) {
+    resources = await readFile(path);
+  } else {
+    const [file] = await readData<Resource>(path);
+
+    if (typeof file !== 'object') {
+      throw new AppsembleError(`File at ${path} does not contain an object or array of objects`);
+    }
+
+    resources = [].concat(file);
   }
 
-  const resources = [].concat(file);
-  logger.info(`Creating ${resources.length} resource(s) from ${path}`);
-
-  for (const resource of resources) {
-    const {
-      data: { id },
-    } = await axios.post<Resource>(`/api/apps/${appId}/resources/${resourceName}`, resource, {
+  logger.info(`Creating resource(s) from ${path}`);
+  const { data } = await axios.post<Resource | Resource[]>(
+    `/api/apps/${appId}/resources/${resourceName}`,
+    resources,
+    {
       baseURL: remote,
-    });
-
-    logger.info(
-      `Successfully created resource ${id} at ${new URL(
-        `/apps/${appId}/resources/${resourceName}/${id}`,
-        remote,
-      )}`,
-    );
-  }
+      headers: { 'content-type': csv ? 'text/csv' : 'application/json' },
+    },
+  );
+  const ids: number[] = [].concat(data).map((d: Resource) => d.id);
+  const url = new URL(`/apps/${appId}/resources/${resourceName}/`, remote);
+  logger.info(
+    `Successfully created ${ids.length ? ids.length : '1'} resource(s) at: \n${ids
+      .map((id) => `${url}${id}`)
+      .join('\n')}`,
+  );
 }
 
 export async function updateResource({
