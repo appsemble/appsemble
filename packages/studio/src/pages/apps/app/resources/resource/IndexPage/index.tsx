@@ -183,7 +183,7 @@ export function IndexPage(): ReactElement {
   );
 
   const downloadCsv = useCallback(async () => {
-    const url = new URL(resourceURL);
+    const url = new URL(resourceURL, window.location.origin);
     url.searchParams.set(
       '$select',
       ['id', '$created', '$updated', '$author', ...keys]
