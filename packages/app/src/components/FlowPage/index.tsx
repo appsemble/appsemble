@@ -50,7 +50,7 @@ export function FlowPage({
     id,
     defaultMessage: step.name,
   }).format() as string;
-  useMeta(name === id ? null : name);
+  useMeta(name === `{${id}}` ? null : name);
 
   // XXX Something weird is going on here.
   // eslint-disable-next-line prefer-const
