@@ -1,7 +1,9 @@
-import { Table, Title, useData, useMeta } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { Button, Table, Title, useData, useMeta } from '@appsemble/react-components';
+import { convertToCsv } from '@appsemble/utils';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
+import { downloadBlob } from 'web-utils/src/download';
 
 import { useApp } from '..';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
@@ -25,6 +27,11 @@ export function UsersPage(): ReactElement {
   const onMemberChange = (member: Member): void => {
     result.setData(result.data.map((m) => (m.id === member.id ? member : m)));
   };
+
+  const onMemberExport = useCallback(() => {
+    const csv = convertToCsv(result.data);
+    downloadBlob(csv, 'members.csv');
+  }, [result.data]);
 
   return (
     <>
@@ -50,26 +57,33 @@ export function UsersPage(): ReactElement {
         result={result}
       >
         {(members) => (
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <FormattedMessage {...messages.user} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.properties} />
-                </th>
-                <th className="has-text-right">
-                  <FormattedMessage {...messages.role} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map((member) => (
-                <MemberRow key={member.id} member={member} onChange={onMemberChange} />
-              ))}
-            </tbody>
-          </Table>
+          <>
+            <div>
+              <Button icon="download" onClick={onMemberExport}>
+                <FormattedMessage {...messages.export} />
+              </Button>
+            </div>
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    <FormattedMessage {...messages.user} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.properties} />
+                  </th>
+                  <th className="has-text-right">
+                    <FormattedMessage {...messages.role} />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => (
+                  <MemberRow key={member.id} member={member} onChange={onMemberChange} />
+                ))}
+              </tbody>
+            </Table>
+          </>
         )}
       </AsyncDataView>
     </>

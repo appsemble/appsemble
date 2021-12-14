@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "Svojstva",
   "studio.src.pages.apps.app.users.MemberRow.value": "Vrijednost",
   "studio.src.pages.apps.app.users.MemberRow.you": "To si ti!",
+  "studio.src.pages.apps.app.users.export": "Izvezi kao CSV",
   "studio.src.pages.apps.app.users.inviteOrganization": "Za pozivanje članova, oni se najprije moraju dodati organizaciji. Za pozivanje novih članova pritisni <link>ovdje</link>.",
   "studio.src.pages.apps.app.users.loadingMembers": "Učitavanje članova …",
   "studio.src.pages.apps.app.users.memberError": "Dogodila se greška tijekom učitavanja popisa članova.",

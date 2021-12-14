@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "Eigenschappen",
   "studio.src.pages.apps.app.users.MemberRow.value": "Waarde",
   "studio.src.pages.apps.app.users.MemberRow.you": "Jij",
+  "studio.src.pages.apps.app.users.export": "Exporteer als CSV",
   "studio.src.pages.apps.app.users.inviteOrganization": "Om meer gebruikers uit te nodigen moeten ze onderdeel zijn van de organisatie. Klik <link>hier</link> om nieuwe leden uit te nodigen.",
   "studio.src.pages.apps.app.users.loadingMembers": "Gebruikers inladen…",
   "studio.src.pages.apps.app.users.memberError": "Er is een fout opgetreden bij het laden van de leden.",

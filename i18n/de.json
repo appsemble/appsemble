@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "",
   "studio.src.pages.apps.app.users.MemberRow.value": "",
   "studio.src.pages.apps.app.users.MemberRow.you": "Du bist es!",
+  "studio.src.pages.apps.app.users.export": "Als CSV exportieren",
   "studio.src.pages.apps.app.users.inviteOrganization": "Um weitere Mitglieder einladen zu können, müssen diese erst der Organisation hinzugefügt werden. Klicken Sie <link>hier</link>, um neue Mitglieder einzuladen.",
   "studio.src.pages.apps.app.users.loadingMembers": "Mitglieder laden…",
   "studio.src.pages.apps.app.users.memberError": "Beim Versuch, die Mitgliederliste zu laden, ist etwas schief gelaufen.",

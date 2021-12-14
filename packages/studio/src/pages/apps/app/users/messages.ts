@@ -11,4 +11,5 @@ export const messages = defineMessages({
   memberError: 'Something went wrong when trying to load the list of users.',
   loadingMembers: 'Loading users…',
   properties: 'Properties',
+  export: 'Export to CSV',
 });

@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "",
   "studio.src.pages.apps.app.users.MemberRow.value": "",
   "studio.src.pages.apps.app.users.MemberRow.you": "Это ты!",
+  "studio.src.pages.apps.app.users.export": "Экспортировать в CSV",
   "studio.src.pages.apps.app.users.inviteOrganization": "Чтобы пригласить больше участников, их сначала нужно добавить в организацию. Щелкните <link> здесь </link>, чтобы пригласить новых участников.",
   "studio.src.pages.apps.app.users.loadingMembers": "Загрузка участников…",
   "studio.src.pages.apps.app.users.memberError": "Что-то пошло не так при попытке загрузить список участников.",
