@@ -2821,6 +2821,20 @@ If defined, a loader will be shown until this event is triggered.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "properties": {
+      "alignment": {
+        "default": "left",
+        "description": "The alignment of the text content.",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
+      "centered": {
+        "description": "Whether or not the content should be centered.",
+        "type": "boolean",
+      },
       "content": {
         "description": "A string containing the [markdown content](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) to display.",
         "format": "remapper",
