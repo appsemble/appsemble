@@ -1,5 +1,4 @@
-import { AppsembleError } from '@appsemble/node-utils';
-import { compareStrings } from '@appsemble/utils';
+import { compareStrings } from '.';
 
 /**
  * Converts an object or an array of objects to a valid CSV format.
@@ -20,11 +19,11 @@ export function convertToCsv(body: any): string {
       : value;
 
   if (body == null) {
-    throw new AppsembleError('No data');
+    throw new Error('No data');
   }
 
   if (typeof body !== 'object') {
-    throw new AppsembleError('Data is of an invalid type');
+    throw new TypeError('Data is of an invalid type');
   }
 
   const data = Array.isArray(body) ? body : [body];
@@ -36,7 +35,7 @@ export function convertToCsv(body: any): string {
   const headers = [...new Set(data.flatMap((value) => Object.keys(value)))].sort(compareStrings);
 
   if (headers.length === 0) {
-    throw new AppsembleError('No headers could be found');
+    throw new Error('No headers could be found');
   }
 
   const lines = data.map((object) => {

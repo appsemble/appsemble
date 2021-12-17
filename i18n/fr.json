@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "Propriétés",
   "studio.src.pages.apps.app.users.MemberRow.value": "Valeur",
   "studio.src.pages.apps.app.users.MemberRow.you": "C’est vous !",
+  "studio.src.pages.apps.app.users.export": "Exporter en CSV",
   "studio.src.pages.apps.app.users.inviteOrganization": "Afin d’inviter d’autres membres, il faut d’abord les ajouter à l’organisation. Cliquez <link> ici </link> pour inviter de nouveaux membres.",
   "studio.src.pages.apps.app.users.loadingMembers": "Chargement des membres…",
   "studio.src.pages.apps.app.users.memberError": "Quelque chose s’est mal passé quand on a essayé de charger la liste des membres.",
