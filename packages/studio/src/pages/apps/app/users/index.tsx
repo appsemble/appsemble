@@ -1,9 +1,9 @@
 import { Button, Table, Title, useData, useMeta } from '@appsemble/react-components';
 import { convertToCsv } from '@appsemble/utils';
+import { downloadBlob } from '@appsemble/web-utils';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { downloadBlob } from 'web-utils/src/download';
 
 import { useApp } from '..';
 import { AsyncDataView } from '../../../../components/AsyncDataView';
