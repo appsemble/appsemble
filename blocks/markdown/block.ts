@@ -20,5 +20,12 @@ declare module '@appsemble/sdk' {
      * Whether or not the content should be centered.
      */
     centered?: boolean;
+
+    /**
+     * The alignment of the text content.
+     *
+     * @default 'left'
+     */
+    alignment?: 'center' | 'left' | 'right';
   }
 }

@@ -7,10 +7,24 @@ function populateNode(
   node: HTMLDivElement,
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
   data: any,
-  { centered, content }: Parameters,
+  { alignment = 'left', centered, content }: Parameters,
 ): void {
   // eslint-disable-next-line no-param-reassign
-  node.className = `content px-3 py-3 ${centered ? 'has-text-centered mx-auto' : ''}`;
+  node.className = 'content px-3 py-3';
+  if (centered) {
+    node.classList.add('mx-auto');
+  }
+  switch (alignment) {
+    case 'center':
+      node.classList.add('has-text-centered');
+      break;
+    case 'right':
+      node.classList.add('has-text-right');
+      break;
+    case 'left':
+    default:
+      node.classList.add('has-text-left');
+  }
   const value = remap(content, data);
   if (typeof value === 'string') {
     // eslint-disable-next-line no-param-reassign
