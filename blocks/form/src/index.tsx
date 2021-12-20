@@ -11,7 +11,15 @@ import { generateDefaultValues } from './utils/generateDefaultValues';
 import { isFormValid } from './utils/validity';
 
 bootstrap(
-  ({ actions, data, events, parameters: { fields, previous, requirements }, ready, utils }) => {
+  ({
+    actions,
+    data,
+    events,
+    parameters: { fields, previous, requirements },
+    path,
+    ready,
+    utils,
+  }) => {
     const defaultValues = useMemo<Values>(
       () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
       [data, fields],
@@ -170,7 +178,7 @@ bootstrap(
     }, [events, ready, receiveData]);
 
     return (
-      <Form className={`${styles.root} is-flex px-2 py-2`} onSubmit={onSubmit}>
+      <Form className={`${styles.root} is-flex px-2 py-2`} data-path={path} onSubmit={onSubmit}>
         {loading && <progress className="progress is-small is-primary" />}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}

@@ -38,8 +38,9 @@ function populateNode(
 /**
  * @param {Object} block - The block as it was specified by the app creator.
  */
-bootstrap(({ data, events, parameters, utils }) => {
+bootstrap(({ data, events, parameters, path, utils }) => {
   const node = document.createElement('div');
+  node.dataset.path = path;
   const shouldWait = events.on.data((d) => {
     populateNode(node, utils.remap, d, parameters);
   });
