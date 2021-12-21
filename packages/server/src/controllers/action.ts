@@ -144,7 +144,7 @@ function createProxyHandler(useBody: boolean): Middleware {
     const {
       pathParams: { appId, path },
     } = ctx;
-    const app = await App.findByPk(appId, { attributes: ['definition', 'id'] });
+    const app = await App.findByPk(appId, { attributes: ['definition', 'id', 'emailName'] });
     if (!app) {
       throw notFound('App not found');
     }

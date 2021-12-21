@@ -612,6 +612,13 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
   to?: Remapper;
 
   /**
+   * The name of the sender.
+   *
+   * @default 'Appsemble'
+   */
+  from?: Remapper;
+
+  /**
    * The recipients to CC the email to.
    */
   cc?: Remapper;
@@ -1248,6 +1255,11 @@ export interface App {
    * A domain name on which this app should be served.
    */
   domain?: string;
+
+  /**
+   * The name used for emails
+   */
+  emailName?: string;
 
   /**
    * The id of the organization this app belongs to.

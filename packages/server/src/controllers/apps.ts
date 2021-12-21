@@ -442,6 +442,7 @@ export async function patchApp(ctx: Context): Promise<void> {
       body: {
         coreStyle,
         domain,
+        emailName,
         googleAnalyticsID,
         icon,
         iconBackground,
@@ -524,6 +525,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (domain !== undefined) {
       result.domain = domain;
+    }
+
+    if (emailName !== undefined) {
+      result.emailName = emailName;
     }
 
     if (googleAnalyticsID !== undefined) {

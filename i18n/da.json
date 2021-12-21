@@ -559,6 +559,8 @@
   "studio.src.pages.apps.app.settings.domain": "Domænenavn",
   "studio.src.pages.apps.app.settings.domainDescription": "Det domænenavn, som denne app er tilgængelig på. Du kan finde flere oplysninger om, hvordan du konfigurerer dette, i <link>dokumentationen</link>.",
   "studio.src.pages.apps.app.settings.domainError": "Dette skal være et gyldigt domænenavn uden en protokol",
+  "studio.src.pages.apps.app.settings.emailNameDescription": "",
+  "studio.src.pages.apps.app.settings.emailNameLabel": "",
   "studio.src.pages.apps.app.settings.errorDelete": "Noget gik galt forsøger at slette denne app",
   "studio.src.pages.apps.app.settings.googleAnalyticsError": "",
   "studio.src.pages.apps.app.settings.googleAnalyticsIDDescription": "",

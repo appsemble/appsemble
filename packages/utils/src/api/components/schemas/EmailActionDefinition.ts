@@ -18,6 +18,11 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
       description:
         'The address the email should be sent to. Can be either in the format of `test@example.com`, or `John Doe <test@example.com>`',
     },
+    from: {
+      $ref: '#/components/schemas/RemapperDefinition',
+      description: 'The name of the sender of the email.',
+      default: 'Appsemble',
+    },
     cc: {
       $ref: '#/components/schemas/RemapperDefinition',
       description:

@@ -559,6 +559,8 @@
   "studio.src.pages.apps.app.settings.domain": "Nom du domaine",
   "studio.src.pages.apps.app.settings.domainDescription": "Le nom de domaine sur lequel cette application est disponible. Pour plus d’informations sur la manière de le configurer, veuillez vous référer à la documentation <link></link>.",
   "studio.src.pages.apps.app.settings.domainError": "Il doit s’agir d’un nom de domaine valide sans protocole",
+  "studio.src.pages.apps.app.settings.emailNameDescription": "",
+  "studio.src.pages.apps.app.settings.emailNameLabel": "",
   "studio.src.pages.apps.app.settings.errorDelete": "Quelque chose a mal tourné en essayant de supprimer cette application",
   "studio.src.pages.apps.app.settings.googleAnalyticsError": "Il doit s'agir d'un identifiant Google Analytics valide",
   "studio.src.pages.apps.app.settings.googleAnalyticsIDDescription": "Si renseigné, Google Analytics sera utilisé dans votre application.",

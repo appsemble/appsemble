@@ -559,6 +559,8 @@
   "studio.src.pages.apps.app.settings.domain": "Ime domene",
   "studio.src.pages.apps.app.settings.domainDescription": "Domena na kojoj je ovaj program dostupan. Za više informacija o tome kako to postaviti, pročitaj <link>dokumentaciju</link>.",
   "studio.src.pages.apps.app.settings.domainError": "Ovo mora biti valjano ime domene bez protokola",
+  "studio.src.pages.apps.app.settings.emailNameDescription": "",
+  "studio.src.pages.apps.app.settings.emailNameLabel": "",
   "studio.src.pages.apps.app.settings.errorDelete": "Dogodila se greška tijekom pokušaja brisanja ovog programa",
   "studio.src.pages.apps.app.settings.googleAnalyticsError": "Ovo mora biti valjani Google Analytics ID",
   "studio.src.pages.apps.app.settings.googleAnalyticsIDDescription": "Ako je ovo navedeno, Google analitika će se primijeniti na tvoj program.",

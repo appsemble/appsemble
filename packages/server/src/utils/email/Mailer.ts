@@ -32,6 +32,13 @@ export interface SendMailOptions {
   to?: string;
 
   /**
+   * The name of the email sender.
+   *
+   * @default 'Appsemble'
+   */
+  from?: string;
+
+  /**
    * The email address(es) to BCC the mail to.
    */
   cc?: string[] | string;
@@ -101,12 +108,14 @@ export class Mailer {
   async sendTranslatedEmail({
     appId,
     emailName,
+    from = 'Appsemble',
     locale = defaultLocale,
     to,
     values,
   }: {
     to: Recipient;
     appId: number;
+    from?: string;
     emailName: string;
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
     locale: string;
@@ -175,6 +184,7 @@ export class Mailer {
 
     await this.sendEmail({
       to: to.name ? `${to.name} <${to.email}>` : to.email,
+      from: from || 'Appsemble',
       subject,
       html,
       text,
@@ -214,6 +224,7 @@ export class Mailer {
    */
   async sendEmail({
     to,
+    from = 'Appsemble',
     cc,
     bcc,
     subject,
@@ -225,7 +236,7 @@ export class Mailer {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
     logger.info(
-      `Sending email:\nTo: ${to} | CC: ${cc} | BCC: ${bcc}\nSubject: ${subject}\n\n${text}`,
+      `Sending email:\nTo: ${to} | CC: ${cc} | BCC: ${bcc} | From: ${from}\nSubject: ${subject}\n\n${text}`,
     );
 
     if (attachments.length) {
@@ -236,7 +247,14 @@ export class Mailer {
       );
     }
     if (this.transport) {
-      await this.transport.sendMail({ html, subject, text, to, attachments });
+      await this.transport.sendMail({
+        html,
+        from: `${from} <${argv.smtpFrom}>`,
+        subject,
+        text,
+        to,
+        attachments,
+      });
     }
     logger.verbose('Email sent succesfully.');
   }

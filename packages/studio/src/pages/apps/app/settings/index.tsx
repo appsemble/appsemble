@@ -76,6 +76,7 @@ export function SettingsPage(): ReactElement {
   // This is needed, because the app domain may be null.
   const defaultValues = useMemo<FormValues>(
     () => ({
+      emailName: app.emailName || '',
       maskableIcon: null,
       domain: app.domain || '',
       googleAnalyticsID: app.googleAnalyticsID || '',
@@ -94,6 +95,7 @@ export function SettingsPage(): ReactElement {
 
   const onSubmit = async (values: FormValues): Promise<void> => {
     const form = new FormData();
+    form.set('emailName', values.emailName);
     form.set('domain', values.domain);
     form.set('googleAnalyticsID', values.googleAnalyticsID);
     form.set('sentryDsn', values.sentryDsn);
@@ -263,6 +265,14 @@ export function SettingsPage(): ReactElement {
             validityMessages={{
               patternMismatch: <FormattedMessage {...messages.domainError} />,
             }}
+          />
+          <SimpleFormField
+            disabled={app.locked}
+            help={<FormattedMessage {...messages.emailNameDescription} />}
+            label={<FormattedMessage {...messages.emailNameLabel} />}
+            maxLength={30}
+            name="emailName"
+            placeholder="Appsemble"
           />
           <SimpleFormField
             disabled={app.locked}
