@@ -14,7 +14,7 @@ let mailer: Mailer;
 useTestDatabase('mailer');
 
 beforeEach(() => {
-  setArgv({ host: '' });
+  setArgv({ host: '', smtpFrom: 'test@example.com' });
   mailer = new Mailer();
 });
 
@@ -49,6 +49,7 @@ describe('sendEmail', () => {
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'Me <test@example.com>',
+      from: 'Appsemble <test@example.com>',
       subject: 'Confirm account registration',
       text: expect.any(String),
       html: expect.any(String),
@@ -66,6 +67,7 @@ describe('sendEmail', () => {
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble <test@example.com>',
       subject: 'Confirm account registration',
       text: expect.any(String),
       html: expect.any(String),
