@@ -213,6 +213,11 @@ export interface BootstrapParams {
   pageParameters?: PageParameters;
 
   /**
+   * The path of the block as it is being rendered on the page.
+   */
+  path: string;
+
+  /**
    * The theme of the block given the context.
    *
    * This is based on a combination of the base theme, app theme, page theme and block theme.
