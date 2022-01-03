@@ -49,7 +49,7 @@ export function getSentryClientSettings(
   ) {
     return {};
   }
-  const dsn = sentryDsn ?? argv.sentryDsn;
+  const dsn = sentryDsn || argv.sentryDsn;
   const { origin, pathname, username } = new URL(dsn);
   return {
     sentryDsn: dsn,
