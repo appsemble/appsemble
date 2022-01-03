@@ -178,6 +178,7 @@ export function Block({
         theme,
         shadowRoot,
         utils,
+        path: prefix,
       });
 
       ready(block);

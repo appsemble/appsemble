@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 bootstrap(({ events, parameters: { fields } }) => {
   const [data, setData] = useState<any[]>(null);

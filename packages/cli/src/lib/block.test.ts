@@ -19,7 +19,7 @@ describe('makePayload', () => {
     const buffer = await new Promise((resolve) => {
       payload.pipe(concat(resolve));
     });
-    expect(String(buffer)).toStrictEqual(`--${boundary}\r
+    expect(String(buffer)).toBe(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {"onClick":{}}\r
@@ -64,7 +64,7 @@ export const string = 'no-icon';
     const buffer = await new Promise((resolve) => {
       payload.pipe(concat(resolve));
     });
-    expect(String(buffer)).toStrictEqual(`--${boundary}\r
+    expect(String(buffer)).toBe(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
 \r
 {}\r

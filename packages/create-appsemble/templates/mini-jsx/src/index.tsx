@@ -19,12 +19,14 @@ bootstrap(({ events, parameters: { fields }, utils: { fa, remap } }) => {
     } else {
       wrapper.append(
         ...fields.map(({ icon, label, value }) => {
-          const remappedLabel = remap(label, data);
+          const remappedLabel = remap(label, data) as string;
 
           return (
             <div className={styles.field}>
               <i className={`${fa(icon)} ${styles.icon}`} />
-              <div className={`has-text-weight-bold ${styles.value}`}>{remap(value, data)}</div>
+              <div className={`has-text-weight-bold ${styles.value}`}>
+                {remap(value, data) as string}
+              </div>
               {remappedLabel && <div>{remappedLabel}</div>}
             </div>
           );
