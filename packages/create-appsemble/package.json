@@ -1,7 +1,6 @@
 {
   "name": "create-appsemble",
   "version": "0.19.10",
-  "private": true,
   "description": "Bootstrap an Appsemble project",
   "keywords": [
     "app",

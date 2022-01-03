@@ -208,6 +208,7 @@ pack:
     - yarn workspace @appsemble/webpack-config pack
     - yarn workspace @appsemble/cli pack
     - yarn workspace appsemble pack
+    - yarn workspace create-appsemble pack
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:
