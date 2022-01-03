@@ -147,7 +147,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                       }
                     },
                   },
-                } as Options,
+                } as Options<'async'>,
               },
             },
           ],
