@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.11](https://gitlab.com/appsemble/appsemble/-/releases/0.19.11)] - 2022-01-04
+
+### Added
+
+- Block(`form`): Add `data-path` attribute to root node of the DOM output.
+- Block(`markdown`): Add `data-path` attribute to root node of the DOM output.
+- App: Add `from` field to `email` action. This can be used to customize the name when Appsemble
+  sends emails.
+- App: Add option to set a default email name when sending emails for an app.
+- Appsemble: Add property `path` to `BootstrapParams`.
+- Create-appsemble: Release `create-appsemble`.
+
+### Fixed
+
+- App: Fix language preference in app settings not always updating appropriately.
+- Create-appsemble: Fix typing issues in `preact` and `mini-jsx` templates.
+
 ## \[[0.19.10](https://gitlab.com/appsemble/appsemble/-/releases/0.19.10)] - 2021-12-17
 
 ### Added

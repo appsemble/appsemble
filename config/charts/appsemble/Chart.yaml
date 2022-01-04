@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.10
-appVersion: 0.19.10
+version: 0.19.11
+appVersion: 0.19.11
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,18 +25,23 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(markdown): Add alignment property. This can be used to
-        change the alignment of the text content."
+      description: "Block(form): Add data-path attribute to root node of the DOM output."
     - kind: added
-      description: "Block(markdown): Add centered property to parameters. This can be
-        used to center the content without having to use the html block or include
-        HTML tags in the messages."
+      description: "Block(markdown): Add data-path attribute to root node of the DOM output."
     - kind: added
-      description: "Cli: Add support for uploading CSV files."
+      description: "App: Add from field to email action. This can be used to customize
+        the name when Appsemble sends emails."
     - kind: added
-      description: "Studio: Add an export to CSV button for app members."
+      description: "App: Add option to set a default email name when sending emails for an app."
+    - kind: added
+      description: "Appsemble: Add property path to BootstrapParams."
+    - kind: added
+      description: "Create-appsemble: Release create-appsemble."
     - kind: fixed
-      description: "Studio: Fix download CSV button."
+      description: "App: Fix language preference in app settings not always updating
+        appropriately."
+    - kind: fixed
+      description: "Create-appsemble: Fix typing issues in preact and mini-jsx templates."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
