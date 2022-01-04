@@ -237,16 +237,16 @@ export class Mailer {
     }
     const loggingMessage = ['Sending email:', `To: ${to}`];
     if (cc) {
-      loggingMessage.push(`CC: ${cc}`)
+      loggingMessage.push(`CC: ${cc}`);
     }
     if (bcc) {
-      loggingMessage.push(`BCC: ${bcc}`)
+      loggingMessage.push(`BCC: ${bcc}`);
     }
     if (from) {
-      loggingMessage.push(`From: ${from}`)
+      loggingMessage.push(`From: ${from}`);
     }
-    loggingMessage.push(`Subject: ${subject}`, '', text)
-    logger.info(loggingMessage.join('\n'))
+    loggingMessage.push(`Subject: ${subject}`, '', text);
+    logger.info(loggingMessage.join('\n'));
 
     if (attachments.length) {
       logger.info(
