@@ -614,7 +614,7 @@ export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
   /**
    * The name of the sender.
    *
-   * @default 'Appsemble'
+   * The default value depends on the email server.
    */
   from?: Remapper;
 

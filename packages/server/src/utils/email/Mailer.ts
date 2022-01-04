@@ -235,9 +235,18 @@ export class Mailer {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
-    logger.info(
-      `Sending email:\nTo: ${to} | CC: ${cc} | BCC: ${bcc} | From: ${from}\nSubject: ${subject}\n\n${text}`,
-    );
+    const loggingMessage = ['Sending email:', `To: ${to}`];
+    if (cc) {
+      loggingMessage.push(`CC: ${cc}`)
+    }
+    if (bcc) {
+      loggingMessage.push(`BCC: ${bcc}`)
+    }
+    if (from) {
+      loggingMessage.push(`From: ${from}`)
+    }
+    loggingMessage.push(`Subject: ${subject}`, '', text)
+    logger.info(loggingMessage.join('\n'))
 
     if (attachments.length) {
       logger.info(
