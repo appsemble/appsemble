@@ -2,14 +2,15 @@
 
 > Bootstrap an Appsemble block
 
+[![npm](https://img.shields.io/npm/v/create-appsemble)](https://www.npmjs.com/package/create-appsemble)
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.18.23/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)
 [![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.18.23/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Usage
 
-This package lets a developer bootstrap Appsemble related boilerplate using `npm init` or
-`yarn create`.
+In a future release, this package lets a developer bootstrap Appsemble related boilerplate using
+`npm init` or `yarn create`.
 
 ```sh
 npm init appsemble
@@ -25,7 +26,7 @@ This package allows you to bootstrap an Appsemble block in a standard Appsemble 
 initial command will be followed by a number questions interactively.
 
 ```sh
-yarn create appsemble block
+npm init appsemble block
 ```
 
 ## License
