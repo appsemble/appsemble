@@ -258,9 +258,10 @@ export class Mailer {
     }
     if (this.transport) {
       const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
+      const name = from || parsed.name;
       await this.transport.sendMail({
         html,
-        from: `${from || parsed.name || 'Appsemble'} <${parsed.address}>`,
+        from: name ? `${name} <${parsed.address}>` : parsed.address,
         subject,
         text,
         to,
