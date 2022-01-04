@@ -699,6 +699,7 @@
   "studio.src.pages.apps.app.users.MemberRow.properties": "",
   "studio.src.pages.apps.app.users.MemberRow.value": "",
   "studio.src.pages.apps.app.users.MemberRow.you": "Det er dig!",
+  "studio.src.pages.apps.app.users.export": "Eksporter som CSV",
   "studio.src.pages.apps.app.users.inviteOrganization": "For at invitere flere medlemmer skal de føjes til organisationen først. Klik på <link>her</link> for at invitere nye medlemmer.",
   "studio.src.pages.apps.app.users.loadingMembers": "Indlæser medlemmer…",
   "studio.src.pages.apps.app.users.memberError": "Noget gik galt, når man forsøgte at indlæse listen over medlemmer.",

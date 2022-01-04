@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.9
-appVersion: 0.19.9
+version: 0.19.10
+appVersion: 0.19.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,20 +25,18 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add analytics action."
+      description: "Block(markdown): Add alignment property. This can be used to
+        change the alignment of the text content."
     - kind: added
-      description: "App: Add support for arrays of strings or numbers for prop remapper."
+      description: "Block(markdown): Add centered property to parameters. This can be
+        used to center the content without having to use the html block or include
+        HTML tags in the messages."
     - kind: added
-      description: "App: Add support for translated flow page steps."
+      description: "Cli: Add support for uploading CSV files."
     - kind: added
-      description: "Server: Add support for creating resources from CSV data."
-    - kind: added
-      description: "Studio: Add support for translating flow page steps."
-    - kind: changed
-      description: "Cli: Update to postcss 8."
-    - kind: removed
-      description: "App: Remove support for accessing properties using dot notation in
-        prop remapper."
+      description: "Studio: Add an export to CSV button for app members."
+    - kind: fixed
+      description: "Studio: Fix download CSV button."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

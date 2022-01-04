@@ -1,7 +1,7 @@
 import { parse } from 'querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
-import { api } from '@appsemble/utils';
+import { api, convertToCsv } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import { parse as parseCSV } from 'csv-parse';
@@ -28,7 +28,6 @@ import { frontend } from '../middleware/frontend';
 import { appRouter, studioRouter } from '../routes';
 import { argv } from './argv';
 import { authentication } from './authentication';
-import { convertToCsv } from './convertToCsv';
 import { Mailer } from './email/Mailer';
 import { readPackageJson } from './readPackageJson';
 

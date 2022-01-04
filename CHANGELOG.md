@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.10](https://gitlab.com/appsemble/appsemble/-/releases/0.19.10)] - 2021-12-17
+
+### Added
+
+- Block(`markdown`): Add `alignment` property. This can be used to change the alignment of the text
+  content.
+- Block(`markdown`): Add `centered` property to parameters. This can be used to center the content
+  without having to use the `html` block or include HTML tags in the messages.
+- Cli: Add support for uploading CSV files.
+- Studio: Add an export to CSV button for app members.
+
+### Fixed
+
+- Studio: Fix download CSV button.
+
 ## \[[0.19.9](https://gitlab.com/appsemble/appsemble/-/releases/0.19.9)] - 2021-12-06
 
 ### Added
