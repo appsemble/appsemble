@@ -69,6 +69,12 @@ export async function getAssetById(ctx: Context): Promise<void> {
     throw notFound('Asset not found');
   }
 
+  if (assetId !== asset.id) {
+    // Redirect to asset using current asset ID
+    ctx.redirect(`/api/apps/${app.id}/assets/${asset.id}`);
+    return;
+  }
+
   let { filename, mime } = asset;
   if (!filename) {
     filename = asset.id;
@@ -83,6 +89,8 @@ export async function getAssetById(ctx: Context): Promise<void> {
   if (filename) {
     ctx.set('content-disposition', `attachment; filename=${JSON.stringify(filename)}`);
   }
+
+  ctx.set('Cache-Control', 'max-age=31536000,immutable');
   ctx.body = asset.data;
 }
 

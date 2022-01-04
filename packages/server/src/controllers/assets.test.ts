@@ -211,6 +211,7 @@ describe('getAssetById', () => {
       headers: expect.objectContaining({
         'content-type': 'application/octet-stream',
         'content-disposition': 'attachment; filename="test.bin"',
+        'cache-control': 'max-age=31536000,immutable',
       }),
       data,
     });
@@ -218,7 +219,7 @@ describe('getAssetById', () => {
 
   it('should be able to fetch an by name', async () => {
     const data = Buffer.from('buffer');
-    await Asset.create({
+    const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
@@ -226,17 +227,15 @@ describe('getAssetById', () => {
       name: 'test-asset',
     });
 
-    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
-      responseType: 'arraybuffer',
-    });
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
 
     expect(response).toMatchObject({
-      status: 200,
+      status: 302,
       headers: expect.objectContaining({
-        'content-type': 'application/octet-stream',
-        'content-disposition': 'attachment; filename="test.bin"',
+        location: `/api/apps/1/assets/${asset.id}`,
+        'content-type': 'text/html; charset=utf-8',
       }),
-      data,
+      data: `Redirecting to <a href="/api/apps/1/assets/${asset.id}">/api/apps/1/assets/${asset.id}</a>.`,
     });
   });
 
