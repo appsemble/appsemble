@@ -39,7 +39,7 @@
     "langmap": "^0.0.16",
     "language-tags": "^1.0.0",
     "lcm": "^0.0.3",
-    "openapi-types": "^9.0.0",
+    "openapi-types": "^10.0.0",
     "parse-duration": "^1.0.0",
     "postcss": "^8.0.0",
     "type-fest": "^2.0.0"
