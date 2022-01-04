@@ -227,19 +227,15 @@ describe('getAssetById', () => {
       name: 'test-asset',
     });
 
-    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`, {
-      responseType: 'arraybuffer',
-    });
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
 
     expect(response).toMatchObject({
-      status: 200,
+      status: 302,
       headers: expect.objectContaining({
-        location: `/api/app/1/assets/${asset.id}`,
-        'content-type': 'application/octet-stream',
-        'content-disposition': 'attachment; filename="test.bin"',
-        'cache-control': 'max-age=31536000,immutable',
+        location: `/api/apps/1/assets/${asset.id}`,
+        'content-type': 'text/html; charset=utf-8',
       }),
-      data,
+      data: `Redirecting to <a href="/api/apps/1/assets/${asset.id}">/api/apps/1/assets/${asset.id}</a>.`,
     });
   });
 
