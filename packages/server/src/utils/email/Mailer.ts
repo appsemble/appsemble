@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
+import { ParsedMailbox, parseOneAddress } from 'email-addresses';
 import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
@@ -224,7 +225,7 @@ export class Mailer {
    */
   async sendEmail({
     to,
-    from = 'Appsemble',
+    from,
     cc,
     bcc,
     subject,
@@ -256,9 +257,10 @@ export class Mailer {
       );
     }
     if (this.transport) {
+      const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
       await this.transport.sendMail({
         html,
-        from: `${from} <${argv.smtpFrom}>`,
+        from: `${from || parsed.name || 'Appsemble'} <${parsed.address}>`,
         subject,
         text,
         to,

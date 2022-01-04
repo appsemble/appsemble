@@ -5591,6 +5591,11 @@ electron-to-chromium@^1.4.17:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.31.tgz#8d5ccc3f8253cd142b07afaa84f200fd33a7f2a6"
   integrity sha512-t3XVQtk+Frkv6aTD4RRk0OqosU+VLe1dQFW83MDer78ZD6a52frgXuYOIsLYTQiH2Lm+JB2OKYcn7zrX+YGAiQ==
 
+email-addresses@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/email-addresses/-/email-addresses-5.0.0.tgz#7ae9e7f58eef7d5e3e2c2c2d3ea49b78dc854fa6"
+  integrity sha512-4OIPYlA6JXqtVn8zpHpGiI7vE6EQOAg16aGnDMIAlZVinnoZ8208tW1hAbjWydgN/4PLTT9q+O1K6AH/vALJGw==
+
 emittery@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.8.1.tgz#bb23cc86d03b30aa75a7f734819dee2e1ba70860"
