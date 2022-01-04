@@ -404,7 +404,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   let user: User;
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'domain', 'OrganizationId', 'path'],
+    attributes: ['definition', 'domain', 'OrganizationId', 'emailName', 'path'],
     include: {
       model: AppMember,
       where: { email },
@@ -476,6 +476,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   mailer
     .sendTranslatedEmail({
       to: { email, name },
+      from: app.emailName,
       appId,
       emailName: 'welcome',
       locale,
@@ -576,7 +577,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
+    attributes: ['definition', 'domain', 'path', 'emailName', 'OrganizationId'],
     include: [{ model: AppMember, where: { email }, required: false }],
   });
 
@@ -593,6 +594,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
     mailer
       .sendTranslatedEmail({
         to: member,
+        from: app.emailName,
         emailName: 'reset',
         appId,
         locale: member.locale,

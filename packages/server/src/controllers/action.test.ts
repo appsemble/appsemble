@@ -345,6 +345,7 @@ describe('handleEmail', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble',
       subject: 'Test title',
       html: `<!doctype html>
 <html lang="en">
@@ -372,6 +373,7 @@ describe('handleEmail', () => {
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
+      from: 'Appsemble',
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
       subject: 'Test title',
       html: `<!doctype html>
@@ -400,6 +402,7 @@ describe('handleEmail', () => {
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
+      from: 'Appsemble',
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
       subject: 'Test title',
       html: `<!doctype html>
@@ -456,6 +459,7 @@ describe('handleEmail', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble',
       subject: 'Test title',
       html: `<!doctype html>
 <html lang="en">
@@ -495,6 +499,7 @@ describe('handleEmail', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble',
       subject: 'Test title',
       html: `<!doctype html>
 <html lang="en">
@@ -538,6 +543,7 @@ describe('handleEmail', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble',
       subject: 'Test title',
       html: `<!doctype html>
 <html lang="en">
@@ -567,6 +573,7 @@ describe('handleEmail', () => {
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(spy).toHaveBeenCalledWith({
       to: 'test@example.com',
+      from: 'Appsemble',
       subject: 'Test title',
       html: `<!doctype html>
 <html lang="en">

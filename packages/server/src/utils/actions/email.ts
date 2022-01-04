@@ -37,6 +37,7 @@ export async function email({
   );
 
   const to = remap(action.to, data, context) as string;
+  const from = (remap(action.from, data, context) as string) || app.emailName || 'Appsemble';
   const cc = remap(action.cc, data, context) as string[] | string;
   const bcc = remap(action.bcc, data, context) as string[] | string;
   const body = remap(action.body, data, context) as string;
@@ -84,6 +85,7 @@ export async function email({
     ...(to && { to }),
     ...(cc && { cc }),
     ...(bcc && { bcc }),
+    from,
     subject,
     html,
     text,

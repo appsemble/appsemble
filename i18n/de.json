@@ -559,6 +559,8 @@
   "studio.src.pages.apps.app.settings.domain": "Domainname",
   "studio.src.pages.apps.app.settings.domainDescription": "Der Domain-Name, auf dem diese App verfügbar ist. Weitere Informationen zum Einrichten finden Sie in der <link>Dokumentation</link>.",
   "studio.src.pages.apps.app.settings.domainError": "Dies muss ein gültiger Domänenname ohne Protokoll sein",
+  "studio.src.pages.apps.app.settings.emailNameDescription": "",
+  "studio.src.pages.apps.app.settings.emailNameLabel": "",
   "studio.src.pages.apps.app.settings.errorDelete": "Beim Versuch, diese App zu löschen, ging etwas schief",
   "studio.src.pages.apps.app.settings.googleAnalyticsError": "",
   "studio.src.pages.apps.app.settings.googleAnalyticsIDDescription": "",

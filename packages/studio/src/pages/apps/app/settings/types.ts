@@ -1,6 +1,7 @@
 import { AppVisibility } from 'types/src/app';
 
 export interface FormValues {
+  emailName: string;
   googleAnalyticsID: string;
   sentryDsn: string;
   sentryEnvironment: string;

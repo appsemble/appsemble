@@ -119,6 +119,9 @@ export class App extends Model {
   showAppsembleLogin: boolean;
 
   @Column
+  emailName: string;
+
+  @Column
   googleAnalyticsID: string;
 
   @Column
@@ -200,6 +203,7 @@ export class App extends Model {
       id: this.id,
       $created: this.created.toISOString(),
       $updated: this.updated.toISOString(),
+      emailName: this.emailName,
       domain: this.domain || null,
       googleAnalyticsID: this.googleAnalyticsID,
       path: this.path,

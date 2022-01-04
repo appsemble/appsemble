@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
+import { ParsedMailbox, parseOneAddress } from 'email-addresses';
 import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
@@ -30,6 +31,13 @@ export interface SendMailOptions {
    * The email address of the recipient
    */
   to?: string;
+
+  /**
+   * The name of the email sender.
+   *
+   * @default 'Appsemble'
+   */
+  from?: string;
 
   /**
    * The email address(es) to BCC the mail to.
@@ -101,12 +109,14 @@ export class Mailer {
   async sendTranslatedEmail({
     appId,
     emailName,
+    from = 'Appsemble',
     locale = defaultLocale,
     to,
     values,
   }: {
     to: Recipient;
     appId: number;
+    from?: string;
     emailName: string;
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
     locale: string;
@@ -175,6 +185,7 @@ export class Mailer {
 
     await this.sendEmail({
       to: to.name ? `${to.name} <${to.email}>` : to.email,
+      from: from || 'Appsemble',
       subject,
       html,
       text,
@@ -214,6 +225,7 @@ export class Mailer {
    */
   async sendEmail({
     to,
+    from,
     cc,
     bcc,
     subject,
@@ -224,9 +236,18 @@ export class Mailer {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
-    logger.info(
-      `Sending email:\nTo: ${to} | CC: ${cc} | BCC: ${bcc}\nSubject: ${subject}\n\n${text}`,
-    );
+    const loggingMessage = ['Sending email:', `To: ${to}`];
+    if (cc) {
+      loggingMessage.push(`CC: ${cc}`);
+    }
+    if (bcc) {
+      loggingMessage.push(`BCC: ${bcc}`);
+    }
+    if (from) {
+      loggingMessage.push(`From: ${from}`);
+    }
+    loggingMessage.push(`Subject: ${subject}`, '', text);
+    logger.info(loggingMessage.join('\n'));
 
     if (attachments.length) {
       logger.info(
@@ -236,7 +257,16 @@ export class Mailer {
       );
     }
     if (this.transport) {
-      await this.transport.sendMail({ html, subject, text, to, attachments });
+      const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
+      const name = from || parsed.name;
+      await this.transport.sendMail({
+        html,
+        from: name ? `${name} <${parsed.address}>` : parsed.address,
+        subject,
+        text,
+        to,
+        attachments,
+      });
     }
     logger.verbose('Email sent succesfully.');
   }

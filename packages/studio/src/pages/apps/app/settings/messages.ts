@@ -61,4 +61,7 @@ export const messages = defineMessages({
   sslReady: 'Your app is secured using SSL',
   sslPending:
     'Your SSL certificate is being generated. This may take up to 24 hours, but it’s usually faster.',
+  emailNameLabel: 'Email name',
+  emailNameDescription:
+    'The name displayed for emails sent for this app. The email address won’t change.',
 });
