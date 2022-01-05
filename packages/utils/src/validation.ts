@@ -441,6 +441,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
   });
 }
 
+export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<BlockManifest[]>;
+
 /**
  * Validate an app definition.
  *
@@ -454,7 +456,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
  */
 export async function validateAppDefinition(
   definition: AppDefinition,
-  getBlockVersions: (blockMap: IdentifiableBlock[]) => Promisable<BlockManifest[]>,
+  getBlockVersions: BlockVersionsGetter,
   validatorResult?: ValidatorResult,
 ): Promise<ValidatorResult> {
   let result = validatorResult;

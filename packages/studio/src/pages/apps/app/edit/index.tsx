@@ -20,12 +20,11 @@ import { parse } from 'yaml';
 import { useApp } from '..';
 import { AppPreview } from '../../../../components/AppPreview';
 import { MonacoEditor } from '../../../../components/MonacoEditor';
-import { getCachedBlockVersions } from '../../../../utils/blockRegistry';
+import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { EditorTab } from './EditorTab';
 import styles from './index.module.css';
 import { messages } from './messages';
-import './appValidation';
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
