@@ -688,7 +688,7 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
-type StorageType = 'idb' | 'localStorage' | 'sessionStorage';
+type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
 
 export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
   /**

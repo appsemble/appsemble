@@ -14,5 +14,9 @@ export const StorageReadActionDefinition = extendJSONSchema(BaseActionDefinition
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The key of the storage entry.',
     },
+    storage: {
+      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      description: 'The mechanism used to read the data from.',
+    },
   },
 });

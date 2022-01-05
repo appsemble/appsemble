@@ -48,6 +48,7 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
 
     const value = remap(definition.value, data);
 
+    // eslint-disable-next-line default-case
     switch (storage) {
       case 'localStorage':
         localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
@@ -55,9 +56,10 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
       case 'sessionStorage':
         sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
         break;
-      case 'idb':
-      default:
-        await (await getDB()).put('storage', remap(definition.value, data), key);
+      case 'idb': {
+        const db = await getDB();
+        db.put('storage', remap(definition.value, data), key);
+      }
     }
 
     return data;
