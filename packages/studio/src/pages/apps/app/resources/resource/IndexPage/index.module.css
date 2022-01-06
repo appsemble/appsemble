@@ -14,3 +14,16 @@
   grid-template-columns: 1fr 1fr;
   row-gap: 1rem;
 }
+
+.noWrap {
+  white-space: nowrap;
+}
+
+.boolean {
+  text-align: center !important;
+
+  & label {
+    margin: 0 !important;
+    padding-left: 1rem !important;
+  }
+}
