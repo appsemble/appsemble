@@ -11,6 +11,8 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 
+import { appValidationLabel } from './appValidation';
+
 declare global {
   interface Window {
     MonacoEnvironment: Environment;
@@ -20,6 +22,8 @@ declare global {
 window.MonacoEnvironment = {
   getWorker(workerId, label) {
     switch (label) {
+      case appValidationLabel:
+        return new Worker(new URL('./appValidation/worker', import.meta.url));
       case 'css':
         return new Worker(new URL('monaco-editor/esm/vs/language/css/css.worker', import.meta.url));
       case 'editorWorkerService':
