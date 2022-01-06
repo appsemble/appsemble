@@ -699,7 +699,7 @@ export interface StorageReadActionDefinition extends BaseActionDefinition<'stora
   /**
    * The mechanism used to read the data from.
    *
-   * @default 'idb'
+   * @default 'indexedDB'
    */
   storage?: StorageType;
 }
@@ -718,7 +718,7 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   /**
    * The mechanism used to read the data from.
    *
-   * @default 'idb'
+   * @default 'indexedDB'
    */
   storage?: StorageType;
 }

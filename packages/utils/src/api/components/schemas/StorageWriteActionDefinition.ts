@@ -21,6 +21,7 @@ export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinitio
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],
       description: 'The mechanism used to store the data.',
+      default: 'indexedDB',
     },
   },
 });

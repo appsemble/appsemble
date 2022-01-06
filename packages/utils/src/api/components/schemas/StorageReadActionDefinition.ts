@@ -17,6 +17,7 @@ export const StorageReadActionDefinition = extendJSONSchema(BaseActionDefinition
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],
       description: 'The mechanism used to read the data from.',
+      default: 'indexedDB',
     },
   },
 });

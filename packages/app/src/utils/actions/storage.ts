@@ -19,18 +19,24 @@ export function getDB(): Promise<IDBPDatabase> {
 
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
   async (data) => {
-    const storage = definition.storage || 'idb';
     const key = remap(definition.key, data);
     if (!key) {
       return;
     }
 
-    if (storage === 'localStorage') {
-      return JSON.parse(localStorage.getItem(`appsemble-${appId}-${key}`));
-    }
-
-    if (storage === 'sessionStorage') {
-      return JSON.parse(sessionStorage.getItem(`appsemble-${appId}-${key}`));
+    const storage = definition.storage || 'indexedDB';
+    if (storage !== 'indexedDB') {
+      const store = storage === 'localStorage' ? localStorage : sessionStorage;
+      const value = store.getItem(`appsemble-${appId}-${key}`);
+      if (!value) {
+        return;
+      }
+      try {
+        return JSON.parse(value);
+      } catch {
+        // Invalid data may be stored due to various reasons. In that case pretend there is no data.
+        return;
+      }
     }
 
     const db = await getDB();
@@ -40,7 +46,6 @@ export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
 
 export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => [
   async (data) => {
-    const storage = definition.storage || 'idb';
     const key = remap(definition.key, data);
     if (!key) {
       return data;
@@ -48,17 +53,16 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
 
     const value = remap(definition.value, data);
 
-    // eslint-disable-next-line default-case
-    switch (storage) {
+    switch (definition.storage) {
       case 'localStorage':
         localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
         break;
       case 'sessionStorage':
         sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
         break;
-      case 'idb': {
+      default: {
         const db = await getDB();
-        db.put('storage', remap(definition.value, data), key);
+        await db.put('storage', remap(definition.value, data), key);
       }
     }
 
