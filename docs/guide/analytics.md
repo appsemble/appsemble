@@ -17,6 +17,9 @@ these instructions as well, but instead of injecting the global site tag, copy t
 (sometimes called _Tracking ID_ or _Analytics ID_) into the _Google Analytics ID_ field in the app
 settings of your Appsemble app.
 
+Note that Appsemble forces Google Analytics to anonymize user IP addresses as well as forcing the
+usage of SSL for any app that uses analytics. This is in accordance to European privacy laws.
+
 ## Custom analytics actions
 
 It’s possible to send custom analytics actions.
@@ -41,3 +44,28 @@ onSuccess:
     object.from:
       score: { prop: score }
 ```
+
+## Recommended settings for Google Analytics
+
+Pursuant to Article 14 of the GDPR, as a controller, you must have an employment contract in place
+to connect to Google. This states that Google only works with the processing of the personal data of
+your website visitors. You can cancel this agreement through the Google Analytics settings menu:
+
+1. Go to the Admin page
+2. Click on “Account Settings”
+3. Click on “Review Amendment”
+4. After you review the amendment, click “Done”
+5. Click “Done” again to save your account settings
+
+In order to comply with European privacy laws, the following settings must be applied to your
+analytics account:
+
+1. Go to the Admin page
+2. Click on “Account Settings”
+3. Disable all 5 of the Data Sharing Settings:
+   - [ ] Google products & services
+   - [ ] Benchmarking
+   - [ ] Technical support
+   - [ ] Account specialists: Google marketing
+   - [ ] Account specialists: Google sales experts
+4. Click on “Save”.

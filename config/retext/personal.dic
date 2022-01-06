@@ -3,6 +3,7 @@ Appsemble
 # Unrecognized words
 accessor/processor
 anonymize/synthesize
+benchmark/mark
 changelog/kitten
 cryptographical/potential
 decrypt/encrypt
@@ -50,6 +51,7 @@ DSN
 dropdown
 ESLint
 falsy
+GDPR
 GitLab
 Gravatar
 IDP
