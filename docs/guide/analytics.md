@@ -41,3 +41,28 @@ onSuccess:
     object.from:
       score: { prop: score }
 ```
+
+## Recommended settings for Google Analytics
+
+Pursuant to Article 14 of the GDPR, as a controller, you must have an employment contract in place
+to connect to Google. This states that Google only works with the processing of the personal data of
+your website visitors. You can cancel this agreement through the Google Analytics settings menu:
+
+1. Go to the Admin page
+2. Click on “Account Settings”
+3. Click on “Review Amendment”
+4. After you review the amendment, click “Done”
+5. Click “Done” again to save your account settings
+
+In order to comply with European privacy laws, the following settings must be applied to your
+analytics account:
+
+1. Go to the Admin page
+2. Click on “Account Settings”
+3. Disable all 5 of the Data Sharing Settings:
+   - [ ] Google products & services
+   - [ ] Benchmarking
+   - [ ] Technical support
+   - [ ] Account specialists: Google marketing
+   - [ ] Account specialists: Google sales experts
+4. Click on “Save”.
