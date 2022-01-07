@@ -688,11 +688,20 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
+type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
+
 export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
   /**
    * The key of the entry to read from the app’s storage.
    */
   key: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
 }
 
 export interface StorageWriteActionDefinition extends BaseActionDefinition<'storage.write'> {
@@ -705,6 +714,13 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
    * The data to write to the app’s storage.
    */
   value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
 }
 
 export interface UserLoginAction extends BaseActionDefinition<'user.login'> {

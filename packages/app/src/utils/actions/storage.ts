@@ -24,6 +24,21 @@ export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
       return;
     }
 
+    const storage = definition.storage || 'indexedDB';
+    if (storage !== 'indexedDB') {
+      const store = storage === 'localStorage' ? localStorage : sessionStorage;
+      const value = store.getItem(`appsemble-${appId}-${key}`);
+      if (!value) {
+        return;
+      }
+      try {
+        return JSON.parse(value);
+      } catch {
+        // Invalid data may be stored due to various reasons. In that case pretend there is no data.
+        return;
+      }
+    }
+
     const db = await getDB();
     return db.get('storage', key);
   },
@@ -36,8 +51,21 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
       return data;
     }
 
-    const db = await getDB();
-    await db.put('storage', remap(definition.value, data), key);
+    const value = remap(definition.value, data);
+
+    switch (definition.storage) {
+      case 'localStorage':
+        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
+        break;
+      case 'sessionStorage':
+        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
+        break;
+      default: {
+        const db = await getDB();
+        await db.put('storage', remap(definition.value, data), key);
+      }
+    }
+
     return data;
   },
 ];

@@ -18,5 +18,10 @@ export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinitio
       $ref: '#/components/schemas/RemapperDefinition',
       description: 'The data to write to the storage entry.',
     },
+    storage: {
+      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      description: 'The mechanism used to store the data.',
+      default: 'indexedDB',
+    },
   },
 });
