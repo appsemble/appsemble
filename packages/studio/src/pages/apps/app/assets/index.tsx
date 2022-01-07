@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Content,
   FileUpload,
   ModalCard,
@@ -105,6 +106,14 @@ export function AssetsPage(): ReactElement {
     [],
   );
 
+  const onSelectAll = useCallback(() => {
+    setSelectedAssets((selected) =>
+      selected.length === assetsResult.data?.length
+        ? []
+        : assetsResult.data.map((asset) => asset.id),
+    );
+  }, [assetsResult]);
+
   return (
     <>
       <Title>
@@ -134,7 +143,18 @@ export function AssetsPage(): ReactElement {
             <thead>
               <tr>
                 <th>
-                  <FormattedMessage {...messages.actions} />
+                  <Checkbox
+                    className={`pr-2 is-inline-block ${styles.boolean} `}
+                    indeterminate={
+                      selectedAssets.length && selectedAssets.length !== assetsResult.data?.length
+                    }
+                    name="select-all"
+                    onChange={onSelectAll}
+                    value={selectedAssets.length === assetsResult.data?.length}
+                  />
+                  <span className="is-inline-block">
+                    <FormattedMessage {...messages.actions} />
+                  </span>
                 </th>
                 <th>
                   <FormattedMessage {...messages.id} />

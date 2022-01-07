@@ -139,6 +139,12 @@ export function IndexPage(): ReactElement {
     [selectedResources],
   );
 
+  const onSelectAll = useCallback(() => {
+    setSelectedResources((selected) =>
+      selected.length === result.data?.length ? [] : result.data.map((resource) => resource.id),
+    );
+  }, [result]);
+
   const onSortProperty = useCallback(
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
       const { property } = event.currentTarget.dataset;
@@ -269,8 +275,19 @@ export function IndexPage(): ReactElement {
           <Table className="is-flex-grow-1 is-flex-shrink-1">
             <thead>
               <tr>
-                <th>
-                  <FormattedMessage {...messages.actions} />
+                <th className={`pl-2 ${styles.noWrap}`}>
+                  <Checkbox
+                    className={`pr-2 is-inline-block ${styles.boolean} `}
+                    indeterminate={
+                      selectedResources.length && selectedResources.length !== result.data?.length
+                    }
+                    name="select-all"
+                    onChange={onSelectAll}
+                    value={selectedResources.length === result.data?.length}
+                  />
+                  <span className="is-inline-block">
+                    <FormattedMessage {...messages.actions} />
+                  </span>
                 </th>
                 {!hiddenProperties.has('id') && (
                   <th className={styles.clickable} data-property="id" onClick={onSortProperty}>

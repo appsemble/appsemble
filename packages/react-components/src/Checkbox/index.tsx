@@ -1,5 +1,15 @@
 import classNames from 'classnames';
-import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, ReactNode, useCallback } from 'react';
+import {
+  ChangeEvent,
+  ComponentPropsWithoutRef,
+  forwardRef,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
+
+import { useCombinedRefs } from '..';
 
 type CheckboxProps = Omit<
   ComponentPropsWithoutRef<'input'>,
@@ -36,6 +46,11 @@ type CheckboxProps = Omit<
    * By default (false), the label will be rendered after the checkbox.
    */
   rtl?: boolean;
+
+  /**
+   * Sets the indeterminate state on the checkbox.
+   */
+  indeterminate?: boolean;
 };
 
 /**
@@ -43,15 +58,34 @@ type CheckboxProps = Omit<
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
-    { className, error, label, name, onChange, value, id = name, switch: isSwitch, rtl, ...props },
+    {
+      className,
+      error,
+      label,
+      name,
+      onChange,
+      value,
+      id = name,
+      switch: isSwitch,
+      indeterminate,
+      rtl,
+      ...props
+    },
     ref,
   ) => {
+    const innerRef = useRef<HTMLInputElement>();
+    const mergedRef = useCombinedRefs(innerRef, ref);
+
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => {
         onChange(event, event.currentTarget.checked);
       },
       [onChange],
     );
+
+    useEffect(() => {
+      innerRef.current.indeterminate = indeterminate;
+    }, [indeterminate]);
 
     return (
       <span className={className}>
@@ -62,7 +96,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           id={id}
           name={name}
           onChange={handleChange}
-          ref={ref}
+          ref={mergedRef}
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>

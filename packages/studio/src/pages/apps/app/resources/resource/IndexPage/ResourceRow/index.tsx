@@ -175,10 +175,10 @@ export function ResourceRow({
       {!filter.has('$actions') && (
         <td className={`is-flex is-paddingless ${styles.actionCell}`}>
           <Checkbox
-            checked={selected}
             className={`px-2 py-2 is-inline-block ${styles.boolean}`}
             name={String(resource.id)}
             onChange={onSelected}
+            value={selected}
           />
           <Dropdown
             className={classNames(styles.dropdown, { 'is-up': dropdownUp })}
