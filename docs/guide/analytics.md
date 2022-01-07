@@ -17,9 +17,6 @@ these instructions as well, but instead of injecting the global site tag, copy t
 (sometimes called _Tracking ID_ or _Analytics ID_) into the _Google Analytics ID_ field in the app
 settings of your Appsemble app.
 
-Note that Appsemble forces Google Analytics to anonymize user IP addresses as well as forcing the
-usage of SSL for any app that uses analytics. This is in accordance to European privacy laws.
-
 ## Custom analytics actions
 
 It’s possible to send custom analytics actions.
