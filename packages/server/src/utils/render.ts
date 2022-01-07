@@ -64,9 +64,9 @@ export function createGtagCode(id: string): string[] {
   return [
     'window.dataLayer=window.dataLayer||[]',
     'function gtag(){dataLayer.push(arguments)}',
-    'gtag("js",new Date);',
-    `gtag("config",${JSON.stringify(id)});`,
-    'gtag("set", "forceSSL", true);',
-    'gtag("set", "anonymizeIp", true);',
+    'gtag("js",new Date)',
+    `gtag("config",${JSON.stringify(id)})`,
+    'gtag("set","forceSSL",true)',
+    'gtag("set","anonymizeIp",true)',
   ];
 }
