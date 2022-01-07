@@ -30,10 +30,10 @@ export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactE
     <tr key={asset.id}>
       <td>
         <Checkbox
-          checked={isSelected}
           className="is-inline-block mt-2"
           name={`asset${asset.id}`}
           onChange={onSelect}
+          value={isSelected}
         />
         <Button
           color="primary"

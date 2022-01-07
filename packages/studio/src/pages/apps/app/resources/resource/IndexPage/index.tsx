@@ -140,12 +140,10 @@ export function IndexPage(): ReactElement {
   );
 
   const onSelectAll = useCallback(() => {
-    if (selectedResources.length === result.data?.length) {
-      setSelectedResources([]);
-    } else {
-      setSelectedResources(result.data.map((resource) => resource.id));
-    }
-  }, [result, selectedResources]);
+    setSelectedResources((selected) =>
+      selected.length === result.data?.length ? [] : result.data.map((resource) => resource.id),
+    );
+  }, [result]);
 
   const onSortProperty = useCallback(
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
@@ -279,10 +277,13 @@ export function IndexPage(): ReactElement {
               <tr>
                 <th className={`pl-2 ${styles.noWrap}`}>
                   <Checkbox
-                    checked={selectedResources.length === result.data?.length}
                     className={`pr-2 is-inline-block ${styles.boolean} `}
+                    indeterminate={
+                      selectedResources.length && selectedResources.length !== result.data?.length
+                    }
                     name="select-all"
                     onChange={onSelectAll}
+                    value={selectedResources.length === result.data?.length}
                   />
                   <span className="is-inline-block">
                     <FormattedMessage {...messages.actions} />
