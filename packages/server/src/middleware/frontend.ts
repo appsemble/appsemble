@@ -1,6 +1,6 @@
+import { isIP } from 'net';
 import { URL } from 'url';
 
-import isIp from 'is-ip';
 import { Context, Middleware } from 'koa';
 import compose from 'koa-compose';
 import { Configuration } from 'webpack';
@@ -42,7 +42,7 @@ export async function frontend(webpackConfigs: Configuration[]): Promise<Middlew
       if (!skipRoute.test(ctx.path)) {
         return koaDevMiddleware(ctx, next);
       }
-      if (new URL(argv.host).hostname === hostname || isIp(hostname)) {
+      if (new URL(argv.host).hostname === hostname || isIP(hostname)) {
         return next();
       }
       return koaDevMiddleware(ctx, next);
