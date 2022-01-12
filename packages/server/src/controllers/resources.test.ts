@@ -2845,7 +2845,7 @@ describe('updateResource', () => {
 
   it('should accept assets as form data', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
@@ -2888,7 +2888,7 @@ describe('updateResource', () => {
 
   it('should disallow unused assets', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
@@ -2927,7 +2927,7 @@ describe('updateResource', () => {
 
   it('should block unuknown asset references', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
       createFormData({
@@ -2968,7 +2968,7 @@ describe('updateResource', () => {
 
   it('should allow referencing existing assets', async () => {
     const app = await exampleApp(organization.id);
-    const resource = await Resource.create({ AppId: app.id, type: 'testAssets' });
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const asset = await Asset.create({
       ResourceId: resource.id,
       AppId: app.id,

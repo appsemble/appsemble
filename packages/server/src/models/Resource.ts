@@ -38,9 +38,11 @@ export class Resource extends Model {
   @Column
   id: number;
 
+  @AllowNull(false)
   @Column
   type: string;
 
+  @AllowNull(false)
   @Column(DataType.JSON)
   data: any;
 
@@ -59,6 +61,7 @@ export class Resource extends Model {
   updated: Date;
 
   @ForeignKey(() => App)
+  @AllowNull(false)
   @Column
   AppId: number;
 
