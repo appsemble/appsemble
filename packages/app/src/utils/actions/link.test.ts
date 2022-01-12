@@ -54,6 +54,20 @@ describe('link', () => {
     );
   });
 
+  it('should support links to default app pages', async () => {
+    const action = createTestAction({
+      app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      definition: { type: 'link', to: '/Login' },
+      route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },
+      history,
+    });
+    const link = action.href();
+    expect(link).toBe('/da/Login');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(history.push).toHaveBeenCalledWith('/da/Login', {});
+  });
+
   it('should support links to pages', async () => {
     const action = createTestAction({
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },

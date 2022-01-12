@@ -413,7 +413,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (typeof to === 'string' && (to === '/Login' || to === '/Settings')) {
+        if (to === '/Login' || to === '/Settings') {
           return;
         }
 
