@@ -15,6 +15,8 @@ export const link: ActionCreator<'link'> = ({
 
   if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
+  } else if (typeof to === 'string' && (to === '/Login' || to === '/Settings')) {
+    href = () => `/${route.params.lang}${to}`;
   } else {
     const [toBase, toSub] = [].concat(to);
 

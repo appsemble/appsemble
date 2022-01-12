@@ -413,6 +413,10 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
+        if (typeof to === 'string' && (to === '/Login' || to === '/Settings')) {
+          return;
+        }
+
         const [toBase, toSub] = [].concat(to);
         const toPage = definition.pages.find(({ name }) => name === toBase);
 
