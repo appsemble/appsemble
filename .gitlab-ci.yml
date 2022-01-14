@@ -191,7 +191,7 @@ build docker image:
   stage: build
   needs: []
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
 
 # Build the npm packages that should be published.
