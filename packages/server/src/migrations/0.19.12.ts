@@ -29,7 +29,7 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Making column `Resource`.`AppId` non nullable');
   await queryInterface.changeColumn('Resource', 'AppId', {
     allowNull: false,
-    type: DataTypes.NUMBER,
+    type: DataTypes.INTEGER,
   });
 }
 
@@ -47,7 +47,7 @@ export async function down(db: Sequelize): Promise<void> {
   logger.info('Making column `Resource`.`AppId` non nullable');
   await queryInterface.changeColumn('Resource', 'AppId', {
     allowNull: false,
-    type: DataTypes.NUMBER,
+    type: DataTypes.INTEGER,
   });
 
   logger.info('Making column `Resource`.`data` non nullable');
