@@ -1,5 +1,5 @@
 import { SubPage } from '@appsemble/types';
-import { normalize, partialNormalized } from '@appsemble/utils';
+import { isAppLink, normalize, partialNormalized } from '@appsemble/utils';
 
 import { ActionCreator } from '.';
 
@@ -15,6 +15,8 @@ export const link: ActionCreator<'link'> = ({
 
   if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
+  } else if (isAppLink(to)) {
+    href = () => `/${route.params.lang}${to}`;
   } else {
     const [toBase, toSub] = [].concat(to);
 
