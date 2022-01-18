@@ -236,6 +236,9 @@ export class Mailer {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
+    const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
+    const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
+
     const loggingMessage = ['Sending email:', `To: ${to}`];
     if (cc) {
       loggingMessage.push(`CC: ${cc}`);
@@ -243,8 +246,8 @@ export class Mailer {
     if (bcc) {
       loggingMessage.push(`BCC: ${bcc}`);
     }
-    if (from) {
-      loggingMessage.push(`From: ${from}`);
+    if (fromHeader) {
+      loggingMessage.push(`From: ${fromHeader}`);
     }
     loggingMessage.push(`Subject: ${subject}`, '', text);
     logger.info(loggingMessage.join('\n'));
@@ -257,11 +260,9 @@ export class Mailer {
       );
     }
     if (this.transport) {
-      const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
-      const name = from || parsed.name;
       await this.transport.sendMail({
         html,
-        from: name ? `${name} <${parsed.address}>` : parsed.address,
+        from: fromHeader,
         subject,
         text,
         to,
