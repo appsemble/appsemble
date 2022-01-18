@@ -70,10 +70,10 @@ export class Resource extends Model {
 
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  UserId: string;
+  AuthorId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  Author: User;
 
   @HasMany(() => Asset)
   Assets: Asset[];
@@ -91,7 +91,7 @@ export class Resource extends Model {
     const result: ResourceType = {
       ...this.data,
       id: this.id,
-      $author: this.User ? { id: this.User.id, name: this.User.name } : undefined,
+      $author: this.Author ? { id: this.Author.id, name: this.Author.name } : undefined,
       $clonable: Boolean(this.clonable),
       $created: this.created,
       $expires: this.expires || undefined,
