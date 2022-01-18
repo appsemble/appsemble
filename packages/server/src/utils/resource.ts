@@ -33,7 +33,7 @@ export function renameOData(name: string): string {
     case '__updated__':
       return 'updated';
     case '__author__':
-      return 'UserId';
+      return 'AuthorId';
     case 'id':
       return name;
     default:
@@ -175,7 +175,7 @@ export async function processHooks(
       app,
       notification,
       // Don't send notifications to the creator when creating
-      action === 'create' ? null : resource.UserId,
+      action === 'create' ? null : resource.AuthorId,
       resource.type,
       action,
       resource.id,

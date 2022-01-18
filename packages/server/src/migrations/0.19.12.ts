@@ -31,6 +31,9 @@ export async function up(db: Sequelize): Promise<void> {
     allowNull: false,
     type: DataTypes.NUMBER,
   });
+
+  logger.info('Renaming column `Resource`.`UserId` to `Resource`.`AuthorId`');
+  await queryInterface.renameColumn('Resource', 'UserId', 'AuthorId');
 }
 
 /**
@@ -43,6 +46,9 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Renaming column `Resource`.`AuthorId` to `Resource`.`UserId`');
+  await queryInterface.renameColumn('Resource', 'AuthorId', 'UserId');
 
   logger.info('Making column `Resource`.`AppId` non nullable');
   await queryInterface.changeColumn('Resource', 'AppId', {

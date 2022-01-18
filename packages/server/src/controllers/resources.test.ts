@@ -273,7 +273,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     authorizeStudio();
     const response = await request.get(
@@ -313,7 +313,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     authorizeApp(app);
@@ -377,7 +377,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      UserId: user.id,
+      AuthorId: user.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
@@ -409,7 +409,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResource',
       data: { id: 23, foo: 'foo', bar: 1 },
-      UserId: user.id,
+      AuthorId: user.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
@@ -723,7 +723,7 @@ describe('queryResources', () => {
     const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
-      UserId: user.id,
+      AuthorId: user.id,
       type: 'testResourceNone',
       data: { bar: 'bar' },
     });
@@ -759,13 +759,13 @@ describe('queryResources', () => {
 
     await Resource.create({
       AppId: app.id,
-      UserId: user.id,
+      AuthorId: user.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
     await Resource.create({
       AppId: app.id,
-      UserId: userB.id,
+      AuthorId: userB.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'baz' },
     });
@@ -810,19 +810,19 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -883,31 +883,31 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
     await Resource.create({
       AppId: appB.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: appB.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baaar' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1144,13 +1144,13 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
@@ -1227,7 +1227,7 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      UserId: user.id,
+      AuthorId: user.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
@@ -1500,7 +1500,7 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
@@ -1535,19 +1535,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1574,19 +1574,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1615,19 +1615,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1655,19 +1655,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1696,19 +1696,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1737,19 +1737,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -1793,19 +1793,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      UserId: userC.id,
+      AuthorId: userC.id,
     });
 
     authorizeApp(app);
@@ -2487,7 +2487,7 @@ describe('updateResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     authorizeStudio();
@@ -2527,7 +2527,7 @@ describe('updateResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     authorizeApp(app);
@@ -3198,7 +3198,7 @@ describe('deleteResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     authorizeStudio();
@@ -3220,7 +3220,7 @@ describe('deleteResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      UserId: userB.id,
+      AuthorId: userB.id,
     });
 
     authorizeApp(app);
@@ -3477,7 +3477,7 @@ describe('verifyAppRole', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      UserId: user.id,
+      AuthorId: user.id,
     });
 
     authorizeStudio();

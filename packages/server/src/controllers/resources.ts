@@ -165,10 +165,10 @@ async function verifyPermission(
     throw unauthorized('User is not logged in.');
   }
 
-  const result = [];
+  const result: WhereOptions[] = [];
 
   if (functionalRoles.includes('$author') && user && action !== 'create') {
-    result.push({ UserId: user.id });
+    result.push({ AuthorId: user.id });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
@@ -186,7 +186,7 @@ async function verifyPermission(
         where: { TeamId: teamIds },
       })
     ).map((tm) => tm.UserId);
-    result.push({ UserId: { [Op.in]: userIds } });
+    result.push({ AuthorId: { [Op.in]: userIds } });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
@@ -207,7 +207,7 @@ async function verifyPermission(
         where: { TeamId: teamIds },
       })
     ).map((tm) => tm.UserId);
-    result.push({ UserId: { [Op.in]: userIds } });
+    result.push({ AuthorId: { [Op.in]: userIds } });
   }
 
   if (app.definition.security && !isPublic) {
@@ -538,13 +538,13 @@ export async function createResource(ctx: Context): Promise<void> {
         AppId: app.id,
         type: resourceType,
         data,
-        UserId: user?.id,
+        AuthorId: user?.id,
         expires: $expires,
       })),
       { logging: false, transaction },
     );
     for (const createdResource of createdResources) {
-      createdResource.User = user;
+      createdResource.Author = user;
     }
     await Asset.bulkCreate(
       preparedAssets.map((asset) => {
