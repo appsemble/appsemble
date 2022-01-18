@@ -16,6 +16,16 @@ import { iterApp, Prefix } from './iterApp';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
+/**
+ * Check whether or not the given link represents a link related to the Appsemble core.
+ *
+ * @param link - The link to check
+ * @returns Whether or not the given link represents a link related to the Appsemble core.
+ */
+export function isAppLink(link: string[] | string): boolean {
+  return link === '/Login' || link === '/Settings';
+}
+
 function validateBlocks(
   definition: AppDefinition,
   blockVersions: BlockManifest[],
@@ -413,7 +423,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (to === '/Login' || to === '/Settings') {
+        if (isAppLink(to)) {
           return;
         }
 
