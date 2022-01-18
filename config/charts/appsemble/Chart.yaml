@@ -51,6 +51,7 @@ annotations:
     - name: support
       url: https://gitlab.com/appsemble/appsemble/-/issues
   artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/container/appsemble/appsemble
     - url: https://artifacthub.io/packages/helm/cert-manager/cert-manager
     - url: https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
   artifacthub.io/signKey: |
