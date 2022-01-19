@@ -4189,7 +4189,8 @@ describe('createAppScreenshot', () => {
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
     expect(createdResponse).toMatchInlineSnapshot(`
-        `);
+
+    `);
   });
 
   it('should not accept files that aren’t images', async () => {
