@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.11
-appVersion: 0.19.11
+version: 0.19.12
+appVersion: 0.19.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,23 +25,12 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add data-path attribute to root node of the DOM output."
+      description: "App: Add option to use the link action to link to the login page
+        and settings page."
     - kind: added
-      description: "Block(markdown): Add data-path attribute to root node of the DOM output."
-    - kind: added
-      description: "App: Add from field to email action. This can be used to customize
-        the name when Appsemble sends emails."
-    - kind: added
-      description: "App: Add option to set a default email name when sending emails for an app."
-    - kind: added
-      description: "Appsemble: Add property path to BootstrapParams."
-    - kind: added
-      description: "Create-appsemble: Release create-appsemble."
-    - kind: fixed
-      description: "App: Fix language preference in app settings not always updating
-        appropriately."
-    - kind: fixed
-      description: "Create-appsemble: Fix typing issues in preact and mini-jsx templates."
+      description: "App: Add support for specifying which storage mechanism to use for
+        the storage actions. Supported values are indexedDB, localStorage, and
+        sessionStorage."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.12](https://gitlab.com/appsemble/appsemble/-/releases/0.19.12)] - 2022-01-19
+
+### Added
+
+- App: Add option to use the `link` action to link to the login page and settings page.
+- App: Add support for specifying which storage mechanism to use for the `storage` actions.
+  Supported values are `indexedDB`, `localStorage`, and `sessionStorage`.
+
 ## \[[0.19.11](https://gitlab.com/appsemble/appsemble/-/releases/0.19.11)] - 2022-01-04
 
 ### Added
