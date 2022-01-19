@@ -23,7 +23,7 @@ window.MonacoEnvironment = {
   getWorker(workerId, label) {
     switch (label) {
       case appValidationLabel:
-        return new Worker(new URL('./appValidation/worker', import.meta.url));
+        return new Worker(new URL('appValidation/worker', import.meta.url));
       case 'css':
         return new Worker(new URL('monaco-editor/esm/vs/language/css/css.worker', import.meta.url));
       case 'editorWorkerService':
