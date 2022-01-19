@@ -573,6 +573,83 @@ export async function createResource(ctx: Context): Promise<void> {
   processHooks(user, app, createdResources[0], action);
 }
 
+export async function updateResources(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, resourceType },
+    user,
+  } = ctx;
+  const action = 'update';
+
+  const app = await App.findByPk(
+    appId,
+    user && {
+      include: [
+        { model: Organization, attributes: ['id'] },
+        {
+          model: AppMember,
+          attributes: ['role', 'UserId'],
+          required: false,
+          where: { UserId: user.id },
+        },
+      ],
+    },
+  );
+
+  const definition = getResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+  const [resources, preparedAssets] = processResourceBody(ctx, definition);
+  const resourceList: Record<string, unknown>[] = [].concat(resources);
+
+  if (resourceList.some((r) => !r.id)) {
+    throw badRequest('List of resources contained a resource without an ID.');
+  }
+
+  const existingResources = await Resource.findAll({
+    where: { id: resourceList.map((r) => r.id), type: resourceType, AppId: appId, ...userQuery },
+    include: [
+      { model: User, attributes: ['id', 'name'], required: false },
+      { model: Asset, attributes: ['id'], required: false },
+    ],
+  });
+  if (existingResources.length !== resources.length) {
+    throw badRequest('One or more resources could not be found.');
+  }
+
+  let updatedResources: Resource[];
+  await transactional(async (transaction) => {
+    updatedResources = await Resource.bulkCreate(resourceList, {
+      updateOnDuplicate: ['data'],
+      transaction,
+    });
+    await Asset.destroy({
+      where: {
+        AppId: app.id,
+        ResourceId: updatedResources.map((r) => r.id),
+      },
+    });
+    await Asset.bulkCreate(
+      preparedAssets.map((asset) => {
+        const index = resourceList.indexOf(asset.resource);
+        const { id: ResourceId } = resourceList[index];
+        return {
+          ...asset,
+          AppId: app.id,
+          ResourceId,
+          UserId: user?.id,
+        };
+      }),
+      { logging: false, transaction },
+    );
+  });
+
+  ctx.body = updatedResources;
+
+  for (const resource of updatedResources) {
+    processReferenceHooks(user, app, resource, action);
+    processHooks(user, app, resource, action);
+  }
+}
+
 export async function updateResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
