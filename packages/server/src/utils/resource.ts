@@ -231,6 +231,43 @@ interface PreparedAsset extends Pick<Asset, 'data' | 'data' | 'filename' | 'id' 
 }
 
 /**
+ * Extracts the IDs of resource request body.
+ *
+ * @param ctx - The Koa context to extract the body from.
+ * @returns A tuple which consists of:
+ *
+ * 1. One or more resources processed from the request body.
+ * 2. A list of newly uploaded assets which should be linked to the resources.
+ * 3. preValidateProperty function used for reconstructing resources from a CSV file.
+ */
+export function extractResourceBody(
+  ctx: Context,
+): [Record<string, unknown> | Record<string, unknown>[], File[], PreValidatePropertyFunction] {
+  let body: ResourceType | ResourceType[];
+  let assets: File[];
+  let preValidateProperty: PreValidatePropertyFunction;
+
+  if (ctx.is('multipart/form-data')) {
+    ({ assets = [], resource: body } = ctx.request.body);
+    if (Array.isArray(body) && body.length === 1) {
+      [body] = body;
+    }
+  } else {
+    if (ctx.is('text/csv')) {
+      preValidateProperty = preProcessCSV;
+    }
+    ({ body } = ctx.request);
+    assets = [];
+  }
+
+  return [
+    Array.isArray(body) ? body.map(stripResource) : stripResource(body),
+    assets,
+    preValidateProperty,
+  ];
+}
+
+/**
  * Process an incoming resource request body.
  *
  * This handles JSON schema validation, resource expiration, and asset linking and validation.
@@ -251,22 +288,7 @@ export function processResourceBody(
   knownAssetIds: string[] = [],
   knownExpires?: Date,
 ): [Record<string, unknown> | Record<string, unknown>[], PreparedAsset[], string[]] {
-  let body: ResourceType | ResourceType[];
-  let assets: File[];
-  let preValidateProperty: PreValidatePropertyFunction;
-  if (ctx.is('multipart/form-data')) {
-    ({ assets = [], resource: body } = ctx.request.body);
-    if (Array.isArray(body) && body.length === 1) {
-      [body] = body;
-    }
-  } else {
-    if (ctx.is('text/csv')) {
-      preValidateProperty = preProcessCSV;
-    }
-    ({ body } = ctx.request);
-    assets = [];
-  }
-  const resource = Array.isArray(body) ? body.map(stripResource) : stripResource(body);
+  const [resource, assets, preValidateProperty] = extractResourceBody(ctx);
   const validator = new Validator();
   const assetIdMap = new Map<number, string>();
   const assetUsedMap = new Map<number, boolean>();

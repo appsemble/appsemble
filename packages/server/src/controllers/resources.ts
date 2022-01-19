@@ -21,6 +21,7 @@ import {
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
+  extractResourceBody,
   processHooks,
   processReferenceHooks,
   processResourceBody,
@@ -534,6 +535,10 @@ export async function createResource(ctx: Context): Promise<void> {
   await verifyPermission(ctx, app, resourceType, action);
 
   const [resource, preparedAssets] = processResourceBody(ctx, definition);
+  if (Array.isArray(resource) && !resource.length) {
+    ctx.body = [];
+    return;
+  }
 
   await user?.reload({ attributes: ['name'] });
   let createdResources: Resource[];
@@ -597,49 +602,75 @@ export async function updateResources(ctx: Context): Promise<void> {
 
   const definition = getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
-  const [resources, preparedAssets] = processResourceBody(ctx, definition);
-  const resourceList: Record<string, unknown>[] = [].concat(resources);
+  const resourceList = extractResourceBody(ctx)[0] as Record<string, unknown>[];
+
+  if (!resourceList.length) {
+    ctx.body = [];
+    return;
+  }
 
   if (resourceList.some((r) => !r.id)) {
     throw badRequest('List of resources contained a resource without an ID.');
   }
 
   const existingResources = await Resource.findAll({
-    where: { id: resourceList.map((r) => r.id), type: resourceType, AppId: appId, ...userQuery },
+    where: {
+      id: resourceList.map((r) => Number(r.id)),
+      type: resourceType,
+      AppId: appId,
+      ...userQuery,
+    },
     include: [
       { model: User, attributes: ['id', 'name'], required: false },
       { model: Asset, attributes: ['id'], required: false },
     ],
   });
+
+  const [resources, preparedAssets, unusedAssetIds] = processResourceBody(
+    ctx,
+    definition,
+    existingResources.flatMap((r) => r.Assets.map((a) => a.id)),
+  );
+  const processedResources = resources as Record<string, unknown>[];
+
   if (existingResources.length !== resources.length) {
     throw badRequest('One or more resources could not be found.');
   }
 
   let updatedResources: Resource[];
   await transactional(async (transaction) => {
-    updatedResources = await Resource.bulkCreate(resourceList, {
-      updateOnDuplicate: ['data'],
-      transaction,
-    });
-    await Asset.destroy({
-      where: {
-        AppId: app.id,
-        ResourceId: updatedResources.map((r) => r.id),
+    updatedResources = await Resource.bulkCreate(
+      processedResources.map(({ $author, $created, $updated, id, ...data }) => ({ id, data })),
+      {
+        updateOnDuplicate: ['dataw'],
+        transaction,
       },
-    });
-    await Asset.bulkCreate(
-      preparedAssets.map((asset) => {
-        const index = resourceList.indexOf(asset.resource);
-        const { id: ResourceId } = resourceList[index];
-        return {
-          ...asset,
-          AppId: app.id,
-          ResourceId,
-          UserId: user?.id,
-        };
-      }),
-      { logging: false, transaction },
     );
+
+    if (unusedAssetIds.length) {
+      await Asset.destroy({
+        where: {
+          id: unusedAssetIds,
+        },
+        transaction,
+      });
+    }
+
+    if (preparedAssets.length) {
+      await Asset.bulkCreate(
+        preparedAssets.map((asset) => {
+          const index = processedResources.indexOf(asset.resource);
+          const { id: ResourceId } = processedResources[index];
+          return {
+            ...asset,
+            AppId: app.id,
+            ResourceId,
+            UserId: user?.id,
+          };
+        }),
+        { logging: false, transaction },
+      );
+    }
   });
 
   ctx.body = updatedResources;
