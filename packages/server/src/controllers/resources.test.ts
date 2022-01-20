@@ -1221,7 +1221,7 @@ describe('queryResources', () => {
     `);
   });
 
-  it('should return the resource authors if it them', async () => {
+  it('should return the resource authors if it has them', async () => {
     const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
