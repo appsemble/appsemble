@@ -642,7 +642,7 @@ export async function updateResources(ctx: Context): Promise<void> {
     updatedResources = await Resource.bulkCreate(
       processedResources.map(({ $author, $created, $updated, id, ...data }) => ({ id, data })),
       {
-        updateOnDuplicate: ['dataw'],
+        updateOnDuplicate: ['data'],
         transaction,
       },
     );

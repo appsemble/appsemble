@@ -1882,7 +1882,99 @@ describe('updateResources', () => {
         .replace(/ +$/g, ''),
       { headers: { 'content-type': 'text/csv' } },
     );
-    expect(response).toMatchInlineSnapshot();
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "boolean": true,
+          "foo": "a",
+          "id": 1,
+          "integer": 42,
+          "number": 3.14,
+          "object": {},
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "boolean": false,
+          "foo": "A",
+          "id": 2,
+          "integer": 1337,
+          "number": 9.8,
+          "object": {},
+        },
+      ]
+    `);
+  });
+
+  it('should accept assets as form data with multiple resources', async () => {
+    const app = await exampleApp(organization.id);
+    const resources = await request.post<ResourceType[]>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: [{ string: 'A' }, { string: 'B', file: '0' }],
+        assets: [Buffer.from('Test resource B')],
+      }),
+    );
+
+    const response = await request.put<ResourceType[]>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: [
+          { id: resources.data[0].id, string: 'A', file: '0' },
+          { id: resources.data[1].id, string: 'B updated' },
+        ],
+        assets: [Buffer.from('Test Resource A')],
+      }),
+    );
+
+    const assets = await Asset.findAll({ raw: true });
+    expect(assets).toStrictEqual([
+      {
+        AppId: app.id,
+        ResourceId: 1,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: Buffer.from('Test Resource A'),
+        filename: null,
+        id: response.data[0].file,
+        mime: 'application/octet-stream',
+        name: null,
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+    ]);
+    expect(Buffer.from('Test Resource A').equals(assets[0].data)).toBe(true);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [{ file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) }, {}],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "id": 1,
+          "string": "A",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 2,
+          "string": "B updated",
+        },
+      ]
+    `,
+    );
   });
 
   it('should not be able to update existing resources if one of them is missing an ID', async () => {
