@@ -413,6 +413,7 @@
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteButton": "Supprimer",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteError": "Une erreur s'est produite lors de la suppression des ressources sélectionnées.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteSuccess": "Suppression réussie des ressources sélectionnées.",
+  "studio.src.pages.apps.app.resources.resource.IndexPage.editor": "",
   "studio.src.pages.apps.app.resources.resource.IndexPage.empty": "",
   "studio.src.pages.apps.app.resources.resource.IndexPage.export": "Exporter en CSV",
   "studio.src.pages.apps.app.resources.resource.IndexPage.header": "Ressource {resourceName}",

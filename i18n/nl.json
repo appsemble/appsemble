@@ -413,6 +413,7 @@
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteButton": "Verwijderen",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteError": "Er is iets misgegaan tijdens het verwijderen van de geselecteerde resources.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteSuccess": "Succesvol de geselecteerde resources verwijderd.",
+  "studio.src.pages.apps.app.resources.resource.IndexPage.editor": "Bewerker",
   "studio.src.pages.apps.app.resources.resource.IndexPage.empty": "Er zijn momenteel geen {type} resources beschikbaar.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.export": "Exporteer als CSV",
   "studio.src.pages.apps.app.resources.resource.IndexPage.header": "Resource {resourceName}",
