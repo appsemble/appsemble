@@ -37,7 +37,7 @@ export function ResourceDetailsPage(): ReactElement {
   useMeta(resourceId);
 
   const setResource = useCallback(
-    ({ $author, $clonable, $created, $updated, id: unused, ...rest }: Resource) => {
+    ({ $author, $clonable, $created, $editor, $updated, id: unused, ...rest }: Resource) => {
       setEditingResource(rest);
       setEditingResourceJson(`${JSON.stringify(rest, null, 2)}\n`);
     },

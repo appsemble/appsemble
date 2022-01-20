@@ -282,7 +282,10 @@ export async function queryResources(ctx: Context): Promise<void> {
   const { order, query } = generateQuery(ctx);
 
   const resources = await Resource.findAll({
-    include: [{ model: User, attributes: ['id', 'name'], required: false }],
+    include: [
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { association: 'Editor', attributes: ['id', 'name'], required: false },
+    ],
     limit: $top,
     order,
     where: {
@@ -374,7 +377,10 @@ export async function getResourceById(ctx: Context): Promise<void> {
       expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
       ...userQuery,
     },
-    include: [{ model: User, attributes: ['id', 'name'], required: false }],
+    include: [
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { association: 'Editor', attributes: ['id', 'name'], required: false },
+    ],
   });
 
   if (!resource) {
@@ -595,7 +601,7 @@ export async function updateResource(ctx: Context): Promise<void> {
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
     include: [
-      { model: User, attributes: ['id', 'name'], required: false },
+      { association: 'Author', attributes: ['id', 'name'], required: false },
       { model: Asset, attributes: ['id'], required: false },
     ],
   });
@@ -618,7 +624,7 @@ export async function updateResource(ctx: Context): Promise<void> {
 
   await transactional((transaction) =>
     Promise.all([
-      resource.update({ data, clonable, expires }, { transaction }),
+      resource.update({ data, clonable, expires, EditorId: user?.id }, { transaction }),
       Asset.bulkCreate(
         preparedAssets.map((asset) => ({
           ...asset,
@@ -631,6 +637,7 @@ export async function updateResource(ctx: Context): Promise<void> {
       Asset.destroy({ where: { id: deletedAssetIds } }),
     ]),
   );
+  await resource.reload({ include: [{ association: 'Editor' }] });
 
   ctx.body = resource;
 

@@ -42,7 +42,7 @@ export interface RouteParams {
   resourceName: string;
 }
 
-const defaultHiddenProperties = new Set(['$created', '$updated']);
+const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
 export function IndexPage(): ReactElement {
   const { app } = useApp();
@@ -302,6 +302,11 @@ export function IndexPage(): ReactElement {
                 {!hiddenProperties.has('$author') && (
                   <th>
                     <FormattedMessage {...messages.author} />
+                  </th>
+                )}
+                {!hiddenProperties.has('$editor') && (
+                  <th>
+                    <FormattedMessage {...messages.editor} />
                   </th>
                 )}
                 {!hiddenProperties.has('$created') && (

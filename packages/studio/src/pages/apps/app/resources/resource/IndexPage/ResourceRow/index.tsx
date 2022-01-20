@@ -248,6 +248,9 @@ export function ResourceRow({
       {!filter.has('$author') && (
         <td className={styles.author}>{resource.$author?.name ?? resource.$author?.id}</td>
       )}
+      {!filter.has('$editor') && (
+        <td className={styles.author}>{resource.$editor?.name ?? resource.$editor?.id}</td>
+      )}
       {!filter.has('$created') && (
         <td>
           <time dateTime={resource.$created}>

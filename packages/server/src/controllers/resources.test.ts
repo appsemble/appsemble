@@ -1221,19 +1221,20 @@ describe('queryResources', () => {
     `);
   });
 
-  it('should return the resource author if it has one', async () => {
+  it('should return the resource authors if it them', async () => {
     const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       AuthorId: user.id,
+      EditorId: user.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response).toMatchInlineSnapshot(
-      { data: [{ $author: { id: expect.any(String) } }] },
+      { data: [{ $author: { id: expect.any(String) }, $editor: { id: expect.any(String) } }] },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -1245,6 +1246,10 @@ describe('queryResources', () => {
             "name": "Test User",
           },
           "$created": "1970-01-01T00:00:00.000Z",
+          "$editor": {
+            "id": Any<String>,
+            "name": "Test User",
+          },
           "$updated": "1970-01-01T00:00:00.000Z",
           "bar": 1,
           "foo": "foo",
@@ -2446,33 +2451,47 @@ describe('updateResource', () => {
       { foo: 'I am not Foo.' },
     );
 
-    expect(response).toMatchInlineSnapshot(`
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:20.000Z",
         "foo": "I am not Foo.",
         "id": 1,
       }
-    `);
+    `,
+    );
 
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseB).toMatchInlineSnapshot(`
+    expect(responseB).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:20.000Z",
         "foo": "I am not Foo.",
         "id": 1,
       }
-    `);
+    `,
+    );
   });
 
   it('should be able to update an existing resource from another team', async () => {
@@ -2497,7 +2516,12 @@ describe('updateResource', () => {
     );
 
     expect(response).toMatchInlineSnapshot(
-      { data: { $author: { id: expect.any(String) } } },
+      {
+        data: {
+          $author: { id: expect.any(String) },
+          $editor: { id: expect.any(String) },
+        },
+      },
       `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
@@ -2508,6 +2532,10 @@ describe('updateResource', () => {
           "name": null,
         },
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:00.000Z",
         "foo": "I am not Foo.",
         "id": 1,
@@ -2739,17 +2767,24 @@ describe('updateResource', () => {
 
     await resource.reload();
 
-    expect(response).toMatchInlineSnapshot(`
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:00.000Z",
         "foo": "I am not Foo.",
         "id": 1,
       }
-    `);
+    `,
+    );
     expect(resource.clonable).toBe(true);
   });
 
@@ -2925,7 +2960,7 @@ describe('updateResource', () => {
     `);
   });
 
-  it('should block unuknown asset references', async () => {
+  it('should block unknown asset references', async () => {
     const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put(
@@ -3045,17 +3080,24 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchInlineSnapshot(`
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:00.000Z",
         "foo": "baz",
         "id": 1,
       }
-    `);
+    `,
+    );
   });
 
   it('should not allow organization members to update resources using Studio', async () => {
@@ -3097,17 +3139,24 @@ describe('updateResource', () => {
       `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
       { foo: 'baz' },
     );
-    expect(response).toMatchInlineSnapshot(`
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
       {
         "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
         "$updated": "1970-01-01T00:00:00.000Z",
         "foo": "baz",
         "id": 1,
       }
-    `);
+    `,
+    );
   });
 
   it('should not allow organization members to update resources using client credentials', async () => {
@@ -3135,6 +3184,42 @@ describe('updateResource', () => {
         "statusCode": 403,
       }
     `);
+  });
+
+  it('should set the updater', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am Foo too!' },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo too!",
+        "id": 1,
+      }
+    `,
+    );
+
+    await resource.reload();
+    expect(resource.EditorId).toBe(user.id);
   });
 });
 
