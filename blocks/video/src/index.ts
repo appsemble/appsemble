@@ -35,8 +35,33 @@ bootstrap(
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
     let currentUrl: string;
+    let finished = false;
     const onFinish = async (): Promise<void> => {
+      if (finished) {
+        return;
+      }
+
+      finished = true;
       await actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
+    };
+    const onTimeUpdate = async ({
+      duration,
+      seconds,
+    }: {
+      seconds: number;
+      percent: number;
+      duration: number;
+    }): Promise<void> => {
+      if (finished) {
+        return;
+      }
+      if (Math.floor(seconds) === Math.floor(duration)) {
+        finished = true;
+        await actions.onFinish(data, {
+          videoId: currentUrl.match(/\d+/)?.[0],
+          videoUrl: currentUrl,
+        });
+      }
     };
     utils.addCleanup(() => player?.destroy());
 
@@ -99,6 +124,7 @@ bootstrap(
       }
 
       currentUrl = newURL;
+      player.on('timeupdate', onTimeUpdate);
       player.on('ended', onFinish);
     };
 
