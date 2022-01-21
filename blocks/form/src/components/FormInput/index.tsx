@@ -11,6 +11,7 @@ import { GeoCoordinatesInput } from '../GeoCoordinatesInput';
 import { NumberInput } from '../NumberInput';
 import { ObjectInput } from '../ObjectInput';
 import { RadioInput } from '../RadioInput';
+import { StaticField } from '../StaticField';
 import { StringInput } from '../StringInput';
 
 type FormInputProps = Omit<InputProps<any, Field>, 'dirty'>;
@@ -40,6 +41,8 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       return <FileInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'geocoordinates':
       return <GeoCoordinatesInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'static':
+      return <StaticField field={field} {...props} />;
     case 'string':
       return <StringInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'number':
