@@ -13,6 +13,7 @@ import { paths as oauth2ClientCredentials } from './oauth2ClientCredentials';
 import { paths as oauth2Login } from './oauth2Login';
 import { paths as oauth2Provider } from './oauth2Provider';
 import { paths as organizations } from './organizations';
+import { paths as resourceHistory } from './resourceHistory';
 import { paths as resources } from './resources';
 import { paths as saml } from './saml';
 import { paths as templates } from './templates';
@@ -33,6 +34,7 @@ export const paths = {
   ...oauth2Provider,
   ...organizations,
   ...action,
+  ...resourceHistory,
   ...resources,
   ...saml,
   ...templates,

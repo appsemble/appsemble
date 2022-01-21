@@ -1,6 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { Resource as ResourceType } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils';
+import { TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
@@ -14,6 +14,7 @@ import {
   Member,
   Organization,
   Resource,
+  ResourceVersion,
   Team,
   TeamMember,
   User,
@@ -183,6 +184,36 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             },
           },
           roles: ['$public'],
+        },
+        testHistoryTrue: {
+          roles: ['$public'],
+          history: true,
+          schema: {
+            type: 'object',
+            properties: {
+              string: { type: 'string' },
+            },
+          },
+        },
+        testHistoryDataTrue: {
+          roles: ['$public'],
+          history: { data: true },
+          schema: {
+            type: 'object',
+            properties: {
+              string: { type: 'string' },
+            },
+          },
+        },
+        testHistoryDataFalse: {
+          roles: ['$public'],
+          history: { data: false },
+          schema: {
+            type: 'object',
+            properties: {
+              string: { type: 'string' },
+            },
+          },
         },
       },
       security: {
@@ -3431,6 +3462,114 @@ describe('updateResource', () => {
 
     await resource.reload();
     expect(resource.EditorId).toBe(user.id);
+  });
+
+  it('should keep an old resource version including data if history is true', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryTrue',
+      data: { string: 'rev1' },
+    });
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testHistoryTrue/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: { string: 'rev1' },
+      id: expect.stringMatching(uuid4Pattern),
+    });
+  });
+
+  it('should keep an old resource version including data if history.data is true', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryDataTrue',
+      data: { string: 'rev1' },
+    });
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testHistoryDataTrue/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: { string: 'rev1' },
+      id: expect.stringMatching(uuid4Pattern),
+    });
+  });
+
+  it('should keep an old resource version excluding data if history.data is false', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryDataFalse',
+      data: { string: 'rev1' },
+    });
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testHistoryDataFalse/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: null,
+      id: expect.stringMatching(uuid4Pattern),
+    });
   });
 });
 

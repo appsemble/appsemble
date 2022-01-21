@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { ResourceDefinition, Resource as ResourceType } from '@appsemble/types';
+import { Resource as ResourceType } from '@appsemble/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
@@ -13,6 +13,7 @@ import {
   Organization,
   Resource,
   ResourceSubscription,
+  ResourceVersion,
   Team,
   TeamMember,
   transactional,
@@ -22,6 +23,7 @@ import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
   extractResourceBody,
+  getResourceDefinition,
   processHooks,
   processReferenceHooks,
   processResourceBody,
@@ -34,29 +36,6 @@ const specialRoles = new Set([
   '$none',
   ...Object.values(TeamRole).map((r) => `$team:${r}`),
 ]);
-
-/**
- * Get the resource definition of an app by name.
- *
- * If there is no match, a 404 HTTP error is thrown.
- *
- * @param app - The app to get the resource definition of
- * @param resourceType - The name of the resource definition to get.
- * @returns The matching resource definition.
- */
-function getResourceDefinition(app: App, resourceType: string): ResourceDefinition {
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  const definition = app.definition.resources?.[resourceType];
-
-  if (!definition) {
-    throw notFound(`App does not have resources called ${resourceType}`);
-  }
-
-  return definition;
-}
 
 /**
  * Generate Sequelize filter objects based on ODATA filters present in the request.
@@ -743,21 +722,44 @@ export async function updateResource(ctx: Context): Promise<void> {
     ...data
   } = updatedResource as Record<string, unknown>;
 
-  await transactional((transaction) =>
-    Promise.all([
+  await transactional((transaction) => {
+    const oldData = resource.data;
+    const previousEditorId = resource.EditorId;
+    const promises: Promise<unknown>[] = [
       resource.update({ data, clonable, expires, EditorId: user?.id }, { transaction }),
-      Asset.bulkCreate(
-        preparedAssets.map((asset) => ({
-          ...asset,
-          AppId: app.id,
-          ResourceId: resource.id,
-          UserId: user?.id,
-        })),
-        { logging: false, transaction },
-      ),
-      Asset.destroy({ where: { id: deletedAssetIds } }),
-    ]),
-  );
+    ];
+
+    if (preparedAssets.length) {
+      promises.push(
+        Asset.bulkCreate(
+          preparedAssets.map((asset) => ({
+            ...asset,
+            AppId: app.id,
+            ResourceId: resource.id,
+            UserId: user?.id,
+          })),
+          { logging: false, transaction },
+        ),
+      );
+    }
+
+    if (definition.history) {
+      promises.push(
+        ResourceVersion.create(
+          {
+            ResourceId: resourceId,
+            UserId: previousEditorId,
+            data: definition.history === true || definition.history.data ? oldData : undefined,
+          },
+          { transaction },
+        ),
+      );
+    } else {
+      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
+    }
+
+    return Promise.all(promises);
+  });
   await resource.reload({ include: [{ association: 'Editor' }] });
 
   ctx.body = resource;

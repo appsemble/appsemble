@@ -16,6 +16,7 @@ import {
 } from 'sequelize-typescript';
 
 import { App, Asset, ResourceSubscription, User } from '.';
+import { ResourceVersion } from './ResourceVersion';
 
 interface ResourceToJsonOptions {
   /**
@@ -87,6 +88,9 @@ export class Resource extends Model {
 
   @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
   ResourceSubscriptions: ResourceSubscription[];
+
+  @HasMany(() => ResourceVersion, { onDelete: 'CASCADE' })
+  ResourceVersions: ResourceVersion[];
 
   /**
    * Represent a resource as JSON output

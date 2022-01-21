@@ -48,3 +48,9 @@ export interface ResourceAuthor {
    */
   name: string;
 }
+
+export interface ResourceVersion {
+  created: string;
+  data: Record<string, unknown>;
+  author: ResourceAuthor;
+}
