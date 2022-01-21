@@ -72,8 +72,15 @@ export class Resource extends Model {
   @Column(DataType.UUID)
   AuthorId: string;
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, 'AuthorId')
   Author: User;
+
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
+  EditorId: string;
+
+  @BelongsTo(() => User, 'EditorId')
+  Editor: User;
 
   @HasMany(() => Asset)
   Assets: Asset[];
@@ -92,6 +99,7 @@ export class Resource extends Model {
       ...this.data,
       id: this.id,
       $author: this.Author ? { id: this.Author.id, name: this.Author.name } : undefined,
+      $editor: this.Editor ? { id: this.Editor.id, name: this.Editor.name } : undefined,
       $clonable: Boolean(this.clonable),
       $created: this.created,
       $expires: this.expires || undefined,

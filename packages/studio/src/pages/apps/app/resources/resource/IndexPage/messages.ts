@@ -19,6 +19,7 @@ export const messages = defineMessages({
   import: 'Import from CSV',
   id: 'ID',
   author: 'Author',
+  editor: 'Editor',
   hideButton: 'Hide columns ({count}/{total})',
   apply: 'Apply',
   hideProperties: 'Hide properties',

@@ -413,6 +413,7 @@
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteButton": "Izbriši",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteError": "Dogodila se greška tijekom brisanja odabranih resursa.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.deleteSuccess": "Odabrani resursi su uspješno izbrisani.",
+  "studio.src.pages.apps.app.resources.resource.IndexPage.editor": "",
   "studio.src.pages.apps.app.resources.resource.IndexPage.empty": "Trenutačno nema dostupnih resursa vrste {type}.",
   "studio.src.pages.apps.app.resources.resource.IndexPage.export": "Izvezi kao CSV",
   "studio.src.pages.apps.app.resources.resource.IndexPage.header": "Resurs {resourceName}",
