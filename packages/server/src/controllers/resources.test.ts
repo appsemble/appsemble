@@ -1994,6 +1994,11 @@ describe('updateResources', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": [
+          {
+            "foo": "baa",
+          },
+        ],
         "error": "Bad Request",
         "message": "List of resources contained a resource without an ID.",
         "statusCode": 400,
@@ -2018,6 +2023,12 @@ describe('updateResources', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "data": [
+          {
+            "foo": "baa",
+            "id": 1000,
+          },
+        ],
         "error": "Bad Request",
         "message": "One or more resources could not be found.",
         "statusCode": 400,

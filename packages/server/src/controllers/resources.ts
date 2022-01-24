@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { ResourceDefinition } from '@appsemble/types';
+import { ResourceDefinition, Resource as ResourceType } from '@appsemble/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
@@ -602,7 +602,7 @@ export async function updateResources(ctx: Context): Promise<void> {
 
   const definition = getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
-  const resourceList = extractResourceBody(ctx)[0] as Record<string, unknown>[];
+  const resourceList = extractResourceBody(ctx)[0] as ResourceType[];
 
   if (!resourceList.length) {
     ctx.body = [];
@@ -610,7 +610,10 @@ export async function updateResources(ctx: Context): Promise<void> {
   }
 
   if (resourceList.some((r) => !r.id)) {
-    throw badRequest('List of resources contained a resource without an ID.');
+    throw badRequest(
+      'List of resources contained a resource without an ID.',
+      resourceList.filter((r) => !r.id),
+    );
   }
 
   const existingResources = await Resource.findAll({
@@ -621,7 +624,8 @@ export async function updateResources(ctx: Context): Promise<void> {
       ...userQuery,
     },
     include: [
-      { model: User, attributes: ['id', 'name'], required: false },
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { association: 'Editor', attributes: ['id', 'name'], required: false },
       { model: Asset, attributes: ['id'], required: false },
     ],
   });
@@ -631,20 +635,29 @@ export async function updateResources(ctx: Context): Promise<void> {
     definition,
     existingResources.flatMap((r) => r.Assets.map((a) => a.id)),
   );
-  const processedResources = resources as Record<string, unknown>[];
+  const processedResources = resources as ResourceType[];
 
-  if (existingResources.length !== resources.length) {
-    throw badRequest('One or more resources could not be found.');
+  if (existingResources.length !== processedResources.length) {
+    const ids = new Set(existingResources.map((r) => r.id));
+    throw badRequest(
+      'One or more resources could not be found.',
+      processedResources.filter((r) => !ids.has(r.id)),
+    );
   }
 
   let updatedResources: Resource[];
   await transactional(async (transaction) => {
-    updatedResources = await Resource.bulkCreate(
-      processedResources.map(({ $author, $created, $updated, id, ...data }) => ({ id, data })),
-      {
-        updateOnDuplicate: ['data'],
-        transaction,
-      },
+    updatedResources = await Promise.all(
+      processedResources.map(async ({ $author, $created, $editor, $updated, id, ...data }) => {
+        const [, [resource]] = await Resource.update(
+          {
+            data,
+            EditorId: user?.id,
+          },
+          { where: { id }, transaction, returning: true },
+        );
+        return resource;
+      }),
     );
 
     if (unusedAssetIds.length) {
@@ -659,7 +672,7 @@ export async function updateResources(ctx: Context): Promise<void> {
     if (preparedAssets.length) {
       await Asset.bulkCreate(
         preparedAssets.map((asset) => {
-          const index = processedResources.indexOf(asset.resource);
+          const index = processedResources.indexOf(asset.resource as ResourceType);
           const { id: ResourceId } = processedResources[index];
           return {
             ...asset,
