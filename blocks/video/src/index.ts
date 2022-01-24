@@ -35,8 +35,31 @@ bootstrap(
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
     let currentUrl: string;
-    const onFinish = async (): Promise<void> => {
-      await actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
+    let finished = false;
+    const onFinish = (): void => {
+      if (finished) {
+        return;
+      }
+
+      finished = true;
+      actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
+    };
+    const onTimeUpdate = ({
+      duration,
+      seconds,
+    }: {
+      // XXX Change to TimeEvent once
+      // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/58351
+      // is merged.
+      seconds: number;
+      percent: number;
+      duration: number;
+    }): void => {
+      if (Math.floor(seconds) !== Math.floor(duration)) {
+        return;
+      }
+
+      onFinish();
     };
     utils.addCleanup(() => player?.destroy());
 
@@ -99,6 +122,7 @@ bootstrap(
       }
 
       currentUrl = newURL;
+      player.on('timeupdate', onTimeUpdate);
       player.on('ended', onFinish);
     };
 
