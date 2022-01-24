@@ -7,7 +7,7 @@ import { InputProps, StaticField as StaticFieldType } from '../../../block';
 type StaticFieldProps = Omit<InputProps<string, StaticFieldType>, 'onChange'>;
 
 /**
- * An input element for a text type schema.
+ * Render static text in between form elements.
  */
 export function StaticField({ field, value }: StaticFieldProps): VNode {
   const { utils } = useBlock();
