@@ -64,5 +64,4 @@ export class Organization extends Model {
   deleted: Date;
 
   Member: Member;
-  AppCount?: number;
 }
