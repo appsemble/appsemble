@@ -487,6 +487,23 @@ export interface NumberField extends AbstractField {
 }
 
 /**
+ * A field that displays static content.
+ *
+ * This field does not contain a name or a value.
+ */
+export interface StaticField extends AbstractField {
+  /**
+   * The type of the field.
+   */
+  type: 'static';
+
+  /**
+   * The content to display.
+   */
+  content: Remapper;
+}
+
+/**
  * Fields with the type of [`string`](#StringField) support requirements. This is an array of
  * requirements that are used to validate the value the user inputs. Each requirement can be
  * provided with its own custom error message, allowing for better feedback towards users.
@@ -580,6 +597,7 @@ export type Field =
   | NumberField
   | ObjectField
   | RadioField
+  | StaticField
   | StringField;
 
 export type Values = Record<string, unknown>;

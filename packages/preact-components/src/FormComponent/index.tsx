@@ -75,6 +75,11 @@ export interface FormComponentProps extends SharedFormComponentProps {
    * Whether or not the input is required.
    */
   required?: boolean;
+
+  /**
+   * Whether or not the help section should be rendered.
+   */
+  disableHelp?: boolean;
 }
 
 /**
@@ -87,6 +92,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       children,
       className,
       control,
+      disableHelp,
       error,
       help,
       helpExtra,
@@ -140,7 +146,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         ) : (
           controls
         )}
-        {helpExtra ? (
+        {disableHelp ? null : helpExtra ? (
           <div className={`is-flex ${styles.helpWrapper}`}>
             {helpContent}
             <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
