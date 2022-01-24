@@ -146,17 +146,14 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         ) : (
           controls
         )}
-        {disableHelp
-          ? null
-          : helpExtra
-          ? (
-              <div className={`is-flex ${styles.helpWrapper}`}>
-                {helpContent}
-                <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
-              </div>
-            )
-          : helpContent
-        }
+        {disableHelp ? null : helpExtra ? (
+          <div className={`is-flex ${styles.helpWrapper}`}>
+            {helpContent}
+            <span className={`help ml-1 ${styles.counter}`}>{helpExtra}</span>
+          </div>
+        ) : (
+          helpContent
+        )}
       </div>
     );
   },
