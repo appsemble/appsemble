@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { ResourceDefinition } from '@appsemble/types';
+import { ResourceDefinition, Resource as ResourceType } from '@appsemble/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
@@ -21,6 +21,7 @@ import {
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
+  extractResourceBody,
   processHooks,
   processReferenceHooks,
   processResourceBody,
@@ -534,6 +535,10 @@ export async function createResource(ctx: Context): Promise<void> {
   await verifyPermission(ctx, app, resourceType, action);
 
   const [resource, preparedAssets] = processResourceBody(ctx, definition);
+  if (Array.isArray(resource) && !resource.length) {
+    ctx.body = [];
+    return;
+  }
 
   await user?.reload({ attributes: ['name'] });
   let createdResources: Resource[];
@@ -571,6 +576,122 @@ export async function createResource(ctx: Context): Promise<void> {
 
   processReferenceHooks(user, app, createdResources[0], action);
   processHooks(user, app, createdResources[0], action);
+}
+
+export async function updateResources(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, resourceType },
+    user,
+  } = ctx;
+  const action = 'update';
+
+  const app = await App.findByPk(
+    appId,
+    user && {
+      include: [
+        { model: Organization, attributes: ['id'] },
+        {
+          model: AppMember,
+          attributes: ['role', 'UserId'],
+          required: false,
+          where: { UserId: user.id },
+        },
+      ],
+    },
+  );
+
+  const definition = getResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+  const resourceList = extractResourceBody(ctx)[0] as ResourceType[];
+
+  if (!resourceList.length) {
+    ctx.body = [];
+    return;
+  }
+
+  if (resourceList.some((r) => !r.id)) {
+    throw badRequest(
+      'List of resources contained a resource without an ID.',
+      resourceList.filter((r) => !r.id),
+    );
+  }
+
+  const existingResources = await Resource.findAll({
+    where: {
+      id: resourceList.map((r) => Number(r.id)),
+      type: resourceType,
+      AppId: appId,
+      ...userQuery,
+    },
+    include: [
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { association: 'Editor', attributes: ['id', 'name'], required: false },
+      { model: Asset, attributes: ['id'], required: false },
+    ],
+  });
+
+  const [resources, preparedAssets, unusedAssetIds] = processResourceBody(
+    ctx,
+    definition,
+    existingResources.flatMap((r) => r.Assets.map((a) => a.id)),
+  );
+  const processedResources = resources as ResourceType[];
+
+  if (existingResources.length !== processedResources.length) {
+    const ids = new Set(existingResources.map((r) => r.id));
+    throw badRequest(
+      'One or more resources could not be found.',
+      processedResources.filter((r) => !ids.has(r.id)),
+    );
+  }
+
+  let updatedResources: Resource[];
+  await transactional(async (transaction) => {
+    updatedResources = await Promise.all(
+      processedResources.map(async ({ $author, $created, $editor, $updated, id, ...data }) => {
+        const [, [resource]] = await Resource.update(
+          {
+            data,
+            EditorId: user?.id,
+          },
+          { where: { id }, transaction, returning: true },
+        );
+        return resource;
+      }),
+    );
+
+    if (unusedAssetIds.length) {
+      await Asset.destroy({
+        where: {
+          id: unusedAssetIds,
+        },
+        transaction,
+      });
+    }
+
+    if (preparedAssets.length) {
+      await Asset.bulkCreate(
+        preparedAssets.map((asset) => {
+          const index = processedResources.indexOf(asset.resource as ResourceType);
+          const { id: ResourceId } = processedResources[index];
+          return {
+            ...asset,
+            AppId: app.id,
+            ResourceId,
+            UserId: user?.id,
+          };
+        }),
+        { logging: false, transaction },
+      );
+    }
+  });
+
+  ctx.body = updatedResources;
+
+  for (const resource of updatedResources) {
+    processReferenceHooks(user, app, resource, action);
+    processHooks(user, app, resource, action);
+  }
 }
 
 export async function updateResource(ctx: Context): Promise<void> {

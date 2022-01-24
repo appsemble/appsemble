@@ -1826,6 +1826,217 @@ describe('countResources', () => {
   });
 });
 
+describe('updateResources', () => {
+  it('should be able to update existing resources', async () => {
+    const app = await exampleApp(organization.id);
+
+    const { data: resources } = await request.post<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource`,
+      [{ foo: 'bar' }, { foo: 'baz' }],
+    );
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
+      { ...resources[0], foo: 'baa' },
+      { ...resources[1], foo: 'zaa' },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baa",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "zaa",
+          "id": 2,
+        },
+      ]
+    `);
+  });
+
+  it('should accept text/csv', async () => {
+    const app = await exampleApp(organization.id);
+
+    const { data: resources } = await request.post<{ id: string }[]>(
+      `/api/apps/${app.id}/resources/testResource`,
+      [
+        { foo: 'bar', bar: '00' },
+        { foo: 'baz', bar: '11' },
+      ],
+    );
+
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource`,
+      stripIndent(`
+        id,foo,integer,boolean,number,object,array\r
+        ${resources[0].id},a,42,true,3.14,{},[]\r
+        ${resources[1].id},A,1337,false,9.8,{},[]\r
+      `)
+        .replace(/^\s+/, '')
+        .replace(/ +$/g, ''),
+      { headers: { 'content-type': 'text/csv' } },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "boolean": true,
+          "foo": "a",
+          "id": 1,
+          "integer": 42,
+          "number": 3.14,
+          "object": {},
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "array": [],
+          "boolean": false,
+          "foo": "A",
+          "id": 2,
+          "integer": 1337,
+          "number": 9.8,
+          "object": {},
+        },
+      ]
+    `);
+  });
+
+  it('should accept assets as form data with multiple resources', async () => {
+    const app = await exampleApp(organization.id);
+    const resources = await request.post<ResourceType[]>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: [{ string: 'A' }, { string: 'B', file: '0' }],
+        assets: [Buffer.from('Test resource B')],
+      }),
+    );
+
+    const response = await request.put<ResourceType[]>(
+      `/api/apps/${app.id}/resources/testAssets`,
+      createFormData({
+        resource: [
+          { id: resources.data[0].id, string: 'A', file: '0' },
+          { id: resources.data[1].id, string: 'B updated' },
+        ],
+        assets: [Buffer.from('Test Resource A')],
+      }),
+    );
+
+    const assets = await Asset.findAll({ raw: true });
+    expect(assets).toStrictEqual([
+      {
+        AppId: app.id,
+        ResourceId: 1,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: Buffer.from('Test Resource A'),
+        filename: null,
+        id: response.data[0].file,
+        mime: 'application/octet-stream',
+        name: null,
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+    ]);
+    expect(Buffer.from('Test Resource A').equals(assets[0].data)).toBe(true);
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [{ file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) }, {}],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+          "id": 1,
+          "string": "A",
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "id": 2,
+          "string": "B updated",
+        },
+      ]
+    `,
+    );
+  });
+
+  it('should not be able to update existing resources if one of them is missing an ID', async () => {
+    const app = await exampleApp(organization.id);
+
+    const { data: resources } = await request.post<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource`,
+      [{ foo: 'bar' }, { foo: 'baz' }],
+    );
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
+      { foo: 'baa' },
+      { ...resources[1], foo: 'zaa' },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": [
+          {
+            "foo": "baa",
+          },
+        ],
+        "error": "Bad Request",
+        "message": "List of resources contained a resource without an ID.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should not be able to update existing resources if one the resources don’t exist', async () => {
+    const app = await exampleApp(organization.id);
+
+    const { data: resources } = await request.post<{ foo: string }[]>(
+      `/api/apps/${app.id}/resources/testResource`,
+      [{ foo: 'bar' }, { foo: 'baz' }],
+    );
+    const response = await request.put(`/api/apps/${app.id}/resources/testResource`, [
+      { id: 1000, foo: 'baa' },
+      { ...resources[1], foo: 'zaa' },
+    ]);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": [
+          {
+            "foo": "baa",
+            "id": 1000,
+          },
+        ],
+        "error": "Bad Request",
+        "message": "One or more resources could not be found.",
+        "statusCode": 400,
+      }
+    `);
+  });
+});
+
 describe('createResource', () => {
   it('should be able to create a new resource', async () => {
     const app = await exampleApp(organization.id);

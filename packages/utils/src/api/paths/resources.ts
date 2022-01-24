@@ -93,6 +93,58 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
+    put: {
+      tags: ['resource'],
+      description: 'Update existing app resources.',
+      operationId: 'updateResources',
+      requestBody: {
+        required: true,
+        description: 'The resources to update',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/Resource' },
+            },
+          },
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['resource'],
+              description: 'A `multipart/form-data` representation of a resource.',
+              additionalProperties: false,
+              properties: {
+                resource: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/Resource' },
+                },
+                assets: {
+                  type: 'array',
+                  description: 'A list of assets that should be linked to the resources.',
+                  items: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+            },
+          },
+          'text/csv': {
+            schema: {
+              type: 'array',
+              items: { type: 'object', additionalProperties: { type: 'string' } },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The updated resources.',
+          $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
   },
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
