@@ -36,32 +36,27 @@ bootstrap(
     let playerDiv: HTMLDivElement;
     let currentUrl: string;
     let finished = false;
-    const onFinish = async (): Promise<void> => {
+    const onFinish = (): void => {
       if (finished) {
         return;
       }
 
       finished = true;
-      await actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
+      actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
     };
-    const onTimeUpdate = async ({
+    const onTimeUpdate = ({
       duration,
       seconds,
     }: {
       seconds: number;
       percent: number;
       duration: number;
-    }): Promise<void> => {
-      if (finished) {
+    }): void => {
+      if (finished || Math.floor(seconds) !== Math.floor(duration)) {
         return;
       }
-      if (Math.floor(seconds) === Math.floor(duration)) {
-        finished = true;
-        await actions.onFinish(data, {
-          videoId: currentUrl.match(/\d+/)?.[0],
-          videoUrl: currentUrl,
-        });
-      }
+
+      onFinish();
     };
     utils.addCleanup(() => player?.destroy());
 
