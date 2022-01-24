@@ -48,11 +48,14 @@ bootstrap(
       duration,
       seconds,
     }: {
+      // XXX Change to TimeEvent once
+      // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/58351
+      // is merged.
       seconds: number;
       percent: number;
       duration: number;
     }): void => {
-      if (finished || Math.floor(seconds) !== Math.floor(duration)) {
+      if (Math.floor(seconds) !== Math.floor(duration)) {
         return;
       }
 
