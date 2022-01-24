@@ -4,7 +4,7 @@ import { download, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useApp } from '../../..';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView';
@@ -29,7 +29,9 @@ export function ResourceDetailsPage(): ReactElement {
   const { formatMessage } = useIntl();
   const { hash } = useLocation();
   const history = useHistory();
-  const result = useData<Resource>(`/api/apps/${id}/resources/${resourceName}/${resourceId}`);
+  const resourceDefinition = app.definition.resources[resourceName];
+  const resourceUrl = `/api/apps/${id}/resources/${resourceName}/${resourceId}`;
+  const result = useData<Resource>(resourceUrl);
   const [submitting, setSubmitting] = useState(false);
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const [editingResourceJson, setEditingResourceJson] = useState<string>();
@@ -43,12 +45,6 @@ export function ResourceDetailsPage(): ReactElement {
     },
     [],
   );
-
-  useEffect(() => {
-    if (!tabOptions.has(hash)) {
-      history.replace({ hash: 'properties' });
-    }
-  }, [hash, history]);
 
   useEffect(() => {
     if (!editingResource && !result.loading && result.data) {
@@ -67,12 +63,8 @@ export function ResourceDetailsPage(): ReactElement {
   }, [formatMessage, push, result]);
 
   const onDownloadResource = useCallback(async () => {
-    await download(
-      `/api/apps/${app.id}/resources/${resourceName}/${resourceId}`,
-      `${resourceName} ${resourceId}.json`,
-      'application/json',
-    );
-  }, [app, resourceName, resourceId]);
+    await download(resourceUrl, `${resourceName} ${resourceId}.json`, 'application/json');
+  }, [resourceName, resourceId, resourceUrl]);
 
   const onEditChange = useCallback((unused, value: Resource) => {
     setEditingResource(value);
@@ -86,11 +78,11 @@ export function ResourceDetailsPage(): ReactElement {
     try {
       setSubmitting(true);
       const { data } = await axios.put<Resource>(
-        `/api/apps/${id}/resources/${resourceName}/${resourceId}`,
+        resourceUrl,
         hash === '#json' ? JSON.parse(editingResourceJson) : serializeResource(editingResource),
       );
       push({
-        body: formatMessage(messages.updateSuccess, { id: resourceId }),
+        body: formatMessage(messages.updateSuccess, { id: data.id }),
         color: 'primary',
       });
       result.setData(data);
@@ -104,13 +96,15 @@ export function ResourceDetailsPage(): ReactElement {
     editingResourceJson,
     formatMessage,
     hash,
-    id,
     push,
-    resourceId,
-    resourceName,
+    resourceUrl,
     result,
     setResource,
   ]);
+
+  if (!tabOptions.has(hash)) {
+    return <Redirect to={`${url}#properties`} />;
+  }
 
   return (
     <>
@@ -144,27 +138,38 @@ export function ResourceDetailsPage(): ReactElement {
       >
         {resourceName} {resourceId}
       </HeaderControl>
-      <AsyncDataView
-        errorMessage={<FormattedMessage {...messages.error} />}
-        loadingMessage={<FormattedMessage {...messages.loading} />}
-        result={result}
-      >
-        {() => (
-          <div className={`is-flex is-flex-direction-column ${styles.flexContent}`}>
-            <Tabs onChange={onClickTab} value={hash}>
-              <Tab href={`${url}#properties`} value="#properties">
-                <FormattedMessage {...messages.properties} />
-              </Tab>
-              <Tab href={`${url}#json`} value="#json">
-                <FormattedMessage {...messages.json} />
-              </Tab>
-            </Tabs>
-            {hash === '#properties' && (
+      <div className={`is-flex is-flex-direction-column ${styles.flexContent}`}>
+        <Tabs onChange={onClickTab} value={hash}>
+          <Tab href={`${url}#properties`} value="#properties">
+            <FormattedMessage {...messages.properties} />
+          </Tab>
+          <Tab href={`${url}#json`} value="#json">
+            <FormattedMessage {...messages.json} />
+          </Tab>
+        </Tabs>
+        <AsyncDataView
+          errorMessage={<FormattedMessage {...messages.error} />}
+          loadingMessage={<FormattedMessage {...messages.loading} />}
+          result={result}
+        >
+          {() =>
+            hash === '#json' ? (
+              <Suspense fallback={<FormattedMessage {...messages.loadingEditor} />}>
+                <MonacoEditor
+                  className={styles.flexContent}
+                  language="json"
+                  onChange={onEditJsonChange}
+                  onSave={onEditSubmit}
+                  uri={`resources/${resourceName}/${resourceId}.json`}
+                  value={editingResourceJson}
+                />
+              </Suspense>
+            ) : (
               <>
                 <JSONSchemaEditor
                   name="resource"
                   onChange={onEditChange}
-                  schema={app.definition.resources[resourceName].schema}
+                  schema={resourceDefinition.schema}
                   value={editingResource}
                 />
                 <div className="is-flex is-justify-content-flex-end">
@@ -180,22 +185,10 @@ export function ResourceDetailsPage(): ReactElement {
                   </Button>
                 </div>
               </>
-            )}
-            {hash === '#json' && (
-              <Suspense fallback={<FormattedMessage {...messages.loadingEditor} />}>
-                <MonacoEditor
-                  className={styles.flexContent}
-                  language="json"
-                  onChange={onEditJsonChange}
-                  onSave={onEditSubmit}
-                  uri={`resources/${resourceName}/${resourceId}.json`}
-                  value={editingResourceJson}
-                />
-              </Suspense>
-            )}
-          </div>
-        )}
-      </AsyncDataView>
+            )
+          }
+        </AsyncDataView>
+      </div>
     </>
   );
 }
