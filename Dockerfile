@@ -27,7 +27,7 @@ RUN rm -r yarn.lock
 
 # Setup the production docker image.
 FROM node:16-bullseye-slim
-ARG version=0.19.12
+ARG version=0.19.13
 ARG date
 
 COPY --from=prod /app /app

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.13](https://gitlab.com/appsemble/appsemble/-/releases/0.19.13)] - 2022-01-24
+
+### Added
+
+- Block(`form`): Add `static` field type. This field type can be used to display text in between
+  fields.
+- Server: Add API endpoint to update multiple resources at once.
+- Server: Keep track of who last edited a resource.
+- Studio: Add support for resource editors.
+
 ## \[[0.19.12](https://gitlab.com/appsemble/appsemble/-/releases/0.19.12)] - 2022-01-19
 
 ### Added
