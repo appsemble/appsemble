@@ -265,6 +265,7 @@ export async function queryResources(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['id', 'OrganizationId', 'definition', 'template'],
     ...(user && {
       include: [
         { model: Organization, attributes: ['id'] },
@@ -314,6 +315,7 @@ export async function countResources(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
     ...(user && {
       include: [
         { model: Organization, attributes: ['id'] },
@@ -355,6 +357,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
     ...(user && {
       include: [
         { model: Organization, attributes: ['id'] },
@@ -516,20 +519,20 @@ export async function createResource(ctx: Context): Promise<void> {
   } = ctx;
   const action = 'create';
 
-  const app = await App.findByPk(
-    appId,
-    user && {
-      include: [
-        { model: Organization, attributes: ['id'] },
-        {
-          model: AppMember,
-          attributes: ['role', 'UserId'],
-          required: false,
-          where: { UserId: user.id },
-        },
-      ],
-    },
-  );
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
+  });
 
   const definition = getResourceDefinition(app, resourceType);
   await verifyPermission(ctx, app, resourceType, action);
@@ -585,20 +588,20 @@ export async function updateResources(ctx: Context): Promise<void> {
   } = ctx;
   const action = 'update';
 
-  const app = await App.findByPk(
-    appId,
-    user && {
-      include: [
-        { model: Organization, attributes: ['id'] },
-        {
-          model: AppMember,
-          attributes: ['role', 'UserId'],
-          required: false,
-          where: { UserId: user.id },
-        },
-      ],
-    },
-  );
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
+  });
 
   const definition = getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
@@ -701,20 +704,20 @@ export async function updateResource(ctx: Context): Promise<void> {
   } = ctx;
   const action = 'update';
 
-  const app = await App.findByPk(
-    appId,
-    user && {
-      include: [
-        { model: Organization, attributes: ['id'] },
-        {
-          model: AppMember,
-          attributes: ['role', 'UserId'],
-          required: false,
-          where: { UserId: user.id },
-        },
-      ],
-    },
-  );
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
+  });
 
   const definition = getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
@@ -774,17 +777,18 @@ export async function deleteResource(ctx: Context): Promise<void> {
   const action = 'delete';
 
   const app = await App.findByPk(appId, {
-    ...(user && {
-      include: [
-        { model: Organization, attributes: ['id'] },
-        {
-          model: AppMember,
-          attributes: ['role', 'UserId'],
-          required: false,
-          where: { UserId: user.id },
-        },
-      ],
-    }),
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
   });
 
   getResourceDefinition(app, resourceType);

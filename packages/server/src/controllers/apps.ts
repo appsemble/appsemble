@@ -468,6 +468,13 @@ export async function patchApp(ctx: Context): Promise<void> {
 
   const dbApp = await App.findOne({
     where: { id: appId },
+    attributes: {
+      exclude: ['icon', 'coreStyle', 'sharedStyle', 'yaml'],
+      include: [
+        [literal('"App".icon IS NOT NULL'), 'hasIcon'],
+        [literal('"maskableIcon" IS NOT NULL'), 'hasMaskableIcon'],
+      ],
+    },
     include: [
       {
         model: Organization,
@@ -648,6 +655,7 @@ export async function setAppLock(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
+    attributes: ['id', 'OrganizationId', 'locked'],
     include: [{ model: AppScreenshot, attributes: ['id'] }],
   });
 
@@ -664,7 +672,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId'] });
 
   if (!app) {
     throw notFound('App not found');
@@ -682,6 +690,7 @@ export async function getAppSnapshots(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: {
       model: AppSnapshot,
       attributes: { exclude: ['yaml'] },
@@ -709,6 +718,7 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: {
       model: AppSnapshot,
       required: false,
@@ -897,7 +907,9 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
   } = ctx;
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: AppScreenshot, where: { id: screenshotId }, required: false }],
+    include: [
+      { model: AppScreenshot, attributes: ['id'], where: { id: screenshotId }, required: false },
+    ],
   });
 
   if (!app) {
@@ -919,7 +931,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { raw: true });
+  const app = await App.findByPk(appId, { attributes: ['coreStyle'], raw: true });
 
   if (!app) {
     throw notFound('App not found');
@@ -935,7 +947,7 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { raw: true });
+  const app = await App.findByPk(appId, { attributes: ['sharedStyle'], raw: true });
 
   if (!app) {
     throw notFound('App not found');
@@ -973,7 +985,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
   const css = String(style).trim();
 
   try {
-    const app = await App.findByPk(appId);
+    const app = await App.findByPk(appId, { attributes: ['locked', 'OrganizationId'] });
     if (!app) {
       throw notFound('App not found.');
     }
@@ -993,11 +1005,11 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
     await (css.length
       ? AppBlockStyle.upsert({
           style: css,
-          AppId: app.id,
+          AppId: appId,
           block: `@${block.OrganizationId}/${block.name}`,
         })
       : AppBlockStyle.destroy({
-          where: { AppId: app.id, block: `@${block.OrganizationId}/${block.name}` },
+          where: { AppId: appId, block: `@${block.OrganizationId}/${block.name}` },
         }));
 
     ctx.status = 204;

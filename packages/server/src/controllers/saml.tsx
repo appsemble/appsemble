@@ -48,6 +48,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
+    attributes: [],
     include: [
       {
         model: AppSamlSecret,

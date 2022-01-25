@@ -139,7 +139,10 @@ export async function getAppMembers(ctx: Context): Promise<void> {
     pathParams: { appId },
   } = ctx;
 
-  const app = await App.findByPk(appId, { include: [{ model: AppMember, include: [User] }] });
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId', 'definition'],
+    include: [{ model: AppMember, include: [User] }],
+  });
   if (!app) {
     throw notFound('App not found');
   }
@@ -182,6 +185,7 @@ export async function getAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['definition'],
     include: [{ model: AppMember, where: { UserId: memberId }, required: false }],
   });
   if (!app) {
@@ -215,6 +219,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId', 'definition', 'id'],
     include: [{ model: AppMember, required: false, where: { UserId: memberId } }],
   });
   if (!app) {
@@ -361,6 +366,7 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: [
       {
         model: AppMember,
@@ -620,6 +626,7 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: {
       model: AppMember,
       required: false,

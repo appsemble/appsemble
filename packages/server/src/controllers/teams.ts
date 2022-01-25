@@ -31,7 +31,7 @@ export async function createTeam(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
   if (!app) {
     throw notFound('App not found.');
   }
@@ -92,6 +92,7 @@ export async function getTeams(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: [
       {
         model: Team,
@@ -207,8 +208,13 @@ export async function addTeamMember(ctx: Context): Promise<void> {
       { model: User, where: userQuery, required: false },
       {
         model: App,
+        attributes: ['OrganizationId', 'definition'],
         include: [
-          { model: Organization, include: [{ model: User, where: userQuery, required: false }] },
+          {
+            model: Organization,
+            attributes: ['id'],
+            include: [{ model: User, where: userQuery, required: false }],
+          },
           {
             model: AppMember,
             required: false,
