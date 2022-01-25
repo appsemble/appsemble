@@ -67,6 +67,7 @@ export * from './ResourceCreateActionDefinition';
 export * from './ResourceDefinition';
 export * from './ResourceDeleteActionDefinition';
 export * from './ResourceGetActionDefinition';
+export * from './ResourceHistoryDefinition';
 export * from './ResourceHooksDefinition';
 export * from './ResourceQueryActionDefinition';
 export * from './ResourceSubscriptionStatusActionDefinition';
