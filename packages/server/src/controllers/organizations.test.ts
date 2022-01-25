@@ -55,7 +55,44 @@ afterEach(() => {
 });
 
 describe('getOrganizations', () => {
-  it('should fetch all organizations', async () => {
+  it('should fetch all organizations with public apps', async () => {
+    await Organization.create({
+      id: 'random',
+      name: 'Random Organization',
+    });
+    await App.create({
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'appsemble',
+      visibility: 'public',
+      definition: {
+        defaultPage: '',
+        resources: { testResource: { schema: { type: 'object' } } },
+        pages: [
+          {
+            name: '',
+            blocks: [],
+          },
+        ],
+      },
+    });
+    await App.create({
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'testorganization',
+      visibility: 'public',
+      definition: {
+        defaultPage: '',
+        resources: { testResource: { schema: { type: 'object' } } },
+        pages: [
+          {
+            name: '',
+            blocks: [],
+          },
+        ],
+      },
+    });
+
     const response = await request.get('/api/organizations');
 
     expect(response).toMatchObject({
