@@ -25,22 +25,25 @@ import { organizationBlocklist } from '../utils/organizationBlocklist';
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({
     order: [['id', 'ASC']],
+    include: [{ model: App, required: false, where: { visibility: 'public' }, attributes: ['id'] }],
     attributes: {
-      include: [[literal('icon IS NOT NULL'), 'hasIcon']],
+      include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon'],
     },
   });
 
-  ctx.body = organizations.map((organization) => ({
-    id: organization.id,
-    name: organization.name,
-    description: organization.description,
-    website: organization.website,
-    email: organization.email,
-    iconUrl: organization.get('hasIcon')
-      ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
-      : null,
-  }));
+  ctx.body = organizations
+    .filter((organization) => organization.Apps.length)
+    .map((organization) => ({
+      id: organization.id,
+      name: organization.name,
+      description: organization.description,
+      website: organization.website,
+      email: organization.email,
+      iconUrl: organization.get('hasIcon')
+        ? `/api/organizations/${organization.id}/icon?updated=${organization.updated.toISOString()}`
+        : null,
+    }));
 }
 
 export async function getOrganization(ctx: Context): Promise<void> {
