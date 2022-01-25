@@ -639,7 +639,16 @@ export async function updateResources(ctx: Context): Promise<void> {
       }),
     );
 
-    if (unusedAssetIds.length) {
+    if (definition.history) {
+      const historyDefinition = definition.history;
+      await ResourceVersion.bulkCreate(
+        existingResources.map((resource) => ({
+          ResourceId: resource.id,
+          UserId: resource.EditorId,
+          data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
+        })),
+      );
+    } else if (unusedAssetIds.length) {
       await Asset.destroy({
         where: {
           id: unusedAssetIds,
