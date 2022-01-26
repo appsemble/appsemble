@@ -1,3 +1,4 @@
+import { ResourceVersion as ResourceVersionType } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,
@@ -11,7 +12,6 @@ import {
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
-import { ResourceVersion as ResourceVersionType } from 'types/src/resource';
 
 import { Resource, User } from '.';
 
