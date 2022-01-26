@@ -9,7 +9,7 @@ import { useTestDatabase } from '../utils/test/testSchema';
 
 let user: User;
 
-useTestDatabase('resources');
+useTestDatabase('resourcehistory');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
