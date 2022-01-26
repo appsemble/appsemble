@@ -177,6 +177,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     const { id: UserId } = user ?? (await User.create({ transaction }));
     const role = app.definition.security?.default?.role;
     let appMember = await AppMember.findOne({
+      attributes: ['id'],
       where: { UserId, AppId: appId },
       transaction,
     });

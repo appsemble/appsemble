@@ -115,6 +115,9 @@ function createAppAccountQuery(user: User, include: IncludeOptions[]): FindOptio
       },
       {
         model: AppMember,
+        attributes: {
+          exclude: ['picture'],
+        },
         where: { UserId: user.id },
         include: [
           {
@@ -141,7 +144,15 @@ export async function getAppMembers(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition'],
-    include: [{ model: AppMember, include: [User] }],
+    include: [
+      {
+        model: AppMember,
+        attributes: {
+          exclude: ['picture'],
+        },
+        include: [User],
+      },
+    ],
   });
   if (!app) {
     throw notFound('App not found');
@@ -186,7 +197,16 @@ export async function getAppMember(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
-    include: [{ model: AppMember, where: { UserId: memberId }, required: false }],
+    include: [
+      {
+        model: AppMember,
+        attributes: {
+          exclude: ['picture'],
+        },
+        where: { UserId: memberId },
+        required: false,
+      },
+    ],
   });
   if (!app) {
     throw notFound('App not found');
@@ -220,7 +240,16 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'definition', 'id'],
-    include: [{ model: AppMember, required: false, where: { UserId: memberId } }],
+    include: [
+      {
+        model: AppMember,
+        attributes: {
+          exclude: ['picture'],
+        },
+        required: false,
+        where: { UserId: memberId },
+      },
+    ],
   });
   if (!app) {
     throw notFound('App not found');
@@ -413,6 +442,9 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     attributes: ['definition', 'domain', 'OrganizationId', 'emailName', 'path'],
     include: {
       model: AppMember,
+      attributes: {
+        exclude: ['picture'],
+      },
       where: { email },
       required: false,
     },
@@ -512,6 +544,7 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
     include: [
       {
         model: AppMember,
+        attributes: ['id', 'emailVerified', 'emailKey'],
         required: false,
         where: {
           emailKey: token,
@@ -546,7 +579,9 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
 
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'path', 'OrganizationId'],
-    include: [{ model: AppMember, where: { email }, required: false }],
+    include: [
+      { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
+    ],
   });
 
   if (app?.AppMembers.length && !app.AppMembers[0].emailVerified) {
@@ -584,7 +619,9 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const app = await App.findByPk(appId, {
     attributes: ['definition', 'domain', 'path', 'emailName', 'OrganizationId'],
-    include: [{ model: AppMember, where: { email }, required: false }],
+    include: [
+      { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
+    ],
   });
 
   if (app?.AppMembers.length) {
@@ -629,6 +666,7 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
     attributes: [],
     include: {
       model: AppMember,
+      attributes: ['id'],
       required: false,
       where: {
         resetKey: token,
@@ -660,7 +698,14 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: AppMember, required: false, where: { UserId: memberId } }],
+    include: [
+      {
+        model: AppMember,
+        attributes: ['id'],
+        required: false,
+        where: { UserId: memberId },
+      },
+    ],
   });
 
   if (!app) {

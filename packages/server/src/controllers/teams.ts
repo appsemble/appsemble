@@ -217,6 +217,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
           },
           {
             model: AppMember,
+            attributes: ['id'],
             required: false,
             include: [{ model: User, where: userQuery, required: true }],
           },
