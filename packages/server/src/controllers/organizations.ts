@@ -379,6 +379,7 @@ export async function getInvites(ctx: Context): Promise<void> {
     include: [
       {
         model: Organization,
+        attributes: ['id'],
         required: false,
         include: [OrganizationInvite],
       },

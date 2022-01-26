@@ -80,14 +80,14 @@ export async function addSubscription(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId, { include: [AppSubscription] });
+  const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
 
   if (!app) {
     throw notFound('App not found');
   }
 
   await AppSubscription.create({
-    AppId: app.id,
+    AppId: appId,
     endpoint,
     p256dh: keys.p256dh,
     auth: keys.auth,
@@ -188,6 +188,7 @@ export async function broadcast(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
     include: [{ model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] }],
   });
 
@@ -198,7 +199,7 @@ export async function broadcast(ctx: Context): Promise<void> {
   await checkRole(ctx, app.OrganizationId, Permission.PushNotifications);
 
   // XXX: Replace with paginated requests
-  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${appId}`);
 
   for (const subscription of app.AppSubscriptions) {
     sendNotification(app, subscription, { title, body });

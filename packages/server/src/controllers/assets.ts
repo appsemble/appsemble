@@ -52,6 +52,7 @@ export async function getAssetById(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
+    attributes: [],
     include: [
       { model: Asset, where: { [Op.or]: [{ id: assetId }, { name: assetId }] }, required: false },
     ],
@@ -71,7 +72,7 @@ export async function getAssetById(ctx: Context): Promise<void> {
 
   if (assetId !== asset.id) {
     // Redirect to asset using current asset ID
-    ctx.redirect(`/api/apps/${app.id}/assets/${asset.id}`);
+    ctx.redirect(`/api/apps/${appId}/assets/${asset.id}`);
     return;
   }
 
@@ -106,7 +107,7 @@ export async function createAsset(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.findByPk(appId);
+  const app = await App.count({ where: { id: appId } });
 
   if (!app) {
     throw notFound('App not found');
@@ -115,7 +116,7 @@ export async function createAsset(ctx: Context): Promise<void> {
   let asset: Asset;
   try {
     asset = await Asset.create({
-      AppId: app.id,
+      AppId: appId,
       data: contents,
       filename,
       mime,

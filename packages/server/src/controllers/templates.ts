@@ -42,6 +42,15 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
    */
   const template = await App.findOne({
     where: { id: templateId },
+    attributes: [
+      'definition',
+      'coreStyle',
+      'sharedStyle',
+      'visibility',
+      'showAppDefinition',
+      'template',
+      'OrganizationId',
+    ],
     include: [
       { model: Resource, where: { clonable: true }, required: false },
       { model: AppMessages, required: false },

@@ -90,4 +90,6 @@ export class AppMember extends Model {
 
   @HasMany(() => AppSamlAuthorization)
   AppSamlAuthorizations: AppSamlAuthorization[];
+
+  hasPicture?: boolean;
 }

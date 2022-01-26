@@ -1,6 +1,6 @@
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
-import { Op } from 'sequelize';
+import { literal, Op } from 'sequelize';
 
 import { App, AppMember, EmailAuthorization, Member, User } from '../models';
 import { argv } from '../utils/argv';
@@ -31,6 +31,10 @@ export async function getUserInfo(ctx: Context): Promise<void> {
 
   if (client && 'app' in client) {
     const appMember = await AppMember.findOne({
+      attributes: {
+        include: [[literal('picture IS NOT NULL'), 'hasPicture']],
+        exclude: ['picture'],
+      },
       where: { UserId: user.id, AppId: client.app.id },
       include: [User],
     });
@@ -44,7 +48,7 @@ export async function getUserInfo(ctx: Context): Promise<void> {
       email: appMember.email,
       email_verified: appMember.emailVerified,
       name: appMember.name,
-      picture: appMember.picture
+      picture: appMember.hasPicture
         ? new URL(
             `/api/apps/${client.app.id}/members/${
               user.id

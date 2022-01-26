@@ -48,6 +48,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
+    attributes: [],
     include: [
       {
         model: AppSamlSecret,
@@ -223,7 +224,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   const app = loginRequest.AppSamlSecret.App;
   const authorization = await AppSamlAuthorization.findOne({
     where: { nameId, AppSamlSecretId: appSamlSecretId },
-    include: [{ model: AppMember, include: [User] }],
+    include: [{ model: AppMember, attributes: { exclude: ['picture'] }, include: [User] }],
   });
 
   const attributes = new Map(
@@ -249,7 +250,10 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
         // account.
         user = loginRequest.User || (await User.create({ name: name || nameId }, { transaction }));
 
-        member = await AppMember.findOne({ where: { UserId: user.id, AppId: appId } });
+        member = await AppMember.findOne({
+          where: { UserId: user.id, AppId: appId },
+          attributes: { exclude: ['picture'] },
+        });
         if (!member) {
           member = await AppMember.create(
             { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },

@@ -152,7 +152,7 @@ export async function createMessages(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  const app = await App.findOne({ where: { id: appId } });
+  const app = await App.findOne({ attributes: ['locked', 'OrganizationId'], where: { id: appId } });
 
   if (!app) {
     throw notFound('App not found');
@@ -168,7 +168,7 @@ export async function createMessages(ctx: Context): Promise<void> {
   const messages = Object.fromEntries(
     Object.entries(ctx.request.body.messages).filter(([, value]) => value),
   );
-  await AppMessages.upsert({ AppId: app.id, language: language.toLowerCase(), messages });
+  await AppMessages.upsert({ AppId: appId, language: language.toLowerCase(), messages });
   ctx.body = { language: language.toLowerCase(), messages };
 }
 
@@ -178,6 +178,7 @@ export async function deleteMessages(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findOne({
+    attributes: ['locked', 'OrganizationId'],
     where: { id: appId },
   });
 
