@@ -463,11 +463,23 @@ interface ResourceReference {
   delete?: ResourceReferenceAction;
 }
 
+export interface ResourceHistoryDefinition {
+  /**
+   * If set to `false`, edits are still tracked, but exactly what changed is lost.
+   */
+  data: boolean;
+}
+
 export interface ResourceDefinition {
   /**
    * The default list of roles used for permission checks for each action.
    */
   roles?: string[];
+
+  /**
+   * A definition of how versioning should happen for instances of this resource.
+   */
+  history?: ResourceHistoryDefinition | boolean;
 
   /**
    * The definition for the `resource.create` action.

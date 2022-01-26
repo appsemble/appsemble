@@ -40,6 +40,7 @@ import * as m41 from './0.19.1';
 import * as m45 from './0.19.11';
 import * as m46 from './0.19.12';
 import * as m47 from './0.19.13';
+import * as m48 from './0.19.14';
 import * as m42 from './0.19.4';
 import * as m43 from './0.19.6';
 import * as m44 from './0.19.8';
@@ -95,4 +96,5 @@ export const migrations: Migration[] = [
   m45,
   m46,
   m47,
+  m48,
 ];

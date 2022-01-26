@@ -88,6 +88,18 @@ name of the resource and how it should behave.
       default: 'id',
       description: 'Name of the field used when accessing singular entities.',
     },
+    history: {
+      description: 'A definition of how versioning should happen for instances of this resource.',
+      default: false,
+      oneOf: [
+        {
+          type: 'boolean',
+          description:
+            'Setting this to `true` is the same as using an object with the property `data` set to `true`.',
+        },
+        { $ref: '#/components/schemas/ResourceHistoryDefinition' },
+      ],
+    },
     query: {
       type: 'object',
       description: "Overrides for 'query' requests.",

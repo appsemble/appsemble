@@ -6,6 +6,7 @@ export const messages = defineMessages({
   loadingEditor: 'Loading editor…',
   json: 'Resource as JSON',
   properties: 'Properties',
+  history: 'History',
   edit: 'Edit {name}',
   updateSuccess: 'Successfully updated resource {id}.',
   updateError: 'Something went wrong when updating this resource.',

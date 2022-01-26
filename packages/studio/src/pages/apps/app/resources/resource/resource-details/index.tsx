@@ -12,8 +12,9 @@ import { HeaderControl } from '../../../../../../components/HeaderControl';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
 import styles from './index.module.css';
 import { messages } from './messages';
+import { ResourceHistory } from './ResourceHistory';
 
-const tabOptions = new Set(['#edit', '#json', '#properties']);
+const tabOptions = new Set(['#history', '#json', '#properties']);
 
 const MonacoEditor = lazy(() =>
   import('../../../../../../components/MonacoEditor').then((m) => ({ default: m.MonacoEditor })),
@@ -146,6 +147,11 @@ export function ResourceDetailsPage(): ReactElement {
           <Tab href={`${url}#json`} value="#json">
             <FormattedMessage {...messages.json} />
           </Tab>
+          {resourceDefinition.history ? (
+            <Tab href={`${url}#history`} value="#history">
+              <FormattedMessage {...messages.history} />
+            </Tab>
+          ) : null}
         </Tabs>
         <AsyncDataView
           errorMessage={<FormattedMessage {...messages.error} />}
@@ -164,6 +170,8 @@ export function ResourceDetailsPage(): ReactElement {
                   value={editingResourceJson}
                 />
               </Suspense>
+            ) : hash === '#history' ? (
+              <ResourceHistory />
             ) : (
               <>
                 <JSONSchemaEditor

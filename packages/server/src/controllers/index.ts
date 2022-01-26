@@ -15,6 +15,7 @@ export * from './oauth2Provider';
 export * from './blocks';
 export * from './health';
 export * from './organizations';
+export * from './resourceHistory';
 export * from './resources';
 export * from './saml';
 export * from './templates';

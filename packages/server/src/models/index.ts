@@ -29,6 +29,7 @@ import { OrganizationInvite } from './OrganizationInvite';
 import { ResetPasswordToken } from './ResetPasswordToken';
 import { Resource } from './Resource';
 import { ResourceSubscription } from './ResourceSubscription';
+import { ResourceVersion } from './ResourceVersion';
 import { SamlLoginRequest } from './SamlLoginRequest';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -74,6 +75,7 @@ export {
   OrganizationInvite,
   ResetPasswordToken,
   Resource,
+  ResourceVersion,
   ResourceSubscription,
   Team,
   TeamMember,
@@ -126,6 +128,7 @@ export function initDB({
       ResetPasswordToken,
       Resource,
       ResourceSubscription,
+      ResourceVersion,
       Team,
       TeamMember,
       Theme,
