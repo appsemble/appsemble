@@ -22,6 +22,8 @@ export * from './RadioButton';
 export * from './RadioGroup';
 export * from './Select';
 export * from './SelectField';
+export * from './Slider';
+export * from './SliderField';
 export * from './TextArea';
 export * from './TextAreaField';
 export * from './types';

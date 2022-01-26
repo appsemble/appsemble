@@ -11,6 +11,7 @@ import { Theme } from '../../models';
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
+const bulmaSliderPath = require.resolve('bulma-slider/src/sass/index.sass').replace(/\\/g, '/');
 const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
 
 interface QueryParamTheme extends Omit<Partial<ThemeType>, 'font'> {
@@ -58,6 +59,7 @@ function processStyle(theme: QueryParamTheme): string {
 
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
+    @import "${bulmaSliderPath}";
     @import "${bulmaSwitchPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
