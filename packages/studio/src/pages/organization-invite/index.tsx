@@ -77,7 +77,7 @@ export function OrganizationInvitePage(): ReactElement {
   const onAcceptClick = useCallback(() => sendResponse(true), [sendResponse]);
   const onDeclineClick = useCallback(() => sendResponse(false), [sendResponse]);
 
-  if (loading) {
+  if (loading || !organizations) {
     return <Loader />;
   }
 
