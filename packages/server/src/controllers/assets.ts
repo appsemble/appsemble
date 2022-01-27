@@ -107,7 +107,7 @@ export async function createAsset(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.count({ where: { id: appId } });
+  const app = await App.findByPk(appId, { attributes: ['id'] });
 
   if (!app) {
     throw notFound('App not found');
