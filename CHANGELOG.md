@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.14](https://gitlab.com/appsemble/appsemble/-/releases/0.19.14)] - 2022-01-27
+
+### Added
+
+- Server: Add support for resource history.
+
+### Changed
+
+- Server: Filter out organizations that don’t have any public apps.
+
 ## \[[0.19.13](https://gitlab.com/appsemble/appsemble/-/releases/0.19.13)] - 2022-01-24
 
 ### Added

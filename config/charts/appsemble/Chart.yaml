@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.13
-appVersion: 0.19.13
+version: 0.19.14
+appVersion: 0.19.14
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,14 +25,9 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add static field type. This field type can be used to
-        display text in between fields."
-    - kind: added
-      description: "Server: Add API endpoint to update multiple resources at once."
-    - kind: added
-      description: "Server: Keep track of who last edited a resource."
-    - kind: added
-      description: "Studio: Add support for resource editors."
+      description: "Server: Add support for resource history."
+    - kind: changed
+      description: "Server: Filter out organizations that don’t have any public apps."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
