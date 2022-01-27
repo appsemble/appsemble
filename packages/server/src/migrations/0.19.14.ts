@@ -6,7 +6,6 @@ export const key = '0.19.14';
 /**
  * Summary:
  * - Add ResourceVersion table
- * - Wipe Theme table
  *
  * @param db - The sequelize database.
  */
@@ -24,15 +23,11 @@ export async function up(db: Sequelize): Promise<void> {
     UserId: { type: DataTypes.UUID, references: { model: 'User', key: 'id' } },
     created: { type: DataTypes.DATE, allowNull: false },
   });
-
-  logger.warn('Deleting all entries from Theme table');
-  await queryInterface.bulkDelete('Theme', {});
 }
 
 /**
  * Summary:
  * - Remove ResourceVersion table
- * - Wipe Theme table
  *
  * @param db - The sequelize database.
  */
@@ -40,7 +35,4 @@ export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
   logger.warn('Deleting table ResourceVersion');
   await queryInterface.dropTable('ResourceVersion');
-
-  logger.warn('Deleting all entries from Theme table');
-  await queryInterface.bulkDelete('Theme', {});
 }

@@ -28,7 +28,7 @@ export async function submitAppRating(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const app = await App.count({ where: { id: AppId } });
+  const app = await App.findByPk(AppId, { attributes: ['id'] });
   await user.reload({ attributes: ['name'] });
 
   if (!app) {
