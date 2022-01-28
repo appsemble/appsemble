@@ -1,4 +1,4 @@
-import { editor, Uri } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, languages, Uri } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { BlockVersionsGetter } from 'utils/src/validation';
 
 import { AppValidationWorker } from './worker';
@@ -42,4 +42,37 @@ editor.onDidCreateModel((model) => {
   model.onWillDispose(() => {
     disposable.dispose();
   });
+});
+
+function toHex(number: number): string {
+  return Math.floor(number * 255)
+    .toString(16)
+    .padStart(2, '0');
+}
+
+languages.registerColorProvider('yaml', {
+  provideColorPresentations(model, { color, range }) {
+    const currentQuote = model.getValueInRange({
+      startLineNumber: range.startLineNumber,
+      startColumn: range.startColumn,
+      endLineNumber: range.startLineNumber,
+      endColumn: range.startColumn + 1,
+    });
+    const hex = `#${toHex(color.red)}${toHex(color.green)}${toHex(color.blue)}`;
+    const quote = currentQuote === '"' ? currentQuote : "'";
+    return [
+      {
+        label: hex,
+        textEdit: {
+          range,
+          text: `${quote}${hex}${quote}`,
+        },
+      },
+    ];
+  },
+
+  async provideDocumentColors(model) {
+    const client = await getClient(model.uri);
+    return client.doDocumentColors(String(model.uri));
+  },
 });

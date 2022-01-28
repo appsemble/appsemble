@@ -1,6 +1,7 @@
 import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
 import { setDiagnosticsOptions } from 'monaco-yaml';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
+import 'monaco-editor/esm/vs/editor/contrib/colorPicker/colorContributions';
 import 'monaco-editor/esm/vs/editor/contrib/comment/comment';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/contextmenu';
 import 'monaco-editor/esm/vs/editor/contrib/find/findController';
