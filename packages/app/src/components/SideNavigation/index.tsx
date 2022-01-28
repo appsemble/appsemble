@@ -1,25 +1,31 @@
-import { Button, MenuItem, MenuSection } from '@appsemble/react-components';
+import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import { appId, sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
+import { BlockMenuItem } from '../MenuProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
 import { messages } from './messages';
 
 interface SideNavigationProps {
   pages: PageDefinition[];
+  blockMenus: BlockMenuItem[];
+}
+
+function sortBlockMenus(a: BlockMenuItem, b: BlockMenuItem): number {
+  return a.path.localeCompare(b.path);
 }
 
 /**
  * The app navigation that is displayed in the side menu.
  */
-export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
+export function SideNavigation({ blockMenus, pages }: SideNavigationProps): ReactElement {
   const {
     params: { lang },
     url,
@@ -83,6 +89,38 @@ export function SideNavigation({ pages }: SideNavigationProps): ReactElement {
             </MenuItem>
           ))}
       </MenuSection>
+      {blockMenus.sort(sortBlockMenus).map((menu) => (
+        <MenuSection key={menu.path} label={menu.header}>
+          {menu.items.map((item) => (
+            <Fragment key={`${menu.path}/${item.title}`}>
+              <MenuButton
+                active={item.active}
+                icon={item.icon}
+                iconColor={item.iconColor}
+                onClick={item.onClick}
+              >
+                {item.title}
+              </MenuButton>
+              {item.submenu ? (
+                <MenuSection className="mt-2">
+                  {item.submenu.map((subItem) => (
+                    <MenuButton
+                      active={subItem.active}
+                      icon={subItem.icon}
+                      iconColor={subItem.iconColor}
+                      isChild
+                      key={`${menu.path}/${item.title}/${subItem.title}`}
+                      onClick={subItem.onClick}
+                    >
+                      {subItem.title}
+                    </MenuButton>
+                  ))}
+                </MenuSection>
+              ) : null}
+            </Fragment>
+          ))}
+        </MenuSection>
+      ))}
     </div>
   );
 }
