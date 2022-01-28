@@ -64,9 +64,9 @@ interface MenuButtonItemProps {
   iconColor?: BulmaColor;
 
   /**
-   * Where to navigate to.
+   * Click handler for the menu item.
    */
-  onClick: () => Promise<void>;
+  onClick: () => void;
 
   /**
    * Whether the menu item should be active.
