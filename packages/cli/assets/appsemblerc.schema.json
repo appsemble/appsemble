@@ -125,6 +125,10 @@
             "default": "unlisted",
             "enum": ["public", "unlisted", "private"]
           },
+          "showAppDefinition": {
+            "description": "Whether or not people who have access to the app may see the app definition.",
+            "type": "boolean"
+          },
           "template": {
             "description": "If template is specified, this will override --template passed on the command line.",
             "type": "boolean",

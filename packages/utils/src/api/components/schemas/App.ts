@@ -54,6 +54,10 @@ This doesn’t affect whether or not the app can be accessed on its own domain.
       default: 'unlisted',
       enum: ['public', 'unlisted', 'private'],
     },
+    showAppDefinition: {
+      type: 'boolean',
+      description: 'Whether or not people who have access to the app may see the app definition.',
+    },
     locked: {
       type: 'boolean',
       description: `Determines whether this app should be locked from being updated.
