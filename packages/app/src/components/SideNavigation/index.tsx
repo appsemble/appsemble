@@ -18,10 +18,6 @@ interface SideNavigationProps {
   blockMenus: BlockMenuItem[];
 }
 
-function sortBlockMenus(a: BlockMenuItem, b: BlockMenuItem): number {
-  return a.path.localeCompare(b.path);
-}
-
 /**
  * The app navigation that is displayed in the side menu.
  */
@@ -89,7 +85,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             </MenuItem>
           ))}
       </MenuSection>
-      {blockMenus.sort(sortBlockMenus).map((menu) => (
+      {blockMenus.map((menu) => (
         <MenuSection key={menu.path} label={menu.header}>
           {menu.items.map((item) => (
             <Fragment key={`${menu.path}/${item.title}`}>

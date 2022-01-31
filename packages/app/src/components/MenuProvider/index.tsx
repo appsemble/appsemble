@@ -34,13 +34,13 @@ interface MenuProviderProps {
 interface MenuProviderContext {
   page: PageDefinition;
   setPage: Dispatch<SetStateAction<PageDefinition>>;
-  setBlockMenus: Dispatch<SetStateAction<BlockMenuItem[]>>;
+  setBlockMenu: (menu: BlockMenuItem) => void;
 }
 
 const Context = createContext<MenuProviderContext>({
   page: undefined,
   setPage: noop,
-  setBlockMenus: noop,
+  setBlockMenu: noop,
 });
 
 export function usePage(): MenuProviderContext {
@@ -54,7 +54,23 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   const { role, teams } = useUser();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
-  const value = useMemo(() => ({ page, setPage, setBlockMenus }), [page, setPage]);
+  const value = useMemo(
+    () => ({
+      page,
+      setPage(p: PageDefinition) {
+        setBlockMenus([]);
+        setPage(p);
+      },
+      setBlockMenu(menu: BlockMenuItem) {
+        setBlockMenus((oldBlockMenus) =>
+          [...oldBlockMenus.filter((blockMenu) => blockMenu.path !== menu.path), menu].sort(
+            (a, b) => a.path.localeCompare(b.path),
+          ),
+        );
+      },
+    }),
+    [page, setPage],
+  );
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
     const roles = p.roles || definition.roles || [];

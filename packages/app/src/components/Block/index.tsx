@@ -83,12 +83,10 @@ export function Block({
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
-  const { setBlockMenus } = usePage();
+  const { setBlockMenu } = usePage();
 
   const ref = useRef<HTMLDivElement>();
-  const cleanups = useRef<(() => void)[]>([
-    () => setBlockMenus((blockMenus) => blockMenus.filter((menu) => menu.path !== prefix)),
-  ]);
+  const cleanups = useRef<(() => void)[]>([]);
   const [initialized, setInitialized] = useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
@@ -157,10 +155,7 @@ export function Block({
       },
       fa,
       menu: (items, header) => {
-        setBlockMenus((blockMenus) => [
-          ...blockMenus.filter((m) => m.path !== prefix),
-          { items, header, path: prefix },
-        ]);
+        setBlockMenu({ items, header, path: prefix });
       },
     };
 
@@ -216,7 +211,7 @@ export function Block({
     ready,
     remap,
     route,
-    setBlockMenus,
+    setBlockMenu,
     setUserInfo,
     showDialog,
     showShareDialog,
