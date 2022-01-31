@@ -54,14 +54,14 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   const { role, teams } = useUser();
   const [page, setPage] = useState<PageDefinition>();
   const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
-  const value = useMemo(
+  const value = useMemo<MenuProviderContext>(
     () => ({
       page,
-      setPage(p: PageDefinition) {
+      setPage(p) {
         setBlockMenus([]);
         setPage(p);
       },
-      setBlockMenu(menu: BlockMenuItem) {
+      setBlockMenu(menu) {
         setBlockMenus((oldBlockMenus) =>
           [...oldBlockMenus.filter((blockMenu) => blockMenu.path !== menu.path), menu].sort(
             (a, b) => a.path.localeCompare(b.path),
@@ -69,7 +69,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
         );
       },
     }),
-    [page, setPage],
+    [page],
   );
 
   const checkPagePermissions = (p: PageDefinition): boolean => {

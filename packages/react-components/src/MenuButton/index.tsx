@@ -1,7 +1,7 @@
 import { BulmaColor } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ReactElement, ReactNode } from 'react';
+import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
 import { Icon } from '..';
 import styles from './index.module.css';
@@ -30,7 +30,7 @@ interface MenuButtonItemProps {
   /**
    * Click handler for the menu item.
    */
-  onClick: () => void;
+  onClick: MouseEventHandler<HTMLButtonElement>;
 
   /**
    * Whether the menu item should be active.
@@ -53,7 +53,7 @@ export function MenuButton({
 }: MenuButtonItemProps): ReactElement {
   return (
     <button
-      className={classNames(`is-flex is-align-items-center ${styles.button} ${styles.root}`, {
+      className={classNames(`is-flex is-align-items-center ${styles.root}`, {
         'is-active': active,
         'pl-2': !isChild,
       })}
