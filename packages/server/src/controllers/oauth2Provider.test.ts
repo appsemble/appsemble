@@ -1,11 +1,12 @@
-import { LoginCodeResponse } from '@appsemble/types';
+import { LoginCodeResponse, UserInfo } from '@appsemble/types';
+import { uuid4Pattern } from '@appsemble/utils';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, AppMember, Member, OAuth2AuthorizationCode, Organization, User } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
+import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let clock: InstalledClock;
@@ -58,6 +59,104 @@ describe('getUserInfo', () => {
         sub: user.id,
       },
     });
+  });
+
+  it('should return 403 forbidden if the user isn’t an app member', async () => {
+    await Organization.create({ id: 'test-organization' });
+    const app = await App.create({
+      definition: {},
+      OrganizationId: 'test-organization',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    authorizeApp(app);
+    const response = await request.get<UserInfo>('/api/connect/userinfo');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "Forbidden",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should use app member information when an app requests the info', async () => {
+    await Organization.create({ id: 'test-organization' });
+    const app = await App.create({
+      definition: {},
+      OrganizationId: 'test-organization',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'test',
+      email: 'test@example.com',
+      emailVerified: true,
+      name: 'Test User',
+      picture: Buffer.from('PNG'),
+    });
+    authorizeApp(app);
+    const response = await request.get<UserInfo>('/api/connect/userinfo');
+    expect(response).toMatchInlineSnapshot(
+      { data: { sub: expect.stringMatching(uuid4Pattern), picture: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "email": "test@example.com",
+        "email_verified": true,
+        "name": "Test User",
+        "picture": Any<String>,
+        "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+      }
+    `,
+    );
+    expect(response.data.sub).toBe(user.id);
+    expect(response.data.picture).toBe(
+      `http://localhost/api/apps/1/members/${user.id}/picture?updated=946684800000`,
+    );
+  });
+
+  it('should fall back to gravatar for the profile picture', async () => {
+    await Organization.create({ id: 'test-organization' });
+    const app = await App.create({
+      definition: {},
+      OrganizationId: 'test-organization',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'test',
+      email: 'test@example.com',
+      emailVerified: true,
+      name: 'Test User',
+    });
+    authorizeApp(app);
+    const response = await request.get<UserInfo>('/api/connect/userinfo');
+    expect(response).toMatchInlineSnapshot(
+      { data: { sub: expect.stringMatching(uuid4Pattern) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "email": "test@example.com",
+        "email_verified": true,
+        "name": "Test User",
+        "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
+        "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+      }
+    `,
+    );
+    expect(response.data.sub).toBe(user.id);
   });
 });
 
