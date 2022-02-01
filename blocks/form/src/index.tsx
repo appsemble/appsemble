@@ -1,9 +1,10 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
 import classNames from 'classnames';
+import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import { Values } from '../block';
+import { FieldEventParameters, Values } from '../block';
 import { FormInput } from './components/FormInput';
 import styles from './index.module.css';
 import { generateDefaultValidity } from './utils/generateDefaultValidity';
@@ -15,23 +16,22 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { fields, previous, requirements },
+    parameters: { fields: initialFields, previous, requirements },
     path,
     ready,
     utils,
   }) => {
+    const [fields, setFields] = useState(initialFields);
     const defaultValues = useMemo<Values>(
       () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
       [data, fields],
     );
-
     const [formErrors, setFormErrors] = useState(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
     const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
     const errors = useMemo(
@@ -130,6 +130,33 @@ bootstrap(
     const onPrevious = useCallback(() => {
       actions.onPrevious(values);
     }, [actions, values]);
+
+    useEffect(() => {
+      const receiveFields = (d: FieldEventParameters): void => {
+        if (!d?.fields.length) {
+          return;
+        }
+
+        setLoading(true);
+        setFields(d.fields);
+
+        const newDefaultValues = generateDefaultValues(d.fields);
+
+        if (d.keepValues) {
+          setValues((currentValues) =>
+            recursive(true, newDefaultValues, d.initialValues, currentValues),
+          );
+        } else {
+          setValues(recursive(true, newDefaultValues, d.initialValues));
+        }
+        setSubmitErrorResult(null);
+        setLoading(false);
+      };
+      events.on.fields(receiveFields);
+
+      return () => events.off.fields(receiveFields);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const receiveData = useCallback(
       (d: Values) => {

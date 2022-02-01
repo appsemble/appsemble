@@ -647,6 +647,30 @@ export interface InputProps<T, F extends Field> {
   value: T;
 }
 
+/**
+ * The expected data for the `fields` listener event.
+ */
+export interface FieldEventParameters {
+  /**
+   * The new fields to apply.
+   */
+  fields: Field[];
+
+  /**
+   * The values after applying the new set of fields.
+   *
+   * This is merged with the previous values if `keepValues` is set to `true`.
+   */
+  initialValues?: Values;
+
+  /**
+   * Whether or not the existing values should be kept or not.
+   *
+   * @default false
+   */
+  keepValues?: boolean;
+}
+
 declare module '@appsemble/sdk' {
   interface Actions {
     /**
@@ -667,12 +691,24 @@ declare module '@appsemble/sdk' {
 
   interface EventListeners {
     /**
-     * The event that is triggered when data is received.
+     * An event that can be used to receive data.
      *
      * Compatible data that is received will be displayed and mapped to the fields as defined in the
      * `fields` parameter.
+     *
+     * `keepData` will retain the previous set of values if set to `true`
+     *
+     * `initialValues` as a mapping of key-value pairs
+     * will be merged with the new fields’ default values.
      */
     data: never;
+
+    /**
+     * An event that can be used to dynamically replace the form’s fields.
+     *
+     * Include an array of fields in `fields` to replace the current list of fields in the block.
+     */
+    fields: never;
 
     /**
      * Custom event listeners that can be used to receive data for specific types of form fields.
