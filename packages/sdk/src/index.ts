@@ -2,7 +2,7 @@
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
-import { Action, Message, Remapper, Theme } from './types';
+import { Action, BulmaColor, Message, Remapper, Theme } from './types';
 
 export * from './types';
 export { IconName };
@@ -97,6 +97,41 @@ export interface Parameters {}
 export type PageParameters = Record<string, string>;
 
 /**
+ * A menu item that can be displayed in addition to the normal app menu.
+ */
+export interface MenuItem {
+  /**
+   * The title of the menu item.
+   */
+  title: string;
+
+  /**
+   * The icon to display next to the title.
+   */
+  icon?: IconName;
+
+  /**
+   * The color to use for the icon.
+   */
+  iconColor?: BulmaColor;
+
+  /**
+   * The click handler for when the menu item is clicked.
+   */
+  onClick: () => void;
+
+  /**
+   * The submenu items associated with this menu item.
+   */
+  submenu?: Omit<MenuItem, 'submenu'>[];
+
+  /**
+   * Whether the item is considered active.
+   */
+  active?: boolean;
+}
+
+/**
  * A set of utility functions provided by the Appsemble SDK.
  */
 export interface Utils {
@@ -145,6 +180,12 @@ export interface Utils {
    * @returns String containing the FontAwesome classes for the icon.
    */
   fa: (icon: IconName) => string;
+
+  /**
+   * @param items - The list of menu items to display.
+   * @param header - A header that can be used to separate from other block menus.
+   */
+  menu: (items: MenuItem[], header?: string) => void;
 }
 
 export interface Events {

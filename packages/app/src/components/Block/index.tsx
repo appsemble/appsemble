@@ -19,6 +19,7 @@ import { makeActions } from '../../utils/makeActions';
 import { apiUrl, appId } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
+import { usePage } from '../MenuProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.module.css';
@@ -82,6 +83,7 @@ export function Block({
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
+  const { setBlockMenu } = usePage();
 
   const ref = useRef<HTMLDivElement>();
   const cleanups = useRef<(() => void)[]>([]);
@@ -152,6 +154,9 @@ export function Block({
         ) as string;
       },
       fa,
+      menu: (items, header) => {
+        setBlockMenu({ items, header, path: prefix });
+      },
     };
 
     (async () => {
@@ -206,6 +211,7 @@ export function Block({
     ready,
     remap,
     route,
+    setBlockMenu,
     setUserInfo,
     showDialog,
     showShareDialog,

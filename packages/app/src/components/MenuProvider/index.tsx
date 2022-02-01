@@ -1,4 +1,5 @@
 import { SideMenuProvider } from '@appsemble/react-components';
+import { MenuItem } from '@appsemble/sdk';
 import { PageDefinition } from '@appsemble/types';
 import { checkAppRole, noop } from '@appsemble/utils';
 import {
@@ -20,6 +21,12 @@ import { SideNavigation } from '../SideNavigation';
 import { useUser } from '../UserProvider';
 import { messages } from './messages';
 
+export interface BlockMenuItem {
+  path: string;
+  header?: string;
+  items: MenuItem[];
+}
+
 interface MenuProviderProps {
   children: ReactNode;
 }
@@ -27,9 +34,14 @@ interface MenuProviderProps {
 interface MenuProviderContext {
   page: PageDefinition;
   setPage: Dispatch<SetStateAction<PageDefinition>>;
+  setBlockMenu: (menu: BlockMenuItem) => void;
 }
 
-const Context = createContext<MenuProviderContext>({ page: undefined, setPage: noop });
+const Context = createContext<MenuProviderContext>({
+  page: undefined,
+  setPage: noop,
+  setBlockMenu: noop,
+});
 
 export function usePage(): MenuProviderContext {
   return useContext(Context);
@@ -41,7 +53,24 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   } = useAppDefinition();
   const { role, teams } = useUser();
   const [page, setPage] = useState<PageDefinition>();
-  const value = useMemo(() => ({ page, setPage }), [page, setPage]);
+  const [blockMenus, setBlockMenus] = useState<BlockMenuItem[]>([]);
+  const value = useMemo<MenuProviderContext>(
+    () => ({
+      page,
+      setPage(p) {
+        setBlockMenus([]);
+        setPage(p);
+      },
+      setBlockMenu(menu) {
+        setBlockMenus((oldBlockMenus) =>
+          [...oldBlockMenus.filter((blockMenu) => blockMenu.path !== menu.path), menu].sort(
+            (a, b) => a.path.localeCompare(b.path),
+          ),
+        );
+      },
+    }),
+    [page],
+  );
 
   const checkPagePermissions = (p: PageDefinition): boolean => {
     const roles = p.roles || definition.roles || [];
@@ -78,7 +107,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
     default:
       navigationElement = (
         <SideMenuProvider
-          base={<SideNavigation pages={pages} />}
+          base={<SideNavigation blockMenus={blockMenus} pages={pages} />}
           bottom={
             <div className="py-2 is-flex is-justify-content-center">
               <a

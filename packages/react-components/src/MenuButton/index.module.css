@@ -1,0 +1,31 @@
+.root {
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  display: block !important;
+  font-size: 16px;
+  font-weight: normal;
+  height: 3rem;
+  overflow: hidden;
+  text-align: left !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+
+  &:hover {
+    background-color: hsl(0deg 0% 96%);
+    color: hsl(0deg 0% 21%);
+  }
+}
+
+.root:global(.is-active) {
+  background-color: var(--link-color);
+  color: var(--link-color-invert);
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
