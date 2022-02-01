@@ -1201,7 +1201,7 @@ Compatible data that is received will be displayed and mapped to the fields as d
 \`keepData\` will retain the previous set of values if set to \`true\`
 
 \`initialValues\` as a mapping of key-value pairs
- will be merged with the new fields’ default values.",
+will be merged with the new fields’ default values.",
       },
       "fields": {
         "description": "An event that can be used to dynamically replace the form’s fields.
