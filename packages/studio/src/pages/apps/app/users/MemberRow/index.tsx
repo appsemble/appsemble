@@ -80,7 +80,13 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
     <>
       <tr key={member.id}>
         <td className={styles.noWrap}>
-          <span>{member.name || member.primaryEmail || member.id}</span>
+          <span>
+            {member.name
+              ? member.primaryEmail
+                ? `${member.name} (${member.primaryEmail})`
+                : member.name
+              : member.primaryEmail || member.id}
+          </span>
           <div className="tags is-inline ml-2">
             {member.id === userInfo.sub && (
               <span className="tag is-success">
