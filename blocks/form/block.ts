@@ -577,6 +577,8 @@ export interface ObjectField extends AbstractField {
 
   /**
    * The fields contained by this object.
+   *
+   * @minItems 1
    */
   fields: Field[];
 
@@ -738,8 +740,10 @@ declare module '@appsemble/sdk' {
   interface Parameters {
     /**
      * A list of objects describing each field that can be entered in the form.
+     *
+     * @minItems 1
      */
-    fields: Field[];
+    fields?: Field[];
 
     /**
      * Whether the previous button should be shown.

@@ -31,7 +31,7 @@ function generateDefaultValue(field: Field): unknown {
   }
 }
 
-export function generateDefaultValues(fields: Field[]): Values {
+export function generateDefaultValues(fields: Field[] = []): Values {
   const values: Values = {};
   for (const field of fields) {
     values[field.name] = generateDefaultValue(field);

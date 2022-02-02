@@ -133,10 +133,6 @@ bootstrap(
 
     useEffect(() => {
       const receiveFields = (d: FieldEventParameters): void => {
-        if (!d?.fields.length) {
-          return;
-        }
-
         setLoading(true);
         setFields(d.fields);
 
@@ -150,9 +146,13 @@ bootstrap(
           setValues(recursive(true, newDefaultValues, d.initialValues));
         }
         setSubmitErrorResult(null);
-        setLoading(false);
+        setLoading(!d.fields?.length);
       };
-      events.on.fields(receiveFields);
+
+      const hasFieldsEvent = events.on.fields(receiveFields);
+      if (hasFieldsEvent && !fields.length) {
+        setLoading(true);
+      }
 
       return () => events.off.fields(receiveFields);
       // eslint-disable-next-line react-hooks/exhaustive-deps
