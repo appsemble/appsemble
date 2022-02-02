@@ -31,10 +31,13 @@ export async function getUserInfo(ctx: Context): Promise<void> {
 
   if (client && 'app' in client) {
     const appMember = await AppMember.findOne({
-      attributes: {
-        include: [[literal('picture IS NOT NULL'), 'hasPicture']],
-        exclude: ['picture'],
-      },
+      attributes: [
+        [literal('"AppMember"."picture" IS NOT NULL'), 'hasPicture'],
+        'email',
+        'emailVerified',
+        'name',
+        'updated',
+      ],
       where: { UserId: user.id, AppId: client.app.id },
       include: [User],
     });
