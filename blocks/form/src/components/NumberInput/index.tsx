@@ -45,6 +45,7 @@ export function NumberInput({
       <SliderField
         {...commonProps}
         bottomLabels={bottomLabels.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
+        onChange={onChange}
         topLabels={topLabels.map((topLabel) => utils.remap(topLabel, value) as string)}
       />
     );

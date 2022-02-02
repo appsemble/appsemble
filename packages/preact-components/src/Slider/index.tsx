@@ -39,7 +39,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
         })}
         id={id}
         name={name}
-        onInput={handleChange}
+        onChange={handleChange}
         readOnly={readOnly}
         ref={ref}
         type="range"
