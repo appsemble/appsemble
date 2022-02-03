@@ -82,7 +82,7 @@ codecov:
   needs:
     - test node 16
   script:
-    - wget https://uploader.codecov.io/latest/linux/codecov
+    - wget https://uploader.codecov.io/latest/alpine/codecov
     - chmod +x codecov
     - ./codecov
 
