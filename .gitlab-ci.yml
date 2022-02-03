@@ -84,7 +84,7 @@ codecov:
   script:
     - wget https://uploader.codecov.io/latest/alpine/codecov
     - chmod +x codecov
-    - ./codecov
+    - ./codecov -R "$CI_PROJECT_DIR"
 
 # Lint JavaScript code using ESLint.
 eslint:
