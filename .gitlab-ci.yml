@@ -83,7 +83,7 @@ codecov:
     - test node 16
   script:
     - wget https://uploader.codecov.io/latest/linux/codecov
-    - chmox +x codecov
+    - chmod +x codecov
     - ./codecov
 
 # Lint JavaScript code using ESLint.
