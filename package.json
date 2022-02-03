@@ -41,7 +41,6 @@
     "@typescript-eslint/parser": "^5.0.0",
     "babel-jest": "^27.0.0",
     "babel-plugin-react-intl-auto": "^3.0.0",
-    "codecov": "^3.0.0",
     "dictionary-en": "^3.0.0",
     "eslint": "^7.0.0",
     "eslint-config-remcohaszing": "^3.0.0",
