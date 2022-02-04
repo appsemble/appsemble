@@ -1,0 +1,22 @@
+{
+  "name": "@appsemble/chart",
+  "version": "0.19.15",
+  "private": true,
+  "description": "Render a chart",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/chart"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.19.15",
+    "chart.js": "^3.0.0"
+  }
+}
