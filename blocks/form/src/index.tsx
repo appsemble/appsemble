@@ -155,8 +155,7 @@ bootstrap(
       }
 
       return () => events.off.fields(receiveFields);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [events, initialFields]);
 
     const receiveData = useCallback(
       (d: Values) => {
