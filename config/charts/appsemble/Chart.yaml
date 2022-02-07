@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.19.14
-appVersion: 0.19.14
+version: 0.19.15
+appVersion: 0.19.15
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,9 +25,18 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Server: Add support for resource history."
+      description: "Block(form): Add event listener for fields. This can be used to
+        dynamically replace the fields."
+    - kind: added
+      description: "Block(form): Add support for slider display on numeric fields."
+    - kind: added
+      description: "App: Inject CSS for the Bulma slider extension."
+    - kind: added
+      description: "Sdk: Add support for generating new menu items using utils.menu()."
+    - kind: added
+      description: "Studio: Add color picker in app editor."
     - kind: changed
-      description: "Server: Filter out organizations that don’t have any public apps."
+      description: "Block(form): Change fields to be optional but require at least 1 item."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

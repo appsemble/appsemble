@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.19.15](https://gitlab.com/appsemble/appsemble/-/releases/0.19.15)] - 2022-02-07
+
+### Added
+
+- Block(`form`): Add event listener for `fields`. This can be used to dynamically replace the
+  fields.
+- Block(`form`): Add support for `slider` display on numeric fields.
+- App: Inject CSS for the Bulma slider extension.
+- Sdk: Add support for generating new menu items using `utils.menu()`.
+- Studio: Add color picker in app editor.
+
+### Changed
+
+- Block(`form`): Change `fields` to be optional but require at least 1 item.
+
 ## \[[0.19.14](https://gitlab.com/appsemble/appsemble/-/releases/0.19.14)] - 2022-01-27
 
 ### Added
