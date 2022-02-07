@@ -25,6 +25,7 @@
     "date-fns": "^2.0.0",
     "flatpickr": "^4.0.0",
     "leaflet": "~1.5.0",
+    "merge": "^2.0.0",
     "preact": "^10.0.0",
     "type-fest": "^2.0.0"
   }
