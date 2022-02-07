@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 

@@ -1,5 +1,4 @@
 import { isIP } from 'net';
-import { URL } from 'url';
 
 import { Middleware } from 'koa';
 

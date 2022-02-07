@@ -28,7 +28,7 @@
     "@appsemble/node-utils": "0.19.15",
     "@appsemble/utils": "0.19.15",
     "@fortawesome/fontawesome-free": "^5.0.0",
-    "@mdx-js/loader": "^2.0.0-rc.1",
+    "@mdx-js/loader": "^2.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
     "@types/mdast": "^3.0.0",
     "@types/sass": "^1.0.0",

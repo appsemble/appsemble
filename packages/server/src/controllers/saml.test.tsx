@@ -1,4 +1,3 @@
-import { URL, URLSearchParams } from 'url';
 import { promisify } from 'util';
 import { inflateRaw } from 'zlib';
 

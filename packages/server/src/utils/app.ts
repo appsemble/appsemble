@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 import { UserInfo } from '@appsemble/types';
 import {
   defaultLocale,

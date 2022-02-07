@@ -1,5 +1,3 @@
-import { URLSearchParams } from 'url';
-
 import { basicAuth } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';

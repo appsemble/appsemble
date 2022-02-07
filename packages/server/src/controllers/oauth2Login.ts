@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { URL } from 'url';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 import { Context } from 'koa';

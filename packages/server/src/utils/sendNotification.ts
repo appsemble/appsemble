@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 

@@ -1,6 +1,5 @@
 import { useSimpleForm } from '@appsemble/react-components';
-import { zxcvbn } from '@zxcvbn-ts/core';
-import { ZxcvbnResult } from '@zxcvbn-ts/core/dist/types';
+import { zxcvbn, ZxcvbnResult } from '@zxcvbn-ts/core';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
