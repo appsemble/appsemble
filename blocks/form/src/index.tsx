@@ -150,7 +150,7 @@ bootstrap(
       };
 
       const hasFieldsEvent = events.on.fields(receiveFields);
-      if (hasFieldsEvent && !fields.length) {
+      if (hasFieldsEvent && !initialFields) {
         setLoading(true);
       }
 
