@@ -2122,6 +2122,7 @@ Note that for \`integer\` type fields are rounded _down_.",
             "items": {
               "$ref": "#/definitions/Field",
             },
+            "minItems": 1,
             "type": "array",
           },
           "icon": {
@@ -2467,6 +2468,7 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
         "items": {
           "$ref": "#/definitions/Field",
         },
+        "minItems": 1,
         "type": "array",
       },
       "previous": {
@@ -2504,9 +2506,6 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
         "type": "array",
       },
     },
-    "required": [
-      "fields",
-    ],
     "type": "object",
   },
 }
