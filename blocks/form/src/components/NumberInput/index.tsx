@@ -1,5 +1,5 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
-import { InputField } from '@appsemble/preact-components';
+import { InputField, SliderField } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 
 import { InputProps, NumberField } from '../../../block';
@@ -20,31 +20,47 @@ export function NumberInput({
   value,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
-  const { icon, label, placeholder, readOnly, tag } = field;
+  const { bottomLabels, display, icon, label, placeholder, readOnly, tag, topLabels } = field;
+
+  const commonProps = {
+    className: 'appsemble-number',
+    disabled,
+    error: dirty && error,
+    icon,
+    label,
+    max: getMax(field),
+    min: getMin(field),
+    name,
+    onChange,
+    optionalLabel: <FormattedMessage id="optionalLabel" />,
+    readOnly,
+    required: isRequired(field),
+    step: getStep(field),
+    tag: utils.remap(tag, value) as string,
+    value,
+  };
+
+  if (display === 'slider') {
+    return (
+      <SliderField
+        {...commonProps}
+        bottomLabels={bottomLabels.map((bottomLabel) => utils.remap(bottomLabel, value) as string)}
+        onChange={onChange}
+        topLabels={topLabels.map((topLabel) => utils.remap(topLabel, value) as string)}
+      />
+    );
+  }
 
   return (
     <InputField
-      className="appsemble-number"
-      disabled={disabled}
-      error={dirty && error}
       icon={icon}
-      label={label}
-      max={getMax(field)}
-      min={getMin(field)}
-      name={name}
-      onChange={onChange}
-      optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={
         (utils.remap(placeholder, value) as string) ||
         (utils.remap(label, value) as string) ||
         field.name
       }
-      readOnly={readOnly}
-      required={isRequired(field)}
-      step={getStep(field)}
-      tag={utils.remap(tag, value) as string}
       type="number"
-      value={value}
+      {...commonProps}
     />
   );
 }

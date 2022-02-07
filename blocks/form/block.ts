@@ -484,6 +484,27 @@ export interface NumberField extends AbstractField {
    * These are evaluated in the order they are defined in.
    */
   requirements?: NumberRequirement[];
+
+  /**
+   * How to display the numeric field.
+   *
+   * By default a `number` input field is displayed.
+   */
+  display?: 'slider';
+
+  /**
+   * If `display` is set to `slider`, these labels are displayed evenly spaced below the slider.
+   *
+   * @minItems 2
+   */
+  bottomLabels?: Remapper[];
+
+  /**
+   * If `display` is set to `slider`, these labels are displayed evenly spaced on top of the slider.
+   *
+   * @minItems 2
+   */
+  topLabels?: Remapper[];
 }
 
 /**

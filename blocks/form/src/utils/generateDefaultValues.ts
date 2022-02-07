@@ -1,5 +1,5 @@
 import { Field, Values } from '../../block';
-import { getMinLength } from './requirements';
+import { getMin, getMinLength } from './requirements';
 
 function generateDefaultValue(field: Field): unknown {
   if ('defaultValue' in field) {
@@ -8,6 +8,8 @@ function generateDefaultValue(field: Field): unknown {
   switch (field.type) {
     case 'boolean':
       return false;
+    case 'number':
+      return field.display === 'slider' ? getMin(field) : undefined;
     case 'string':
       return '';
     case 'file':

@@ -105,7 +105,7 @@ export function getMin(field: FieldWithRequirements): number | undefined {
  * @returns The maximum value of the field.
  */
 export function getMax(field: FieldWithRequirements): number | undefined {
-  const maximums = field.requirements?.map((r) => r.min).filter(Number.isFinite);
+  const maximums = field.requirements?.map((r) => r.max).filter(Number.isFinite);
   if (maximums?.length) {
     return Math.min(...maximums);
   }

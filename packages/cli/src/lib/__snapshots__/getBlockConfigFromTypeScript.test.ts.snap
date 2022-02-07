@@ -1997,9 +1997,24 @@ This type can be useful to enforce some input to be JSON-compatible or as a supe
         "additionalProperties": false,
         "description": "A number entry field.",
         "properties": {
+          "bottomLabels": {
+            "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced below the slider.",
+            "items": {
+              "format": "remapper",
+            },
+            "minItems": 2,
+            "type": "array",
+          },
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "number",
+          },
+          "display": {
+            "const": "slider",
+            "description": "How to display the numeric field.
+
+By default a \`number\` input field is displayed.",
+            "type": "string",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2036,6 +2051,14 @@ These are evaluated in the order they are defined in.",
 
 Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
             "format": "remapper",
+          },
+          "topLabels": {
+            "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced on top of the slider.",
+            "items": {
+              "format": "remapper",
+            },
+            "minItems": 2,
+            "type": "array",
           },
           "type": {
             "description": "The type of the field.",

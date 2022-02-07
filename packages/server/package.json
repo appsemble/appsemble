@@ -47,6 +47,7 @@
     "bcrypt": "5.0.1",
     "bulma": "0.9.3",
     "bulma-checkradio": "^1.0.0",
+    "bulma-slider": "2.0.4",
     "bulma-switch": "^2.0.0",
     "cli-highlight": "^2.0.0",
     "cron-parser": "^4.0.0",
