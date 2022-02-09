@@ -36,7 +36,7 @@
     "@appsemble/types": "0.19.15",
     "@appsemble/utils": "0.19.15",
     "@fortawesome/fontawesome-common-types": "^0.2.0",
-    "axios": "^0.23.0",
+    "axios": "^0.25.0",
     "chalk": "^4.0.0",
     "cosmiconfig": "^7.0.0",
     "fast-glob": "^3.0.0",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@appsemble/types": "0.19.15",
-    "@types/concat-stream": "^1.0.0",
+    "@types/concat-stream": "^2.0.0",
     "@types/fs-extra": "^9.0.0",
     "@types/inquirer": "^8.0.0",
     "@types/normalize-path": "^3.0.0",
@@ -71,6 +71,6 @@
     "keytar": "^7.0.0"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   }
 }

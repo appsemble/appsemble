@@ -1,6 +1,5 @@
 import { createReadStream, existsSync, promises as fs, ReadStream } from 'fs';
 import { join, parse, relative, resolve } from 'path';
-import { URL } from 'url';
 import { inspect } from 'util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';

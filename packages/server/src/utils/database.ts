@@ -1,6 +1,6 @@
 import { FindOptions, Model, ModelCtor } from 'sequelize';
 
-interface IterTableOptions extends Omit<FindOptions, 'limit' | 'offset'> {
+interface IterTableOptions<M extends Model> extends Omit<FindOptions<M>, 'limit' | 'offset'> {
   /**
    * How many entries to fetch at once.
    */
@@ -16,7 +16,7 @@ interface IterTableOptions extends Omit<FindOptions, 'limit' | 'offset'> {
  */
 export async function* iterTable<M extends Model>(
   model: ModelCtor<M>,
-  { chunkSize = 100, ...options }: IterTableOptions = {},
+  { chunkSize = 100, ...options }: IterTableOptions<M> = {},
 ): AsyncGenerator<M, void, undefined> {
   let offset = 0;
   let length = Number.POSITIVE_INFINITY;

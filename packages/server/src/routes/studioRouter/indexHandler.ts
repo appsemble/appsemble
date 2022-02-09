@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { URL } from 'url';
 
 import { Context } from 'koa';
 

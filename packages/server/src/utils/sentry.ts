@@ -1,5 +1,3 @@
-import { URL } from 'url';
-
 import { init } from '@sentry/node';
 import matcher from 'matcher';
 

@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { URL, URLSearchParams } from 'url';
 
 import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';

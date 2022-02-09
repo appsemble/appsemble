@@ -1,5 +1,4 @@
 import { createReadStream, ReadStream } from 'fs';
-import { URL } from 'url';
 
 import normalizePath from 'normalize-path';
 

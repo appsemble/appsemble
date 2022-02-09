@@ -1,5 +1,4 @@
 import { isIP } from 'net';
-import { URL } from 'url';
 
 import { Context, Middleware } from 'koa';
 import compose from 'koa-compose';

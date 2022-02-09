@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import { Agent } from 'https';
 import { join } from 'path';
-import { URL } from 'url';
 
 import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';

@@ -10,147 +10,110 @@ describe('odataFilterToSequelize', () => {
     //
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360958
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo eq true': where(col('Model.foo'), '=', true),
     'foo eq 01234567-89ab-cdef-0123-456789abcdef': where(
       col('Model.foo'),
       '=',
       '01234567-89ab-cdef-0123-456789abcdef',
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo eq 1999-12-31': where(col('Model.foo'), '=', new Date('1999-12-31T00:00:00Z')),
     'foo eq 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '=',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo eq 12': where(col('Model.foo'), '=', 12),
     "foo eq 'bar'": where(col('Model.foo'), '=', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360959
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo ne true': where(col('Model.foo'), '!=', true),
     'foo ne 01234567-89ab-cdef-0123-456789abcdef': where(
       col('Model.foo'),
       '!=',
       '01234567-89ab-cdef-0123-456789abcdef',
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo ne 1999-12-31': where(col('Model.foo'), '!=', new Date('1999-12-31T00:00:00Z')),
     'foo ne 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '!=',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo ne 12': where(col('Model.foo'), '!=', 12),
     "foo ne 'bar'": where(col('Model.foo'), '!=', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360960
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo gt 1999-12-31': where(col('Model.foo'), '>', new Date('1999-12-31T00:00:00Z')),
     'foo gt 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '>',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo gt 12': where(col('Model.foo'), '>', 12),
     "foo gt 'bar'": where(col('Model.foo'), '>', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360961
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo ge 1999-12-31': where(col('Model.foo'), '>=', new Date('1999-12-31T00:00:00Z')),
     'foo ge 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '>=',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo ge 12': where(col('Model.foo'), '>=', 12),
     "foo ge 'bar'": where(col('Model.foo'), '>=', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360962
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo lt 1999-12-31': where(col('Model.foo'), '<', new Date('1999-12-31T00:00:00Z')),
     'foo lt 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '<',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo lt 12': where(col('Model.foo'), '<', 12),
     "foo lt 'bar'": where(col('Model.foo'), '<', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360963
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo le 1999-12-31': where(col('Model.foo'), '<=', new Date('1999-12-31T00:00:00Z')),
     'foo le 1999-12-31T12:00:00+02:00': where(
       col('Model.foo'),
       '<=',
-      // @ts-expect-error This is a bug in the Sequelize types.
       new Date('1999-12-31T10:00:00Z'),
     ),
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo le 12': where(col('Model.foo'), '<=', 12),
     "foo le 'bar'": where(col('Model.foo'), '<=', 'bar'),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360964
     'foo eq 12 and bar eq 14': and(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
     ),
     'foo eq 12 and bar eq 14 and baz eq 8': and(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.baz'), '=', 8),
     ),
     'foo eq 12 and (bar eq 14 and baz eq 8)': and(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.baz'), '=', 8),
     ),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360965
     'foo eq 12 or bar eq 14': or(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
     ),
     'foo eq 12 or bar eq 14 or baz eq 8': or(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.baz'), '=', 8),
     ),
     'foo eq 12 or (bar eq 14 or baz eq 8)': or(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.bar'), '=', 14),
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.baz'), '=', 8),
     ),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Not
-    // @ts-expect-error This is a bug in the Sequelize types.
     'not foo eq 12': { [Op.not]: where(col('Model.foo'), '=', 12) },
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Has
@@ -205,12 +168,10 @@ describe('odataFilterToSequelize', () => {
     // XXX implement for collections
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_indexof
-    // @ts-expect-error This is a bug in the Sequelize types
     "indexof(foo, 'bar') eq 3": where(fn('strpos', col('Model.foo'), 'bar'), '=', 3),
     // XXX implement for collections
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_length
-    // @ts-expect-error This is a bug in the Sequelize types
     'length(foo) eq 42': where(fn('length', col('Model.foo')), '=', 42),
     // XXX implement for collections
 
@@ -265,24 +226,17 @@ describe('odataFilterToSequelize', () => {
 
     // Combine boolean logical expressions
     'foo eq 12 or (bar eq 14 and baz eq 8)': or(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
       // @ts-expect-error This is a bug in the Sequelize types.
       and(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
     'foo eq 12 and (bar eq 14 or baz eq 8)': and(
-      // @ts-expect-error This is a bug in the Sequelize types.
       where(col('Model.foo'), '=', 12),
       // @ts-expect-error This is a bug in the Sequelize types.
       or(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
     'not (foo eq 12 and bar eq 14)': {
-      [Op.not]: and(
-        // @ts-expect-error This is a bug in the Sequelize types.
-        where(col('Model.foo'), '=', 12),
-        // @ts-expect-error This is a bug in the Sequelize types.
-        where(col('Model.bar'), '=', 14),
-      ),
+      [Op.not]: and(where(col('Model.foo'), '=', 12), where(col('Model.bar'), '=', 14)),
     },
   };
 

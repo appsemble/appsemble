@@ -1,5 +1,4 @@
 import querystring from 'querystring';
-import { URL } from 'url';
 
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';

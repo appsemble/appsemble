@@ -1,5 +1,4 @@
 import { randomBytes } from 'crypto';
-import { URL } from 'url';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';

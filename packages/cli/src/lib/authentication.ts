@@ -1,5 +1,3 @@
-import { URL, URLSearchParams } from 'url';
-
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
 import axios from 'axios';

@@ -1,5 +1,4 @@
 import { promises as fs } from 'fs';
-import { URL } from 'url';
 
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
