@@ -70,7 +70,7 @@ function validateBlocks(
           for (const error of result.errors) {
             report(error.instance, error.message, [...path, 'parameters', ...error.path]);
           }
-        } else {
+        } else if (!result.valid) {
           report(block, 'requires property "parameters"', path);
         }
       } else if (block.parameters) {
