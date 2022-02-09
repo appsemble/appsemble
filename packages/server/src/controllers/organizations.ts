@@ -342,7 +342,9 @@ export async function createOrganization(ctx: Context): Promise<void> {
     };
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict(`Another organization with the name “${name}” already exists`);
+      throw conflict(
+        `Another organization with the ${name ? 'name' : 'id'} “${name || id}” already exists`,
+      );
     }
 
     throw error;
