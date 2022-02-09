@@ -499,7 +499,7 @@ describe('createOrganization', () => {
 
     expect(response).toMatchObject({
       status: 409,
-      data: { message: 'Another organization with the name “Foooo” already exists' },
+      data: { message: 'Another organization with the id “foo” already exists' },
     });
   });
 
