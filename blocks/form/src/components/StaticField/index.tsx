@@ -20,6 +20,7 @@ export function StaticField({ field, value }: StaticFieldProps): VNode {
       className="appsemble-static"
       disableHelp
       label={utils.remap(label, value) as string}
+      required
       tag={utils.remap(tag, value) as string}
     >
       <div>{content}</div>
