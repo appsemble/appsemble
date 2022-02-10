@@ -1,5 +1,5 @@
+import { BlockVersionsGetter } from '@appsemble/utils';
 import { editor, languages, Uri } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { BlockVersionsGetter } from 'utils/src/validation';
 
 import { AppValidationWorker } from './worker';
 

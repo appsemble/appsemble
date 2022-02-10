@@ -6,16 +6,16 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   Title,
+  useMessages,
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
-import { useMessages } from 'react-components/src/MessagesProvider';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useUser } from 'studio/src/components/UserProvider';
 
 import { Member } from '..';
 import { useApp } from '../..';
+import { useUser } from '../../../../../components/UserProvider';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable';
 import styles from './index.module.css';
 import { messages } from './messages';

@@ -1,4 +1,4 @@
-import { AppVisibility } from 'types/src/app';
+import { AppVisibility } from '@appsemble/types';
 
 export interface FormValues {
   emailName: string;
