@@ -94,6 +94,7 @@ describe('validateAppDefinition', () => {
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
       version: '1.2.3',
+      parameters: {},
     });
     const result = await validateAppDefinition(app, () => [
       {
@@ -117,6 +118,36 @@ describe('validateAppDefinition', () => {
         0,
         'parameters',
       ]),
+    ]);
+  });
+
+  it('should validate missing block parameters', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        parameters: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'requires property "parameters"',
+        { type: 'test', version: '1.2.3' },
+        undefined,
+        ['pages', 0, 'blocks', 0],
+      ),
     ]);
   });
 
@@ -273,7 +304,7 @@ describe('validateAppDefinition', () => {
     ]);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
-      new ValidationError('is now allowed on this block type', {}, undefined, [
+      new ValidationError('is not allowed on this block type', {}, undefined, [
         'pages',
         0,
         'blocks',
@@ -334,7 +365,7 @@ describe('validateAppDefinition', () => {
     ]);
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
-      new ValidationError('is now allowed on this block', {}, undefined, [
+      new ValidationError('is not allowed on this block', {}, undefined, [
         'pages',
         0,
         'blocks',

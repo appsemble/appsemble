@@ -65,12 +65,16 @@ function validateBlocks(
         validator.customFormats['event-listener'] = (property) =>
           has(block.events?.listen, property);
         validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
-        const result = validator.validate(block.parameters || {}, version.parameters);
-        for (const error of result.errors) {
-          report(error.instance, error.message, [...path, 'parameters', ...error.path]);
+        const result = validator.validate(block.parameters || {}, version.parameters, {});
+        if ('parameters' in block) {
+          for (const error of result.errors) {
+            report(error.instance, error.message, [...path, 'parameters', ...error.path]);
+          }
+        } else if (!result.valid) {
+          report(block, 'requires property "parameters"', path);
         }
       } else if (block.parameters) {
-        report(block.parameters, 'is now allowed on this block type', [...path, 'parameters']);
+        report(block.parameters, 'is not allowed on this block type', [...path, 'parameters']);
       }
 
       if (block.actions) {
@@ -89,7 +93,7 @@ function validateBlocks(
             }
           }
         } else {
-          report(block.actions, 'is now allowed on this block', [...path, 'actions']);
+          report(block.actions, 'is not allowed on this block', [...path, 'actions']);
         }
       }
 
