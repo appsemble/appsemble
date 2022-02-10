@@ -40,13 +40,19 @@ export function useTestDatabase(spec: string, options: InitDBParams = {}): void 
   });
 
   afterEach(async () => {
-    const tables = Object.values(db.models).map(({ tableName }) => `"${tableName}"`);
-    await db.query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY`);
+    if (db) {
+      const tables = Object.values(db.models).map(({ tableName }) => `"${tableName}"`);
+      await db.query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY`);
+    }
   });
 
   afterAll(async () => {
-    await db.close();
-    await rootDB.query(`DROP DATABASE ${dbName}`);
-    await rootDB.close();
+    if (db) {
+      await db.close();
+    }
+    if (rootDB) {
+      await rootDB.query(`DROP DATABASE ${dbName}`);
+      await rootDB.close();
+    }
   });
 }
