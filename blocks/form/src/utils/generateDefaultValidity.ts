@@ -10,6 +10,10 @@ export function generateDefaultValidity(
   defaultError: Remapper,
 ): FieldErrorMap {
   const validity: FieldErrorMap = {};
+  if (!fields) {
+    return validity;
+  }
+
   for (const field of fields) {
     const value = data[field.name];
     if (field.type === 'object') {

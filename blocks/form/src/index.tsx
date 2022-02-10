@@ -219,7 +219,7 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        {fields.map((f) => (
+        {fields?.map((f) => (
           <FormInput
             disabled={loading || submitting}
             error={errors[f.name]}
