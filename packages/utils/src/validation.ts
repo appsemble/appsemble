@@ -455,6 +455,87 @@ function validateActions(definition: AppDefinition, report: Report): void {
   });
 }
 
+function validateEvents(definition: AppDefinition, report: Report): void {
+  const indexMap = new Map<
+    number,
+    {
+      emitters: Map<string, Prefix[]>;
+      listeners: Map<string, Prefix[]>;
+    }
+  >();
+
+  function collect(prefix: Prefix, name: string, isEmitter: boolean): void {
+    const [firstKey, pageIndex] = prefix;
+
+    // Ignore anything not part of a page. For example cron actions never support events.
+    if (firstKey !== 'pages') {
+      return;
+    }
+
+    if (typeof pageIndex !== 'number') {
+      return;
+    }
+    if (!indexMap.has(pageIndex)) {
+      indexMap.set(pageIndex, { emitters: new Map(), listeners: new Map() });
+    }
+    const { emitters, listeners } = indexMap.get(pageIndex)!;
+    const context = isEmitter ? emitters : listeners;
+    if (!context.has(name)) {
+      context.set(name, []);
+    }
+    const prefixes = context.get(name)!;
+    prefixes.push(prefix);
+  }
+
+  iterApp(definition, {
+    onAction(action, path) {
+      if (action.type !== 'event') {
+        return;
+      }
+
+      collect([...path, 'event'], action.event, true);
+      if ('waitFor' in action) {
+        collect([...path, 'waitFor'], action.waitFor, false);
+      }
+    },
+
+    onBlock(block, path) {
+      if (!block.events) {
+        return;
+      }
+
+      if (block.events.emit) {
+        for (const [prefix, name] of Object.entries(block.events.emit)) {
+          collect([...path, 'events', 'emit', prefix], name, true);
+        }
+      }
+
+      if (block.events.listen) {
+        for (const [prefix, name] of Object.entries(block.events.listen)) {
+          collect([...path, 'events', 'listen', prefix], name, false);
+        }
+      }
+    },
+  });
+
+  for (const { emitters, listeners } of indexMap.values()) {
+    for (const [name, prefixes] of listeners.entries()) {
+      if (!emitters.has(name)) {
+        for (const prefix of prefixes) {
+          report(name, 'does not match any event emitters', prefix);
+        }
+      }
+    }
+    for (const [name, prefixes] of emitters.entries()) {
+      if (!listeners.has(name)) {
+        for (const prefix of prefixes) {
+          report(name, 'does not match any event listeners', prefix);
+        }
+      }
+    }
+  }
+}
+
 export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<BlockManifest[]>;
 
 /**
@@ -498,6 +579,7 @@ export async function validateAppDefinition(
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersions, report);
     validateActions(definition, report);
+    validateEvents(definition, report);
   } catch (error) {
     report(null, `Unexpected error: ${error.message}`, []);
   }

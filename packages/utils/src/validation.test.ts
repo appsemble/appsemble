@@ -175,6 +175,7 @@ describe('validateAppDefinition', () => {
       },
       events: {
         emit: { myEvent: 'handleEvent' },
+        listen: { myEvent: 'handleEvent' },
       },
     });
     const result = await validateAppDefinition(app, () => [
@@ -192,6 +193,7 @@ describe('validateAppDefinition', () => {
         },
         events: {
           emit: { myEvent: {} },
+          listen: { myEvent: {} },
         },
       },
     ]);
@@ -218,6 +220,7 @@ describe('validateAppDefinition', () => {
         bar: 'myEvent',
       },
       events: {
+        emit: { myEvent: 'handleEvent' },
         listen: { myEvent: 'handleEvent' },
       },
     });
@@ -235,6 +238,7 @@ describe('validateAppDefinition', () => {
           },
         },
         events: {
+          emit: { myEvent: {} },
           listen: { myEvent: {} },
         },
       },
@@ -432,6 +436,9 @@ describe('validateAppDefinition', () => {
         emit: {
           foo: 'bar',
         },
+        listen: {
+          foo: 'bar',
+        },
       },
     });
     const result = await validateAppDefinition(app, () => [
@@ -443,6 +450,7 @@ describe('validateAppDefinition', () => {
         wildcardActions: true,
         events: {
           emit: {},
+          listen: { $any: {} },
         },
       },
     ]);
@@ -469,6 +477,9 @@ describe('validateAppDefinition', () => {
         emit: {
           foo: 'bar',
         },
+        listen: {
+          foo: 'bar',
+        },
       },
     });
     const result = await validateAppDefinition(app, () => [
@@ -480,6 +491,7 @@ describe('validateAppDefinition', () => {
         wildcardActions: true,
         events: {
           emit: { $any: {} },
+          listen: { $any: {} },
         },
       },
     ]);
@@ -495,6 +507,9 @@ describe('validateAppDefinition', () => {
         listen: {
           foo: 'bar',
         },
+        emit: {
+          foo: 'bar',
+        },
       },
     });
     const result = await validateAppDefinition(app, () => [
@@ -506,6 +521,7 @@ describe('validateAppDefinition', () => {
         wildcardActions: true,
         events: {
           listen: {},
+          emit: { $any: {} },
         },
       },
     ]);
@@ -529,6 +545,36 @@ describe('validateAppDefinition', () => {
       type: 'test',
       version: '1.2.3',
       events: {
+        emit: {
+          foo: 'bar',
+        },
+        listen: {
+          foo: 'bar',
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        wildcardActions: true,
+        events: {
+          emit: { foo: {} },
+          listen: { $any: {} },
+        },
+      },
+    ]);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should report unmatched event listeners', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      events: {
         listen: {
           foo: 'bar',
         },
@@ -546,7 +592,103 @@ describe('validateAppDefinition', () => {
         },
       },
     ]);
-    expect(result.valid).toBe(true);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not match any event emitters', 'bar', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'events',
+        'listen',
+        'foo',
+      ]),
+    ]);
+  });
+
+  it('should report unmatched event emitters', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      events: {
+        emit: {
+          foo: 'bar',
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        wildcardActions: true,
+        events: {
+          emit: { $any: {} },
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not match any event listeners', 'bar', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'events',
+        'emit',
+        'foo',
+      ]),
+    ]);
+  });
+
+  it('should report unmatched event from event actions', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onClick: {
+          type: 'event',
+          event: 'sent',
+          waitFor: 'reply',
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        wildcardActions: true,
+        actions: {
+          onClick: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('does not match any event emitters', 'reply', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'waitFor',
+      ]),
+      new ValidationError('does not match any event listeners', 'sent', undefined, [
+        'pages',
+        0,
+        'blocks',
+        0,
+        'actions',
+        'onClick',
+        'event',
+      ]),
+    ]);
   });
 
   it('should not crash if security is undefined', async () => {
