@@ -9,8 +9,8 @@ import {
   normalize,
   objectCache,
 } from '@appsemble/utils';
+import memoize from '@formatjs/fast-memoize';
 import axios from 'axios';
-import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
 import {
   createContext,
@@ -47,9 +47,13 @@ interface AppMessageContext {
 const Context = createContext<AppMessageContext>(null);
 
 const formatters = {
-  getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
-  getDateTimeFormat: memoizeIntlConstructor(Intl.DateTimeFormat),
-  getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
+  getNumberFormat: memoize(
+    // XXX The type cast will be unnecessary as of TypeScript 4.6
+    // https://github.com/microsoft/TypeScript/pull/46740
+    (locale, opts) => new Intl.NumberFormat(locale, opts),
+  ),
+  getDateTimeFormat: memoize((locale, opts) => new Intl.DateTimeFormat(locale, opts)),
+  getPluralRules: memoize((locale, opts) => new Intl.PluralRules(locale, opts)),
 };
 
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {

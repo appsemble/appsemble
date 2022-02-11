@@ -6,8 +6,8 @@ import {
   objectCache,
   RemapperContext,
 } from '@appsemble/utils';
+import memoize from '@formatjs/fast-memoize';
 import { badRequest } from '@hapi/boom';
-import memoizeIntlConstructor from 'intl-format-cache';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { Context } from 'koa';
 import tags from 'language-tags';
@@ -18,9 +18,13 @@ import { argv } from './argv';
 import { mergeMessages } from './mergeMessages';
 
 const formatters = {
-  getNumberFormat: memoizeIntlConstructor(Intl.NumberFormat),
-  getDateTimeFormat: memoizeIntlConstructor(Intl.DateTimeFormat),
-  getPluralRules: memoizeIntlConstructor(Intl.PluralRules),
+  getNumberFormat: memoize(
+    // XXX The type cast will be unnecessary as of TypeScript 4.6
+    // https://github.com/microsoft/TypeScript/pull/46740
+    (locale, opts) => new Intl.NumberFormat(locale, opts as Intl.NumberFormatOptions),
+  ),
+  getDateTimeFormat: memoize((locale, opts) => new Intl.DateTimeFormat(locale, opts)),
+  getPluralRules: memoize((locale, opts) => new Intl.PluralRules(locale, opts)),
 };
 
 interface GetAppValue {
