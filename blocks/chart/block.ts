@@ -5,14 +5,14 @@ declare module '@appsemble/sdk' {
     /**
      * Add new data to the chart.
      *
-     * The the block description for more information on the supported data format.
+     * Refer to the block description for more information on the supported data format.
      */
     add: never;
 
     /**
      * Replace all current data with the new data.
      *
-     * The the block description for more information on the supported data format.
+     * Refer to the block description for more information on the supported data format.
      */
     replace: never;
   }
