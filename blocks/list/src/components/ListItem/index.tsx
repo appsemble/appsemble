@@ -51,17 +51,24 @@ export function ListItem({ item }: ListItemProps): VNode {
         )}
         {fields?.map((field) => {
           let value;
+          let label;
 
           if (field.value) {
             value = remap(field.value, item);
           }
 
+          if (field.label) {
+            label = remap(field.label, item);
+          }
+
           return (
-            <span className={`${styles.itemField} mr-1 is-inline-block`} key={field.label}>
+            // There is nothing that is guaranteed to be unique in these items.
+            // eslint-disable-next-line react/jsx-key
+            <span className={`${styles.itemField} mr-1 is-inline-block`}>
               {field.icon && <Icon icon={field.icon} />}
-              {field.label && (
+              {label == null ? null : (
                 <span>
-                  {field.label}
+                  {label}
                   {value && ': '}
                 </span>
               )}
