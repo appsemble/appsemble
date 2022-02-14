@@ -244,6 +244,7 @@ export async function processReferenceHooks(
 function stripResource({
   $author,
   $created,
+  $editor,
   $updated,
   ...data
 }: ResourceType): Record<string, unknown> {
