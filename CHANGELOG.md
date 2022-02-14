@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.0](https://gitlab.com/appsemble/appsemble/-/releases/0.20.0)] - 2022-02-14
+
+### Added
+
+- Block(`chart`): Add chart block.
+
+### Removed
+
+- Appsemble: Remove support for Node.js 12.
+- Cli: Remove support for Node.js 12.
+- Create-appsemble: Remove support for Node.js 12.
+- Webpack-config: Remove support for Node.js 12.
+
+### Fixed
+
+- Block(`list`): Fix issue where `label` was not correctly being remapped.
+- Server: Fix issue where the `$editor` was being included in the resource validation when updating
+  resources.
+
 ## \[[0.19.15](https://gitlab.com/appsemble/appsemble/-/releases/0.19.15)] - 2022-02-07
 
 ### Added

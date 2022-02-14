@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.19.15",
+  "version": "0.20.0",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.19.15",
-    "@appsemble/types": "0.19.15",
-    "@appsemble/utils": "0.19.15",
+    "@appsemble/node-utils": "0.20.0",
+    "@appsemble/types": "0.20.0",
+    "@appsemble/utils": "0.20.0",
     "@formatjs/fast-memoize": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^0.2.0",
     "@fortawesome/fontawesome-free": "^5.0.0",
