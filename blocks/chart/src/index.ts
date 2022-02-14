@@ -72,10 +72,17 @@ bootstrap(
         return;
       }
       const backgroundColor: string[] = [];
-      for (let i = 0; i < labels.length && i < dataset.data.length; i += 1) {
-        const remapper = backgroundColors[i % backgroundColors.length];
-        const color = remap(remapper, { data: dataset.data[i] });
-        backgroundColor.push(typeof color === 'string' ? color : theme.primaryColor);
+      if (Array.isArray(dataset.labels)) {
+        chart.data.labels = dataset.labels;
+      }
+      for (let i = 0; i < chart.data.labels.length && i < dataset.data.length; i += 1) {
+        if (backgroundColors) {
+          const remapper = backgroundColors[i % backgroundColors.length];
+          const color = remap(remapper, { data: dataset.data[i] });
+          backgroundColor.push(typeof color === 'string' ? color : theme.primaryColor);
+        } else {
+          backgroundColor.push(theme.primaryColor);
+        }
       }
       chart.data.datasets.push({
         type: datasetType as 'bar',
@@ -83,9 +90,6 @@ bootstrap(
         backgroundColor,
         data: dataset.data,
       });
-      if (Array.isArray(dataset.labels)) {
-        chart.data.labels = dataset.labels;
-      }
     }
 
     function addDatasets(dataset: DataSet | DataSet[]): void {
