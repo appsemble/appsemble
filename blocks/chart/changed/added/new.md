@@ -1,0 +1,1 @@
+Add chart block.
