@@ -30,7 +30,7 @@ declare module '@appsemble/sdk' {
      *
      * @minItems 1
      */
-    labels: Remapper[];
+    labels?: Remapper[];
 
     /**
      * The background colors to use for each dataset by default.
