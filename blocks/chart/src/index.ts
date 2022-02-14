@@ -28,6 +28,8 @@ interface DataSet {
   label?: string;
 
   data: number[];
+
+  labels?: string[];
 }
 
 bootstrap(
@@ -44,7 +46,7 @@ bootstrap(
     const chart = new Chart(ctx, {
       type,
       data: {
-        labels: labels.map((label) => remap(label, {})),
+        labels: labels?.map((label) => remap(label, {})),
         datasets: [],
       },
       options: {
@@ -81,6 +83,9 @@ bootstrap(
         backgroundColor,
         data: dataset.data,
       });
+      if (Array.isArray(dataset.labels)) {
+        chart.data.labels = dataset.labels;
+      }
     }
 
     function addDatasets(dataset: DataSet | DataSet[]): void {
