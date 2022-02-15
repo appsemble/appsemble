@@ -20,10 +20,10 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.addColumn('App', 'locked', DataTypes.BOOLEAN);
 
   logger.warn('Deleting soft deleted assets');
-  await queryInterface.bulkDelete('Asset', { [Op.not]: { deleted: null } });
+  await queryInterface.bulkDelete('Asset', { deleted: { [Op.not]: null } });
 
   logger.warn('Deleting soft deleted resources');
-  await queryInterface.bulkDelete('Resource', { [Op.not]: { deleted: null } });
+  await queryInterface.bulkDelete('Resource', { deleted: { [Op.not]: null } });
 
   logger.info('Removing column Asset.deleted');
   await queryInterface.removeColumn('Asset', 'deleted');

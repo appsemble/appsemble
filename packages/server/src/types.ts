@@ -1,3 +1,5 @@
+import { Op } from 'sequelize';
+
 import { App, User } from './models';
 import { Mailer } from './utils/email/Mailer';
 
@@ -57,5 +59,13 @@ declare module 'koas-parameters' {
     domains: string[];
     $select: string;
     $top: number;
+  }
+}
+
+// XXX remove once https://github.com/sequelize/sequelize/pull/14022 or
+// https://github.com/sequelize/sequelize/pull/14087 has been released
+declare module 'sequelize/types/model' {
+  interface WhereOperators {
+    [Op.col]?: string;
   }
 }

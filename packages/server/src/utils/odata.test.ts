@@ -113,6 +113,7 @@ describe('odataFilterToSequelize', () => {
       where(col('Model.baz'), '=', 8),
     ),
 
+    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Not
     'not foo eq 12': { [Op.not]: where(col('Model.foo'), '=', 12) },
 
@@ -235,6 +236,7 @@ describe('odataFilterToSequelize', () => {
       // @ts-expect-error This is a bug in the Sequelize types.
       or(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
+    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     'not (foo eq 12 and bar eq 14)': {
       [Op.not]: and(where(col('Model.foo'), '=', 12), where(col('Model.bar'), '=', 14)),
     },
