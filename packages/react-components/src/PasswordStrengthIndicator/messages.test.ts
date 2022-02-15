@@ -1,4 +1,4 @@
-import { ZxcvbnOptions } from '@zxcvbn-ts/core';
+import { zxcvbnOptions } from '@zxcvbn-ts/core';
 
 import { messages } from './messages';
 
@@ -6,8 +6,8 @@ describe('messages', () => {
   it('should match core messages', () => {
     const zxcvbnMessages = [
       ...new Set([
-        ...Object.keys(ZxcvbnOptions.translations.suggestions),
-        ...Object.keys(ZxcvbnOptions.translations.warnings),
+        ...Object.keys(zxcvbnOptions.translations.suggestions),
+        ...Object.keys(zxcvbnOptions.translations.warnings),
       ]),
       'minLength',
       'required',

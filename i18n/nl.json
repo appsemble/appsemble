@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "Het wachtwoord moet tenminste 8 tekens lang zijn",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Voor- en achternamen op zich zijn makkelijk te raden.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Je kan ook een sterk wachtwoord maken zonder speciale tekens, hoofdletters of nummers.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "Als je dit wachtwoord ergens anders gebruikt, kun je dit het beste veranderen.",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Vermijd recente jaartallen.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Vermijd herhalende woorden en letters.",
   "react-components.src.PasswordStrengthIndicator.required": "Wachtwoord is vereist",

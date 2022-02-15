@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "Votre mot de passe doit comporter au moins 8 caractères",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Des noms ou des prénoms simples sont faciles à deviner.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Vous pouvez créer des mots de passe forts sans utiliser de symboles, de chiffres ou de lettres majuscules.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "Si vous utilisez ce mot de passe ailleurs, vous devriez le modifier.",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Évitez les dernières années.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Évitez les mots et les caractères répétés.",
   "react-components.src.PasswordStrengthIndicator.required": "Un nouveau mot de passe est requis",

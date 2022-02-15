@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "Kata sandi harus minimal 8 karakter",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Nama tunggal atau nama keluarga mudah ditebak.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "",
+  "react-components.src.PasswordStrengthIndicator.pwned": "",
   "react-components.src.PasswordStrengthIndicator.recentYears": "",
   "react-components.src.PasswordStrengthIndicator.repeated": "",
   "react-components.src.PasswordStrengthIndicator.required": "",

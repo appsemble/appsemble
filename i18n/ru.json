@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Единичные имена или фамилии угадать несложно.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Вы можете создавать надежные пароли без использования символов, цифр или заглавных букв.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Недавние года легко угадать.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Избегайте повторяющихся слов и символов.",
   "react-components.src.PasswordStrengthIndicator.required": "Требуется пароль",

@@ -34,4 +34,5 @@ export const messages = defineMessages({
   anotherWord: 'Add more words that are less common.',
   useWords: 'Use multiple words, but avoid common phrases.',
   noNeed: 'You can create strong passwords without using symbols, numbers, or uppercase letters.',
+  pwned: 'If you use this password elsewhere, you should change it.',
 });

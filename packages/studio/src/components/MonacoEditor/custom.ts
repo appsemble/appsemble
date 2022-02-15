@@ -34,7 +34,7 @@ window.MonacoEnvironment = {
           new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
         );
       case 'yaml':
-        return new Worker(new URL('monaco-yaml/lib/esm/yaml.worker', import.meta.url));
+        return new Worker(new URL('monaco-yaml/yaml.worker', import.meta.url));
       default:
         throw new Error(`Unknown label ${label}`);
     }
