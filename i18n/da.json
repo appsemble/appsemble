@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "Adgangskoden skal indeholde mindst 8 tegn",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Enkeltnavne eller efternavne er nemme at gætte.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Du kan oprette stærke adgangskoder uden at bruge symboler, tal eller store bogstaver.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "",
   "react-components.src.PasswordStrengthIndicator.recentYears": "De seneste årstal er nemme at gætte.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Undgå gentagne ord og tegn.",
   "react-components.src.PasswordStrengthIndicator.required": "Der kræves en ny adgangskode",

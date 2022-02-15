@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "The password must be at least 8 characters",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Single names or surnames are easy to guess.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "You can create strong passwords without using symbols, numbers, or uppercase letters.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "If you use this password elsewhere, you should change it.",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Recent years are easy to guess.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Avoid repeated words and characters.",
   "react-components.src.PasswordStrengthIndicator.required": "A password is required",

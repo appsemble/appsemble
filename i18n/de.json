@@ -100,6 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Einzelne Namen oder Nachnamen sind leicht zu erraten.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Es ist möglich, starke Passwörter zu erstellen, ohne Symbole, Zahlen oder Großbuchstaben zu verwenden.",
+  "react-components.src.PasswordStrengthIndicator.pwned": "Wenn Sie dieses Kennwort an anderer Stelle verwenden, sollten Sie es ändern.",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Die jüngsten Jahreszahlen vermeiden.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Wort- und Zeichenwiederholungen vermeiden.",
   "react-components.src.PasswordStrengthIndicator.required": "Ein Passwort ist erforderlich",
