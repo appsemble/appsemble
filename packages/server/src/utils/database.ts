@@ -1,4 +1,4 @@
-import { FindOptions, Model, ModelCtor } from 'sequelize';
+import { FindOptions, Model, ModelStatic } from 'sequelize';
 
 interface IterTableOptions<M extends Model> extends Omit<FindOptions<M>, 'limit' | 'offset'> {
   /**
@@ -15,14 +15,14 @@ interface IterTableOptions<M extends Model> extends Omit<FindOptions<M>, 'limit'
  * @yields All entries in the database table.
  */
 export async function* iterTable<M extends Model>(
-  model: ModelCtor<M>,
+  model: ModelStatic<M>,
   { chunkSize = 100, ...options }: IterTableOptions<M> = {},
 ): AsyncGenerator<M, void, undefined> {
   let offset = 0;
   let length = Number.POSITIVE_INFINITY;
   while (chunkSize <= length) {
     const chunk = await model.findAll({ ...options, limit: chunkSize, offset });
-    yield* chunk as M[];
+    yield* chunk;
     ({ length } = chunk);
     offset += length;
   }

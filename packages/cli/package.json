@@ -50,9 +50,9 @@
     "postcss-load-config": "^3.0.0",
     "postcss-url": "^10.0.0",
     "read-pkg-up": "^7.0.0",
-    "ts-json-schema-generator": "^0.95.0",
+    "ts-json-schema-generator": "^0.97.0",
     "type-fest": "^2.0.0",
-    "typescript": "~4.3.0",
+    "typescript": "~4.4.0",
     "webpack": "^5.0.0",
     "yaml": "^2.0.0-8",
     "yargs": "^17.0.0"

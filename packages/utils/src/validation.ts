@@ -585,7 +585,7 @@ export async function validateAppDefinition(
     validateActions(definition, report);
     validateEvents(definition, report);
   } catch (error) {
-    report(null, `Unexpected error: ${error.message}`, []);
+    report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }
 
   return result;

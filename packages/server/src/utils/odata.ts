@@ -205,6 +205,7 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
   }
 
   if (token.type === TokenType.NotExpression) {
+    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     return { [Op.not]: processLogicalExpression(token.value, model, rename) };
   }
 
