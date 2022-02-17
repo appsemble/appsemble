@@ -100,7 +100,7 @@
   "react-components.src.PasswordStrengthIndicator.minLength": "Lozinka mora sadržati barem 8 znakova",
   "react-components.src.PasswordStrengthIndicator.namesByThemselves": "Pojedinačna imena ili prezimena se lako pogađaju.",
   "react-components.src.PasswordStrengthIndicator.noNeed": "Možeš stvoriti sigurne lozinke bez upotrebe simbola, brojeva ili velikih slova.",
-  "react-components.src.PasswordStrengthIndicator.pwned": "",
+  "react-components.src.PasswordStrengthIndicator.pwned": "Ako ovu lozinku koristiš negdje drugdje, promijeni je.",
   "react-components.src.PasswordStrengthIndicator.recentYears": "Nedavne godine se lako pogađaju.",
   "react-components.src.PasswordStrengthIndicator.repeated": "Izbjegavaj ponavljati riječi i znakove.",
   "react-components.src.PasswordStrengthIndicator.required": "Potrebna je lozinka",
