@@ -35,7 +35,7 @@ interface DataSet {
 bootstrap(
   ({
     events,
-    parameters: { backgroundColors, labels, type = 'line' },
+    parameters: { backgroundColors, labels, type = 'line', yAxis },
     shadowRoot,
     theme,
     utils: { remap },
@@ -43,6 +43,7 @@ bootstrap(
     const canvas = document.createElement('canvas');
     shadowRoot.append(canvas);
     const ctx = canvas.getContext('2d');
+    const yAxisID = 'a';
     const chart = new Chart(ctx, {
       type,
       data: {
@@ -51,6 +52,7 @@ bootstrap(
       },
       options: {
         responsive: true,
+        scales: { [yAxisID]: yAxis },
       },
     });
 
@@ -89,6 +91,7 @@ bootstrap(
         label: dataset.label ?? '',
         backgroundColor,
         data: dataset.data,
+        yAxisID,
       });
     }
 
