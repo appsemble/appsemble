@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/sdk';
-import Vimeo from '@vimeo/player';
+import Vimeo, { TimeEvent } from '@vimeo/player';
 
 import styles from './index.module.css';
 
@@ -44,22 +44,10 @@ bootstrap(
       finished = true;
       actions.onFinish(data, { videoId: currentUrl.match(/\d+/)?.[0], videoUrl: currentUrl });
     };
-    const onTimeUpdate = ({
-      duration,
-      seconds,
-    }: {
-      // XXX Change to TimeEvent once
-      // https://github.com/DefinitelyTyped/DefinitelyTyped/pull/58351
-      // is merged.
-      seconds: number;
-      percent: number;
-      duration: number;
-    }): void => {
-      if (Math.floor(seconds) !== Math.floor(duration)) {
-        return;
+    const onTimeUpdate = ({ duration, seconds }: TimeEvent): void => {
+      if (seconds > duration - 0.5) {
+        onFinish();
       }
-
-      onFinish();
     };
     utils.addCleanup(() => player?.destroy());
 
