@@ -56,39 +56,47 @@ export async function syncBlock({
   const id = `@${OrganizationId}/${name}`;
   const blockUrl = String(new URL(`/api/blocks/${id}/versions/${version}`, argv.remote));
   logger.info(`Synchronizing block from ${blockUrl}`);
-  const { data: block } = await axios.get<BlockManifest>(blockUrl);
-  if (block.name !== id) {
-    return;
-  }
-  if (block.version !== version) {
-    return;
-  }
-  await transactional(async (transaction) => {
-    const { id: BlockVersionId } = await BlockVersion.create(
-      { ...block, OrganizationId, name, version },
-      { transaction },
-    );
-
-    const promises = block.files.map(async (filename) => {
-      const { data: content, headers } = await axios.get(`${blockUrl}/asset`, {
-        params: { filename },
-        responseType: 'arraybuffer',
-      });
-      const [mime] = headers['content-type'].split(';');
-      await BlockAsset.create({ BlockVersionId, content, mime, filename }, { transaction });
-    });
-
-    if (block.languages) {
-      promises.push(
-        ...block.languages.map(async (language) => {
-          const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`);
-          await BlockMessages.create({ BlockVersionId, language, messages }, { transaction });
-        }),
-      );
+  try {
+    const { data: block } = await axios.get<BlockManifest>(blockUrl);
+    if (block.name !== id) {
+      return;
     }
+    if (block.version !== version) {
+      return;
+    }
+    await transactional(async (transaction) => {
+      const { id: BlockVersionId } = await BlockVersion.create(
+        { ...block, OrganizationId, name, version },
+        { transaction },
+      );
 
-    await Promise.all(promises);
-  });
-  logger.info(`Synchronized block from ${blockUrl}`);
-  return block;
+      const promises = block.files.map(async (filename) => {
+        const { data: content, headers } = await axios.get(`${blockUrl}/asset`, {
+          params: { filename },
+          responseType: 'arraybuffer',
+        });
+        const [mime] = headers['content-type'].split(';');
+        await BlockAsset.create({ BlockVersionId, content, mime, filename }, { transaction });
+      });
+
+      if (block.languages) {
+        promises.push(
+          ...block.languages.map(async (language) => {
+            const { data: messages } = await axios.get(`${blockUrl}/messages/${language}`);
+            await BlockMessages.create({ BlockVersionId, language, messages }, { transaction });
+          }),
+        );
+      }
+
+      await Promise.all(promises);
+    });
+    logger.info(`Synchronized block from ${blockUrl}`);
+    return block;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response.status === 404) {
+      logger.warn(`Failed to synchronize block from ${blockUrl}`);
+      return;
+    }
+    throw error;
+  }
 }
