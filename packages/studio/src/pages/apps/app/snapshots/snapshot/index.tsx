@@ -42,7 +42,7 @@ export function SnapshotPage(): ReactElement {
   useMeta(title);
 
   const onRestore = useCallback(async () => {
-    const definition = parse(result.data.yaml) as AppDefinition;
+    const definition = parse(result.data.yaml, { maxAliasCount: 10_000 }) as AppDefinition;
     const data = new FormData();
     data.set('yaml', result.data.yaml);
 
