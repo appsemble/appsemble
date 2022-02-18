@@ -12,8 +12,8 @@ const {
   TWITTER_CONSUMER_API_KEY_SECRET,
 } = process.env;
 
-// The character limit of a tweetis 280 characters. URLs count as 23 regardless of length.
-// URLs won’t be rendered if the URL is at the end of the tweet. Only a
+// The character limit of a tweet is 280 characters. URLs count as 23 regardless of length.
+// URLs won’t be rendered if the URL is at the end of the tweet. Only a preview will be rendered.
 const status = `We have just released Appsemble version ${CI_COMMIT_TAG}!
 
 Check out the release notes to find out what’s new.
