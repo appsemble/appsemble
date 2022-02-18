@@ -94,7 +94,7 @@ export default function EditPage(): ReactElement {
   });
 
   const onUpload = useCallback(async () => {
-    const newApp = parse(appDefinition) as AppDefinition;
+    const newApp = parse(appDefinition, { maxAliasCount: 10_000 }) as AppDefinition;
 
     if (!equal(newApp.resources, app.definition.resources)) {
       promptUpdateApp();
