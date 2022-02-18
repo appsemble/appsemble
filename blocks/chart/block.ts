@@ -1,5 +1,21 @@
 import { Remapper } from '@appsemble/sdk';
 
+export interface YAxis {
+  /**
+   * The minimal value to render on the vertical axis.
+   *
+   * @default 0
+   */
+  min: number;
+
+  /**
+   * The maximum value to render on the vertical axis.
+   *
+   * If not specified, the maximum value is determined automatically based on the values given.
+   */
+  max: number;
+}
+
 declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
@@ -42,5 +58,10 @@ declare module '@appsemble/sdk' {
      * @minItems 1
      */
     backgroundColors?: Remapper[];
+
+    /**
+     * Configuration options for the vertical axis.
+     */
+    yAxis: YAxis;
   }
 }

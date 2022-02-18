@@ -170,6 +170,29 @@ Refer to the block description for more information on the supported data format
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
+    "definitions": {
+      "YAxis": {
+        "additionalProperties": false,
+        "properties": {
+          "max": {
+            "description": "The maximum value to render on the vertical axis.
+
+If not specified, the maximum value is determined automatically based on the values given.",
+            "type": "number",
+          },
+          "min": {
+            "default": 0,
+            "description": "The minimal value to render on the vertical axis.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "min",
+          "max",
+        ],
+        "type": "object",
+      },
+    },
     "properties": {
       "backgroundColors": {
         "description": "The background colors to use for each dataset by default.
@@ -200,9 +223,14 @@ By default the primary color of the theme will be used.",
         ],
         "type": "string",
       },
+      "yAxis": {
+        "$ref": "#/definitions/YAxis",
+        "description": "Configuration options for the vertical axis.",
+      },
     },
     "required": [
       "type",
+      "yAxis",
     ],
     "type": "object",
   },
