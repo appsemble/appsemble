@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "",
   "studio.src.components.Toolbar.iconAlt": "",
   "studio.src.components.Toolbar.login": "",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "",

@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Fortrolighedspolitik",
   "studio.src.components.Toolbar.iconAlt": "Appsemble-logo",
   "studio.src.components.Toolbar.login": "Log ind",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Der er i øjeblikket ingen apps tilgængelige.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Noget gik galt under forsøget på at indlæse denne app.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Indlæser apps …",

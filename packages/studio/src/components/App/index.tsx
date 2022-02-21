@@ -21,6 +21,7 @@ import { SideMenuBottom } from '../SideMenuBottom';
 import { StudioMessagesProvider } from '../StudioMessagesProvider';
 import { Toolbar } from '../Toolbar';
 import { UserProvider } from '../UserProvider';
+import { VerifyBanner } from '../VerifyBanner';
 import styles from './index.module.css';
 import { messages } from './messages';
 
@@ -53,6 +54,7 @@ export function App(): ReactElement {
                         <div
                           className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}
                         >
+                          <VerifyBanner />
                           <Breadcrumbs />
                           <Routes />
                         </div>

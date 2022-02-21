@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Datenschutzregelung",
   "studio.src.components.Toolbar.iconAlt": "Appsemble-Logo",
   "studio.src.components.Toolbar.login": "Benutzername",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Es sind derzeit keine Apps verfügbar.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Beim Versuch, die Apps zu laden, ist etwas schief gelaufen.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Apps laden…",

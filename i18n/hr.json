@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Politika privatnosti",
   "studio.src.components.Toolbar.iconAlt": "Appsemble logotip",
   "studio.src.components.Toolbar.login": "Prijava",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Trenutačno nema programa.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Dogodila se greška tijekom pokušaja učitavanja programa.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Učitavanje programa …",

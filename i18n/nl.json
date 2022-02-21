@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Privacybeleid",
   "studio.src.components.Toolbar.iconAlt": "Appsemble logo",
   "studio.src.components.Toolbar.login": "Inloggen",
+  "studio.src.components.VerifyBanner.verifyEmail": "Verifieer je e-mailadres ({email}) om je Appsemble-registratie te voltooien.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Er zijn momenteel geen apps beschikbaar.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Er is een fout opgetreden tijdens het laden van de apps.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Apps inladen…",
