@@ -15,7 +15,7 @@ export function VerifyBanner(): ReactElement {
 
   return (
     <Message color="warning">
-      <div className="is-flex">
+      <div className="is-flex is-justify-content-space-between">
         <span>
           <FormattedMessage values={{ email: userInfo.email }} {...messages.verifyEmail} />
         </span>
