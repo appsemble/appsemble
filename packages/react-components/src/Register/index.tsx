@@ -6,7 +6,7 @@ import {
   SimpleFormField,
   SimpleSubmit,
 } from '@appsemble/react-components';
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -27,8 +27,8 @@ export function Register({ onRegister }: RegisterProps): ReactElement {
   return (
     <SimpleForm defaultValues={{ email: '', name: '', password: '' }} onSubmit={onRegister}>
       <SimpleFormError>
-        {({ error }: { error: AxiosError }) =>
-          error.response && error.response.status === 409 ? (
+        {({ error }) =>
+          axios.isAxiosError(error) && error.response.status === 409 ? (
             <FormattedMessage {...messages.emailConflict} />
           ) : (
             <FormattedMessage {...messages.registerFailed} />

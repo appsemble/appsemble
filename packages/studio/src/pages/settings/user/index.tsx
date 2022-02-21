@@ -19,7 +19,7 @@ import {
 } from '@appsemble/react-components';
 import { UserEmail } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -163,7 +163,7 @@ export function UserPage(): ReactElement {
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>
           <SimpleFormError>
             {({ error: submitError }) =>
-              (submitError as AxiosError)?.response?.status === 409 ? (
+              axios.isAxiosError(submitError) && submitError.response.status === 409 ? (
                 <FormattedMessage {...messages.addEmailConflict} />
               ) : (
                 <FormattedMessage {...messages.addEmailError} />

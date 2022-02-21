@@ -1,5 +1,5 @@
 import { Loader, useQuery } from '@appsemble/react-components';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { ReactElement, useEffect } from 'react';
 
 import { ExtendedOAuth2State } from '../../types';
@@ -31,9 +31,12 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactEle
         redirectUri: appRequest.get('redirect_uri'),
       })
       .then(({ data }) => oauth2Redirect(appRequest, data))
-      .catch((err: AxiosError) =>
+      .catch((err) =>
         oauth2Redirect(appRequest, {
-          code: err.response.status < 500 ? 'invalid_request' : 'server_error',
+          code:
+            axios.isAxiosError(err) && err.response.status < 500
+              ? 'invalid_request'
+              : 'server_error',
         }),
       );
   }, [qs, session]);

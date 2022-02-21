@@ -5,7 +5,7 @@ import { join } from 'path';
 import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import matcher from 'matcher';
 import { Op } from 'sequelize';
 
@@ -267,8 +267,8 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
         } as Ingress,
         config,
       );
-    } catch (error: unknown) {
-      if ((error as AxiosError).response?.status !== 409) {
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response.status !== 409) {
         throw error;
       }
       logger.warn(`Conflict registering ingress ${name}`);

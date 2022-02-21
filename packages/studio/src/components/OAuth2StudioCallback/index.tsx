@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
@@ -101,8 +101,8 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
         authorizationUrl: session.authorizationUrl,
       });
       finalizeLogin(data);
-    } catch (err: unknown) {
-      if ((err as AxiosError)?.response?.status === 409) {
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response.status === 409) {
         setLinkError(true);
       } else {
         setError(messages.loginError);

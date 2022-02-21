@@ -59,10 +59,10 @@ function httpErrorToString(error: AxiosError): string {
 }
 
 function toString(info: TransformableInfo): string {
+  if (axios.isAxiosError(info)) {
+    return httpErrorToString(info);
+  }
   if (info instanceof Error) {
-    if (axios.isAxiosError(info)) {
-      return httpErrorToString(info as Error as AxiosError);
-    }
     return info.stack;
   }
   if (typeof info.message === 'string') {
