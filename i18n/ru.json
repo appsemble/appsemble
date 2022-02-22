@@ -269,6 +269,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "Отмена",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Создать",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Создать новое приложение",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "Чтобы создать новую организацию, вы должны сначала подтвердить свой адрес электронной почты. Обновите страницу, как только подтвердите свой адрес электронной почты.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Описание",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Что-то пошло не так при создании этого приложения.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Включите примеры ресурсов",

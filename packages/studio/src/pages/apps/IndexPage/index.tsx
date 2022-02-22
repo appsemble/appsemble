@@ -1,12 +1,10 @@
 import { Content, InputField, SelectField } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { useUser } from '../../../components/UserProvider';
-import { checkRole } from '../../../utils/checkRole';
 import { CollapsibleAppList } from './CollapsibleAppList';
 import { CreateAppButton } from './CreateAppButton';
 import styles from './index.module.css';
@@ -34,7 +32,7 @@ export function IndexPage(): ReactElement {
     reverse: true,
   });
   const { formatMessage } = useIntl();
-  const { organizations, userInfo } = useUser();
+  const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
 
   const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -48,9 +46,6 @@ export function IndexPage(): ReactElement {
     },
     [],
   );
-
-  const createOrganizations =
-    organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) ?? [];
 
   return (
     <Content className={styles.content} main>
@@ -96,7 +91,7 @@ export function IndexPage(): ReactElement {
             {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
           </option>
         </SelectField>
-        {createOrganizations.length >= 1 && <CreateAppButton className={styles.createAppButton} />}
+        {userInfo && <CreateAppButton className={styles.createAppButton} />}
       </div>
 
       {userInfo && (

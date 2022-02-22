@@ -269,6 +269,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "Annuller",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Opret",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Opret ny app",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "For at oprette en ny organisation skal du først bekræfte din e-mailadresse. Opdater siden, når du har bekræftet din e-mailadresse.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Beskrivelse",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Der gik noget galt, da denne app blev oprettet.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Medtag eksempelressourcer",

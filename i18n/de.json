@@ -269,6 +269,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "Abbrechen",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Erstellen",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Neue App erstellen",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Beschreibung",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Bei der Erstellung dieser App ist etwas schief gelaufen.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Beispielressourcen einbeziehen",

@@ -269,6 +269,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "Odustani",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Stvori",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Stvori novi program",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "Za stvaranje nove organizacije najprije moraš potvrditi svoju e-mail adresu. Aktualiziraj stranicu nakon što potvrdiš svoju e-mail adresu.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Opis",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Dogodila se greška tijekom stvaranja programa.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Uključi resurse primjera",

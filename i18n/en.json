@@ -269,6 +269,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "Cancel",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Create",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Create new App",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "In order to create an app you must be in an organization and have the permission to create new apps. You can create one below or have someone invite you to an existing organization.",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "In order to create a new organization you must first verify your email address. Refresh the page once you have verified your email.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Description",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Something went wrong when creating this app.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Include example resources",

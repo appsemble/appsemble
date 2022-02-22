@@ -9,15 +9,16 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   useData,
-  useToggle,
 } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
+import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal';
+import { ResendEmailButton } from '../../../../components/ResendEmailButton';
 import { useUser } from '../../../../components/UserProvider';
 import { checkRole } from '../../../../utils/checkRole';
 import { messages } from './messages';
@@ -30,14 +31,14 @@ interface Template {
 }
 
 export function CreateAppButton({ className }: { className: string }): ReactElement {
-  const modal = useToggle();
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
   const history = useHistory();
+  const { hash } = useLocation();
   const { formatMessage } = useIntl();
   const { url } = useRouteMatch();
-  const { organizations } = useUser();
+  const { organizations, userInfo } = useUser();
 
   const onCreate = useCallback(
     async ({ description, includeResources, name, selectedOrganization, visibility }) => {
@@ -56,6 +57,16 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
     [history, url, organizations, selectedTemplate, templates],
   );
 
+  const openCreateDialog = useCallback(() => {
+    history.replace({ hash: 'create' });
+  }, [history]);
+
+  const closeCreateDialog = useCallback(() => {
+    history.replace({ hash: null });
+  }, [history]);
+
+  const active = hash === '#create';
+
   const createOrganizations = organizations.filter((org) =>
     checkRole(org.role, Permission.CreateApps),
   );
@@ -66,98 +77,122 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
 
   return (
     <>
-      <Button className={className} onClick={modal.enable}>
+      <Button className={className} onClick={openCreateDialog}>
         <FormattedMessage {...messages.createApp} />
       </Button>
-      <ModalCard
-        component={SimpleForm}
-        defaultValues={{
-          name: '',
-          description: '',
-          resources: false,
-          visibility: 'unlisted',
-          includeResources: templates[selectedTemplate].resources,
-          selectedOrganization: 0,
-        }}
-        footer={
-          <SimpleModalFooter
-            cancelLabel={<FormattedMessage {...messages.cancel} />}
-            onClose={modal.disable}
-            submitLabel={<FormattedMessage {...messages.create} />}
-          />
-        }
-        isActive={modal.enabled}
-        onClose={modal.disable}
-        onSubmit={onCreate}
-        title={<FormattedMessage {...messages.createApp} />}
-      >
-        <SimpleFormError>
-          {({ error }) =>
-            (error as AxiosError)?.response?.status === 409 ? (
-              <FormattedMessage {...messages.nameConflict} />
-            ) : (
-              <FormattedMessage {...messages.error} />
-            )
+      {createOrganizations.length ? (
+        <ModalCard
+          component={SimpleForm}
+          defaultValues={{
+            name: '',
+            description: '',
+            resources: false,
+            visibility: 'unlisted',
+            includeResources: templates[selectedTemplate].resources,
+            selectedOrganization: 0,
+          }}
+          footer={
+            <SimpleModalFooter
+              cancelLabel={<FormattedMessage {...messages.cancel} />}
+              onClose={closeCreateDialog}
+              submitLabel={<FormattedMessage {...messages.create} />}
+            />
           }
-        </SimpleFormError>
-        <SimpleFormField
-          label={<FormattedMessage {...messages.name} />}
-          maxLength={30}
-          minLength={1}
-          name="name"
-          required
-        />
-        <SimpleFormField
-          component={SelectField}
-          disabled={createOrganizations.length === 1}
-          label={<FormattedMessage {...messages.organization} />}
-          name="selectedOrganization"
-          required
+          isActive={active}
+          onClose={closeCreateDialog}
+          onSubmit={onCreate}
+          title={<FormattedMessage {...messages.createApp} />}
         >
-          {createOrganizations.map((organization, index) => (
-            <option key={organization.id} value={index}>
-              {organization.id}
-            </option>
-          ))}
-        </SimpleFormField>
-        <SimpleFormField
-          label={<FormattedMessage {...messages.description} />}
-          maxLength={80}
-          name="description"
-        />
-        <SimpleFormField
-          component={SelectField}
-          label={<FormattedMessage {...messages.template} />}
-          name="selectedTemplate"
-          onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
-          required
-        >
-          {templates.map((template, index) => (
-            <option key={template.name} value={index}>
-              {template.name}
-            </option>
-          ))}
-        </SimpleFormField>
-        <Message>{templates[selectedTemplate].description}</Message>
-        <SimpleFormField
-          component={SelectField}
-          help={<FormattedMessage {...messages.visibilityDescription} />}
-          label={<FormattedMessage {...messages.visibilityLabel} />}
-          name="visibility"
-        >
-          <option value="public">{formatMessage(messages.public)}</option>
-          <option value="unlisted">{formatMessage(messages.unlisted)}</option>
-          <option value="private">{formatMessage(messages.private)}</option>
-        </SimpleFormField>
-        {templates[selectedTemplate].resources && (
+          <SimpleFormError>
+            {({ error }) =>
+              (error as AxiosError)?.response?.status === 409 ? (
+                <FormattedMessage {...messages.nameConflict} />
+              ) : (
+                <FormattedMessage {...messages.error} />
+              )
+            }
+          </SimpleFormError>
           <SimpleFormField
-            component={CheckboxField}
-            label={<FormattedMessage {...messages.resources} />}
-            name="includeResources"
-            title={<FormattedMessage {...messages.includeResources} />}
+            label={<FormattedMessage {...messages.name} />}
+            maxLength={30}
+            minLength={1}
+            name="name"
+            required
           />
-        )}
-      </ModalCard>
+          <SimpleFormField
+            component={SelectField}
+            disabled={createOrganizations.length === 1}
+            label={<FormattedMessage {...messages.organization} />}
+            name="selectedOrganization"
+            required
+          >
+            {createOrganizations.map((organization, index) => (
+              <option key={organization.id} value={index}>
+                {organization.id}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleFormField
+            label={<FormattedMessage {...messages.description} />}
+            maxLength={80}
+            name="description"
+          />
+          <SimpleFormField
+            component={SelectField}
+            label={<FormattedMessage {...messages.template} />}
+            name="selectedTemplate"
+            onChange={({ currentTarget }) => setSelectedTemplate(currentTarget.value)}
+            required
+          >
+            {templates.map((template, index) => (
+              <option key={template.name} value={index}>
+                {template.name}
+              </option>
+            ))}
+          </SimpleFormField>
+          <Message>{templates[selectedTemplate].description}</Message>
+          <SimpleFormField
+            component={SelectField}
+            help={<FormattedMessage {...messages.visibilityDescription} />}
+            label={<FormattedMessage {...messages.visibilityLabel} />}
+            name="visibility"
+          >
+            <option value="public">{formatMessage(messages.public)}</option>
+            <option value="unlisted">{formatMessage(messages.unlisted)}</option>
+            <option value="private">{formatMessage(messages.private)}</option>
+          </SimpleFormField>
+          {templates[selectedTemplate].resources && (
+            <SimpleFormField
+              component={CheckboxField}
+              label={<FormattedMessage {...messages.resources} />}
+              name="includeResources"
+              title={<FormattedMessage {...messages.includeResources} />}
+            />
+          )}
+        </ModalCard>
+      ) : (
+        <CreateOrganizationModal
+          disabled={!userInfo.email_verified}
+          help={
+            <div className="mb-4">
+              <span>
+                <FormattedMessage {...messages.createOrganizationInstructions} />
+              </span>
+              {userInfo.email_verified ? null : (
+                <div className="is-flex is-flex-direction-column is-align-items-center">
+                  <span className="my-2">
+                    <FormattedMessage {...messages.createVerifyMessage} />
+                  </span>
+                  <ResendEmailButton className="is-outlined" email={userInfo.email} />
+                </div>
+              )}
+            </div>
+          }
+          isActive={active}
+          onClose={closeCreateDialog}
+          title={<FormattedMessage {...messages.createApp} />}
+        />
+      )}
     </>
   );
 }
