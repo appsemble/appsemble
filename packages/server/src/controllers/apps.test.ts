@@ -2090,6 +2090,60 @@ describe('createApp', () => {
       `);
     });
 
+    it('should not synchronize if the remote returns an invalid status code', async () => {
+      authorizeStudio();
+
+      mock
+        .onGet('https://appsemble.example/api/blocks/@appsemble/upstream/versions/1.2.3')
+        .reply(404, {
+          name: '@appsemble/upstream',
+          version: '3.2.1',
+        });
+      const response = await request.post(
+        '/api/apps',
+        createFormData({
+          OrganizationId: organization.id,
+          path: 'a',
+          yaml: stripIndent(`
+            name: Test App
+            defaultPage: Test Page
+            pages:
+              - name: Test Page
+                blocks:
+                  - type: upstream
+                    version: 1.2.3
+          `),
+        }),
+      );
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "data": {
+            "errors": [
+              {
+                "instance": "upstream",
+                "message": "is not a known block type",
+                "path": [
+                  "pages",
+                  0,
+                  "blocks",
+                  0,
+                  "type",
+                ],
+                "property": "instance.pages[0].blocks[0].type",
+                "stack": "instance.pages[0].blocks[0].type is not a known block type",
+              },
+            ],
+          },
+          "error": "Bad Request",
+          "message": "App validation failed",
+          "statusCode": 400,
+        }
+      `);
+    });
+
     it('should store the remote block in the local database', async () => {
       authorizeStudio();
 
