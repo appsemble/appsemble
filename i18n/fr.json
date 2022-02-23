@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Politique de confidentialité",
   "studio.src.components.Toolbar.iconAlt": "Appsemblez le logo",
   "studio.src.components.Toolbar.login": "Identifiant",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Il n’y a pas d’application disponible actuellement.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Quelque chose s’est mal passé en essayant de charger les applications.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Chargement des applications…",

@@ -262,6 +262,7 @@
   "studio.src.components.SideMenuBottom.privacyPolicy": "Политика конфиденциальности",
   "studio.src.components.Toolbar.iconAlt": "Логотип Appsemble",
   "studio.src.components.Toolbar.login": "Логин",
+  "studio.src.components.VerifyBanner.verifyEmail": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.error": "Что-то пошло не так при попытке загрузить приложения.",
   "studio.src.pages.apps.IndexPage.CollapsibleAppList.loading": "Загрузка приложений…",
