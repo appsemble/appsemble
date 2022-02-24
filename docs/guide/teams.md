@@ -24,7 +24,7 @@ team members of the resource author may perform the action on that resource. If 
 `$team:manager`, then only the managers of the teams the author is in may perform that action on the
 resource.
 
-For example, let’s say we have an app for managing soccer club:
+For example, let’s say we have an app for managing a soccer club:
 
 ```yaml
 name: Soccer club
@@ -79,7 +79,7 @@ We have the following teams:
 - Jessie
 - Alex
 
-Each soccer team has their own strategy. only the team manager may create a strategy. Manny may
+Each soccer team has their own strategy. Only the team manager may create a strategy. Manny may
 create a strategy (`$team:manager`), meaning they are now the author of that strategy. Because James
 and Alex are in the same team as Manny, they may view the strategy (`$team:member`).
 
@@ -97,7 +97,7 @@ However, if Alex reports absence, both Manny and Mandy can see it.
 Page security rules should match that of the data they display. Otherwise, they show the user a
 bunch of errors, which leads to a bad user experience.
 
-Continuing on the Soccer club app in the resources example, the following could represent the app’s
+Continuing with the Soccer club app in the resources example, the following could represent the app’s
 pages:
 
 ```yaml
