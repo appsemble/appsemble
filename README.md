@@ -57,7 +57,8 @@ yarn start --help
 ```
 
 A new account can be registered by going to `http://localhost:9999/register`, or you can login on
-`http://localhost:9999/login`.
+`http://localhost:9999/login`. If you use email registration to register an account, the email
+containing the verification link will be printed in the server logs.
 
 #### CLI Login
 
