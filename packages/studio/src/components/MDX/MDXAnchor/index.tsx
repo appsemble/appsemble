@@ -19,7 +19,7 @@ interface MDXAnchorProps {
 export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
 
-  if (/^https?:\/\//.test(href)) {
+  if (/^https?:\/\//.test(href) || href === '/api-explorer') {
     return (
       <a href={href} rel="noopener noreferrer" target="_blank">
         {children}
