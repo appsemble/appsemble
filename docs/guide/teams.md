@@ -97,8 +97,8 @@ However, if Alex reports absence, both Manny and Mandy can see it.
 Page security rules should match that of the data they display. Otherwise, they show the user a
 bunch of errors, which leads to a bad user experience.
 
-Continuing with the Soccer club app in the resources example, the following could represent the app’s
-pages:
+Continuing with the Soccer club app in the resources example, the following could represent the
+app’s pages:
 
 ```yaml
 pages:
