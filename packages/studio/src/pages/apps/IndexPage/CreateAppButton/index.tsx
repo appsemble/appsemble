@@ -12,7 +12,7 @@ import {
 } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
@@ -105,7 +105,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         >
           <SimpleFormError>
             {({ error }) =>
-              (error as AxiosError)?.response?.status === 409 ? (
+              axios.isAxiosError(error) && error.response.status === 409 ? (
                 <FormattedMessage {...messages.nameConflict} />
               ) : (
                 <FormattedMessage {...messages.error} />
