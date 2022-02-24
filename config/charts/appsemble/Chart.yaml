@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.0
-appVersion: 0.20.0
+version: 0.20.1
+appVersion: 0.20.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,20 +25,11 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(chart): Add chart block."
-    - kind: removed
-      description: "Appsemble: Remove support for Node.js 12."
-    - kind: removed
-      description: "Cli: Remove support for Node.js 12."
-    - kind: removed
-      description: "Create-appsemble: Remove support for Node.js 12."
-    - kind: removed
-      description: "Webpack-config: Remove support for Node.js 12."
-    - kind: fixed
-      description: "Block(list): Fix issue where label was not correctly being remapped."
-    - kind: fixed
-      description: "Server: Fix issue where the $editor was being included in the
-        resource validation when updating resources."
+      description: "Block(chart): Allow configuration of the vertical axis."
+    - kind: changed
+      description: "Studio: Update create app button to always be visible if the user
+        is logged in, using the same flow used to verify email addresses and
+        creating organizations as the flow used when cloning apps."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

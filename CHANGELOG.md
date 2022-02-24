@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.1](https://gitlab.com/appsemble/appsemble/-/releases/0.20.1)] - 2022-02-24
+
+### Added
+
+- Block(`chart`): Allow configuration of the vertical axis.
+
+### Changed
+
+- Studio: Update create app button to always be visible if the user is logged in, using the same
+  flow used to verify email addresses and creating organizations as the flow used when cloning apps.
+
 ## \[[0.20.0](https://gitlab.com/appsemble/appsemble/-/releases/0.20.0)] - 2022-02-14
 
 ### Added
