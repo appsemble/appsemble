@@ -270,6 +270,8 @@
   "studio.src.pages.apps.IndexPage.CreateAppButton.cancel": "",
   "studio.src.pages.apps.IndexPage.CreateAppButton.create": "Bikin",
   "studio.src.pages.apps.IndexPage.CreateAppButton.createApp": "Buat Aplikasi baru",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createOrganizationInstructions": "",
+  "studio.src.pages.apps.IndexPage.CreateAppButton.createVerifyMessage": "",
   "studio.src.pages.apps.IndexPage.CreateAppButton.description": "Deskripsi",
   "studio.src.pages.apps.IndexPage.CreateAppButton.error": "Ada yang tidak beres saat membuat aplikasi ini.",
   "studio.src.pages.apps.IndexPage.CreateAppButton.includeResources": "Sertakan sumber daya contoh",
