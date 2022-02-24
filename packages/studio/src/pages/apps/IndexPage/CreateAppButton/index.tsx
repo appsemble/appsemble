@@ -67,7 +67,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
 
   const active = hash === '#create';
 
-  const createOrganizations = organizations.filter((org) =>
+  const createOrganizations = organizations?.filter((org) =>
     checkRole(org.role, Permission.CreateApps),
   );
 
