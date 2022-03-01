@@ -42,6 +42,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
   '/api/blocks/@{organizationId}/{blockId}': {

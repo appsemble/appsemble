@@ -25,7 +25,10 @@ import { organizationBlocklist } from '../utils/organizationBlocklist';
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({
     order: [['id', 'ASC']],
-    include: [{ model: App, required: false, where: { visibility: 'public' }, attributes: ['id'] }],
+    include: [
+      { model: App, required: false, where: { visibility: 'public' }, attributes: ['id'] },
+      { model: BlockVersion, required: false, where: { visibility: 'public' }, attributes: ['id'] },
+    ],
     attributes: {
       include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon'],
@@ -33,7 +36,7 @@ export async function getOrganizations(ctx: Context): Promise<void> {
   });
 
   ctx.body = organizations
-    .filter((organization) => organization.Apps.length)
+    .filter((organization) => organization.Apps.length || organization.BlockVersions.length)
     .map((organization) => ({
       id: organization.id,
       name: organization.name,
@@ -145,6 +148,7 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
 export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
+    user,
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -153,8 +157,22 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
       exclude: ['icon'],
     },
   });
+
   if (!organization) {
     throw notFound('Organization not found.');
+  }
+
+  if (user) {
+    await user.reload({
+      include: [
+        {
+          model: Organization,
+          attributes: {
+            include: ['id'],
+          },
+        },
+      ],
+    });
   }
 
   // Sequelize does not support subqueries
@@ -162,7 +180,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(
     {
-      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon
+      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon, visibility
         FROM "BlockVersion"
         WHERE "OrganizationId" = ?
         AND created IN (SELECT MAX(created)
@@ -173,38 +191,44 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = blockVersions.map(
-    ({
-      OrganizationId,
-      actions,
-      description,
-      events,
-      icon,
-      layout,
-      longDescription,
-      name,
-      parameters,
-      version,
-    }) => {
-      let iconUrl = null;
-      if (icon) {
-        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
-      } else if (organization.get('hasIcon')) {
-        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
-      }
-      return {
-        name: `@${OrganizationId}/${name}`,
-        description,
-        longDescription,
-        version,
+  ctx.body = blockVersions
+    .filter(
+      (blockVersion) =>
+        blockVersion.visibility === 'public' ||
+        user?.Organizations.some((org) => org.id === blockVersion.OrganizationId),
+    )
+    .map(
+      ({
+        OrganizationId,
         actions,
+        description,
         events,
-        iconUrl,
+        icon,
         layout,
+        longDescription,
+        name,
         parameters,
-      };
-    },
-  );
+        version,
+      }) => {
+        let iconUrl = null;
+        if (icon) {
+          iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+        } else if (organization.get('hasIcon')) {
+          iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+        }
+        return {
+          name: `@${OrganizationId}/${name}`,
+          description,
+          longDescription,
+          version,
+          actions,
+          events,
+          iconUrl,
+          layout,
+          parameters,
+        };
+      },
+    );
 }
 
 export async function getOrganizationIcon(ctx: Context): Promise<void> {

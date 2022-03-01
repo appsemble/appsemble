@@ -46,6 +46,14 @@ This uses the same form as scoped npm packages. For example, \`@appsemble/form\`
       pattern: semver.source,
       description: 'A [semver](https://semver.org) representation of the block version.',
     },
+    visibility: {
+      enum: ['public', 'unlisted'],
+      default: 'public',
+      description: `Whether the block should be listed publicly for users who aren’t part of the block’s organization.
+
+- **\`public\`**: The block is visible for everyone.
+- **\`unlisted\`**: The block will only be visible if the user is logged in and is part of the block’s organization.`,
+    },
     layout: {
       description: `How the block will be displayed on the screen.
 

@@ -55,10 +55,18 @@ afterEach(() => {
 });
 
 describe('getOrganizations', () => {
-  it('should fetch all organizations with public apps', async () => {
+  it('should fetch all organizations with public apps or public blocks', async () => {
     await Organization.create({
       id: 'random',
       name: 'Random Organization',
+    });
+    await Organization.create({
+      id: 'blocker',
+      name: 'Organization with Blocks',
+    });
+    await Organization.create({
+      id: 'private',
+      name: 'Private organization with private apps and blocks',
     });
     await App.create({
       vapidPublicKey: '',
@@ -92,6 +100,49 @@ describe('getOrganizations', () => {
         ],
       },
     });
+    await App.create({
+      vapidPublicKey: '',
+      vapidPrivateKey: '',
+      OrganizationId: 'private',
+      visibility: 'unlisted',
+      definition: {
+        defaultPage: '',
+        resources: { testResource: { schema: { type: 'object' } } },
+        pages: [
+          {
+            name: '',
+            blocks: [],
+          },
+        ],
+      },
+    });
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'blocker',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'private',
+      visibility: 'unlisted',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
 
     const response = await request.get('/api/organizations');
 
@@ -101,7 +152,10 @@ describe('getOrganizations', () => {
         {
           id: 'appsemble',
           name: 'Appsemble',
-          iconUrl: null,
+        },
+        {
+          id: 'blocker',
+          name: 'Organization with Blocks',
         },
         {
           id: 'testorganization',
@@ -250,11 +304,25 @@ describe('getOrganizationApps', () => {
 });
 
 describe('getOrganizationBlocks', () => {
-  it('should return the organization’s blocks', async () => {
+  it('should return the organization’s public blocks', async () => {
     await BlockVersion.create({
       name: 'test',
       version: '0.0.0',
       OrganizationId: 'testorganization',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    await BlockVersion.create({
+      name: 'test-2',
+      version: '0.0.0',
+      OrganizationId: 'testorganization',
+      visibility: 'unlisted',
       parameters: {
         properties: {
           type: 'object',
@@ -278,6 +346,81 @@ describe('getOrganizationBlocks', () => {
           layout: null,
           longDescription: null,
           name: '@testorganization/test',
+          parameters: {
+            properties: {
+              foo: {
+                type: 'number',
+              },
+              type: 'object',
+            },
+          },
+          version: '0.0.0',
+        },
+      ],
+    });
+  });
+
+  it('should include the organization’s private blocks if the user is logged in', async () => {
+    authorizeStudio(user);
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: 'testorganization',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    await BlockVersion.create({
+      name: 'test-2',
+      version: '0.0.0',
+      OrganizationId: 'testorganization',
+      visibility: 'unlisted',
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+
+    const response = await request.get('/api/organizations/testorganization/blocks');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          actions: null,
+          description: null,
+          events: null,
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+          layout: null,
+          longDescription: null,
+          name: '@testorganization/test',
+          parameters: {
+            properties: {
+              foo: {
+                type: 'number',
+              },
+              type: 'object',
+            },
+          },
+          version: '0.0.0',
+        },
+        {
+          actions: null,
+          description: null,
+          events: null,
+          iconUrl: '/api/organizations/testorganization/icon?updated=1970-01-01T00:00:00.000Z',
+          layout: null,
+          longDescription: null,
+          name: '@testorganization/test-2',
           parameters: {
             properties: {
               foo: {
