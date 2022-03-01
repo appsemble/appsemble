@@ -85,6 +85,99 @@ describe('queryBlocks', () => {
       omit(pen, ['files', 'languages']),
     ]);
   });
+
+  it('should not include unlisted blocks', async () => {
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test-2',
+      version: '1.2.3',
+      visibility: 'unlisted',
+    });
+
+    const { data: response } = await request.get<BlockManifest[]>('/api/blocks');
+    expect(response).toHaveLength(1);
+    expect(response).toMatchInlineSnapshot(`
+      [
+        {
+          "actions": null,
+          "description": null,
+          "events": null,
+          "iconUrl": null,
+          "layout": null,
+          "longDescription": null,
+          "name": "@xkcd/test",
+          "parameters": null,
+          "version": "1.2.3",
+          "wildcardActions": false,
+        },
+      ]
+    `);
+  });
+
+  it('should include unlisted blocks for the organizations the user is a part of', async () => {
+    await Organization.create({
+      id: 'not-xkcd',
+      name: 'not-xkcd',
+    });
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test',
+      version: '1.2.3',
+    });
+    await BlockVersion.create({
+      OrganizationId: 'xkcd',
+      name: 'test-2',
+      version: '1.2.3',
+      visibility: 'unlisted',
+    });
+    await BlockVersion.create({
+      OrganizationId: 'not-xkcd',
+      name: 'not-test',
+      version: '1.2.3',
+    });
+    await BlockVersion.create({
+      OrganizationId: 'not-xkcd',
+      name: 'test-2',
+      version: '1.2.3',
+      visibility: 'unlisted',
+    });
+
+    const { data: response } = await request.get<BlockManifest[]>('/api/blocks');
+    expect(response).toHaveLength(2);
+    expect(response).toMatchInlineSnapshot(`
+      [
+        {
+          "actions": null,
+          "description": null,
+          "events": null,
+          "iconUrl": null,
+          "layout": null,
+          "longDescription": null,
+          "name": "@xkcd/test",
+          "parameters": null,
+          "version": "1.2.3",
+          "wildcardActions": false,
+        },
+        {
+          "actions": null,
+          "description": null,
+          "events": null,
+          "iconUrl": null,
+          "layout": null,
+          "longDescription": null,
+          "name": "@not-xkcd/not-test",
+          "parameters": null,
+          "version": "1.2.3",
+          "wildcardActions": false,
+        },
+      ]
+    `);
+  });
 });
 
 describe('publishBlock', () => {
@@ -525,6 +618,14 @@ considered invalid.
                 description: 'A [semver](https://semver.org) representation of the block version.',
                 pattern: '^\\d+\\.\\d+\\.\\d+$',
                 type: 'string',
+              },
+              visibility: {
+                default: 'public',
+                description: `Whether the block should be listed publicly for users who aren’t part of the block’s organization.
+
+- **\`public\`**: The block is visible for everyone.
+- **\`unlisted\`**: The block will only be visible if the user is logged in and is part of the block’s organization.`,
+                enum: ['public', 'unlisted'],
               },
             },
             required: ['name', 'version', 'files'],

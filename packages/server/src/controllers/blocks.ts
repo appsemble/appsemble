@@ -18,6 +18,7 @@ import {
 } from '../models';
 import { blockVersionToJson } from '../utils/block';
 import { checkRole } from '../utils/checkRole';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
 import { serveIcon } from '../utils/icon';
 
 export async function getBlock(ctx: Context): Promise<void> {
@@ -70,7 +71,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
   >(
     `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
-    version, actions, events, layout, parameters, "wildcardActions",
+    version, actions, events, layout, parameters, "wildcardActions", bv.visibility,
     bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
     FROM "BlockVersion" bv
     INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
@@ -80,7 +81,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = blockVersions.map((blockVersion) => {
+  ctx.body = await createBlockVersionResponse(ctx, blockVersions, (blockVersion) => {
     const {
       OrganizationId,
       actions,
@@ -166,7 +167,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
   try {
     await transactional(async (transaction) => {
       const createdBlock = await BlockVersion.create(
-        { ...data, icon: icon?.contents, name: blockId, OrganizationId },
+        {
+          ...data,
+          visibility: data.visibility || 'public',
+          icon: icon?.contents,
+          name: blockId,
+          OrganizationId,
+        },
         { transaction },
       );
 

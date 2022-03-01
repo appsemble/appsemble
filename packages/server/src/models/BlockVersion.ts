@@ -67,6 +67,11 @@ export class BlockVersion extends Model {
   @Column(DataType.BOOLEAN)
   wildcardActions: boolean;
 
+  @Default('public')
+  @AllowNull(false)
+  @Column(DataType.STRING)
+  visibility: 'public' | 'unlisted';
+
   @BelongsTo(() => Organization)
   Organization: Organization;
 

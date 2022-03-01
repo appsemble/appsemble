@@ -19,13 +19,17 @@ import {
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
 import { serveIcon } from '../utils/icon';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
 
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({
     order: [['id', 'ASC']],
-    include: [{ model: App, required: false, where: { visibility: 'public' }, attributes: ['id'] }],
+    include: [
+      { model: App, required: false, where: { visibility: 'public' }, attributes: ['id'] },
+      { model: BlockVersion, required: false, where: { visibility: 'public' }, attributes: ['id'] },
+    ],
     attributes: {
       include: [[literal('"Organization".icon IS NOT NULL'), 'hasIcon']],
       exclude: ['icon'],
@@ -33,7 +37,7 @@ export async function getOrganizations(ctx: Context): Promise<void> {
   });
 
   ctx.body = organizations
-    .filter((organization) => organization.Apps.length)
+    .filter((organization) => organization.Apps.length || organization.BlockVersions.length)
     .map((organization) => ({
       id: organization.id,
       name: organization.name,
@@ -153,6 +157,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
       exclude: ['icon'],
     },
   });
+
   if (!organization) {
     throw notFound('Organization not found.');
   }
@@ -162,7 +167,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(
     {
-      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon
+      query: `SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, icon, visibility
         FROM "BlockVersion"
         WHERE "OrganizationId" = ?
         AND created IN (SELECT MAX(created)
@@ -173,7 +178,9 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = blockVersions.map(
+  ctx.body = await createBlockVersionResponse(
+    ctx,
+    blockVersions,
     ({
       OrganizationId,
       actions,

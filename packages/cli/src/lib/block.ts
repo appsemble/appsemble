@@ -124,7 +124,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   const { dir, output } = config;
   const distPath = resolvePath(dir, output);
   const form = new FormData();
-  const { description, layout, longDescription, name, version } = config;
+  const { description, layout, longDescription, name, version, visibility } = config;
   const { actions, events, messages, parameters } = getBlockConfigFromTypeScript(config);
   const files = await fs.readdir(dir);
   const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
@@ -144,6 +144,9 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   append('longDescription', longDescription);
   append('events', events);
   append('layout', layout);
+  if (visibility) {
+    append('visibility', visibility);
+  }
   append('name', name);
   append('parameters', parameters);
   append('version', version);

@@ -1052,6 +1052,16 @@ export interface BlockManifest {
   languages: string[] | null;
 
   /**
+   * Whether the block should be listed publicly
+   * for users who aren’t part of the block’s organization.
+   *
+   * - **`public`**: The block is visible for everyone.
+   * - **`unlisted`**: The block will only be visible if the user is
+   * logged in and is part of the block’s organization.
+   */
+  visibility?: 'public' | 'unlisted';
+
+  /**
    * Whether action validation for wildcard action is skipped.
    */
   wildcardActions?: boolean;
@@ -1765,6 +1775,7 @@ export interface BlockConfig
     | 'name'
     | 'parameters'
     | 'version'
+    | 'visibility'
     | 'wildcardActions'
   > {
   /**
