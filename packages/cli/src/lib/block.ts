@@ -144,7 +144,9 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   append('longDescription', longDescription);
   append('events', events);
   append('layout', layout);
-  append('visibility', visibility || 'public');
+  if (visibility) {
+    append('visibility', visibility);
+  }
   append('name', name);
   append('parameters', parameters);
   append('version', version);

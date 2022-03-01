@@ -1055,8 +1055,8 @@ export interface BlockManifest {
    * Whether the block should be listed publicly
    * for users who aren’t part of the block’s organization.
    *
-   * - **\`public\`**: The block is visible for everyone.
-   * - **\`unlisted\`**: The block will only be visible if the user is
+   * - **`public`**: The block is visible for everyone.
+   * - **`unlisted`**: The block will only be visible if the user is
    * logged in and is part of the block’s organization.
    */
   visibility?: 'public' | 'unlisted';
