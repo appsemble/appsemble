@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.2](https://gitlab.com/appsemble/appsemble/-/releases/0.20.2)] - 2022-03-01
+
+### Changed
+
+- Server: Add `visibility` property to blocks, this allows for blocks to be hidden from the block
+  store.
+- Server: Change public list of organizations to also include organizations with public blocks.
+
+### Fixed
+
+- Create-appsemble: Fix fatal error in `create-appsemble block` command.
+- Server: Query all necessary fields for server side actions.
+
 ## \[[0.20.1](https://gitlab.com/appsemble/appsemble/-/releases/0.20.1)] - 2022-02-24
 
 ### Added

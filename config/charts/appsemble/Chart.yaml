@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.1
-appVersion: 0.20.1
+version: 0.20.2
+appVersion: 0.20.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,12 +24,16 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(chart): Allow configuration of the vertical axis."
     - kind: changed
-      description: "Studio: Update create app button to always be visible if the user
-        is logged in, using the same flow used to verify email addresses and
-        creating organizations as the flow used when cloning apps."
+      description: "Server: Add visibility property to blocks, this allows for blocks
+        to be hidden from the block store."
+    - kind: changed
+      description: "Server: Change public list of organizations to also include
+        organizations with public blocks."
+    - kind: fixed
+      description: "Create-appsemble: Fix fatal error in create-appsemble block command."
+    - kind: fixed
+      description: "Server: Query all necessary fields for server side actions."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

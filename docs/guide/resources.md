@@ -136,7 +136,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.20.1
+        version: 0.20.2
         actions:
           onLoad:
             type: resource.query
