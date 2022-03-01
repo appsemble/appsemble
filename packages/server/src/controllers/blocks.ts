@@ -18,6 +18,7 @@ import {
 } from '../models';
 import { blockVersionToJson } from '../utils/block';
 import { checkRole } from '../utils/checkRole';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
 import { serveIcon } from '../utils/icon';
 
 export async function getBlock(ctx: Context): Promise<void> {
@@ -63,8 +64,6 @@ export async function getBlock(ctx: Context): Promise<void> {
 }
 
 export async function queryBlocks(ctx: Context): Promise<void> {
-  const { user } = ctx;
-
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
@@ -82,60 +81,41 @@ export async function queryBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  if (user) {
-    await user.reload({
-      include: [
-        {
-          model: Organization,
-          attributes: {
-            include: ['id'],
-          },
-        },
-      ],
-    });
-  }
-
-  ctx.body = blockVersions
-    .filter(
-      (blockVersion) =>
-        blockVersion.visibility === 'public' ||
-        user?.Organizations.some((org) => org.id === blockVersion.OrganizationId),
-    )
-    .map((blockVersion) => {
-      const {
-        OrganizationId,
-        actions,
-        description,
-        events,
-        hasIcon,
-        hasOrganizationIcon,
-        layout,
-        longDescription,
-        name,
-        organizationUpdated,
-        parameters,
-        version,
-        wildcardActions,
-      } = blockVersion;
-      let iconUrl = null;
-      if (hasIcon) {
-        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
-      } else if (hasOrganizationIcon) {
-        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
-      }
-      return {
-        name: `@${OrganizationId}/${name}`,
-        description,
-        longDescription,
-        version,
-        actions,
-        events,
-        iconUrl,
-        layout,
-        parameters,
-        wildcardActions,
-      };
-    });
+  ctx.body = await createBlockVersionResponse(ctx, blockVersions, (blockVersion) => {
+    const {
+      OrganizationId,
+      actions,
+      description,
+      events,
+      hasIcon,
+      hasOrganizationIcon,
+      layout,
+      longDescription,
+      name,
+      organizationUpdated,
+      parameters,
+      version,
+      wildcardActions,
+    } = blockVersion;
+    let iconUrl = null;
+    if (hasIcon) {
+      iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+    } else if (hasOrganizationIcon) {
+      iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organizationUpdated.toISOString()}`;
+    }
+    return {
+      name: `@${OrganizationId}/${name}`,
+      description,
+      longDescription,
+      version,
+      actions,
+      events,
+      iconUrl,
+      layout,
+      parameters,
+      wildcardActions,
+    };
+  });
 }
 
 interface PublishBlockBody extends Omit<BlockManifest, 'files'> {

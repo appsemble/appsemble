@@ -19,6 +19,7 @@ import {
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
 import { serveIcon } from '../utils/icon';
 import { organizationBlocklist } from '../utils/organizationBlocklist';
 
@@ -148,7 +149,6 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
 export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
-    user,
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, {
@@ -160,19 +160,6 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
 
   if (!organization) {
     throw notFound('Organization not found.');
-  }
-
-  if (user) {
-    await user.reload({
-      include: [
-        {
-          model: Organization,
-          attributes: {
-            include: ['id'],
-          },
-        },
-      ],
-    });
   }
 
   // Sequelize does not support subqueries
@@ -191,44 +178,40 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = blockVersions
-    .filter(
-      (blockVersion) =>
-        blockVersion.visibility === 'public' ||
-        user?.Organizations.some((org) => org.id === blockVersion.OrganizationId),
-    )
-    .map(
-      ({
-        OrganizationId,
-        actions,
+  ctx.body = createBlockVersionResponse(
+    ctx,
+    blockVersions,
+    ({
+      OrganizationId,
+      actions,
+      description,
+      events,
+      icon,
+      layout,
+      longDescription,
+      name,
+      parameters,
+      version,
+    }) => {
+      let iconUrl = null;
+      if (icon) {
+        iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
+      } else if (organization.get('hasIcon')) {
+        iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
+      }
+      return {
+        name: `@${OrganizationId}/${name}`,
         description,
-        events,
-        icon,
-        layout,
         longDescription,
-        name,
-        parameters,
         version,
-      }) => {
-        let iconUrl = null;
-        if (icon) {
-          iconUrl = `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`;
-        } else if (organization.get('hasIcon')) {
-          iconUrl = `/api/organizations/${OrganizationId}/icon?updated=${organization.updated.toISOString()}`;
-        }
-        return {
-          name: `@${OrganizationId}/${name}`,
-          description,
-          longDescription,
-          version,
-          actions,
-          events,
-          iconUrl,
-          layout,
-          parameters,
-        };
-      },
-    );
+        actions,
+        events,
+        iconUrl,
+        layout,
+        parameters,
+      };
+    },
+  );
 }
 
 export async function getOrganizationIcon(ctx: Context): Promise<void> {
