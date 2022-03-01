@@ -178,7 +178,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     { type: QueryTypes.SELECT },
   );
 
-  ctx.body = createBlockVersionResponse(
+  ctx.body = await createBlockVersionResponse(
     ctx,
     blockVersions,
     ({

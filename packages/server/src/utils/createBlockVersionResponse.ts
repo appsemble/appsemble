@@ -15,6 +15,7 @@ export async function createBlockVersionResponse(
   mapper: (blockVersion: ExtendedBlockVersion) => Omit<BlockManifest, 'files' | 'languages'>,
 ): Promise<Omit<BlockManifest, 'files' | 'languages'>[]> {
   const { user } = ctx;
+
   if (user) {
     await user.reload({
       include: [
@@ -27,7 +28,9 @@ export async function createBlockVersionResponse(
       ],
     });
   }
-  const organizationIds = new Set(user.Organizations?.map((org) => org.id) || undefined);
+
+  const organizationIds = new Set(user?.Organizations?.map((org) => org.id) || undefined);
+
   return blockVersions
     .filter(
       (blockVersion) =>
