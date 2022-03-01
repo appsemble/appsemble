@@ -28,6 +28,10 @@ Content-Disposition: form-data; name="events"\r
 \r
 {"listen":{"test":{}}}\r
 --${boundary}\r
+Content-Disposition: form-data; name="visibility"\r
+\r
+public\r
+--${boundary}\r
 Content-Disposition: form-data; name="name"\r
 \r
 @org/block\r
@@ -72,6 +76,10 @@ Content-Disposition: form-data; name="actions"\r
 Content-Disposition: form-data; name="events"\r
 \r
 {}\r
+--${boundary}\r
+Content-Disposition: form-data; name="visibility"\r
+\r
+public\r
 --${boundary}\r
 Content-Disposition: form-data; name="name"\r
 \r
