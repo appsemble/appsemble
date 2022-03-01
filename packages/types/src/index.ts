@@ -1775,6 +1775,7 @@ export interface BlockConfig
     | 'name'
     | 'parameters'
     | 'version'
+    | 'visibility'
     | 'wildcardActions'
   > {
   /**
