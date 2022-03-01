@@ -46,7 +46,7 @@ export async function handler(args: BlockArgs): Promise<void> {
       },
       !args.name && { name: 'name', message: 'What should be the name of the block?' },
       !args.template && {
-        name: 'type',
+        name: 'template',
         type: 'list',
         choices,
         message: 'What kind of block project should be bootstrapped?',
