@@ -122,6 +122,10 @@ export function Page(): ReactElement {
 
   const checkPagePermissions = useCallback(
     (p: PageDefinition): boolean => {
+      // Users should always be able to access custom login and register pages.
+      if (p.name === 'Login' || p.name === 'Register') {
+        return true;
+      }
       const roles = p.roles || definition.roles || [];
 
       return (

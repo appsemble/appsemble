@@ -33,6 +33,8 @@ export function AppRoutes(): ReactElement {
   }
 
   const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
+  const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
+  const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
   // The `lang` parameter for the parent route is optional. It should be required for subroutes to
   // prevent an infinite routing loop.
@@ -46,13 +48,14 @@ export function AppRoutes(): ReactElement {
           <AppSettings />
         </Route>
 
-        {!isLoggedIn && (
+        {!isLoggedIn && !hasCustomLogin && (
           <Route exact path="/:lang/Login" sensitive>
             <Login />
           </Route>
         )}
-        {!isLoggedIn && (
+        {!isLoggedIn && !hasCustomRegister && (
           <Route exact path="/:lang/Register" sensitive>
+            {hasCustomRegister ? <Page /> : <Register />}
             <Register />
           </Route>
         )}

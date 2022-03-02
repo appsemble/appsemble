@@ -30,6 +30,9 @@ a login form appears on the login page from which a user can login, register a n
 their password. This method also allows for the usage of the
 [`user.login` and `user.register` actions](/docs/reference/actions#user.login).
 
+This login option can be customized by naming pages `Login` and `Register`. Doing so will display
+these pages instead of the default app login and register pages.
+
 The third login option allows for setting up your own login methods using [OAuth2](oauth2.md) or
 [SAML2.0](saml.md) which are described in more detail in their own pages.
 
