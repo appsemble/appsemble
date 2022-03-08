@@ -186,10 +186,6 @@ If not specified, the maximum value is determined automatically based on the val
             "type": "number",
           },
         },
-        "required": [
-          "min",
-          "max",
-        ],
         "type": "object",
       },
     },
