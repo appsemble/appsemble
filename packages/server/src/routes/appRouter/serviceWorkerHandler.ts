@@ -21,7 +21,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
         resolve(__dirname, '..', '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
         'utf8',
       )
-    : ctx.fs.promises.readFile(filename, 'utf-8'));
+    : ctx.fs.promises.readFile(filename, 'utf8'));
   const { app } = await getApp(ctx, {
     attributes: ['definition'],
   });

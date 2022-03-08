@@ -141,7 +141,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   }
 
   const buf = Buffer.from(SAMLResponse, 'base64');
-  const xml = buf.toString('utf-8');
+  const xml = buf.toString('utf8');
   logger.verbose(`SAML response XML: ${xml}`);
   const doc = parser.parseFromString(xml);
   const x = (localName: string, namespace: NS, element: Node = doc): Element =>

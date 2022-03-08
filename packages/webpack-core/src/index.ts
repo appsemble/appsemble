@@ -241,7 +241,6 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
     new InjectManifest({
       swSrc: require.resolve('@appsemble/service-worker'),
       swDest: 'service-worker.js',
-      // @ts-expect-error The types on DefinitelyTyped are outdated.
       injectionPoint: 'appAssets',
       manifestTransforms: [
         (entries) => ({

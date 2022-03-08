@@ -42,8 +42,8 @@ declare module '@appsemble/sdk' {
     /**
      * The volume in percentages the video should default to.
      *
-     * @minimum 0
      * @maximum 100
+     * @minimum 0
      */
     volume?: number;
 

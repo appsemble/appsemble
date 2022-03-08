@@ -185,7 +185,7 @@ describe('makeActions', () => {
       actions: { onClick: {} },
       context: { actions: { onClick: { type: 'dialog.ok' } } },
       extraCreators: {
-        'dialog.ok': (params) => {
+        'dialog.ok'(params) {
           ({ prefix } = params);
           return [identity];
         },

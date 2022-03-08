@@ -11,7 +11,7 @@ import visit from 'unist-util-visit';
  * @returns The release notes for the last version
  */
 export async function getReleaseNotes(): Promise<string> {
-  const changelog = await fs.readFile('CHANGELOG.md', 'utf-8');
+  const changelog = await fs.readFile('CHANGELOG.md', 'utf8');
   const ast = fromMarkdown(changelog);
   let sectionStart: number;
   let sectionEnd: number;

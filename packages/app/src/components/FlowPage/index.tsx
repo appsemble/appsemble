@@ -39,7 +39,7 @@ export function FlowPage({
 }: FlowPageProps): ReactElement {
   const history = useHistory();
   const route = useRouteMatch<{ lang: string }>();
-  const [currentStep, setCurrentPage] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
@@ -75,7 +75,7 @@ export function FlowPage({
       }
 
       setData(d);
-      setCurrentPage(currentStep + 1);
+      setCurrentStep(currentStep + 1);
 
       return d;
     },
@@ -91,7 +91,7 @@ export function FlowPage({
       }
 
       setData(d);
-      setCurrentPage(currentStep - 1);
+      setCurrentStep(currentStep - 1);
 
       return d;
     },
@@ -117,7 +117,7 @@ export function FlowPage({
       }
 
       setData(d);
-      setCurrentPage(found);
+      setCurrentStep(found);
 
       return d;
     },

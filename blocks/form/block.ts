@@ -76,8 +76,8 @@ interface RegexRequirement extends BaseRequirement {
    *
    * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
    *
-   * @pattern ^[gimsuy]+$
    * @default 'g'
+   * @pattern ^[gimsuy]+$
    */
   flags?: string;
 }

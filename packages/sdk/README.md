@@ -54,8 +54,8 @@ declare module '@appsemble/sdk' {
      * This is an example string parameter.
      *
      * @format email
-     * @minLength 10
      * @maxLength 50
+     * @minLength 10
      * @pattern ^.+@.*+\..+$
      * @example 'Example string'
      */
@@ -65,8 +65,8 @@ declare module '@appsemble/sdk' {
      * This is an number parameter.
      *
      * @type integer
-     * @minimum 42
      * @maximum 1337
+     * @minimum 42
      * @multipleOf 3
      * @example 123
      */

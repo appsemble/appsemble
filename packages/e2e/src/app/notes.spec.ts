@@ -4,7 +4,7 @@ describe('Notes', () => {
     const url = `${protocol}//notes.appsemble.${host}`;
 
     cy.visit(url, {
-      onBeforeLoad: (window) => {
+      onBeforeLoad(window) {
         window.localStorage.clear();
       },
     });

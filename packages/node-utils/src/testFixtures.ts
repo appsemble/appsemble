@@ -10,11 +10,11 @@ let baseDir: string;
  *
  * This is typically called in `jest.setup.ts`.
  *
+ * @param dir - The base directory
  * @example
  * ```ts
  * setFixtureBase(__dirname);
  * ```
- * @param dir - The base directory
  */
 export function setFixtureBase(dir: string): void {
   baseDir = join(dir, '__fixtures__');

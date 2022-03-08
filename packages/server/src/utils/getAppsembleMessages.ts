@@ -30,7 +30,7 @@ export async function getAppsembleMessages(
   if (baseLang && languages.has(baseLanguage)) {
     Object.assign(
       messages,
-      JSON.parse(await fs.readFile(join(translationsDir, `${baseLang}.json`), 'utf-8')),
+      JSON.parse(await fs.readFile(join(translationsDir, `${baseLang}.json`), 'utf8')),
     );
   }
 
@@ -39,7 +39,7 @@ export async function getAppsembleMessages(
       messages,
       Object.fromEntries(
         Object.entries(
-          JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf-8')),
+          JSON.parse(await fs.readFile(join(translationsDir, `${lang}.json`), 'utf8')),
         ).filter(([, value]) => Boolean(value)),
       ),
     );
@@ -49,7 +49,7 @@ export async function getAppsembleMessages(
   if (!languages.has(lang) && (!baseLang || !languages.has(baseLang))) {
     Object.assign(
       messages,
-      JSON.parse(await fs.readFile(join(translationsDir, `${defaultLocale}.json`), 'utf-8')),
+      JSON.parse(await fs.readFile(join(translationsDir, `${defaultLocale}.json`), 'utf8')),
     );
   }
 

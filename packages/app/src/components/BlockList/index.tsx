@@ -65,14 +65,14 @@ export function BlockList({
   const blockStatus = useRef(blockList.map(() => false));
   const [pageReady, setPageReady] = useState<Promise<void>>();
 
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const resolvePageReady = useRef<Function>();
 
   const ready = useCallback(
     (block: BlockDefinition) => {
       blockStatus.current[blockList.findIndex(([b]) => b === block)] = true;
       if (blockStatus.current.every(Boolean)) {
-        setLoading(false);
+        setIsLoading(false);
         resolvePageReady.current();
       }
     },

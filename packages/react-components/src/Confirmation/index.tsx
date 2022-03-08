@@ -52,17 +52,17 @@ const Context = createContext(null);
  */
 export function Confirmation({ children }: ConfirmationProps): ReactElement {
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
-  const [isActive, setActive] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
     try {
       await new Promise<void>((resolve, reject) => {
         setOptions({ ...opts, resolve, reject });
-        setActive(true);
+        setIsActive(true);
       });
     } finally {
       // The timeout must match the transition length of Modal.
-      setTimeout(() => setActive(false), 90);
+      setTimeout(() => setIsActive(false), 90);
     }
     return opts.action(...args);
   }, []);

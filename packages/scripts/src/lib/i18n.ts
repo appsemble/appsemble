@@ -48,7 +48,7 @@ export async function extractMessages(): Promise<Translations> {
           FormatJsPlugin,
           {
             preserveWhitespace: true,
-            onMsgExtracted: (filepath, messages) => {
+            onMsgExtracted(filepath, messages) {
               for (const locale of locales) {
                 if (locale === defaultLocale) {
                   for (const message of messages) {

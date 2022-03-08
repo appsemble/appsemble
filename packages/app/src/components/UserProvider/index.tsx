@@ -86,7 +86,7 @@ const Context = createContext<UserContext>(null);
 export function UserProvider({ children }: UserProviderProps): ReactElement {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
-  const [isLoading, setLoading] = useState(Boolean(definition.security));
+  const [isLoading, setIsLoading] = useState(Boolean(definition.security));
   const [state, setState] = useState(initialState);
   const [userInfo, setUserInfo] = useState<UserInfo>(null);
   const [exp, setExp] = useState(null);
@@ -215,11 +215,11 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     const rt = localStorage.getItem(REFRESH_TOKEN);
     if (rt) {
       // If a refresh token is known, start a new session.
-      login('refresh_token', { refresh_token: rt }).finally(() => setLoading(false));
+      login('refresh_token', { refresh_token: rt }).finally(() => setIsLoading(false));
     } else {
       // Otherwise make sure the state is fully reset.
       logout();
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [definition, login, logout]);
 

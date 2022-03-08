@@ -13,7 +13,7 @@ export function TypePage(): ReactElement {
   const qs = useQuery();
   const location = useLocationString();
 
-  const [hasError, setError] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const clientId = qs.get('client_id');
@@ -27,7 +27,7 @@ export function TypePage(): ReactElement {
             { appRequest: String(qs), id },
           ),
         )
-        .catch(() => setError(true));
+        .catch(() => setHasError(true));
     } else if (type === 'saml') {
       axios
         .post<{ redirect: string }>(`/api/apps/${appId}/saml/${id}/authn`, {
@@ -36,7 +36,7 @@ export function TypePage(): ReactElement {
           state: qs.get('state'),
         })
         .then(({ data }) => window.location.replace(data.redirect))
-        .catch(() => setError(true));
+        .catch(() => setHasError(true));
     }
   }, [id, location, qs, type]);
 

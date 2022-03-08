@@ -58,7 +58,7 @@ export function TranslationsPage(): ReactElement {
     body: <FormattedMessage {...messages.deleteBody} />,
     cancelLabel: <FormattedMessage {...messages.cancel} />,
     confirmLabel: <FormattedMessage {...messages.delete} />,
-    action: async () => {
+    async action() {
       setSubmitting(true);
       await axios.delete(`/api/apps/${app.id}/messages/${languageId}`);
       setSubmitting(false);
