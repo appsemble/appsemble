@@ -6,14 +6,14 @@ export interface YAxis {
    *
    * @default 0
    */
-  min: number;
+  min?: number;
 
   /**
    * The maximum value to render on the vertical axis.
    *
    * If not specified, the maximum value is determined automatically based on the values given.
    */
-  max: number;
+  max?: number;
 }
 
 declare module '@appsemble/sdk' {
