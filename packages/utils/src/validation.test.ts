@@ -15,6 +15,7 @@ function createTestApp(): AppDefinition {
       person: {
         update: {},
         schema: {
+          type: 'object',
           properties: {
             name: { type: 'string' },
           },
@@ -819,6 +820,191 @@ describe('validateAppDefinition', () => {
         'person',
         'update',
         'roles',
+        0,
+      ]),
+    ]);
+  });
+
+  it('should validate resources use schemas define a type', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = { properties: {} };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('must define type object', { properties: {} }, undefined, [
+        'resources',
+        'person',
+        'schema',
+      ]),
+    ]);
+  });
+
+  it('should validate resources use schemas define a type of object', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = { type: 'string', properties: {} };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('must define type object', 'string', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'type',
+      ]),
+    ]);
+  });
+
+  it('should validate the resource id schema is correct', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = {
+      type: 'object',
+      properties: { id: { type: 'string', description: '', title: '', format: 'email' } },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('must be integer', 'string', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        'id',
+        'type',
+      ]),
+      new ValidationError('does not support custom validators', 'email', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        'id',
+        'format',
+      ]),
+    ]);
+  });
+
+  it('should validate the resource $created and $updated schemas are correct', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = {
+      type: 'object',
+      properties: {
+        $created: { type: 'number', description: '', title: '', format: 'email' },
+        $updated: { type: 'boolean', description: '', title: '', format: 'uuid' },
+      },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('must be string', 'number', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        '$created',
+        'type',
+      ]),
+      new ValidationError('must be date-time', 'email', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        '$created',
+        'format',
+      ]),
+      new ValidationError('must be string', 'boolean', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        '$updated',
+        'type',
+      ]),
+      new ValidationError('must be date-time', 'uuid', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        '$updated',
+        'format',
+      ]),
+    ]);
+  });
+
+  it('should report resource properties starting with $', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = {
+      type: 'object',
+      properties: { $invalid: { type: 'string' } },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('may not start with $', { type: 'string' }, undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        '$invalid',
+      ]),
+    ]);
+  });
+
+  it('should report missing properties in JSON schemas', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = { type: 'object' };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is missing properties', { type: 'object' }, undefined, [
+        'resources',
+        'person',
+        'schema',
+      ]),
+    ]);
+  });
+
+  it('should report missing properties in JSON schemas resursively', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = {
+      type: 'object',
+      properties: { foo: { type: 'object' } },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is missing properties', { type: 'object' }, undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        'foo',
+      ]),
+    ]);
+  });
+
+  it('should report unknown required properties in JSON schemas', async () => {
+    const app = createTestApp();
+    app.resources.person.schema = {
+      type: 'object',
+      required: ['bar'],
+      properties: { foo: { type: 'object', properties: {}, required: ['baz'] } },
+    };
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is not defined in properties', 'bar', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'required',
+        0,
+      ]),
+      new ValidationError('is not defined in properties', 'baz', undefined, [
+        'resources',
+        'person',
+        'schema',
+        'properties',
+        'foo',
+        'required',
         0,
       ]),
     ]);
