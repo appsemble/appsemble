@@ -44,9 +44,9 @@ export function createAction<T extends ActionDefinition['type']>({
     ? extraCreators[type]
     : actionCreators.noop;
 
-  // @ts-expect-error ts(2590) Expression produces a union type that is too complex to represent.
   const [dispatch, properties] = actionCreator({
     ...params,
+    // @ts-expect-error TS2322
     definition,
     extraCreators,
     remap: localRemap,

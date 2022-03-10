@@ -45,10 +45,10 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
   const provider = logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
   const [profile, setProfile] = useState(session?.userinfo);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [linkError, setLinkError] = useState(false);
   const [error, setError] = useState<MessageDescriptor>();
-  const [isSubmitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const finalizeLogin = useCallback(
     (response: TokenResponse) => {
@@ -76,10 +76,10 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
         // Prevent the user from calling the oauth2 registration API twice.
         appendOAuth2State({ userinfo: data });
         setProfile(data);
-        setLoading(false);
+        setIsLoading(false);
       } catch {
         setError(messages.loginError);
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
@@ -87,14 +87,14 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
       setError(messages.invalidState);
     } else if (profile) {
       // The user refreshed the page.
-      setLoading(false);
+      setIsLoading(false);
     } else {
       connect();
     }
   }, [code, finalizeLogin, profile, session, state]);
 
   const submit = useCallback(async () => {
-    setSubmitting(true);
+    setIsSubmitting(true);
     try {
       const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {
         code,
@@ -108,7 +108,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
         setError(messages.loginError);
       }
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   }, [code, finalizeLogin, session]);
 

@@ -154,7 +154,7 @@ export function Block({
         ) as string;
       },
       fa,
-      menu: (items, header) => {
+      menu(items, header) {
         setBlockMenu({ items, header, path: prefix });
       },
     };

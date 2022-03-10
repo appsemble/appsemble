@@ -12,7 +12,7 @@ import { messages } from './messages';
 
 const sortFunctions = {
   organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),
-  rating: (a: App, b: App) => {
+  rating(a: App, b: App) {
     const ratingA = a.rating ?? { average: 0, count: 0 };
     const ratingB = b.rating ?? { average: 0, count: 0 };
 

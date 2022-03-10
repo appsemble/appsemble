@@ -14,15 +14,15 @@ interface AsyncSelectProps extends ComponentPropsWithoutRef<typeof Select> {
  * goes out of the loading state when the action has finished.
  */
 export function AsyncSelect({ disabled, onChange, ...props }: AsyncSelectProps): ReactElement {
-  const [isBusy, setBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
 
   const handleChange = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, value: string) => {
-      setBusy(true);
+      setIsBusy(true);
       try {
         await onChange(event, value);
       } finally {
-        setBusy(false);
+        setIsBusy(false);
       }
     },
     [onChange],

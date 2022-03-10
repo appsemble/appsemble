@@ -169,7 +169,7 @@ describe('schemas', () => {
         const valid = join(testsDir, name, 'valid');
 
         it.each(readdirSync(valid))('%s', async (filename) => {
-          const buffer = await fs.readFile(join(valid, filename), 'utf-8');
+          const buffer = await fs.readFile(join(valid, filename), 'utf8');
           expect(buffer).toMatch(
             new RegExp(
               `^# yaml-language-server: \\$schema=https://appsemble.app/api.json#/components/schemas/${name}\n`,
@@ -185,7 +185,7 @@ describe('schemas', () => {
         const invalid = join(testsDir, name, 'invalid');
 
         it.each(readdirSync(invalid))('%s', async (filename) => {
-          const buffer = await fs.readFile(join(invalid, filename), 'utf-8');
+          const buffer = await fs.readFile(join(invalid, filename), 'utf8');
           const instance = parse(buffer);
           const result = validator.validate(instance, schema, { base: '#' });
           expect(result.valid).toBe(false);

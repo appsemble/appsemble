@@ -188,7 +188,7 @@ interface Certificate extends AbstractKubernetesResource {
 }
 
 function readK8sSecret(filename: string): Promise<string> {
-  return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
+  return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf8');
 }
 
 /**

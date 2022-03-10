@@ -44,9 +44,9 @@ export function bootstrap(Component: ComponentType<BlockProps>): void {
 /**
  * A HOC which passes the Appsemble block values to he wrapped Preact component.
  *
- * @deprecated Use `useBlock()` instead.
  * @param Component - The Preact componen to wrap.
  * @returns The wrapper component.
+ * @deprecated Use `useBlock()` instead.
  */
 export function withBlock<P extends {}>(
   Component: ComponentType<Omit<BlockProps, keyof P> & P>,

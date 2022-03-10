@@ -129,9 +129,9 @@ declare module '@appsemble/sdk' {
      * Decreasing will make more, smaller clusters. One can also use a function that accepts the
      * current map zoom and returns the maximum cluster radius in pixels.
      *
+     * @type integer
      * @default 80
      * @minimum 1
-     * @type integer
      */
     maxClusterRadius?: number;
   }

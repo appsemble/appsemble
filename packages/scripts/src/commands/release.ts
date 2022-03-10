@@ -119,7 +119,7 @@ async function replaceFile(
   newVersion: string,
 ): Promise<void> {
   logger.info(`Updating ${filename}`);
-  const content = await fs.readFile(filename, 'utf-8');
+  const content = await fs.readFile(filename, 'utf8');
   const updated = content.split(oldVersion).join(newVersion);
   await fs.writeFile(filename, updated);
 }
@@ -129,7 +129,7 @@ async function processChangesDir(dir: string, prefix: string): Promise<ListItem[
 
   const filenames = await fs.readdir(dir);
   const absoluteFiles = filenames.filter((f) => f !== '.gitkeep').map((f) => join(dir, f));
-  const lines = await Promise.all(absoluteFiles.map((f) => fs.readFile(f, 'utf-8')));
+  const lines = await Promise.all(absoluteFiles.map((f) => fs.readFile(f, 'utf8')));
   await Promise.all(absoluteFiles.map((f) => remove(f)));
   return lines
     .filter(Boolean)
@@ -173,7 +173,7 @@ async function getAllChanges(directories: string[]): Promise<Changes> {
 }
 
 async function updateChangelog(changesByCategory: Changes, version: string): Promise<void> {
-  const changelog = fromMarkdown(await fs.readFile('CHANGELOG.md', 'utf-8'));
+  const changelog = fromMarkdown(await fs.readFile('CHANGELOG.md', 'utf8'));
   const changesSection = [
     createHeading(2, [
       '[',

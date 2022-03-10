@@ -14,15 +14,15 @@ interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
  * out of the loading state when the action has finished.
  */
 export function AsyncButton({ disabled, onClick, ...props }: AsyncButtonProps): ReactElement {
-  const [isBusy, setBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
 
   const handleClick = useCallback(
     async (event: MouseEvent<HTMLButtonElement>) => {
-      setBusy(true);
+      setIsBusy(true);
       try {
         await onClick(event);
       } finally {
-        setBusy(false);
+        setIsBusy(false);
       }
     },
     [onClick],

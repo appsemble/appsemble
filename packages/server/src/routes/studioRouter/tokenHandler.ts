@@ -63,7 +63,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
       throw new GrantError('invalid_request');
     }
     const { grant_type: grantType, ...query } = querystring.parse(
-      await raw(ctx.req, { encoding: 'utf-8' }),
+      await raw(ctx.req, { encoding: 'utf8' }),
     );
 
     switch (grantType) {

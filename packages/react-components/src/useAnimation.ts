@@ -69,16 +69,16 @@ export function useAnimation(
   duration: number,
   { closed, closing, open, opening }: Classes,
 ): string | undefined {
-  const [isOpen, setOpen] = useState(isActive);
+  const [isOpen, setIsOpen] = useState(isActive);
 
   useEffect(() => {
     if (isActive) {
-      setOpen(true);
+      setIsOpen(true);
       return;
     }
 
     // The timeout must match the CSS transition length.
-    const timeout = setTimeout(setOpen, duration, false);
+    const timeout = setTimeout(setIsOpen, duration, false);
     return () => clearTimeout(timeout);
   }, [duration, isActive]);
 

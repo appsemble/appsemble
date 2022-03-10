@@ -146,7 +146,7 @@ export function remap(
  * @see Remappers
  */
 const mapperImplementations: MapperImplementations = {
-  app: (prop, input, context) => {
+  app(prop, input, context) {
     if (prop === 'id') {
       return context.appId;
     }
@@ -159,7 +159,7 @@ const mapperImplementations: MapperImplementations = {
     throw new Error(`Unknown app property: ${prop}`);
   },
 
-  page: (prop, input, context) => {
+  page(prop, input, context) {
     if (prop === 'data') {
       return context.pageData;
     }
@@ -174,7 +174,7 @@ const mapperImplementations: MapperImplementations = {
       .split('.')
       .reduce((acc, p) => acc?.[p] ?? null, context.context),
 
-  equals: (mappers, input: any, context) => {
+  equals(mappers, input: any, context) {
     if (mappers.length <= 1) {
       return true;
     }
@@ -183,7 +183,7 @@ const mapperImplementations: MapperImplementations = {
     return values.every((value) => equal(values[0], value));
   },
 
-  if: (mappers, input, context) => {
+  if(mappers, input, context) {
     const condition = remap(mappers.condition, input, context);
     return remap(condition ? mappers.then : mappers.else, input, context);
   },
@@ -204,7 +204,7 @@ const mapperImplementations: MapperImplementations = {
       }),
     ) ?? [],
 
-  'array.unique': (mapper, input, context) => {
+  'array.unique'(mapper, input, context) {
     if (!Array.isArray(input)) {
       return input;
     }
@@ -236,7 +236,7 @@ const mapperImplementations: MapperImplementations = {
 
   'date.now': () => new Date(),
 
-  'date.add': (time, input: any) => {
+  'date.add'(time, input: any) {
     const expireDuration = parseDuration(time);
 
     if (!expireDuration || !input || (!Number.isFinite(input) && !(input instanceof Date))) {
@@ -253,7 +253,7 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
-  'string.case': (stringCase, input) => {
+  'string.case'(stringCase, input) {
     if (stringCase === 'lower') {
       return String(input).toLowerCase();
     }
@@ -263,7 +263,7 @@ const mapperImplementations: MapperImplementations = {
     return input;
   },
 
-  'string.format': ({ messageId, template, values }, input, context) => {
+  'string.format'({ messageId, template, values }, input, context) {
     try {
       const message = context.getMessage({ id: messageId, defaultMessage: template });
       return message.format(
@@ -278,12 +278,12 @@ const mapperImplementations: MapperImplementations = {
     }
   },
 
-  'string.replace': (values, input) => {
+  'string.replace'(values, input) {
     const [[regex, replacer]] = Object.entries(values);
     return String(input).replace(new RegExp(regex, 'gm'), replacer);
   },
 
-  translate: (messageId, input, context) => {
+  translate(messageId, input, context) {
     const message = context.getMessage({ id: messageId });
     return message.format() || `{${messageId}}`;
   },

@@ -10,5 +10,5 @@ import { PackageJson } from 'type-fest';
  * @returns The contents of package.json
  */
 export function readPackageJson(): PackageJson {
-  return JSON.parse(readFileSync(require.resolve('../../package.json'), 'utf-8'));
+  return JSON.parse(readFileSync(require.resolve('../../package.json'), 'utf8'));
 }

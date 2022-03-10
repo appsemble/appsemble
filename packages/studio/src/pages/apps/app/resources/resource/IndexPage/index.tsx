@@ -57,6 +57,7 @@ export function IndexPage(): ReactElement {
   const resourceURL = `/api/apps/${appId}/resources/${resourceName}`;
   const hiddenPropertiesKey = `${appId}.${resourceName}.hiddenProperties`;
 
+  // eslint-disable-next-line react/hook-use-state
   const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
     [string, 'ASC' | 'DESC']
   >(['id', 'DESC']);
