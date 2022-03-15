@@ -88,11 +88,11 @@ pages:
             data: people
         parameters:
           fields:
-            - value:
-                - prop: firstName
+            - type: string
+              value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - type: string
+              value: { prop: lastName }
               label: Surname
 ```
 
@@ -187,11 +187,11 @@ pages:
             data: people
         parameters:
           fields:
-            - value:
-                - prop: firstName
+            - type: string
+              value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - type: string
+              value: { prop: lastName }
               label: Surname
 ```
 
@@ -216,13 +216,17 @@ Add a new page:
       parameters:
         fields:
           - name: firstName
+            type: string
             label: First Name
           - name: lastName
+            type: string
             label: Surname
           - name: email
+            type: string
             label: Email Address
             format: email
           - name: description
+            type: string
             label: Description
             multiline: true
 ```
@@ -296,11 +300,11 @@ pages:
             data: people
         parameters:
           fields:
-            - value:
-                - prop: firstName
+            - type: string
+              value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - type: string
+              value: { prop: lastName }
               label: Surname
 ```
 
@@ -333,17 +337,17 @@ Add a new page:
           data: person
       parameters:
         fields:
-          - value:
-              - prop: firstName
+          - type: string
+            value: { prop: firstName }
             label: First Name
-          - value:
-              - prop: lastName
+          - type: string
+            value: { prop: lastName }
             label: Last Name
-          - value:
-              - prop: email
+          - type: string
+            value: { prop: email }
             label: Email Address
-          - value:
-              - prop: description
+          - type: string
+            value: { prop: description }
             label: Description
 ```
 
@@ -398,13 +402,17 @@ pages:
         parameters:
           fields:
             - name: firstName
+              type: string
               label: First Name
             - name: lastName
+              type: string
               label: Surname
             - name: email
+              type: string
               label: Email Address
               format: email
             - name: description
+              type: string
               label: Description
               multiline: true
 
@@ -426,11 +434,11 @@ pages:
             data: people
         parameters:
           fields:
-            - value:
-                - prop: firstName
+            - type: string
+              value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - type: string
+              value: { prop: lastName }
               label: Surname
 
   - name: Person details
@@ -453,17 +461,17 @@ pages:
             data: person
         parameters:
           fields:
-            - value:
-                - prop: firstName
+            - type: string
+              value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - type: string
+              value: { prop: lastName }
               label: Last Name
-            - value:
-                - prop: email
+            - type: string
+              value: { prop: email }
               label: Email Address
-            - value:
-                - prop: description
+            - type: string
+              value: { prop: description }
               label: Description
 ```
 
