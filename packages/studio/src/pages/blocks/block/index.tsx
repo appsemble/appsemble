@@ -12,16 +12,16 @@ import {
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { Fragment, ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Schema } from 'studio/src/components/Schema';
 
 import { ActionTable } from './ActionTable';
 import { EventTable } from './EventTable';
 import styles from './index.module.css';
 import { messages, untranslatedMessages } from './messages';
-import { ParameterTable } from './ParameterTable';
-import { TypeTable } from './TypeTable';
+import { RefLink } from './RefLink';
 
 interface BlockDetailsRoutesMatch {
   /**
@@ -91,7 +91,7 @@ export function BlockPage(): ReactElement {
 
   return (
     <Content className={`content ${styles.content}`}>
-      <div>
+      <>
         <figure className="image is-inline-block is-marginless is-64x64 mr-4">
           {selectedBlockManifest.iconUrl ? (
             <img alt={formatMessage(messages.blockIcon)} src={selectedBlockManifest.iconUrl} />
@@ -107,7 +107,7 @@ export function BlockPage(): ReactElement {
             <Link to={`/${lang}/organizations/${organization}`}>@{organization}</Link>
           </Subtitle>
         </header>
-      </div>
+      </>
       <SelectField
         disabled={blockVersions.length === 1}
         label={untranslatedMessages.selectedVersion}
@@ -136,7 +136,7 @@ export function BlockPage(): ReactElement {
       {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
         <>
           <Title level={4}>{untranslatedMessages.parameters}</Title>
-          <ParameterTable parameters={selectedBlockManifest.parameters} />
+          <Schema anchors renderRef={RefLink} schema={selectedBlockManifest.parameters} />
         </>
       )}
       {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
@@ -156,19 +156,14 @@ export function BlockPage(): ReactElement {
         <>
           <Title level={4}>{untranslatedMessages.definitions}</Title>
           {Object.entries(selectedBlockManifest.parameters.definitions).map(([key, definition]) => (
-            <Fragment key={key}>
-              <Title lang={defaultLocale} level={5}>
+            <div className="mb-4 pl-4" key={key}>
+              <Title className="mb-2" lang={defaultLocale} level={5}>
                 <a href={`#${key}`} id={key}>
                   {key}
                 </a>
               </Title>
-              {definition.description && <MarkdownContent content={definition.description} />}
-              {definition.type === 'object' || definition.type === 'array' ? (
-                <ParameterTable parameters={definition} />
-              ) : (
-                <TypeTable definition={definition} />
-              )}
-            </Fragment>
+              <Schema anchors renderRef={RefLink} schema={definition} />
+            </div>
           ))}
         </>
       )}
