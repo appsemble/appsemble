@@ -31,7 +31,8 @@ exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "A custom action that gets dispatched when a button is clicked that has the same click action
+specified as the name of this action.",
     },
     "onClick": {
       "description": "Action that gets dispatched when a button is clicked that doesn’t specify its own click
@@ -237,12 +238,12 @@ exports[`getBlockConfigFromTypeScript official blocks control-buttons 1`] = `
 {
   "actions": {
     "onBack": {
-      "description": "This actions gets triggered then the back button is clicked.
+      "description": "This action gets triggered then the back button is clicked.
 
 It will be called with the page data.",
     },
     "onForward": {
-      "description": "This actions gets triggered then the back button is clicked.
+      "description": "This action gets triggered then the back button is clicked.
 
 It will be called with the page data.",
     },
@@ -439,6 +440,43 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AssetMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on an existing asset.",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "asset": {
+            "description": "The id of an asset to use.",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "asset",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -525,6 +563,46 @@ If not set, the item itself is used as the url.",
         ],
         "type": "object",
       },
+      "FontAwesomeMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color to apply to the icon.",
+          },
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "GeoCoordinatesField": {
         "additionalProperties": false,
         "description": "Displays a map with a marker.",
@@ -609,81 +687,10 @@ If not defined, Appsemble’s Asset API will be used instead.",
       "icons": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A marker based on an existing asset.",
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "asset": {
-                "description": "The id of an asset to use.",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "asset",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AssetMarkerIcon",
           },
           {
-            "additionalProperties": false,
-            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": {
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/FontAwesomeMarkerIcon",
           },
         ],
         "description": "Custom icon configuration for geocoordinate fields.",
@@ -759,6 +766,35 @@ Compatible data that is received will be displayed.",
           "white",
         ],
         "type": "string",
+      },
+      "Reply": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "default": [
+              {
+                "prop": "$author",
+              },
+              {
+                "prop": "name",
+              },
+            ],
+            "description": "The author of the reply.",
+            "format": "remapper",
+          },
+          "content": {
+            "default": {
+              "prop": "content",
+            },
+            "description": "The content of the reply.",
+            "format": "remapper",
+          },
+          "parentId": {
+            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
+            "type": "string",
+          },
+        },
+        "type": "object",
       },
     },
     "properties": {
@@ -891,34 +927,8 @@ If not defined, the Asset API will be used instead.",
         "format": "remapper",
       },
       "reply": {
-        "additionalProperties": false,
+        "$ref": "#/definitions/Reply",
         "description": "The definition used to display replies.",
-        "properties": {
-          "author": {
-            "default": [
-              {
-                "prop": "$author",
-              },
-              {
-                "prop": "name",
-              },
-            ],
-            "description": "The author of the reply.",
-            "format": "remapper",
-          },
-          "content": {
-            "default": {
-              "prop": "content",
-            },
-            "description": "The content of the reply.",
-            "format": "remapper",
-          },
-          "parentId": {
-            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
-            "type": "string",
-          },
-        },
-        "type": "object",
       },
       "subtitle": {
         "description": "The subtitle displayed on the card.",
@@ -1256,7 +1266,7 @@ exports[`getBlockConfigFromTypeScript official blocks form 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "A custom action that gets dispatched when checking form requirements.",
     },
     "onPrevious": {
       "description": "Action that gets dispatched when the previous button is clicked.",
@@ -1275,7 +1285,7 @@ The data received in the entire form data.",
     },
     "listen": {
       "$any": {
-        "description": undefined,
+        "description": "Custom event listeners that can be used to receive data for specific types of form fields.",
       },
       "data": {
         "description": "An event that can be used to receive data.
@@ -1493,6 +1503,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "type": "boolean",
           },
           "requirements": {
+            "description": "All requirements that are applicable to this type of field.",
             "items": {
               "$ref": "#/definitions/DateTimeRequirement",
             },
@@ -2088,6 +2099,25 @@ This type can be useful to enforce some input to be JSON-compatible or as a supe
         ],
         "description": "Matches any valid JSON value.",
       },
+      "MinMaxRequirement": {
+        "additionalProperties": false,
+        "description": "Minimum and maximum form requirements for number fields.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "max": {
+            "description": "The maximum value of the field.",
+            "type": "number",
+          },
+          "min": {
+            "description": "The minimum value of the field.",
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "NumberField": {
         "additionalProperties": false,
         "description": "A number entry field.",
@@ -2173,23 +2203,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "NumberRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "Minimum and maximum form requirements for number fields.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "max": {
-                "description": "The maximum value of the field.",
-                "type": "number",
-              },
-              "min": {
-                "description": "The minimum value of the field.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/MinMaxRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
@@ -2623,7 +2637,11 @@ exports[`getBlockConfigFromTypeScript official blocks html 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "Any custom action.
+These can be used on \`<button>\`, \`<a>\`, and \`<input>\` elements using \`data-click\`.
+
+If no corresponding \`data-click\` attribute can be found
+the action will be considered unused and invalid.",
     },
   },
   "events": {
@@ -2800,6 +2818,50 @@ Otherwise, it will toggle between following and not following.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AssetMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on an existing asset.",
+        "properties": {
+          "activeRatio": {
+            "default": 1,
+            "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+            "type": "number",
+          },
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "asset": {
+            "description": "The id of an asset to use.",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "asset",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -2813,6 +2875,53 @@ Otherwise, it will toggle between following and not following.",
           "white",
         ],
         "type": "string",
+      },
+      "FontAwesomeMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+        "properties": {
+          "activeRatio": {
+            "default": 1,
+            "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+            "type": "number",
+          },
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color to apply to the icon.",
+          },
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "type": "object",
       },
     },
     "properties": {
@@ -2854,95 +2963,10 @@ These are used for filtering purposes.",
       "icons": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A marker based on an existing asset.",
-            "properties": {
-              "activeRatio": {
-                "default": 1,
-                "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
-                "type": "number",
-              },
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "asset": {
-                "description": "The id of an asset to use.",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "asset",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AssetMarkerIcon",
           },
           {
-            "additionalProperties": false,
-            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-            "properties": {
-              "activeRatio": {
-                "default": 1,
-                "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
-                "type": "number",
-              },
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": {
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/FontAwesomeMarkerIcon",
           },
         ],
         "description": "Custom icon configuration.",
@@ -3080,7 +3104,7 @@ exports[`getBlockConfigFromTypeScript official blocks table 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "Custom action mapping.",
     },
     "onClick": {
       "description": "The default action that is triggered when clicking on a row.

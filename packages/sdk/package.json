@@ -32,6 +32,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@appsemble/types": "^0.20.0",
     "@fortawesome/fontawesome-common-types": "^0.3.0",
     "type-fest": "^2.0.0"
   }

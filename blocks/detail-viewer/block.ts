@@ -1,6 +1,6 @@
 import { BulmaColor, IconName, Remapper } from '@appsemble/sdk';
 
-interface AbstractField {
+export interface AbstractField {
   /**
    * The label that is presented to the user. No label will be displayed if this is not defined.
    */
@@ -12,7 +12,7 @@ interface AbstractField {
   value?: Remapper;
 }
 
-interface AbstractMarkerIcon {
+export interface AbstractMarkerIcon {
   /**
    * The anchor X and Y offset used for positioning the image.
    *
@@ -41,7 +41,7 @@ interface AbstractMarkerIcon {
 /**
  * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
  */
-interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
+export interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
@@ -58,7 +58,7 @@ interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
 /**
  * A marker based on an existing asset.
  */
-interface AssetMarkerIcon extends AbstractMarkerIcon {
+export interface AssetMarkerIcon extends AbstractMarkerIcon {
   /**
    * The id of an asset to use.
    */
