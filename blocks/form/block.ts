@@ -4,7 +4,7 @@ import { JsonValue } from 'type-fest';
 /**
  * Properties that are shared between all requirements.
  */
-interface BaseRequirement {
+export interface BaseRequirement {
   /**
    * The error message that is displayed when the requirement is not met.
    */
