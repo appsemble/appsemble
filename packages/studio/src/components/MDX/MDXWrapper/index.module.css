@@ -10,6 +10,11 @@
     }
   }
 
+  /* stylelint-disable-next-line selector-max-type */
+  & h1 img {
+    vertical-align: middle;
+  }
+
   & h1,
   & h2,
   & h3,
@@ -19,7 +24,7 @@
     position: relative;
 
     /* stylelint-disable-next-line selector-max-type */
-    & > a {
+    & > a:only-of-type {
       left: -1em;
       position: absolute;
 
