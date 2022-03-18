@@ -1332,6 +1332,95 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AcceptRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "accept": {
+            "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "accept",
+        ],
+        "type": "object",
+      },
+      "ActionEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of values based on the output of an action.",
+        "properties": {
+          "action": {
+            "description": "This action will be fired to fetch dynamic enum options.
+
+The action should return an array of objects that contain the \`label\` and \`value\` property.",
+            "format": "action",
+            "type": "string",
+          },
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "loadError": {
+            "default": "Error loading options",
+            "description": "This message is displayed if the options failed to load.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "action",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
       "BooleanField": {
         "additionalProperties": false,
         "description": "A checkbox that returns \`true\` when checked and \`false\` when not.",
@@ -1546,23 +1635,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "DateTimeRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the range of available dates.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "from": {
-                "description": "The minimum date that can be picked.",
-                "format": "remapper",
-              },
-              "to": {
-                "description": "The maximum date that can be picked.",
-                "format": "remapper",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/RangeRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
@@ -1573,208 +1646,84 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "EnumField": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of values based on the output of an action.",
-            "properties": {
-              "action": {
-                "description": "This action will be fired to fetch dynamic enum options.
-
-The action should return an array of objects that contain the \`label\` and \`value\` property.",
-                "format": "action",
-                "type": "string",
-              },
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "loadError": {
-                "default": "Error loading options",
-                "description": "This message is displayed if the options failed to load.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "action",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/ActionEnumField",
           },
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of values based on the output of an event.",
-            "properties": {
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "event": {
-                "description": "Wait until an event has been fired containing the list of options.
-
-The event should return an array of objects that contain the \`label\` and \`value\` property.",
-                "format": "event-listener",
-                "type": "string",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "loadError": {
-                "default": "Error loading options",
-                "description": "This message is displayed if the options failed to load.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "event",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/EventEnumField",
           },
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of predetermined values.",
-            "properties": {
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "enum": {
-                "description": "The list of available choices.",
-                "items": {
-                  "$ref": "#/definitions/Choice",
-                },
-                "type": "array",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "enum",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/SyncEnumField",
           },
         ],
+      },
+      "EventEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of values based on the output of an event.",
+        "properties": {
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "event": {
+            "description": "Wait until an event has been fired containing the list of options.
+
+The event should return an array of objects that contain the \`label\` and \`value\` property.",
+            "format": "event-listener",
+            "type": "string",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "loadError": {
+            "default": "Error loading options",
+            "description": "This message is displayed if the options failed to load.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+          "name",
+          "type",
+        ],
+        "type": "object",
       },
       "Field": {
         "anyOf": [
@@ -1897,51 +1846,42 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "FileRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "properties": {
-              "accept": {
-                "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
-                "items": {
-                  "type": "string",
-                },
-                "type": "array",
-              },
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-            },
-            "required": [
-              "accept",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AcceptRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the length or amount of items in the input.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "maxLength": {
-                "description": "The maximum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-              "minLength": {
-                "description": "The minimum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/LengthRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
           },
         ],
         "description": "All requirements applicable to file fields.",
+      },
+      "FormRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "description": "The name of the action to trigger when the requirement is checked.",
+            "format": "action",
+            "type": "string",
+          },
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "isValid": {
+            "description": "The list of fields that must be valid before running the requirement action.",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "isValid",
+          "action",
+        ],
+        "type": "object",
       },
       "GeoCoordinatesField": {
         "additionalProperties": false,
@@ -2099,6 +2039,27 @@ This type can be useful to enforce some input to be JSON-compatible or as a supe
         ],
         "description": "Matches any valid JSON value.",
       },
+      "LengthRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the length or amount of items in the input.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "maxLength": {
+            "description": "The maximum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+          "minLength": {
+            "description": "The minimum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "MinMaxRequirement": {
         "additionalProperties": false,
         "description": "Minimum and maximum form requirements for number fields.",
@@ -2209,24 +2170,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/RequiredRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "Requirement used to indicate how big a step should be for the field.
-
-Note that for \`integer\` type fields are rounded _down_.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "step": {
-                "description": "The amount to increment or decrement when using the stepper buttons of the field.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "step",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/StepRequirement",
           },
         ],
         "description": "All requirements applicable to number fields.",
@@ -2304,25 +2248,8 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "type": "object",
       },
       "ObjectRequirement": {
-        "additionalProperties": false,
+        "$ref": "#/definitions/LengthRequirement",
         "description": "All requirements applicable to object fields.",
-        "properties": {
-          "errorMessage": {
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "maxLength": {
-            "description": "The maximum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-          "minLength": {
-            "description": "The minimum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-        },
-        "type": "object",
       },
       "RadioField": {
         "additionalProperties": false,
@@ -2383,6 +2310,51 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "required": [
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "RangeRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the range of available dates.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "from": {
+            "description": "The minimum date that can be picked.",
+            "format": "remapper",
+          },
+          "to": {
+            "description": "The maximum date that can be picked.",
+            "format": "remapper",
+          },
+        },
+        "type": "object",
+      },
+      "RegexRequirement": {
+        "additionalProperties": false,
+        "description": "Requirement that matches using a given regex.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "flags": {
+            "default": "g",
+            "description": "The flags to use for the regex.
+
+Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
+            "pattern": "^[gimsuy]+$",
+            "type": "string",
+          },
+          "regex": {
+            "description": "The regex to match with. Must be a valid JavaScript regex.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "regex",
         ],
         "type": "object",
       },
@@ -2451,6 +2423,26 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "content",
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "StepRequirement": {
+        "additionalProperties": false,
+        "description": "Requirement used to indicate how big a step should be for the field.
+
+Note that for \`integer\` type fields are rounded _down_.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "step": {
+            "description": "The amount to increment or decrement when using the stepper buttons of the field.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "step",
         ],
         "type": "object",
       },
@@ -2531,57 +2523,80 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "StringRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the length or amount of items in the input.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "maxLength": {
-                "description": "The maximum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-              "minLength": {
-                "description": "The minimum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/LengthRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "Requirement that matches using a given regex.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "flags": {
-                "default": "g",
-                "description": "The flags to use for the regex.
-
-Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
-                "pattern": "^[gimsuy]+$",
-                "type": "string",
-              },
-              "regex": {
-                "description": "The regex to match with. Must be a valid JavaScript regex.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "regex",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/RegexRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
           },
         ],
         "description": "All requirements applicable to string fields.",
+      },
+      "SyncEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of predetermined values.",
+        "properties": {
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "enum": {
+            "description": "The list of available choices.",
+            "items": {
+              "$ref": "#/definitions/Choice",
+            },
+            "type": "array",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "enum",
+          "name",
+          "type",
+        ],
+        "type": "object",
       },
     },
     "properties": {
@@ -2600,30 +2615,7 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
       "requirements": {
         "description": "A list of requirements that are checked across all of the form data.",
         "items": {
-          "additionalProperties": false,
-          "properties": {
-            "action": {
-              "description": "The name of the action to trigger when the requirement is checked.",
-              "format": "action",
-              "type": "string",
-            },
-            "errorMessage": {
-              "description": "The error message that is displayed when the requirement is not met.",
-              "format": "remapper",
-            },
-            "isValid": {
-              "description": "The list of fields that must be valid before running the requirement action.",
-              "items": {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "required": [
-            "isValid",
-            "action",
-          ],
-          "type": "object",
+          "$ref": "#/definitions/FormRequirement",
         },
         "type": "array",
       },
