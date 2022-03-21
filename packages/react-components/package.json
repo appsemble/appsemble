@@ -30,7 +30,7 @@
     "@appsemble/utils": "0.20.2",
     "@appsemble/web-utils": "0.20.2",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
-    "@fortawesome/fontawesome-common-types": "^0.3.0",
+    "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^6.0.0",
     "@types/creativebulma__bulma-tagsinput": "^1.0.0",
     "@types/css-modules": "^1.0.0",

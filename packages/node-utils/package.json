@@ -48,7 +48,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^8.0.0",
+    "@sinonjs/fake-timers": "^9.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/parse-json": "^4.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
