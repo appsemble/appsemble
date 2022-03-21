@@ -740,6 +740,7 @@
   "studio.src.pages.connect.type.error": "An error has occurred.",
   "studio.src.pages.docs.action": "Action",
   "studio.src.pages.docs.app": "App",
+  "studio.src.pages.docs.changelog": "Changelog",
   "studio.src.pages.docs.reference": "Reference",
   "studio.src.pages.docs.reference.action.description": "Reference documentation for Appsemble action definitions",
   "studio.src.pages.docs.reference.action.showYaml": "Show YAML",

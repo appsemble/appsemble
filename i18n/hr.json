@@ -740,6 +740,7 @@
   "studio.src.pages.connect.type.error": "Dogodila se greška.",
   "studio.src.pages.docs.action": "Radnja",
   "studio.src.pages.docs.app": "Program",
+  "studio.src.pages.docs.changelog": "",
   "studio.src.pages.docs.reference": "Referenca",
   "studio.src.pages.docs.reference.action.description": "Referentna dokumentacija za definicije Appsemble radnji",
   "studio.src.pages.docs.reference.action.showYaml": "Prikaži YAML",

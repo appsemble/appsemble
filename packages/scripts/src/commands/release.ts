@@ -195,8 +195,7 @@ async function updateChangelog(changesByCategory: Changes, version: string): Pro
     }
   });
   logger.info(await dumpMarkdown(createRoot(changesSection), 'CHANGELOG.md'));
-  const content = await dumpMarkdown(changelog, 'CHANGELOG.md');
-  await fs.writeFile('CHANGELOG.md', content);
+  await fs.writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
 }
 
 async function updateHelmChart(changes: Changes, version: string): Promise<void> {
