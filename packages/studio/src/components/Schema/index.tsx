@@ -4,18 +4,19 @@ import classNames from 'classnames';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
+import { AnyOfSchema } from './AnyOfSchema';
 import styles from './index.module.css';
 import { messages } from './messages';
 import { SchemaDescriptor } from './SchemaDescriptor';
 
 export interface RenderRefProps {
   isArray: boolean;
-
   jsonRef: string;
 }
 
-interface SchemaProps {
+export interface SchemaProps {
   /**
    * If this is true, anchors will be rendered for all properties.
    */
@@ -68,6 +69,8 @@ export function Schema({
     () => (schema.allOf ? combineSchemas(...schema.allOf) : schema),
     [schema],
   );
+
+  const { lang } = useParams<{ lang: string }>();
 
   const description =
     mergedSchema.description ||
@@ -136,7 +139,13 @@ export function Schema({
       ) : null}
       {mergedSchema.format ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.format} />}>
-          {mergedSchema.format}
+          {mergedSchema.format === 'remapper' ? (
+            <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/reference/remapper`}>
+              Remapper
+            </Link>
+          ) : (
+            mergedSchema.format
+          )}
         </SchemaDescriptor>
       ) : null}
       {mergedSchema.minItems > 0 && (
@@ -144,7 +153,7 @@ export function Schema({
           {mergedSchema.minItems}
         </SchemaDescriptor>
       )}
-      {mergedSchema.maxItems > 0 && (
+      {mergedSchema.maxItems != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maxItems} />}>
           {mergedSchema.maxItems}
         </SchemaDescriptor>
@@ -154,7 +163,7 @@ export function Schema({
           {mergedSchema.minLength}
         </SchemaDescriptor>
       )}
-      {mergedSchema.maxLength > 0 && (
+      {mergedSchema.maxLength != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maxLength} />}>
           {mergedSchema.maxLength}
         </SchemaDescriptor>
@@ -164,7 +173,7 @@ export function Schema({
           {mergedSchema.minimum}
         </SchemaDescriptor>
       )}
-      {mergedSchema.maximum > 0 && (
+      {mergedSchema.maximum != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.maximum} />}>
           {mergedSchema.maximum}
         </SchemaDescriptor>
@@ -192,6 +201,26 @@ export function Schema({
             />
           ))
         : null}
+      {mergedSchema.anyOf?.length ? (
+        <AnyOfSchema
+          anchors={anchors}
+          idPrefix={id}
+          nested
+          renderRef={RenderRef}
+          schema={mergedSchema}
+          type="anyOf"
+        />
+      ) : null}
+      {mergedSchema.oneOf?.length ? (
+        <AnyOfSchema
+          anchors={anchors}
+          idPrefix={id}
+          nested
+          renderRef={RenderRef}
+          schema={mergedSchema}
+          type="oneOf"
+        />
+      ) : null}
       {mergedSchema.type === 'array' &&
         mergedSchema.items &&
         !Array.isArray(mergedSchema.items) &&

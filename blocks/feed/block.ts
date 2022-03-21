@@ -1,6 +1,6 @@
 import { BulmaColor, IconName, Remapper } from '@appsemble/sdk';
 
-interface Reply {
+export interface Reply {
   /**
    * The field that is used to associate the ID of the resource this reply belongs to.
    */
@@ -24,7 +24,7 @@ interface Reply {
 /**
  * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
  */
-interface FontAwesomeMarkerIcon {
+export interface FontAwesomeMarkerIcon {
   /**
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
@@ -41,7 +41,7 @@ interface FontAwesomeMarkerIcon {
 /**
  * A marker based on an existing asset.
  */
-interface AssetMarkerIcon {
+export interface AssetMarkerIcon {
   /**
    * The id of an asset to use.
    */

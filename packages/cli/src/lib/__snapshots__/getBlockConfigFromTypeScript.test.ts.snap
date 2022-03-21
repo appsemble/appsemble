@@ -31,7 +31,8 @@ exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "A custom action that gets dispatched when a button is clicked that has the same click action
+specified as the name of this action.",
     },
     "onClick": {
       "description": "Action that gets dispatched when a button is clicked that doesn’t specify its own click
@@ -237,12 +238,12 @@ exports[`getBlockConfigFromTypeScript official blocks control-buttons 1`] = `
 {
   "actions": {
     "onBack": {
-      "description": "This actions gets triggered then the back button is clicked.
+      "description": "This action gets triggered then the back button is clicked.
 
 It will be called with the page data.",
     },
     "onForward": {
-      "description": "This actions gets triggered then the back button is clicked.
+      "description": "This action gets triggered then the back button is clicked.
 
 It will be called with the page data.",
     },
@@ -439,6 +440,43 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AssetMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on an existing asset.",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "asset": {
+            "description": "The id of an asset to use.",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "asset",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -525,6 +563,46 @@ If not set, the item itself is used as the url.",
         ],
         "type": "object",
       },
+      "FontAwesomeMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color to apply to the icon.",
+          },
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "GeoCoordinatesField": {
         "additionalProperties": false,
         "description": "Displays a map with a marker.",
@@ -609,81 +687,10 @@ If not defined, Appsemble’s Asset API will be used instead.",
       "icons": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A marker based on an existing asset.",
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "asset": {
-                "description": "The id of an asset to use.",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "asset",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AssetMarkerIcon",
           },
           {
-            "additionalProperties": false,
-            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": {
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/FontAwesomeMarkerIcon",
           },
         ],
         "description": "Custom icon configuration for geocoordinate fields.",
@@ -759,6 +766,35 @@ Compatible data that is received will be displayed.",
           "white",
         ],
         "type": "string",
+      },
+      "Reply": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "default": [
+              {
+                "prop": "$author",
+              },
+              {
+                "prop": "name",
+              },
+            ],
+            "description": "The author of the reply.",
+            "format": "remapper",
+          },
+          "content": {
+            "default": {
+              "prop": "content",
+            },
+            "description": "The content of the reply.",
+            "format": "remapper",
+          },
+          "parentId": {
+            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
+            "type": "string",
+          },
+        },
+        "type": "object",
       },
     },
     "properties": {
@@ -891,34 +927,8 @@ If not defined, the Asset API will be used instead.",
         "format": "remapper",
       },
       "reply": {
-        "additionalProperties": false,
+        "$ref": "#/definitions/Reply",
         "description": "The definition used to display replies.",
-        "properties": {
-          "author": {
-            "default": [
-              {
-                "prop": "$author",
-              },
-              {
-                "prop": "name",
-              },
-            ],
-            "description": "The author of the reply.",
-            "format": "remapper",
-          },
-          "content": {
-            "default": {
-              "prop": "content",
-            },
-            "description": "The content of the reply.",
-            "format": "remapper",
-          },
-          "parentId": {
-            "description": "The field that is used to associate the ID of the resource this reply belongs to.",
-            "type": "string",
-          },
-        },
-        "type": "object",
       },
       "subtitle": {
         "description": "The subtitle displayed on the card.",
@@ -1256,7 +1266,7 @@ exports[`getBlockConfigFromTypeScript official blocks form 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "A custom action that gets dispatched when checking form requirements.",
     },
     "onPrevious": {
       "description": "Action that gets dispatched when the previous button is clicked.",
@@ -1275,7 +1285,7 @@ The data received in the entire form data.",
     },
     "listen": {
       "$any": {
-        "description": undefined,
+        "description": "Custom event listeners that can be used to receive data for specific types of form fields.",
       },
       "data": {
         "description": "An event that can be used to receive data.
@@ -1322,6 +1332,95 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AcceptRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "accept": {
+            "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "accept",
+        ],
+        "type": "object",
+      },
+      "ActionEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of values based on the output of an action.",
+        "properties": {
+          "action": {
+            "description": "This action will be fired to fetch dynamic enum options.
+
+The action should return an array of objects that contain the \`label\` and \`value\` property.",
+            "format": "action",
+            "type": "string",
+          },
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "loadError": {
+            "default": "Error loading options",
+            "description": "This message is displayed if the options failed to load.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "action",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
       "BooleanField": {
         "additionalProperties": false,
         "description": "A checkbox that returns \`true\` when checked and \`false\` when not.",
@@ -1493,6 +1592,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "type": "boolean",
           },
           "requirements": {
+            "description": "All requirements that are applicable to this type of field.",
             "items": {
               "$ref": "#/definitions/DateTimeRequirement",
             },
@@ -1535,23 +1635,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "DateTimeRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the range of available dates.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "from": {
-                "description": "The minimum date that can be picked.",
-                "format": "remapper",
-              },
-              "to": {
-                "description": "The maximum date that can be picked.",
-                "format": "remapper",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/RangeRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
@@ -1562,208 +1646,84 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "EnumField": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of values based on the output of an action.",
-            "properties": {
-              "action": {
-                "description": "This action will be fired to fetch dynamic enum options.
-
-The action should return an array of objects that contain the \`label\` and \`value\` property.",
-                "format": "action",
-                "type": "string",
-              },
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "loadError": {
-                "default": "Error loading options",
-                "description": "This message is displayed if the options failed to load.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "action",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/ActionEnumField",
           },
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of values based on the output of an event.",
-            "properties": {
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "event": {
-                "description": "Wait until an event has been fired containing the list of options.
-
-The event should return an array of objects that contain the \`label\` and \`value\` property.",
-                "format": "event-listener",
-                "type": "string",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "loadError": {
-                "default": "Error loading options",
-                "description": "This message is displayed if the options failed to load.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "event",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/EventEnumField",
           },
           {
-            "additionalProperties": false,
-            "description": "A dropdown list containing a list of predetermined values.",
-            "properties": {
-              "defaultValue": {
-                "$ref": "#/definitions/JsonValue",
-                "description": "The default value of the field.",
-              },
-              "enum": {
-                "description": "The list of available choices.",
-                "items": {
-                  "$ref": "#/definitions/Choice",
-                },
-                "type": "array",
-              },
-              "icon": {
-                "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "label": {
-                "description": "The label displayed next to the field.",
-                "format": "remapper",
-              },
-              "name": {
-                "description": "The name used when storing this field.",
-                "type": "string",
-              },
-              "placeholder": {
-                "description": "The placeholder to display when the field is empty.",
-                "format": "remapper",
-              },
-              "readOnly": {
-                "description": "Whether the field should be read-only.",
-                "type": "boolean",
-              },
-              "requirements": {
-                "description": "The requirements that are used to validate the field with.
-
-These are evaluated in the order they are defined in.",
-                "items": {
-                  "$ref": "#/definitions/RequiredRequirement",
-                },
-                "type": "array",
-              },
-              "tag": {
-                "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-                "format": "remapper",
-              },
-              "type": {
-                "const": "enum",
-                "description": "The type of the field.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "enum",
-              "name",
-              "type",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/SyncEnumField",
           },
         ],
+      },
+      "EventEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of values based on the output of an event.",
+        "properties": {
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "event": {
+            "description": "Wait until an event has been fired containing the list of options.
+
+The event should return an array of objects that contain the \`label\` and \`value\` property.",
+            "format": "event-listener",
+            "type": "string",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "loadError": {
+            "default": "Error loading options",
+            "description": "This message is displayed if the options failed to load.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+          "name",
+          "type",
+        ],
+        "type": "object",
       },
       "Field": {
         "anyOf": [
@@ -1886,51 +1846,42 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "FileRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "properties": {
-              "accept": {
-                "description": "The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).",
-                "items": {
-                  "type": "string",
-                },
-                "type": "array",
-              },
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-            },
-            "required": [
-              "accept",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AcceptRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the length or amount of items in the input.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "maxLength": {
-                "description": "The maximum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-              "minLength": {
-                "description": "The minimum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/LengthRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
           },
         ],
         "description": "All requirements applicable to file fields.",
+      },
+      "FormRequirement": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "description": "The name of the action to trigger when the requirement is checked.",
+            "format": "action",
+            "type": "string",
+          },
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "isValid": {
+            "description": "The list of fields that must be valid before running the requirement action.",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        },
+        "required": [
+          "isValid",
+          "action",
+        ],
+        "type": "object",
       },
       "GeoCoordinatesField": {
         "additionalProperties": false,
@@ -2088,6 +2039,46 @@ This type can be useful to enforce some input to be JSON-compatible or as a supe
         ],
         "description": "Matches any valid JSON value.",
       },
+      "LengthRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the length or amount of items in the input.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "maxLength": {
+            "description": "The maximum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+          "minLength": {
+            "description": "The minimum length.",
+            "minimum": 1,
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+      "MinMaxRequirement": {
+        "additionalProperties": false,
+        "description": "Minimum and maximum form requirements for number fields.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "max": {
+            "description": "The maximum value of the field.",
+            "type": "number",
+          },
+          "min": {
+            "description": "The minimum value of the field.",
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
       "NumberField": {
         "additionalProperties": false,
         "description": "A number entry field.",
@@ -2173,46 +2164,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "NumberRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "Minimum and maximum form requirements for number fields.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "max": {
-                "description": "The maximum value of the field.",
-                "type": "number",
-              },
-              "min": {
-                "description": "The minimum value of the field.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/MinMaxRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "Requirement used to indicate how big a step should be for the field.
-
-Note that for \`integer\` type fields are rounded _down_.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "step": {
-                "description": "The amount to increment or decrement when using the stepper buttons of the field.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "step",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/StepRequirement",
           },
         ],
         "description": "All requirements applicable to number fields.",
@@ -2290,25 +2248,8 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "type": "object",
       },
       "ObjectRequirement": {
-        "additionalProperties": false,
+        "$ref": "#/definitions/LengthRequirement",
         "description": "All requirements applicable to object fields.",
-        "properties": {
-          "errorMessage": {
-            "description": "The error message that is displayed when the requirement is not met.",
-            "format": "remapper",
-          },
-          "maxLength": {
-            "description": "The maximum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-          "minLength": {
-            "description": "The minimum length.",
-            "minimum": 1,
-            "type": "number",
-          },
-        },
-        "type": "object",
       },
       "RadioField": {
         "additionalProperties": false,
@@ -2369,6 +2310,51 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "required": [
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "RangeRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the range of available dates.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "from": {
+            "description": "The minimum date that can be picked.",
+            "format": "remapper",
+          },
+          "to": {
+            "description": "The maximum date that can be picked.",
+            "format": "remapper",
+          },
+        },
+        "type": "object",
+      },
+      "RegexRequirement": {
+        "additionalProperties": false,
+        "description": "Requirement that matches using a given regex.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "flags": {
+            "default": "g",
+            "description": "The flags to use for the regex.
+
+Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
+            "pattern": "^[gimsuy]+$",
+            "type": "string",
+          },
+          "regex": {
+            "description": "The regex to match with. Must be a valid JavaScript regex.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "regex",
         ],
         "type": "object",
       },
@@ -2437,6 +2423,26 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "content",
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "StepRequirement": {
+        "additionalProperties": false,
+        "description": "Requirement used to indicate how big a step should be for the field.
+
+Note that for \`integer\` type fields are rounded _down_.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "step": {
+            "description": "The amount to increment or decrement when using the stepper buttons of the field.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "step",
         ],
         "type": "object",
       },
@@ -2517,57 +2523,80 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "StringRequirement": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A requirement used to enforce the length or amount of items in the input.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "maxLength": {
-                "description": "The maximum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-              "minLength": {
-                "description": "The minimum length.",
-                "minimum": 1,
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/LengthRequirement",
           },
           {
-            "additionalProperties": false,
-            "description": "Requirement that matches using a given regex.",
-            "properties": {
-              "errorMessage": {
-                "description": "The error message that is displayed when the requirement is not met.",
-                "format": "remapper",
-              },
-              "flags": {
-                "default": "g",
-                "description": "The flags to use for the regex.
-
-Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
-                "pattern": "^[gimsuy]+$",
-                "type": "string",
-              },
-              "regex": {
-                "description": "The regex to match with. Must be a valid JavaScript regex.",
-                "type": "string",
-              },
-            },
-            "required": [
-              "regex",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/RegexRequirement",
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
           },
         ],
         "description": "All requirements applicable to string fields.",
+      },
+      "SyncEnumField": {
+        "additionalProperties": false,
+        "description": "A dropdown list containing a list of predetermined values.",
+        "properties": {
+          "defaultValue": {
+            "$ref": "#/definitions/JsonValue",
+            "description": "The default value of the field.",
+          },
+          "enum": {
+            "description": "The list of available choices.",
+            "items": {
+              "$ref": "#/definitions/Choice",
+            },
+            "type": "array",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "description": "Whether the field should be read-only.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "enum",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "enum",
+          "name",
+          "type",
+        ],
+        "type": "object",
       },
     },
     "properties": {
@@ -2586,30 +2615,7 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
       "requirements": {
         "description": "A list of requirements that are checked across all of the form data.",
         "items": {
-          "additionalProperties": false,
-          "properties": {
-            "action": {
-              "description": "The name of the action to trigger when the requirement is checked.",
-              "format": "action",
-              "type": "string",
-            },
-            "errorMessage": {
-              "description": "The error message that is displayed when the requirement is not met.",
-              "format": "remapper",
-            },
-            "isValid": {
-              "description": "The list of fields that must be valid before running the requirement action.",
-              "items": {
-                "type": "string",
-              },
-              "type": "array",
-            },
-          },
-          "required": [
-            "isValid",
-            "action",
-          ],
-          "type": "object",
+          "$ref": "#/definitions/FormRequirement",
         },
         "type": "array",
       },
@@ -2623,7 +2629,11 @@ exports[`getBlockConfigFromTypeScript official blocks html 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "Any custom action.
+These can be used on \`<button>\`, \`<a>\`, and \`<input>\` elements using \`data-click\`.
+
+If no corresponding \`data-click\` attribute can be found
+the action will be considered unused and invalid.",
     },
   },
   "events": {
@@ -2800,6 +2810,50 @@ Otherwise, it will toggle between following and not following.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AssetMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on an existing asset.",
+        "properties": {
+          "activeRatio": {
+            "default": 1,
+            "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+            "type": "number",
+          },
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "asset": {
+            "description": "The id of an asset to use.",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "asset",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -2813,6 +2867,53 @@ Otherwise, it will toggle between following and not following.",
           "white",
         ],
         "type": "string",
+      },
+      "FontAwesomeMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+        "properties": {
+          "activeRatio": {
+            "default": 1,
+            "description": "Enlarge an active marker with this ratio.
+
+This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
+            "type": "number",
+          },
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color to apply to the icon.",
+          },
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "type": "object",
       },
     },
     "properties": {
@@ -2854,95 +2955,10 @@ These are used for filtering purposes.",
       "icons": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "description": "A marker based on an existing asset.",
-            "properties": {
-              "activeRatio": {
-                "default": 1,
-                "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
-                "type": "number",
-              },
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "asset": {
-                "description": "The id of an asset to use.",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "asset",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AssetMarkerIcon",
           },
           {
-            "additionalProperties": false,
-            "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
-            "properties": {
-              "activeRatio": {
-                "default": 1,
-                "description": "Enlarge an active marker with this ratio.
-
-This modifier is applied if a marker matches the block data which may be received by the block context. For example, this is applied if a marker matches the data that was passed in from a link action.",
-                "type": "number",
-              },
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": {
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "type": "object",
+            "$ref": "#/definitions/FontAwesomeMarkerIcon",
           },
         ],
         "description": "Custom icon configuration.",
@@ -3080,7 +3096,7 @@ exports[`getBlockConfigFromTypeScript official blocks table 1`] = `
 {
   "actions": {
     "$any": {
-      "description": undefined,
+      "description": "Custom action mapping.",
     },
     "onClick": {
       "description": "The default action that is triggered when clicking on a row.

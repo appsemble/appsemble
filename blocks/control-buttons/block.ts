@@ -24,14 +24,14 @@ declare module '@appsemble/sdk' {
 
   interface Actions {
     /**
-     * This actions gets triggered then the back button is clicked.
+     * This action gets triggered then the back button is clicked.
      *
      * It will be called with the page data.
      */
     onBack: never;
 
     /**
-     * This actions gets triggered then the back button is clicked.
+     * This action gets triggered then the back button is clicked.
      *
      * It will be called with the page data.
      */

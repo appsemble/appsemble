@@ -2,6 +2,7 @@ import { relative } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockConfig, BlockManifest } from '@appsemble/types';
+import { parse } from 'comment-parser';
 import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import { createFormatter, createParser, SchemaGenerator } from 'ts-json-schema-generator';
@@ -12,6 +13,7 @@ import {
   formatDiagnostic,
   FormatDiagnosticsHost,
   formatDiagnosticsWithColorAndContext,
+  getLeadingCommentRanges,
   getPreEmitDiagnostics,
   InterfaceDeclaration,
   isIdentifier,
@@ -71,10 +73,25 @@ function processInterface<T>(
     return;
   }
 
+  const source = iface.getSourceFile().getText();
+
   return Object.fromEntries(
     iface.members.map((member) => {
       const description = getNodeComments(checker, member);
       if (isIndexSignatureDeclaration(member)) {
+        // Comments aren’t properly extracted for index signatures.
+        const commentRanges = getLeadingCommentRanges(source, member.pos);
+        if (commentRanges) {
+          const comments = commentRanges?.map((r) => source.slice(r.pos, r.end)) ?? [];
+          const [block] = parse(comments[0]);
+          const processedDescription = block.source
+            .map((src) => src.tokens.description)
+            .join('\n')
+            .replace(/^\s+|\s+$/g, '');
+
+          return convert(undefined, processedDescription);
+        }
+
         return convert(undefined, description);
       }
 
