@@ -743,6 +743,7 @@
   "studio.src.pages.connect.type.error": "Der opstod en fejl.",
   "studio.src.pages.docs.action": "Handling",
   "studio.src.pages.docs.app": "App",
+  "studio.src.pages.docs.changelog": "",
   "studio.src.pages.docs.reference": "Reference",
   "studio.src.pages.docs.reference.action.description": "Reference dokumentation for definitioner af Appsemble handlinger",
   "studio.src.pages.docs.reference.action.showYaml": "Vis YAML",

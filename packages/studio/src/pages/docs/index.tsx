@@ -3,11 +3,14 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
+// eslint-disable-next-line node/no-unpublished-import
+import Changelog from '../../../../../CHANGELOG.md';
 import { Doc } from './Doc';
 import { messages } from './messages';
 import { ReferenceRoutes } from './reference';
 
 const context = require.context('../../../../../docs', true, /\.mdx?$/);
+
 const docs = context
   .keys()
   .map((key) => {
@@ -69,11 +72,17 @@ export function DocsRoutes(): ReactElement {
           <FormattedMessage {...messages.remapper} />
         </MenuItem>
       </MenuSection>
+      <MenuItem exact icon="scroll" to={`${url}/changelog`}>
+        <FormattedMessage {...messages.changelog} />
+      </MenuItem>
     </MenuSection>,
   );
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route path={`${path}/changelog`}>
+        <Changelog />
+      </Route>
       <Route path={`${path}/reference`}>
         <ReferenceRoutes />
       </Route>

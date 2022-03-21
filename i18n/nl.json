@@ -743,6 +743,7 @@
   "studio.src.pages.connect.type.error": "Er is een fout opgetreden.",
   "studio.src.pages.docs.action": "Actie",
   "studio.src.pages.docs.app": "App",
+  "studio.src.pages.docs.changelog": "Changelog",
   "studio.src.pages.docs.reference": "Referentie",
   "studio.src.pages.docs.reference.action.description": "Referentiedocumentatie voor Appsemble actie definities",
   "studio.src.pages.docs.reference.action.showYaml": "Laat YAML zien",
