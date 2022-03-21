@@ -137,7 +137,19 @@ describe('getAppRatings', () => {
 
     const response = await request.get(`/api/apps/${app.id}/ratings`);
 
-    expect(response).toMatchInlineSnapshot(`
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: [
+          {
+            UserId: expect.stringMatching(uuid4Pattern),
+          },
+
+          {
+            UserId: expect.stringMatching(uuid4Pattern),
+          },
+        ],
+      },
+      `
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -145,7 +157,7 @@ describe('getAppRatings', () => {
         {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
-          "UserId": "33c0c32a-ddd3-4dee-9d0f-56e6a4c99cc7",
+          "UserId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "description": "This is a test rating",
           "name": "Test User",
           "rating": 5,
@@ -153,12 +165,13 @@ describe('getAppRatings', () => {
         {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
-          "UserId": "139a9302-7a30-4366-a82c-ac457c7b098d",
+          "UserId": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "description": "This is also a test rating",
           "name": null,
           "rating": 4,
         },
       ]
-    `);
+    `,
+    );
   });
 });
