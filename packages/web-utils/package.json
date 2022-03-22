@@ -27,7 +27,7 @@
   "dependencies": {
     "@appsemble/types": "0.20.2",
     "@appsemble/utils": "0.20.2",
-    "@fortawesome/fontawesome-common-types": "^0.3.0",
+    "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^6.0.0",
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",

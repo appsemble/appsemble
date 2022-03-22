@@ -36,7 +36,7 @@ export type ActionCreator<T extends ActionDefinition['type']> = (
   params: MakeActionParameters<ActionDefinition & { type: T }>,
 ) => [
   (data: unknown, context: Record<string, any>) => unknown,
-  ...(keyof ActionProperties<T> extends never ? [] : [ActionProperties<T>])
+  ...(keyof ActionProperties<T> extends never ? [] : [ActionProperties<T>]),
 ];
 
 /**
