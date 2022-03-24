@@ -16,6 +16,7 @@ export const messages = defineMessages({
   deleteBody:
     'Are you sure you wish to delete the translations for this language? These can not be restored.',
   delete: 'Delete',
+  deleteError: 'Something went wrong when trying to delete the translations for this language.',
   language: 'Language',
   deleteSuccess: 'Successfully deleted messages',
 });

@@ -692,6 +692,7 @@
   "studio.src.pages.apps.app.translations.cancel": "Cancel",
   "studio.src.pages.apps.app.translations.delete": "Delete",
   "studio.src.pages.apps.app.translations.deleteBody": "Are you sure you wish to delete the translations for this language? These can not be restored.",
+  "studio.src.pages.apps.app.translations.deleteError": "Something went wrong when trying to delete the translations for this language.",
   "studio.src.pages.apps.app.translations.deleteSuccess": "Successfully deleted messages",
   "studio.src.pages.apps.app.translations.deleteTitle": "Deleting translations for {language}",
   "studio.src.pages.apps.app.translations.language": "Language",
