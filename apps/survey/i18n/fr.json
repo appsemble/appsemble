@@ -2,17 +2,17 @@
   "app": {
     "description": "Une application qui demande à l'utilisateur de répondre à quelques questions.",
     "name": "Sondage",
-    "pages.0": "Sondage",
-    "pages.0.steps.0": "",
-    "pages.0.steps.1": "",
-    "pages.0.steps.2": "",
-    "pages.0.steps.3": "",
-    "pages.0.steps.4": "",
-    "pages.0.steps.5": "",
-    "pages.0.steps.6": "",
-    "pages.0.steps.7": "",
-    "pages.0.steps.8": "",
-    "pages.1": "Terminé"
+    "pages.survey": "Sondage",
+    "pages.survey.steps.0": "",
+    "pages.survey.steps.1": "",
+    "pages.survey.steps.2": "",
+    "pages.survey.steps.3": "",
+    "pages.survey.steps.4": "",
+    "pages.survey.steps.5": "",
+    "pages.survey.steps.6": "",
+    "pages.survey.steps.7": "",
+    "pages.survey.steps.8": "",
+    "pages.finished": "Terminé"
   },
   "blocks": {
     "@appsemble/form": {

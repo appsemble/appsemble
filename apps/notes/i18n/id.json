@@ -4,7 +4,7 @@
     "app.roles.User.description": "Seorang pengguna yang menyimpan catatannya sendiri.",
     "description": "Simpan catatan pribadi",
     "name": "Catatan",
-    "pages.0": "Catatan"
+    "pages.notes": "Catatan"
   },
   "messageIds": {
     "body": "Badan",
