@@ -53,6 +53,7 @@ interface BlockProps {
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   pageReady: Promise<void>;
   prefix: string;
+  prefixIndex: string;
 }
 
 /**
@@ -70,6 +71,7 @@ export function Block({
   page,
   pageReady,
   prefix,
+  prefixIndex,
   ready,
   remap,
   showDialog,
@@ -126,6 +128,7 @@ export function Block({
       pageReady,
       route,
       prefix,
+      prefixIndex,
       ee,
       remap,
       showMessage: push,
@@ -184,6 +187,7 @@ export function Block({
         shadowRoot,
         utils,
         path: prefix,
+        pathIndex: prefixIndex,
       });
 
       ready(block);
@@ -206,6 +210,7 @@ export function Block({
     params,
     passwordLogin,
     prefix,
+    prefixIndex,
     push,
     pushNotifications,
     ready,
@@ -249,6 +254,7 @@ export function Block({
         })}
         data-block={blockName}
         data-path={prefix}
+        data-path-index={prefixIndex}
       >
         {header}
         <div className={styles.host} ref={ref} />
@@ -262,6 +268,7 @@ export function Block({
       className={`is-flex ${styles.root} ${layout === 'static' ? styles.static : styles.grow}`}
       data-block={blockName}
       data-path={prefix}
+      data-path-index={prefixIndex}
     >
       {header}
       <div className={styles.host} ref={ref} />

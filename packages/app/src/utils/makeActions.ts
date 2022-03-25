@@ -162,6 +162,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     history: null,
     pageReady: Promise.resolve(),
     prefix: null,
+    prefixIndex: null,
     pushNotifications: null,
     remap: (remapper, data, context) =>
       remap(remapper, data, {

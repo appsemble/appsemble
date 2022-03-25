@@ -436,7 +436,7 @@ describe('iterApp', () => {
 
     const result = iterApp(app, { onPage });
 
-    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 0]);
+    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 'page']);
     expect(result).toBe(false);
   });
 
@@ -461,7 +461,7 @@ describe('iterApp', () => {
     const result = iterApp(app, { onPage });
 
     expect(onPage).toHaveBeenCalledTimes(1);
-    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 0]);
+    expect(onPage).toHaveBeenCalledWith(app.pages[0], ['pages', 'page-1']);
     expect(result).toBe(true);
   });
 

@@ -18,7 +18,8 @@ describe('dialog', () => {
     const action = createTestAction({
       definition: { type: 'dialog', blocks: [] },
       showDialog,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const promise = action({ test: 'input' });
     // Perform a tick
@@ -30,7 +31,8 @@ describe('dialog', () => {
       close: expect.any(Function),
       data: { test: 'input' },
       fullscreen: false,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     options.close();
     await expect(promise).rejects.toThrow(new Error('closed'));
@@ -47,7 +49,8 @@ describe('dialog', () => {
         title: 'Hello dialog',
       },
       showDialog,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const promise = action({ test: 'input' });
     // Perform a tick
@@ -59,7 +62,8 @@ describe('dialog', () => {
       close: expect.any(Function),
       data: { test: 'input' },
       fullscreen: true,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
       title: 'Hello dialog',
     });
     options.close();
@@ -71,7 +75,8 @@ describe('dialog', () => {
     const action = createTestAction({
       definition: { type: 'dialog', blocks: [] },
       showDialog,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const promise = action({ test: 'input' });
     // Perform a tick
@@ -83,7 +88,8 @@ describe('dialog', () => {
       close: expect.any(Function),
       data: { test: 'input' },
       fullscreen: false,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     await options.actionCreators['dialog.ok'](null)[0]({ value: 'success' }, null);
     const result = await promise;
@@ -94,7 +100,8 @@ describe('dialog', () => {
     const action = createTestAction({
       definition: { type: 'dialog', blocks: [] },
       showDialog,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const promise = action({ test: 'input' });
     // Perform a tick
@@ -106,7 +113,8 @@ describe('dialog', () => {
       close: expect.any(Function),
       data: { test: 'input' },
       fullscreen: false,
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test-page.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     await options.actionCreators['dialog.error'](null)[0]({ value: 'fail' }, null);
     await expect(promise).rejects.toStrictEqual({ value: 'fail' });

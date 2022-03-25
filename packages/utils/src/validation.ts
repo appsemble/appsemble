@@ -9,7 +9,7 @@ import { Schema, ValidationError, Validator, ValidatorResult } from 'jsonschema'
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
-import { partialNormalized } from '.';
+import { normalize, partialNormalized } from '.';
 import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils';
 import { has } from './has';
 import { iterApp, Prefix } from './iterApp';
@@ -478,7 +478,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
       }
 
       if (action.type.startsWith('flow.')) {
-        const page = definition.pages?.[Number(path[1])];
+        const page = definition.pages?.find((p) => normalize(p.name) === path[1]);
         if (page?.type !== 'flow') {
           report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
             ...path,
@@ -566,8 +566,8 @@ function validateActions(definition: AppDefinition, report: Report): void {
 }
 
 function validateEvents(definition: AppDefinition, report: Report): void {
-  const indexMap = new Map<
-    number,
+  const pageNameMap = new Map<
+    string,
     {
       emitters: Map<string, Prefix[]>;
       listeners: Map<string, Prefix[]>;
@@ -575,20 +575,21 @@ function validateEvents(definition: AppDefinition, report: Report): void {
   >();
 
   function collect(prefix: Prefix, name: string, isEmitter: boolean): void {
-    const [firstKey, pageIndex] = prefix;
+    const [firstKey, pageName] = prefix;
 
     // Ignore anything not part of a page. For example cron actions never support events.
     if (firstKey !== 'pages') {
       return;
     }
 
-    if (typeof pageIndex !== 'number') {
+    if (typeof pageName !== 'string') {
       return;
     }
-    if (!indexMap.has(pageIndex)) {
-      indexMap.set(pageIndex, { emitters: new Map(), listeners: new Map() });
+
+    if (!pageNameMap.has(pageName)) {
+      pageNameMap.set(pageName, { emitters: new Map(), listeners: new Map() });
     }
-    const { emitters, listeners } = indexMap.get(pageIndex)!;
+    const { emitters, listeners } = pageNameMap.get(pageName)!;
     const context = isEmitter ? emitters : listeners;
     if (!context.has(name)) {
       context.set(name, []);
@@ -628,7 +629,7 @@ function validateEvents(definition: AppDefinition, report: Report): void {
     },
   });
 
-  for (const { emitters, listeners } of indexMap.values()) {
+  for (const { emitters, listeners } of pageNameMap.values()) {
     for (const [name, prefixes] of listeners.entries()) {
       if (!emitters.has(name)) {
         for (const prefix of prefixes) {

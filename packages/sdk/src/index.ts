@@ -254,9 +254,14 @@ export interface BootstrapParams {
   pageParameters?: PageParameters;
 
   /**
-   * The path of the block as it is being rendered on the page.
+   * The path of the block as it is being rendered on the page using the page’s normalized name.
    */
   path: string;
+
+  /**
+   * The path of the block as it is being rendered on the page using the page’s index.
+   */
+  pathIndex: string;
 
   /**
    * The theme of the block given the context.

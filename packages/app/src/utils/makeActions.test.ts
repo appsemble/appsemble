@@ -17,7 +17,8 @@ describe('makeActions', () => {
       pageReady: new Promise((resolve) => {
         pageReady = resolve;
       }),
-      prefix: 'pages.0.blocks.0',
+      prefix: 'pages.test-page.blocks.0',
+      prefixIndex: 'pages.0.blocks.0',
       pushNotifications: null,
       remap,
       route: null,
@@ -192,6 +193,6 @@ describe('makeActions', () => {
       },
     });
     await actions.onClick('input');
-    expect(prefix).toBe('pages.0.blocks.0.actions.onClick');
+    expect(prefix).toBe('pages.test-page.blocks.0.actions.onClick');
   });
 });

@@ -79,7 +79,9 @@ export function Page(): ReactElement {
   }
 
   const page = index === -1 ? null : definition.pages[index];
-  const prefix = index === -1 ? null : `pages.${index}`;
+  const internalPageName = page ? normalize(page.name) : null;
+  const prefix = index === -1 ? null : `pages.${internalPageName}`;
+  const prefixIndex = index === -1 ? null : `pages.${index}`;
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: Record<string, any>) =>
@@ -143,7 +145,10 @@ export function Page(): ReactElement {
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
-    const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
+    const pageName = getAppMessage({
+      id: prefix,
+      defaultMessage: page.name,
+    }).format() as string;
     const normalizedPageName = normalize(pageName);
 
     if (pageId !== normalize(normalizedPageName)) {
@@ -157,6 +162,7 @@ export function Page(): ReactElement {
           [styles.hasBottomNavigation]: definition.layout?.navigation === 'bottom',
         })}
         data-path={prefix}
+        data-path-index={prefixIndex}
       >
         <TitleBar>{pageName}</TitleBar>
         {page.type === 'tabs' ? (
@@ -166,6 +172,7 @@ export function Page(): ReactElement {
             key={prefix}
             page={page}
             prefix={prefix}
+            prefixIndex={prefixIndex}
             remap={remapWithContext}
             showDialog={showDialog}
             showShareDialog={showShareDialog}
@@ -182,6 +189,7 @@ export function Page(): ReactElement {
                   key={prefix}
                   page={page}
                   prefix={prefix}
+                  prefixIndex={prefixIndex}
                   remap={remapWithContext}
                   setData={setData}
                   showDialog={showDialog}
@@ -195,6 +203,7 @@ export function Page(): ReactElement {
                   key={prefix}
                   page={page}
                   prefix={`${prefix}.blocks`}
+                  prefixIndex={`${prefixIndex}.blocks`}
                   remap={remapWithContext}
                   showDialog={showDialog}
                   showShareDialog={showShareDialog}
@@ -232,11 +241,10 @@ export function Page(): ReactElement {
   const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
   const defaultPage = definition.pages.find((p) => p.name === defaultPageName);
   if (checkPagePermissions(defaultPage)) {
-    const i = definition.pages.indexOf(defaultPage);
     let pageName = defaultPage.name;
 
-    if (appMessageIds.includes(`pages.${i}`)) {
-      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${internalPageName}`)) {
+      pageName = getAppMessage({ id: `pages.${internalPageName}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -245,11 +253,10 @@ export function Page(): ReactElement {
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
-    const i = definition.pages.indexOf(redirectPage);
     let pageName = redirectPage.name;
 
-    if (appMessageIds.includes(`pages.${i}`)) {
-      pageName = getAppMessage({ id: `pages.${i}` }).format() as string;
+    if (appMessageIds.includes(`pages.${internalPageName}`)) {
+      pageName = getAppMessage({ id: `pages.${internalPageName}` }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;

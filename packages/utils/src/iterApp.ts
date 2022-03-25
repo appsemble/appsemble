@@ -1,5 +1,7 @@
 import { ActionDefinition, AppDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
 
+import { normalize } from './normalize';
+
 export type Prefix = (number | string)[];
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
@@ -155,7 +157,7 @@ export function iterPage(
 export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
   if (
     Array.isArray(app.pages) &&
-    app.pages.some((page, index) => iterPage(page, callbacks, ['pages', index]))
+    app.pages.some((page) => iterPage(page, callbacks, ['pages', normalize(page.name)]))
   ) {
     return true;
   }

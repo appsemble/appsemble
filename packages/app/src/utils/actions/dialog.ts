@@ -3,6 +3,7 @@ import { ActionCreator } from '.';
 export const dialog: ActionCreator<'dialog'> = ({
   definition: { blocks, closable = true, fullscreen = false, title },
   prefix,
+  prefixIndex,
   showDialog,
 }) => [
   (data) =>
@@ -33,6 +34,7 @@ export const dialog: ActionCreator<'dialog'> = ({
         },
         fullscreen,
         prefix,
+        prefixIndex,
         title,
       });
     }),
