@@ -1,11 +1,18 @@
 import { ActionCreator } from '.';
 import { createAction } from '../makeActions';
 
-export const condition: ActionCreator<'condition'> = ({ definition, prefix, remap, ...params }) => {
+export const condition: ActionCreator<'condition'> = ({
+  definition,
+  prefix,
+  prefixIndex,
+  remap,
+  ...params
+}) => {
   const thenAction = createAction({
     ...params,
     definition: definition.then,
     prefix: `${prefix}.then`,
+    prefixIndex: `${prefixIndex}.then`,
     remap,
   });
 
@@ -13,6 +20,7 @@ export const condition: ActionCreator<'condition'> = ({ definition, prefix, rema
     ...params,
     definition: definition.else,
     prefix: `${prefix}.else`,
+    prefixIndex: `${prefixIndex}.else`,
     remap,
   });
 
