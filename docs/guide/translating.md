@@ -145,8 +145,8 @@ The format used for these translation files is similar to the format shown on th
   "app": {
     "name": "The app’s name",
     "description": "The app’s description",
-    "pages.0": "The name of the first page",
-    "pages.0.blocks.1.example": "The message with ID ‘example’ from the second block on the first page"
+    "pages.example-page": "The name of the first page",
+    "pages.example-page.blocks.1.example": "The message with ID ‘example’ from the second block on the first page"
   },
   "blocks": {
     "@appsemble/form": {
