@@ -88,7 +88,6 @@ export async function up(db: Sequelize): Promise<void> {
   const { apps, messages } = processAppsAndMessages(appsInput, messagesInput);
 
   logger.info('Applying all changes to database.');
-
   await Promise.all([
     ...apps
       .filter((app) => app.coreStyle && app.sharedStyle)
@@ -105,8 +104,6 @@ export async function up(db: Sequelize): Promise<void> {
       }),
     ),
   ]);
-
-  throw new Error('don’t update meta please');
 }
 
 /**
