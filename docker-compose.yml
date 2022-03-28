@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   # A persistent database for local development.
-  postgres_dev:
+  postgres-dev:
     image: postgres:11
     restart: always
     environment:
@@ -13,7 +13,7 @@ services:
       - '5432:5432'
 
   # A database using tmpfs for faster test runs.
-  postgres_test:
+  postgres-test:
     image: postgres:11
     restart: always
     environment:
