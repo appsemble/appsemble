@@ -37,7 +37,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
@@ -54,7 +55,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', method: 'delete' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'delete' });
     expect(request.method).toBe('delete');
@@ -72,6 +74,7 @@ describe('request', () => {
     const action = createTestAction({
       definition: { type: 'request', method: 'get' },
       prefix: 'pages.0.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
@@ -88,7 +91,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', method: 'patch' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'patch' });
     expect(request.method).toBe('patch');
@@ -105,7 +109,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', method: 'post' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'post' });
     expect(request.method).toBe('post');
@@ -122,7 +127,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', method: 'put' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'put' });
     expect(request.method).toBe('put');
@@ -139,7 +145,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', method: 'post', body: { static: { remapped: 'data' } } },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     await action({ hello: 'post' });
     expect(request.data).toBe('{"remapped":"data"}');
@@ -152,7 +159,8 @@ describe('request', () => {
     });
     const action = createTestAction({
       definition: { type: 'request', proxy: false, url: 'https://example.com' },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'get' });
     expect(request.method).toBe('get');
@@ -181,7 +189,8 @@ describe('request', () => {
         },
         proxy: false,
       },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
 
     const result = await action(null, { test: 'nl' });
@@ -209,7 +218,8 @@ describe('request', () => {
           },
         },
       },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
 
     const result = await action(null, { test: 'foo' });
@@ -234,7 +244,8 @@ describe('request', () => {
         proxy: false,
         body: { context: 'test' },
       },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
 
     const result = await action(null, { test: { foo: 'bar', baz: 1234 } });
@@ -299,7 +310,8 @@ describe('request', () => {
           },
         },
       },
-      prefix: 'pages.0.blocks.0.actions.onClick',
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
     const result = await action({ hello: 'get' });
     expect(result).toStrictEqual({
