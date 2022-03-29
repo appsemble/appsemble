@@ -27,7 +27,7 @@ import {
   transactional,
   User,
 } from '../models';
-import { applyAppMessages, parseLanguage } from '../utils/app';
+import { applyAppMessages, getAppUrl, parseLanguage } from '../utils/app';
 import { argv } from '../utils/argv';
 import { checkRole } from '../utils/checkRole';
 import { createJWTResponse } from '../utils/createJWTResponse';
@@ -350,9 +350,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     result.emailVerified = false;
     result.emailKey = randomBytes(40).toString('hex');
 
-    const url = new URL(argv.host);
-    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    const verificationUrl = new URL('/Verify', url);
+    const verificationUrl = new URL('/Verify', getAppUrl(app));
     verificationUrl.searchParams.set('token', result.emailKey);
 
     mailer
@@ -506,9 +504,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     throw error;
   }
 
-  const url = new URL(argv.host);
-  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-  url.pathname = '/Verify';
+  const url = new URL('/Verify', getAppUrl(app));
   url.searchParams.set('token', key);
 
   // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
@@ -588,9 +584,7 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
   });
 
   if (app?.AppMembers.length && !app.AppMembers[0].emailVerified) {
-    const url = new URL(argv.host);
-    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    url.pathname = '/Verify';
+    const url = new URL('/Verify', getAppUrl(app));
     url.searchParams.set('token', app.AppMembers[0].emailKey);
 
     mailer
@@ -631,9 +625,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
     const [member] = app.AppMembers;
     const resetKey = randomBytes(40).toString('hex');
 
-    const url = new URL(argv.host);
-    url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-    url.pathname = '/Edit-Password';
+    const url = new URL('/Edit-Password', getAppUrl(app));
     url.searchParams.set('token', resetKey);
 
     await member.update({ resetKey });

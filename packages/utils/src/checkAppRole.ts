@@ -13,7 +13,7 @@ export function checkAppRole(
   securityDefinition: Security,
   role: string,
   userRole: string,
-  teams: TeamMember[],
+  teams: Pick<TeamMember, 'role'>[],
 ): boolean {
   if (role === userRole) {
     return true;

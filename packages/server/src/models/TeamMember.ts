@@ -30,7 +30,7 @@ export class TeamMember extends Model {
   @Default(TeamRole.Member)
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(TeamRole)))
-  role: string;
+  role: TeamRole;
 
   @BelongsTo(() => User)
   User: User;

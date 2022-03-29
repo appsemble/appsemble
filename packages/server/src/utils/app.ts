@@ -88,6 +88,12 @@ export async function getApp(
   return value;
 }
 
+export function getAppUrl(app: App): URL {
+  const url = new URL(argv.host);
+  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
+  return url;
+}
+
 /**
  * Get a context for remappers based on an app definition.
  *
@@ -114,9 +120,7 @@ export async function getRemapperContext(
   const cache = objectCache(
     (message) => new IntlMessageFormat(message, language, undefined, { formatters }),
   );
-  const url = new URL(argv.host);
-  url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
-  const appUrl = String(url);
+  const appUrl = String(getAppUrl(app));
 
   return {
     appId: app.id,

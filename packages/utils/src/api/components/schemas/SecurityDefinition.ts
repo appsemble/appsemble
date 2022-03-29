@@ -13,5 +13,9 @@ export const SecurityDefinition: OpenAPIV3.NonArraySchemaObject = {
       minProperties: 1,
       additionalProperties: { $ref: '#/components/schemas/SecurityRoleDefinition' },
     },
+    teams: {
+      $ref: '#/components/schemas/TeamsDefinition',
+      description: 'Define how teams are handled by the app.',
+    },
   },
 };

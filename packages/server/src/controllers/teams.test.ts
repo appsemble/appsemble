@@ -1,21 +1,32 @@
 import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
+import Koa from 'koa';
 
-import { App, AppMember, Member, Organization, Team, TeamMember, User } from '../models';
+import {
+  App,
+  AppMember,
+  Member,
+  Organization,
+  Team,
+  TeamInvite,
+  TeamMember,
+  User,
+} from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
+import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
 let organization: Organization;
 let app: App;
 let user: User;
+let server: Koa;
 
 useTestDatabase('teams');
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  server = await createServer();
   await setTestApp(server);
 });
 
@@ -30,6 +41,10 @@ beforeEach(async () => {
       name: 'Test App',
       defaultPage: 'Test Page',
       security: {
+        teams: {
+          join: 'anyone',
+          invite: [],
+        },
         default: {
           role: 'Reader',
           policy: 'everyone',
@@ -155,111 +170,181 @@ describe('getTeam', () => {
 });
 
 describe('createTeam', () => {
-  it('should create a team if user is Owner', async () => {
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams`, {
-      name: 'Test Team',
+  describe('app', () => {
+    beforeEach(() => {
+      authorizeApp(app);
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: { id: expect.any(Number), name: 'Test Team', role: TeamRole.Manager },
-    });
-  });
-
-  it('should create a team with annotations', async () => {
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams`, {
-      name: 'Test Team',
-      annotations: { testKey: 'foo' },
-    });
-
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
-        id: expect.any(Number),
-        name: 'Test Team',
-        role: TeamRole.Manager,
-        annotations: { testKey: 'foo' },
-      },
-    });
-  });
-
-  it('should not create a team if teams are not used or usable', async () => {
-    const noSecurity = await App.create({
-      definition: {
-        name: 'No Security App',
-        defaultPage: 'Test Page',
-      },
-      path: 'no-security-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organization.id,
-    });
-
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${noSecurity.id}/teams`, { name: 'Test Team' });
-
-    expect(response).toMatchObject({
-      status: 400,
-      data: { message: 'App does not have a security definition.' },
-    });
-  });
-
-  it('should not create a team if user is not an Owner', async () => {
-    await Member.update(
-      { role: 'AppEditor' },
-      { where: { UserId: user.id, OrganizationId: organization.id } },
-    );
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams`, { name: 'Test Team' });
-
-    expect(response).toMatchObject({
-      status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
-    });
-  });
-
-  it('should not create a team if user is not part of the organization', async () => {
-    await Organization.create({
-      id: 'appsemble',
-      name: 'Appsemble',
-    });
-    const appB = await App.create({
-      definition: {
-        name: 'Test App 2',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
+    it('should create a team if the user has the proper role', async () => {
+      await app.update({
+        definition: {
+          ...app.definition,
+          security: {
+            ...app.definition.security,
+            teams: { create: ['TeamCreator'] },
+            roles: { TeamCreator: {} },
           },
         },
-      },
-      path: 'test-app-2',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: 'appsemble',
-    });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${appB.id}/teams`, { name: 'Test Team' });
+      });
+      await AppMember.create({ AppId: app.id, UserId: user.id, role: 'TeamCreator' });
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: { message: 'User is not part of this organization.' },
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
+        name: 'Test Team',
+      });
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "annotations": {},
+          "id": 1,
+          "name": "Test Team",
+          "role": "manager",
+        }
+      `);
+    });
+
+    it('should reject if the user doesn’t have the proper role', async () => {
+      await app.update({
+        definition: {
+          ...app.definition,
+          security: {
+            ...app.definition.security,
+            teams: { create: ['TeamCreator'] },
+            roles: { TeamCreator: {}, Invalid: {} },
+          },
+        },
+      });
+      await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Invalid' });
+
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
+        name: 'Test Team',
+      });
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 403 Forbidden
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "error": "Forbidden",
+          "message": "User is not allowed to create teams",
+          "statusCode": 403,
+        }
+      `);
     });
   });
 
-  it('should not create a team for non-existent organizations', async () => {
-    authorizeStudio();
-    const response = await request.post('/api/apps/80123/teams', { name: 'Test Team' });
+  describe('studio', () => {
+    beforeEach(() => {
+      authorizeStudio();
+    });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'App not found.' },
+    it('should create a team if user is Owner', async () => {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
+        name: 'Test Team',
+      });
+
+      expect(response).toMatchObject({
+        status: 201,
+        data: { id: expect.any(Number), name: 'Test Team', role: TeamRole.Manager },
+      });
+    });
+
+    it('should create a team with annotations', async () => {
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
+        name: 'Test Team',
+        annotations: { testKey: 'foo' },
+      });
+
+      expect(response).toMatchObject({
+        status: 201,
+        data: {
+          id: expect.any(Number),
+          name: 'Test Team',
+          role: TeamRole.Manager,
+          annotations: { testKey: 'foo' },
+        },
+      });
+    });
+
+    it('should not create a team if teams are not used or usable', async () => {
+      const noSecurity = await App.create({
+        definition: {
+          name: 'No Security App',
+          defaultPage: 'Test Page',
+        },
+        path: 'no-security-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      });
+
+      const response = await request.post(`/api/apps/${noSecurity.id}/teams`, {
+        name: 'Test Team',
+      });
+
+      expect(response).toMatchObject({
+        status: 400,
+        data: { message: 'App does not have a security definition.' },
+      });
+    });
+
+    it('should not create a team if user is not an Owner', async () => {
+      await Member.update(
+        { role: 'AppEditor' },
+        { where: { UserId: user.id, OrganizationId: organization.id } },
+      );
+      const response = await request.post(`/api/apps/${app.id}/teams`, { name: 'Test Team' });
+
+      expect(response).toMatchObject({
+        status: 403,
+        data: { message: 'User does not have sufficient permissions.' },
+      });
+    });
+
+    it('should not create a team if user is not part of the organization', async () => {
+      await Organization.create({
+        id: 'appsemble',
+        name: 'Appsemble',
+      });
+      const appB = await App.create({
+        definition: {
+          name: 'Test App 2',
+          defaultPage: 'Test Page',
+          security: {
+            teams: {
+              join: 'anyone',
+              invite: [],
+            },
+            default: {
+              role: 'Reader',
+              policy: 'everyone',
+            },
+            roles: {
+              Reader: {},
+            },
+          },
+        },
+        path: 'test-app-2',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: 'appsemble',
+      });
+      const response = await request.post(`/api/apps/${appB.id}/teams`, { name: 'Test Team' });
+
+      expect(response).toMatchObject({
+        status: 403,
+        data: { message: 'User is not part of this organization.' },
+      });
+    });
+
+    it('should not create a team for non-existent organizations', async () => {
+      authorizeStudio();
+      const response = await request.post('/api/apps/80123/teams', { name: 'Test Team' });
+
+      expect(response).toMatchObject({
+        status: 404,
+        data: { message: 'App not found.' },
+      });
     });
   });
 });
@@ -453,150 +538,327 @@ describe('getTeamMembers', () => {
   });
 });
 
+describe('inviteTeamMember', () => {
+  beforeEach(() => {
+    authorizeApp(app);
+  });
+
+  it('should not allow to invite team members if the join policy is not invite', async () => {
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'manager' });
+
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
+      email: 'newuser@example.com',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Team invites are not supported",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should not allow to create an invite for a non existent team', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        security: {
+          ...app.definition.security,
+          teams: {
+            ...app.definition.security.teams,
+            join: 'invite',
+          },
+        },
+      },
+    });
+    const response = await request.post(`/api/apps/${app.id}/teams/83/invite`, {
+      email: 'newuser@example.com',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Team 83 does not exist",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should allow only team managers to create a team invite if specified', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        security: {
+          ...app.definition.security,
+          teams: {
+            ...app.definition.security.teams,
+            join: 'invite',
+            invite: ['$team:manager'],
+          },
+        },
+      },
+    });
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'member' });
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
+      email: 'newuser@example.com',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not allowed to invite members to this team",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should create and send an invite email', async () => {
+    await app.update({
+      definition: {
+        ...app.definition,
+        security: {
+          ...app.definition.security,
+          teams: {
+            ...app.definition.security.teams,
+            join: 'invite',
+            invite: ['$team:member'],
+          },
+        },
+      },
+    });
+
+    jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+    const team = await Team.create({ name: 'A', AppId: app.id });
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'member' });
+    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {
+      email: 'newuser@example.com',
+    });
+    const invite = await TeamInvite.findOne();
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(server.context.mailer.sendTemplateEmail).toHaveBeenCalledWith(
+      { email: 'newuser@example.com' },
+      'teamInvite',
+      {
+        appName: 'Test App',
+        teamName: 'A',
+        url: `http://test-app.testorganization.localhost/Team-Invite?code=${invite.key}`,
+      },
+    );
+  });
+});
+
 describe('addTeamMember', () => {
-  it('should add an app member to a team', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.id,
+  describe('app', () => {
+    beforeEach(() => {
+      authorizeApp(app);
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
+    it('should allow anyone to join is the join policy is `anyone', async () => {
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+        id: user.id,
+      });
+
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 201 Created
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "id": "02342b52-bea9-49bb-82a9-fa0e986ebef2",
+          "name": "Test User",
+          "primaryEmail": "test@example.com",
+          "role": "member",
+        }
+      `);
+    });
+
+    it('should allow reject users if the join policy is `invite`', async () => {
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      await app.update({
+        definition: {
+          ...app.definition,
+          security: {
+            ...app.definition.security,
+            teams: {
+              ...app.definition.security.teams,
+              join: 'invite',
+            },
+          },
+        },
+      });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+        id: user.id,
+      });
+
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 403 Forbidden
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "error": "Forbidden",
+          "message": "You need an invite to join this team",
+          "statusCode": 403,
+        }
+      `);
+    });
+  });
+
+  describe('studio', () => {
+    beforeEach(() => {
+      authorizeStudio();
+    });
+
+    it('should add an app member to a team', async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
-        name: userB.name,
-        primaryEmail: userB.primaryEmail,
-        role: TeamRole.Member,
-      },
-    });
-  });
+      });
 
-  it('should add an app member to a team by their primary email', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.primaryEmail,
+      expect(response).toMatchObject({
+        status: 201,
+        data: {
+          id: userB.id,
+          name: userB.name,
+          primaryEmail: userB.primaryEmail,
+          role: TeamRole.Member,
+        },
+      });
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
+    it('should add an app member to a team by their primary email', async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+        id: userB.primaryEmail,
+      });
+
+      expect(response).toMatchObject({
+        status: 201,
+        data: {
+          id: userB.id,
+          name: userB.name,
+          primaryEmail: userB.primaryEmail,
+          role: TeamRole.Member,
+        },
+      });
+    });
+
+    it('should add an app member to a team if user has manager role', async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      await Member.update(
+        { role: 'Member' },
+        { where: { UserId: user.id, OrganizationId: organization.id } },
+      );
+      await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
-        name: userB.name,
-        primaryEmail: userB.primaryEmail,
-        role: TeamRole.Member,
-      },
-    });
-  });
+      });
 
-  it('should add an app member to a team if user has manager role', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update(
-      { role: 'Member' },
-      { where: { UserId: user.id, OrganizationId: organization.id } },
-    );
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Manager });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.id,
+      expect(response).toMatchObject({
+        status: 201,
+        data: {
+          id: userB.id,
+          name: userB.name,
+          primaryEmail: userB.primaryEmail,
+          role: TeamRole.Member,
+        },
+      });
     });
 
-    expect(response).toMatchObject({
-      status: 201,
-      data: {
+    it('should not add an app member if user has insufficient permissions', async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
+      await Member.update(
+        { role: 'Member' },
+        { where: { UserId: user.id, OrganizationId: organization.id } },
+      );
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Member });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: userB.id,
-        name: userB.name,
-        primaryEmail: userB.primaryEmail,
-        role: TeamRole.Member,
-      },
-    });
-  });
+      });
 
-  it('should not add an app member if user has insufficient permissions', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
-    await Member.update(
-      { role: 'Member' },
-      { where: { UserId: user.id, OrganizationId: organization.id } },
-    );
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    await TeamMember.create({ UserId: user.id, TeamId: team.id, role: TeamRole.Member });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.id,
+      expect(response).toMatchObject({
+        status: 403,
+        data: { message: 'User does not have sufficient permissions.' },
+      });
     });
 
-    expect(response).toMatchObject({
-      status: 403,
-      data: { message: 'User does not have sufficient permissions.' },
-    });
-  });
+    it('should not add an app member to a team twice', async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+        id: userB.id,
+      });
 
-  it('should not add an app member to a team twice', async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    authorizeStudio();
-    await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, { id: userB.id });
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.id,
-    });
-
-    expect(response).toMatchObject({
-      status: 400,
-      data: {
-        message: 'This user is already a member of this team.',
-      },
-    });
-  });
-
-  it("should not add a member who isn't part of the team's app members", async () => {
-    const userB = await User.create({
-      password: user.password,
-      name: 'Test User',
-      primaryEmail: 'testuser@example.com',
-    });
-    const team = await Team.create({ name: 'A', AppId: app.id });
-    authorizeStudio();
-    const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
-      id: userB.id,
+      expect(response).toMatchObject({
+        status: 400,
+        data: {
+          message: 'This user is already a member of this team.',
+        },
+      });
     });
 
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        message: `User with id ${userB.id} is not part of this app’s members.`,
-      },
+    it("should not add a member who isn't part of the team's app members", async () => {
+      const userB = await User.create({
+        password: user.password,
+        name: 'Test User',
+        primaryEmail: 'testuser@example.com',
+      });
+      const team = await Team.create({ name: 'A', AppId: app.id });
+      const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
+        id: userB.id,
+      });
+
+      expect(response).toMatchObject({
+        status: 404,
+        data: {
+          message: `User with id ${userB.id} is not part of this app’s members.`,
+        },
+      });
     });
   });
 });
@@ -834,5 +1096,50 @@ describe('updateTeamMember', () => {
         message: 'This user is not a member of this team.',
       },
     });
+  });
+});
+
+describe('acceptTeamInvite', () => {
+  beforeEach(() => {
+    authorizeApp(app);
+  });
+
+  it('should respond with 404 if no team invite was found', async () => {
+    const response = await request.post(`/api/apps/${app.id}/team/invite`, { code: 'invalid' });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "No invite found for code: invalid",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should create a team member and destroy the invite', async () => {
+    const team = await Team.create({ name: 'Fooz', AppId: app.id });
+    const invite = await TeamInvite.create({
+      TeamId: team.id,
+      key: 'super secret',
+      email: 'test@example.com',
+    });
+    const response = await request.post(`/api/apps/${app.id}/team/invite`, {
+      code: 'super secret',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "id": 1,
+        "name": "Fooz",
+        "role": "member",
+      }
+    `);
+    await expect(invite.reload()).rejects.toBeDefined();
   });
 });

@@ -97,6 +97,7 @@ export type Action =
   | BaseAction<'static'>
   | BaseAction<'storage.read'>
   | BaseAction<'storage.write'>
+  | BaseAction<'team.invite'>
   | BaseAction<'team.join'>
   | BaseAction<'team.list'>
   | BaseAction<'throw'>

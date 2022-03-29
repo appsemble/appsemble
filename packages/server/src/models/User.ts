@@ -68,6 +68,9 @@ export class User extends Model {
   @HasMany(() => AppMember)
   AppMembers: AppMember[];
 
+  @HasMany(() => TeamMember)
+  TeamMembers: TeamMember[];
+
   @CreatedAt
   created: Date;
 
