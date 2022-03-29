@@ -30,7 +30,8 @@ bootstrap(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
     const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
-    const [loading, setLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(true);
+    const [fieldsLoading, setFieldsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
@@ -133,7 +134,7 @@ bootstrap(
 
     useEffect(() => {
       const receiveFields = (d: FieldEventParameters): void => {
-        setLoading(true);
+        setFieldsLoading(true);
         setFields(d.fields);
 
         const newDefaultValues = generateDefaultValues(d.fields);
@@ -146,12 +147,12 @@ bootstrap(
           setValues(recursive(true, newDefaultValues, d.initialValues));
         }
         setSubmitErrorResult(null);
-        setLoading(!d.fields?.length);
+        setFieldsLoading(!d.fields?.length);
       };
 
       const hasFieldsEvent = events.on.fields(receiveFields);
       if (hasFieldsEvent && !initialFields) {
-        setLoading(true);
+        setFieldsLoading(true);
       }
 
       return () => events.off.fields(receiveFields);
@@ -160,7 +161,7 @@ bootstrap(
     const receiveData = useCallback(
       (d: Values) => {
         const newValues = { ...defaultValues, ...d };
-        setLoading(false);
+        setDataLoading(false);
         setValues(newValues);
 
         const requirementErrors = new Map<number, string>();
@@ -199,9 +200,11 @@ bootstrap(
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      setLoading(hasListener);
+      setDataLoading(hasListener);
       ready();
     }, [events, ready, receiveData]);
+
+    const loading = dataLoading || fieldsLoading;
 
     return (
       <Form className={`${styles.root} is-flex px-2 py-2`} data-path={path} onSubmit={onSubmit}>
@@ -221,7 +224,7 @@ bootstrap(
         </Message>
         {fields?.map((f) => (
           <FormInput
-            disabled={loading || submitting}
+            disabled={dataLoading || submitting}
             error={errors[f.name]}
             field={f}
             key={f.name}
@@ -232,7 +235,7 @@ bootstrap(
         ))}
         <FormButtons className="mt-4">
           {previous && (
-            <Button className="mr-4" disabled={loading || submitting} onClick={onPrevious}>
+            <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
               {utils.formatMessage('previousLabel')}
             </Button>
           )}
