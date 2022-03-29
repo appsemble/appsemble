@@ -60,12 +60,16 @@ export function TranslationsPage(): ReactElement {
     confirmLabel: <FormattedMessage {...messages.delete} />,
     async action() {
       setSubmitting(true);
-      await axios.delete(`/api/apps/${app.id}/messages/${languageId}`);
+      try {
+        await axios.delete(`/api/apps/${app.id}/messages/${languageId}`);
+        const newLanguages = languageIds.data.filter((lang) => lang !== languageId);
+        setSelectedLanguage(newLanguages[0]);
+        languageIds.setData(newLanguages);
+        push({ color: 'info', body: formatMessage(messages.deleteSuccess) });
+      } catch {
+        push({ body: formatMessage(messages.deleteError), color: 'danger' });
+      }
       setSubmitting(false);
-      const newLanguages = languageIds.data.filter((lang) => lang !== languageId);
-      setSelectedLanguage(newLanguages[0]);
-      languageIds.setData(newLanguages);
-      push({ color: 'info', body: formatMessage(messages.deleteSuccess) });
     },
   });
 
@@ -104,7 +108,12 @@ export function TranslationsPage(): ReactElement {
         <Button
           className="mr-2"
           color="danger"
-          disabled={submitting || app.locked}
+          disabled={
+            submitting ||
+            app.locked ||
+            !selectedLanguage ||
+            selectedLanguage === (app.definition.defaultLanguage ?? 'en')
+          }
           icon="minus"
           onClick={onDeleteLanguage}
         />

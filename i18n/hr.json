@@ -692,6 +692,7 @@
   "studio.src.pages.apps.app.translations.cancel": "Odustani",
   "studio.src.pages.apps.app.translations.delete": "Izbriši",
   "studio.src.pages.apps.app.translations.deleteBody": "Stvarno želiš izbrisati ovaj prijevod? To je nepovratna radnja.",
+  "studio.src.pages.apps.app.translations.deleteError": "",
   "studio.src.pages.apps.app.translations.deleteSuccess": "Poruke su uspješno izbrisane",
   "studio.src.pages.apps.app.translations.deleteTitle": "Brisanje prijevoda za {language}",
   "studio.src.pages.apps.app.translations.language": "Jezik",

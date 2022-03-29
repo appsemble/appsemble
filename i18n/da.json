@@ -692,6 +692,7 @@
   "studio.src.pages.apps.app.translations.cancel": "Fortryd",
   "studio.src.pages.apps.app.translations.delete": "Slet",
   "studio.src.pages.apps.app.translations.deleteBody": "Er du sikker på, at du vil slette oversættelserne for dette sprog? Disse kan ikke gendannes.",
+  "studio.src.pages.apps.app.translations.deleteError": "",
   "studio.src.pages.apps.app.translations.deleteSuccess": "Meddelelser er slettet",
   "studio.src.pages.apps.app.translations.deleteTitle": "Sletning af oversættelser for {sprog}",
   "studio.src.pages.apps.app.translations.language": "Sprog",

@@ -692,6 +692,7 @@
   "studio.src.pages.apps.app.translations.cancel": "Annuleren",
   "studio.src.pages.apps.app.translations.delete": "Verwijderen",
   "studio.src.pages.apps.app.translations.deleteBody": "Weet je zeker dat je de vertalingen voor deze taal wil verwijderen? Deze kunnen niet worden hersteld.",
+  "studio.src.pages.apps.app.translations.deleteError": "Er is iets misgegaan tijdens het verwijderen van deze taal.",
   "studio.src.pages.apps.app.translations.deleteSuccess": "Vertalingen succesvol verwijderd",
   "studio.src.pages.apps.app.translations.deleteTitle": "Verwijderen vertalingen voor {language}",
   "studio.src.pages.apps.app.translations.language": "Talen",
