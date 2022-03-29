@@ -172,9 +172,10 @@ form {
 ### Applying themes to specific pages or parts of pages
 
 Specific pages and elements can be styled in the core styling by using the `data-` attributes that
-are applied to pages. Each page has a `data-path` and a `data-path-index` property indicating the
-path Appsemble used internally to access this page, for example, the first page would have
-`data-path="pages.example-page"` or `data-path-index="pages.0"`.
+are applied to pages. Each page has a `data-path` and a `data-path-index` attribute. The `data-path`
+is a unique path calculated using Appsemble’s normalization function that represents a page or
+block. For example, it could be `data-path="pages.example-page"`. `data-path-index` is the same,
+except it uses the index of the page. For example `data-path-index="pages.0"`.
 
 To target this using CSS:
 

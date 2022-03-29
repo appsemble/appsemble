@@ -243,8 +243,8 @@ export function Page(): ReactElement {
   if (checkPagePermissions(defaultPage)) {
     let pageName = defaultPage.name;
 
-    if (appMessageIds.includes(`pages.${internalPageName}`)) {
-      pageName = getAppMessage({ id: `pages.${internalPageName}` }).format() as string;
+    if (appMessageIds.includes(prefix)) {
+      pageName = getAppMessage({ id: prefix }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -256,7 +256,8 @@ export function Page(): ReactElement {
     let pageName = redirectPage.name;
 
     if (appMessageIds.includes(`pages.${internalPageName}`)) {
-      pageName = getAppMessage({ id: `pages.${internalPageName}` }).format() as string;
+    if (appMessageIds.includes(prefix)) {
+      pageName = getAppMessage({ id: prefix }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
