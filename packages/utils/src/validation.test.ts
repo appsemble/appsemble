@@ -61,7 +61,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is not a known block type', 'test', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'type',
@@ -82,7 +82,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is not a known version for this block type', '1.2.3', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'version',
@@ -114,7 +114,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('requires property "foo"', {}, undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'parameters',
@@ -147,7 +147,7 @@ describe('validateAppDefinition', () => {
         'requires property "parameters"',
         { type: 'test', version: '1.2.3' },
         undefined,
-        ['pages', 'test-page', 'blocks', 0],
+        ['pages', 0, 'blocks', 0],
       ),
     ]);
   });
@@ -187,7 +187,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not conform to the "action" format', 'invalid', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'parameters',
@@ -233,7 +233,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not conform to the "event-emitter" format', 'invalid', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'parameters',
@@ -279,7 +279,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not conform to the "event-listener" format', 'invalid', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'parameters',
@@ -307,7 +307,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is not allowed on this block type', {}, undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'parameters',
@@ -340,7 +340,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is an unknown action for this block', { type: 'noop' }, undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -368,7 +368,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is not allowed on this block', {}, undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -413,7 +413,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is unused', { type: 'noop' }, undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -490,7 +490,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is an unknown event emitter', 'bar', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'events',
@@ -561,7 +561,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is an unknown event listener', 'bar', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'events',
@@ -628,7 +628,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not match any event emitters', 'bar', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'events',
@@ -665,7 +665,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not match any event listeners', 'bar', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'events',
@@ -704,7 +704,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not match any event emitters', 'reply', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -713,7 +713,7 @@ describe('validateAppDefinition', () => {
       ]),
       new ValidationError('does not match any event listeners', 'sent', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -1040,7 +1040,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
         'pages',
-        'test-page',
+        0,
         'roles',
         0,
       ]),
@@ -1061,7 +1061,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('does not exist in this app’s roles', 'Unknown', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'roles',
@@ -1317,7 +1317,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('refers to a page that doesn’t exist', 'Doesn’t exist', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -1356,7 +1356,7 @@ describe('validateAppDefinition', () => {
         'refers to a sub page on a page that isn’t of type ‘tabs’ or ‘flow’',
         'Bla',
         undefined,
-        ['pages', 'test-page', 'blocks', 0, 'actions', 'onWhatever', 'to', 1],
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'to', 1],
       ),
     ]);
   });
@@ -1388,7 +1388,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('refers to a tab that doesn’t exist', 'Bla', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -1453,19 +1453,19 @@ describe('validateAppDefinition', () => {
         'refers to a user action but the app doesn’t have a security definition',
         'user.login',
         undefined,
-        ['pages', 'test-page', 'blocks', 0, 'actions', 'onWhatever', 'type'],
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
         'refers to a user action but the app doesn’t have a security definition',
         'user.register',
         undefined,
-        ['pages', 'test-page', 'blocks', 1, 'actions', 'onWhatever', 'type'],
+        ['pages', 0, 'blocks', 1, 'actions', 'onWhatever', 'type'],
       ),
       new ValidationError(
         'refers to a user action but the app doesn’t have a security definition',
         'user.update',
         undefined,
-        ['pages', 'test-page', 'blocks', 2, 'actions', 'onWhatever', 'type'],
+        ['pages', 0, 'blocks', 2, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });
@@ -1499,7 +1499,7 @@ describe('validateAppDefinition', () => {
         'flow actions can only be used on pages with the type ‘flow’',
         'flow.next',
         undefined,
-        ['pages', 'test-page', 'blocks', 0, 'actions', 'onWhatever', 'type'],
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });
@@ -1531,7 +1531,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('is not allowed on the first step in the flow', 'flow.back', undefined, [
         'pages',
-        'page-with-steps',
+        3,
         'steps',
         0,
         'blocks',
@@ -1571,7 +1571,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('refers to a step that doesn’t exist', 'flow.to', undefined, [
         'pages',
-        'page-with-steps',
+        3,
         'steps',
         0,
         'blocks',
@@ -1612,7 +1612,7 @@ describe('validateAppDefinition', () => {
         'was defined on the last step but ‘onFlowFinish’ page action wasn’t defined',
         'flow.next',
         undefined,
-        ['pages', 'page-with-steps', 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });
@@ -1646,7 +1646,7 @@ describe('validateAppDefinition', () => {
         'was defined but ‘onFlowFinish’ page action wasn’t defined',
         'flow.finish',
         undefined,
-        ['pages', 'page-with-steps', 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });
@@ -1680,7 +1680,7 @@ describe('validateAppDefinition', () => {
         'was defined but ‘onFlowCancel’ page action wasn’t defined',
         'flow.cancel',
         undefined,
-        ['pages', 'page-with-steps', 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
+        ['pages', 3, 'steps', 1, 'blocks', 0, 'actions', 'onWhatever', 'type'],
       ),
     ]);
   });
@@ -1713,7 +1713,7 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError('refers to a resource that doesn’t exist', 'resource.get', undefined, [
         'pages',
-        'test-page',
+        0,
         'blocks',
         0,
         'actions',
@@ -1753,7 +1753,7 @@ describe('validateAppDefinition', () => {
         'refers to a resource action that is currently set to private',
         'resource.get',
         undefined,
-        ['pages', 'test-page', 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
       ),
     ]);
   });
@@ -1789,7 +1789,7 @@ describe('validateAppDefinition', () => {
         'refers to a resource action that is accessible when logged in, but the app has no security definitions',
         'resource.get',
         undefined,
-        ['pages', 'test-page', 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+        ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
       ),
     ]);
   });

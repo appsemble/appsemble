@@ -1,6 +1,7 @@
 import { AppDefinition, AppsembleMessages, BlockDefinition } from '@appsemble/types';
 
 import { iterApp, Prefix } from '.';
+import { normalize } from './normalize';
 
 /**
  * Recursively find `string.format` remapper message IDs.
@@ -64,7 +65,10 @@ export function extractAppMessages(
       );
 
       if (onBlock) {
-        onBlock(block, prefix);
+        const normalizedPrefix = prefix.map((entry, index) =>
+          index === 1 ? normalize(app.pages[entry as number].name) : entry,
+        );
+        onBlock(block, normalizedPrefix);
       }
     },
     onAction(action) {
@@ -119,18 +123,19 @@ export function extractAppMessages(
         default:
       }
     },
-    onPage(page, prefix) {
-      messages.app[prefix.join('.')] = page.name;
+    onPage(page) {
+      const prefix = `pages.${normalize(page.name)}`;
+      messages.app[prefix] = page.name;
 
       if (page.type === 'tabs') {
         for (const [index, tab] of page.tabs.entries()) {
-          messages.app[`${prefix.join('.')}.tabs.${index}`] = tab.name ?? '';
+          messages.app[`${prefix}.tabs.${index}`] = tab.name ?? '';
         }
       }
 
       if (page.type === 'flow') {
         for (const [index, step] of page.steps.entries()) {
-          messages.app[`${prefix.join('.')}.steps.${index}`] = step.name ?? '';
+          messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
         }
       }
     },
