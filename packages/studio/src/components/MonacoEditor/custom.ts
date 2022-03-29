@@ -1,6 +1,7 @@
 import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
 import { setDiagnosticsOptions } from 'monaco-yaml';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
+import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions';
 import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu';
@@ -8,7 +9,7 @@ import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController';
 import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover';
-import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
+import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletionsContribution';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 
