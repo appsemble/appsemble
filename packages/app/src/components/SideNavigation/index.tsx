@@ -28,7 +28,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   } = useRouteMatch<{ lang: string }>();
   const { getAppMessage, getMessage } = useAppMessages();
   const {
-    definition: { layout, security, ...definition },
+    definition: { layout, security },
   } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
@@ -37,7 +37,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
       <MenuSection>
         {pages.map((page) => {
           const name = getAppMessage({
-            id: `pages.${definition.pages.indexOf(page)}`,
+            id: `pages.${normalize(page.name)}`,
             defaultMessage: page.name,
           }).format() as string;
           const navName = page.navTitle

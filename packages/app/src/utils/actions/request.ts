@@ -7,7 +7,7 @@ import { ActionCreator } from '.';
 import { apiUrl, appId } from '../settings';
 import { xmlToJson } from '../xmlToJson';
 
-export const request: ActionCreator<'request'> = ({ definition, prefix, remap }) => {
+export const request: ActionCreator<'request'> = ({ definition, prefixIndex, remap }) => {
   const { body, method: uncasedMethod = 'GET', proxy = true, schema, url } = definition;
   const method = uncasedMethod.toUpperCase() as HTTPMethods;
 
@@ -16,7 +16,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefix, remap })
       const req = proxy
         ? {
             method,
-            url: `${apiUrl}/api/apps/${appId}/action/${prefix}`,
+            url: `${apiUrl}/api/apps/${appId}/action/${prefixIndex}`,
           }
         : formatRequestAction(definition, data, remap, context);
 

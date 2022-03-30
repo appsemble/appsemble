@@ -20,6 +20,7 @@ interface FlowPageProps {
   ee: EventEmitter;
   page: FlowPageDefinition;
   prefix: string;
+  prefixIndex: string;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
   setData: (data: unknown) => void;
   showDialog: ShowDialogAction;
@@ -32,6 +33,7 @@ export function FlowPage({
   ee,
   page,
   prefix,
+  prefixIndex,
   remap,
   setData,
   showDialog,
@@ -147,6 +149,7 @@ export function FlowPage({
         extraCreators: {},
         flowActions,
         prefix,
+        prefixIndex,
         pushNotifications,
         ee,
         pageReady: null,
@@ -167,6 +170,7 @@ export function FlowPage({
       showShareDialog,
       flowActions,
       prefix,
+      prefixIndex,
       pushNotifications,
       ee,
       remap,
@@ -195,6 +199,7 @@ export function FlowPage({
         key={currentStep}
         page={page}
         prefix={`${prefix}.steps.${currentStep}.blocks`}
+        prefixIndex={`${prefixIndex}.steps.${currentStep}.blocks`}
         remap={remap}
         showDialog={showDialog}
         showShareDialog={showShareDialog}

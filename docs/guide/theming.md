@@ -172,22 +172,26 @@ form {
 ### Applying themes to specific pages or parts of pages
 
 Specific pages and elements can be styled in the core styling by using the `data-` attributes that
-are applied to pages. Each page has a `data-path` property indicating the path Appsemble used
-internally to access this page, for example, the first page would have `data-path="pages.0"`.
+are applied to pages. Each page has a `data-path` and a `data-path-index` attribute. The `data-path`
+is a unique path calculated using Appsemble’s normalization function that represents a page or
+block. For example, it could be `data-path="pages.example-page"`. `data-path-index` is the same,
+except it uses the index of the page. For example `data-path-index="pages.0"`.
 
 To target this using CSS:
 
 ```css copy
-[data-path='pages.0'] {
+[data-path='pages.example-page'] {
   background-color: red;
 }
 ```
 
-The blocks within a page also have their own data properties applied to them. These are `data-path`
-and `data-type`. The property `data-path` looks similar to `data-path` on pages, with `.blocks.`
-being added following by the index number of the block, such as: `pages.0.blocks.1` for the second
-block on the first page. The `data-type` property contains the full name of the block. Both of these
-can be combined to target specific blocks on specific pages.
+The blocks within a page also have their own data properties applied to them. These are `data-path`,
+`data-path-index`, and `data-type`. The property `data-path` looks similar to `data-path` on pages,
+with `.blocks.` being added following by the index number of the block, such as:
+`pages.example-page.blocks.1` for the second block on the first page. The `data-path-index` property
+is the same as `data-path`, using the index of the page instead of the page’s internal name. The
+`data-type` property contains the full name of the block. Both of these can be combined to target
+specific blocks on specific pages.
 
 ```css copy
 /* List blocks have a yellow background. */
@@ -196,7 +200,7 @@ can be combined to target specific blocks on specific pages.
 }
 
 /* List blocks on the first page have a blue background. */
-[data-path='pages.0'] [data-type='@appsemble/list'] {
+[data-path-index='pages.0'] [data-type='@appsemble/list'] {
   background-color: blue;
 }
 ```

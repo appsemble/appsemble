@@ -2,10 +2,10 @@
   "app": {
     "description": "Une application dans laquelle les déchets peuvent être signalés et affichés sur une carte interactive.",
     "name": "",
-    "pages.0": "Signaler des déchets",
-    "pages.1": "Aperçu des déchets",
-    "pages.2": "Détails des déchets",
-    "pages.3": "Liste des déchets"
+    "pages.report-litter": "Signaler des déchets",
+    "pages.litter-overview": "Aperçu des déchets",
+    "pages.litter-details": "Détails des déchets",
+    "pages.litter-list": "Liste des déchets"
   },
   "messageIds": {
     "date": "Date",

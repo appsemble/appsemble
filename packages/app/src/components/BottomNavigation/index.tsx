@@ -42,7 +42,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
         <ul className={`${styles.list} is-flex`}>
           {pages.map((page) => {
             const name = getAppMessage({
-              id: `pages.${definition.pages.indexOf(page)}`,
+              id: `pages.${normalize(page.name)}`,
               defaultMessage: page.name,
             }).format() as string;
             const navName = page.navTitle

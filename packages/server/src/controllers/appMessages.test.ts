@@ -258,7 +258,7 @@ describe('getMessages', () => {
           "app": {
             "description": "Description",
             "name": "Test App",
-            "pages.0": "test",
+            "pages.test": "test",
           },
           "blocks": {
             "@appsemble/form": {
@@ -334,7 +334,7 @@ describe('getMessages', () => {
           "app": {
             "description": "Description",
             "name": "Test App",
-            "pages.0": "test",
+            "pages.test": "test",
           },
           "blocks": {
             "@testorganization/test": {
@@ -402,7 +402,7 @@ describe('getMessages', () => {
           "app": {
             "description": "Description",
             "name": "Test App",
-            "pages.0": "test",
+            "pages.test": "test",
           },
           "blocks": {
             "@testorganization/test": {
@@ -517,10 +517,10 @@ describe('getMessages', () => {
           app: {
             name: 'Test App',
             description: 'Description',
-            'pages.0': 'test-page',
-            'pages.1': 'test-page-2',
-            'pages.0.blocks.0.test': 'foo',
-            'pages.1.blocks.0.test': 'foo',
+            'pages.test-page': 'test-page',
+            'pages.test-page-2': 'test-page-2',
+            'pages.test-page.blocks.0.test': 'foo',
+            'pages.test-page-2.blocks.0.test': 'foo',
           },
           blocks: {
             '@xkcd/standing': {
@@ -579,7 +579,7 @@ describe('getMessages', () => {
       AppId: app.id,
       language: 'en',
       messages: {
-        app: { 'pages.0.blocks.0.test': 'Bla' },
+        app: { 'pages.test-page.blocks.0.test': 'Bla' },
 
         messageIds: { bla: 'bla' },
       },
@@ -602,9 +602,9 @@ describe('getMessages', () => {
           app: {
             name: 'Test App',
             description: 'Description',
-            'pages.0': 'test-page',
-            'pages.1': 'test-page-2',
-            'pages.0.blocks.0.test': 'Bla',
+            'pages.test-page': 'test-page',
+            'pages.test-page-2': 'test-page-2',
+            'pages.test-page.blocks.0.test': 'Bla',
           },
           blocks: {
             '@xkcd/standing': {

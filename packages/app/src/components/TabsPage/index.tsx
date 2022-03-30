@@ -12,7 +12,12 @@ interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>,
   page: TabsPageDefinition;
 }
 
-export function TabsPage({ page, prefix, ...blockListProps }: TabsPageProps): ReactElement {
+export function TabsPage({
+  page,
+  prefix,
+  prefixIndex,
+  ...blockListProps
+}: TabsPageProps): ReactElement {
   const { path, url } = useRouteMatch();
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
@@ -58,6 +63,7 @@ export function TabsPage({ page, prefix, ...blockListProps }: TabsPageProps): Re
                 name={translatedName}
                 page={page}
                 prefix={`${prefix}.tabs.${index}.blocks`}
+                prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
               />
             </Route>
           );

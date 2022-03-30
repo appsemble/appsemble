@@ -64,7 +64,9 @@ describe('extractAppMessages', () => {
         { name: 'Second Page', blocks: [] },
       ],
     });
-    expect(result).toMatchObject({ app: { 'pages.0': 'First Page', 'pages.1': 'Second Page' } });
+    expect(result).toMatchObject({
+      app: { 'pages.first-page': 'First Page', 'pages.second-page': 'Second Page' },
+    });
   });
 
   it('should extract block header remappers', () => {
@@ -79,7 +81,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.0': 'Page' } });
+    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.page': 'Page' } });
   });
 
   it('should extract remappers from block parameters', () => {
@@ -98,7 +100,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.0': 'Page' } });
+    expect(result).toMatchObject({ messageIds: { foo: '' }, app: { 'pages.page': 'Page' } });
   });
 
   it('should extract action remap', () => {
@@ -132,7 +134,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { onClickMessageId: '', onErrorMessageId: '', onSuccessMessageId: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -161,7 +163,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { ifCondition: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -189,7 +191,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { dialogTitle: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -221,7 +223,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { attachments: '', bcc: '', body: '', cc: '', subject: '', to: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -248,7 +250,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { toPage: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -275,7 +277,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { messageBody: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -368,7 +370,7 @@ describe('extractAppMessages', () => {
         resourceUpdateQuery: '',
         resourceUpdateUrl: '',
       },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -397,7 +399,7 @@ describe('extractAppMessages', () => {
     });
     expect(result).toMatchObject({
       messageIds: { shareText: '', shareTitle: '', shareUrl: '' },
-      app: { 'pages.0': 'Page' },
+      app: { 'pages.page': 'Page' },
     });
   });
 
@@ -412,7 +414,7 @@ describe('extractAppMessages', () => {
         },
       ],
     });
-    expect(result).toMatchObject({ app: { 'pages.0': 'Tabs', 'pages.0.tabs.0': 'Tab' } });
+    expect(result).toMatchObject({ app: { 'pages.tabs': 'Tabs', 'pages.tabs.tabs.0': 'Tab' } });
   });
 
   it('should append any messages returned by onBlock', () => {
@@ -424,7 +426,7 @@ describe('extractAppMessages', () => {
       },
       onBlock,
     );
-    expect(onBlock).toHaveBeenCalledWith({ type: '', version: '' }, ['pages', 0, 'blocks', 0]);
-    expect(result).toMatchObject({ app: { 'pages.0': 'Page' } });
+    expect(onBlock).toHaveBeenCalledWith({ type: '', version: '' }, ['pages', 'page', 'blocks', 0]);
+    expect(result).toMatchObject({ app: { 'pages.page': 'Page' } });
   });
 });

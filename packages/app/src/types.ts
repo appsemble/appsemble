@@ -88,6 +88,7 @@ export interface ShowDialogParams {
   close: () => void;
   fullscreen: boolean;
   prefix: string;
+  prefixIndex: string;
   title?: Remapper;
 }
 
@@ -120,6 +121,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   showShareDialog: ShowShareDialog;
   showDialog: ShowDialogAction;
   prefix: string;
+  prefixIndex: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;

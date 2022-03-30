@@ -2,8 +2,8 @@
   "app": {
     "description": "",
     "name": "Опрос",
-    "pages.0": "Опрос",
-    "pages.1": "Завершено"
+    "pages.survey": "Опрос",
+    "pages.finished": "Завершено"
   },
   "blocks": {
     "@appsemble/form": {
