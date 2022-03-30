@@ -7,7 +7,7 @@ import { BlockList } from '../BlockList';
 import styles from './index.module.css';
 
 interface PageDialogProps
-  extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix'> {
+  extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix' | 'prefixIndex'> {
   dialog: ShowDialogParams;
 }
 
@@ -29,6 +29,7 @@ export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps):
           data={dialog.data}
           extraCreators={dialog.actionCreators}
           prefix={`${dialog.prefix}.blocks`}
+          prefixIndex={`${dialog.prefixIndex}.blocks`}
           remap={remap}
           {...props}
         />

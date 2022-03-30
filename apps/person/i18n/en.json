@@ -2,9 +2,9 @@
   "app": {
     "description": "A simple form and data viewing app using the resource API",
     "name": "Person",
-    "pages.0": "Person List",
-    "pages.1": "Person Registration Form",
-    "pages.2": "Person Details"
+    "pages.person-list": "Person List",
+    "pages.person-registration-form": "Person Registration Form",
+    "pages.person-details": "Person Details"
   },
   "messageIds": {
     "description": "Description",

@@ -4,7 +4,7 @@
     "app.roles.User.description": "A user who keeps their own notes.",
     "description": "Keep personal notes",
     "name": "Notes",
-    "pages.0": "Notes"
+    "pages.notes": "Notes"
   },
   "messageIds": {
     "body": "Body",

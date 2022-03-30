@@ -163,8 +163,10 @@ it('should render the index page', async () => {
   await App.create({
     OrganizationId: 'test',
     definition: {
+      name: 'Test App',
       pages: [
         {
+          name: 'Test Page',
           blocks: [
             { type: '@test/a', version: '0.0.0' },
             { type: 'a', version: '0.1.0' },
@@ -172,6 +174,7 @@ it('should render the index page', async () => {
           ],
         },
         {
+          name: 'Test Page with Flow',
           type: 'flow',
           steps: [
             {
@@ -244,8 +247,10 @@ it('should render the index page', async () => {
     showAppsembleLogin: false,
     showAppsembleOAuth2Login: true,
     definition: {
+      name: 'Test App',
       pages: [
         {
+          name: 'Test Page',
           blocks: [
             { type: '@test/a', version: '0.0.0' },
             { type: 'a', version: '0.1.0' },
@@ -253,6 +258,7 @@ it('should render the index page', async () => {
           ],
         },
         {
+          name: 'Test Page with Flow',
           type: 'flow',
           steps: [
             {

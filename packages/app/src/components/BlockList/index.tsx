@@ -20,6 +20,7 @@ interface BlockListProps {
   flowActions?: {};
   page: PageDefinition;
   prefix: string;
+  prefixIndex: string;
   remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
@@ -49,6 +50,7 @@ export function BlockList({
   flowActions,
   page,
   prefix,
+  prefixIndex,
   remap,
   showDialog,
   showShareDialog,
@@ -110,6 +112,7 @@ export function BlockList({
           page={page}
           pageReady={pageReady}
           prefix={`${prefix}.${index}`}
+          prefixIndex={`${prefixIndex}.${index}`}
           ready={ready}
           remap={remap}
           showDialog={showDialog}

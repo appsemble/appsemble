@@ -34,6 +34,7 @@ export function createAction<T extends ActionDefinition['type']>({
   extraCreators,
   pageReady,
   prefix,
+  prefixIndex,
   remap: localRemap,
   ...params
 }: CreateActionParams<T>): Extract<Action, { type: T }> {
@@ -51,6 +52,7 @@ export function createAction<T extends ActionDefinition['type']>({
     extraCreators,
     remap: localRemap,
     prefix,
+    prefixIndex,
   });
   // Name the function to enhance stack traces.
   Object.defineProperty(dispatch, 'name', { value: `${type}[implementation]` });
@@ -63,6 +65,7 @@ export function createAction<T extends ActionDefinition['type']>({
       extraCreators,
       pageReady,
       prefix: `${prefix}.onSuccess`,
+      prefixIndex: `${prefixIndex}.onSuccess`,
       remap: localRemap,
     });
   const onError =
@@ -73,6 +76,7 @@ export function createAction<T extends ActionDefinition['type']>({
       extraCreators,
       pageReady,
       prefix: `${prefix}.onError`,
+      prefixIndex: `${prefixIndex}.onError`,
       remap: localRemap,
     });
 
@@ -129,6 +133,7 @@ export function makeActions({
   actions,
   context,
   prefix,
+  prefixIndex,
   ...params
 }: MakeActionsParams): Record<string, Action> {
   const actionMap: Record<string, Action> = {};
@@ -143,6 +148,7 @@ export function makeActions({
         ...params,
         definition: context?.actions?.[key],
         prefix: `${prefix}.actions.${key}`,
+        prefixIndex: `${prefixIndex}.actions.${key}`,
       });
     }
   }
@@ -162,6 +168,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     history: null,
     pageReady: Promise.resolve(),
     prefix: null,
+    prefixIndex: null,
     pushNotifications: null,
     remap: (remapper, data, context) =>
       remap(remapper, data, {

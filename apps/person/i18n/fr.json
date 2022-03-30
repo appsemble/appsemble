@@ -2,9 +2,9 @@
   "app": {
     "description": "Une application simple de visualisation de formulaires et de données utilisant l'API de ressources",
     "name": "Personne",
-    "pages.0": "Liste des personnes",
-    "pages.1": "Formulaire d'inscription de personne",
-    "pages.2": "Détails de l'individu"
+    "pages.person-list": "Liste des personnes",
+    "pages.person-registration-form": "Formulaire d'inscription de personne",
+    "pages.person-details": "Détails de l'individu"
   },
   "messageIds": {
     "description": "Description",
