@@ -241,10 +241,11 @@ export function Page(): ReactElement {
   const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
   const defaultPage = definition.pages.find((p) => p.name === defaultPageName);
   if (checkPagePermissions(defaultPage)) {
+    const defaultPagePrefix = `pages.${normalize(defaultPage.name)}`;
     let pageName = defaultPage.name;
 
-    if (appMessageIds.includes(prefix)) {
-      pageName = getAppMessage({ id: prefix }).format() as string;
+    if (appMessageIds.includes(defaultPagePrefix)) {
+      pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
@@ -253,10 +254,11 @@ export function Page(): ReactElement {
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
   const redirectPage = definition.pages.find((p) => checkPagePermissions(p) && !p.parameters);
   if (redirectPage) {
+    const normalizedRedirectPageName = `pages.${normalize(redirectPage.name)}`;
     let pageName = redirectPage.name;
 
-    if (appMessageIds.includes(prefix)) {
-      pageName = getAppMessage({ id: prefix }).format() as string;
+    if (appMessageIds.includes(normalizedRedirectPageName)) {
+      pageName = getAppMessage({ id: normalizedRedirectPageName }).format() as string;
     }
 
     return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
