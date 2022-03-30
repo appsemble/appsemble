@@ -4,9 +4,9 @@ subject: Invited to team
 
 Hello,
 
-You have been invited to join the team **`{{teamName}}`** of **`{{appName}}`**.
+You have been invited to join the team **`{{teamName}}`** for the app **`{{appName}}`**.
 
-You can accept or decline this invitation by following [this link](/{{url}}).
+You can accept this invitation by following [this link](/{{url}}).
 
 Kind regards,
 
