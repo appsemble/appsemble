@@ -255,35 +255,33 @@ export function Page(): ReactElement {
   if (redirectPage) {
     let pageName = redirectPage.name;
 
-    if (appMessageIds.includes(`pages.${internalPageName}`)) {
-      if (appMessageIds.includes(prefix)) {
-        pageName = getAppMessage({ id: prefix }).format() as string;
-      }
-
-      return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
+    if (appMessageIds.includes(prefix)) {
+      pageName = getAppMessage({ id: prefix }).format() as string;
     }
 
-    // If the user isn’t allowed to view any pages, show an error message.
-    return (
-      <Content padding>
-        <Message color="danger">
-          <p>
-            <FormattedMessage
-              {...messages.permissionError}
-              values={{
-                link: (text: string) => (
-                  <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
-                    {text}
-                  </a>
-                ),
-              }}
-            />
-          </p>
-          <Button className="mt-4" color="danger">
-            <FormattedMessage {...messages.logout} />
-          </Button>
-        </Message>
-      </Content>
-    );
+    return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
   }
+
+  // If the user isn’t allowed to view any pages, show an error message.
+  return (
+    <Content padding>
+      <Message color="danger">
+        <p>
+          <FormattedMessage
+            {...messages.permissionError}
+            values={{
+              link: (text: string) => (
+                <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
+                  {text}
+                </a>
+              ),
+            }}
+          />
+        </p>
+        <Button className="mt-4" color="danger">
+          <FormattedMessage {...messages.logout} />
+        </Button>
+      </Message>
+    </Content>
+  );
 }
