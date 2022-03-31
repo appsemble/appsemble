@@ -1,4 +1,4 @@
-import { TeamRole } from '@appsemble/utils';
+import { TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
@@ -666,23 +666,30 @@ describe('addTeamMember', () => {
       authorizeApp(app);
     });
 
-    it('should allow anyone to join is the join policy is `anyone', async () => {
+    it('should allow anyone to join if the join policy is `anyone', async () => {
       const team = await Team.create({ name: 'A', AppId: app.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
         id: user.id,
       });
 
-      expect(response).toMatchInlineSnapshot(`
+      expect(response).toMatchInlineSnapshot(
+        {
+          data: {
+            id: expect.stringMatching(uuid4Pattern),
+          },
+        },
+        `
         HTTP/1.1 201 Created
         Content-Type: application/json; charset=utf-8
 
         {
-          "id": "02342b52-bea9-49bb-82a9-fa0e986ebef2",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
           "name": "Test User",
           "primaryEmail": "test@example.com",
           "role": "member",
         }
-      `);
+      `,
+      );
     });
 
     it('should allow reject users if the join policy is `invite`', async () => {
