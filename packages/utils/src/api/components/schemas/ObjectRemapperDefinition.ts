@@ -139,7 +139,11 @@ Supported properties:
 `,
     },
     prop: {
-      anyOf: [{ type: 'string' }, { type: 'integer' }],
+      anyOf: [
+        { type: 'string' },
+        { type: 'integer' },
+        { type: 'array', minItems: 1, items: { anyOf: [{ type: 'string' }, { type: 'integer' }] } },
+      ],
       description: 'Get a property from an object.',
     },
     'random.choice': {
