@@ -2,12 +2,12 @@
   "app": {
     "description": "",
     "name": "Опрос",
-    "pages.survey": "Опрос",
-    "pages.finished": "Завершено"
+    "pages.finished": "Завершено",
+    "pages.survey": "Опрос"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.2": {
+      "0.20.3": {
         "submitLabel": "Следующий"
       }
     }

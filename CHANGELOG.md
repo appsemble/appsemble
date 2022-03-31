@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.3](https://gitlab.com/appsemble/appsemble/-/releases/0.20.3)] - 2022-03-31
+
+### Added
+
+- App: Add `security.teams` property in app definition.
+- App: Add `team.invite` action.
+- App: Add page for accepting team invites.
+- App: Add support for replacing existing login and register pages with custom pages by naming the
+  pages `Login` or `Register`.
+- Server: Add support for team invites.
+
+### Changed
+
+- Block(`chart`): Make `min` and `max` in `yAxis` property optional.
+- Studio: Replace the JSON schema representation of block parameters and definitions with the one
+  used to render out app resource schema.
+
+### Fixed
+
+- Cli: Fix issue where the description for `$any` actions and events were not extracted.
+- Studio: Fix issue where block documentation would not render any types that used `anyOf` or
+  `oneOf`.
+
 ## \[[0.20.2](https://gitlab.com/appsemble/appsemble/-/releases/0.20.2)] - 2022-03-01
 
 ### Changed

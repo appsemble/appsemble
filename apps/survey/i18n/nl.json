@@ -2,6 +2,7 @@
   "app": {
     "description": "Een app waarin een gebruiker een vragenlijst kan invullen",
     "name": "Vragenlijst",
+    "pages.finished": "Klaar",
     "pages.survey": "Vragenlijst",
     "pages.survey.steps.0": "Introductie",
     "pages.survey.steps.1": "Bekendheid",
@@ -11,12 +12,11 @@
     "pages.survey.steps.5": "Volgende app met Appsemble",
     "pages.survey.steps.6": "Jouw volgende app",
     "pages.survey.steps.7": "Waarom niet Appemble",
-    "pages.survey.steps.8": "Nog iets anders",
-    "pages.finished": "Klaar"
+    "pages.survey.steps.8": "Nog iets anders"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.2": {
+      "0.20.3": {
         "submitLabel": "Volgende"
       }
     }

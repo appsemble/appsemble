@@ -2,6 +2,7 @@
   "app": {
     "description": "Une application qui demande à l'utilisateur de répondre à quelques questions.",
     "name": "Sondage",
+    "pages.finished": "Terminé",
     "pages.survey": "Sondage",
     "pages.survey.steps.0": "",
     "pages.survey.steps.1": "",
@@ -11,12 +12,11 @@
     "pages.survey.steps.5": "",
     "pages.survey.steps.6": "",
     "pages.survey.steps.7": "",
-    "pages.survey.steps.8": "",
-    "pages.finished": "Terminé"
+    "pages.survey.steps.8": ""
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.2": {
+      "0.20.3": {
         "submitLabel": "Suivant"
       }
     }

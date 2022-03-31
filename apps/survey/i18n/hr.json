@@ -2,6 +2,7 @@
   "app": {
     "description": "Program koji zahtijeva da korisnik odgovori na neka pitanja.",
     "name": "Anketa",
+    "pages.finished": "Završeno",
     "pages.survey": "Anketa",
     "pages.survey.steps.0": "Uvod",
     "pages.survey.steps.1": "Familijarnost",
@@ -11,12 +12,11 @@
     "pages.survey.steps.5": "Sljedeći program s Appsemble",
     "pages.survey.steps.6": "Tvoj sljedeći program",
     "pages.survey.steps.7": "Zašto ne Appsemble",
-    "pages.survey.steps.8": "Bilo što drugo",
-    "pages.finished": "Završeno"
+    "pages.survey.steps.8": "Bilo što drugo"
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.2": {
+      "0.20.3": {
         "submitLabel": "Dalje"
       }
     }
