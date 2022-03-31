@@ -142,7 +142,7 @@ export function AppRoutes(): ReactElement {
             <FormattedMessage {...messages.users} />
           </MenuItem>
         )}
-        {editPermission && app.definition.security && (
+        {editPermission && app.definition.security?.teams && (
           <MenuItem icon="hands-helping" to={`${url}/teams`}>
             <FormattedMessage {...messages.teams} />
           </MenuItem>
@@ -230,21 +230,25 @@ export function AppRoutes(): ReactElement {
         >
           <TranslationsPage />
         </ProtectedRoute>
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/users`}
-          permission={Permission.ManageRoles}
-        >
-          <UsersPage />
-        </ProtectedRoute>
-        <ProtectedRoute
-          organization={organization}
-          path={`${path}/teams`}
-          permission={Permission.InviteMember}
-        >
-          <TeamsRoutes />
-        </ProtectedRoute>
+        {app.definition.security ? (
+          <ProtectedRoute
+            exact
+            organization={organization}
+            path={`${path}/users`}
+            permission={Permission.ManageRoles}
+          >
+            <UsersPage />
+          </ProtectedRoute>
+        ) : null}
+        {app.definition.security?.teams ? (
+          <ProtectedRoute
+            organization={organization}
+            path={`${path}/teams`}
+            permission={Permission.InviteMember}
+          >
+            <TeamsRoutes />
+          </ProtectedRoute>
+        ) : null}
         <ProtectedRoute
           exact
           organization={organization}

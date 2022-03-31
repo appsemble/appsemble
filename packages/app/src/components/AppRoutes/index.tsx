@@ -15,6 +15,7 @@ import { Page } from '../Page';
 import { Register } from '../Register';
 import { ResetPassword } from '../ResetPassword';
 import { SentryFeedback } from '../SentryFeedback';
+import { TeamInvite } from '../TeamInvite';
 import { useUser } from '../UserProvider';
 import { Verify } from '../Verify';
 
@@ -59,6 +60,9 @@ export function AppRoutes(): ReactElement {
             <Register />
           </Route>
         )}
+        <Route exact path="/:lang/Team-Invite" sensitive>
+          <TeamInvite />
+        </Route>
         <Route exact path="/:lang/Reset-Password" sensitive>
           <ResetPassword />
         </Route>

@@ -23,3 +23,12 @@ export const teamJoin: ActionCreator<'team.join'> = ({ getUserInfo, updateTeam }
 ];
 
 export const teamList: ActionCreator<'team.list'> = ({ teams }) => [() => teams];
+
+export const teamInvite: ActionCreator<'team.invite'> = ({ definition, remap }) => [
+  async (data) => {
+    const id = definition.id ? await remap(definition.id, data) : (data as any).id;
+    const email = definition.email ? await remap(definition.email, data) : (data as any).email;
+
+    await axios.post<unknown>(`${apiUrl}/api/apps/${appId}/teams/${id}/invite`, { email });
+  },
+];

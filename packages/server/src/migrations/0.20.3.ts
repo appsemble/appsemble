@@ -1,9 +1,18 @@
 import { logger } from '@appsemble/node-utils';
+import { AppDefinition, TeamsDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
 import { cloneDeep } from 'lodash';
-import { QueryTypes, Sequelize } from 'sequelize';
+import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
+import { parseDocument } from 'yaml';
 
 export const key = '0.20.3';
+
+interface AppDefinitionQuery {
+  id: number;
+  created: Date;
+  yaml: string;
+  definition: AppDefinition;
+}
 
 interface AppQuery {
   id: number;
@@ -63,11 +72,61 @@ function processAppsAndMessages(
 
 /**
  * Summary:
+ * - Add table `TeamInvite`
  * - Convert all path references for apps to use the page name instead of the index.
  *
  * @param db - The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+
+  logger.info('Adding table `TeamInvite` ');
+  await queryInterface.createTable('TeamInvite', {
+    TeamId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      references: { model: 'Team', key: 'id' },
+      allowNull: false,
+    },
+    email: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
+    role: { type: DataTypes.STRING, allowNull: false },
+    key: { type: DataTypes.STRING, allowNull: false },
+    created: { type: DataTypes.DATE, allowNull: false },
+    updated: { type: DataTypes.DATE, allowNull: false },
+  });
+
+  const unmigrated = await db.query<AppDefinitionQuery>(
+    `SELECT DISTINCT ON (a.id) a.id, s.created, s.yaml, a.definition
+     FROM "App" a
+     INNER JOIN "Team" ON "Team"."AppId" = a.id
+     INNER JOIN "AppSnapshot" s ON a.id = s."AppId"
+     ORDER BY a.id, s.created DESC`,
+    { type: QueryTypes.SELECT },
+  );
+
+  for (const { definition, id, yaml } of unmigrated) {
+    const doc = parseDocument(yaml);
+    if (!definition.security) {
+      logger.warn(`App ${id} has teams, but no security definition. Adding default role “User”`);
+      const securityDefinition = { roles: { User: {} }, default: { role: 'User' } };
+      definition.security = securityDefinition;
+      doc.setIn(['security'], securityDefinition);
+    }
+    const teamsDefinition: TeamsDefinition = { join: 'anyone', invite: ['$team:member'] };
+    definition.security.teams = teamsDefinition;
+    doc.setIn(['security', 'teams'], teamsDefinition);
+    logger.warn(`Adding old teams behaviour for app ${id}`);
+    await db.query('UPDATE "App" SET definition = ? where id = ?', {
+      type: QueryTypes.UPDATE,
+      replacements: [JSON.stringify(definition), id],
+    });
+    await db.query('INSERT INTO "AppSnapshot" (created, yaml, "AppId") VALUES (NOW(), ?, ?)', {
+      type: QueryTypes.INSERT,
+      replacements: [String(doc), id],
+    });
+  }
+
+  logger.info('Starting path reference migration');
   const messagesInput = await db.query<MessagesQuery>(
     'SELECT "AppId", language, messages FROM "AppMessages" WHERE messages->>\'app\' ~ \'"pages\\.\\d+\'',
     {
@@ -109,10 +168,14 @@ export async function up(db: Sequelize): Promise<void> {
 /**
  * Summary:
  * - Convert all path references for apps to use the page index instead of the name.
+ * - Remove table `TeamInvite`
  *
  * @param db - The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
+  const queryInterface = db.getQueryInterface();
+
+  logger.info('Starting path reference migration');
   const messagesInput = await db.query<MessagesQuery>(
     `SELECT "AppId", language, messages FROM "AppMessages" WHERE messages->>'app' ~ '"pages\\.${partialNormalized.source}'`,
     {
@@ -154,4 +217,7 @@ export async function down(db: Sequelize): Promise<void> {
       }),
     ),
   ]);
+
+  logger.info('Removing table `TeamInvite`');
+  await queryInterface.dropTable('TeamInvite');
 }

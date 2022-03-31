@@ -4,7 +4,7 @@ import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
-import { AppVisibility } from './app';
+import { AppVisibility, TeamsDefinition } from './app';
 
 export * from './app';
 export * from './appMember';
@@ -15,6 +15,7 @@ export * from './snapshot';
 export * from './resource';
 export * from './saml';
 export * from './ssl';
+export * from './team';
 export * from './template';
 export * from './user';
 
@@ -398,7 +399,13 @@ export interface Security {
     role: string;
     policy?: 'everyone' | 'invite' | 'organization';
   };
+
   roles: Record<string, RoleDefinition>;
+
+  /**
+   * Define how teams are handled by the app.
+   */
+  teams?: TeamsDefinition;
 }
 
 export type Navigation = 'bottom' | 'hidden' | 'left-menu';
@@ -735,6 +742,18 @@ export interface StorageWriteActionDefinition extends BaseActionDefinition<'stor
   storage?: StorageType;
 }
 
+export interface TeamInviteActionDefinition extends BaseActionDefinition<'team.invite'> {
+  /**
+   * The ID of the team to invite the user to.
+   */
+  id?: Remapper;
+
+  /**
+   * The email address of the user to invite.
+   */
+  email?: Remapper;
+}
+
 export interface UserLoginAction extends BaseActionDefinition<'user.login'> {
   /**
    * The email address to login with.
@@ -955,6 +974,7 @@ export type ActionDefinition =
   | StaticActionDefinition
   | StorageReadActionDefinition
   | StorageWriteActionDefinition
+  | TeamInviteActionDefinition
   | UserLoginAction
   | UserRegisterAction
   | UserUpdateAction;
@@ -1500,30 +1520,6 @@ export interface Organization {
    * The URL at which the organization’s icon can be found.
    */
   iconUrl: string;
-}
-
-/**
- * Represents a team within an organization.
- */
-export interface Team {
-  /**
-   * The ID of the team.
-   */
-  id: number;
-
-  /**
-   * The display name of the team.
-   */
-  name: string;
-
-  /**
-   * Custom annotations for the team.
-   */
-  annotations?: Record<string, string>;
-}
-
-export interface TeamMember extends Team {
-  role: 'manager' | 'member';
 }
 
 /**

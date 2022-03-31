@@ -1,9 +1,21 @@
-import { Permission, TeamRole } from '@appsemble/utils';
+import { randomBytes } from 'crypto';
+
+import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { validate } from 'uuid';
 
-import { App, AppMember, Organization, Team, TeamMember, transactional, User } from '../models';
+import {
+  App,
+  AppMember,
+  Organization,
+  Team,
+  TeamInvite,
+  TeamMember,
+  transactional,
+  User,
+} from '../models';
+import { getAppUrl } from '../utils/app';
 import { checkRole } from '../utils/checkRole';
 
 async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
@@ -22,16 +34,7 @@ async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
   }
 }
 
-export async function createTeam(ctx: Context): Promise<void> {
-  const {
-    pathParams: { appId },
-    request: {
-      body: { annotations, name },
-    },
-    user,
-  } = ctx;
-
-  const app = await App.findByPk(appId, { attributes: ['definition', 'OrganizationId'] });
+function assertTeamsDefinition(app: App): asserts app {
   if (!app) {
     throw notFound('App not found.');
   }
@@ -40,7 +43,59 @@ export async function createTeam(ctx: Context): Promise<void> {
     throw badRequest('App does not have a security definition.');
   }
 
-  await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
+  if (!app.definition.security.teams) {
+    throw badRequest('App does not have a teams definition.');
+  }
+}
+
+export async function createTeam(ctx: Context): Promise<void> {
+  const {
+    clients,
+    pathParams: { appId },
+    request: {
+      body: { annotations, name },
+    },
+    user,
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'OrganizationId'],
+    include:
+      'app' in clients
+        ? [
+            {
+              model: AppMember,
+              required: false,
+              where: { UserId: user.id },
+              attributes: ['role'],
+              include: [
+                {
+                  model: User,
+                  attributes: ['id'],
+                  include: [{ model: TeamMember, required: false }],
+                },
+              ],
+            },
+          ]
+        : [],
+  });
+  assertTeamsDefinition(app);
+
+  if ('app' in clients) {
+    const appMember = app.AppMembers.find((member) => member.User.id === user.id);
+    if (!appMember) {
+      throw forbidden('User is not an app member');
+    }
+    if (
+      !app.definition.security.teams.create.some((teamName) =>
+        checkAppRole(app.definition.security, teamName, appMember.role, appMember.User.TeamMembers),
+      )
+    ) {
+      throw forbidden('User is not allowed to create teams');
+    }
+  } else {
+    await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
+  }
 
   let team: Team;
   await transactional(async (transaction) => {
@@ -190,6 +245,77 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
   }));
 }
 
+export async function inviteTeamMember(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId, teamId },
+    request: {
+      body: { email, role = 'member' },
+    },
+    user,
+  } = ctx;
+
+  const app = await App.findOne({
+    attributes: ['id', 'definition', 'path', 'OrganizationId', 'domain'],
+    where: { id: appId },
+    include: [
+      { model: Team, required: false, where: { id: teamId } },
+      { model: AppMember, required: false, attributes: ['role'], where: { UserId: user.id } },
+    ],
+  });
+  assertTeamsDefinition(app);
+
+  if (app.definition.security.teams.join !== 'invite') {
+    throw badRequest('Team invites are not supported');
+  }
+
+  if (!app.Teams?.length) {
+    throw badRequest(`Team ${teamId} does not exist`);
+  }
+
+  const teamMembers = await TeamMember.findAll({ where: { UserId: user.id, TeamId: teamId } });
+  const [appMember] = app.AppMembers;
+  if (
+    !app.definition.security.teams.invite.some((r) =>
+      checkAppRole(app.definition.security, r, appMember?.role, teamMembers),
+    )
+  ) {
+    throw forbidden('User is not allowed to invite members to this team');
+  }
+
+  const invite = await TeamInvite.create({
+    email: email.trim().toLowerCase(),
+    TeamId: teamId,
+    key: randomBytes(20).toString('hex'),
+    role,
+  });
+  const url = new URL('/Team-Invite', getAppUrl(app));
+  url.searchParams.set('code', invite.key);
+  await mailer.sendTemplateEmail({ email: invite.email }, 'teamInvite', {
+    appName: app.definition.name,
+    teamName: app.Teams[0].name,
+    url: String(url),
+  });
+}
+
+export async function getTeamInvite(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    queryParams: { code },
+  } = ctx;
+
+  const invite = await TeamInvite.findOne({
+    where: { key: code },
+    include: [{ model: Team, where: { AppId: appId } }],
+  });
+
+  if (!invite) {
+    throw notFound(`No invite found for code ${code}`);
+  }
+
+  ctx.body = invite;
+}
+
 export async function addTeamMember(ctx: Context): Promise<void> {
   const {
     clients,
@@ -233,7 +359,10 @@ export async function addTeamMember(ctx: Context): Promise<void> {
   // Allow app users to add themselves to a team.
   if ('app' in clients) {
     if (id !== user.id && id !== user.primaryEmail) {
-      throw forbidden('App users may only modify add themselves as team member');
+      throw forbidden('App users may only add themselves as team member');
+    }
+    if (team.App.definition.security?.teams.join === 'invite') {
+      throw forbidden('You need an invite to join this team');
     }
   } else {
     try {
@@ -343,4 +472,32 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     primaryEmail: user.primaryEmail,
     role,
   };
+}
+
+export async function acceptTeamInvite(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: {
+      body: { code },
+    },
+    user,
+  } = ctx;
+
+  const invite = await TeamInvite.findOne({
+    where: { key: code },
+    include: [{ model: Team, where: { AppId: appId } }],
+  });
+
+  if (!invite) {
+    throw notFound(`No invite found for code: ${code}`);
+  }
+
+  await TeamMember.create({
+    UserId: user.id,
+    role: invite.role,
+    TeamId: invite.TeamId,
+  });
+  await invite.destroy();
+
+  ctx.body = invite;
 }

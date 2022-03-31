@@ -32,6 +32,7 @@ import { ResourceSubscription } from './ResourceSubscription';
 import { ResourceVersion } from './ResourceVersion';
 import { SamlLoginRequest } from './SamlLoginRequest';
 import { Team } from './Team';
+import { TeamInvite } from './TeamInvite';
 import { TeamMember } from './TeamMember';
 import { Theme } from './Theme';
 import { User } from './User';
@@ -78,6 +79,7 @@ export {
   ResourceVersion,
   ResourceSubscription,
   Team,
+  TeamInvite,
   TeamMember,
   Theme,
   SamlLoginRequest,
@@ -130,6 +132,7 @@ export function initDB({
       ResourceSubscription,
       ResourceVersion,
       Team,
+      TeamInvite,
       TeamMember,
       Theme,
       SamlLoginRequest,

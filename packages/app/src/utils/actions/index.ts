@@ -17,7 +17,7 @@ import * as resource from './resource';
 import { share } from './share';
 import { staticAction } from './static';
 import { read, write } from './storage';
-import { teamJoin, teamList } from './team';
+import { teamInvite, teamJoin, teamList } from './team';
 import { throwAction } from './throw';
 import { login, register, update } from './user';
 
@@ -79,6 +79,7 @@ export const actionCreators: ActionCreators = {
   static: staticAction,
   'storage.read': read,
   'storage.write': write,
+  'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,
   'user.login': login,
