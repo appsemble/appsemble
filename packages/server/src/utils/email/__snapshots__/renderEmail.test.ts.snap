@@ -374,6 +374,37 @@ _The Appsemble Team_
 "
 `;
 
+exports[`teamInvite should render teamInvite %#: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have been invited to join the team <strong>Test Team</strong> for the app <strong>Test App</strong>.</p>
+<p>You can accept this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Test App Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`teamInvite should render teamInvite %#: text 1`] = `
+"Hello,
+
+You have been invited to join the team **Test Team** for the app **Test App**.
+
+You can accept this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Test App Team_
+"
+`;
+
 exports[`welcome should render welcome %#: html 1`] = `
 "<!doctype html>
 <html lang=\\"en\\">
