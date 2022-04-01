@@ -13,7 +13,7 @@ interface FormOutputProps
   copyErrorMessage: string;
 
   /**
-   * The message to display if the contents have been copied succesfully.
+   * The message to display if the contents have been copied successfully.
    */
   copySuccessMessage: string;
 

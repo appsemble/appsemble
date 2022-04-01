@@ -63,7 +63,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      responses: { 200: { description: 'The token has been refreshed succesfully.' } },
+      responses: { 200: { description: 'The token has been refreshed successfully.' } },
     },
   },
   '/api/user': {
@@ -143,7 +143,7 @@ export const paths: OpenAPIV3.PathsObject = {
       operationId: 'listEmails',
       responses: {
         200: {
-          description: 'The email address has been added succesfully.',
+          description: 'The email address has been added successfully.',
           content: {
             'application/json': {
               schema: {
@@ -174,7 +174,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       responses: {
         201: {
-          description: 'The email address has been added succesfully.',
+          description: 'The email address has been added successfully.',
           content: {
             'application/json': {
               schema: {
@@ -202,7 +202,7 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       responses: {
         204: {
-          description: 'The email address has been removed succesfully.',
+          description: 'The email address has been removed successfully.',
         },
       },
       security: [{ studio: [] }],

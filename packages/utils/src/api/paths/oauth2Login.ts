@@ -107,7 +107,7 @@ export const paths: OpenAPIV3.PathsObject = {
       ],
       responses: {
         204: {
-          description: 'The account was unlinked succesfully.',
+          description: 'The account was unlinked successfully.',
         },
       },
       security: [{ studio: [] }],

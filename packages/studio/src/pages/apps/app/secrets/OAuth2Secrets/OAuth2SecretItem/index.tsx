@@ -9,7 +9,7 @@ import { OAuth2Modal } from '../OAuth2Modal';
 
 interface OAuth2SecretItemProps {
   /**
-   * Called when the provider has been updated succesfully.
+   * Called when the provider has been updated successfully.
    *
    * @param newProvider - The new provider values.
    * @param oldProvider - The old provider values to replace..

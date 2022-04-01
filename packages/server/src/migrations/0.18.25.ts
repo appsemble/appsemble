@@ -75,7 +75,7 @@ export async function up(db: Sequelize): Promise<void> {
       replacements: [mime, width, height, id],
       type: QueryTypes.UPDATE,
     });
-    logger.info(`Succesfully added metadata to AppScreenshot ${id}`);
+    logger.info(`Successfully added metadata to AppScreenshot ${id}`);
   }
 
   logger.info('Making column width on AppScreenshot non nullable');

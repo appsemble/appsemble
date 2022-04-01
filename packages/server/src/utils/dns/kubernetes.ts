@@ -273,7 +273,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
       }
       logger.warn(`Conflict registering ingress ${name}`);
     }
-    logger.info(`Succesfully registered ingress ${name} for ${domain}`);
+    logger.info(`Successfully registered ingress ${name} for ${domain}`);
   };
 }
 
@@ -321,7 +321,7 @@ export async function cleanupDNS(): Promise<void> {
       labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
     },
   });
-  logger.info(`Succesfully Deleted all ingresses for ${serviceName}`);
+  logger.info(`Successfully Deleted all ingresses for ${serviceName}`);
 }
 
 /**

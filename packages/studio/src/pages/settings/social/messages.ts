@@ -5,6 +5,6 @@ export const messages = defineMessages({
   connectAccount: 'Connect {name} account',
   disconnectAccount: 'Disconnect {name} account',
   disconnectError: 'There was a problem disconnecting {name}',
-  disconnectSuccess: 'Disconnected {name} succesfully',
+  disconnectSuccess: 'Disconnected {name} successfully',
   error: 'There was a problem loading your connected accounts. Please try again.',
 });
