@@ -50,5 +50,5 @@ export async function handleAction(
     }
     throw error;
   }
-  logger.info(`Succesfully ran action: ${params.action.type}`);
+  logger.info(`Successfully ran action: ${params.action.type}`);
 }

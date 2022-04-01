@@ -70,7 +70,7 @@ export const paths: OpenAPIV3.PathsObject = {
       operationId: 'deleteOAuth2ClientCredentials',
       responses: {
         204: {
-          description: 'The client credentials have been revoked succesfully.',
+          description: 'The client credentials have been revoked successfully.',
         },
       },
       security: [{ studio: [] }],

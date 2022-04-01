@@ -85,7 +85,7 @@ export async function login({ clientCredentials, remote }: BaseArguments): Promi
   }
   const [clientId, clientSecret] = credentials.split(':');
   await setPassword(getService(remote), clientId, clientSecret);
-  logger.info(`Succesfully stored credentials for ${clientId} 🕶`);
+  logger.info(`Successfully stored credentials for ${clientId} 🕶`);
 }
 
 export async function remove({ remote }: BaseArguments): Promise<void> {
@@ -106,7 +106,7 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
   await Promise.all(
     clientIds.map(async (clientId) => {
       await deletePassword(getService(remote), clientId);
-      logger.info(`Succesfully delete client id ${clientId}`);
+      logger.info(`Successfully delete client id ${clientId}`);
     }),
   );
 }
@@ -148,6 +148,6 @@ export async function authenticate(
     }
     return config;
   });
-  logger.info(`Logged in to ${remote} succesfully`);
+  logger.info(`Logged in to ${remote} successfully`);
   logger.verbose(`Login scope: ${scope}`);
 }

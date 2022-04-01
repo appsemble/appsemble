@@ -519,7 +519,7 @@ export const paths: OpenAPIV3.PathsObject = {
       operationId: 'deleteAppMember',
       responses: {
         204: {
-          description: 'The app member was deleted succesfully.',
+          description: 'The app member was deleted successfully.',
         },
       },
       security: [{ studio: [] }],
@@ -888,7 +888,7 @@ This will return a 404 if the user has not uploaded one.`,
       },
       responses: {
         204: {
-          description: 'The block style has been updated succesfully.',
+          description: 'The block style has been updated successfully.',
         },
       },
       security: [{ studio: [] }, { cli: ['apps:write'] }],

@@ -241,7 +241,7 @@ export const paths: OpenAPIV3.PathsObject = {
       operationId: 'deleteResource',
       responses: {
         204: {
-          description: 'The app resource has been deleted succesfully.',
+          description: 'The app resource has been deleted successfully.',
           $ref: '#/components/responses/resource',
         },
       },

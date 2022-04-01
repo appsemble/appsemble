@@ -269,6 +269,6 @@ export class Mailer {
         attachments,
       });
     }
-    logger.verbose('Email sent succesfully.');
+    logger.verbose('Email sent successfully.');
   }
 }
