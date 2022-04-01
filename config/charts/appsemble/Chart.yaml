@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.3
-appVersion: 0.20.3
+version: 0.20.4
+appVersion: 0.20.4
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,27 +25,10 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add security.teams property in app definition."
-    - kind: added
-      description: "App: Add team.invite action."
-    - kind: added
-      description: "App: Add page for accepting team invites."
-    - kind: added
-      description: "App: Add support for replacing existing login and register pages
-        with custom pages by naming the pages Login or Register."
-    - kind: added
-      description: "Server: Add support for team invites."
-    - kind: changed
-      description: "Block(chart): Make min and max in yAxis property optional."
-    - kind: changed
-      description: "Studio: Replace the JSON schema representation of block parameters
-        and definitions with the one used to render out app resource schema."
+      description: "Block(chart): Add loading indicator if the chart has not received
+        any data yet."
     - kind: fixed
-      description: "Cli: Fix issue where the description for $any actions and events
-        were not extracted."
-    - kind: fixed
-      description: "Studio: Fix issue where block documentation would not render any
-        types that used anyOf or oneOf."
+      description: "App: Fix resolving of pages based on translated page names."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

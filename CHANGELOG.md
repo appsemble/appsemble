@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.4](https://gitlab.com/appsemble/appsemble/-/releases/0.20.4)] - 2022-04-01
+
+### Added
+
+- Block(`chart`): Add loading indicator if the chart has not received any data yet.
+
+### Fixed
+
+- App: Fix resolving of pages based on translated page names.
+
 ## \[[0.20.3](https://gitlab.com/appsemble/appsemble/-/releases/0.20.3)] - 2022-03-31
 
 ### Added
