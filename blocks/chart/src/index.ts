@@ -40,6 +40,11 @@ bootstrap(
     theme,
     utils: { remap },
   }) => {
+    const loader = document.createElement('progress');
+    loader.classList.add('progress', 'is-small', 'is-primary');
+    shadowRoot.append(loader);
+    let loaded = false;
+
     const canvas = document.createElement('canvas');
     shadowRoot.append(canvas);
     const ctx = canvas.getContext('2d');
@@ -96,6 +101,11 @@ bootstrap(
     }
 
     function addDatasets(dataset: DataSet | DataSet[]): void {
+      if (!loaded) {
+        loaded = true;
+        loader.remove();
+      }
+
       if (Array.isArray(dataset)) {
         for (const entry of dataset) {
           addDataset(entry);
