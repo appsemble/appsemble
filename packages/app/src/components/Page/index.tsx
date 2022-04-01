@@ -74,7 +74,8 @@ export function Page(): ReactElement {
     );
 
     if (translatedPage) {
-      index = Number(translatedPage.split('.').pop());
+      const pageName = translatedPage.split('.').pop();
+      index = definition.pages.findIndex((p) => normalize(p.name) === pageName);
     }
   }
 
