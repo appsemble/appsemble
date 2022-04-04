@@ -249,6 +249,8 @@
   "studio.src.components.Schema.AnyOfSchema.anyOf": "Een van de volgende:",
   "studio.src.components.Schema.AnyOfSchema.oneOf": "Exact één van de volgende:",
   "studio.src.components.Schema.AnyOfSchema.option": "Optie",
+  "studio.src.components.Schema.additionalProperties": "Extra velden",
+  "studio.src.components.Schema.additionalPropertiesTrue": "Extra velden zijn toegestaan",
   "studio.src.components.Schema.default": "Standaardwaarde",
   "studio.src.components.Schema.description": "Beschrijving",
   "studio.src.components.Schema.format": "Formaat",

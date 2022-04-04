@@ -249,6 +249,8 @@
   "studio.src.components.Schema.AnyOfSchema.anyOf": "",
   "studio.src.components.Schema.AnyOfSchema.oneOf": "",
   "studio.src.components.Schema.AnyOfSchema.option": "",
+  "studio.src.components.Schema.additionalProperties": "",
+  "studio.src.components.Schema.additionalPropertiesTrue": "",
   "studio.src.components.Schema.default": "Nilai standar",
   "studio.src.components.Schema.description": "",
   "studio.src.components.Schema.format": "",
