@@ -17,3 +17,15 @@ export function camelToHyphen(string: string): string {
 export function toUpperCase(input: string): string {
   return input.toUpperCase();
 }
+
+/**
+ * Escape a JSON reference.
+ *
+ * See https://tools.ietf.org/html/rfc6901#section-3
+ *
+ * @param ref - THe JSON pointer segment to escape.
+ * @returns The escaped JSON pointer segment.
+ */
+export function decodeJSONRef(ref: string): string {
+  return decodeURIComponent(ref).replace(/~/g, '~0').replace(/\//g, '~1');
+}

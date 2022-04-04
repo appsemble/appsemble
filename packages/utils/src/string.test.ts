@@ -1,4 +1,4 @@
-import { camelToHyphen, toUpperCase } from './string';
+import { camelToHyphen, decodeJSONRef, toUpperCase } from './string';
 
 describe('camelToHyphen', () => {
   it('should convert camel case to hyphenated', () => {
@@ -10,5 +10,20 @@ describe('camelToHyphen', () => {
 describe('toUpperCase', () => {
   it('should convert a string to upper case', () => {
     expect(toUpperCase('hello')).toBe('HELLO');
+  });
+});
+
+describe('decodeJSONRef', () => {
+  const tests = [
+    ['foo/bar', 'foo~1bar'],
+    ['foo~bar', 'foo~0bar'],
+    ['foo~/bar', 'foo~0~1bar'],
+    ['foo/~bar', 'foo~1~0bar'],
+    ['Record%3Cstring%2Cnumber%3E', 'Record<string,number>'],
+  ];
+
+  it.each(tests)('%s → %s', (unescaped, escaped) => {
+    const result = decodeJSONRef(unescaped);
+    expect(result).toBe(escaped);
   });
 });
