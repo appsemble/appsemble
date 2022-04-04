@@ -1,14 +1,12 @@
 import { BlockManifest, Theme } from '@appsemble/types';
-import { BlockVersionsGetter, iterApp, Prefix, validateAppDefinition } from '@appsemble/utils';
-import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
-// @ts-expect-error This module is untyped.
-import { initialize } from 'monaco-editor/esm/vs/editor/editor.worker';
-import { Promisable } from 'type-fest';
+import { IdentifiableBlock, iterApp, Prefix, validateAppDefinition } from '@appsemble/utils';
+import { editor, IRange, languages } from 'monaco-editor/esm/vs/editor/editor.api';
+import { initialize } from 'monaco-worker-manager/worker';
 import { isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
-const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
+async function getCachedBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const manifests = await Promise.all(
     blocks.map(({ type, version }) => {
       const url = `/api/blocks/${type}/versions/${version}`;
@@ -22,13 +20,13 @@ const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
     }),
   );
   return manifests.filter(Boolean);
-};
+}
 
 export interface AppValidationWorker {
   /**
    * Perform validation of an app definition in a YAML file.
    */
-  doValidation: (uri: string) => Promise<editor.IMarkerData[]>;
+  doValidation: (uri: string) => editor.IMarkerData[];
 
   /**
    * Get color information from a given URI.
@@ -36,7 +34,7 @@ export interface AppValidationWorker {
    * @param uri - The URI to get color information for.
    * @returns Monaco color information.
    */
-  doDocumentColors: (uri: string) => Promisable<languages.IColorInformation[]>;
+  doDocumentColors: (uri: string) => languages.IColorInformation[];
 
   /**
    * Fetch and cache block manifests usng a local cache.
@@ -45,7 +43,7 @@ export interface AppValidationWorker {
    * @returns A list of block manifest that match the block manifests. If not matching manifest is
    * found, it’s ignored.
    */
-  getCachedBlockVersions: BlockVersionsGetter;
+  getCachedBlockVersions: (blockMap: IdentifiableBlock[]) => BlockManifest[];
 }
 
 /**
@@ -92,80 +90,73 @@ function parseColor(color: unknown): languages.IColor {
   return result;
 }
 
-self.onmessage = () => {
-  initialize((ctx: worker.IWorkerContext) => {
-    const implementation: AppValidationWorker = {
-      getCachedBlockVersions,
+initialize<AppValidationWorker, unknown>((ctx) => ({
+  getCachedBlockVersions,
 
-      doDocumentColors(uri) {
-        const models = ctx.getMirrorModels();
-        const model = models.find((m) => String(m.uri) === uri);
-        const yaml = model.getValue();
-        const lineCounter = new LineCounter();
-        const doc = parseDocument(yaml, { lineCounter });
-        const definition = doc.toJS({ maxAliasCount: 10_000 });
-        const result: languages.IColorInformation[] = [];
+  doDocumentColors(uri) {
+    const models = ctx.getMirrorModels();
+    const model = models.find((m) => String(m.uri) === uri);
+    const yaml = model.getValue();
+    const lineCounter = new LineCounter();
+    const doc = parseDocument(yaml, { lineCounter });
+    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const result: languages.IColorInformation[] = [];
 
-        function handleKey(prefix: Prefix, key: keyof Theme): void {
-          const node = doc.getIn([...prefix, 'theme', key], true);
-          if (!isScalar(node)) {
-            return;
-          }
+    function handleKey(prefix: Prefix, key: keyof Theme): void {
+      const node = doc.getIn([...prefix, 'theme', key], true);
+      if (!isScalar(node)) {
+        return;
+      }
 
-          result.push({ color: parseColor(node.value), range: getNodeRange(node, lineCounter) });
-        }
+      result.push({ color: parseColor(node.value), range: getNodeRange(node, lineCounter) });
+    }
 
-        function processTheme(prefix: Prefix): void {
-          handleKey(prefix, 'dangerColor');
-          handleKey(prefix, 'infoColor');
-          handleKey(prefix, 'linkColor');
-          handleKey(prefix, 'primaryColor');
-          handleKey(prefix, 'splashColor');
-          handleKey(prefix, 'successColor');
-          handleKey(prefix, 'themeColor');
-          handleKey(prefix, 'warningColor');
-        }
+    function processTheme(prefix: Prefix): void {
+      handleKey(prefix, 'dangerColor');
+      handleKey(prefix, 'infoColor');
+      handleKey(prefix, 'linkColor');
+      handleKey(prefix, 'primaryColor');
+      handleKey(prefix, 'splashColor');
+      handleKey(prefix, 'successColor');
+      handleKey(prefix, 'themeColor');
+      handleKey(prefix, 'warningColor');
+    }
 
-        processTheme([]);
-        iterApp(definition, {
-          onBlock(block, prefix) {
-            processTheme(prefix);
-          },
-          onPage(page, prefix) {
-            processTheme(prefix);
-          },
-        });
-
-        return result;
+    processTheme([]);
+    iterApp(definition, {
+      onBlock(block, prefix) {
+        processTheme(prefix);
       },
-
-      async doValidation(uri) {
-        const models = ctx.getMirrorModels();
-        const model = models.find((m) => String(m.uri) === uri);
-        const yaml = model.getValue();
-        const lineCounter = new LineCounter();
-        const doc = parseDocument(yaml, { lineCounter });
-        const definition = doc.toJS({ maxAliasCount: 10_000 });
-        const { errors } = await validateAppDefinition(definition, getCachedBlockVersions);
-
-        return errors.map((error) => {
-          const node = doc.getIn(error.path, true);
-          const range: IRange = isNode(node)
-            ? getNodeRange(node, lineCounter)
-            : { startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1 };
-
-          return {
-            // The severity matches MarkerSeverity.Error, but since this runs in a web worker and
-            // `monaco-editor` used DOM APIs, it may not be imported.
-            severity: 8,
-            message: error.message,
-            ...range,
-          };
-        });
+      onPage(page, prefix) {
+        processTheme(prefix);
       },
-    };
+    });
 
-    // Monaco expects properties to exist on the prototype, not on the own instance.
-    return Object.create(implementation);
-  });
-};
+    return result;
+  },
+
+  async doValidation(uri) {
+    const models = ctx.getMirrorModels();
+    const model = models.find((m) => String(m.uri) === uri);
+    const yaml = model.getValue();
+    const lineCounter = new LineCounter();
+    const doc = parseDocument(yaml, { lineCounter });
+    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const { errors } = await validateAppDefinition(definition, getCachedBlockVersions);
+
+    return errors.map((error) => {
+      const node = doc.getIn(error.path, true);
+      const range: IRange = isNode(node)
+        ? getNodeRange(node, lineCounter)
+        : { startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1 };
+
+      return {
+        // The severity matches MarkerSeverity.Error, but since this runs in a web worker and
+        // `monaco-editor` used DOM APIs, it may not be imported.
+        severity: 8,
+        message: error.message,
+        ...range,
+      };
+    });
+  },
+}));
