@@ -3,7 +3,7 @@ import { camelToHyphen, combineSchemas } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { AnyOfSchema } from './AnyOfSchema';
@@ -70,6 +70,7 @@ export function Schema({
     [schema],
   );
 
+  const intl = useIntl();
   const { lang } = useParams<{ lang: string }>();
 
   const description =
@@ -184,23 +185,42 @@ export function Schema({
         </SchemaDescriptor>
       )}
       {description ? <MarkdownContent content={description} /> : null}
-      {mergedSchema.type === 'object' && mergedSchema.properties
-        ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
+      {mergedSchema.type === 'object' && (
+        <>
+          {mergedSchema.additionalProperties === true ? (
+            <p>
+              <FormattedMessage {...messages.additionalPropertiesTrue} />
+            </p>
+          ) : null}
+          {typeof mergedSchema.additionalProperties === 'object' ? (
             <Schema
               anchors={anchors}
               idPrefix={id}
-              key={propertyName}
-              name={propertyName}
+              name={intl.formatMessage(messages.additionalProperties)}
               nested
               renderRef={RenderRef}
-              required={
-                Array.isArray(mergedSchema.required) &&
-                mergedSchema.required?.includes(propertyName)
-              }
-              schema={property}
+              schema={mergedSchema.additionalProperties}
             />
-          ))
-        : null}
+          ) : null}
+          {mergedSchema.properties
+            ? Object.entries(mergedSchema.properties).map(([propertyName, property]) => (
+                <Schema
+                  anchors={anchors}
+                  idPrefix={id}
+                  key={propertyName}
+                  name={propertyName}
+                  nested
+                  renderRef={RenderRef}
+                  required={
+                    Array.isArray(mergedSchema.required) &&
+                    mergedSchema.required?.includes(propertyName)
+                  }
+                  schema={property}
+                />
+              ))
+            : null}
+        </>
+      )}
       {mergedSchema.anyOf?.length ? (
         <AnyOfSchema
           anchors={anchors}

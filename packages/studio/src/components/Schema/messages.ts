@@ -15,4 +15,6 @@ export const messages = defineMessages({
   minimum: 'Minimum value',
   maximum: 'Maximum value',
   pattern: 'Pattern',
+  additionalProperties: 'Additional properties',
+  additionalPropertiesTrue: 'Additional properties are allowed',
 });
