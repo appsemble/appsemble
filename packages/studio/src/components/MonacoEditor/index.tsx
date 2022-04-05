@@ -1,6 +1,13 @@
 import { applyRefs } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { editor, IDisposable, KeyCode, KeyMod, Uri } from 'monaco-editor/esm/vs/editor/editor.api';
+import {
+  editor,
+  IDisposable,
+  KeyCode,
+  KeyMod,
+  MarkerSeverity,
+  Uri,
+} from 'monaco-editor/esm/vs/editor/editor.api';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 
 import './custom';
@@ -183,7 +190,11 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
         const modelUri = String(ed.getModel().uri);
         for (const resource of resources) {
           if (String(resource) === modelUri) {
-            setMarkers(editor.getModelMarkers({ resource }));
+            setMarkers(
+              editor
+                .getModelMarkers({ resource })
+                .filter((marker) => marker.severity !== MarkerSeverity.Hint),
+            );
             break;
           }
         }
