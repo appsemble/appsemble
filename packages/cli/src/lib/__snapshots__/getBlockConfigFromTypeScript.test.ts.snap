@@ -175,6 +175,19 @@ Refer to the block description for more information on the supported data format
       "YAxis": {
         "additionalProperties": false,
         "properties": {
+          "colors": {
+            "default": [
+              "#ededed",
+            ],
+            "description": "By default a grey tone is used.",
+            "items": {
+              "description": "A hexadecimal color.",
+              "pattern": "^#[a-fA-F\\\\d]{6}$",
+              "type": "string",
+            },
+            "minItems": 1,
+            "type": "array",
+          },
           "max": {
             "description": "The maximum value to render on the vertical axis.
 
@@ -184,6 +197,12 @@ If not specified, the maximum value is determined automatically based on the val
           "min": {
             "default": 0,
             "description": "The minimal value to render on the vertical axis.",
+            "type": "number",
+          },
+          "step": {
+            "description": "If specified, the Y-axis of the chart will be incremented by this fixed amount.
+
+By default it’s detected automatically.",
             "type": "number",
           },
         },
