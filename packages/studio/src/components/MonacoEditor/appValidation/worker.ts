@@ -1,6 +1,6 @@
 import { BlockManifest, Theme } from '@appsemble/types';
 import { IdentifiableBlock, iterApp, Prefix, validateAppDefinition } from '@appsemble/utils';
-import { editor, IRange, languages } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
 import { initialize } from 'monaco-worker-manager/worker';
 import { isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
 
@@ -90,7 +90,7 @@ function parseColor(color: unknown): languages.IColor {
   return result;
 }
 
-initialize<AppValidationWorker, unknown>((ctx) => ({
+initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
   getCachedBlockVersions,
 
   doDocumentColors(uri) {
@@ -151,9 +151,9 @@ initialize<AppValidationWorker, unknown>((ctx) => ({
         : { startColumn: 1, startLineNumber: 1, endColumn: 1, endLineNumber: 1 };
 
       return {
-        // The severity matches MarkerSeverity.Error, but since this runs in a web worker and
-        // `monaco-editor` used DOM APIs, it may not be imported.
-        severity: 8,
+        // The severity matches MarkerSeverity.Warning, but since this runs in a web worker and
+        // `monaco-editor` uses DOM APIs, it may not be imported.
+        severity: 4,
         message: error.message,
         ...range,
       };

@@ -1,5 +1,12 @@
 import { Remapper } from '@appsemble/sdk';
 
+/**
+ * A hexadecimal color.
+ *
+ * @pattern ^#[a-fA-F\d]{6}$
+ */
+type Color = string;
+
 export interface YAxis {
   /**
    * The minimal value to render on the vertical axis.
@@ -14,6 +21,22 @@ export interface YAxis {
    * If not specified, the maximum value is determined automatically based on the values given.
    */
   max?: number;
+
+  /**
+   * If specified, the Y-axis of the chart will be incremented by this fixed amount.
+   *
+   * By default it’s detected automatically.
+   */
+  step?: number;
+
+  /**
+   *
+   * By default a grey tone is used.
+   *
+   * @default ['#ededed']
+   * @minItems 1
+   */
+  colors?: Color[];
 }
 
 declare module '@appsemble/sdk' {

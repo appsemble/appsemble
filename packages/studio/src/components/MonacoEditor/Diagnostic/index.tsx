@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
@@ -37,7 +37,11 @@ export function Diagnostic({ marker, monaco }: DiagnosticProps): ReactElement {
       role="button"
       tabIndex={-1}
     >
-      <Icon className="has-text-warning mx-1" icon="exclamation-triangle" size="small" />
+      {marker.severity === MarkerSeverity.Warning ? (
+        <Icon className="has-text-warning mx-1" icon="exclamation-triangle" size="small" />
+      ) : (
+        <Icon className="has-text-danger mx-1" icon="circle-xmark" size="small" />
+      )}
       {marker.message}
       <span className="has-text-grey-light pl-1">
         [{marker.startLineNumber}, {marker.startColumn}]

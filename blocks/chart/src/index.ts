@@ -48,7 +48,7 @@ bootstrap(
     const canvas = document.createElement('canvas');
     shadowRoot.append(canvas);
     const ctx = canvas.getContext('2d');
-    const yAxisID = 'a';
+    const yAxisID = 'y';
     const chart = new Chart(ctx, {
       type,
       data: {
@@ -57,7 +57,18 @@ bootstrap(
       },
       options: {
         responsive: true,
-        scales: { [yAxisID]: yAxis },
+        scales: {
+          [yAxisID]: {
+            min: yAxis.min,
+            max: yAxis.max,
+            ticks: {
+              stepSize: yAxis.step,
+            },
+            grid: {
+              color: yAxis.colors || ['#ededed'],
+            },
+          },
+        },
       },
     });
 
