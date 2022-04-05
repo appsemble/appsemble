@@ -8,6 +8,11 @@ interface BaseField {
    * row won’t be shown.
    */
   label?: Remapper;
+
+  /**
+   * Whether the content of the cell should be aligned left, right, or centered
+   */
+  alignment?: 'center' | 'left' | 'right';
 }
 
 /**

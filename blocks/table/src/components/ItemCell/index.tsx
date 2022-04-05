@@ -65,6 +65,7 @@ export function ItemCell({
     onClickAction(record, { index, repeatedIndex });
   }, [onClickAction, record, index, repeatedIndex]);
 
+  const alignment = field.alignment || 'left';
   let content: VNode | string;
   if ('dropdown' in field) {
     content = (
@@ -89,7 +90,7 @@ export function ItemCell({
       onClick={onCellClick}
       role="gridcell"
     >
-      {content}
+      <div class={`is-flex is-justify-content-${alignment}`}>{content}</div>
     </td>
   );
 }
