@@ -35,6 +35,25 @@ editor.onDidCreateModel((model) => {
   });
 });
 
+editor.onDidCreateModel((model) => {
+  const modelMap = new WeakMap<editor.ITextModel, string[]>();
+
+  const disposable = model.onDidChangeContent(async () => {
+    if (String(model.uri) !== 'file:///app.yaml' || model.getLanguageId() !== 'yaml') {
+      return;
+    }
+
+    const client = await workerManager.getWorker(model.uri);
+    const markers = await client.getDecorations(String(model.uri));
+    modelMap.set(model, model.deltaDecorations(modelMap.get(model) ?? [], markers));
+  });
+
+  model.onWillDispose(() => {
+    disposable.dispose();
+    modelMap.delete(model);
+  });
+});
+
 function toHex(number: number): string {
   return Math.floor(number * 255)
     .toString(16)
