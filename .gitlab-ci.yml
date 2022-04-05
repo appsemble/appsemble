@@ -1,4 +1,5 @@
-image: node:16-bullseye-slim
+default:
+  image: node:16-bullseye-slim
 
 stages:
   - test
