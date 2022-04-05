@@ -1,27 +1,18 @@
 import { BlockVersionsGetter } from '@appsemble/utils';
-import { editor, languages, Uri } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor, languages } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { createWorkerManager } from 'monaco-worker-manager';
 
 import { AppValidationWorker } from './worker';
 
 export const appValidationLabel = 'appValidation';
 
-let worker: editor.MonacoWebWorker<AppValidationWorker>;
-let clientPromise: Promise<AppValidationWorker>;
-
-async function getClient(...resources: Uri[]): Promise<AppValidationWorker> {
-  if (!clientPromise) {
-    worker = editor.createWebWorker<AppValidationWorker>({
-      moduleId: appValidationLabel,
-      label: appValidationLabel,
-    });
-    clientPromise = worker.getProxy();
-  }
-  await worker.withSyncedResources(resources);
-  return clientPromise;
-}
+const workerManager = createWorkerManager<AppValidationWorker>({
+  label: appValidationLabel,
+  moduleId: appValidationLabel,
+});
 
 export const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
-  const client = await getClient();
+  const client = await workerManager.getWorker();
   return client.getCachedBlockVersions(blocks);
 };
 
@@ -32,7 +23,7 @@ editor.onDidCreateModel((model) => {
     }
 
     const startVersion = model.getVersionId();
-    const client = await getClient(model.uri);
+    const client = await workerManager.getWorker(model.uri);
     const markers = await client.doValidation(String(model.uri));
     if (startVersion === model.getVersionId()) {
       editor.setModelMarkers(model, appValidationLabel, markers);
@@ -72,7 +63,7 @@ languages.registerColorProvider('yaml', {
   },
 
   async provideDocumentColors(model) {
-    const client = await getClient(model.uri);
+    const client = await workerManager.getWorker(model.uri);
     return client.doDocumentColors(String(model.uri));
   },
 });
