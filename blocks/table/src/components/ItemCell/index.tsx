@@ -3,6 +3,7 @@ import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Button, Dropdown as DropdownType, Field } from '../../../block';
+import { ButtonField } from '../ButtonField';
 import { DropdownField } from '../DropdownField';
 import styles from './index.module.css';
 
@@ -76,7 +77,7 @@ export function ItemCell({
       />
     );
   } else if ('button' in field) {
-    content = <div />;
+    content = <ButtonField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else {
     content = renderValue(remap(field.value, item, { index, repeatedIndex }));
   }

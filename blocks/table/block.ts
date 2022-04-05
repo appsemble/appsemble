@@ -1,4 +1,4 @@
-import { BulmaColor, IconName, Remapper } from '@appsemble/sdk';
+import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
 
 interface BaseField {
   /**
@@ -47,6 +47,13 @@ export interface Button extends BaseField {
     color?: BulmaColor;
 
     /**
+     * The size of the button.
+     *
+     * @default "normal"
+     */
+    size?: BulmaSize;
+
+    /**
      * The label to display inside of the button.
      */
     label?: Remapper;
@@ -55,6 +62,11 @@ export interface Button extends BaseField {
      * An optional FontAwesome icon to display inside of the button.
      */
     icon?: IconName;
+
+    /**
+     * When set to true, the ‘light’ set of Bulma colors are used.
+     */
+    light?: boolean;
 
     /**
      * Whether the button should be rounded.
@@ -155,7 +167,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Dropdown | Field | RepeatedField)[];
+    fields: (Button | Dropdown | Field | RepeatedField)[];
   }
 
   interface Actions {
