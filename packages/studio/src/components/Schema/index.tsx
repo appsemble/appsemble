@@ -1,5 +1,5 @@
 import { Join, MarkdownContent, Title } from '@appsemble/react-components';
-import { camelToHyphen, combineSchemas } from '@appsemble/utils';
+import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Schema as SchemaType } from 'jsonschema';
 import { FC, ReactElement, useMemo } from 'react';
@@ -110,14 +110,18 @@ export function Schema({
           <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
             <code>
               {mergedSchema.$ref
-                ? RenderRef && <RenderRef isArray={false} jsonRef={mergedSchema.$ref} />
+                ? RenderRef && (
+                    <RenderRef isArray={false} jsonRef={decodeJSONRef(mergedSchema.$ref)} />
+                  )
                 : mergedSchema.type === 'array'
                 ? !mergedSchema.items || Array.isArray(mergedSchema.items)
                   ? 'array'
                   : mergedSchema.items.type
                   ? `${mergedSchema.items.type}[]`
                   : mergedSchema.items.$ref
-                  ? RenderRef && <RenderRef isArray jsonRef={mergedSchema.items.$ref} />
+                  ? RenderRef && (
+                      <RenderRef isArray jsonRef={decodeJSONRef(mergedSchema.items.$ref)} />
+                    )
                   : 'array'
                 : mergedSchema.type}
             </code>
