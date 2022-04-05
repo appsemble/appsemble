@@ -249,6 +249,8 @@
   "studio.src.components.Schema.AnyOfSchema.anyOf": "L'un des éléments suivants :",
   "studio.src.components.Schema.AnyOfSchema.oneOf": "Exactement l'un des éléments suivants :",
   "studio.src.components.Schema.AnyOfSchema.option": "Option",
+  "studio.src.components.Schema.additionalProperties": "",
+  "studio.src.components.Schema.additionalPropertiesAllowed": "",
   "studio.src.components.Schema.default": "Valeur par défaut",
   "studio.src.components.Schema.description": "Description",
   "studio.src.components.Schema.format": "Format",
