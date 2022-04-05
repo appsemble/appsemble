@@ -3124,9 +3124,118 @@ This does not trigger if the field has a different action specified.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "BulmaSize": {
+        "enum": [
+          "large",
+          "medium",
+          "normal",
+          "small",
+        ],
+        "type": "string",
+      },
+      "Button": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "button": {
+            "additionalProperties": false,
+            "description": "The definition of the contents and styling of the button.",
+            "properties": {
+              "color": {
+                "$ref": "#/definitions/BulmaColor",
+                "default": "primary",
+                "description": "The color of the button.",
+              },
+              "fullwidth": {
+                "description": "Whether the button should be full width or not.
+
+By default buttons only take up as much space as needed.",
+                "type": "boolean",
+              },
+              "icon": {
+                "description": "An optional FontAwesome icon to display inside of the button.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "inverted": {
+                "description": "Whether the text and background colors should be inverted.",
+                "type": "boolean",
+              },
+              "label": {
+                "description": "The label to display inside of the button.",
+                "format": "remapper",
+              },
+              "light": {
+                "description": "When set to true, the ‘light’ set of Bulma colors are used.",
+                "type": "boolean",
+              },
+              "outlined": {
+                "description": "Whether the button should display its colors in the outlines.",
+                "type": "boolean",
+              },
+              "rounded": {
+                "description": "Whether the button should be rounded.",
+                "type": "boolean",
+              },
+              "size": {
+                "$ref": "#/definitions/BulmaSize",
+                "default": "normal",
+                "description": "The size of the button.",
+              },
+            },
+            "type": "object",
+          },
+          "label": {
+            "description": "An optional label used in the header of the table.
+
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
+            "format": "remapper",
+          },
+          "onClick": {
+            "description": "The name of the action to trigger when clicking on this field.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "button",
+        ],
+        "type": "object",
+      },
       "Dropdown": {
         "additionalProperties": false,
         "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
           "dropdown": {
             "additionalProperties": false,
             "properties": {
@@ -3192,6 +3301,15 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         "additionalProperties": false,
         "description": "Represents a column that should be displayed in the table.",
         "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
           "label": {
             "description": "An optional label used in the header of the table.
 
@@ -3224,6 +3342,9 @@ Only one repeated field is allowed, only the first RepeatedField is considered."
             "items": {
               "anyOf": [
                 {
+                  "$ref": "#/definitions/Button",
+                },
+                {
                   "$ref": "#/definitions/Dropdown",
                 },
                 {
@@ -3252,6 +3373,9 @@ Should be an array of data.",
         "description": "A list of fields to display.",
         "items": {
           "anyOf": [
+            {
+              "$ref": "#/definitions/Button",
+            },
             {
               "$ref": "#/definitions/Dropdown",
             },
