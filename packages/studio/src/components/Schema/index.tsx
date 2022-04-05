@@ -189,7 +189,7 @@ export function Schema({
         <>
           {mergedSchema.additionalProperties === true ? (
             <p>
-              <FormattedMessage {...messages.additionalPropertiesTrue} />
+              <FormattedMessage {...messages.additionalPropertiesAllowed} />
             </p>
           ) : null}
           {typeof mergedSchema.additionalProperties === 'object' ? (
