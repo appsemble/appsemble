@@ -94,6 +94,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 icon={item.icon}
                 iconColor={item.iconColor}
                 onClick={() => item.onClick()}
+                title={item.title}
               >
                 {item.title}
               </MenuButton>
@@ -107,6 +108,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                       isChild
                       key={`${menu.path}/${item.title}/${subItem.title}`}
                       onClick={() => subItem.onClick()}
+                      title={subItem.title}
                     >
                       {subItem.title}
                     </MenuButton>

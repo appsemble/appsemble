@@ -62,6 +62,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                 <NavLink
                   activeClassName="is-active"
                   className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                  title={navName as string}
                   to={`${url}/${normalize(name)}`}
                 >
                   {page.icon ? (
