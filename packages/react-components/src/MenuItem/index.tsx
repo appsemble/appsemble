@@ -6,6 +6,11 @@ import styles from './index.module.css';
 
 interface SideNavLinkProps {
   /**
+   * The title text to apply to the link.
+   */
+  title?: string;
+
+  /**
    * If true, only highlight on an exact match.
    */
   exact?: boolean;
@@ -31,9 +36,14 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, exact, icon, to }: SideNavLinkProps): ReactElement {
+export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
   return (
-    <NavLink className={`is-flex is-align-items-center ${styles.root}`} exact={exact} to={to}>
+    <NavLink
+      className={`is-flex is-align-items-center ${styles.root}`}
+      exact={exact}
+      title={title}
+      to={to}
+    >
       {icon && <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" />}
       <span className={styles.text}>{children}</span>
     </NavLink>
