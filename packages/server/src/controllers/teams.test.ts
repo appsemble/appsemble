@@ -1142,6 +1142,7 @@ describe('acceptTeamInvite', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "annotations": {},
         "id": 1,
         "name": "Fooz",
         "role": "member",

@@ -11,12 +11,12 @@ export const teamJoin: ActionCreator<'team.join'> = ({ getUserInfo, updateTeam }
       throw new Error('User is not logged in');
     }
 
-    const {
-      data: { role },
-    } = await axios.post<TeamMember>(`${apiUrl}/api/apps/${appId}/teams/${id}/members`, {
-      id: userInfo.sub,
-    });
-    const team = { role, id };
+    const { data: team } = await axios.post<TeamMember>(
+      `${apiUrl}/api/apps/${appId}/teams/${id}/members`,
+      {
+        id: userInfo.sub,
+      },
+    );
     updateTeam(team);
     return team;
   },

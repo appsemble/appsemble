@@ -230,7 +230,7 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User }],
+    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
   });
 
   if (!team) {
@@ -499,5 +499,11 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
   });
   await invite.destroy();
 
-  ctx.body = invite;
+  const { Team: team } = invite;
+  ctx.body = {
+    id: team.id,
+    name: team.name,
+    role: invite.role,
+    annotations: team.annotations ?? {},
+  };
 }
