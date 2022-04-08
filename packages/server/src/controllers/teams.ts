@@ -386,6 +386,18 @@ export async function addTeamMember(ctx: Context): Promise<void> {
 
   const member = team.App.AppMembers[0]?.User ?? team.App.Organization.Users[0];
   await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
+
+  if ('app' in clients) {
+    // XXX: Separate app and studio responses.
+    ctx.body = {
+      id: team.id,
+      name: team.name,
+      role: TeamRole.Member,
+      annotations: team.annotations ?? {},
+    };
+
+    return;
+  }
   ctx.body = {
     id: member.id,
     name: member.name,
