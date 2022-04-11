@@ -1,5 +1,6 @@
 import { BlockVersionsGetter } from '@appsemble/utils';
 import { editor, languages } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';
 
 import { AppValidationWorker } from './worker';
@@ -16,23 +17,16 @@ export const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
   return client.getCachedBlockVersions(blocks);
 };
 
-editor.onDidCreateModel((model) => {
-  const disposable = model.onDidChangeContent(async () => {
+registerMarkerDataProvider({ editor }, 'yaml', {
+  owner: appValidationLabel,
+
+  async provideMarkerData(model) {
     if (String(model.uri) !== 'file:///app.yaml' || model.getLanguageId() !== 'yaml') {
       return;
     }
-
-    const startVersion = model.getVersionId();
     const client = await workerManager.getWorker(model.uri);
-    const markers = await client.doValidation(String(model.uri));
-    if (startVersion === model.getVersionId()) {
-      editor.setModelMarkers(model, appValidationLabel, markers);
-    }
-  });
-
-  model.onWillDispose(() => {
-    disposable.dispose();
-  });
+    return client.doValidation(String(model.uri));
+  },
 });
 
 editor.onDidCreateModel((model) => {

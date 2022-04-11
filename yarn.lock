@@ -10280,6 +10280,11 @@ monaco-editor@^0.33.0:
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.33.0.tgz#842e244f3750a2482f8a29c676b5684e75ff34af"
   integrity sha512-VcRWPSLIUEgQJQIE0pVT8FcGBIgFoxz7jtqctE+IiCxWugD0DwgyQBcZBhdSrdMC84eumoqMZsGl2GTreOzwqw==
 
+monaco-marker-data-provider@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/monaco-marker-data-provider/-/monaco-marker-data-provider-1.0.0.tgz#153e4bdee918374dd754034a18495d207ce31cf0"
+  integrity sha512-HW6DIWi0hVjJa2v5dI4P/oexz7SjLBaNGfMb/VAAk2Js9jMPrh3mCCWh1Hsm7t0ftW2RN9WDr9vyQLJING91Bw==
+
 monaco-worker-manager@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/monaco-worker-manager/-/monaco-worker-manager-2.0.0.tgz#504511aabbe28145dea76c909af701e7d5cd9c1b"
