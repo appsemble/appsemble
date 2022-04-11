@@ -10,8 +10,11 @@ import { ListButton } from '../../../../../../../components/ListButton';
 import { messages } from './messages';
 
 export function ResourceHistory(): ReactElement {
-  const { id, resourceId, resourceName } =
-    useParams<{ id: string; resourceName: string; resourceId: string }>();
+  const { id, resourceId, resourceName } = useParams<{
+    id: string;
+    resourceName: string;
+    resourceId: string;
+  }>();
   const result = useData<ResourceVersion[]>(
     `/api/apps/${id}/resources/${resourceName}/${resourceId}/history`,
   );
