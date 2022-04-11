@@ -231,6 +231,33 @@ describe('createTeam', () => {
         }
       `);
     });
+
+    it('should reject if the is now an app member', async () => {
+      await app.update({
+        definition: {
+          ...app.definition,
+          security: {
+            ...app.definition.security,
+            teams: { create: ['TeamCreator'] },
+            roles: { TeamCreator: {}, Invalid: {} },
+          },
+        },
+      });
+
+      const response = await request.post(`/api/apps/${app.id}/teams`, {
+        name: 'Test Team',
+      });
+      expect(response).toMatchInlineSnapshot(`
+        HTTP/1.1 403 Forbidden
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "error": "Forbidden",
+          "message": "User is not an app member",
+          "statusCode": 403,
+        }
+      `);
+    });
   });
 
   describe('studio', () => {
