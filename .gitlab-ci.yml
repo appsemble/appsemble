@@ -436,6 +436,7 @@ review:
 # Stop a review environment.
 stop review:
   image: dtzar/helm-kubectl:3
+  dependencies: []
   stage: deploy
   rules:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
