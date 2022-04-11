@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.4
-appVersion: 0.20.4
+version: 0.20.5
+appVersion: 0.20.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,10 +25,17 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(chart): Add loading indicator if the chart has not received
-        any data yet."
+      description: "Block(chart): Support custom colors for the y axis."
+    - kind: added
+      description: "Block(chart): Support custom step size for the y axis."
+    - kind: added
+      description: "Block(table): Add alignment property to field types."
+    - kind: added
+      description: "Block(table): Add support for button field types."
+    - kind: changed
+      description: "Cli: Expose all block parameter related types as definitions."
     - kind: fixed
-      description: "App: Fix resolving of pages based on translated page names."
+      description: "App: Fix issue where teams were not correctly updated when joining a team."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

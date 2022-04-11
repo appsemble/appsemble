@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",
@@ -30,7 +30,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.4",
+    "@appsemble/sdk": "0.20.5",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "jsonschema": "^1.0.0",
     "openapi-types": "^10.0.0",

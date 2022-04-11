@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.5](https://gitlab.com/appsemble/appsemble/-/releases/0.20.5)] - 2022-04-11
+
+### Added
+
+- Block(`chart`): Support custom colors for the y axis.
+- Block(`chart`): Support custom step size for the y axis.
+- Block(`table`): Add `alignment` property to field types.
+- Block(`table`): Add support for button field types.
+
+### Changed
+
+- Cli: Expose all block parameter related types as definitions.
+
+### Fixed
+
+- App: Fix issue where teams were not correctly updated when joining a team.
+
 ## \[[0.20.4](https://gitlab.com/appsemble/appsemble/-/releases/0.20.4)] - 2022-04-01
 
 ### Added

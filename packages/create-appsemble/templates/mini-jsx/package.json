@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.20.4",
+    "@appsemble/sdk": "0.20.5",
     "mini-jsx": "^3.0.0"
   }
 }
