@@ -2,7 +2,7 @@ import { Button, Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
 import { ReactElement, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
 import { shouldShowMenu } from '../../utils/layout';
@@ -30,6 +30,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
   const { getAppMessage, getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { logout, role, userInfo } = useUser();
+  const { formatMessage } = useIntl();
 
   const showMenu = useMemo(
     () => shouldShowMenu(definition, role, teams),
@@ -62,6 +63,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                 <NavLink
                   activeClassName="is-active"
                   className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                  title={navName as string}
                   to={`${url}/${normalize(name)}`}
                 >
                   {page.icon ? (
@@ -78,6 +80,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
               <NavLink
                 activeClassName="is-active"
                 className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                title={formatMessage(messages.settings)}
                 to={`${url}/Settings`}
               >
                 <Icon className="mb-1" icon="wrench" iconSize="3x" size="large" />
@@ -92,11 +95,12 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
               <NavLink
                 activeClassName="is-active"
                 className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                title={formatMessage(messages.feedback)}
                 to={`${url}/Feedback`}
               >
                 <Icon className="mb-1" icon="comment" iconSize="3x" size="large" />
                 <span>
-                  <FormattedMessage {...messages.settings} />
+                  <FormattedMessage {...messages.feedback} />
                 </span>
               </NavLink>
             </li>
@@ -111,6 +115,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                   iconSize="large"
                   iconSizeModifier="3x"
                   onClick={logout}
+                  title={formatMessage(messages.logout)}
                 >
                   <FormattedMessage {...messages.logout} />
                 </Button>
@@ -120,6 +125,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                 <NavLink
                   activeClassName="is-active"
                   className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                  title={formatMessage(messages.login)}
                   to={`${url}/Login`}
                 >
                   <Icon className="mb-1" icon="sign-in-alt" iconSize="3x" size="large" />

@@ -8,6 +8,11 @@ import styles from './index.module.css';
 
 interface MenuButtonItemProps {
   /**
+   * The title text to apply to the button.
+   */
+  title?: string;
+
+  /**
    * Child navigation items to render.
    */
   children?: ReactNode;
@@ -50,6 +55,7 @@ export function MenuButton({
   iconColor,
   isChild,
   onClick,
+  title,
 }: MenuButtonItemProps): ReactElement {
   return (
     <button
@@ -58,6 +64,7 @@ export function MenuButton({
         'pl-2': !isChild,
       })}
       onClick={onClick}
+      title={title}
       type="button"
     >
       {icon && <Icon className="mr-1" color={iconColor} icon={icon} size="medium" />}

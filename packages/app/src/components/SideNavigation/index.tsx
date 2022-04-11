@@ -2,7 +2,7 @@ import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-comp
 import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
 import { Fragment, ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import { appId, sentryDsn } from '../../utils/settings';
@@ -30,6 +30,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
   const {
     definition: { layout, security },
   } = useAppDefinition();
+  const { formatMessage } = useIntl();
   const { isLoggedIn, logout, userInfo } = useUser();
 
   return (
@@ -53,18 +54,23 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             : name;
 
           return (
-            <MenuItem icon={page.icon} key={page.name} to={`${url}/${normalize(name)}`}>
+            <MenuItem
+              icon={page.icon}
+              key={page.name}
+              title={navName as string}
+              to={`${url}/${normalize(name)}`}
+            >
               {navName}
             </MenuItem>
           );
         })}
         {layout?.settings === 'navigation' && (
-          <MenuItem icon="wrench" to={`${url}/Settings`}>
+          <MenuItem icon="wrench" title={formatMessage(messages.settings)} to={`${url}/Settings`}>
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
         {layout?.feedback === 'navigation' && sentryDsn && (
-          <MenuItem icon="comment" to={`${url}/Feedback`}>
+          <MenuItem icon="comment" title={formatMessage(messages.feedback)} to={`${url}/Feedback`}>
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
         )}
@@ -76,11 +82,12 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
               icon="sign-out-alt"
               iconSize="medium"
               onClick={logout}
+              title={formatMessage(messages.logout)}
             >
               <FormattedMessage {...messages.logout} />
             </Button>
           ) : (
-            <MenuItem icon="sign-in-alt" to={`${url}/Login`}>
+            <MenuItem icon="sign-in-alt" title={formatMessage(messages.login)} to={`${url}/Login`}>
               <FormattedMessage {...messages.login} />
             </MenuItem>
           ))}
@@ -94,6 +101,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 icon={item.icon}
                 iconColor={item.iconColor}
                 onClick={() => item.onClick()}
+                title={item.title}
               >
                 {item.title}
               </MenuButton>
@@ -107,6 +115,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                       isChild
                       key={`${menu.path}/${item.title}/${subItem.title}`}
                       onClick={() => subItem.onClick()}
+                      title={subItem.title}
                     >
                       {subItem.title}
                     </MenuButton>
