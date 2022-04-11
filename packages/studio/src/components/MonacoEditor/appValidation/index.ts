@@ -6,10 +6,10 @@ import { AppValidationWorker } from './worker';
 
 export const appValidationLabel = 'appValidation';
 
-const workerManager = createWorkerManager<AppValidationWorker>({
-  label: appValidationLabel,
-  moduleId: appValidationLabel,
-});
+const workerManager = createWorkerManager<AppValidationWorker>(
+  { editor },
+  { label: appValidationLabel, moduleId: appValidationLabel },
+);
 
 export const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
   const client = await workerManager.getWorker();

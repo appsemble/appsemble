@@ -172,6 +172,11 @@ Refer to the block description for more information on the supported data format
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "Color": {
+        "description": "A hexadecimal color.",
+        "pattern": "^#[a-fA-F\\\\d]{6}$",
+        "type": "string",
+      },
       "YAxis": {
         "additionalProperties": false,
         "properties": {
@@ -181,9 +186,7 @@ Refer to the block description for more information on the supported data format
             ],
             "description": "By default a grey tone is used.",
             "items": {
-              "description": "A hexadecimal color.",
-              "pattern": "^#[a-fA-F\\\\d]{6}$",
-              "type": "string",
+              "$ref": "#/definitions/Color",
             },
             "minItems": 1,
             "type": "array",

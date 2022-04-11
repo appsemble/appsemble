@@ -111,7 +111,7 @@
     "xast-util-to-xml": "^2.0.0",
     "xastscript": "^2.0.0",
     "xml-crypto": "^2.0.0",
-    "yaml": "^2.0.0-10",
+    "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
