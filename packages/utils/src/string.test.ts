@@ -15,10 +15,10 @@ describe('toUpperCase', () => {
 
 describe('decodeJSONRef', () => {
   const tests = [
-    ['foo/bar', 'foo~1bar'],
-    ['foo~bar', 'foo~0bar'],
-    ['foo~/bar', 'foo~0~1bar'],
-    ['foo/~bar', 'foo~1~0bar'],
+    ['foo~1bar', 'foo/bar'],
+    ['foo~0bar', 'foo~bar'],
+    ['foo~0~1bar', 'foo~/bar'],
+    ['foo~1~0bar', 'foo/~bar'],
     ['Record%3Cstring%2Cnumber%3E', 'Record<string,number>'],
   ];
 
