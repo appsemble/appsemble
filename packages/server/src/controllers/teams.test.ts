@@ -232,7 +232,7 @@ describe('createTeam', () => {
       `);
     });
 
-    it('should reject if the is now an app member', async () => {
+    it('should reject if the user is not an app member', async () => {
       await app.update({
         definition: {
           ...app.definition,
