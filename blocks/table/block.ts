@@ -1,14 +1,6 @@
-import { IconName, Remapper } from '@appsemble/sdk';
+import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
 
-/**
- * Represents a column that should be displayed in the table.
- */
-export interface Field {
-  /**
-   * The value of the field.
-   */
-  value: Remapper;
-
+interface BaseField {
   /**
    * An optional label used in the header of the table.
    *
@@ -16,6 +8,21 @@ export interface Field {
    * row won’t be shown.
    */
   label?: Remapper;
+
+  /**
+   * Whether the content of the cell should be aligned left, right, or centered
+   */
+  alignment?: 'center' | 'left' | 'right';
+}
+
+/**
+ * Represents a column that should be displayed in the table.
+ */
+export interface Field extends BaseField {
+  /**
+   * The value of the field.
+   */
+  value: Remapper;
 
   /**
    * The name of the action to trigger when clicking on this field.
@@ -25,15 +32,72 @@ export interface Field {
   onClick?: string;
 }
 
-export interface Dropdown {
+export interface Button extends BaseField {
   /**
-   * An optional label used in the header of the table.
+   * The name of the action to trigger when clicking on this field.
    *
-   * If this isn’t specified, no label will be shown. If no fields have a label, the table header
-   * row won’t be shown.
+   * @format action
    */
-  label?: Remapper;
+  onClick?: string;
 
+  /**
+   * The definition of the contents and styling of the button.
+   */
+  button: {
+    /**
+     * The color of the button.
+     *
+     * @default "primary"
+     */
+    color?: BulmaColor;
+
+    /**
+     * The size of the button.
+     *
+     * @default "normal"
+     */
+    size?: BulmaSize;
+
+    /**
+     * The label to display inside of the button.
+     */
+    label?: Remapper;
+
+    /**
+     * An optional FontAwesome icon to display inside of the button.
+     */
+    icon?: IconName;
+
+    /**
+     * When set to true, the ‘light’ set of Bulma colors are used.
+     */
+    light?: boolean;
+
+    /**
+     * Whether the button should be rounded.
+     */
+    rounded?: boolean;
+
+    /**
+     * Whether the button should be full width or not.
+     *
+     * By default buttons only take up as much space as needed.
+     */
+    fullwidth?: boolean;
+
+    /**
+     * Whether the text and background colors should be inverted.
+     */
+    inverted?: boolean;
+
+    /**
+     * Whether the button should display its colors in the outlines.
+     */
+    outlined?: boolean;
+  };
+}
+
+export interface Dropdown extends BaseField {
   dropdown: {
     /**
      * The text to show in the dropdown button.
@@ -82,7 +146,7 @@ export interface RepeatedField {
   /**
    * The list of fields that should be repeated for each array item.
    */
-  repeat: (Dropdown | Field)[];
+  repeat: (Button | Dropdown | Field)[];
 
   /**
    * The value to use as the base of the repeated field.
@@ -108,7 +172,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Dropdown | Field | RepeatedField)[];
+    fields: (Button | Dropdown | Field | RepeatedField)[];
   }
 
   interface Actions {
