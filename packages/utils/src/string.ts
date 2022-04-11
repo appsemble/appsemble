@@ -27,5 +27,5 @@ export function toUpperCase(input: string): string {
  * @returns The escaped JSON pointer segment.
  */
 export function decodeJSONRef(ref: string): string {
-  return decodeURIComponent(ref).replace(/~/g, '~0').replace(/\//g, '~1');
+  return decodeURIComponent(ref).replace(/~1/g, '/').replace(/~0/g, '~');
 }
