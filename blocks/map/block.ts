@@ -40,7 +40,7 @@ interface AbstractMarkerIcon {
 /**
  * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
  */
-export interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
+interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
@@ -57,7 +57,7 @@ export interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
 /**
  * A marker based on an existing asset.
  */
-export interface AssetMarkerIcon extends AbstractMarkerIcon {
+interface AssetMarkerIcon extends AbstractMarkerIcon {
   /**
    * The id of an asset to use.
    */

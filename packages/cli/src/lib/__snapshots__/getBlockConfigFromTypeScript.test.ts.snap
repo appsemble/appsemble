@@ -1922,11 +1922,8 @@ This can be used to set the location to something that is more relevant to the u
             "type": "array",
           },
           "defaultValue": {
-            "additionalProperties": {
-              "type": "number",
-            },
+            "$ref": "#/definitions/Record%3Cstring%2Cnumber%3E",
             "description": "The default value of the field.",
-            "type": "object",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2351,6 +2348,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "Record<string,number>": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "type": "object",
+      },
       "RegexRequirement": {
         "additionalProperties": false,
         "description": "Requirement that matches using a given regex.",
@@ -2669,17 +2672,22 @@ All elements specifying \`data-content\` will be updated each time this event is
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
+    "definitions": {
+      "Record<string,Remapper>": {
+        "additionalProperties": {
+          "format": "remapper",
+        },
+        "type": "object",
+      },
+    },
     "properties": {
       "content": {
         "description": "The HTML to render.",
         "type": "string",
       },
       "placeholders": {
-        "additionalProperties": {
-          "format": "remapper",
-        },
+        "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
         "description": "The placeholders that are injected on elements with the \`data-content\` property.",
-        "type": "object",
       },
     },
     "required": [

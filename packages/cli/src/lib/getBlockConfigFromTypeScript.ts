@@ -188,7 +188,7 @@ function processParameters(program: Program, iface: InterfaceDeclaration): Schem
       getChildren: () => [],
     });
   });
-  const parser = createParser(program, { topRef: false });
+  const parser = createParser(program, { expose: 'all', topRef: false });
   const generator = new SchemaGenerator(program, parser, formatter);
   const schema = generator.createSchemaFromNodes([iface]) as Schema;
   if (schema.definitions && !Object.keys(schema.definitions).length) {
