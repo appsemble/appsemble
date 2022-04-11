@@ -8,7 +8,6 @@
   position: relative;
 
   &::after {
-    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
     background: linear-gradient(to bottom, rgb(0 0 0 / 0%), rgb(255 255 255 / 100%) 90%);
     bottom: 0;
     content: '';

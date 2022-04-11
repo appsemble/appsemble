@@ -44,7 +44,7 @@
     "sort-keys": "^4.0.0",
     "type-fest": "^2.0.0",
     "winston": "^3.0.0",
-    "yaml": "^2.0.0-10",
+    "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
