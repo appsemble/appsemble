@@ -198,11 +198,17 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     [login],
   );
 
-  const updateTeam: UpdateTeam = useCallback(({ id, role }) => {
-    setState(({ teams, ...oldState }) => ({
-      ...oldState,
-      teams: teams.map((t) => (t.id === id ? { ...t, role } : t)),
-    }));
+  const updateTeam: UpdateTeam = useCallback((team) => {
+    setState(({ teams, ...oldState }) => {
+      const newTeams = teams.map((t) => (t.id === team.id ? { ...t, role: team.role } : t));
+      if (!newTeams.some((t) => t.id === team.id)) {
+        newTeams.push(team);
+      }
+      return {
+        ...oldState,
+        teams: newTeams,
+      };
+    });
   }, []);
 
   // Initialize the login session/

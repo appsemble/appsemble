@@ -230,7 +230,7 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User }],
+    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
   });
 
   if (!team) {
@@ -386,6 +386,18 @@ export async function addTeamMember(ctx: Context): Promise<void> {
 
   const member = team.App.AppMembers[0]?.User ?? team.App.Organization.Users[0];
   await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
+
+  if ('app' in clients) {
+    // XXX: Separate app and studio responses.
+    ctx.body = {
+      id: team.id,
+      name: team.name,
+      role: TeamRole.Member,
+      annotations: team.annotations ?? {},
+    };
+
+    return;
+  }
   ctx.body = {
     id: member.id,
     name: member.name,
@@ -499,5 +511,11 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
   });
   await invite.destroy();
 
-  ctx.body = invite;
+  const { Team: team } = invite;
+  ctx.body = {
+    id: team.id,
+    name: team.name,
+    role: invite.role,
+    annotations: team.annotations ?? {},
+  };
 }

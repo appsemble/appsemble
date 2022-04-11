@@ -12,11 +12,13 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { apiUrl, appId } from '../../../utils/settings';
+import { useUser } from '../../UserProvider';
 import { messages } from './messages';
 
 export function TeamInvitePrompt(): ReactElement {
   const query = useQuery();
   const [isAccepted, setIsAccepted] = useState(false);
+  const { updateTeam } = useUser();
 
   const {
     data: invite,
@@ -25,9 +27,12 @@ export function TeamInvitePrompt(): ReactElement {
   } = useData<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invite?${query}`);
 
   const accept = useCallback(async () => {
-    await axios.post(`${apiUrl}/api/apps/${appId}/team/invite`, { code: query.get('code') });
+    const { data: team } = await axios.post<TeamMember>(`${apiUrl}/api/apps/${appId}/team/invite`, {
+      code: query.get('code'),
+    });
     setIsAccepted(true);
-  }, [query]);
+    updateTeam(team);
+  }, [query, updateTeam]);
 
   if (loading) {
     return <Loader />;
@@ -61,8 +66,8 @@ export function TeamInvitePrompt(): ReactElement {
   }
 
   return (
-    <Content>
-      <p className="content">
+    <Content padding>
+      <p className="content has-text-centered">
         <FormattedMessage
           {...messages.description}
           values={{ teamName: <strong>{invite.name}</strong> }}
