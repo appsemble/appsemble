@@ -6,6 +6,9 @@ mates. App managers can view and manage teams from the _Teams_ page in the app p
 Studio. In order to become a team member, a user must first be registered as an app member. They can
 do so by logging into the app. Teams determine how its members can share resources with each other.
 
+To enable teams, first `security.teams` needs to be enabled in the app definition. For more
+information, see [teams security](security.md#teams)
+
 ## Roles
 
 Within a team a user has one of the roles _Manager_ or _Member_. The exact difference between these
@@ -143,5 +146,6 @@ anyone.
 
 The following team related actions are can be used within an app:
 
+- [`team.invite`](/docs/reference/action#team.invite)
 - [`team.join`](/docs/reference/action#team.join)
 - [`team.list`](/docs/reference/action#team.list)

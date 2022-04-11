@@ -14,7 +14,7 @@ export interface BaseRequirement {
 /**
  * Minimum and maximum form requirements for number fields.
  */
-export interface MinMaxRequirement extends BaseRequirement {
+interface MinMaxRequirement extends BaseRequirement {
   /**
    * The minimum value of the field.
    */
@@ -31,7 +31,7 @@ export interface MinMaxRequirement extends BaseRequirement {
  *
  * Note that for `integer` type fields are rounded _down_.
  */
-export interface StepRequirement extends BaseRequirement {
+interface StepRequirement extends BaseRequirement {
   /**
    * The amount to increment or decrement when using the stepper buttons of the field.
    */
@@ -48,7 +48,7 @@ export interface RequiredRequirement extends BaseRequirement {
   required: boolean;
 }
 
-export interface FormRequirement extends BaseRequirement {
+interface FormRequirement extends BaseRequirement {
   /**
    * The list of fields that must be valid before running the requirement action.
    */
@@ -65,7 +65,7 @@ export interface FormRequirement extends BaseRequirement {
 /**
  * Requirement that matches using a given regex.
  */
-export interface RegexRequirement extends BaseRequirement {
+interface RegexRequirement extends BaseRequirement {
   /**
    * The regex to match with. Must be a valid JavaScript regex.
    */
@@ -85,7 +85,7 @@ export interface RegexRequirement extends BaseRequirement {
 /**
  * A requirement used to enforce the length or amount of items in the input.
  */
-export interface LengthRequirement extends BaseRequirement {
+interface LengthRequirement extends BaseRequirement {
   /**
    * The minimum length.
    *
@@ -101,7 +101,7 @@ export interface LengthRequirement extends BaseRequirement {
   maxLength?: number;
 }
 
-export interface AcceptRequirement extends BaseRequirement {
+interface AcceptRequirement extends BaseRequirement {
   /**
    * The list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types).
    */
@@ -111,7 +111,7 @@ export interface AcceptRequirement extends BaseRequirement {
 /**
  * A requirement used to enforce the range of available dates.
  */
-export interface RangeRequirement extends BaseRequirement {
+interface RangeRequirement extends BaseRequirement {
   /**
    * The minimum date that can be picked.
    */
@@ -297,7 +297,7 @@ export interface RadioField extends AbstractField {
   requirements?: RequiredRequirement[];
 }
 
-export interface AbstractEnumField extends AbstractField {
+interface AbstractEnumField extends AbstractField {
   /**
    * The type of the field.
    */
@@ -319,7 +319,7 @@ export interface AbstractEnumField extends AbstractField {
 /**
  * A dropdown list containing a list of predetermined values.
  */
-export interface SyncEnumField extends AbstractEnumField {
+interface SyncEnumField extends AbstractEnumField {
   /**
    * The list of available choices.
    */
@@ -329,7 +329,7 @@ export interface SyncEnumField extends AbstractEnumField {
 /**
  * A dropdown list containing a list of values based on the output of an action.
  */
-export interface ActionEnumField extends AbstractEnumField {
+interface ActionEnumField extends AbstractEnumField {
   /**
    * This action will be fired to fetch dynamic enum options.
    *
@@ -350,7 +350,7 @@ export interface ActionEnumField extends AbstractEnumField {
 /**
  * A dropdown list containing a list of values based on the output of an event.
  */
-export interface EventEnumField extends AbstractEnumField {
+interface EventEnumField extends AbstractEnumField {
   /**
    * Wait until an event has been fired containing the list of options.
    *

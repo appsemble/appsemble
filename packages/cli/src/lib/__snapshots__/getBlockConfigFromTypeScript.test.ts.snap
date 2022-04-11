@@ -172,6 +172,11 @@ Refer to the block description for more information on the supported data format
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "Color": {
+        "description": "A hexadecimal color.",
+        "pattern": "^#[a-fA-F\\\\d]{6}$",
+        "type": "string",
+      },
       "YAxis": {
         "additionalProperties": false,
         "properties": {
@@ -181,9 +186,7 @@ Refer to the block description for more information on the supported data format
             ],
             "description": "By default a grey tone is used.",
             "items": {
-              "description": "A hexadecimal color.",
-              "pattern": "^#[a-fA-F\\\\d]{6}$",
-              "type": "string",
+              "$ref": "#/definitions/Color",
             },
             "minItems": 1,
             "type": "array",
@@ -1922,11 +1925,8 @@ This can be used to set the location to something that is more relevant to the u
             "type": "array",
           },
           "defaultValue": {
-            "additionalProperties": {
-              "type": "number",
-            },
+            "$ref": "#/definitions/Record%3Cstring%2Cnumber%3E",
             "description": "The default value of the field.",
-            "type": "object",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2351,6 +2351,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "Record<string,number>": {
+        "additionalProperties": {
+          "type": "number",
+        },
+        "type": "object",
+      },
       "RegexRequirement": {
         "additionalProperties": false,
         "description": "Requirement that matches using a given regex.",
@@ -2669,17 +2675,22 @@ All elements specifying \`data-content\` will be updated each time this event is
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
+    "definitions": {
+      "Record<string,Remapper>": {
+        "additionalProperties": {
+          "format": "remapper",
+        },
+        "type": "object",
+      },
+    },
     "properties": {
       "content": {
         "description": "The HTML to render.",
         "type": "string",
       },
       "placeholders": {
-        "additionalProperties": {
-          "format": "remapper",
-        },
+        "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
         "description": "The placeholders that are injected on elements with the \`data-content\` property.",
-        "type": "object",
       },
     },
     "required": [
@@ -3143,9 +3154,118 @@ This does not trigger if the field has a different action specified.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "BulmaSize": {
+        "enum": [
+          "large",
+          "medium",
+          "normal",
+          "small",
+        ],
+        "type": "string",
+      },
+      "Button": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "button": {
+            "additionalProperties": false,
+            "description": "The definition of the contents and styling of the button.",
+            "properties": {
+              "color": {
+                "$ref": "#/definitions/BulmaColor",
+                "default": "primary",
+                "description": "The color of the button.",
+              },
+              "fullwidth": {
+                "description": "Whether the button should be full width or not.
+
+By default buttons only take up as much space as needed.",
+                "type": "boolean",
+              },
+              "icon": {
+                "description": "An optional FontAwesome icon to display inside of the button.",
+                "format": "fontawesome",
+                "type": "string",
+              },
+              "inverted": {
+                "description": "Whether the text and background colors should be inverted.",
+                "type": "boolean",
+              },
+              "label": {
+                "description": "The label to display inside of the button.",
+                "format": "remapper",
+              },
+              "light": {
+                "description": "When set to true, the ‘light’ set of Bulma colors are used.",
+                "type": "boolean",
+              },
+              "outlined": {
+                "description": "Whether the button should display its colors in the outlines.",
+                "type": "boolean",
+              },
+              "rounded": {
+                "description": "Whether the button should be rounded.",
+                "type": "boolean",
+              },
+              "size": {
+                "$ref": "#/definitions/BulmaSize",
+                "default": "normal",
+                "description": "The size of the button.",
+              },
+            },
+            "type": "object",
+          },
+          "label": {
+            "description": "An optional label used in the header of the table.
+
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
+            "format": "remapper",
+          },
+          "onClick": {
+            "description": "The name of the action to trigger when clicking on this field.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "button",
+        ],
+        "type": "object",
+      },
       "Dropdown": {
         "additionalProperties": false,
         "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
           "dropdown": {
             "additionalProperties": false,
             "properties": {
@@ -3211,6 +3331,15 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         "additionalProperties": false,
         "description": "Represents a column that should be displayed in the table.",
         "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
           "label": {
             "description": "An optional label used in the header of the table.
 
@@ -3243,6 +3372,9 @@ Only one repeated field is allowed, only the first RepeatedField is considered."
             "items": {
               "anyOf": [
                 {
+                  "$ref": "#/definitions/Button",
+                },
+                {
                   "$ref": "#/definitions/Dropdown",
                 },
                 {
@@ -3271,6 +3403,9 @@ Should be an array of data.",
         "description": "A list of fields to display.",
         "items": {
           "anyOf": [
+            {
+              "$ref": "#/definitions/Button",
+            },
             {
               "$ref": "#/definitions/Dropdown",
             },

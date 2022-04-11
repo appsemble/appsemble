@@ -77,7 +77,35 @@ security:
         - Reader
 ```
 
-### Root app roles
+### Teams
+
+In addition to roles, an app may also use teams for securing the app. This can be defined using the
+`teams` property of the security definition.
+
+```yaml copy
+security:
+  default:
+    role: Reader
+    policy: everyone
+  teams:
+    join: invite
+    create:
+      - Reader
+    invite:
+      - $team:member
+  roles:
+    Reader:
+      description: Anyone viewing the app.
+    Admin:
+      description: Administrators of the app.
+      inherits:
+        - Reader
+```
+
+For more details, see the [teams guide](teams.md) and the
+[teams reference documentation](https://appsemble.app/en/docs/reference/app#teams-definition)
+
+## Root app roles
 
 By specifying the [`roles`](/docs/reference/app#app-definition-roles) property to the root of the
 app definition, each user must at least have one of these roles in order to view the app.
@@ -98,7 +126,7 @@ roles:
 > `Reader` role. This will result in each page that doesn’t have its own `roles` property defined
 > showing a login page if the user is not currently authenticated.
 
-### Page app roles
+## Page app roles
 
 By specifying the [`roles`](/docs/reference/app#base-page-definition-roles) property for a page,
 visiting the page requires the user to have at least one of the roles specified in this list.
@@ -145,7 +173,7 @@ pages:
 > role will be able to visit “Example Page”. Anyone else will be redirected automatically to
 > “Example Page 2”.
 
-### Block roles
+## Block roles
 
 By specifying the `roles` property for a block, it is possible to hide the block for users with
 insufficient roles. Users who don’t have any of the roles specified to the `roles` property of a
@@ -169,7 +197,7 @@ pages:
 > In the example above, only the “example” block will be shown to users who don’t have the “Admin”
 > role. Users who do will see both blocks.
 
-### Resource roles
+## Resource roles
 
 As described in the [Appsemble resources](resources.md) page, it is possible to define and manage
 various resources that can be used from within an app. By default the corresponding API endpoints

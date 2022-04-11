@@ -108,7 +108,7 @@ export interface FlowActions {
   to: (data: any, step: string) => Promise<any>;
 }
 
-export type UpdateTeam = (team: Pick<TeamMember, 'id' | 'role'>) => void;
+export type UpdateTeam = (team: TeamMember) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;

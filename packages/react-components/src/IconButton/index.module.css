@@ -14,7 +14,6 @@
     &:active,
     &:focus,
     &:hover {
-      /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
       background-image: radial-gradient(
         circle closest-side,
         hsl(218deg 100% 66% / 43%),

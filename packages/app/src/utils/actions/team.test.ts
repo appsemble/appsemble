@@ -14,15 +14,17 @@ describe('team.join', () => {
   });
 
   it('should join a team and update the state', async () => {
-    mock.onPost(`${apiUrl}/api/apps/42/teams/1337/members`).reply(() => [201, { role: 'member' }]);
+    mock
+      .onPost(`${apiUrl}/api/apps/42/teams/1337/members`)
+      .reply(() => [201, { id: 1337, role: 'member', annotations: {} }]);
     const action = createTestAction({
       definition: { type: 'team.join' },
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
       updateTeam,
     });
     const result = await action(1337);
-    expect(result).toStrictEqual({ id: 1337, role: 'member' });
-    expect(updateTeam).toHaveBeenCalledWith({ id: 1337, role: 'member' });
+    expect(result).toStrictEqual({ id: 1337, role: 'member', annotations: {} });
+    expect(updateTeam).toHaveBeenCalledWith({ id: 1337, role: 'member', annotations: {} });
   });
 
   it('should throw if the user is not logged in', async () => {

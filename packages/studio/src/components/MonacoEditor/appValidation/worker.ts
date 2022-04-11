@@ -1,5 +1,12 @@
 import { BlockManifest, Theme } from '@appsemble/types';
-import { IdentifiableBlock, iterApp, Prefix, validateAppDefinition } from '@appsemble/utils';
+import {
+  IdentifiableBlock,
+  iterApp,
+  normalizeBlockName,
+  Prefix,
+  stripBlockName,
+  validateAppDefinition,
+} from '@appsemble/utils';
 import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
 import { initialize } from 'monaco-worker-manager/worker';
 import { isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
@@ -9,7 +16,7 @@ const blockMap = new Map<string, Promise<BlockManifest>>();
 async function getCachedBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const manifests = await Promise.all(
     blocks.map(({ type, version }) => {
-      const url = `/api/blocks/${type}/versions/${version}`;
+      const url = `/api/blocks/${normalizeBlockName(type)}/versions/${version}`;
       if (!blockMap.has(url)) {
         blockMap.set(
           url,
@@ -43,7 +50,16 @@ export interface AppValidationWorker {
    * @returns A list of block manifest that match the block manifests. If not matching manifest is
    * found, it’s ignored.
    */
+
   getCachedBlockVersions: (blockMap: IdentifiableBlock[]) => BlockManifest[];
+
+  /**
+   * Get editor decorations to render inline in the app editor.
+   *
+   * @param uri - The URI of the model to get decorations for.
+   * @returns editor decorations for an app definition.
+   */
+  getDecorations: (uri: string) => editor.IModelDeltaDecoration[];
 }
 
 /**
@@ -131,7 +147,6 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
         processTheme(prefix);
       },
     });
-
     return result;
   },
 
@@ -158,5 +173,52 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
         ...range,
       };
     });
+  },
+
+  getDecorations(uri) {
+    const models = ctx.getMirrorModels();
+    const model = models.find((m) => String(m.uri) === uri);
+    const yaml = model.getValue();
+    const lineCounter = new LineCounter();
+    const doc = parseDocument(yaml, { lineCounter });
+    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const decorations: Promise<editor.IModelDeltaDecoration>[] = [];
+    iterApp(definition, {
+      onBlock(block, prefix) {
+        decorations.push(
+          Promise.resolve().then(async () => {
+            const type = doc.getIn([...prefix, 'type'], true);
+
+            if (!isScalar(type) || typeof type.value !== 'string') {
+              return;
+            }
+            let href = `/blocks/${normalizeBlockName(type.value)}`;
+            const version = doc.getIn([...prefix, 'version']);
+            let manifest: BlockManifest | undefined;
+            if (typeof version === 'string') {
+              href += `/${version}`;
+              [manifest] = await getCachedBlockVersions([block]);
+            }
+
+            const description = manifest?.longDescription || manifest?.description || '';
+            const url = new URL(href, self.location.origin);
+
+            return {
+              range: getNodeRange(type, lineCounter),
+              options: {
+                afterContentClassName: 'ml-1 fas fa-circle-info has-text-info is-clickable',
+                hoverMessage: {
+                  value: `**${stripBlockName(
+                    block.type,
+                  )}**\n\n${description}\n\n[Full documentation](${url})`,
+                  isTrusted: true,
+                },
+              },
+            };
+          }),
+        );
+      },
+    });
+    return Promise.all(decorations);
   },
 }));

@@ -6,10 +6,10 @@ import { AppValidationWorker } from './worker';
 
 export const appValidationLabel = 'appValidation';
 
-const workerManager = createWorkerManager<AppValidationWorker>({
-  label: appValidationLabel,
-  moduleId: appValidationLabel,
-});
+const workerManager = createWorkerManager<AppValidationWorker>(
+  { editor },
+  { label: appValidationLabel, moduleId: appValidationLabel },
+);
 
 export const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
   const client = await workerManager.getWorker();
@@ -32,6 +32,25 @@ editor.onDidCreateModel((model) => {
 
   model.onWillDispose(() => {
     disposable.dispose();
+  });
+});
+
+editor.onDidCreateModel((model) => {
+  const modelMap = new WeakMap<editor.ITextModel, string[]>();
+
+  const disposable = model.onDidChangeContent(async () => {
+    if (String(model.uri) !== 'file:///app.yaml' || model.getLanguageId() !== 'yaml') {
+      return;
+    }
+
+    const client = await workerManager.getWorker(model.uri);
+    const markers = await client.getDecorations(String(model.uri));
+    modelMap.set(model, model.deltaDecorations(modelMap.get(model) ?? [], markers));
+  });
+
+  model.onWillDispose(() => {
+    disposable.dispose();
+    modelMap.delete(model);
   });
 });
 
