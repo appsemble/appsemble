@@ -33,7 +33,7 @@ function httpErrorToString(error: AxiosError): string {
     blue.bold('Request:'),
     highlight(
       [
-        `${request.method} ${axios.getUri(config)} HTTP/${request.res.httpVersion}`,
+        `${request.method} ${axios.getUri(config)} HTTP/${request.res?.httpVersion ?? '1.1'}`,
         ...Object.entries(request.getHeaders())
           .map(([key, value]) => [headerCase(key), value])
           .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)
