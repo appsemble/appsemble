@@ -225,6 +225,99 @@ describe('equals', () => {
   });
 });
 
+describe('ical', () => {
+  runTests({
+    'support string date': {
+      input: {
+        date: '2023-01-01T00:00:00Z',
+        title: 'Happy new year!',
+        description: 'Best wishes for 2023 🍾',
+        url: 'https://example.com',
+        location: 'Earth',
+        latlng: [0, 0],
+      },
+      mappers: [
+        {
+          ical: {
+            start: { prop: 'date' },
+            title: { prop: 'title' },
+            description: { prop: 'description' },
+            duration: '24h',
+            url: { prop: 'url' },
+            location: { prop: 'location' },
+            coordinates: { prop: 'latlng' },
+          },
+        },
+        { 'string.replace': { 'UID:[\\w-]+': 'UID:UID_STUB' } },
+        { 'string.replace': { 'DTSTAMP:\\w+': 'DTSTAMP:DTSTAMP_STUB' } },
+      ],
+      expected: `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+CALSCALE:GREGORIAN\r
+PRODID:https://example.com\r
+METHOD:PUBLISH\r
+X-PUBLISHED-TTL:PT1H\r
+BEGIN:VEVENT\r
+UID:UID_STUB\r
+SUMMARY:Happy new year!\r
+DTSTAMP:DTSTAMP_STUB\r
+DTSTART:20230101T000000Z\r
+DESCRIPTION:Best wishes for 2023 🍾\r
+URL:https://example.com\r
+GEO:0;0\r
+LOCATION:Earth\r
+DURATION:P1DT\r
+END:VEVENT\r
+END:VCALENDAR\r
+`,
+    },
+    'support JavaScript date': {
+      input: {
+        date: new Date('2023-01-01T00:00:00Z'),
+        title: 'Happy new year!',
+        description: 'Best wishes for 2023 🍾',
+        url: 'https://example.com',
+        location: 'Earth',
+        latlng: [0, 0],
+      },
+      mappers: [
+        {
+          ical: {
+            start: { prop: 'date' },
+            title: { prop: 'title' },
+            description: { prop: 'description' },
+            duration: '24h',
+            url: { prop: 'url' },
+            location: { prop: 'location' },
+            coordinates: { prop: 'latlng' },
+          },
+        },
+        { 'string.replace': { 'UID:[\\w-]+': 'UID:UID_STUB' } },
+        { 'string.replace': { 'DTSTAMP:\\w+': 'DTSTAMP:DTSTAMP_STUB' } },
+      ],
+      expected: `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+CALSCALE:GREGORIAN\r
+PRODID:https://example.com\r
+METHOD:PUBLISH\r
+X-PUBLISHED-TTL:PT1H\r
+BEGIN:VEVENT\r
+UID:UID_STUB\r
+SUMMARY:Happy new year!\r
+DTSTAMP:DTSTAMP_STUB\r
+DTSTART:20230101T000000Z\r
+DESCRIPTION:Best wishes for 2023 🍾\r
+URL:https://example.com\r
+GEO:0;0\r
+LOCATION:Earth\r
+DURATION:P1DT\r
+END:VEVENT\r
+END:VCALENDAR\r
+`,
+    },
+  });
+});
+
 describe('if', () => {
   runTests({
     'return the value of then if condition is truthy': {

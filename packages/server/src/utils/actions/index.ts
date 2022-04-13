@@ -23,6 +23,7 @@ export const actions = {
   dialog: noop,
   'dialog.error': noop,
   'dialog.ok': noop,
+  download: noop,
   email,
   event: noop,
   'flow.back': noop,

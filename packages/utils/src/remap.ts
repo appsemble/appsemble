@@ -1,10 +1,12 @@
 import { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
+import { createEvent } from 'ics';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
 import { has } from './has';
+import { getDuration, processLocation } from './ical';
 import { mapValues } from './mapValues';
 import { stripNullValues } from './miscellaneous';
 
@@ -181,6 +183,33 @@ const mapperImplementations: MapperImplementations = {
 
     const values = mappers.map((mapper) => remap(mapper, input, context));
     return values.every((value) => equal(values[0], value));
+  },
+
+  ical(mappers, input, context) {
+    const mappedStart = remap(mappers.start, input, context);
+    const start = mappedStart instanceof Date ? mappedStart : parseISO(mappedStart as string);
+    const { error, value } = createEvent({
+      start: [
+        start.getUTCFullYear(),
+        start.getUTCMonth() + 1,
+        start.getUTCDate(),
+        start.getUTCHours(),
+        start.getUTCMinutes(),
+      ],
+      startInputType: 'utc',
+      startOutputType: 'utc',
+      duration: getDuration(remap(mappers.duration, input, context) as string),
+      title: remap(mappers.title, input, context) as string,
+      description: remap(mappers.description, input, context) as string,
+      url: remap(mappers.url, input, context) as string,
+      location: remap(mappers.location, input, context) as string,
+      geo: processLocation(remap(mappers.coordinates, input, context)),
+      productId: context.appUrl,
+    });
+    if (error) {
+      throw error;
+    }
+    return value;
   },
 
   if(mappers, input, context) {

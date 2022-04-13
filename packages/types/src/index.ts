@@ -272,6 +272,51 @@ export interface Remappers {
   'array.unique': Remapper;
 
   /**
+   * Create an icalendar event.
+   */
+  ical: {
+    /**
+     * The start of the ical event.
+     */
+    start: Remapper;
+
+    /**
+     * The duration of the event.
+     *
+     * @example '1w 3d 10h 30m'
+     */
+    duration: Remapper;
+
+    /**
+     * The title of the event.
+     */
+    title: Remapper;
+
+    /**
+     * An optional description of the event.
+     */
+    description?: Remapper;
+
+    /**
+     * An optional link to attach to the event.
+     */
+    url?: Remapper;
+
+    /**
+     * An optional location description to attach to the event.
+     */
+    location?: Remapper;
+
+    /**
+     * An optional geolocation description to attach to the event.
+     *
+     * This must be an object with the properties `lat` or `latitude`, and `lon`, `lng` or
+     * `longitude`.
+     */
+    coordinates?: Remapper;
+  };
+
+  /**
    * Checks if condition results in a truthy value.
    *
    * Returns value of then if condition is truthy, otherwise it returns the value of else.
@@ -545,7 +590,7 @@ export interface ResourceDefinition {
   /**
    * A time string representing when a resource should expire.
    *
-   * Example: 1d 8h 30m
+   * @example '1d 8h 30m'
    */
   expires?: string;
 }
@@ -622,6 +667,13 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * The title to show in the dialog.
    */
   title?: Remapper;
+}
+
+export interface DownloadActionDefinition extends BaseActionDefinition<'download'> {
+  /**
+   * The filename to download the file as. It must include a file extension.
+   */
+  filename: string;
 }
 
 export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
@@ -953,6 +1005,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
   | DialogActionDefinition
+  | DownloadActionDefinition
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition

@@ -31,6 +31,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/DialogActionDefinition' },
         { $ref: '#/components/schemas/DialogErrorActionDefinition' },
         { $ref: '#/components/schemas/DialogOkActionDefinition' },
+        { $ref: '#/components/schemas/DownloadActionDefinition' },
         { $ref: '#/components/schemas/EmailActionDefinition' },
         { $ref: '#/components/schemas/EventActionDefinition' },
         { $ref: '#/components/schemas/FlowBackActionDefinition' },

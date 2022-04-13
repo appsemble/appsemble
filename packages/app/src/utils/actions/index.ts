@@ -5,6 +5,7 @@ import { MakeActionParameters } from '../../types';
 import { analytics } from './analytics';
 import { condition } from './condition';
 import { dialog } from './dialog';
+import { download } from './download';
 import { email } from './email';
 import { event } from './event';
 import * as flow from './flow';
@@ -49,6 +50,7 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   analytics,
   condition,
+  download,
   link,
   'link.back': back,
   'link.next': next,
