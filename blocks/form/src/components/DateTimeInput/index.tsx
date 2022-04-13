@@ -5,8 +5,15 @@ import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateTimeField, InputProps } from '../../../block';
 import { useLocale } from '../../hooks/useLocale';
+import { isWeekend } from '../../utils/date';
 import { extractDate } from '../../utils/extractDate';
-import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
+import {
+  getMaxDate,
+  getMaxTime,
+  getMinDate,
+  getMinTime,
+  isRequired,
+} from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
 
@@ -35,11 +42,14 @@ export function DateTimeInput({
 
   const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const minTime = useMemo(() => getMinTime(field), [field]);
+  const maxTime = useMemo(() => getMaxTime(field), [field]);
 
   const locale = useLocale(field);
 
   return (
     <DateTimeComponent
+      disable={field.disableWeekends ? [isWeekend] : []}
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty && error}
@@ -48,7 +58,10 @@ export function DateTimeInput({
       label={dateTimeLabel}
       locale={locale}
       maxDate={maxDate}
+      maxTime={maxTime}
       minDate={minDate}
+      minTime={minTime}
+      minuteIncrement={field.minuteIncrement}
       name={name}
       onChange={handleOnChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}

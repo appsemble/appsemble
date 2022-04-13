@@ -1,4 +1,5 @@
 import { Utils } from '@appsemble/sdk';
+import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
 import { Field } from '../../block';
@@ -26,6 +27,16 @@ export function isValidDate(date: Date): boolean {
 }
 
 /**
+ * Check if a given time string is a valid time between 00:00 and 23:59.
+ *
+ * @param time - The time string to check.
+ * @returns Whether the time string is valid.
+ */
+export function isValidTime(time: string): boolean {
+  return /^([01]\d|2[0-3]):([0-5]\d)$/.test(time);
+}
+
+/**
  * Get the earliest date of a field.
  *
  * @param field - The field to check.
@@ -40,6 +51,42 @@ export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | u
   if (minDates?.length) {
     return minDates.sort(compareAsc)[0];
   }
+}
+
+/**
+ * Get the earliest time out of the time requirements.
+ *
+ * @param field - The field to check.
+ * @returns A string matching the earliest time.
+ */
+export function getMinTime(field: FieldWithRequirements): string {
+  const minTimes = field.requirements
+    ?.filter((r) => 'minTime' in r)
+    .map((r) => r.minTime)
+    .filter(isValidTime);
+  if (minTimes?.length) {
+    return minTimes.sort(compareStrings)[0];
+  }
+
+  return '00:00';
+}
+
+/**
+ * Get the latest time out of the time requirements.
+ *
+ * @param field - The field to check.
+ * @returns A string matching the latest time.
+ */
+export function getMaxTime(field: FieldWithRequirements): string {
+  const maxTimes = field.requirements
+    ?.filter((r) => 'maxTime' in r)
+    .map((r) => r.maxTime)
+    .filter(isValidTime);
+  if (maxTimes?.length) {
+    return maxTimes.sort(compareStrings)[maxTimes.length - 1];
+  }
+
+  return '23:59';
 }
 
 /**

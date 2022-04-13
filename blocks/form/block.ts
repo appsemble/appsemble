@@ -124,6 +124,29 @@ interface RangeRequirement extends BaseRequirement {
 }
 
 /**
+ * A requirement used to enforce the range of available times.
+ */
+interface TimeRangeRequirement extends BaseRequirement {
+  /**
+   * The minimum time that can be selected.
+   *
+   * @default '00:00'
+   * @pattern ^([01]\d|2[0-3]):([0-5]\d)$
+   * @example '15:20'
+   */
+  minTime: string;
+
+  /**
+   * The maximum time that can be selected.
+   *
+   * @default '23:59'
+   * @pattern ^([01]\d|2[0-3]):([0-5]\d)$
+   * @example '15:20'
+   */
+  maxTime: string;
+}
+
+/**
  * All requirements applicable to string fields.
  */
 export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
@@ -141,8 +164,7 @@ export type FileRequirement = AcceptRequirement | LengthRequirement | RequiredRe
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RangeRequirement | RequiredRequirement;
-
+export type DateTimeRequirement = RangeRequirement | RequiredRequirement | TimeRangeRequirement;
 /**
  * All requirements applicable to object fields.
  */
@@ -218,6 +240,19 @@ export interface DateTimeField extends AbstractField {
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
+   * The minute increment when pressing the up or down arrows on the time picker.
+   *
+   * @default 5
+   * @minimum 1
+   */
+  minuteIncrement?: number;
+
+  /**
+   * Whether weekends should be disabled.
+   */
+  disableWeekends?: boolean;
+
+  /**
    * All requirements that are applicable to this type of field.
    */
   requirements?: DateTimeRequirement[];
@@ -241,6 +276,9 @@ export interface DateField extends AbstractField {
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
+  /**
+   * All requirements that are applicable to this type of field.
+   */
   requirements?: DateTimeRequirement[];
 }
 
