@@ -1,4 +1,4 @@
-import { BlockManifest, Theme } from '@appsemble/types';
+import { ActionType, BlockManifest, EventType, Theme } from '@appsemble/types';
 import {
   IdentifiableBlock,
   iterApp,
@@ -9,7 +9,7 @@ import {
 } from '@appsemble/utils';
 import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
 import { initialize } from 'monaco-worker-manager/worker';
-import { isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
+import { isMap, isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
@@ -106,6 +106,27 @@ function parseColor(color: unknown): languages.IColor {
   return result;
 }
 
+function* processEventsOrActions(
+  map: Record<string, ActionType | EventType>,
+  node: unknown,
+  lineCounter: LineCounter,
+): Iterable<editor.IModelDeltaDecoration> {
+  if (map && isMap(node)) {
+    for (const { key } of node.items) {
+      if (!isScalar(key) || typeof key.value !== 'string') {
+        continue;
+      }
+      const value = map?.[key.value]?.description || map.$any?.description;
+      if (value) {
+        yield {
+          range: getNodeRange(key, lineCounter),
+          options: { hoverMessage: { value: `**${key}**\n\n${value}`, isTrusted: true } },
+        };
+      }
+    }
+  }
+}
+
 initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
   getCachedBlockVersions,
 
@@ -175,50 +196,77 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
     });
   },
 
-  getDecorations(uri) {
+  async getDecorations(uri) {
     const models = ctx.getMirrorModels();
     const model = models.find((m) => String(m.uri) === uri);
     const yaml = model.getValue();
     const lineCounter = new LineCounter();
     const doc = parseDocument(yaml, { lineCounter });
     const definition = doc.toJS({ maxAliasCount: 10_000 });
-    const decorations: Promise<editor.IModelDeltaDecoration>[] = [];
+    const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
     iterApp(definition, {
       onBlock(block, prefix) {
-        decorations.push(
+        decorationsPromises.push(
           Promise.resolve().then(async () => {
-            const type = doc.getIn([...prefix, 'type'], true);
+            const blockNode = doc.getIn(prefix, true);
+            if (!isMap(blockNode)) {
+              return;
+            }
+
+            const type = blockNode.get('type', true);
 
             if (!isScalar(type) || typeof type.value !== 'string') {
               return;
             }
             let href = `/blocks/${normalizeBlockName(type.value)}`;
-            const version = doc.getIn([...prefix, 'version']);
+            const version = blockNode.get('version');
             let manifest: BlockManifest | undefined;
             if (typeof version === 'string') {
               href += `/${version}`;
               [manifest] = await getCachedBlockVersions([block]);
             }
 
+            if (!manifest) {
+              return;
+            }
+
             const description = manifest?.longDescription || manifest?.description || '';
             const url = new URL(href, self.location.origin);
 
-            return {
-              range: getNodeRange(type, lineCounter),
-              options: {
-                afterContentClassName: 'ml-1 fas fa-circle-info has-text-info is-clickable',
-                hoverMessage: {
-                  value: `**${stripBlockName(
-                    block.type,
-                  )}**\n\n${description}\n\n[Full documentation](${url})`,
-                  isTrusted: true,
+            return [
+              {
+                range: getNodeRange(type, lineCounter),
+                options: {
+                  afterContentClassName: 'ml-1 fas fa-circle-info has-text-info is-clickable',
+                  hoverMessage: {
+                    value: `**${stripBlockName(
+                      block.type,
+                    )}**\n\n${description}\n\n[Full documentation](${url})`,
+                    isTrusted: true,
+                  },
                 },
               },
-            };
+              ...processEventsOrActions(
+                manifest.actions,
+                blockNode.get('actions', true),
+                lineCounter,
+              ),
+              ...processEventsOrActions(
+                manifest.events?.listen,
+                blockNode.getIn(['events', 'listen'], true),
+                lineCounter,
+              ),
+              ...processEventsOrActions(
+                manifest.events?.emit,
+                blockNode.getIn(['events', 'emit'], true),
+                lineCounter,
+              ),
+            ];
           }),
         );
       },
     });
-    return Promise.all(decorations);
+    const decorations = await Promise.all(decorationsPromises);
+    return Promise.all(decorations.flat());
   },
 }));
