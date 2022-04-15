@@ -68,7 +68,7 @@
   "app.src.components.TeamInvite.TeamInvitePrompt.error": "There was a problem loading your invite.",
   "app.src.components.TeamInvite.TeamInvitePrompt.notFound": "Your invite could not be found.",
   "app.src.components.Verify.requestFailed": "Request failed. Token may be invalid.",
-  "app.src.components.Verify.requestSuccess": "Your email was successfully verified!.",
+  "app.src.components.Verify.requestSuccess": "Your email was successfully verified!",
   "app.src.components.Verify.returnToApp": "Return to app",
   "app.src.components.Verify.title": "Account verification",
   "react-components.src.EditPassword.passwordLabel": "Password",
