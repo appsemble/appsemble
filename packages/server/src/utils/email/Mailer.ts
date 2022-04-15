@@ -121,7 +121,8 @@ export class Mailer {
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
     locale: string;
   }): Promise<void> {
-    const lang = locale.toLowerCase();
+    const loc = locale || defaultLocale;
+    const lang = loc.toLowerCase();
     const baseLanguage = tags(lang)
       .subtags()
       .find((sub) => sub.type() === 'language');
@@ -178,8 +179,8 @@ export class Mailer {
       templateBody = messages[bodyKey];
     }
 
-    const sub = new IntlMessageFormat(templateSubject, locale).format(values);
-    const body = new IntlMessageFormat(templateBody, locale).format(values);
+    const sub = new IntlMessageFormat(templateSubject, loc).format(values);
+    const body = new IntlMessageFormat(templateBody, loc).format(values);
 
     const { html, subject, text } = await renderEmail(body as string, {}, sub as string);
 
