@@ -1549,6 +1549,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "type": "boolean",
           },
           "requirements": {
+            "description": "All requirements that are applicable to this type of field.",
             "items": {
               "$ref": "#/definitions/DateTimeRequirement",
             },
@@ -1592,6 +1593,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
+          "disableWeekends": {
+            "description": "Whether weekends should be disabled.",
+            "type": "boolean",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1600,6 +1605,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
+          },
+          "minuteIncrement": {
+            "default": 5,
+            "description": "The minute increment when pressing the up or down arrows on the time picker.",
+            "minimum": 1,
+            "type": "number",
           },
           "name": {
             "description": "The name used when storing this field.",
@@ -1661,6 +1672,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           {
             "$ref": "#/definitions/RequiredRequirement",
+          },
+          {
+            "$ref": "#/definitions/TimeRangeRequirement",
           },
         ],
         "description": "All requirements applicable to date-time fields.",
@@ -2620,6 +2634,33 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "enum",
           "name",
           "type",
+        ],
+        "type": "object",
+      },
+      "TimeRangeRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement used to enforce the range of available times.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "maxTime": {
+            "default": "23:59",
+            "description": "The maximum time that can be selected.",
+            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
+            "type": "string",
+          },
+          "minTime": {
+            "default": "00:00",
+            "description": "The minimum time that can be selected.",
+            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
+            "type": "string",
+          },
+        },
+        "required": [
+          "minTime",
+          "maxTime",
         ],
         "type": "object",
       },
