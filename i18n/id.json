@@ -68,7 +68,7 @@
   "app.src.components.TeamInvite.TeamInvitePrompt.error": "",
   "app.src.components.TeamInvite.TeamInvitePrompt.notFound": "",
   "app.src.components.Verify.requestFailed": "Permintaan gagal. Token mungkin tidak valid.",
-  "app.src.components.Verify.requestSuccess": "Email Anda berhasil diverifikasi!.",
+  "app.src.components.Verify.requestSuccess": "Email Anda berhasil diverifikasi!",
   "app.src.components.Verify.returnToApp": "Kembali ke aplikasi",
   "app.src.components.Verify.title": "Verifikasi akun",
   "react-components.src.EditPassword.passwordLabel": "Kata sandi",
