@@ -31,6 +31,16 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }
       - name: Germany
         blocks:
           - type: data-loader
@@ -55,6 +65,16 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }
       - name: Spain
         blocks:
           - type: data-loader
@@ -79,6 +99,16 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }
 
   - name: Holidays in America
     icon: globe-americas
@@ -106,6 +136,16 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }
       - name: Canada
         blocks:
           - type: data-loader
@@ -128,6 +168,16 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }
       - name: Mexico
         blocks:
           - type: data-loader
@@ -152,3 +202,13 @@ pages:
             events:
               listen:
                 data: holidays
+            actions:
+              onClick:
+                type: download
+                filename: holiday.ics
+                remap:
+                  ics:
+                    title: { prop: name }
+                    start: { prop: date }
+                    duration: 1d
+                    description: { prop: localName }

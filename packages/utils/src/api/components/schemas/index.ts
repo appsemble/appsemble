@@ -16,6 +16,7 @@ export * from './CustomFontDefinition';
 export * from './DialogActionDefinition';
 export * from './DialogErrorActionDefinition';
 export * from './DialogOkActionDefinition';
+export * from './DownloadActionDefinition';
 export * from './EmailActionDefinition';
 export * from './Error';
 export * from './EventActionDefinition';
