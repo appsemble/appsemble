@@ -74,7 +74,7 @@ If the input is not an array, the input is returned without any modifications.`,
 Returns \`true\` if all entries are equal, otherwise \`false\`.
 `,
     },
-    ical: {
+    ics: {
       type: 'object',
       description: 'Create a calendar event',
       additionalProperties: false,
@@ -82,7 +82,7 @@ Returns \`true\` if all entries are equal, otherwise \`false\`.
       properties: {
         start: {
           $ref: '#/components/schemas/RemapperDefinition',
-          description: 'The start of the ical event.',
+          description: 'The start of the icalendar event.',
         },
         duration: {
           $ref: '#/components/schemas/RemapperDefinition',

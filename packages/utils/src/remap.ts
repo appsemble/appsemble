@@ -6,7 +6,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
 import { has } from './has';
-import { getDuration, processLocation } from './ical';
+import { getDuration, processLocation } from './ics';
 import { mapValues } from './mapValues';
 import { stripNullValues } from './miscellaneous';
 
@@ -185,7 +185,7 @@ const mapperImplementations: MapperImplementations = {
     return values.every((value) => equal(values[0], value));
   },
 
-  ical(mappers, input, context) {
+  ics(mappers, input, context) {
     const mappedStart = remap(mappers.start, input, context);
     const start = mappedStart instanceof Date ? mappedStart : parseISO(mappedStart as string);
     const { error, value } = createEvent({

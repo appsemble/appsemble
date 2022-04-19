@@ -274,9 +274,9 @@ export interface Remappers {
   /**
    * Create an icalendar event.
    */
-  ical: {
+  ics: {
     /**
-     * The start of the ical event.
+     * The start of the icalendar event.
      */
     start: Remapper;
 

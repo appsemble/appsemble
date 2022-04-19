@@ -225,7 +225,7 @@ describe('equals', () => {
   });
 });
 
-describe('ical', () => {
+describe('ics', () => {
   runTests({
     'support string date': {
       input: {
@@ -238,7 +238,7 @@ describe('ical', () => {
       },
       mappers: [
         {
-          ical: {
+          ics: {
             start: { prop: 'date' },
             title: { prop: 'title' },
             description: { prop: 'description' },
@@ -282,7 +282,7 @@ END:VCALENDAR\r
       },
       mappers: [
         {
-          ical: {
+          ics: {
             start: { prop: 'date' },
             title: { prop: 'title' },
             description: { prop: 'description' },

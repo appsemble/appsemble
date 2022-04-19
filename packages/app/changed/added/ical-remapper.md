@@ -1,1 +1,1 @@
-Add remapper `ical` for creating calendar events.
+Add remapper `ics` for creating calendar events.
