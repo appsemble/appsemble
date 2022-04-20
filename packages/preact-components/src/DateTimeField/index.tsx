@@ -10,7 +10,16 @@ import { FormComponent, Input, SharedFormComponentProps } from '..';
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   Pick<
     flatpickr.Options.Options,
-    'enableTime' | 'locale' | 'maxDate' | 'minDate' | 'mode' | 'noCalendar'
+    | 'disable'
+    | 'enableTime'
+    | 'locale'
+    | 'maxDate'
+    | 'maxTime'
+    | 'minDate'
+    | 'minTime'
+    | 'minuteIncrement'
+    | 'mode'
+    | 'noCalendar'
   > &
   SharedFormComponentProps & {
     /**
@@ -36,6 +45,7 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
 
 export function DateTimeField({
   className,
+  disable,
   disabled,
   enableTime,
   noCalendar,
@@ -54,7 +64,10 @@ export function DateTimeField({
   value,
   minDate,
   maxDate,
+  minTime,
+  maxTime,
   id = name,
+  minuteIncrement = 5,
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
@@ -100,8 +113,12 @@ export function DateTimeField({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,
       wrap: true,
+      ...(disable?.length && { disable }),
       minDate,
       maxDate,
+      minTime: '00:00',
+      maxTime: '23:59',
+      minuteIncrement,
       formatDate: (date) =>
         remap(
           {
@@ -122,7 +139,20 @@ export function DateTimeField({
       p.destroy();
       setPicker(null);
     };
-  }, [disabled, enableTime, locale, maxDate, minDate, mode, noCalendar, remap]);
+  }, [
+    disable,
+    disabled,
+    enableTime,
+    locale,
+    maxDate,
+    maxTime,
+    minDate,
+    minTime,
+    minuteIncrement,
+    mode,
+    noCalendar,
+    remap,
+  ]);
 
   useEffect(() => {
     picker?.setDate(new Date(value));
