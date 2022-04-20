@@ -166,7 +166,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
         } = checkTokenRequestParameters(query, ['client_id', 'username', 'password', 'scope']);
         const appId = Number(clientId.replace('app:', ''));
         const member = await AppMember.findOne({
-          where: { AppId: appId, email: username },
+          where: { AppId: appId, email: username.toLowerCase() },
         });
 
         if (!member || !(await compare(password, member.password))) {
