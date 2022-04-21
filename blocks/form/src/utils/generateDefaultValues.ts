@@ -5,6 +5,7 @@ function generateDefaultValue(field: Field): unknown {
   if ('defaultValue' in field) {
     return field.defaultValue;
   }
+
   switch (field.type) {
     case 'boolean':
       return false;
