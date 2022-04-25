@@ -36,8 +36,15 @@ bootstrap(
     const [values, setValues] = useState(defaultValues);
     const [lastChanged, setLastChanged] = useState<string>(null);
     const errors = useMemo(
-      () => generateDefaultValidity(fields, values, utils, utils.formatMessage('invalidLabel')),
-      [fields, utils, values],
+      () =>
+        generateDefaultValidity(
+          fields,
+          values,
+          utils,
+          utils.formatMessage('invalidLabel'),
+          defaultValues,
+        ),
+      [defaultValues, fields, utils, values],
     );
 
     const lock = useRef<symbol>();
