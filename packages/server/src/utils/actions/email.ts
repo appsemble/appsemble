@@ -83,17 +83,17 @@ export async function email({
 
   const attachments: SendMailOptions['attachments'] = [];
   const assetSelectors: TargetAttachment[] = [];
-  for (const remapped of [remap(action.attachments, data, context)]) {
+  for (const remapped of [remap(action.attachments, data, context)].flat()) {
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
       if (attachment.target.startsWith('http')) {
-        assetSelectors.push(attachment);
-      } else {
         attachments.push({
           path: attachment.target,
           ...(attachment.filename && { filename: attachment.filename }),
           ...(attachment.accept && { httpHeaders: { accept: attachment.accept } }),
         });
+      } else {
+        assetSelectors.push(attachment);
       }
     } else if (isContentAttachment(attachment)) {
       attachments.push({

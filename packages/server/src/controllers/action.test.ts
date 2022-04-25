@@ -512,15 +512,44 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [
-        { content: buffer, filename: 'test.json' },
         {
           filename: 'example.csv',
           httpHeaders: { accept: 'text/csv' },
           path: 'https://via.placeholder.com/150',
         },
+        { content: buffer, filename: 'test.json' },
       ],
     });
     spy.mockRestore();
+  });
+
+  it('should acceot assets from content', async () => {
+    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
+      to: 'test@example.com',
+      body: 'Body',
+      attachments: [{ content: 'Hello attachment!', filename: 'hello.txt' }],
+    });
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(spy).toHaveBeenCalledWith({
+      to: 'test@example.com',
+      from: 'Appsemble',
+      subject: 'Test title',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Body</p>
+</body>
+</html>
+`,
+      text: 'Body\n',
+      attachments: [{ content: 'Hello attachment!', filename: 'hello.txt' }],
+    });
   });
 
   it('should attach existing assets', async () => {
