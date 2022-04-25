@@ -77,30 +77,26 @@ export function SimpleForm<T extends {}>({
     }
   }, [onSubmit, reset, resetOnSuccess, values]);
 
-  const setFormError = useCallback(
-    (name: string, errorMessage?: ReactNode) => {
-      setFormErrors({
-        ...formErrors,
-        [name]: errorMessage,
-      });
-    },
-    [formErrors],
-  );
+  const setFormError = useCallback((name: string, errorMessage?: ReactNode) => {
+    setFormErrors((oldFormErrors) => ({
+      ...oldFormErrors,
+      [name]: errorMessage,
+    }));
+  }, []);
 
   const setValue = useCallback(
     (name: string, value: any, errorMessage?: ReactNode) => {
       setPristine((p) => ({ ...p, [name]: false }));
-      let newValues = {
-        ...values,
-        [name]: value,
-      };
-      if (preprocess) {
-        newValues = preprocess(name, newValues, values);
-      }
-      setValues(newValues);
+      setValues((oldValues) => {
+        const newValues = {
+          ...oldValues,
+          [name]: value,
+        };
+        return preprocess ? preprocess(name, newValues, oldValues) : newValues;
+      });
       setFormError(name, errorMessage);
     },
-    [preprocess, setFormError, values],
+    [preprocess, setFormError],
   );
 
   const value = useMemo(
