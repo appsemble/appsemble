@@ -162,7 +162,9 @@ test node 16:
       - coverage
     reports:
       junit: junit.xml
-      cobertura: coverage/cobertura-coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
 
 # Check type validity for our TypeScript files.
 tsc:
