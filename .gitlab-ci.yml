@@ -1,5 +1,5 @@
 default:
-  image: node:16-bullseye-slim
+  image: node:18-bullseye-slim
 
 stages:
   - test
@@ -81,7 +81,7 @@ codecov:
   image: alpine
   allow_failure: true
   needs:
-    - test node 16
+    - test node 18
   script:
     - wget https://uploader.codecov.io/latest/alpine/codecov
     - chmod +x codecov
@@ -146,6 +146,24 @@ test node 14:
 
 # Run unittests using NodeJS 16.
 test node 16:
+  interruptible: true
+  image: node:16-bullseye-slim
+  services:
+    - name: postgres:11
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - yarn --frozen-lockfile
+    - yarn jest
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Run unittests using NodeJS 18.
+test node 18:
   interruptible: true
   services:
     - name: postgres:11
