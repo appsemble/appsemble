@@ -43,8 +43,16 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
     },
     attachments: {
       $ref: '#/components/schemas/RemapperDefinition',
-      description:
-        'Remapper for the attachments to include in the email. Must resolve into an array of either asset IDs that are associated with the same app, or absolute URLs.',
+      description: `The attachments to include in the email.
+
+The remapper must resolve to an object containing the following properties:
+
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
+- \`filename\`: The filename to include the attachment as.
+- \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
+
+If the attachment is a string, it will be treated as the target.`,
     },
   },
 });
