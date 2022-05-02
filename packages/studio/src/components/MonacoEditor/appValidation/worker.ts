@@ -1,4 +1,4 @@
-import { ActionType, BlockManifest, EventType, Theme } from '@appsemble/types';
+import { ActionType, AppDefinition, BlockManifest, EventType, Theme } from '@appsemble/types';
 import {
   IdentifiableBlock,
   iterApp,
@@ -9,7 +9,7 @@ import {
 } from '@appsemble/utils';
 import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
 import { initialize } from 'monaco-worker-manager/worker';
-import { isMap, isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
+import { Document, isMap, isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
@@ -27,6 +27,33 @@ async function getCachedBlockVersions(blocks: IdentifiableBlock[]): Promise<Bloc
     }),
   );
   return manifests.filter(Boolean);
+}
+
+let cachedYaml: [
+  doc: Document.Parsed,
+  lineCounter: LineCounter,
+  definition: AppDefinition,
+  version: number,
+];
+function parseYamlCached(ctx: worker.IWorkerContext, uri: string): typeof cachedYaml | [] {
+  const models = ctx.getMirrorModels();
+  const model = models.find((m) => String(m.uri) === uri);
+  if (!model) {
+    return [];
+  }
+  const { version } = model;
+  const oldVersion = cachedYaml?.[3] ?? 0;
+  if (version < oldVersion) {
+    return [];
+  }
+  if (version > oldVersion) {
+    const yaml = model.getValue();
+    const lineCounter = new LineCounter();
+    const doc = parseDocument(yaml, { lineCounter });
+    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    cachedYaml = [doc, lineCounter, definition, version];
+  }
+  return cachedYaml;
 }
 
 export interface AppValidationWorker {
@@ -131,12 +158,10 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
   getCachedBlockVersions,
 
   doDocumentColors(uri) {
-    const models = ctx.getMirrorModels();
-    const model = models.find((m) => String(m.uri) === uri);
-    const yaml = model.getValue();
-    const lineCounter = new LineCounter();
-    const doc = parseDocument(yaml, { lineCounter });
-    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+    if (!doc) {
+      return;
+    }
     const result: languages.IColorInformation[] = [];
 
     function handleKey(prefix: Prefix, key: keyof Theme): void {
@@ -172,12 +197,10 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
   },
 
   async doValidation(uri) {
-    const models = ctx.getMirrorModels();
-    const model = models.find((m) => String(m.uri) === uri);
-    const yaml = model.getValue();
-    const lineCounter = new LineCounter();
-    const doc = parseDocument(yaml, { lineCounter });
-    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+    if (!doc) {
+      return;
+    }
     const { errors } = await validateAppDefinition(definition, getCachedBlockVersions);
 
     return errors.map((error) => {
@@ -197,12 +220,10 @@ initialize<AppValidationWorker, unknown>((ctx: worker.IWorkerContext) => ({
   },
 
   async getDecorations(uri) {
-    const models = ctx.getMirrorModels();
-    const model = models.find((m) => String(m.uri) === uri);
-    const yaml = model.getValue();
-    const lineCounter = new LineCounter();
-    const doc = parseDocument(yaml, { lineCounter });
-    const definition = doc.toJS({ maxAliasCount: 10_000 });
+    const [doc, lineCounter, definition] = parseYamlCached(ctx, uri);
+    if (!doc) {
+      return;
+    }
     const decorationsPromises: Promise<editor.IModelDeltaDecoration[]>[] = [];
     iterApp(definition, {
       onBlock(block, prefix) {
