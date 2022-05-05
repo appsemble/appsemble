@@ -106,6 +106,40 @@ export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | u
   }
 }
 
+export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
+  const disabledDays = field.requirements.reduce<Set<number>>((disabled, current) => {
+    if ('monday' in current && !current.monday) {
+      disabled.add(1);
+    }
+    if ('tuesday' in current && !current.tuesday) {
+      disabled.add(2);
+    }
+    if ('wednesday' in current && !current.wednesday) {
+      disabled.add(3);
+    }
+    if ('thursday' in current && !current.thursday) {
+      disabled.add(4);
+    }
+    if ('friday' in current && !current.friday) {
+      disabled.add(5);
+    }
+    if ('saturday' in current && !current.saturday) {
+      disabled.add(6);
+    }
+    if ('sunday' in current && !current.sunday) {
+      disabled.add(0);
+    }
+
+    return disabled;
+  }, new Set());
+
+  if (!disabledDays.size) {
+    return [];
+  }
+
+  return [(date) => disabledDays.has(date.getDay())];
+}
+
 /**
  * Get the absolute minimum length of a field.
  *

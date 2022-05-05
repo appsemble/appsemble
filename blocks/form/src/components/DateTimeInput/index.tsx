@@ -1,13 +1,13 @@
-import { FormattedMessage, useBlock } from '@appsemble/preact';
+import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
 import { DateTimeField, InputProps } from '../../../block';
 import { useLocale } from '../../hooks/useLocale';
-import { isWeekend } from '../../utils/date';
 import { extractDate } from '../../utils/extractDate';
 import {
+  getDisabledDays,
   getMaxDate,
   getMaxTime,
   getMinDate,
@@ -44,12 +44,13 @@ export function DateTimeInput({
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
   const minTime = useMemo(() => getMinTime(field), [field]);
   const maxTime = useMemo(() => getMaxTime(field), [field]);
+  const disable = useMemo(() => getDisabledDays(field), [field]);
 
   const locale = useLocale(field);
 
   return (
     <DateTimeComponent
-      disable={field.disableWeekends ? [isWeekend] : []}
+      disable={disable}
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty && error}
@@ -64,7 +65,7 @@ export function DateTimeInput({
       minuteIncrement={field.minuteIncrement}
       name={name}
       onChange={handleOnChange}
-      optionalLabel={<FormattedMessage id="optionalLabel" />}
+      optionalLabel={utils.formatMessage('optionalLabel')}
       placeholder={(utils.remap(placeholder, value) as string) || dateTimeLabel || name}
       readOnly={readOnly}
       required={required}
