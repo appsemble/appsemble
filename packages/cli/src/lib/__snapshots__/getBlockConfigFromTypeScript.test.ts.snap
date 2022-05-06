@@ -1559,7 +1559,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "default": 1,
             "description": "The day to display as the first day of the week.
 
-0 means sunday, 1 means monday, etc.",
+0 means Sunday, 1 means Monday, etc.",
             "enum": [
               0,
               1,
@@ -1668,6 +1668,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       "DateTimeRequirement": {
         "anyOf": [
           {
+            "$ref": "#/definitions/EnabledDayRequirement",
+          },
+          {
             "$ref": "#/definitions/RangeRequirement",
           },
           {
@@ -1678,6 +1681,52 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
         ],
         "description": "All requirements applicable to date-time fields.",
+      },
+      "EnabledDayRequirement": {
+        "additionalProperties": false,
+        "description": "A requirement that can be used to disable specific days.",
+        "properties": {
+          "errorMessage": {
+            "description": "The error message that is displayed when the requirement is not met.",
+            "format": "remapper",
+          },
+          "friday": {
+            "default": true,
+            "description": "Whether Fridays should be selectable.",
+            "type": "boolean",
+          },
+          "monday": {
+            "default": true,
+            "description": "Whether Mondays should be selectable.",
+            "type": "boolean",
+          },
+          "saturday": {
+            "default": true,
+            "description": "Whether Saturdays should be selectable.",
+            "type": "boolean",
+          },
+          "sunday": {
+            "default": true,
+            "description": "Whether Sundays should be selectable.",
+            "type": "boolean",
+          },
+          "thursday": {
+            "default": true,
+            "description": "Whether Thursdays should be selectable.",
+            "type": "boolean",
+          },
+          "tuesday": {
+            "default": true,
+            "description": "Whether Tuesdays should be selectable.",
+            "type": "boolean",
+          },
+          "wednesday": {
+            "default": true,
+            "description": "Whether Wednesdays should be selectable.",
+            "type": "boolean",
+          },
+        },
+        "type": "object",
       },
       "EnumField": {
         "anyOf": [
