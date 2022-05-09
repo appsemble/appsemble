@@ -76,6 +76,13 @@ export interface Argv {
    */
   ingressAnnotations: string;
 
+  /**
+   * The class name of the ingress.
+   *
+   * @default 'nginx'
+   */
+  ingressClassName: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -259,6 +266,7 @@ const defaults: Argv = {
   kubernetesServiceHost: 'kubernetes.default.svc',
   kubernetesServicePort: 443,
   ingressAnnotations: undefined,
+  ingressClassName: 'nginx',
   databaseHost: undefined,
   databasePort: 5432,
   databaseUser: undefined,

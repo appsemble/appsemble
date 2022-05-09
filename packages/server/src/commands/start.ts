@@ -92,6 +92,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'How to link app domain names to apps',
       choices: ['kubernetes-ingress'],
     })
+    .option('ingress-class-name', {
+      desc: 'The class name of the ingresses to create.',
+      default: 'nginx',
+    })
     .option('ingress-annotations', {
       desc: 'A JSON string representing ingress annotations to add to created ingresses.',
       implies: ['service-name', 'service-port'],

@@ -41,6 +41,8 @@ spec:
                   key: postgresql-postgres-password
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
+            - name: INGRESS_CLASS_NAME
+              value: {{ .Values.ingress.className | quote }}
             - name: INGRESS_ANNOTATIONS
               value: {{ .Values.ingress.annotations | toJson | quote }}
             - name: SERVICE_NAME

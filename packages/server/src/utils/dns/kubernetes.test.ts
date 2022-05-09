@@ -65,6 +65,7 @@ describe('configureDNS', () => {
         name: 'testorg-host-example',
       },
       spec: {
+        ingressClassName: 'nginx',
         rules: [
           {
             host: '*.testorg.host.example',
@@ -126,6 +127,7 @@ describe('configureDNS', () => {
         name: 'example-com',
       },
       spec: {
+        ingressClassName: 'nginx',
         rules: [
           {
             host: 'example.com',
@@ -204,6 +206,7 @@ describe('configureDNS', () => {
         name: 'foo-host-example',
       },
       spec: {
+        ingressClassName: 'nginx',
         rules: [
           {
             host: '*.foo.host.example',
@@ -290,6 +293,7 @@ describe('restoreDNS', () => {
           name: 'test-host-example',
         },
         spec: {
+          ingressClassName: 'nginx',
           rules: [
             {
               host: '*.test.host.example',
@@ -320,6 +324,7 @@ describe('restoreDNS', () => {
           name: 'app-example',
         },
         spec: {
+          ingressClassName: 'nginx',
           rules: [
             {
               host: 'app.example',
