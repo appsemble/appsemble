@@ -15,6 +15,7 @@ service:
 
 ingress:
   enabled: true
+  className: nginx
   annotations: {}
   host: ''
   tls:
