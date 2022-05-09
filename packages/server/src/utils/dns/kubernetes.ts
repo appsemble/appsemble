@@ -145,6 +145,11 @@ interface Ingress extends AbstractKubernetesResource {
    */
   spec: {
     /**
+     * The class name of the ingress.
+     */
+    ingressClassName: string;
+
+    /**
      * Ingress rules used to match incoming traffic.
      */
     rules: IngressRule[];
@@ -216,7 +221,7 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
  * the command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
-  const { ingressAnnotations, serviceName, servicePort } = argv;
+  const { ingressAnnotations, ingressClassName, serviceName, servicePort } = argv;
   const { version } = readPackageJson();
   const namespace = await readK8sSecret('namespace');
   const config = await getAxiosConfig();
@@ -243,6 +248,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
             name,
           },
           spec: {
+            ingressClassName,
             rules: [
               {
                 host: domain,

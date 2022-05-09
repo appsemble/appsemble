@@ -56,6 +56,10 @@
           "type": "boolean",
           "description": "Whether or not the service should be exposed through an ingress."
         },
+        "className": {
+          "type": "string",
+          "description": "The ingress class name."
+        },
         "annotations": {
           "type": "object",
           "description": "Annotations for the Appsemble ingress.",
