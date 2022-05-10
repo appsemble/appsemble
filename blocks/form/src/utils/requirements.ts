@@ -106,32 +106,25 @@ export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | u
   }
 }
 
-export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
-  const disabledDays = field.requirements.reduce<Set<number>>((disabled, current) => {
-    if ('monday' in current && !current.monday) {
-      disabled.add(1);
-    }
-    if ('tuesday' in current && !current.tuesday) {
-      disabled.add(2);
-    }
-    if ('wednesday' in current && !current.wednesday) {
-      disabled.add(3);
-    }
-    if ('thursday' in current && !current.thursday) {
-      disabled.add(4);
-    }
-    if ('friday' in current && !current.friday) {
-      disabled.add(5);
-    }
-    if ('saturday' in current && !current.saturday) {
-      disabled.add(6);
-    }
-    if ('sunday' in current && !current.sunday) {
-      disabled.add(0);
-    }
+const weekdays = [
+  'sunday',
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+] as const
 
-    return disabled;
-  }, new Set());
+export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
+  const disabled = new Set<number>();
+  for (const current = field.requirements) {
+    for (const [index, name] of weekdays.entries()) {
+      if (current[name] === false) {
+        disabled.add(index);
+      }
+    }
+  }
 
   if (!disabledDays.size) {
     return [];
