@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'preact/hooks';
 import { DateField, InputProps } from '../../../block';
 import { useLocale } from '../../hooks/useLocale';
 import { extractDate } from '../../utils/extractDate';
-import { getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
+import { getDisabledDays, getMaxDate, getMinDate, isRequired } from '../../utils/requirements';
 
 type DateTimeInputProps = InputProps<string, DateField>;
 
@@ -36,11 +36,13 @@ export function DateInput({
 
   const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
   const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const disable = useMemo(() => getDisabledDays(field), [field]);
 
   const locale = useLocale(field);
 
   return (
     <DateTimeComponent
+      disable={disable}
       disabled={disabled}
       error={dirty && error}
       id={name}

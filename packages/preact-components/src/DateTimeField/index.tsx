@@ -64,8 +64,8 @@ export function DateTimeField({
   value,
   minDate,
   maxDate,
-  minTime,
-  maxTime,
+  minTime = '00:00',
+  maxTime = '23:59',
   id = name,
   minuteIncrement = 5,
   ...props
@@ -116,8 +116,8 @@ export function DateTimeField({
       ...(disable?.length && { disable }),
       minDate,
       maxDate,
-      minTime: '00:00',
-      maxTime: '23:59',
+      minTime,
+      maxTime,
       minuteIncrement,
       formatDate: (date) =>
         remap(

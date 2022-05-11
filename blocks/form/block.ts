@@ -147,6 +147,60 @@ interface TimeRangeRequirement extends BaseRequirement {
 }
 
 /**
+ * A requirement that can be used to disable specific days.
+ */
+interface EnabledDayRequirement extends BaseRequirement {
+  /**
+   * Whether Mondays should be selectable.
+   *
+   * @default true
+   */
+  monday?: boolean;
+
+  /**
+   * Whether Tuesdays should be selectable.
+   *
+   * @default true
+   */
+  tuesday?: boolean;
+
+  /**
+   * Whether Wednesdays should be selectable.
+   *
+   * @default true
+   */
+  wednesday?: boolean;
+
+  /**
+   * Whether Thursdays should be selectable.
+   *
+   * @default true
+   */
+  thursday?: boolean;
+
+  /**
+   * Whether Fridays should be selectable.
+   *
+   * @default true
+   */
+  friday?: boolean;
+
+  /**
+   * Whether Saturdays should be selectable.
+   *
+   * @default true
+   */
+  saturday?: boolean;
+
+  /**
+   * Whether Sundays should be selectable.
+   *
+   * @default true
+   */
+  sunday?: boolean;
+}
+
+/**
  * All requirements applicable to string fields.
  */
 export type StringRequirement = LengthRequirement | RegexRequirement | RequiredRequirement;
@@ -164,7 +218,11 @@ export type FileRequirement = AcceptRequirement | LengthRequirement | RequiredRe
 /**
  * All requirements applicable to date-time fields.
  */
-export type DateTimeRequirement = RangeRequirement | RequiredRequirement | TimeRangeRequirement;
+export type DateTimeRequirement =
+  | EnabledDayRequirement
+  | RangeRequirement
+  | RequiredRequirement
+  | TimeRangeRequirement;
 /**
  * All requirements applicable to object fields.
  */
@@ -270,7 +328,7 @@ export interface DateField extends AbstractField {
   /**
    * The day to display as the first day of the week.
    *
-   * 0 means sunday, 1 means monday, etc.
+   * 0 means Sunday, 1 means Monday, etc.
    *
    * @default 1
    */
