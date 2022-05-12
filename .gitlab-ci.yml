@@ -518,6 +518,8 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
+    HELM_KUBECONTEXT: $CI_PROJECT_PATH:production
+    HELM_NAMESPACE: appsemble
   script:
     - helm repo add appsemble https://charts.appsemble.com
     - helm upgrade appsemble appsemble/appsemble
