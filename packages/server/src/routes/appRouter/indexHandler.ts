@@ -36,6 +36,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
 
   const { app, appPath, organizationId } = await getApp(ctx, {
     attributes: [
+      'domain',
       'definition',
       'googleAnalyticsID',
       'sentryDsn',
@@ -106,6 +107,10 @@ export async function indexHandler(ctx: Context): Promise<void> {
     app.sentryEnvironment,
   );
 
+  const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+  const languages = [
+    ...new Set([...app.AppMessages.map(({ language }) => language), defaultLanguage]),
+  ].sort();
   const [settingsHash, settings] = createSettings(
     {
       apiUrl: host,
@@ -120,12 +125,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
         }),
       ),
       id: app.id,
-      languages: [
-        ...new Set([
-          ...app.AppMessages.map(({ language }) => language),
-          app.definition.defaultLanguage || defaultLocale,
-        ]),
-      ].sort(),
+      languages,
       logins: [
         ...app.AppOAuth2Secrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'oauth2' })),
         ...app.AppSamlSecrets.map(({ icon, id, name }) => ({ icon, id, name, type: 'saml' })),
@@ -160,8 +160,17 @@ export async function indexHandler(ctx: Context): Promise<void> {
   };
 
   ctx.set('Content-Security-Policy', makeCSP(csp));
+
+  const url = new URL(host);
+  url.hostname = app.domain || `${appPath}.${organizationId}.${url.hostname}`;
+  const appUrl = String(url);
+
   return render(ctx, 'app/index.html', {
     app,
+    appUrl,
+    host,
+    locale: defaultLanguage,
+    locales: languages.filter((lang) => lang !== defaultLanguage),
     bulmaURL: createThemeURL(mergeThemes(app.definition.theme)),
     faURL,
     nonce,

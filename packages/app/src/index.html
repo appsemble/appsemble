@@ -8,7 +8,21 @@
       content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,width=device-width"
     />
     <meta name="theme-color" content="{{{ themeColor }}}" />
+    <meta name="author" content="{{{ app.OrganizationId }}}" />
+    <meta name="generator" content="Appsemble 0.20.5" />
+    <meta name="og:title" content="{{{ app.definition.name }}}" />
+    <meta name="og:type" content="website" />
+    <meta name="og:locale" content="{{{ locale }}}" />
+    <meta name="og:url" content="{{{ appUrl }}}" />
+    {{ #locales }}
+    <meta name="og:locale:alternate" content="{{.}}" />
+    {{ /locales }}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@appsemble_" />
+    <meta name="og:description" content="{{{ app.definition.description }}}" />
     <meta name="description" content="{{{ app.definition.description }}}" />
+    <meta name="og:image" content="{{{ host }}}/api/apps/{{{ app.id }}}/icon" />
+    <meta name="twitter:image" content="{{{ host }}}/api/apps/{{{ app.id }}}/icon" />
     <link rel="icon" sizes="16x16" href="/icon-16.png?updated={{{ appUpdated }}}" />
     <link rel="icon" sizes="32x32" href="/icon-32.png?updated={{{ appUpdated }}}" />
     <link rel="icon" sizes="96x96" href="/icon-96.png?updated={{{ appUpdated }}}" />

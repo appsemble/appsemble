@@ -260,6 +260,7 @@ export async function handler({ increment }: Args): Promise<void> {
   logger.info(`New version: ${version}`);
   const paths = await globby(
     [
+      'apps/*/index.html',
       'apps/*/app-definition.yaml',
       'docs/*.md',
       'docs/**/*.md',
