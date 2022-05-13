@@ -201,6 +201,57 @@ export interface TokenResponse {
   token_type: 'bearer';
 }
 
+interface BaseICSRemapper {
+  /**
+   * The start of the icalendar event.
+   */
+  start: Remapper;
+
+  /**
+   * The title of the event.
+   */
+  title: Remapper;
+
+  /**
+   * An optional description of the event.
+   */
+  description?: Remapper;
+
+  /**
+   * An optional link to attach to the event.
+   */
+  url?: Remapper;
+
+  /**
+   * An optional location description to attach to the event.
+   */
+  location?: Remapper;
+
+  /**
+   * An optional geolocation description to attach to the event.
+   *
+   * This must be an object with the properties `lat` or `latitude`, and `lon`, `lng` or
+   * `longitude`.
+   */
+  coordinates?: Remapper;
+}
+
+interface DurationICSRemapper extends BaseICSRemapper {
+  /**
+   * The duration of the event.
+   *
+   * @example '1w 3d 10h 30m'
+   */
+  duration: Remapper;
+}
+
+interface EndICSRemapper extends BaseICSRemapper {
+  /**
+   * The end time of the event as a date or a date string.
+   */
+  end: Remapper;
+}
+
 export interface Remappers {
   /**
    * Get app metadata.
@@ -274,47 +325,7 @@ export interface Remappers {
   /**
    * Create an icalendar event.
    */
-  ics: {
-    /**
-     * The start of the icalendar event.
-     */
-    start: Remapper;
-
-    /**
-     * The duration of the event.
-     *
-     * @example '1w 3d 10h 30m'
-     */
-    duration: Remapper;
-
-    /**
-     * The title of the event.
-     */
-    title: Remapper;
-
-    /**
-     * An optional description of the event.
-     */
-    description?: Remapper;
-
-    /**
-     * An optional link to attach to the event.
-     */
-    url?: Remapper;
-
-    /**
-     * An optional location description to attach to the event.
-     */
-    location?: Remapper;
-
-    /**
-     * An optional geolocation description to attach to the event.
-     *
-     * This must be an object with the properties `lat` or `latitude`, and `lon`, `lng` or
-     * `longitude`.
-     */
-    coordinates?: Remapper;
-  };
+  ics: DurationICSRemapper | EndICSRemapper;
 
   /**
    * Checks if condition results in a truthy value.
