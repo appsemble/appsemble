@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.5
-appVersion: 0.20.5
+version: 0.20.6
+appVersion: 0.20.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,17 +25,19 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(chart): Support custom colors for the y axis."
+      description: "Block(form): Add TimeRangeRequirement for date-time fields to
+        limit the time range."
     - kind: added
-      description: "Block(chart): Support custom step size for the y axis."
+      description: "Block(form): Add new requirement for date and date-time fields to
+        disable selecting dates that fall on specific weekdays."
     - kind: added
-      description: "Block(table): Add alignment property to field types."
+      description: "App: Add download action for downloading the result of an action."
     - kind: added
-      description: "Block(table): Add support for button field types."
-    - kind: changed
-      description: "Cli: Expose all block parameter related types as definitions."
+      description: "App: Add remapper ics for creating calendar events."
+    - kind: added
+      description: "Server: Email actions now support content based attachments."
     - kind: fixed
-      description: "App: Fix issue where teams were not correctly updated when joining a team."
+      description: "Server: Fix case sensitivity bug when using password grant type."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.6](https://gitlab.com/appsemble/appsemble/-/releases/0.20.6)] - 2022-05-13
+
+### Added
+
+- Block(`form`): Add `TimeRangeRequirement` for `date-time` fields to limit the time range.
+- Block(`form`): Add new requirement for `date` and `date-time` fields to disable selecting dates
+  that fall on specific weekdays.
+- App: Add `download` action for downloading the result of an action.
+- App: Add remapper `ics` for creating calendar events.
+- Server: Email actions now support content based attachments.
+
+### Fixed
+
+- Server: Fix case sensitivity bug when using `password` grant type.
+
 ## \[[0.20.5](https://gitlab.com/appsemble/appsemble/-/releases/0.20.5)] - 2022-04-11
 
 ### Added
