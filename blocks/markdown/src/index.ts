@@ -21,7 +21,6 @@ function populateNode(
     case 'right':
       node.classList.add('has-text-right');
       break;
-    case 'left':
     default:
       node.classList.add('has-text-left');
   }

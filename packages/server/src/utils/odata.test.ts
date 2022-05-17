@@ -113,7 +113,6 @@ describe('odataFilterToSequelize', () => {
       where(col('Model.baz'), '=', 8),
     ),
 
-    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Not
     'not foo eq 12': { [Op.not]: where(col('Model.foo'), '=', 12) },
 
@@ -129,26 +128,21 @@ describe('odataFilterToSequelize', () => {
     //
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Addition
-    // @ts-expect-error This is a bug in the Sequelize types
     'foo add 1 eq 3': where(where(col('Model.foo'), '+', 1), '=', 3),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Subtraction
-    // @ts-expect-error This is a bug in the Sequelize types
     'foo sub 1 eq 3': where(where(col('Model.foo'), '-', 1), '=', 3),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Negation
     // XXX
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Multiplication
-    // @ts-expect-error This is a bug in the Sequelize types
     'foo mul 1 eq 3': where(where(col('Model.foo'), '*', 1), '=', 3),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Divisionmul
-    // @ts-expect-error This is a bug in the Sequelize types
     'foo div 1 eq 3': where(where(col('Model.foo'), '/', 1), '=', 3),
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#sec_Modulo
-    // @ts-expect-error This is a bug in the Sequelize types
     'foo mod 1 eq 3': where(where(col('Model.foo'), '%', 1), '=', 3),
 
     //
@@ -217,7 +211,6 @@ describe('odataFilterToSequelize', () => {
     //
 
     // Nested properties
-    // @ts-expect-error This is a bug in the Sequelize types.
     'foo/bar/baz eq 42': where(json('foo.bar.baz'), '=', 42),
 
     // Nested functions
@@ -228,15 +221,12 @@ describe('odataFilterToSequelize', () => {
     // Combine boolean logical expressions
     'foo eq 12 or (bar eq 14 and baz eq 8)': or(
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       and(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
     'foo eq 12 and (bar eq 14 or baz eq 8)': and(
       where(col('Model.foo'), '=', 12),
-      // @ts-expect-error This is a bug in the Sequelize types.
       or(where(col('Model.bar'), '=', 14), where(col('Model.baz'), '=', 8)),
     ),
-    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     'not (foo eq 12 and bar eq 14)': {
       [Op.not]: and(where(col('Model.foo'), '=', 12), where(col('Model.bar'), '=', 14)),
     },

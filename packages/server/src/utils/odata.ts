@@ -174,7 +174,6 @@ function processToken(
   }
   if (operators.has(token.type)) {
     return where(
-      // @ts-expect-error This is a bug in the Sequelize types
       processToken(token.value.left, model, rename),
       operators.get(token.type),
       processToken(token.value.right, model, rename),
@@ -205,7 +204,6 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
   }
 
   if (token.type === TokenType.NotExpression) {
-    // @ts-expect-error https://github.com/sequelize/sequelize/pull/14087
     return { [Op.not]: processLogicalExpression(token.value, model, rename) };
   }
 
