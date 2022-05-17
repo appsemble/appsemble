@@ -8,15 +8,6 @@ import { HighlightedCode, HighlightedCodeProps } from '../HighlightedCode';
 import styles from './index.module.css';
 import { messages } from './messages';
 
-/**
- * This is a helper element for the clipboard button.
- *
- * To copy content to a clipboard, it must first be added to an existing element in the DOM.
- */
-const textarea = document.createElement('textarea');
-textarea.className = styles.hidden;
-document.body.append(textarea);
-
 interface CodeBlockProps {
   /**
    * A class name to add to the `pre` element.
@@ -41,7 +32,7 @@ interface CodeBlockProps {
   /**
    * The language to use for highlighting the code.
    */
-  language: string;
+  language?: string;
 }
 
 /**
@@ -57,21 +48,30 @@ export function CodeBlock({
   const { formatMessage } = useIntl();
   const push = useMessages();
 
-  const code = typeof children === 'string' ? children : children?.props.children;
+  let code = children;
+  let codeClassName: string;
+  if (Array.isArray(code)) {
+    [code] = code;
+  }
+  if (typeof code !== 'string') {
+    codeClassName = code.props.className;
+    code = code.props.children;
+  }
+  if (Array.isArray(code)) {
+    [code] = code;
+  }
 
   const onDownload = useCallback(() => {
-    downloadBlob(code, filename);
+    downloadBlob(code as string, filename);
   }, [code, filename]);
 
-  const onCopy = useCallback(() => {
-    textarea.value = code;
-    textarea.select();
-    if (document.execCommand('copy')) {
+  const onCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code as string);
       push({ body: formatMessage(messages.copySuccess), color: 'success' });
-    } else {
+    } catch {
       push({ body: formatMessage(messages.copyError), color: 'danger' });
     }
-    textarea.value = '';
   }, [code, formatMessage, push]);
 
   return (
@@ -95,9 +95,11 @@ export function CodeBlock({
         )}
       </div>
       <pre className={styles.pre}>
-        {typeof children === 'string' ? (
-          <HighlightedCode className={language ? `language-${language}` : null}>
-            {children}
+        {typeof code === 'string' ? (
+          <HighlightedCode
+            className={classNames(codeClassName, language ? `language-${language}` : null)}
+          >
+            {code}
           </HighlightedCode>
         ) : (
           children

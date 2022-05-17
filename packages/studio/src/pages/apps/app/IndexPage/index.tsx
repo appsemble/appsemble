@@ -1,4 +1,4 @@
-import { Button, MarkdownContent, Title, useToggle } from '@appsemble/react-components';
+import { Button, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement } from 'react';
@@ -9,6 +9,7 @@ import { useApp } from '..';
 import { AppIcon } from '../../../../components/AppIcon';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl';
 import { CloneButton } from '../../../../components/CloneButton';
+import { MarkdownContent } from '../../../../components/MarkdownContent';
 import { StarRating } from '../../../../components/StarRating';
 import { getAppUrl } from '../../../../utils/getAppUrl';
 import { AppRatings } from './AppRatings';

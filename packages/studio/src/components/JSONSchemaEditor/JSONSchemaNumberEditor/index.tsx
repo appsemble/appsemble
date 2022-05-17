@@ -1,7 +1,8 @@
-import { InputField, MarkdownContent } from '@appsemble/react-components';
+import { InputField } from '@appsemble/react-components';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement } from 'react';
 
+import { MarkdownContent } from '../../MarkdownContent';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { CommonJSONSchemaEditorProps } from '../types';
 

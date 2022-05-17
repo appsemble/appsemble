@@ -1,4 +1,4 @@
-import { Children, ReactElement, ReactNode } from 'react';
+import { Children, Fragment, ReactElement, ReactNode } from 'react';
 
 interface JoinProps {
   children: ReactNode;
@@ -9,13 +9,23 @@ interface JoinProps {
  * Join React JSX children using a separator node.
  */
 export function Join({ children, separator }: JoinProps): ReactElement {
-  return Children.toArray(children)
-    .filter((child) => child != null && typeof child !== 'boolean')
-    .map((child, index) => (
-      // eslint-disable-next-line react/jsx-key
-      <>
-        {index ? separator : null}
+  let count = 0;
+  return Children.map(children, (child) => {
+    if (typeof child !== 'object') {
+      return null;
+    }
+    if (!child) {
+      return null;
+    }
+    count += 1;
+    if (count === 1) {
+      return child;
+    }
+    return (
+      <Fragment key={('key' in child && child.key) ?? count}>
+        {separator}
         {child}
-      </>
-    )) as any;
+      </Fragment>
+    );
+  }) as ReactNode as ReactElement;
 }

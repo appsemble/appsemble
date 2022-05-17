@@ -1,7 +1,8 @@
-import { MarkdownContent, SelectField } from '@appsemble/react-components';
+import { SelectField } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
+import { MarkdownContent } from '../../MarkdownContent';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { CommonJSONSchemaEditorProps } from '../types';
 import { messages } from './messages';
