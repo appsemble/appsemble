@@ -4,15 +4,15 @@
     "name": "Sondage",
     "pages.finished": "Terminé",
     "pages.survey": "Sondage",
-    "pages.survey.steps.0": "",
-    "pages.survey.steps.1": "",
-    "pages.survey.steps.2": "",
-    "pages.survey.steps.3": "",
-    "pages.survey.steps.4": "",
-    "pages.survey.steps.5": "",
-    "pages.survey.steps.6": "",
-    "pages.survey.steps.7": "",
-    "pages.survey.steps.8": ""
+    "pages.survey.steps.0": "Introduction",
+    "pages.survey.steps.1": "Familiarité",
+    "pages.survey.steps.2": "Évaluations de Appsemble",
+    "pages.survey.steps.3": "Commentaires sur Appsemble",
+    "pages.survey.steps.4": "Évaluations des fonctionnalités",
+    "pages.survey.steps.5": "Application suivante avec Appsemble",
+    "pages.survey.steps.6": "Votre prochaine application",
+    "pages.survey.steps.7": "Pourquoi pas Appsemble",
+    "pages.survey.steps.8": "Rien d'autre"
   },
   "blocks": {
     "@appsemble/form": {
