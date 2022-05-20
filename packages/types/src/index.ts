@@ -245,7 +245,7 @@ interface DurationICSRemapper extends BaseICSRemapper {
   duration: Remapper;
 }
 
-interface EndICSRemapper extends BaseICSRemapper {
+interface EndTimeICSRemapper extends BaseICSRemapper {
   /**
    * The end time of the event as a date or a date string.
    */
@@ -325,7 +325,7 @@ export interface Remappers {
   /**
    * Create an icalendar event.
    */
-  ics: DurationICSRemapper | EndICSRemapper;
+  ics: DurationICSRemapper | EndTimeICSRemapper;
 
   /**
    * Checks if condition results in a truthy value.
