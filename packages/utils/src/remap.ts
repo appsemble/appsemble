@@ -1,7 +1,7 @@
 import { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import { createEvent } from 'ics';
+import { createEvent, EventAttributes } from 'ics';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
@@ -186,9 +186,10 @@ const mapperImplementations: MapperImplementations = {
   },
 
   ics(mappers, input, context) {
+    let event;
     const mappedStart = remap(mappers.start, input, context);
     const start = mappedStart instanceof Date ? mappedStart : parseISO(mappedStart as string);
-    const { error, value } = createEvent({
+    const sharedAttributes = {
       start: [
         start.getUTCFullYear(),
         start.getUTCMonth() + 1,
@@ -198,14 +199,37 @@ const mapperImplementations: MapperImplementations = {
       ],
       startInputType: 'utc',
       startOutputType: 'utc',
-      duration: getDuration(remap(mappers.duration, input, context) as string),
       title: remap(mappers.title, input, context) as string,
       description: remap(mappers.description, input, context) as string,
       url: remap(mappers.url, input, context) as string,
       location: remap(mappers.location, input, context) as string,
       geo: processLocation(remap(mappers.coordinates, input, context)),
       productId: context.appUrl,
-    });
+    };
+
+    if ('end' in mappers) {
+      const mappedEnd = remap(mappers.end, input, context);
+      const end = mappedEnd instanceof Date ? mappedEnd : parseISO(mappedEnd as string);
+      event = {
+        ...sharedAttributes,
+        endInputType: 'utc',
+        endOutputType: 'utc',
+        end: [
+          end.getUTCFullYear(),
+          end.getUTCMonth() + 1,
+          end.getUTCDate(),
+          end.getUTCHours(),
+          end.getUTCMinutes(),
+        ],
+      };
+    } else {
+      event = {
+        ...sharedAttributes,
+        duration: getDuration(remap(mappers.duration, input, context) as string),
+      };
+    }
+
+    const { error, value } = createEvent(event as EventAttributes);
     if (error) {
       throw error;
     }
