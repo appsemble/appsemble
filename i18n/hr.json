@@ -68,7 +68,7 @@
   "app.src.components.TeamInvite.TeamInvitePrompt.error": "Došlo je do problema prilikom učitavanja tvoje pozivnice.",
   "app.src.components.TeamInvite.TeamInvitePrompt.notFound": "Nije bilo moguće pronaći tvoju pozivnicu.",
   "app.src.components.Verify.requestFailed": "Neuspio zahtjev. Token možda nije ispravan.",
-  "app.src.components.Verify.requestSuccess": "Tvoja je e-mail adresa uspješno potvrđena.",
+  "app.src.components.Verify.requestSuccess": "Tvoja je e-mail adresa uspješno potvrđena!",
   "app.src.components.Verify.returnToApp": "Vrati se na program",
   "app.src.components.Verify.title": "Provjera računa",
   "react-components.src.EditPassword.passwordLabel": "Lozinka",
