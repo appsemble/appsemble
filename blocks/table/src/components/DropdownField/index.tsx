@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Dropdown } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { Fragment, VNode } from 'preact';
 
 import { Dropdown as Field } from '../../../block';
@@ -42,10 +43,11 @@ export function DropdownField({
   const {
     utils: { remap },
   } = useBlock();
+  const alignment = field.alignment || 'right';
 
   return (
     <Dropdown
-      className="is-right"
+      className={classNames({ 'is-right': alignment === 'right' })}
       icon={field.dropdown.icon}
       label={remap(field.dropdown.label, item, { index, repeatedIndex }) as string}
     >
