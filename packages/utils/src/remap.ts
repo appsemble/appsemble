@@ -188,7 +188,7 @@ const mapperImplementations: MapperImplementations = {
   gt: ([left, right], input: any, context) =>
     remap(left, input, context) > remap(right, input, context),
 
-  lt([left, right], input: any, context) =>
+  lt: ([left, right], input: any, context) =>
     remap(left, input, context) < remap(right, input, context),
 
   ics(mappers, input, context) {
