@@ -305,14 +305,14 @@ export interface Remappers {
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is greater than the second entry.
-  */
+   */
   gt: [Remapper, Remapper];
 
   /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is less than the second entry.
-  */
+   */
   lt: [Remapper, Remapper];
 
   /**
