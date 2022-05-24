@@ -3397,6 +3397,15 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
       "DropdownOption": {
         "additionalProperties": false,
         "properties": {
+          "alignment": {
+            "default": "right",
+            "description": "How the dropdown should be aligned.",
+            "enum": [
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
           "icon": {
             "description": "The icon to show in the option.",
             "format": "fontawesome",
