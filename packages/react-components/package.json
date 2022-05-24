@@ -41,7 +41,7 @@
     "@types/react-transition-group": "^4.0.0",
     "@types/webpack-env": "^1.0.0",
     "@zxcvbn-ts/core": "^2.0.0",
-    "axios": "^0.26.0",
+    "axios": "^0.27.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",

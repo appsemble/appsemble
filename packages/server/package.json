@@ -44,7 +44,7 @@
     "@sentry/node": "^6.0.0",
     "@types/mdast": "^3.0.0",
     "@xmldom/xmldom": "^0.8.0",
-    "axios": "^0.26.0",
+    "axios": "^0.27.0",
     "bcrypt": "5.0.1",
     "bulma": "0.9.3",
     "bulma-checkradio": "2.1.1",
