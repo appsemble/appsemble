@@ -64,7 +64,7 @@ bootstrap(
             image ? (
               <img alt={text} src={isUrl ? image : asset(image)} />
             ) : icon ? (
-              <i className={`${fa(icon)} ${styles.icon}`} style={style} />
+              <i className={`${fa(icon)} ${styles.icon}`} />
             ) : undefined,
             text && (
               <p className="has-text-centered" style={style}>

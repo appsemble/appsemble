@@ -18,7 +18,7 @@ declare module '@appsemble/sdk' {
   interface Parameters {
     /**
      * This can be used to render an image.
-     * This can be either the asset’s UUID or alias, or a full URL.
+     * This can be either an asset ID or name, or a full URL.
      *
      * This takes precedence over an icon.
      */
