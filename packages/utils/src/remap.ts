@@ -185,6 +185,12 @@ const mapperImplementations: MapperImplementations = {
     return values.every((value) => equal(values[0], value));
   },
 
+  gt: ([left, right], input: any, context) =>
+    remap(left, input, context) > remap(right, input, context),
+
+  lt: ([left, right], input: any, context) =>
+    remap(left, input, context) < remap(right, input, context),
+
   ics(mappers, input, context) {
     let event;
     const mappedStart = remap(mappers.start, input, context);

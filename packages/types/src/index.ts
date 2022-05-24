@@ -302,6 +302,20 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
+   * Returns `true` of the first entry is greater than the second entry.
+   */
+  gt: [Remapper, Remapper];
+
+  /**
+   * Compares the first computed remapper value with the second computed remapper value.
+   *
+   * Returns `true` of the first entry is less than the second entry.
+   */
+  lt: [Remapper, Remapper];
+
+  /**
    * Builds an array based on the given data and remappers.
    *
    * The remappers gets applied to each item in the array.

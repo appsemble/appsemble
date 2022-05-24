@@ -195,6 +195,46 @@ describe('date.add', () => {
   });
 });
 
+describe('le', () => {
+  runTests({
+    'return true if the left value is less than the right value': {
+      input: { left: 42, right: 420 },
+      mappers: { lt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with dates': {
+      input: { left: new Date(200_000), right: new Date(0) },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with strings': {
+      input: { left: 'aa', right: 'a' },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+  });
+});
+
+describe('ge', () => {
+  runTests({
+    'return true if the left value is greater than the right value': {
+      input: { left: 420, right: 42 },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with dates': {
+      input: { left: new Date(200_000), right: new Date(0) },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with strings': {
+      input: { left: 'aa', right: 'a' },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+  });
+});
+
 describe('equals', () => {
   runTests({
     'return true if all values are equal': {

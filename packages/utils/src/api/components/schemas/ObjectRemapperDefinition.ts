@@ -74,6 +74,17 @@ If the input is not an array, the input is returned without any modifications.`,
 Returns \`true\` if all entries are equal, otherwise \`false\`.
 `,
     },
+    gt: {
+      type: 'array',
+      description: `Compare the first computed remapper value with the second computed remapper value.
+
+Returns \`true\` if the first entry is greater than the second entry.`,
+      minItems: 2,
+      maxItems: 2,
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+    },
     ics: {
       type: 'object',
       description: 'Create a calendar event',
@@ -134,6 +145,17 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
           $ref: '#/components/schemas/RemapperDefinition',
           description: 'This remapper is used if the condition returns false.',
         },
+      },
+    },
+    lt: {
+      type: 'array',
+      description: `Compare the first computed remapper value with the second computed remapper value.
+
+Returns \`true\` if the first entry is lesser than the second entry.`,
+      minItems: 2,
+      maxItems: 2,
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
       },
     },
     'null.strip': {
