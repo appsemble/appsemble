@@ -36,7 +36,7 @@
     "@appsemble/types": "0.20.6",
     "@appsemble/utils": "0.20.6",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "axios": "^0.26.0",
+    "axios": "^0.27.0",
     "chalk": "^4.0.0",
     "comment-parser": "^1.0.0",
     "cosmiconfig": "^7.0.0",

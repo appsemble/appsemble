@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import { inspect } from 'util';
 
 import axios, { AxiosError } from 'axios';
-import { blue } from 'chalk';
+import { blue, red } from 'chalk';
 import { highlight } from 'cli-highlight';
 import { TransformableInfo } from 'logform';
 import winston from 'winston';
@@ -33,8 +33,10 @@ function httpErrorToString(error: AxiosError): string {
     blue.bold('Request:'),
     highlight(
       [
-        `${request.method} ${axios.getUri(config)} HTTP/${request.res?.httpVersion ?? '1.1'}`,
-        ...Object.entries(request.getHeaders())
+        `${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/${
+          request.res?.httpVersion ?? '1.1'
+        }`,
+        ...Object.entries(config.headers)
           .map(([key, value]) => [headerCase(key), value])
           .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)
           .sort(),
@@ -43,18 +45,21 @@ function httpErrorToString(error: AxiosError): string {
     ),
     '',
     blue.bold('Response:'),
-    highlight(
-      [
-        `HTTP/${request.res.httpVersion} ${response.status} ${response.statusText}`,
-        ...Object.entries(response.headers)
-          .map(([key, value]) => [headerCase(key), value])
-          .map((pair) => pair.join(': '))
-          .sort(),
-        '',
-        response.data instanceof Object ? JSON.stringify(response.data, null, 2) : response.data,
-      ].join(EOL),
-      { language: 'http', ignoreIllegals: true },
-    ),
+    response
+      ? highlight(
+          [
+            `HTTP/${request.res?.httpVersion} ${response.status} ${response.statusText}`,
+            ...Object.entries(response.headers)
+              .map(([key, value]) => `${headerCase(key)}: ${value}`)
+              .sort(),
+            '',
+            response.data instanceof Object
+              ? JSON.stringify(response.data, null, 2)
+              : response.data,
+          ].join(EOL),
+          { language: 'http', ignoreIllegals: true },
+        )
+      : red.bold('No response from server'),
   ].join(EOL);
 }
 
