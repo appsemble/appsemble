@@ -9,7 +9,7 @@
 
 .tile {
   align-items: center;
-  color: hsl(0deg 0% 100% / 75%);
+  color: hsl(0deg 0% 100% / 85%);
   cursor: pointer;
   display: flex;
   flex-flow: column;
@@ -17,7 +17,7 @@
   min-height: 6rem;
 
   &:hover {
-    color: hsl(0deg 0% 100% / 75%);
+    color: hsl(0deg 0% 100% / 85%);
   }
 }
 

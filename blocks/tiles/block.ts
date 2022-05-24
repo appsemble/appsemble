@@ -17,11 +17,12 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
-     * This asset will be used to render an image.
+     * This can be used to render an image.
+     * This can be either an asset ID or name, or a full URL.
      *
      * This takes precedence over an icon.
      */
-    asset?: Remapper;
+    image?: Remapper;
 
     /**
      * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
@@ -37,6 +38,10 @@ declare module '@appsemble/sdk' {
 
     /**
      * This color is used to fill the background of the tile.
+     *
+     * Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpers/color-helpers)
+     *
+     * @default 'primary'
      */
     color?: Remapper;
   }

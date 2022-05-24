@@ -3551,20 +3551,23 @@ exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "properties": {
-      "asset": {
-        "description": "This asset will be used to render an image.
-
-This takes precedence over an icon.",
-        "format": "remapper",
-      },
       "color": {
-        "description": "This color is used to fill the background of the tile.",
+        "default": "primary",
+        "description": "This color is used to fill the background of the tile.
+
+Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpers/color-helpers)",
         "format": "remapper",
       },
       "icon": {
         "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
 
 This is ignored if an asset can be resolved.",
+        "format": "remapper",
+      },
+      "image": {
+        "description": "This can be used to render an image. This can be either an asset ID or name, or a full URL.
+
+This takes precedence over an icon.",
         "format": "remapper",
       },
       "text": {

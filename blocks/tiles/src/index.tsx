@@ -2,6 +2,30 @@ import { bootstrap, IconName } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 
+function isValidUrl(string: string): boolean {
+  let url;
+
+  try {
+    url = new URL(string);
+  } catch {
+    return false;
+  }
+
+  return url.protocol === 'http:' || url.protocol === 'https:';
+}
+
+const hexColor = /^#[\dA-Fa-f]{6}$/;
+const bulmaColors = new Set([
+  'danger',
+  'dark',
+  'info',
+  'link',
+  'primary',
+  'success',
+  'warning',
+  'white',
+]);
+
 bootstrap(
   ({ actions: { onClick }, events, parameters, utils: { asset, fa, formatMessage, remap } }) => {
     const wrapper = (
@@ -24,28 +48,40 @@ bootstrap(
 
       wrapper.append(
         ...results.map((result) => {
-          const assetId = remap(parameters.asset, result) as string;
+          const image = remap(parameters.image, result) as string;
           const color = remap(parameters.color, result) as string;
           const text = remap(parameters.text, result) as string;
           const icon = remap(parameters.icon, result) as IconName;
+          const isUrl = isValidUrl(image);
+          const isHexColor = hexColor.test(color);
+          const isBulmaColor = !isHexColor && bulmaColors.has(color);
 
-          const className = `${styles.tile} px-3 py-3 has-background-${color}`;
+          const className = `${styles.tile} px-3 py-3 ${
+            isHexColor ? '' : `has-background-${isBulmaColor ? color : 'primary'}`
+          }`;
+          const style = isHexColor ? { backgroundColor: color } : {};
           const children = [
-            assetId ? (
-              <img alt={text} src={asset(assetId)} />
+            image ? (
+              <img alt={text} src={isUrl ? image : asset(image)} />
             ) : icon ? (
               <i className={`${fa(icon)} ${styles.icon}`} />
             ) : undefined,
-            text && <p className="has-text-centered">{text}</p>,
+            text && (
+              <p className="has-text-centered" style={style}>
+                {text}
+              </p>
+            ),
           ];
 
           const element =
             onClick.type === 'link' ? (
-              <a className={className} href={onClick.href(result)}>
+              <a className={className} href={onClick.href(result)} style={style}>
                 {children}
               </a>
             ) : (
-              <div className={className}>{children}</div>
+              <div className={className} style={style}>
+                {children}
+              </div>
             );
           element.addEventListener('click', (event) => {
             event.preventDefault();
