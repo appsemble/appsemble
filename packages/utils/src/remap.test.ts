@@ -195,6 +195,76 @@ describe('date.add', () => {
   });
 });
 
+describe('le', () => {
+  runTests({
+    'return true if the left value is less than the right value': {
+      input: { left: 42, right: 420 },
+      mappers: { lt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with dates': {
+      input: { left: new Date(200_000), right: new Date(0) },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with strings': {
+      input: { left: 'aa', right: 'a' },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'ignore additional inputs beyond the first two': {
+      input: { left: 42, right: 420 },
+      mappers: { lt: [{ prop: 'left' }, { prop: 'right' }, { static: 1 }, { static: 2 }] },
+      expected: true,
+    },
+    'return false if there is no remapper defined for the left or right values': {
+      input: {},
+      mappers: { lt: [] },
+      expected: false,
+    },
+    'return false if there is no remapper defined for the right value': {
+      input: {},
+      mappers: { lt: [{ static: 1 }] },
+      expected: false,
+    },
+  });
+});
+
+describe('ge', () => {
+  runTests({
+    'return true if the left value is greater than the right value': {
+      input: { left: 420, right: 42 },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with dates': {
+      input: { left: new Date(200_000), right: new Date(0) },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'work with strings': {
+      input: { left: 'aa', right: 'a' },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
+      expected: true,
+    },
+    'ignore additional inputs beyond the first two': {
+      input: { left: 420, right: 42 },
+      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }, { static: 1 }, { static: 2 }] },
+      expected: true,
+    },
+    'return false if there is no remapper defined for the left or right values': {
+      input: {},
+      mappers: { gt: [] },
+      expected: false,
+    },
+    'return false if there is no remapper defined for the right value': {
+      input: {},
+      mappers: { gt: [{ static: 1 }] },
+      expected: false,
+    },
+  });
+});
+
 describe('equals', () => {
   runTests({
     'return true if all values are equal': {
