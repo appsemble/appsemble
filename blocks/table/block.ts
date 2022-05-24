@@ -125,6 +125,13 @@ export interface DropdownOption {
   label?: Remapper;
 
   /**
+   * How the dropdown should be aligned.
+   *
+   * @default 'right'
+   */
+  alignment?: 'left' | 'right';
+
+  /**
    * The icon to show in the option.
    */
   icon?: IconName;
