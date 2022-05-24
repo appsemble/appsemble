@@ -11,6 +11,8 @@ describe('odataFilterToSequelize', () => {
 
     // https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31360958
     'foo eq true': where(col('Model.foo'), '=', true),
+    'foo eq null': where(col('Model.foo'), '=', null),
+    "foo eq 'null'": where(col('Model.foo'), '=', 'null'),
     'foo eq 01234567-89ab-cdef-0123-456789abcdef': where(
       col('Model.foo'),
       '=',

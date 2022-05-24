@@ -6,6 +6,7 @@ import { Col, Fn, Json, Where } from 'sequelize/types/utils';
 type PartialModel = Pick<typeof Model, 'tableName'>;
 
 enum Edm {
+  null = 'null',
   Boolean = 'Edm.Boolean',
   Byte = 'Edm.Byte',
   Date = 'Edm.Date',
@@ -112,6 +113,8 @@ function processLiteral(token: Token): Date | boolean | number | string {
       return new Date(token.raw);
     case Edm.Guid:
       return token.raw;
+    case Edm.null:
+      return null;
     default:
       throw new TypeError(`${token.position}: Unhandled OData literal type: ${token.value}`);
   }
