@@ -212,21 +212,6 @@ describe('le', () => {
       mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
       expected: true,
     },
-    'ignore additional inputs beyond the first two': {
-      input: { left: 42, right: 420 },
-      mappers: { lt: [{ prop: 'left' }, { prop: 'right' }, { static: 1 }, { static: 2 }] },
-      expected: true,
-    },
-    'return false if there is no remapper defined for the left or right values': {
-      input: {},
-      mappers: { lt: [] },
-      expected: false,
-    },
-    'return false if there is no remapper defined for the right value': {
-      input: {},
-      mappers: { lt: [{ static: 1 }] },
-      expected: false,
-    },
   });
 });
 
@@ -246,21 +231,6 @@ describe('ge', () => {
       input: { left: 'aa', right: 'a' },
       mappers: { gt: [{ prop: 'left' }, { prop: 'right' }] },
       expected: true,
-    },
-    'ignore additional inputs beyond the first two': {
-      input: { left: 420, right: 42 },
-      mappers: { gt: [{ prop: 'left' }, { prop: 'right' }, { static: 1 }, { static: 2 }] },
-      expected: true,
-    },
-    'return false if there is no remapper defined for the left or right values': {
-      input: {},
-      mappers: { gt: [] },
-      expected: false,
-    },
-    'return false if there is no remapper defined for the right value': {
-      input: {},
-      mappers: { gt: [{ static: 1 }] },
-      expected: false,
     },
   });
 });

@@ -305,21 +305,15 @@ export interface Remappers {
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is greater than the second entry.
-   * All other entries are ignored.
-   *
-   * @minItems 2
-   */
-  gt: Remapper[];
+  */
+  gt: [Remapper, Remapper];
 
   /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is less than the second entry.
-   * All other entries are ignored.
-   *
-   * @minItems 2
-   */
-  lt: Remapper[];
+  */
+  lt: [Remapper, Remapper];
 
   /**
    * Builds an array based on the given data and remappers.
