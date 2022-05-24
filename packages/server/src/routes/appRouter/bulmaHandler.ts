@@ -136,8 +136,6 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
 
   if (!result) {
     // This is not awaited on purpose.
-    setTimeout(() => {
-      Theme.create({ ...theme, css });
-    });
+    Theme.create({ ...theme, css });
   }
 }
