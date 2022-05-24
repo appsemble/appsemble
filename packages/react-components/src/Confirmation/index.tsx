@@ -1,6 +1,5 @@
 import { BulmaColor } from '@appsemble/sdk';
 import { createContext, ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
-import { PromiseValue } from 'type-fest';
 
 import { CardFooterButton, ModalCard } from '..';
 
@@ -97,7 +96,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
  */
 export function useConfirmation<T, A extends any[]>(
   options: ConfirmationOptions<T, A>,
-): (...args: A) => Promise<PromiseValue<T>> {
+): (...args: A) => Promise<Awaited<T>> {
   const confirm = useContext(Context);
 
   return useCallback((...args: A) => confirm(options, args), [confirm, options]);

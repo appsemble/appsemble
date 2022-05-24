@@ -8,7 +8,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Promisable } from 'type-fest';
 
 import { Form } from '..';
 
@@ -16,7 +15,7 @@ interface SimpleFormProps<T>
   extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {
   children: ReactNode;
   defaultValues: T;
-  onSubmit: (values: T) => Promisable<void>;
+  onSubmit: (values: T) => void;
   preprocess?: (name: string, newValues: T, oldValues: T) => T;
   resetOnSuccess?: boolean;
 }
