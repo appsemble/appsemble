@@ -3556,7 +3556,7 @@ This is ignored if an asset can be resolved.",
         "format": "remapper",
       },
       "image": {
-        "description": "This can be used to render an image. This can be either the asset’s UUID or alias, or a full URL.
+        "description": "This can be used to render an image. This can be either an asset ID or name, or a full URL.
 
 This takes precedence over an icon.",
         "format": "remapper",
