@@ -4,6 +4,20 @@ Appsemble supports login to apps using SAML2.0 identity providers (IDP). This al
 using Single Sign On (SSO), for example using Microsoft Azure AD. In this case Appsemble Studio
 serves as the SAML2.0 service provider (SP).
 
+## Flows
+
+Users may try to access an application from one of the following flows:
+
+- Service Provider (SP) flow. From a browser, the user attempts to go directly to the web resource
+  without authenticating. The user is redirected to the IDP to authenticate. Once authenticated the
+  user is redirected back to the web resource. **This flow is supported in Appsemble**
+- Identity provider (IDP) flow. The user launches applications to the service provider (SP)
+  resource. In Enterprise Application Access (EAA), this happens from the EAA Login Portal after the
+  user authenticates them. When the user clicks on an application icon, a SAML assertion
+  (authentication) is sent over to the SP Assertion Consumer Service (ACS). The user is signed into
+  the service and does not need to enter their credentials again. **This flow is currently
+  unsupported in Appsemble**
+
 ## Configuration
 
 Configuration options for SAML2.0 can be found in the _Secrets_ page of the app details.
