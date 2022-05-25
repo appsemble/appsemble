@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.7](https://gitlab.com/appsemble/appsemble/-/releases/0.20.7)] - 2022-05-25
+
+### Added
+
+- Block(`table`): Add alignment property to allow for setting the alignment of dropdown fields.
+- App: Add `lt` and `gt` remappers for comparing if a value if greater than or less than another
+  value.
+- App: Add support for setting an `end` date for the `ics` remapper. This is mutually exclusive with
+  the property `duration`.
+- Server: Add support for `null` in OData queries. For example: `/$filter=date eq null`.
+
+### Changed
+
+- Block(`tiles`): Change default text color to be brighter.
+- Block(`tiles`): Rename `asset` to `image`. Any value that matches a valid URL will be used as the
+  source of the image, otherwise it will attempt to load an asset based on either an alias or a
+  UUID.
+
+### Fixed
+
+- Block(`tiles`): Fix background color. This used to assume the color is a valid
+  [Bulma color](https://bulma.io/documentation/helpers/color-helpers). Instead it will display
+  either a hex value, a valid Bulma color, or default to `primary`.
+
 ## \[[0.20.6](https://gitlab.com/appsemble/appsemble/-/releases/0.20.6)] - 2022-05-13
 
 ### Added

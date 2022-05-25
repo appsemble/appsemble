@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.6
-appVersion: 0.20.6
+version: 0.20.7
+appVersion: 0.20.7
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,19 +25,27 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add TimeRangeRequirement for date-time fields to
-        limit the time range."
+      description: "Block(table): Add alignment property to allow for setting the
+        alignment of dropdown fields."
     - kind: added
-      description: "Block(form): Add new requirement for date and date-time fields to
-        disable selecting dates that fall on specific weekdays."
+      description: "App: Add lt and gt remappers for comparing if a value if greater
+        than or less than another value."
     - kind: added
-      description: "App: Add download action for downloading the result of an action."
+      description: "App: Add support for setting an end date for the ics remapper.
+        This is mutually exclusive with the property duration."
     - kind: added
-      description: "App: Add remapper ics for creating calendar events."
-    - kind: added
-      description: "Server: Email actions now support content based attachments."
+      description: "Server: Add support for null in OData queries. For example:
+        /$filter=date eq null."
+    - kind: changed
+      description: "Block(tiles): Change default text color to be brighter."
+    - kind: changed
+      description: "Block(tiles): Rename asset to image. Any value that matches a
+        valid URL will be used as the source of the image, otherwise it will attempt
+        to load an asset based on either an alias or a UUID."
     - kind: fixed
-      description: "Server: Fix case sensitivity bug when using password grant type."
+      description: "Block(tiles): Fix background color. This used to assume the color
+        is a valid Bulma color. Instead it will display either a hex value, a valid
+        Bulma color, or default to primary."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

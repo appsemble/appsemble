@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/button-list",
-  "version": "0.20.6",
+  "version": "0.20.7",
   "private": true,
   "description": "A block that renders list of actionable buttons",
   "homepage": "https://appsemble.app",
@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.6",
+    "@appsemble/sdk": "0.20.7",
     "classnames": "^2.0.0",
     "mini-jsx": "^3.0.0"
   }
