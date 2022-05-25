@@ -50,6 +50,7 @@ Dnsmasq
 DOM
 DSN
 dropdown
+EAA
 ESLint
 falsy
 GDPR
@@ -79,6 +80,7 @@ prerelease/release
 PWA
 remapper/mapper
 Redux
+SAML
 SDK
 SMTP
 SSL
