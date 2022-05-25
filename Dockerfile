@@ -1,5 +1,5 @@
 # Build production files
-FROM node:16-bullseye-slim AS build
+FROM node:18-bullseye-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
@@ -12,7 +12,7 @@ RUN yarn workspace @appsemble/node-utils prepack
 RUN yarn workspace @appsemble/server prepack
 
 # Install production dependencies
-FROM node:16-bullseye-slim AS prod
+FROM node:18-bullseye-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -26,7 +26,7 @@ RUN find . -name '*.ts' -delete
 RUN rm -r yarn.lock
 
 # Setup the production docker image.
-FROM node:16-bullseye-slim
+FROM node:18-bullseye-slim
 ARG version=0.20.6
 ARG date
 
