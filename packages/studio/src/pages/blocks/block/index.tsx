@@ -2,7 +2,6 @@ import {
   Content,
   Icon,
   Loader,
-  MarkdownContent,
   Message,
   SelectField,
   Subtitle,
@@ -15,6 +14,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { MarkdownContent } from 'studio/src/components/MarkdownContent';
 import { Schema } from 'studio/src/components/Schema';
 
 import { ActionTable } from './ActionTable';

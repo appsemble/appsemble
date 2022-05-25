@@ -1,4 +1,4 @@
-import { MarkdownContent, Title, useMeta } from '@appsemble/react-components';
+import { Title, useMeta } from '@appsemble/react-components';
 import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { stringify } from 'yaml';
 import { useApp } from '../../..';
 import { CodeBlock } from '../../../../../../components/CodeBlock';
 import { Collapsible } from '../../../../../../components/Collapsible';
+import { MarkdownContent } from '../../../../../../components/MarkdownContent';
 import { Schema } from '../../../../../../components/Schema';
 import { Endpoint } from './Endpoint';
 import { messages } from './messages';

@@ -2,13 +2,13 @@ import {
   DateTimeField,
   FileUpload,
   InputField,
-  MarkdownContent,
   PasswordField,
   TextAreaField,
 } from '@appsemble/react-components';
 import { OpenAPIV3 } from 'openapi-types';
 import { ReactElement } from 'react';
 
+import { MarkdownContent } from '../../MarkdownContent';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { CommonJSONSchemaEditorProps } from '../types';
 

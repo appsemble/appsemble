@@ -1,6 +1,7 @@
-import { JSONField, MarkdownContent } from '@appsemble/react-components';
+import { JSONField } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 
+import { MarkdownContent } from '../../MarkdownContent';
 import { JSONSchemaLabel } from '../JSONSchemaLabel';
 import { CommonJSONSchemaEditorProps } from '../types';
 
