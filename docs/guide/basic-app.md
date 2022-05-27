@@ -1,7 +1,7 @@
 # Basic app
 
 Each app has a name, description, and a default page. Notice the name and description have the value
-that was entered in the _“Create app”_ dialog.
+that was entered in the _“Create new app”_ dialog.
 
 ## Empty app
 
@@ -21,13 +21,14 @@ _“Example Page B”_ has a button that links to _“Example Page A”_.
 Resources allow apps to store data in the Appsemble resource API, or to map resources to somewhat
 compliant third party APIs. This tutorial will focus on usage with Appsemble’s own resource API.
 
-Add the following to the app definition:
+Add the following to the app definition at the root of the YAML:
 
 ```yaml copy
 resources:
   person:
     schema:
       type: object
+      additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
       required:
         - firstName
         - lastName
@@ -88,11 +89,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 ```
 
@@ -103,7 +102,8 @@ removed.
 defaultPage: People
 ```
 
-Now save this app and behold, the app is… loading?
+After adding this you will notice an error message mentioning that there is no matching _event
+emitter_ that will submit data to the `people` event listener.
 
 Most blocks rely on data loader block to display data. Notice the table block on the _“People”_ page
 doesn’t even reference the `person` resource anywhere. It merely listens on an event called
@@ -218,18 +218,36 @@ Add a new page:
           - name: firstName
             type: string
             label: First Name
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
           - name: lastName
             type: string
             label: Surname
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
           - name: email
             type: string
             label: Email Address
             format: email
+            requirements:
+              - required: true
+                errorMessage: This field is required
           - name: description
             type: string
             label: Description
             multiline: true
+            requirements:
+              - maxLength: 500
 ```
+
+This page uses the `form` block to enter the data to create a new `person` resource. It takes a
+parameter called `fields` which contains a list of various types of field types. In this case it’s 4
+`string` fields, where the first three are required and have a length requirement, and the last one
+is optional and allows for multi line input.
 
 After saving, the page can be opened from the app’s side menu. When data is entered and the form is
 saved, a new person is registered. The user is then redirected to the _“People”_ page. This page now
@@ -246,6 +264,7 @@ resources:
   person:
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName
@@ -270,17 +289,34 @@ pages:
       - type: form
         version: 0.20.7
         parameters:
-          fields:
-            - name: firstName
-              label: First Name
-            - name: lastName
-              label: Surname
-            - name: email
-              label: Email Address
-              format: email
-            - name: description
-              label: Description
-              multiline: true
+        fields:
+          - name: firstName
+            type: string
+            label: First Name
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
+          - name: lastName
+            type: string
+            label: Surname
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
+          - name: email
+            type: string
+            label: Email Address
+            format: email
+            requirements:
+              - required: true
+                errorMessage: This field is required
+          - name: description
+            type: string
+            label: Description
+            multiline: true
+            requirements:
+              - maxLength: 500
 
   - name: People
     blocks:
@@ -300,11 +336,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 ```
 
@@ -376,6 +410,7 @@ resources:
   person:
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName
@@ -399,22 +434,42 @@ pages:
     blocks:
       - type: form
         version: 0.20.7
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: person
+            onSuccess:
+              type: link
+              to: Person details
         parameters:
-          fields:
-            - name: firstName
-              type: string
-              label: First Name
-            - name: lastName
-              type: string
-              label: Surname
-            - name: email
-              type: string
-              label: Email Address
-              format: email
-            - name: description
-              type: string
-              label: Description
-              multiline: true
+        fields:
+          - name: firstName
+            type: string
+            label: First Name
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
+          - name: lastName
+            type: string
+            label: Surname
+            requirements:
+              - required: true
+                errorMessage: This field is required
+              - maxLength: 80
+          - name: email
+            type: string
+            label: Email Address
+            format: email
+            requirements:
+              - required: true
+                errorMessage: This field is required
+          - name: description
+            type: string
+            label: Description
+            multiline: true
+            requirements:
+              - maxLength: 500
 
   - name: People
     blocks:
@@ -429,6 +484,10 @@ pages:
             data: people
       - type: table
         version: 0.20.7
+        actions:
+          onClick:
+            type: link
+            to: Person details
         events:
           listen:
             data: people

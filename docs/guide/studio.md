@@ -34,16 +34,16 @@ Apps are defined using a data serialization language called `YAML`. To learn mor
 works, please refer to [this page](https://learnxinyminutes.com/docs/yaml).
 
 The _“App”_ tab contains the app definition in YAML. Changes can be made to the app definition by
-editing them in this tab and pressing the _“Save”_ button. Doing so will replace the app definition
-in the right-hand panel with the new one, serving as a preview of the changes that have been made.
-Note that some functionality such as the [resource API](resources.md) when defining new resources
-might not be available unless the new app definition has been uploaded to the server.
+editing them in this tab and pressing the _“Preview”_ button. Doing so will replace the app
+definition in the right-hand panel with the new one, serving as a preview of the changes that have
+been made. Note that some functionality such as the [resource API](resources.md) when defining new
+resources might not be available unless the new app definition has been uploaded to the server.
 
 The other tabs that are available such as the _“Core”_ and _“Shared”_ tabs refer to the theming API.
 For more information about this, please refer to [this page](theming.md).
 
-Provided the app definition and styles are valid, the _“Upload”_ button will upload all this data to
-the server, updating the app.
+Provided the app definition and styles are valid, the _“Publish”_ button will upload all this data
+to the server, updating the app.
 
 ## Further reading
 
