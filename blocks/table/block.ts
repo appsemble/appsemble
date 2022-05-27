@@ -115,6 +115,13 @@ export interface Dropdown extends BaseField {
      * @minItems 1
      */
     options: DropdownOption[];
+
+    /**
+     * How the dropdown should be aligned.
+     *
+     * @default 'right'
+     */
+    alignment?: 'left' | 'right';
   };
 }
 
@@ -123,13 +130,6 @@ export interface DropdownOption {
    * The text to show in the option.
    */
   label?: Remapper;
-
-  /**
-   * How the dropdown should be aligned.
-   *
-   * @default 'right'
-   */
-  alignment?: 'left' | 'right';
 
   /**
    * The icon to show in the option.
