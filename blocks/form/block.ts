@@ -1,4 +1,4 @@
-import { IconName, Remapper } from '@appsemble/sdk';
+import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
 import { JsonValue } from 'type-fest';
 
 /**
@@ -358,6 +358,40 @@ export interface BooleanField extends AbstractField {
    * The type of the field.
    */
   type: 'boolean';
+
+  /**
+   * The color of the checkbox.
+   */
+  color?: BulmaColor;
+
+  /**
+   * The size of the checkbox.
+   *
+   * @default 'normal'
+   */
+  size?: BulmaSize;
+
+  /**
+   * Whether the checkbox should display as a switch instead.
+   *
+   * @see https://wikiki.github.io/form/switch/
+   */
+  switch?: {
+    /**
+     * Whether the roundd style should be used.
+     */
+    rounded?: boolean;
+
+    /**
+     * Whether the thin style should be used.
+     */
+    thin?: boolean;
+
+    /**
+     * Whether the outlined style should be used.
+     */
+    outlined?: boolean;
+  };
 
   /**
    * The requirements that are used to validate the field with.
