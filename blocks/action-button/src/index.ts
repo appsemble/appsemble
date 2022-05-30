@@ -2,7 +2,7 @@ import './index.css';
 
 import { bootstrap } from '@appsemble/sdk';
 
-bootstrap(({ actions, data, parameters: { icon }, utils: { fa } }) => {
+bootstrap(({ actions, data, parameters: { icon, title }, utils: { fa, remap } }) => {
   let node;
   const iconNode = document.createElement('i');
   iconNode.className = fa(icon);
@@ -14,6 +14,7 @@ bootstrap(({ actions, data, parameters: { icon }, utils: { fa } }) => {
     node.type = 'button';
   }
   node.classList.add('button', 'is-paddingless', 'is-primary', 'is-rounded');
+  node.title = remap(title, data) as string;
   node.addEventListener(
     'click',
     (event) => {

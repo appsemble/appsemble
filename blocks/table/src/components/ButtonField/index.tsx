@@ -26,7 +26,18 @@ interface ButtonFieldProps {
 
 export function ButtonField({
   field: {
-    button: { color, fullwidth, icon, inverted, label, light, outlined, rounded, size = 'normal' },
+    button: {
+      color,
+      fullwidth,
+      icon,
+      inverted,
+      label,
+      light,
+      outlined,
+      rounded,
+      size = 'normal',
+      title,
+    },
     ...field
   },
   index,
@@ -47,6 +58,7 @@ export function ButtonField({
     'is-inverted': inverted,
     'is-outlined': outlined,
   });
+  const remappedTitle = remap(title, item, { index, repeatedIndex }) as string;
 
   const content = (
     <Fragment>
@@ -60,11 +72,11 @@ export function ButtonField({
   }, [action, item]);
 
   return action?.type === 'link' ? (
-    <a className={className} href={action.href()} onClick={onClick}>
+    <a className={className} href={action.href()} onClick={onClick} title={remappedTitle}>
       {content}
     </a>
   ) : (
-    <button className={className} onClick={onClick} type="button">
+    <button className={className} onClick={onClick} title={remappedTitle} type="button">
       {content}
     </button>
   );

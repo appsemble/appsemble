@@ -1,4 +1,4 @@
-import { IconName } from '@appsemble/sdk';
+import { IconName, Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {
@@ -13,5 +13,12 @@ declare module '@appsemble/sdk' {
      * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
      */
     icon: IconName;
+
+    /**
+     * The title for the button.
+     *
+     * Describe what the button does. This helps with accessibility for poeple using screen readers.
+     */
+    title?: Remapper;
   }
 }
