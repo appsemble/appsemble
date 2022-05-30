@@ -21,7 +21,7 @@ exports[`getBlockConfigFromTypeScript official blocks action-button 1`] = `
       "title": {
         "description": "The title for the button.
 
-Describe what the button does. This helps with accessibility for poeple using screen readers.",
+Describe what the button does. This helps with accessibility for people using screen readers.",
         "format": "remapper",
       },
     },
@@ -137,7 +137,7 @@ Will not render if undefined.",
           "title": {
             "description": "The title for the button.
 
-Describe what the button does. This helps with accessibility for poeple using screen readers.",
+Describe what the button does. This helps with accessibility for people using screen readers.",
             "format": "remapper",
           },
         },
@@ -3339,7 +3339,7 @@ By default buttons only take up as much space as needed.",
               "title": {
                 "description": "The title for the button.
 
-Describe what the button does. This helps with accessibility for poeple using screen readers.",
+Describe what the button does. This helps with accessibility for people using screen readers.",
                 "format": "remapper",
               },
             },
