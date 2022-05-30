@@ -378,7 +378,7 @@ export interface BooleanField extends AbstractField {
    */
   switch?: {
     /**
-     * Whether the roundd style should be used.
+     * Whether the rounded style should be used.
      */
     rounded?: boolean;
 
