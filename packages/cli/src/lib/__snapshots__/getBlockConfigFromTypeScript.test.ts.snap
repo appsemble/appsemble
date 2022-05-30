@@ -3288,6 +3288,12 @@ This does not trigger if the field has a different action specified.",
                 "default": "primary",
                 "description": "The color of the button.",
               },
+              "disabled": {
+                "description": "Whether the button should be disabled.
+
+If the resulting remapper value is truthy, the button will be disabled.",
+                "format": "remapper",
+              },
               "fullwidth": {
                 "description": "Whether the button should be full width or not.
 
