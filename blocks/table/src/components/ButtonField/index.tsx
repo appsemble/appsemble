@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useMemo } from 'preact/hooks';
 
 import { Button as ButtonFieldType } from '../../../block';
 
@@ -26,7 +26,18 @@ interface ButtonFieldProps {
 
 export function ButtonField({
   field: {
-    button: { color, fullwidth, icon, inverted, label, light, outlined, rounded, size = 'normal' },
+    button: {
+      color,
+      fullwidth,
+      icon,
+      inverted,
+      label,
+      light,
+      outlined,
+      rounded,
+      size = 'normal',
+      ...button
+    },
     ...field
   },
   index,
@@ -38,6 +49,10 @@ export function ButtonField({
     utils: { remap },
   } = useBlock();
 
+  const disabled = useMemo(
+    () => Boolean(remap(button.disabled, item, { index, repeatedIndex })),
+    [button.disabled, index, item, remap, repeatedIndex],
+  );
   const action = actions[field.onClick];
   const className = classNames('button', `is-${size}`, {
     'is-rounded': rounded,
@@ -56,15 +71,19 @@ export function ButtonField({
   );
 
   const onClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
     action(item);
-  }, [action, item]);
+  }, [action, disabled, item]);
 
   return action?.type === 'link' ? (
-    <a className={className} href={action.href()} onClick={onClick}>
+    <a className={className} disabled={disabled} href={action.href()} onClick={onClick}>
       {content}
     </a>
   ) : (
-    <button className={className} onClick={onClick} type="button">
+    <button className={className} disabled={disabled} onClick={onClick} type="button">
       {content}
     </button>
   );
