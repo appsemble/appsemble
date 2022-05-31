@@ -17,10 +17,6 @@ export const ResourceCountActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to count.',
       },
-      view: {
-        type: 'string',
-        description: 'The view to use for the resource.',
-      },
     },
   },
   ['url'],

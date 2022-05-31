@@ -978,11 +978,20 @@ interface ResourceActionDefinition<T extends Action['type']>
   resource: string;
 }
 
+interface ViewResourceDefinition {
+  /**
+   * The view to use for the request.
+   */
+  view?: string;
+}
+
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
 export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
-export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
-export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
+export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'> &
+  ViewResourceDefinition;
+export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'> &
+  ViewResourceDefinition;
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
