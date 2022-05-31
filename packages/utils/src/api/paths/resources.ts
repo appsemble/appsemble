@@ -11,6 +11,7 @@ export const paths: OpenAPIV3.PathsObject = {
       description: 'Get all resources of this app.',
       operationId: 'queryResources',
       parameters: [
+        { $ref: '#/components/parameters/view' },
         { $ref: '#/components/parameters/$filter' },
         { $ref: '#/components/parameters/$orderby' },
         { $ref: '#/components/parameters/$select' },
@@ -206,6 +207,7 @@ export const paths: OpenAPIV3.PathsObject = {
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
       { $ref: '#/components/parameters/resourceId' },
+      { $ref: '#/components/parameters/view' },
     ],
     get: {
       tags: ['resource'],

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { Resource as ResourceType } from '@appsemble/types';
-import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
+import { checkAppRole, defaultLocale, Permission, remap, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
 import { Op, Order, WhereOptions } from 'sequelize';
@@ -19,6 +19,7 @@ import {
   transactional,
   User,
 } from '../models';
+import { getRemapperContext } from '../utils/app';
 import { checkRole } from '../utils/checkRole';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
@@ -114,7 +115,11 @@ async function verifyPermission(
     return;
   }
 
-  let roles = resourceDefinition[action]?.roles ?? resourceDefinition.roles ?? [];
+  const [view] = [].concat(ctx.query.view);
+  let roles: string[] = [];
+  roles = view
+    ? resourceDefinition.views[view].roles
+    : resourceDefinition[action]?.roles ?? resourceDefinition.roles;
 
   if ((!roles || !roles.length) && app.definition.roles?.length) {
     ({ roles } = app.definition);
@@ -258,7 +263,8 @@ export async function queryResources(ctx: Context): Promise<void> {
     }),
   });
 
-  getResourceDefinition(app, resourceType);
+  const [view] = [].concat(ctx.query.view);
+  const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
   const { order, query } = generateQuery(ctx);
 
@@ -284,7 +290,26 @@ export async function queryResources(ctx: Context): Promise<void> {
 
   const exclude: string[] = app.template ? [] : undefined;
   const include = $select?.split(',').map((s) => s.trim());
-  ctx.body = resources.map((resource) => resource.toJSON({ exclude, include }));
+  const mappedResources = resources.map((resource) => resource.toJSON({ exclude, include }));
+
+  if (view) {
+    const context = await getRemapperContext(
+      app,
+      app.definition.defaultLanguage || defaultLocale,
+      user && {
+        sub: user.id,
+        name: user.name,
+        email: user.primaryEmail,
+        email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      },
+    );
+    ctx.body = mappedResources.map((resource) =>
+      remap(resourceDefinition.views[view].remap, resource, context),
+    );
+    return;
+  }
+
+  ctx.body = mappedResources;
 }
 
 export async function countResources(ctx: Context): Promise<void> {
@@ -308,7 +333,8 @@ export async function countResources(ctx: Context): Promise<void> {
     }),
   });
 
-  getResourceDefinition(app, resourceType);
+  const [view] = [].concat(ctx.query.view);
+  getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
   const { query } = generateQuery(ctx);
 
@@ -349,7 +375,8 @@ export async function getResourceById(ctx: Context): Promise<void> {
       ],
     }),
   });
-  getResourceDefinition(app, resourceType);
+  const [view] = [].concat(ctx.query.view);
+  const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'get');
 
   const resource = await Resource.findOne({
@@ -368,6 +395,22 @@ export async function getResourceById(ctx: Context): Promise<void> {
 
   if (!resource) {
     throw notFound('Resource not found');
+  }
+
+  if (view) {
+    const context = await getRemapperContext(
+      app,
+      app.definition.defaultLanguage || defaultLocale,
+      user && {
+        sub: user.id,
+        name: user.name,
+        email: user.primaryEmail,
+        email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      },
+    );
+
+    ctx.body = remap(resourceDefinition.views[view].remap, resource.toJSON(), context);
+    return;
   }
 
   ctx.body = resource;

@@ -222,5 +222,21 @@ name of the resource and how it should behave.
         },
       },
     },
+    views: {
+      type: 'object',
+      minProperties: 1,
+      description:
+        'Alternative views of a resource that are modified using remappers and support different sets of roles.',
+      additionalProperties: {
+        type: 'object',
+        properties: {
+          roles,
+          remap: {
+            $ref: '#/components/schemas/RemapperDefinition',
+            description: 'The modified view.',
+          },
+        },
+      },
+    },
   },
 };

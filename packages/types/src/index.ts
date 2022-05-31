@@ -608,6 +608,24 @@ export interface ResourceDefinition {
   url?: string;
 
   /**
+   * The alternate views of this resource.
+   */
+  views?: Record<
+    string,
+    {
+      /**
+       * The roles required to use this view.
+       */
+      roles: string[];
+
+      /**
+       * The remappers used to transform the output.
+       */
+      remap: Remapper;
+    }
+  >;
+
+  /**
    * The references this resources has to other resources.
    */
   references?: Record<string, ResourceReference>;

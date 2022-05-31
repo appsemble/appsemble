@@ -42,6 +42,26 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
       defaultPage: 'Test Page',
       resources: {
         testResource: {
+          views: {
+            testView: {
+              roles: ['Reader'],
+              remap: {
+                'object.from': {
+                  name: {
+                    'string.format': {
+                      template: '{id}-{foo}',
+                      values: { id: { prop: 'id' }, foo: { prop: 'foo' } },
+                    },
+                  },
+                  randomValue: 'Some random value',
+                },
+              },
+            },
+            authorView: {
+              roles: ['$author'],
+              remap: { 'object.assign': { author: { static: true } } },
+            },
+          },
           schema: {
             type: 'object',
             required: ['foo'],
@@ -286,6 +306,32 @@ describe('getResourceById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "foo": "bar",
         "id": 1,
+      }
+    `);
+  });
+
+  it('should be able to fetch a resource view', async () => {
+    const app = await exampleApp(organization.id);
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    authorizeApp(app);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { params: { view: 'testView' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "name": "1-bar",
+        "randomValue": "Some random value",
       }
     `);
   });
