@@ -18,6 +18,12 @@ exports[`getBlockConfigFromTypeScript official blocks action-button 1`] = `
         "format": "fontawesome",
         "type": "string",
       },
+      "title": {
+        "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+        "format": "remapper",
+      },
     },
     "required": [
       "icon",
@@ -127,6 +133,12 @@ Will not render if undefined.",
           "size": {
             "$ref": "#/definitions/BulmaSize",
             "description": "The size of the button. By default the size is ‘normal’.",
+          },
+          "title": {
+            "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+            "format": "remapper",
           },
         },
         "type": "object",
@@ -3323,6 +3335,12 @@ By default buttons only take up as much space as needed.",
                 "$ref": "#/definitions/BulmaSize",
                 "default": "normal",
                 "description": "The size of the button.",
+              },
+              "title": {
+                "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+                "format": "remapper",
               },
             },
             "type": "object",
