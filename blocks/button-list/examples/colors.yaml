@@ -1,0 +1,23 @@
+parameters:
+  buttons:
+    - label: Primary
+      color: primary
+      onClick: clickPrimary
+    - label: Warning
+      color: warning
+      onClick: clickWarning
+    - label: Danger
+      color: danger
+      onClick: clickDanger
+    - label: Link
+      color: link
+      onClick: clickLink
+actions:
+  clickPrimary:
+    type: noop
+  clickWarning:
+    type: noop
+  clickDanger:
+    type: noop
+  clickLink:
+    type: noop

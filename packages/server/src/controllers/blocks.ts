@@ -1,12 +1,17 @@
 import { logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { BlockDefinition, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
+import { Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
+import { has } from 'lodash';
+import { recursive } from 'merge';
+import { OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
+import { parse } from 'yaml';
 
 import {
   BlockAsset,
@@ -20,6 +25,7 @@ import { blockVersionToJson } from '../utils/block';
 import { checkRole } from '../utils/checkRole';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
 import { serveIcon } from '../utils/icon';
+import { handleValidatorResult } from '../utils/jsonschema';
 
 export async function getBlock(ctx: Context): Promise<void> {
   const {
@@ -30,6 +36,7 @@ export async function getBlock(ctx: Context): Promise<void> {
     attributes: [
       'created',
       'description',
+      'examples',
       'longDescription',
       'name',
       'version',
@@ -70,14 +77,29 @@ export async function queryBlocks(ctx: Context): Promise<void> {
   const blockVersions = await getDB().query<
     BlockVersion & { hasIcon: boolean; hasOrganizationIcon: boolean; organizationUpdated: Date }
   >(
-    `SELECT bv."OrganizationId", bv.name, bv.description, "longDescription",
-    version, actions, events, layout, parameters, "wildcardActions", bv.visibility,
-    bv.icon IS NOT NULL as "hasIcon", o.icon IS NOT NULL as "hasOrganizationIcon", o.updated AS "organizationUpdated"
+    `SELECT
+      bv.actions,
+      bv.description,
+      bv.events,
+      bv.examples,
+      bv.icon IS NOT NULL as "hasIcon",
+      bv.layout,
+      bv."longDescription",
+      bv.name,
+      bv."OrganizationId",
+      bv.parameters,
+      bv.version,
+      bv.visibility,
+      bv."wildcardActions",
+      o.icon IS NOT NULL as "hasOrganizationIcon",
+      o.updated AS "organizationUpdated"
     FROM "BlockVersion" bv
     INNER JOIN "Organization" o ON o.id = bv."OrganizationId"
-    WHERE bv.created IN (SELECT MAX(created)
-                          FROM "BlockVersion"
-                          GROUP BY "OrganizationId", name)`,
+    WHERE bv.created IN (
+      SELECT MAX(created)
+      FROM "BlockVersion"
+      GROUP BY "OrganizationId", name
+    )`,
     { type: QueryTypes.SELECT },
   );
 
@@ -87,6 +109,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       actions,
       description,
       events,
+      examples,
       hasIcon,
       hasOrganizationIcon,
       layout,
@@ -110,6 +133,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
       version,
       actions,
       events,
+      examples,
       iconUrl,
       layout,
       parameters,
@@ -121,6 +145,7 @@ export async function queryBlocks(ctx: Context): Promise<void> {
 interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
   files: File[];
   icon: File;
+  examples: string[];
 }
 
 export async function publishBlock(ctx: Context): Promise<void> {
@@ -136,6 +161,79 @@ export async function publishBlock(ctx: Context): Promise<void> {
       if (!actionKeyRegex.test(key) && key !== '$any') {
         throw badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
+    }
+  }
+
+  if (data.examples?.length) {
+    const validator = new Validator();
+    validator.customFormats.fontawesome = () => true;
+    validator.customFormats.remapper = () => true;
+    validator.customFormats.action = () => true;
+    validator.customFormats['event-listener'] = () => true;
+    validator.customFormats['event-emitter'] = () => true;
+
+    for (const exampleString of data.examples) {
+      let example: BlockDefinition;
+      try {
+        example = parse(exampleString);
+      } catch {
+        throw badRequest(`Error parsing YAML example:\n${exampleString}`);
+      }
+      if (!example || typeof example !== 'object') {
+        continue;
+      }
+      const { required, ...blockSchema } = recursive(
+        ctx.openApi.document.components.schemas.BlockDefinition,
+      ) as OpenAPIV3.NonArraySchemaObject;
+
+      delete blockSchema.properties.name;
+      delete blockSchema.properties.version;
+
+      const actionsSchema = blockSchema.properties.actions as OpenAPIV3.NonArraySchemaObject;
+
+      delete actionsSchema.additionalProperties;
+      if (example.actions) {
+        actionsSchema.properties = Object.fromEntries(
+          Object.keys(example.actions).map((key) => [
+            key,
+            { $ref: '#/components/schemas/ActionDefinition' },
+          ]),
+        );
+      }
+      const blockEventsSchema: OpenAPIV3.NonArraySchemaObject = {
+        type: 'object',
+        additionalProperties: false,
+        properties: {},
+      };
+      blockSchema.properties.events = blockEventsSchema;
+      if (example.events) {
+        if (example.events.emit) {
+          blockEventsSchema.properties.emit = has(example.events.emit, '$any')
+            ? { type: 'object', additionalProperties: { type: 'string' } }
+            : {
+                type: 'object',
+                properties: Object.fromEntries(
+                  Object.keys(example.events.emit).map((emitter) => [emitter, { type: 'string' }]),
+                ),
+              };
+        }
+        if (example.events.listen) {
+          blockEventsSchema.properties.listen = has(example.events.listen, '$any')
+            ? { type: 'object', additionalProperties: { type: 'string' } }
+            : {
+                type: 'object',
+                properties: Object.fromEntries(
+                  Object.keys(example.events.listen).map((listener) => [
+                    listener,
+                    { type: 'string' },
+                  ]),
+                ),
+              };
+        }
+      }
+
+      const validationResult = ctx.openApi.validate(example, blockSchema, { throw: false });
+      handleValidatorResult(validationResult, 'Validation failed for block example');
     }
   }
 
@@ -234,6 +332,7 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
       'name',
       'parameters',
       'description',
+      'examples',
       'longDescription',
       'version',
       'wildcardActions',
@@ -274,6 +373,7 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
       'longDescription',
       'name',
       'events',
+      'examples',
       'layout',
       'version',
       'parameters',

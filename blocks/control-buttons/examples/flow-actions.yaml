@@ -1,0 +1,5 @@
+actions:
+  onBack:
+    type: flow.back
+  onForward:
+    type: flow.next

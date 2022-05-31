@@ -10,12 +10,14 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
-import { defaultLocale } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { defaultLocale, stripBlockName } from '@appsemble/utils';
+import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { CodeBlock } from 'studio/src/components/CodeBlock';
 import { MarkdownContent } from 'studio/src/components/MarkdownContent';
 import { Schema } from 'studio/src/components/Schema';
+import { isMap, parseDocument } from 'yaml';
 
 import { ActionTable } from './ActionTable';
 import { EventTable } from './EventTable';
@@ -72,6 +74,22 @@ export function BlockPage(): ReactElement {
   const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
 
   useMeta(`@${organization}/${blockName}`, selectedBlockManifest?.description);
+
+  const examples = useMemo(
+    () =>
+      selectedBlockManifest?.examples?.map((example) => {
+        const doc = parseDocument(example);
+        const { contents } = doc;
+        if (isMap(contents)) {
+          contents.items.unshift(
+            doc.createPair('name', stripBlockName(selectedBlockManifest.name)),
+            doc.createPair('version', selectedBlockManifest.version),
+          );
+        }
+        return String(doc);
+      }) ?? [],
+    [selectedBlockManifest],
+  );
 
   if (error) {
     return (
@@ -133,6 +151,19 @@ export function BlockPage(): ReactElement {
           content={selectedBlockManifest.longDescription}
           lang={defaultLocale}
         />
+      ) : null}
+
+      {examples.length ? (
+        <>
+          <Title level={4}>Examples</Title>
+          <div className={`is-flex is-flex-column mb-3 ${styles.examples}`}>
+            {examples.map((example) => (
+              <CodeBlock className="mx-2 mb-1" copy key={example} language="yaml">
+                {example}
+              </CodeBlock>
+            ))}
+          </div>
+        </>
       ) : null}
 
       {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (

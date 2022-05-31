@@ -1,0 +1,18 @@
+events:
+  listen:
+    replace: growth
+parameters:
+  yAxis:
+    colors:
+      - '#ff00ff'
+      - '#ff0088'
+      - '#ff0000'
+      - '#ff8800'
+      - '#ffff00'
+      - '#88ff00'
+      - '#00ff00'
+      - '#00ff88'
+      - '#00ffff'
+      - '#0088ff'
+      - '#0000ff'
+      - '#8800ff'

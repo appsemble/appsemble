@@ -4,6 +4,7 @@ import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
+import stripIndent from 'strip-indent';
 
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
@@ -637,6 +638,848 @@ considered invalid.
       message: 'Invalid content types found',
     });
     expect(status).toBe(400);
+  });
+
+  it('should allow block examples', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.2.3');
+    formData.append('files', createFixtureStream('standing.png'));
+    formData.append('events', JSON.stringify({ listen: { foo: {} }, emit: { bar: {} } }));
+    formData.append('actions', JSON.stringify({ onSubmit: {} }));
+    formData.append(
+      'parameters',
+      JSON.stringify({
+        type: 'object',
+        additionalProperties: false,
+        properties: { hello: { type: 'string' } },
+      }),
+    );
+    formData.append(
+      'examples',
+      stripIndent(`
+        parameters:
+          hello: world
+        actions:
+          onSubmit:
+            type: noop
+        events:
+          listen:
+            foo: ok
+          emit:
+            bar: ok
+      `),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "actions": {
+          "onSubmit": {},
+        },
+        "description": null,
+        "events": {
+          "emit": {
+            "bar": {},
+          },
+          "listen": {
+            "foo": {},
+          },
+        },
+        "examples": [
+          "
+      parameters:
+        hello: world
+      actions:
+        onSubmit:
+          type: noop
+      events:
+        listen:
+          foo: ok
+        emit:
+          bar: ok
+            ",
+        ],
+        "files": [
+          "standing.png",
+        ],
+        "iconUrl": null,
+        "languages": null,
+        "layout": null,
+        "longDescription": null,
+        "name": "@xkcd/standing",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "hello": {
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "version": "1.2.3",
+        "wildcardActions": false,
+      }
+    `);
+  });
+
+  it('should validate block examples', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.2.3');
+    formData.append('files', createFixtureStream('standing.png'));
+    formData.append('events', JSON.stringify({ listen: { foo: {} }, emit: { bar: {} } }));
+    formData.append('actions', JSON.stringify({ onSubmit: {} }));
+    formData.append(
+      'parameters',
+      JSON.stringify({
+        type: 'object',
+        additionalProperties: false,
+        properties: {},
+      }),
+    );
+    formData.append(
+      'examples',
+      stripIndent(`
+        parameters:
+          additional: forbidden
+        actions:
+          onSubmit:
+            type: invalid
+        events:
+          listen:
+            fooz: invalid
+          emit:
+            baz: invalid
+      `),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": {
+                "id": "[subschema 1]",
+                "length": 1,
+                "valid": {
+                  "disableFormat": false,
+                  "errors": [
+                    {
+                      "argument": [
+                        "<#/components/schemas/AnalyticsActionDefinition>",
+                        "<#/components/schemas/ConditionActionDefinition>",
+                        "<#/components/schemas/DialogActionDefinition>",
+                        "<#/components/schemas/DialogErrorActionDefinition>",
+                        "<#/components/schemas/DialogOkActionDefinition>",
+                        "<#/components/schemas/DownloadActionDefinition>",
+                        "<#/components/schemas/EmailActionDefinition>",
+                        "<#/components/schemas/EventActionDefinition>",
+                        "<#/components/schemas/FlowBackActionDefinition>",
+                        "<#/components/schemas/FlowFinishActionDefinition>",
+                        "<#/components/schemas/FlowNextActionDefinition>",
+                        "<#/components/schemas/FlowToActionDefinition>",
+                        "<#/components/schemas/LinkActionDefinition>",
+                        "<#/components/schemas/LinkBackActionDefinition>",
+                        "<#/components/schemas/LinkNextActionDefinition>",
+                        "<#/components/schemas/LogActionDefinition>",
+                        "<#/components/schemas/MessageActionDefinition>",
+                        "<#/components/schemas/NoopActionDefinition>",
+                        "<#/components/schemas/RequestActionDefinition>",
+                        "<#/components/schemas/ResourceCountActionDefinition>",
+                        "<#/components/schemas/ResourceCreateActionDefinition>",
+                        "<#/components/schemas/ResourceDeleteActionDefinition>",
+                        "<#/components/schemas/ResourceGetActionDefinition>",
+                        "<#/components/schemas/ResourceQueryActionDefinition>",
+                        "<#/components/schemas/ResourceSubscriptionStatusActionDefinition>",
+                        "<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>",
+                        "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
+                        "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
+                        "<#/components/schemas/ResourceUpdateActionDefinition>",
+                        "<#/components/schemas/ShareActionDefinition>",
+                        "<#/components/schemas/ShareActionDefinition>",
+                        "<#/components/schemas/StaticActionDefinition>",
+                        "<#/components/schemas/StorageReadActionDefinition>",
+                        "<#/components/schemas/StorageReadActionDefinition>",
+                        "<#/components/schemas/StorageWriteActionDefinition>",
+                        "<#/components/schemas/StorageWriteActionDefinition>",
+                        "<#/components/schemas/TeamInviteActionDefinition>",
+                        "<#/components/schemas/TeamJoinActionDefinition>",
+                        "<#/components/schemas/TeamListActionDefinition>",
+                        "<#/components/schemas/ThrowActionDefinition>",
+                        "<#/components/schemas/UserLoginActionDefinition>",
+                        "<#/components/schemas/UserRegisterActionDefinition>",
+                        "<#/components/schemas/UserUpdateActionDefinition>",
+                      ],
+                      "instance": {
+                        "type": "invalid",
+                      },
+                      "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                      "name": "anyOf",
+                      "path": [
+                        "actions",
+                        "onSubmit",
+                      ],
+                      "property": "instance.actions.onSubmit",
+                      "schema": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/components/schemas/AnalyticsActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ConditionActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/DialogActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/DialogErrorActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/DialogOkActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/DownloadActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/EmailActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/EventActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/FlowBackActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/FlowFinishActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/FlowNextActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/FlowToActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/LinkActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/LinkBackActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/LinkNextActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/LogActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/MessageActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/NoopActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/RequestActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceCountActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceCreateActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceGetActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceQueryActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceSubscriptionStatusActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceSubscriptionSubscribeActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceSubscriptionToggleActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ShareActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ShareActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/StaticActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/StorageReadActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/StorageReadActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/TeamListActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/ThrowActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/UserLoginActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                          },
+                          {
+                            "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                          },
+                        ],
+                      },
+                      "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                    },
+                  ],
+                  "instance": {
+                    "type": "invalid",
+                  },
+                  "options": {
+                    "base": "#",
+                  },
+                  "path": [
+                    "actions",
+                    "onSubmit",
+                  ],
+                  "propertyPath": "instance.actions.onSubmit",
+                  "schema": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/AnalyticsActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ConditionActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogErrorActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogOkActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DownloadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmailActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/EventActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowBackActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowFinishActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowNextActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowToActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkBackActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkNextActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LogActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/MessageActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/NoopActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/RequestActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceCountActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceCreateActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceGetActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceQueryActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionStatusActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionSubscribeActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionToggleActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ShareActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ShareActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StaticActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageReadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageReadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamListActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ThrowActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserLoginActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                      },
+                    ],
+                  },
+                },
+              },
+              "instance": {
+                "type": "invalid",
+              },
+              "message": "does not match allOf schema [subschema 1] with 1 error[s]:",
+              "name": "allOf",
+              "path": [
+                "actions",
+                "onSubmit",
+              ],
+              "property": "instance.actions.onSubmit",
+              "schema": {
+                "allOf": [
+                  {
+                    "additionalProperties": true,
+                    "description": "The base properties of an action definition.",
+                    "properties": {
+                      "onError": {
+                        "$ref": "#/components/schemas/ActionDefinition",
+                        "description": "Another action that is dispatched when the action has failed to dispatch successfully.",
+                      },
+                      "onSuccess": {
+                        "$ref": "#/components/schemas/ActionDefinition",
+                        "description": "Another action that is dispatched when the action has been dispatched successfully.",
+                      },
+                      "remap": {
+                        "$ref": "#/components/schemas/RemapperDefinition",
+                        "description": "This may be used to remap data before it is passed into the action function.",
+                      },
+                    },
+                    "type": "object",
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/AnalyticsActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ConditionActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogErrorActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DialogOkActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/DownloadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/EmailActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/EventActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowBackActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowFinishActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowNextActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/FlowToActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkBackActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LinkNextActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/LogActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/MessageActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/NoopActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/RequestActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceCountActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceCreateActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceGetActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceQueryActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionStatusActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionSubscribeActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionToggleActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ShareActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ShareActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StaticActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageReadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageReadActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/TeamListActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/ThrowActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserLoginActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                      },
+                      {
+                        "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                      },
+                    ],
+                  },
+                ],
+              },
+              "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 1 error[s]:",
+            },
+            {
+              "argument": [
+                "<#/components/schemas/AnalyticsActionDefinition>",
+                "<#/components/schemas/ConditionActionDefinition>",
+                "<#/components/schemas/DialogActionDefinition>",
+                "<#/components/schemas/DialogErrorActionDefinition>",
+                "<#/components/schemas/DialogOkActionDefinition>",
+                "<#/components/schemas/DownloadActionDefinition>",
+                "<#/components/schemas/EmailActionDefinition>",
+                "<#/components/schemas/EventActionDefinition>",
+                "<#/components/schemas/FlowBackActionDefinition>",
+                "<#/components/schemas/FlowFinishActionDefinition>",
+                "<#/components/schemas/FlowNextActionDefinition>",
+                "<#/components/schemas/FlowToActionDefinition>",
+                "<#/components/schemas/LinkActionDefinition>",
+                "<#/components/schemas/LinkBackActionDefinition>",
+                "<#/components/schemas/LinkNextActionDefinition>",
+                "<#/components/schemas/LogActionDefinition>",
+                "<#/components/schemas/MessageActionDefinition>",
+                "<#/components/schemas/NoopActionDefinition>",
+                "<#/components/schemas/RequestActionDefinition>",
+                "<#/components/schemas/ResourceCountActionDefinition>",
+                "<#/components/schemas/ResourceCreateActionDefinition>",
+                "<#/components/schemas/ResourceDeleteActionDefinition>",
+                "<#/components/schemas/ResourceGetActionDefinition>",
+                "<#/components/schemas/ResourceQueryActionDefinition>",
+                "<#/components/schemas/ResourceSubscriptionStatusActionDefinition>",
+                "<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>",
+                "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
+                "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
+                "<#/components/schemas/ResourceUpdateActionDefinition>",
+                "<#/components/schemas/ShareActionDefinition>",
+                "<#/components/schemas/ShareActionDefinition>",
+                "<#/components/schemas/StaticActionDefinition>",
+                "<#/components/schemas/StorageReadActionDefinition>",
+                "<#/components/schemas/StorageReadActionDefinition>",
+                "<#/components/schemas/StorageWriteActionDefinition>",
+                "<#/components/schemas/StorageWriteActionDefinition>",
+                "<#/components/schemas/TeamInviteActionDefinition>",
+                "<#/components/schemas/TeamJoinActionDefinition>",
+                "<#/components/schemas/TeamListActionDefinition>",
+                "<#/components/schemas/ThrowActionDefinition>",
+                "<#/components/schemas/UserLoginActionDefinition>",
+                "<#/components/schemas/UserRegisterActionDefinition>",
+                "<#/components/schemas/UserUpdateActionDefinition>",
+              ],
+              "instance": {
+                "type": "invalid",
+              },
+              "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+              "name": "anyOf",
+              "path": [
+                "actions",
+                "onSubmit",
+              ],
+              "property": "instance.actions.onSubmit",
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AnalyticsActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ConditionActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/DialogActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/DialogErrorActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/DialogOkActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/DownloadActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/EmailActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/EventActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowBackActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowFinishActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowNextActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/FlowToActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/LinkActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/LinkBackActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/LinkNextActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/LogActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/MessageActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/NoopActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/RequestActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceCountActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceCreateActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceDeleteActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceGetActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceQueryActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceSubscriptionStatusActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceSubscriptionSubscribeActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceSubscriptionToggleActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ShareActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ShareActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/StaticActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/StorageReadActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/StorageReadActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TeamInviteActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TeamJoinActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/TeamListActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/ThrowActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/UserLoginActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/UserRegisterActionDefinition",
+                  },
+                  {
+                    "$ref": "#/components/schemas/UserUpdateActionDefinition",
+                  },
+                ],
+              },
+              "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Validation failed for block example",
+        "statusCode": 400,
+      }
+    `);
   });
 });
 
