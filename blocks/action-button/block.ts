@@ -17,7 +17,7 @@ declare module '@appsemble/sdk' {
     /**
      * The title for the button.
      *
-     * Describe what the button does. This helps with accessibility for poeple using screen readers.
+     * Describe what the button does. This helps with accessibility for people using screen readers.
      */
     title?: Remapper;
   }
