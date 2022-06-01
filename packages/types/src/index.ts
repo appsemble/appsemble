@@ -366,6 +366,11 @@ export interface Remappers {
   'object.assign': Record<string, Remapper>;
 
   /**
+   * Omit properties from an existing object given the object keys.
+   */
+  'object.omit': (string[] | string)[];
+
+  /**
    * Use a static value.
    */
   static: any;

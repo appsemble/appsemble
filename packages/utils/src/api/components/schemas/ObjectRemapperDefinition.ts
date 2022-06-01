@@ -189,6 +189,23 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
         $ref: '#/components/schemas/RemapperDefinition',
       },
     },
+    'object.omit': {
+      description: 'Remove properties from object using given keys.',
+      type: 'array',
+      items: {
+        minItems: 1,
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'array',
+            minItems: 2,
+            items: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+    },
     page: {
       enum: ['data', 'url'],
       description: `Get page metadata.
