@@ -1,3 +1,4 @@
+import { Remapper } from '@appsemble/types';
 import axios from 'axios';
 
 import { ActionCreator } from '.';
@@ -7,6 +8,7 @@ import { request } from './request';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { app, definition } = args;
+  const { view } = definition;
   const resource = app.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
@@ -15,11 +17,16 @@ export const get: ActionCreator<'resource.get'> = (args) => {
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
+  const query: Remapper = [].concat(definition?.query ?? resource?.query?.query).filter(Boolean);
+  if (view) {
+    query.push({ 'object.assign': { view } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.get?.query,
+      query: query.length ? query : undefined,
       method,
       proxy: false,
       type: 'request',
@@ -36,6 +43,7 @@ export const get: ActionCreator<'resource.get'> = (args) => {
 
 export const query: ActionCreator<'resource.query'> = (args) => {
   const { app, definition } = args;
+  const { view } = definition;
   const resource = app.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
@@ -43,11 +51,18 @@ export const query: ActionCreator<'resource.query'> = (args) => {
     resource?.url ??
     `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
 
+  const queryRemapper: Remapper = []
+    .concat(definition?.query ?? resource?.query?.query)
+    .filter(Boolean);
+  if (view) {
+    queryRemapper.push({ 'object.assign': { view } });
+  }
+
   return request({
     ...args,
     definition: {
       ...definition,
-      query: definition?.query ?? resource?.query?.query,
+      query: queryRemapper.length ? queryRemapper : undefined,
       method,
       proxy: false,
       type: 'request',
