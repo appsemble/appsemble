@@ -57,6 +57,10 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
                 },
               },
             },
+            publicView: {
+              roles: ['$public'],
+              remap: { 'object.assign': { public: { static: true } } },
+            },
             authorView: {
               roles: ['$author'],
               remap: { 'object.assign': { author: { static: true } } },
@@ -242,6 +246,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
           policy: 'invite',
         },
         roles: {
+          Visitor: {},
           Reader: {},
           Admin: {
             inherits: ['Reader'],
@@ -332,6 +337,113 @@ describe('getResourceById', () => {
       {
         "name": "1-bar",
         "randomValue": "Some random value",
+      }
+    `);
+  });
+
+  it('should be able to fetch a public resource view', async () => {
+    const app = await exampleApp(organization.id);
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { params: { view: 'publicView' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+        "public": true,
+      }
+    `);
+  });
+
+  it('should return 404 for non-existing resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    authorizeApp(app);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { params: { view: 'missingView' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "View missingView does not exist for resource type testResource",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should check for authentication when using resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { params: { view: 'testView' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "User is not logged in.",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should check for the correct role when using resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Visitor' });
+    authorizeApp(app);
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { params: { view: 'testView' } },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
       }
     `);
   });
@@ -1503,6 +1615,156 @@ describe('queryResources', () => {
       {
         "error": "Forbidden",
         "message": "This action is private.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should be able to fetch a resource view', async () => {
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    authorizeApp(app);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { view: 'testView' },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "name": "1-bar",
+          "randomValue": "Some random value",
+        },
+        {
+          "name": "2-baz",
+          "randomValue": "Some random value",
+        },
+        {
+          "name": "3-",
+          "randomValue": "Some random value",
+        },
+      ]
+    `);
+  });
+
+  it('should be able to fetch a public resource view', async () => {
+    const app = await exampleApp(organization.id);
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { bar: 'baz' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { view: 'publicView' },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+          "public": true,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "baz",
+          "id": 2,
+          "public": true,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "bar": "baz",
+          "id": 3,
+          "public": true,
+        },
+      ]
+    `);
+  });
+
+  it('should return 404 for non-existing resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    authorizeApp(app);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { view: 'missingView' },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "View missingView does not exist for resource type testResource",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should check for authentication when using resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { view: 'testView' },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 401 Unauthorized
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Unauthorized",
+        "message": "User is not logged in.",
+        "statusCode": 401,
+      }
+    `);
+  });
+
+  it('should check for the correct role when using resource views', async () => {
+    const app = await exampleApp(organization.id);
+
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Visitor' });
+    authorizeApp(app);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      params: { view: 'testView' },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
         "statusCode": 403,
       }
     `);
