@@ -1,12 +1,6 @@
 import { Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
-  interface Actions {
-    /**
-     * What happens if the button is clicked.
-     */
-    onClick: never;
-  }
   interface Parameters {
     /**
      * The URL of the image.
