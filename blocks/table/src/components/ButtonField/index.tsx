@@ -36,6 +36,7 @@ export function ButtonField({
       outlined,
       rounded,
       size = 'normal',
+      title,
       ...button
     },
     ...field
@@ -62,6 +63,7 @@ export function ButtonField({
     'is-inverted': inverted,
     'is-outlined': outlined,
   });
+  const remappedTitle = remap(title, item, { index, repeatedIndex }) as string;
 
   const content = (
     <Fragment>
@@ -79,11 +81,23 @@ export function ButtonField({
   }, [action, disabled, item]);
 
   return action?.type === 'link' ? (
-    <a className={className} disabled={disabled} href={action.href()} onClick={onClick}>
+    <a
+      className={className}
+      disabled={disabled}
+      href={action.href()}
+      onClick={onClick}
+      title={remappedTitle}
+    >
       {content}
     </a>
   ) : (
-    <button className={className} disabled={disabled} onClick={onClick} type="button">
+    <button
+      className={className}
+      disabled={disabled}
+      onClick={onClick}
+      title={remappedTitle}
+      type="button"
+    >
       {content}
     </button>
   );

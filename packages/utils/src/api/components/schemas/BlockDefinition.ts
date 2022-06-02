@@ -6,7 +6,7 @@ export const BlockDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   description: 'A block that is displayed on a page.',
   required: ['type', 'version'],
-  additionalProperties: true,
+  additionalProperties: false,
   properties: {
     theme: {
       $ref: '#/components/schemas/Theme',

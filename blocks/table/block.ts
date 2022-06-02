@@ -101,6 +101,13 @@ export interface Button extends BaseField {
      * Whether the button should display its colors in the outlines.
      */
     outlined?: boolean;
+
+    /**
+     * The title for the button.
+     *
+     * Describe what the button does. This helps with accessibility for people using screen readers.
+     */
+    title?: Remapper;
   };
 }
 
@@ -122,6 +129,13 @@ export interface Dropdown extends BaseField {
      * @minItems 1
      */
     options: DropdownOption[];
+
+    /**
+     * How the dropdown should be aligned.
+     *
+     * @default 'right'
+     */
+    alignment?: 'left' | 'right';
   };
 }
 
@@ -130,13 +144,6 @@ export interface DropdownOption {
    * The text to show in the option.
    */
   label?: Remapper;
-
-  /**
-   * How the dropdown should be aligned.
-   *
-   * @default 'right'
-   */
-  alignment?: 'left' | 'right';
 
   /**
    * The icon to show in the option.

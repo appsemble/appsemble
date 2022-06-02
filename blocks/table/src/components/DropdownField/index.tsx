@@ -43,7 +43,7 @@ export function DropdownField({
   const {
     utils: { remap },
   } = useBlock();
-  const alignment = field.alignment || 'right';
+  const alignment = field.dropdown.alignment || 'right';
 
   return (
     <Dropdown

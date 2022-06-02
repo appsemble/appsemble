@@ -15,6 +15,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         outlined,
         rounded,
         size = 'normal',
+        title,
       }) => {
         const action = actions[onClick];
         const node =
@@ -29,6 +30,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
           'is-inverted': inverted,
           'is-outlined': outlined,
         });
+        node.title = utils.remap(title, data) as string;
         if (icon) {
           node.append(
             <span className="icon">
