@@ -1505,7 +1505,7 @@ This typically means that the checkbox *must* be checked.",
                 "type": "boolean",
               },
               "rounded": {
-                "description": "Whether the roundd style should be used.",
+                "description": "Whether the rounded style should be used.",
                 "type": "boolean",
               },
               "thin": {
