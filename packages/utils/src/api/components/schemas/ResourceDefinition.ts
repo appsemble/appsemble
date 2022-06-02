@@ -229,6 +229,8 @@ name of the resource and how it should behave.
         'Alternative views of a resource that are modified using remappers and support different sets of roles.',
       additionalProperties: {
         type: 'object',
+        additionalProperties: false,
+        description: 'A custom view for a resource.',
         properties: {
           roles,
           remap: {
