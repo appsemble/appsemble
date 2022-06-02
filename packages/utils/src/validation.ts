@@ -486,13 +486,13 @@ function validateActions(definition: AppDefinition, report: Report): void {
           }
 
           if ((type === 'get' || type === 'query') && view) {
-            if (!resource.views[view]) {
+            if (!resource.views?.[view]) {
               report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
               return;
             }
 
             const viewRoles = resource?.views?.[view].roles;
-            if (!viewRoles) {
+            if (!viewRoles?.length) {
               report(action.type, 'refers to a resource view that is currently set to private', [
                 ...path,
                 'view',
