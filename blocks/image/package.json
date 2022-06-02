@@ -1,0 +1,8 @@
+{
+  "name": "@appsemble/image",
+  "version": "0.20.7",
+  "private": true,
+  "dependencies": {
+    "@appsemble/sdk": "0.20.7"
+  }
+}
