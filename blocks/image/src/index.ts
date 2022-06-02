@@ -17,7 +17,7 @@ bootstrap(({ data, parameters: { alignment, alt, rounded, url }, utils }) => {
   node.classList.add('image');
 
   if (rounded) {
-    node.classList.add('is-rounded');
+    image.classList.add('is-rounded');
   }
   image.alt = utils.remap(alt, data) as string;
   image.src = utils.remap(url, data) as string;

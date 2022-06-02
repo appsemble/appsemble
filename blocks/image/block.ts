@@ -13,7 +13,7 @@ declare module '@appsemble/sdk' {
      *
      * Note that this is ignored if the onImage event listener is set.
      */
-    url?: Remapper;
+    url: Remapper;
 
     /**
      * The ALT text of the image.
@@ -33,12 +33,6 @@ declare module '@appsemble/sdk' {
      * @default 'left'
      */
     alignment?: 'center' | 'left' | 'right';
-
-    /**
-     * Is image rounded.
-     *
-     */
-    ratio?: string;
   }
 }
 
