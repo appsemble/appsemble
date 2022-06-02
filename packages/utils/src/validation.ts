@@ -485,7 +485,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
             return;
           }
 
-          if (type === 'get' || (type === 'query' && view)) {
+          if ((type === 'get' || type === 'query') && view) {
             if (!resource.views[view]) {
               report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
               return;
