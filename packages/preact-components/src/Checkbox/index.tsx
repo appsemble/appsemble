@@ -1,3 +1,4 @@
+import { BulmaColor, BulmaSize } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { ComponentChild, ComponentProps, JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
@@ -5,7 +6,7 @@ import { useCallback } from 'preact/hooks';
 
 type CheckboxProps = Omit<
   ComponentProps<'input'>,
-  'label' | 'onChange' | 'onInput' | 'title' | 'value'
+  'label' | 'onChange' | 'onInput' | 'size' | 'title' | 'value'
 > & {
   /**
    * If true, render an error color.
@@ -33,6 +34,29 @@ type CheckboxProps = Omit<
   switch?: boolean;
 
   /**
+   * Style options for when the checkbox is displaying as a switch.
+   *
+   * Does nothing if `switch` is set to `false`.
+   */
+  switchOptions?: {
+    outlined?: boolean;
+    thin?: boolean;
+    rounded?: boolean;
+  };
+
+  /**
+   * The color of the checkbox.
+   */
+  color?: BulmaColor;
+
+  /**
+   * The size of the checkbox.
+   *
+   * @default 'normal'
+   */
+  size?: BulmaSize;
+
+  /**
    * Whether the label should be displayed to the right of the checkbox or to the left.
    *
    * By default (false), the label will be rendered after the checkbox.
@@ -45,7 +69,21 @@ type CheckboxProps = Omit<
  */
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
-    { className, error, label, name, onChange, value, id = name, switch: isSwitch, rtl, ...props },
+    {
+      className,
+      error,
+      label,
+      name,
+      onChange,
+      value,
+      id = name,
+      switch: isSwitch,
+      switchOptions,
+      size = 'normal',
+      color,
+      rtl,
+      ...props
+    },
     ref,
   ) => {
     const handleChange = useCallback(
@@ -60,7 +98,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         <input
           {...props}
           checked={value}
-          className={classNames(isSwitch ? 'switch' : 'is-checkradio', { 'is-rtl': rtl })}
+          className={classNames(isSwitch ? 'switch' : 'is-checkradio', {
+            [`is-${color}`]: color,
+            [`is-${size}`]: size,
+            'is-rtl': rtl,
+            'is-outlined': switchOptions?.outlined,
+            'is-thin': switchOptions?.thin,
+            'is-rounded': switchOptions?.rounded,
+          })}
           id={id}
           name={name}
           onChange={handleChange}
