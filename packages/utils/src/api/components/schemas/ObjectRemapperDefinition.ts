@@ -190,7 +190,18 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
       },
     },
     'object.omit': {
-      description: 'Remove properties from object using given keys.',
+      description: `Remove properties from an existing object based on the given the object keys.
+
+Nested properties can be removed using arrays of keys.
+
+For example:
+\`\`\`yaml
+object.omit:
+  - foo   # Removes the property foo
+  - - bar # Removes the property baz inside of bar
+    - baz
+\`\`\`
+`,
       type: 'array',
       items: {
         minItems: 1,
