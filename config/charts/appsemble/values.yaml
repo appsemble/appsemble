@@ -67,15 +67,14 @@ global:
       existingSecret: appsemble-postgresql-secret
       username: appsemble
       database: appsemble
+      secretKeys:
+        userPasswordKey: password
     service:
       ports:
         postgresql: 5432
 
 postgresql:
   fullnameOverride: appsemble-postgresql
-
-  persistence:
-    enabled: false
 
 postgresSSL: false
 

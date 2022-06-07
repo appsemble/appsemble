@@ -430,6 +430,7 @@ review:
   script:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
@@ -475,6 +476,7 @@ stop review:
     HELM_NAMESPACE: review
   script:
     - helm delete "review-$CI_MERGE_REQUEST_IID"
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -496,6 +498,7 @@ staging:
   script:
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging"
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
