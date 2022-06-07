@@ -22,12 +22,18 @@ interface SamlSecretItemProps {
    * The current provider values.
    */
   secret: AppSamlSecret;
+
+  onDeleted: (secret: AppSamlSecret) => void;
 }
 
 /**
  * Render an Saml app secret that may be updated.
  */
-export function SamlSecretItem({ onUpdated, secret }: SamlSecretItemProps): ReactElement {
+export function SamlSecretItem({
+  onDeleted,
+  onUpdated,
+  secret,
+}: SamlSecretItemProps): ReactElement {
   const { formatMessage } = useIntl();
   const modal = useToggle();
   const { app } = useApp();
@@ -62,7 +68,7 @@ export function SamlSecretItem({ onUpdated, secret }: SamlSecretItemProps): Reac
         subtitle={ssoUrl.origin}
         title={secret.name}
       />
-      <SamlModal onSubmit={onSubmit} secret={secret} toggle={modal} />
+      <SamlModal onDeleted={onDeleted} onSubmit={onSubmit} secret={secret} toggle={modal} />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import {
+  Button,
   FormOutput,
   ModalCard,
   SimpleForm,
@@ -6,9 +7,12 @@ import {
   SimpleModalFooter,
   TextAreaField,
   Toggle,
+  useConfirmation,
+  useMessages,
 } from '@appsemble/react-components';
 import { AppSamlSecret } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
+import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -34,6 +38,11 @@ interface AppSecretCardProps {
    * The toggle used for managing the modal.
    */
   toggle: Toggle;
+
+  /**
+   *
+   */
+  onDeleted?: (secret: AppSamlSecret) => void;
 }
 
 const certificateRows = 14;
@@ -45,11 +54,35 @@ function processCertificate(value: string): string {
 /**
  * Render a modal for editing an Saml app secret.
  */
-export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): ReactElement {
+export function SamlModal({
+  onDeleted,
+  onSubmit,
+  secret,
+  toggle,
+}: AppSecretCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
 
   const urlPrefix = `${window.location.origin}/api/apps/${app.id}/saml/${secret.id}`;
+
+  const push = useMessages();
+
+  const onDelete = useConfirmation({
+    title: <FormattedMessage {...messages.deleteWarningTitle} />,
+    body: <FormattedMessage {...messages.deleteWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    color: 'danger',
+    async action() {
+      await axios.delete(`/api/apps/${app.id}/secrets/saml/${secret.id}`);
+
+      push({
+        body: formatMessage(messages.deleteSuccess, { name: secret.name }),
+        color: 'info',
+      });
+      onDeleted(secret);
+    },
+  });
 
   return (
     <ModalCard
@@ -171,6 +204,7 @@ export function SamlModal({ onSubmit, secret, toggle }: AppSecretCardProps): Rea
         // @ts-expect-error This can’t be properly typed.
         rows={certificateRows + 4}
       />
+      {onDeleted && <Button onClick={onDelete}> delete </Button>}
     </ModalCard>
   );
 }
