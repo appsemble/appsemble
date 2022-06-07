@@ -131,7 +131,7 @@ test node 14:
   interruptible: true
   image: node:14-bullseye-slim
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -149,7 +149,7 @@ test node 16:
   interruptible: true
   image: node:16-bullseye-slim
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -166,7 +166,7 @@ test node 16:
 test node 18:
   interruptible: true
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
