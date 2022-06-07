@@ -34,9 +34,9 @@ spec:
             - name: DATABASE_PORT
               value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
             - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.postgresql.auth.database }}
+              value: {{ .Values.global.postgresql.auth.database }}
             - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.postgresql.auth.username }}
+              value: {{ .Values.global.postgresql.auth.username }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
