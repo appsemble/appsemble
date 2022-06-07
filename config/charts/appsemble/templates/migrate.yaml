@@ -32,15 +32,15 @@ spec:
               value: 'true'
             {{ end }}
             - name: DATABASE_PORT
-              value: {{ .Values.global.postgresql.servicePort | quote }}
+              value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
             - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.postgresqlDatabase }}
+              value: {{ .Values.global.postgresql.postgresql.auth.database }}
             - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.postgresqlUsername }}
+              value: {{ .Values.global.postgresql.postgresql.auth.username }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.global.postgresql.existingSecret }}
+                  name: {{ .Values.global.postgresql.auth.existingSecret }}
                   key: postgresql-postgres-password
             {{- with .Values.sentrySecret }}
             - name: SENTRY_DSN

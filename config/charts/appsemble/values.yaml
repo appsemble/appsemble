@@ -63,10 +63,13 @@ proxy: false
 
 global:
   postgresql:
-    postgresqlDatabase: appsemble
-    postgresqlUsername: appsemble
-    servicePort: 5432
-    existingSecret: appsemble-postgresql-secret
+    auth:
+      existingSecret: appsemble-postgresql-secret
+      username: appsemble
+      database: appsemble
+    service:
+      ports:
+        postgresql: 5432
 
 postgresql:
   fullnameOverride: appsemble-postgresql

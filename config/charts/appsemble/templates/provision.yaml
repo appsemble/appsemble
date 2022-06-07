@@ -53,14 +53,14 @@ spec:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}
             - name: PGPORT
-              value: {{ .Values.global.postgresql.servicePort | quote }}
+              value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
             - name: PGDATABASE
-              value: {{ .Values.global.postgresql.postgresqlDatabase }}
+              value: {{ .Values.global.postgresql.postgresql.auth.database }}
             - name: PGUSER
-              value: {{ .Values.global.postgresql.postgresqlUsername }}
+              value: {{ .Values.global.postgresql.postgresql.auth.username }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.global.postgresql.existingSecret }}
+                  name: {{ .Values.global.postgresql.auth.existingSecret }}
                   key: postgresql-postgres-password
 {{ end }}
