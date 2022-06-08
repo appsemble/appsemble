@@ -1,7 +1,18 @@
-import { AsyncCheckbox, Content, Title, useMeta } from '@appsemble/react-components';
+import {
+  AsyncCheckbox,
+  CheckboxField,
+  Content,
+  PasswordField,
+  SimpleForm,
+  SimpleFormField,
+  SimpleSubmit,
+  Title,
+  useMeta,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Collapsible } from 'studio/src/components/Collapsible';
 
 import { useApp } from '..';
 import { messages } from './messages';
@@ -51,6 +62,54 @@ export function SecretsPage(): ReactElement {
           value={app.showAppsembleLogin}
         />
       </div>
+      <Collapsible collapsed={false} title={<FormattedMessage {...messages.emailSettings} />}>
+        <SimpleForm
+          defaultValues={{
+            emailName: 'Appsemble',
+            emailHost: '',
+            emailPassword: '',
+            emailPort: 587,
+            emailSecure: true,
+          }}
+          // eslint-disable-next-line no-console
+          onSubmit={(values) => console.log(values)}
+        >
+          <SimpleFormField
+            autoComplete="off"
+            label={<FormattedMessage {...messages.emailName} />}
+            name="emailName"
+          />
+          <SimpleFormField
+            autoComplete="off"
+            label={<FormattedMessage {...messages.emailUser} />}
+            name="emailUser"
+          />
+          <SimpleFormField
+            autoComplete="off"
+            label={<FormattedMessage {...messages.emailHost} />}
+            name="emailHost"
+          />
+          <SimpleFormField
+            autoComplete="off"
+            component={PasswordField}
+            label={<FormattedMessage {...messages.emailPassword} />}
+            name="emailPassword"
+          />
+          <SimpleFormField
+            label={<FormattedMessage {...messages.emailPort} />}
+            name="emailPort"
+            type="number"
+          />
+          <SimpleFormField
+            component={CheckboxField}
+            label={<FormattedMessage {...messages.emailSecure} />}
+            name="emailSecure"
+          />
+          <SimpleSubmit>
+            <FormattedMessage {...messages.submit} />
+          </SimpleSubmit>
+        </SimpleForm>
+      </Collapsible>
       <OAuth2Secrets />
       <SamlSecrets />
     </Content>
