@@ -5,8 +5,7 @@ export const key = '0.20.8';
 
 /**
  * Summary:
- * - Add table `TeamInvite`
- * - Convert all path references for apps to use the page name instead of the index.
+ * - Add column `example` to `BlockVersion`
  *
  * @param db - The sequelize database.
  */
@@ -19,8 +18,7 @@ export async function up(db: Sequelize): Promise<void> {
 
 /**
  * Summary:
- * - Convert all path references for apps to use the page index instead of the name.
- * - Remove table `TeamInvite`
+ * - Remove column `example` from `BlockVersion`
  *
  * @param db - The sequelize database.
  */
