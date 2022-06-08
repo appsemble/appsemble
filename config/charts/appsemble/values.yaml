@@ -40,11 +40,7 @@ affinity: {}
 
 smtpSecret: smtp
 
-sentryAllowedDomains: null
-
-sentrySecret: null
-
-sentryEnvironment: null
+sentry: null
 
 oauthSecret: null
 

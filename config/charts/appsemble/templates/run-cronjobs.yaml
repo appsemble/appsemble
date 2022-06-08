@@ -27,6 +27,7 @@ spec:
                 - -vv
               env:
 {{ include "appsemble.postgres" . | indent 16 }}
+{{ include "appsemble.sentry" . | indent 16 }}
                 - name: HOST
                   {{ if .Values.ingress.enabled -}}
                   value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
@@ -64,16 +65,5 @@ spec:
                     secretKeyRef:
                       name: {{ . | quote }}
                       key: from
-                {{- end }}
-                {{- with .Values.sentrySecret }}
-                - name: SENTRY_DSN
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ . | quote }}
-                      key: dsn
-                {{- end }}
-                {{- with .Values.sentryEnvironment }}
-                - name: SENTRY_ENVIRONMENT
-                  value: {{ . | quote }}
                 {{- end }}
 {{ end }}

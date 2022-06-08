@@ -42,6 +42,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
 {{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.sentry" . | indent 12 }}
             - name: HOST
               {{ if .Values.ingress.enabled -}}
               value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
@@ -134,21 +135,6 @@ spec:
                   name: {{ . | quote }}
                   key: google-client-secret
                   optional: true
-            {{- end }}
-            {{- with .Values.sentrySecret }}
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: dsn
-            {{- end }}
-            {{- with .Values.sentryEnvironment }}
-            - name: SENTRY_ENVIRONMENT
-              value: {{ . | quote }}
-            {{- end }}
-            {{- with .Values.sentryAllowedDomains }}
-            - name: SENTRY_ALLOWED_DOMAINS
-              value: {{ join "," . | quote }}
             {{- end }}
             {{- with .Values.remote }}
             - name: REMOTE
