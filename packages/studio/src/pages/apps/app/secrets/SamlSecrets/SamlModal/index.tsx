@@ -204,7 +204,11 @@ export function SamlModal({
         // @ts-expect-error This can’t be properly typed.
         rows={certificateRows + 4}
       />
-      {onDeleted && <Button onClick={onDelete}> delete </Button>}
+      {onDeleted && (
+        <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
+          <FormattedMessage {...messages.deleteButton} />
+        </Button>
+      )}
     </ModalCard>
   );
 }

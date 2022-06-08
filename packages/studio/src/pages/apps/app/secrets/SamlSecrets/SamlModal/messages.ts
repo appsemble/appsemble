@@ -42,4 +42,5 @@ export const messages = defineMessages({
   cancel: 'Cancel',
   delete: 'Delete secret',
   deleteSuccess: 'Successfully deleted secret {name}',
+  deleteButton: 'Delete secret',
 });
