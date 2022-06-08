@@ -7,8 +7,9 @@ import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter 
 import { Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
-import { AppMessages } from '../../models';
+import { App, AppMessages } from '../../models';
 import { argv } from '../argv';
+import { decrypt } from '../crypto';
 import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages';
 import { readAsset } from '../readAsset';
 import { renderEmail } from './renderEmail';
@@ -76,8 +77,17 @@ export interface SendMailOptions {
 export class Mailer {
   transport: Transporter;
 
-  constructor() {
-    const { smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser } = argv;
+  constructor({
+    smtpFrom,
+    smtpHost,
+    smtpPass,
+    smtpPort,
+    smtpSecure,
+    smtpUser,
+  }: Pick<
+    typeof argv,
+    'smtpFrom' | 'smtpHost' | 'smtpPass' | 'smtpPort' | 'smtpSecure' | 'smtpUser'
+  >) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(
@@ -113,6 +123,7 @@ export class Mailer {
     locale = defaultLocale,
     to,
     values,
+    app,
   }: {
     to: Recipient;
     appId: number;
@@ -120,6 +131,7 @@ export class Mailer {
     emailName: string;
     values: Record<string, FormatXMLElementFn<string, string[] | string> | PrimitiveType>;
     locale: string;
+    app?: App;
   }): Promise<void> {
     const emailLocale = locale || defaultLocale;
     const lang = emailLocale.toLowerCase();
@@ -184,13 +196,30 @@ export class Mailer {
 
     const { html, subject, text } = await renderEmail(body as string, {}, sub as string);
 
-    await this.sendEmail({
+    const email = {
       to: to.name ? `${to.name} <${to.email}>` : to.email,
       from: from || 'Appsemble',
       subject,
       html,
       text,
-    });
+    };
+
+    if (app?.emailHost && app?.emailPassword) {
+      const smtpPass = decrypt(app.emailPassword, argv.aesSecret);
+      const mailer = new Mailer({
+        smtpFrom: from,
+        smtpHost: app.emailHost,
+        smtpPass,
+        smtpPort: app.emailPort,
+        smtpSecure: app.emailSecure,
+        smtpUser: app.emailHost,
+      });
+
+      await mailer.sendEmail(email);
+      return;
+    }
+
+    await this.sendEmail(email);
   }
 
   /**

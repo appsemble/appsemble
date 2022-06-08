@@ -3,7 +3,7 @@ import { setTestApp } from 'axios-test-instance';
 import { Transporter } from 'nodemailer';
 
 import { App, AppMessages, Organization } from '../../models';
-import { setArgv } from '../argv';
+import { argv, setArgv } from '../argv';
 import { createServer } from '../createServer';
 import { useTestDatabase } from '../test/testSchema';
 import { Mailer } from './Mailer';
@@ -15,7 +15,7 @@ useTestDatabase('mailer');
 
 beforeEach(() => {
   setArgv({ host: '', smtpFrom: 'test@example.com' });
-  mailer = new Mailer();
+  mailer = new Mailer(argv);
 });
 
 describe('verify', () => {

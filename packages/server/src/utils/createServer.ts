@@ -77,7 +77,7 @@ export async function createServer({
   app.use(loggerMiddleware());
   app.use(boomMiddleware());
   app.use(range);
-  Object.assign(app.context, { mailer: new Mailer() });
+  Object.assign(app.context, { mailer: new Mailer(argv) });
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
