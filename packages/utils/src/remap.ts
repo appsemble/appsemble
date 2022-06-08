@@ -255,6 +255,25 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
   }),
 
+  'object.omit'(keys, input: Record<string, any>) {
+    const result = { ...input };
+    for (const key of keys) {
+      if (Array.isArray(key)) {
+        key.reduce((acc, k, index) => {
+          if (index === key.length - 1) {
+            delete acc[k];
+          } else {
+            return acc?.[k];
+          }
+          return acc;
+        }, result);
+      } else {
+        delete result[key];
+      }
+    }
+    return result;
+  },
+
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {

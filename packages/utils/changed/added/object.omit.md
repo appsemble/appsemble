@@ -1,0 +1,1 @@
+Add `object.omit` remapper.
