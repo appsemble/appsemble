@@ -245,7 +245,7 @@ async function updateAppTranslations(version: string): Promise<void> {
   );
 }
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs.positional('increment', {
     description: 'Whether to increment the minor or patch version',
     choices: ['minor', 'patch'],
