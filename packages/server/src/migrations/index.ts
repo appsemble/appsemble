@@ -47,6 +47,7 @@ import * as m0_19_6 from './0.19.6';
 import * as m0_19_8 from './0.19.8';
 import * as m0_20_2 from './0.20.2';
 import * as m0_20_3 from './0.20.3';
+import * as m0_20_8 from './0.20.8';
 import * as m0_9_0 from './0.9.0';
 import * as m0_9_3 from './0.9.3';
 import * as m0_9_4 from './0.9.4';
@@ -103,4 +104,5 @@ export const migrations: Migration[] = [
   m0_19_15,
   m0_20_2,
   m0_20_3,
+  m0_20_8,
 ];
