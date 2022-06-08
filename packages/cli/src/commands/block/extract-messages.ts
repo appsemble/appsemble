@@ -14,7 +14,7 @@ interface BuildBlockArguments extends BaseArguments {
 export const command = 'extract-messages <paths...>';
 export const description = 'Extract messages from a block.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('paths', {
       describe: 'The paths to the blocks to extract messages from.',
