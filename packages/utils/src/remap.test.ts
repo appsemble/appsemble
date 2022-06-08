@@ -692,6 +692,62 @@ describe('random.choice', () => {
   });
 });
 
+describe('random.integer', () => {
+  beforeEach(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.integer': [5, 10] }],
+      expected: 7,
+    },
+  });
+});
+
+describe('random.float', () => {
+  beforeEach(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.float': [5, 10] }],
+      expected: 7.5,
+    },
+  });
+});
+
+describe('random.string', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.4)
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.6)
+      .mockReturnValueOnce(0.7)
+      .mockReturnValueOnce(0.8)
+      .mockReturnValueOnce(0.2)
+      .mockReturnValueOnce(0.3)
+      .mockReturnValueOnce(0.4)
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.7)
+      .mockReturnValueOnce(0.9)
+      .mockReturnValueOnce(0.6);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.string': { choice: 'abcdefghijklmnopqrstuvwzyx', length: 12 } }],
+      expected: 'aknpsufhknszp',
+    },
+  });
+});
+
 describe('root', () => {
   runTests({
     'return the root input data': {

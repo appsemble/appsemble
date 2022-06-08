@@ -390,6 +390,26 @@ export interface Remappers {
    * If the input is not an array, the input is returned as-is.
    */
   'random.choice': null;
+  /**
+   * Pick and return a random entry from an array.
+   *
+   * If the input is not an array, the input is returned as-is.
+   */
+  'random.integer': [number, number];
+
+  /**
+   * Pick and return a random entry from an array.
+   *
+   * If the input is not an array, the input is returned as-is.
+   */
+  'random.float': [number, number];
+
+  /**
+   * Pick and return a random entry from an array.
+   *
+   * If the input is not an array, the input is returned as-is.
+   */
+  'random.string': { choice: string; length: number };
 
   /**
    * Get the input data as it was initially passed to the remap function.

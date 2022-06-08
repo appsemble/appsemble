@@ -212,6 +212,34 @@ Supported properties:
       description:
         'Pick and return a random entry from an array. If the input is not an array, the input is returned as-is.',
     },
+    'random.integer': {
+      type: 'array',
+      maxItems: 2,
+      minItems: 2,
+      items: {
+        type: 'integer',
+      },
+      description: 'Pick and return a random integer from an array.',
+    },
+    'random.float': {
+      type: 'array',
+      maxItems: 2,
+      minItems: 2,
+      items: {
+        type: 'number',
+      },
+      description: 'Pick and return a random number from an array.',
+    },
+    'random.string': {
+      type: 'object',
+      required: ['choice', 'length'],
+      properties: {
+        choice: { type: 'string', minLength: 1 },
+        length: { type: 'integer', minimum: 1 },
+      },
+      description:
+        'Pick and return a random string from a given length using characters from a given input string.',
+    },
     root: {
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',

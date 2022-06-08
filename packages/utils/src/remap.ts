@@ -310,6 +310,27 @@ const mapperImplementations: MapperImplementations = {
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
 
+  'random.integer'(args) {
+    const min = Math.min(...args);
+    const max = Math.max(...args);
+    return Math.floor(Math.random() * (max - min) + min);
+  },
+
+  'random.float'(args) {
+    const min = Math.min(...args);
+    const max = Math.max(...args);
+    return Math.random() * (max - min) + min;
+  },
+
+  'random.string'(args) {
+    const result: string[] = [];
+    const characters = [...new Set(args.choice.split(''))];
+    for (let i = 0; i <= args.length; i += 1) {
+      result.push(characters[Math.floor(Math.random() * characters.length)]);
+    }
+    return result.join('');
+  },
+
   root: (args, input, context) => context.root,
 
   'string.case'(stringCase, input) {
