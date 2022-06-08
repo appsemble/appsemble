@@ -20,12 +20,21 @@ interface OAuth2SecretItemProps {
    * The current provider values.
    */
   secret: AppOAuth2Secret;
+
+  /**
+   * Called when secret has been deleted successfully.
+   */
+  onDeleted: (secret: AppOAuth2Secret) => void;
 }
 
 /**
  * Render an OAuth2 app secret that may be updated.
  */
-export function OAuth2SecretItem({ onUpdated, secret }: OAuth2SecretItemProps): ReactElement {
+export function OAuth2SecretItem({
+  onDeleted,
+  onUpdated,
+  secret,
+}: OAuth2SecretItemProps): ReactElement {
   const modal = useToggle();
   const { app } = useApp();
 
@@ -50,7 +59,7 @@ export function OAuth2SecretItem({ onUpdated, secret }: OAuth2SecretItemProps): 
         subtitle={new URL(secret.authorizationUrl).origin}
         title={secret.name}
       />
-      <OAuth2Modal onSubmit={onSubmit} secret={secret} toggle={modal} />
+      <OAuth2Modal onDeleted={onDeleted} onSubmit={onSubmit} secret={secret} toggle={modal} />
     </>
   );
 }

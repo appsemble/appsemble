@@ -92,6 +92,16 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    delete: {
+      tags: ['secret'],
+      operationId: 'deleteAppOAuth2Secret',
+      security: [{ studio: [] }],
+      responses: {
+        204: {
+          description: 'The deleted OAuth2 secret.',
+        },
+      },
+    },
   },
   '/api/apps/{appId}/secrets/oauth2/{appOAuth2SecretId}/verify': {
     parameters: [

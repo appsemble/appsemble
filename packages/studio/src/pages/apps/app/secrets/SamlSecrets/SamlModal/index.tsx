@@ -40,7 +40,7 @@ interface AppSecretCardProps {
   toggle: Toggle;
 
   /**
-   *
+   * Called when the secret has been updated successfully.
    */
   onDeleted?: (secret: AppSamlSecret) => void;
 }

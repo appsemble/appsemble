@@ -1,4 +1,5 @@
 import {
+  Button,
   FormOutput,
   JSONField,
   ModalCard,
@@ -8,13 +9,17 @@ import {
   SimpleModalFooter,
   TagsField,
   Toggle,
+  useConfirmation,
+  useMessages,
 } from '@appsemble/react-components';
 import { AppOAuth2Secret } from '@appsemble/types';
+import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../../..';
+import styles from './index.module.css';
 import { messages } from './messages';
 
 interface AppSecretCardProps {
@@ -35,17 +40,47 @@ interface AppSecretCardProps {
    * The toggle used for managing the modal.
    */
   toggle: Toggle;
+
+  /**
+   * Called when the secret has been updated successfully.
+   */
+  onDeleted?: (secret: AppOAuth2Secret) => void;
 }
 
 /**
  * Render a modal for editing an OAuth2 app secret.
  */
-export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): ReactElement {
+export function OAuth2Modal({
+  onDeleted,
+  onSubmit,
+  secret,
+  toggle,
+}: AppSecretCardProps): ReactElement {
   const { formatMessage } = useIntl();
   const {
     app: { locked },
   } = useApp();
   const { lang } = useParams<{ lang: string }>();
+
+  const push = useMessages();
+  const { app } = useApp();
+
+  const onDelete = useConfirmation({
+    title: <FormattedMessage {...messages.deleteWarningTitle} />,
+    body: <FormattedMessage {...messages.deleteWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    color: 'danger',
+    async action() {
+      await axios.delete(`/api/apps/${app.id}/secrets/oauth2/${secret.id}`);
+
+      push({
+        body: formatMessage(messages.deleteSuccess, { name: secret.name }),
+        color: 'info',
+      });
+      onDeleted(secret);
+    },
+  });
 
   return (
     <ModalCard
@@ -171,6 +206,11 @@ export function OAuth2Modal({ onSubmit, secret, toggle }: AppSecretCardProps): R
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
       />
+      {onDeleted && (
+        <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
+          <FormattedMessage {...messages.deleteButton} />
+        </Button>
+      )}
     </ModalCard>
   );
 }

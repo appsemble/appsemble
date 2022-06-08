@@ -23,6 +23,9 @@ interface SamlSecretItemProps {
    */
   secret: AppSamlSecret;
 
+  /**
+   * Called when secret has been deleted successfully.
+   */
   onDeleted: (secret: AppSamlSecret) => void;
 }
 
