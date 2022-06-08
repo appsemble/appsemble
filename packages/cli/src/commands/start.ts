@@ -98,6 +98,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'Secret key used to sign JWTs and cookies',
       required: true,
     })
+    .option('aes-secret', {
+      desc: 'The key used for all the data that is encrypted using AES.',
+      required: true,
+    })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',

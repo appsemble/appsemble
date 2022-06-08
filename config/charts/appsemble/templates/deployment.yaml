@@ -81,6 +81,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretSecret | quote }}
                   key: secret
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.aesSecret | quote }}
+                  key: aes-secret
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST
               valueFrom:

@@ -11,6 +11,13 @@ kubectl create secret generic appsemble \
   --from-literal "secret=$(openssl rand -base64 30)"
 ```
 
+A separate secret is used for settings that are encrypted using AES.
+
+```sh
+kubectl create secret generic appsemble \
+  --from-literal "aes-secret=$(openssl rand -base64 32)"
+```
+
 It is recommended to create a PostgreSQL secret beforehand.
 
 ```sh
@@ -97,6 +104,7 @@ helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.existingS
 | `sentrySecret`                         | `nil`                         | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `sentryEnvironment`                    | `nil`                         | The environment to send with Sentry error reports.                                                                                        |
 | `secretSecret`                         | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                      |
+| `aesSecret`                            | `appsemble`                   | The Kubernetes secret which holds the `AES-SECRET` environment variable.                                                                  |
 | `cronjob.jobsHistoryLimit`             | 3                             | How long to keep logs for cronjobs in days.                                                                                               |
 | `migrateTo`                            | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |
 | `proxy`                                | `false`                       | If `true`, The proxy is trusted for logging purposes.                                                                                     |
