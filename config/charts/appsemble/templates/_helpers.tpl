@@ -109,4 +109,5 @@ Configure the environment variables for Sentry.
 - name: SENTRY_ALLOWED_DOMAINS
   value: {{ join "," . | quote }}
 {{ end }}
+{{ end }}
 {{- end -}}
