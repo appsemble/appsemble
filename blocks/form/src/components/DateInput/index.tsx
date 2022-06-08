@@ -45,6 +45,7 @@ export function DateInput({
       disable={disable}
       disabled={disabled}
       error={dirty && error}
+      icon={field.icon}
       id={name}
       label={dateLabel}
       locale={locale}
