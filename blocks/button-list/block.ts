@@ -58,6 +58,13 @@ export interface Button {
    * Whether the button should display its colors in the outlines.
    */
   outlined?: boolean;
+
+  /**
+   * The title for the button.
+   *
+   * Describe what the button does. This helps with accessibility for people using screen readers.
+   */
+  title?: Remapper;
 }
 
 declare module '@appsemble/sdk' {

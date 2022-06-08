@@ -18,6 +18,12 @@ exports[`getBlockConfigFromTypeScript official blocks action-button 1`] = `
         "format": "fontawesome",
         "type": "string",
       },
+      "title": {
+        "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+        "format": "remapper",
+      },
     },
     "required": [
       "icon",
@@ -127,6 +133,12 @@ Will not render if undefined.",
           "size": {
             "$ref": "#/definitions/BulmaSize",
             "description": "The size of the button. By default the size is ‘normal’.",
+          },
+          "title": {
+            "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+            "format": "remapper",
           },
         },
         "type": "object",
@@ -1447,6 +1459,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A checkbox that returns \`true\` when checked and \`false\` when not.",
         "properties": {
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "description": "The color of the checkbox.",
+          },
           "defaultValue": {
             "description": "The default value of the field.",
             "type": "boolean",
@@ -1487,6 +1503,30 @@ This typically means that the checkbox *must* be checked.",
             },
             "type": "array",
           },
+          "size": {
+            "$ref": "#/definitions/BulmaSize",
+            "default": "normal",
+            "description": "The size of the checkbox.",
+          },
+          "switch": {
+            "additionalProperties": false,
+            "description": "Whether the checkbox should display as a switch instead.",
+            "properties": {
+              "outlined": {
+                "description": "Whether the outlined style should be used.",
+                "type": "boolean",
+              },
+              "rounded": {
+                "description": "Whether the rounded style should be used.",
+                "type": "boolean",
+              },
+              "thin": {
+                "description": "Whether the thin style should be used.",
+                "type": "boolean",
+              },
+            },
+            "type": "object",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -1504,6 +1544,29 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "type",
         ],
         "type": "object",
+      },
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "BulmaSize": {
+        "enum": [
+          "large",
+          "medium",
+          "normal",
+          "small",
+        ],
+        "type": "string",
       },
       "Choice": {
         "additionalProperties": false,
@@ -3288,6 +3351,12 @@ This does not trigger if the field has a different action specified.",
                 "default": "primary",
                 "description": "The color of the button.",
               },
+              "disabled": {
+                "description": "Whether the button should be disabled.
+
+If the resulting remapper value is truthy, the button will be disabled.",
+                "format": "remapper",
+              },
               "fullwidth": {
                 "description": "Whether the button should be full width or not.
 
@@ -3323,6 +3392,12 @@ By default buttons only take up as much space as needed.",
                 "$ref": "#/definitions/BulmaSize",
                 "default": "normal",
                 "description": "The size of the button.",
+              },
+              "title": {
+                "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+                "format": "remapper",
               },
             },
             "type": "object",

@@ -131,7 +131,7 @@ test node 14:
   interruptible: true
   image: node:14-bullseye-slim
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -149,7 +149,7 @@ test node 16:
   interruptible: true
   image: node:16-bullseye-slim
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -166,7 +166,7 @@ test node 16:
 test node 18:
   interruptible: true
   services:
-    - name: postgres:11
+    - postgres:14
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -425,11 +425,12 @@ review:
     on_stop: stop review
   variables:
     GIT_STRATEGY: none
-    HELM_KUBECONTEXT: $CI_PROJECT_PATH:development
-    HELM_NAMESPACE: review
   script:
+    - kubectl config use-context "$CI_PROJECT_PATH:development"
+    - kubectl config set-context --current --namespace review
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "review-$CI_MERGE_REQUEST_IID" || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID" || true
     - helm install "review-$CI_MERGE_REQUEST_IID" ./public/appsemble-*.tgz
       --atomic
       --set "fullnameOverride=review-$CI_MERGE_REQUEST_IID"
@@ -445,7 +446,7 @@ review:
       --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
       --set "ingress.tls.wildcardSecretName=review-$CI_MERGE_REQUEST_IID-tls-wildcard"
       --set "migrateTo=next"
-      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
@@ -471,10 +472,11 @@ stop review:
     action: stop
   variables:
     GIT_STRATEGY: none
-    HELM_KUBECONTEXT: $CI_PROJECT_PATH:development
-    HELM_NAMESPACE: review
   script:
+    - kubectl config use-context "$CI_PROJECT_PATH:development"
+    - kubectl config set-context --current --namespace review
     - helm delete "review-$CI_MERGE_REQUEST_IID"
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=review-$CI_MERGE_REQUEST_IID"
 
 # Deploy the Docker image for main to the staging environment.
 staging:
@@ -491,16 +493,17 @@ staging:
     url: https://staging.appsemble.review
   variables:
     GIT_STRATEGY: none
-    HELM_KUBECONTEXT: $CI_PROJECT_PATH:development
-    HELM_NAMESPACE: staging
   script:
+    - kubectl config use-context "$CI_PROJECT_PATH:development"
+    - kubectl config set-context --current --namespace staging
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
+    - kubectl delete pvc --selector "app.kubernetes.io/instance=staging" || true
     - helm install staging ./public/appsemble-*.tgz
       --atomic
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "global.postgresql.auth.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=main"
@@ -536,18 +539,18 @@ production:
     url: https://appsemble.app
   variables:
     GIT_STRATEGY: none
-    HELM_KUBECONTEXT: $CI_PROJECT_PATH:production
-    HELM_NAMESPACE: appsemble
   script:
+    - kubectl config use-context "$CI_PROJECT_PATH:production"
+    - kubectl config set-context --current --namespace appsemble
     - helm repo add appsemble https://charts.appsemble.com
     - helm upgrade appsemble appsemble/appsemble
       --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
-      --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
-      --set "global.postgresql.postgresqlDatabase=$POSTGRESQL_DATABASE"
-      --set "global.postgresql.postgresqlUsername=$POSTGRESQL_USERNAME"
-      --set "global.postgresql.servicePort=$POSTGRESQL_PORT"
+      --set "global.postgresql.auth.existingSecret=$POSTGRESQL_SECRET"
+      --set "global.postgresql.auth.database=$POSTGRESQL_DATABASE"
+      --set "global.postgresql.auth.username=$POSTGRESQL_USERNAME"
+      --set "global.postgresql.service.ports.postgresql=$POSTGRESQL_PORT"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
