@@ -204,7 +204,7 @@ export class Mailer {
       text,
     };
 
-    if (app?.emailHost && app?.emailPassword) {
+    if (app?.emailHost && app?.emailUser && app?.emailPassword) {
       const smtpPass = decrypt(app.emailPassword, argv.aesSecret);
       const mailer = new Mailer({
         smtpFrom: from,
