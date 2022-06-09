@@ -57,7 +57,6 @@ export function AppRoutes(): ReactElement {
         {!isLoggedIn && !hasCustomRegister && (
           <Route exact path="/:lang/Register" sensitive>
             {hasCustomRegister ? <Page /> : <Register />}
-            <Register />
           </Route>
         )}
         <Route exact path="/:lang/Team-Invite" sensitive>
