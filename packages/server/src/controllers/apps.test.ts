@@ -21,6 +21,7 @@ import {
 } from '../models';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
+import { encrypt } from '../utils/crypto';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization';
 import { useTestDatabase } from '../utils/test/testSchema';
 
@@ -31,7 +32,7 @@ let user: User;
 useTestDatabase('apps');
 
 beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
+  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' });
   const server = await createServer();
   await setTestApp(server);
 });
@@ -2573,6 +2574,83 @@ describe('patchApp', () => {
     `);
   });
 
+  it('should update the email settings', async () => {
+    const app = await App.create(
+      {
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio(user);
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({
+        emailName: 'Test!',
+        emailHost: 'smtp.google.com',
+        emailUser: 'user',
+        emailPassword: 'password',
+        emailPort: 123,
+        emailSecure: false,
+      }),
+    );
+
+    const email = await request.get(`/api/apps/${app.id}/email`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "domain": null,
+        "emailName": "Test!",
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+    expect(email).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "emailHost": "smtp.google.com",
+        "emailPassword": true,
+        "emailPort": 123,
+        "emailSecure": false,
+        "emailUser": "user",
+      }
+    `);
+  });
+
   it('should not update a non-existent app', async () => {
     authorizeStudio();
     const response = await request.patch(
@@ -3746,6 +3824,95 @@ describe('deleteApp', () => {
   });
 });
 
+describe('getAppEmailSettings', () => {
+  it('should return its default settings', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/email`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "emailHost": null,
+        "emailPassword": false,
+        "emailPort": 587,
+        "emailSecure": true,
+        "emailUser": null,
+      }
+    `);
+  });
+
+  it('should obfuscate the email password', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      emailHost: 'smtp.gmail.com',
+      emailUser: 'example',
+      password: encrypt('password', 'key'),
+    });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/email`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "emailHost": "smtp.gmail.com",
+        "emailPassword": false,
+        "emailPort": 587,
+        "emailSecure": true,
+        "emailUser": "example",
+      }
+    `);
+  });
+
+  it('should check for the EditAppSettings permission', async () => {
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      icon: await readFixture('nodejs-logo.png'),
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+      emailHost: 'smtp.gmail.com',
+      emailUser: 'example',
+      password: encrypt('password', 'key'),
+    });
+
+    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+
+    authorizeStudio(user);
+    const response = await request.get(`/api/apps/${app.id}/email`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+});
+
 describe('getAppSnapshots', () => {
   it('should return a list of app snapshots', async () => {
     const app = await App.create({
@@ -4242,9 +4409,7 @@ describe('createAppScreenshot', () => {
     authorizeStudio();
     const createdResponse = await request.post(`/api/apps/${app.id}/screenshots`, form);
 
-    expect(createdResponse).toMatchInlineSnapshot(`
-
-    `);
+    expect(createdResponse).toMatchInlineSnapshot();
   });
 
   it('should not accept files that aren’t images', async () => {

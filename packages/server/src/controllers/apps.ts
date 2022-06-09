@@ -40,6 +40,7 @@ import { argv } from '../utils/argv';
 import { blockVersionToJson, syncBlock } from '../utils/block';
 import { checkAppLock } from '../utils/checkAppLock';
 import { checkRole } from '../utils/checkRole';
+import { encrypt } from '../utils/crypto';
 import { serveIcon } from '../utils/icon';
 import { handleValidatorResult } from '../utils/jsonschema';
 
@@ -442,7 +443,12 @@ export async function patchApp(ctx: Context): Promise<void> {
       body: {
         coreStyle,
         domain,
+        emailHost,
         emailName,
+        emailPassword,
+        emailPort,
+        emailSecure,
+        emailUser,
         googleAnalyticsID,
         icon,
         iconBackground,
@@ -536,6 +542,29 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (emailName !== undefined) {
       result.emailName = emailName;
+    }
+
+    if (emailHost !== undefined) {
+      result.emailHost = emailHost;
+    }
+
+    if (emailPassword !== undefined) {
+      result.emailPassword = (emailPassword as string).length
+        ? encrypt(emailPassword, argv.aesSecret)
+        : null;
+    }
+
+    if (emailUser !== undefined) {
+      result.emailUser = emailUser;
+    }
+
+    if (emailPort !== undefined) {
+      const port = Number(emailPort);
+      result.emailPort = Number.isFinite(port) ? port : 587;
+    }
+
+    if (emailSecure !== undefined) {
+      result.emailSecure = emailSecure;
     }
 
     if (googleAnalyticsID !== undefined) {
@@ -682,6 +711,42 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   await app.update({ path: null });
   await app.destroy();
+}
+
+export async function getAppEmailSettings(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: {
+      include: [
+        'emailHost',
+        'emailUser',
+        'emailPassword',
+        'emailPort',
+        'emailSecure',
+        'id',
+        'OrganizationId',
+      ],
+    },
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
+
+  const { emailHost, emailPassword, emailPort, emailSecure, emailUser } = app;
+
+  ctx.body = {
+    emailHost,
+    emailUser,
+    emailPort,
+    emailSecure,
+    emailPassword: Boolean(emailPassword?.length),
+  };
 }
 
 export async function getAppSnapshots(ctx: Context): Promise<void> {

@@ -12,5 +12,8 @@ export const messages = defineMessages({
   emailPassword: 'Email password',
   emailPort: 'Email port',
   emailSecure: 'Secure',
+  emailUpdateSuccess: 'Successfully updated email settings',
+  emailSettingsError: 'Something went wrong when trying to fetch the email settings',
+  emailLoading: 'Loading email settings…',
   submit: 'Submit',
 });

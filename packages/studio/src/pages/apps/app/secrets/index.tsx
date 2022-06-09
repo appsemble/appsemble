@@ -7,11 +7,14 @@ import {
   SimpleFormField,
   SimpleSubmit,
   Title,
+  useData,
+  useMessages,
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { AsyncDataView } from 'studio/src/components/AsyncDataView';
 import { Collapsible } from 'studio/src/components/Collapsible';
 
 import { useApp } from '..';
@@ -19,9 +22,25 @@ import { messages } from './messages';
 import { OAuth2Secrets } from './OAuth2Secrets';
 import { SamlSecrets } from './SamlSecrets';
 
+interface EmailFormParameters {
+  emailName: string;
+  emailHost: string;
+  emailUser: string;
+  emailPassword: string;
+  emailPort: number;
+  emailSecure: boolean;
+}
+
+const passwordPlaceholder = '***********';
+
 export function SecretsPage(): ReactElement {
   useMeta(messages.title);
   const { app, setApp } = useApp();
+  const push = useMessages();
+  const { formatMessage } = useIntl();
+  const emailSettingsResult = useData<
+    Omit<EmailFormParameters, 'emailPassword'> & { emailPassword: boolean }
+  >(`/api/apps/${app.id}/email`);
 
   const onClickOAuth2Checkbox = useCallback(async () => {
     const formData = new FormData();
@@ -29,6 +48,26 @@ export function SecretsPage(): ReactElement {
     await axios.patch(`/api/apps/${app.id}`, formData);
     setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
   }, [app, setApp]);
+
+  const onSaveEmailSettings = useCallback(
+    async (values: EmailFormParameters) => {
+      const formData = new FormData();
+      for (const [key, value] of Object.entries(values)) {
+        if (key === 'emailPassword' && value === passwordPlaceholder) {
+          continue;
+        }
+
+        formData.set(key, value);
+      }
+      await axios.patch(`/api/apps/${app.id}`, formData);
+      push({ color: 'success', body: formatMessage(messages.emailUpdateSuccess) });
+      emailSettingsResult.setData({
+        ...values,
+        emailPassword: Boolean(values.emailPassword),
+      });
+    },
+    [app, emailSettingsResult, formatMessage, push],
+  );
 
   const onClickCheckbox = useCallback(async () => {
     const formData = new FormData();
@@ -63,52 +102,62 @@ export function SecretsPage(): ReactElement {
         />
       </div>
       <Collapsible collapsed={false} title={<FormattedMessage {...messages.emailSettings} />}>
-        <SimpleForm
-          defaultValues={{
-            emailName: 'Appsemble',
-            emailHost: '',
-            emailPassword: '',
-            emailPort: 587,
-            emailSecure: true,
-          }}
-          // eslint-disable-next-line no-console
-          onSubmit={(values) => console.log(values)}
+        <AsyncDataView
+          errorMessage={<FormattedMessage {...messages.emailSettingsError} />}
+          loadingMessage={<FormattedMessage {...messages.emailLoading} />}
+          result={emailSettingsResult}
         >
-          <SimpleFormField
-            autoComplete="off"
-            label={<FormattedMessage {...messages.emailName} />}
-            name="emailName"
-          />
-          <SimpleFormField
-            autoComplete="off"
-            label={<FormattedMessage {...messages.emailUser} />}
-            name="emailUser"
-          />
-          <SimpleFormField
-            autoComplete="off"
-            label={<FormattedMessage {...messages.emailHost} />}
-            name="emailHost"
-          />
-          <SimpleFormField
-            autoComplete="off"
-            component={PasswordField}
-            label={<FormattedMessage {...messages.emailPassword} />}
-            name="emailPassword"
-          />
-          <SimpleFormField
-            label={<FormattedMessage {...messages.emailPort} />}
-            name="emailPort"
-            type="number"
-          />
-          <SimpleFormField
-            component={CheckboxField}
-            label={<FormattedMessage {...messages.emailSecure} />}
-            name="emailSecure"
-          />
-          <SimpleSubmit>
-            <FormattedMessage {...messages.submit} />
-          </SimpleSubmit>
-        </SimpleForm>
+          {(emailSettings) => (
+            <SimpleForm
+              defaultValues={{
+                ...emailSettings,
+                emailPassword: emailSettings.emailPassword ? passwordPlaceholder : '',
+              }}
+              onSubmit={onSaveEmailSettings}
+            >
+              <SimpleFormField
+                autoComplete="off"
+                label={<FormattedMessage {...messages.emailName} />}
+                name="emailName"
+              />
+              <SimpleFormField
+                autoComplete="off"
+                label={<FormattedMessage {...messages.emailHost} />}
+                name="emailHost"
+                required={Boolean(emailSettings.emailPassword || emailSettings.emailUser)}
+              />
+              <SimpleFormField
+                autoComplete="off"
+                label={<FormattedMessage {...messages.emailUser} />}
+                name="emailUser"
+                required={Boolean(emailSettings.emailPassword || emailSettings.emailHost)}
+              />
+              <SimpleFormField
+                autoComplete="off"
+                component={PasswordField}
+                label={<FormattedMessage {...messages.emailPassword} />}
+                name="emailPassword"
+                required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
+              />
+              <SimpleFormField
+                label={<FormattedMessage {...messages.emailPort} />}
+                name="emailPort"
+                type="number"
+              />
+              <SimpleFormField
+                component={CheckboxField}
+                label={<FormattedMessage {...messages.emailSecure} />}
+                name="emailSecure"
+                required={Boolean(
+                  emailSettings.emailHost || emailSettings.emailUser || emailSettings.emailPassword,
+                )}
+              />
+              <SimpleSubmit>
+                <FormattedMessage {...messages.submit} />
+              </SimpleSubmit>
+            </SimpleForm>
+          )}
+        </AsyncDataView>
       </Collapsible>
       <OAuth2Secrets />
       <SamlSecrets />
