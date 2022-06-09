@@ -16,7 +16,7 @@ interface PublishBlockArguments extends BaseArguments {
 export const command = 'publish <paths...>';
 export const description = 'Publish a block.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('paths', {
       describe: 'The paths to the blocks to publish.',

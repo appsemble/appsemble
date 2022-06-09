@@ -20,7 +20,7 @@ export const command = 'create <id>';
 export const description =
   'Register a new organization. You will be the owner of the new organization.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('id', {
       describe: 'The id for the newly created organization',

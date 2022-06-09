@@ -20,7 +20,7 @@ interface BlockArgs {
   template?: string;
 }
 
-export async function builder(yargs: Argv): Promise<Argv> {
+export async function builder(yargs: Argv): Promise<Argv<any>> {
   const choices = await fs.readdir(templateDir);
 
   return yargs

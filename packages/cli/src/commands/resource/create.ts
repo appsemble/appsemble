@@ -19,7 +19,7 @@ interface CreateResourceArguments extends BaseArguments {
 export const command = 'create <resource-name> <paths...>';
 export const description = 'Create resources based on a specified JSON file or directory.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('resource-name', {
       describe: 'The name of the resource that should be created.',

@@ -29,7 +29,7 @@ interface UpdateAppArguments extends BaseArguments {
 export const command = 'update <paths...>';
 export const description = 'Update an app based on a specified YAML file or directory.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('paths', {
       describe: 'The path to the app to register',
