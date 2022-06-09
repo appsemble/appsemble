@@ -719,17 +719,16 @@ export async function getAppEmailSettings(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: {
-      include: [
-        'emailHost',
-        'emailUser',
-        'emailPassword',
-        'emailPort',
-        'emailSecure',
-        'id',
-        'OrganizationId',
-      ],
-    },
+    attributes: [
+      'emailName',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+      'id',
+      'OrganizationId',
+    ],
   });
 
   if (!app) {
@@ -738,9 +737,10 @@ export async function getAppEmailSettings(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
-  const { emailHost, emailPassword, emailPort, emailSecure, emailUser } = app;
+  const { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser } = app;
 
   ctx.body = {
+    emailName,
     emailHost,
     emailUser,
     emailPort,

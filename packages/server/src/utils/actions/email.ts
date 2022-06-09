@@ -124,6 +124,7 @@ export async function email({
     html,
     text,
     attachments,
+    app,
   });
 
   return data;

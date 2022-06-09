@@ -69,6 +69,11 @@ export interface SendMailOptions {
    * The attachments to include in the email.
    */
   attachments?: MailerSendMailOptions['attachments'];
+
+  /**
+   * An app containing custom SMTP settings.
+   */
+  app?: App;
 }
 
 /**
@@ -212,7 +217,7 @@ export class Mailer {
         smtpPass,
         smtpPort: app.emailPort,
         smtpSecure: app.emailSecure,
-        smtpUser: app.emailHost,
+        smtpUser: app.emailUser,
       });
 
       await mailer.sendEmail(email);
@@ -262,8 +267,24 @@ export class Mailer {
     html,
     text,
     attachments = [],
+    app,
   }: SendMailOptions): Promise<void> {
-    if (!this.transport) {
+    let { transport } = this;
+    if (app?.emailHost && app?.emailUser && app?.emailPassword) {
+      const smtpPass = decrypt(app.emailPassword, argv.aesSecret);
+      const mailer = new Mailer({
+        smtpFrom: from,
+        smtpHost: app.emailHost,
+        smtpPass,
+        smtpPort: app.emailPort,
+        smtpSecure: app.emailSecure,
+        smtpUser: app.emailUser,
+      });
+
+      ({ transport } = mailer);
+    }
+
+    if (!transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
     const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
@@ -289,8 +310,8 @@ export class Mailer {
         )}`,
       );
     }
-    if (this.transport) {
-      await this.transport.sendMail({
+    if (transport) {
+      await transport.sendMail({
         html,
         from: fromHeader,
         subject,

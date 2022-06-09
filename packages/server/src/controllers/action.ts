@@ -146,7 +146,19 @@ function createProxyHandler(useBody: boolean): Middleware {
     } = ctx;
 
     const app = await App.findByPk(appId, {
-      attributes: ['definition', 'domain', 'emailName', 'id', 'OrganizationId', 'path'],
+      attributes: [
+        'definition',
+        'domain',
+        'emailName',
+        'emailHost',
+        'emailUser',
+        'emailPassword',
+        'emailPort',
+        'emailSecure',
+        'id',
+        'OrganizationId',
+        'path',
+      ],
     });
 
     if (!app) {

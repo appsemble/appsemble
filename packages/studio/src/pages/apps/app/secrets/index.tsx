@@ -2,7 +2,6 @@ import {
   AsyncCheckbox,
   CheckboxField,
   Content,
-  PasswordField,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
@@ -117,35 +116,42 @@ export function SecretsPage(): ReactElement {
             >
               <SimpleFormField
                 autoComplete="off"
+                help={<FormattedMessage {...messages.emailNameDescription} />}
                 label={<FormattedMessage {...messages.emailName} />}
                 name="emailName"
               />
               <SimpleFormField
                 autoComplete="off"
+                help={<FormattedMessage {...messages.emailHostDescription} />}
                 label={<FormattedMessage {...messages.emailHost} />}
                 name="emailHost"
                 required={Boolean(emailSettings.emailPassword || emailSettings.emailUser)}
               />
               <SimpleFormField
                 autoComplete="off"
+                help={<FormattedMessage {...messages.emailUserDescription} />}
                 label={<FormattedMessage {...messages.emailUser} />}
                 name="emailUser"
                 required={Boolean(emailSettings.emailPassword || emailSettings.emailHost)}
               />
               <SimpleFormField
                 autoComplete="off"
-                component={PasswordField}
+                help={<FormattedMessage {...messages.emailPasswordDescription} />}
+                icon="unlock"
                 label={<FormattedMessage {...messages.emailPassword} />}
                 name="emailPassword"
                 required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
+                type="password"
               />
               <SimpleFormField
+                help={<FormattedMessage {...messages.emailPortDescription} />}
                 label={<FormattedMessage {...messages.emailPort} />}
                 name="emailPort"
                 type="number"
               />
               <SimpleFormField
                 component={CheckboxField}
+                help={<FormattedMessage {...messages.emailSecureDescription} />}
                 label={<FormattedMessage {...messages.emailSecure} />}
                 name="emailSecure"
                 required={Boolean(
