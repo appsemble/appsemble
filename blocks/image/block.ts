@@ -3,7 +3,7 @@ import { Remapper } from '@appsemble/sdk';
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * The URL of the image.
+     * The Url of the image.
      *
      * Note that this is ignored if the onImage event listener is set.
      */
