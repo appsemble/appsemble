@@ -1,7 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { roles } from '.';
-
 export const ResourceViewDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   minProperties: 1,
@@ -12,7 +10,13 @@ export const ResourceViewDefinition: OpenAPIV3.NonArraySchemaObject = {
     additionalProperties: false,
     description: 'A custom view for a resource.',
     properties: {
-      roles,
+      roles: {
+        type: 'array',
+        description: 'The list of roles that are allowed to use this view.',
+        items: {
+          type: 'string',
+        },
+      },
       remap: {
         $ref: '#/components/schemas/RemapperDefinition',
         description: 'The modified view.',

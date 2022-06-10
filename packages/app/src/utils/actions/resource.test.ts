@@ -59,7 +59,7 @@ describe('resource.get', () => {
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/1`);
-    expect(request.params).toStrictEqual({ $filter: "'type eq 'dog'", view: 'dogs' });
+    expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
   });
@@ -100,7 +100,7 @@ describe('resource.query', () => {
     const result = await action({ id: 1 });
     expect(request.method).toBe('get');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
-    expect(request.params).toStrictEqual({ $filter: "'type eq 'dog'", view: 'dogs' });
+    expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'dog' });
   });
