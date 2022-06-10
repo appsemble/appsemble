@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "blocks/list"
+    "directory": "blocks/image"
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
