@@ -219,7 +219,8 @@ Supported properties:
       items: {
         type: 'integer',
       },
-      description: 'Pick and return a random integer between the provided lowest and highest values.',
+      description:
+        'Pick and return a random integer between the provided lowest and highest values.',
     },
     'random.float': {
       type: 'array',
@@ -228,7 +229,8 @@ Supported properties:
       items: {
         type: 'number',
       },
-      description: 'Pick and return a random number between the provided lowest and highest values.',
+      description:
+        'Pick and return a random number between the provided lowest and highest values.',
     },
     'random.string': {
       type: 'object',
