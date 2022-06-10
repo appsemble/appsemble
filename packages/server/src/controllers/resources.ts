@@ -115,7 +115,7 @@ async function verifyPermission(
     return;
   }
 
-  const { view } = ctx.queryParams;
+  const view = ctx.queryParams?.view;
   const roles =
     (view
       ? resourceDefinition.views[view].roles
@@ -263,7 +263,7 @@ export async function queryResources(ctx: Context): Promise<void> {
     }),
   });
 
-  const { view } = ctx.queryParams;
+  const view = ctx.queryParams?.view;
   const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
   const { order, query } = generateQuery(ctx);
@@ -333,7 +333,7 @@ export async function countResources(ctx: Context): Promise<void> {
     }),
   });
 
-  const { view } = ctx.queryParams;
+  const view = ctx.queryParams?.view;
   getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
   const { query } = generateQuery(ctx);
@@ -375,7 +375,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
       ],
     }),
   });
-  const { view } = ctx.queryParams;
+  const view = ctx.queryParams?.view;
   const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'get');
 
