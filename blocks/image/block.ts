@@ -10,7 +10,7 @@ declare module '@appsemble/sdk' {
     url: Remapper;
 
     /**
-     * The ALT text of the image.
+     * The alt text of the image.
      *
      */
     alt?: Remapper;
