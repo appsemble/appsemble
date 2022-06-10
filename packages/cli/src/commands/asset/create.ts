@@ -22,7 +22,7 @@ interface CreateAssetArguments extends BaseArguments {
 export const command = 'create <paths...>';
 export const description = 'Create assets for an existing app.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
 
     .positional('paths', {

@@ -20,7 +20,7 @@ export const command = 'update <resource-name> <paths...>';
 export const description =
   'Update resources based on a specified JSON file or directory. Entries without the property `id` will be skipped.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('resource-name', {
       describe: 'The name of the resource that should be created.',

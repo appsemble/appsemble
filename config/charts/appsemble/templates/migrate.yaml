@@ -25,31 +25,5 @@ spec:
             - {{ . }}
             {{ end }}
           env:
-            - name: DATABASE_HOST
-              value: {{ .Values.postgresql.fullnameOverride }}
-            {{ if .Values.postgresSSL }}
-            - name: DATABASE_SSL
-              value: 'true'
-            {{ end }}
-            - name: DATABASE_PORT
-              value: {{ .Values.global.postgresql.servicePort | quote }}
-            - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.postgresqlDatabase }}
-            - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.postgresqlUsername }}
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-postgres-password
-            {{- with .Values.sentrySecret }}
-            - name: SENTRY_DSN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ . | quote }}
-                  key: dsn
-            {{- end }}
-            {{- with .Values.sentryEnvironment }}
-            - name: SENTRY_ENVIRONMENT
-              value: {{ . | quote }}
-            {{- end }}
+{{ include "appsemble.postgres" . | indent 12 }}
+{{ include "appsemble.sentry" . | indent 12 }}

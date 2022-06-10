@@ -366,6 +366,21 @@ export interface Remappers {
   'object.assign': Record<string, Remapper>;
 
   /**
+   * Remove properties from an existing object based on the given the object keys.
+   *
+   * Nested properties can be removed using arrays of keys.
+   *
+   * @example
+   * ```yaml
+   * object.omit:
+   *   - foo   # Removes the property foo
+   *   - - bar # Removes the property baz inside of bar
+   *     - baz
+   * ```
+   */
+  'object.omit': (string[] | string)[];
+
+  /**
    * Use a static value.
    */
   static: any;
