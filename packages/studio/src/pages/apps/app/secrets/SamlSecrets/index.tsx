@@ -47,6 +47,13 @@ export function SamlSecrets(): ReactElement {
     [app, modal, setSecrets],
   );
 
+  const onDeleted = useCallback(
+    (secret: AppSamlSecret) => {
+      setSecrets((secrets) => secrets.filter((s) => s.id !== secret.id));
+    },
+    [setSecrets],
+  );
+
   return (
     <div>
       <HeaderControl
@@ -68,7 +75,12 @@ export function SamlSecrets(): ReactElement {
         {(secrets) => (
           <ul>
             {secrets.map((secret) => (
-              <SamlSecretItem key={secret.id} onUpdated={onUpdated} secret={secret} />
+              <SamlSecretItem
+                key={secret.id}
+                onDeleted={onDeleted}
+                onUpdated={onUpdated}
+                secret={secret}
+              />
             ))}
           </ul>
         )}

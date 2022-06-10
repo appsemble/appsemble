@@ -110,3 +110,28 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
     ssoUrl,
   });
 }
+export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, appSamlSecretId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+    include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  checkAppLock(ctx, app);
+  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  const [secret] = app.AppSamlSecrets;
+
+  if (!secret) {
+    throw notFound('SAML secret not found');
+  }
+
+  await secret.destroy();
+}

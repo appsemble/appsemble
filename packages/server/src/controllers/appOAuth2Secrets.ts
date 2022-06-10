@@ -109,6 +109,30 @@ export async function updateAppOAuth2Secret(ctx: Context): Promise<void> {
   ctx.body = secret;
 }
 
+export async function deleteAppOAuth2Secret(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, appOAuth2SecretId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+    include: [{ model: AppOAuth2Secret, required: false, where: { id: appOAuth2SecretId } }],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  if (!app.AppOAuth2Secrets?.length) {
+    throw notFound('OAuth2 secret not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
+
+  const [secret] = app.AppOAuth2Secrets;
+  await secret.destroy();
+}
+
 export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   const {
     headers,

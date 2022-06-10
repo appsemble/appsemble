@@ -27,4 +27,10 @@ export const messages = defineMessages({
   badUrl: 'This must be a valid URL',
   close: 'Close',
   save: 'Save secret',
+  deleteWarningTitle: 'Deleting secret',
+  deleteWarning: 'Are you sure you want to delete this secret? This action cannot be reverted.',
+  cancel: 'Cancel',
+  delete: 'Delete secret',
+  deleteSuccess: 'Successfully deleted secret {name}',
+  deleteButton: 'Delete secret',
 });

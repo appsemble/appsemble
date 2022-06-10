@@ -80,6 +80,7 @@ export function AssetsPage(): ReactElement {
     ),
     cancelLabel: <FormattedMessage {...messages.cancel} />,
     confirmLabel: <FormattedMessage {...messages.delete} />,
+    color: 'danger',
     async action() {
       await Promise.all(
         selectedAssets.map((asset) => axios.delete(`/api/apps/${app.id}/assets/${asset}`)),
