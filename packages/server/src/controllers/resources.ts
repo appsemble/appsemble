@@ -116,13 +116,13 @@ async function verifyPermission(
   }
 
   const { view } = ctx.queryParams;
-  let roles: string[] = [];
-  roles = view
-    ? resourceDefinition.views[view].roles
-    : resourceDefinition[action]?.roles ?? resourceDefinition.roles;
+  const roles =
+    (view
+      ? resourceDefinition.views[view].roles
+      : resourceDefinition[action]?.roles ?? resourceDefinition.roles) || [];
 
   if ((!roles || !roles.length) && app.definition.roles?.length) {
-    ({ roles } = app.definition);
+    roles.push(...app.definition.roles);
   }
 
   const functionalRoles = roles.filter((r) => specialRoles.has(r));
@@ -333,7 +333,7 @@ export async function countResources(ctx: Context): Promise<void> {
     }),
   });
 
-  const [view] = [].concat(ctx.query.view);
+  const { view } = ctx.queryParams;
   getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
   const { query } = generateQuery(ctx);
@@ -375,7 +375,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
       ],
     }),
   });
-  const [view] = [].concat(ctx.query.view);
+  const { view } = ctx.queryParams;
   const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'get');
 

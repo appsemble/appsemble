@@ -119,9 +119,9 @@ person:
 
 Aside from including the query string parameters in the URL manually, it is also possible to define
 a `query` object in a resource definition. This allows for the URL to be easier to read. Note that
-if `query` is defined in the (`resource` action)[], the `query` [remapper](/docs/reference/remapper)
-as defined in the action will take precedence over the one defined as the default for the resource’s
-method.
+if `query` is defined in the [`resource` action](/docs/reference/app#-resource-definition-query),
+the `query` [remapper](/docs/reference/remapper) as defined in the action will take precedence over
+the one defined as the default for the resource’s method.
 
 Below is an example of what the query object looks like when in use.
 
@@ -152,10 +152,10 @@ pages:
 
 ## Views
 
-When using roles for resources to secure the access to a resource it is usually to protect
-sensitive data that you don’t want to expose to everyone, such as names or email addresses.
-Sometimes it is still desirable to know about parts of a resource despite of this sensitive data.
-For this purpose resource _views_ can be used.
+When using roles for resources to secure the access to a resource it is usually to protect sensitive
+data that you don’t want to expose to everyone, such as names or email addresses. Sometimes it is
+still desirable to know about parts of a resource despite of this sensitive data. For this purpose
+resource _views_ can be used.
 
 Views are alternate ways to display resources, using separate sets of roles. The output of these API
 calls can then be modified using [remappers](/docs/reference/remapper).
@@ -185,6 +185,8 @@ resources:
       type: object
       properties:
         name:
+          type: string
+        email:
           type: string
         table:
           type: string

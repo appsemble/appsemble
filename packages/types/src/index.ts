@@ -562,6 +562,18 @@ export interface ResourceHistoryDefinition {
   data: boolean;
 }
 
+export interface ResourceView {
+  /**
+   * The roles required to use this view.
+   */
+  roles: string[];
+
+  /**
+   * The remappers used to transform the output.
+   */
+  remap: Remapper;
+}
+
 export interface ResourceDefinition {
   /**
    * The default list of roles used for permission checks for each action.
@@ -625,20 +637,7 @@ export interface ResourceDefinition {
   /**
    * The alternate views of this resource.
    */
-  views?: Record<
-    string,
-    {
-      /**
-       * The roles required to use this view.
-       */
-      roles: string[];
-
-      /**
-       * The remappers used to transform the output.
-       */
-      remap: Remapper;
-    }
-  >;
+  views?: Record<string, ResourceView>;
 
   /**
    * The references this resources has to other resources.
