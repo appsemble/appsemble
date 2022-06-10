@@ -40,11 +40,7 @@ affinity: {}
 
 smtpSecret: smtp
 
-sentryAllowedDomains: null
-
-sentrySecret: null
-
-sentryEnvironment: null
+sentry: null
 
 oauthSecret: null
 
@@ -63,16 +59,18 @@ proxy: false
 
 global:
   postgresql:
-    postgresqlDatabase: appsemble
-    postgresqlUsername: appsemble
-    servicePort: 5432
-    existingSecret: appsemble-postgresql-secret
+    auth:
+      existingSecret: appsemble-postgresql-secret
+      username: appsemble
+      database: appsemble
+      secretKeys:
+        userPasswordKey: password
+    service:
+      ports:
+        postgresql: 5432
 
 postgresql:
   fullnameOverride: appsemble-postgresql
-
-  persistence:
-    enabled: false
 
 postgresSSL: false
 

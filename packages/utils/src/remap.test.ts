@@ -492,6 +492,32 @@ describe('object.from', () => {
   });
 });
 
+describe('object.omit', () => {
+  runTests({
+    'omit properties from existing object': {
+      input: { foo: 'foo', bar: 'bar', baz: 'baz' },
+      mappers: {
+        'object.omit': ['bar'],
+      },
+      expected: { foo: 'foo', baz: 'baz' },
+    },
+    'delete nested properties': {
+      input: { foo: 1, bar: 'bar', baz: { test: 'foo', test2: 10 } },
+      mappers: {
+        'object.omit': ['bar', ['baz', 'test']],
+      },
+      expected: { foo: 1, baz: { test2: 10 } },
+    },
+    'handle non existing properties': {
+      input: { foo: 1, bar: 'bar', baz: { test: 'foo', test2: 10 } },
+      mappers: {
+        'object.omit': ['bar', ['baz', '5']],
+      },
+      expected: { foo: 1, baz: { test: 'foo', test2: 10 } },
+    },
+  });
+});
+
 describe('object.assign', () => {
   runTests({
     'assign to an object from remappers': {

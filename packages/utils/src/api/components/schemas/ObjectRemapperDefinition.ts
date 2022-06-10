@@ -189,6 +189,34 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
         $ref: '#/components/schemas/RemapperDefinition',
       },
     },
+    'object.omit': {
+      description: `Remove properties from an existing object based on the given the object keys.
+
+Nested properties can be removed using arrays of keys.
+
+For example:
+\`\`\`yaml
+object.omit:
+  - foo   # Removes the property foo
+  - - bar # Removes the property baz inside of bar
+    - baz
+\`\`\`
+`,
+      type: 'array',
+      items: {
+        minItems: 1,
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'array',
+            minItems: 2,
+            items: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+    },
     page: {
       enum: ['data', 'url'],
       description: `Get page metadata.

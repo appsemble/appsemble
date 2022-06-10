@@ -20,7 +20,7 @@ export const command = 'update <id>';
 export const description =
   'Update an existing organization. You must be an owner of the organization.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('id', {
       describe: 'The ID of the organization',

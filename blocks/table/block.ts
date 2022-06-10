@@ -52,6 +52,13 @@ export interface Button extends BaseField {
     color?: BulmaColor;
 
     /**
+     * Whether the button should be disabled.
+     *
+     * If the resulting remapper value is truthy, the button will be disabled.
+     */
+    disabled?: Remapper;
+
+    /**
      * The size of the button.
      *
      * @default "normal"

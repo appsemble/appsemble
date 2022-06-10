@@ -6,7 +6,7 @@ import { BaseArguments } from '../types';
 export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',

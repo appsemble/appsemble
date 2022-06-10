@@ -18,7 +18,7 @@ interface InviteTeamArguments extends BaseArguments {
 export const command = 'update <user> <role>';
 export const description = 'Update an existing team member.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('id', {
       describe: 'The ID of the team.',

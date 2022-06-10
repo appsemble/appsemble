@@ -23,23 +23,7 @@ spec:
             - cleanup
             - -vv
           env:
-            - name: DATABASE_HOST
-              value: {{ .Values.postgresql.fullnameOverride }}
-            {{ if .Values.postgresSSL }}
-            - name: DATABASE_SSL
-              value: 'true'
-            {{ end }}
-            - name: DATABASE_PORT
-              value: {{ .Values.global.postgresql.servicePort | quote }}
-            - name: DATABASE_NAME
-              value: {{ .Values.global.postgresql.postgresqlDatabase }}
-            - name: DATABASE_USER
-              value: {{ .Values.global.postgresql.postgresqlUsername }}
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.global.postgresql.existingSecret }}
-                  key: postgresql-postgres-password
+{{ include "appsemble.postgres" . | indent 12 }}
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
             - name: SERVICE_NAME

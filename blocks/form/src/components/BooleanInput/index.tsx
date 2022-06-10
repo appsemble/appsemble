@@ -21,7 +21,7 @@ export function BooleanInput({
   value,
 }: BooleanInputProps): VNode {
   const { utils } = useBlock();
-  const { label, labelText, readOnly, tag } = field;
+  const { color, label, labelText, readOnly, size, switch: switchType, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
   const required = isRequired(field);
@@ -29,6 +29,7 @@ export function BooleanInput({
   return (
     <CheckboxField
       className={classNames('appsemble-boolean', { 'is-danger': error })}
+      color={color}
       disabled={disabled}
       error={dirty && error}
       label={checkboxLabel as string}
@@ -37,6 +38,9 @@ export function BooleanInput({
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       readOnly={readOnly}
       required={required}
+      size={size}
+      switch={Boolean(switchType)}
+      switchOptions={switchType}
       tag={utils.remap(tag, value) as string}
       title={(utils.remap(labelText, value) as string) ?? (checkboxLabel as string) ?? null}
       value={Boolean(value)}

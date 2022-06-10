@@ -17,7 +17,7 @@ interface UpdateTeamArguments extends BaseArguments {
 export const command = 'update';
 export const description = 'Update an existing team for an app.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('id', {
       describe: 'The ID of the team to update.',

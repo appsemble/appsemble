@@ -6,7 +6,7 @@ import { BaseArguments } from '../types';
 export const command = 'cleanup-resources';
 export const description = 'Deletes all expired resources from the database.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',
