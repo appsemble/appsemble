@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-export const roles: OpenAPIV3.ArraySchemaObject = {
+const roles: OpenAPIV3.ArraySchemaObject = {
   type: 'array',
   description: `The list of roles that are allowed to use this action.
 
