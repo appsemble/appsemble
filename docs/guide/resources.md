@@ -152,10 +152,10 @@ pages:
 
 ## Views
 
-When using roles for resources to secure the access to a resource it is usually to protect some sort
-of sensitive data that you don’t want to expose to everyone, such as names or email addresses.
+When using roles for resources to secure the access to a resource it is usually to protect
+sensitive data that you don’t want to expose to everyone, such as names or email addresses.
 Sometimes it is still desirable to know about parts of a resource despite of this sensitive data.
-For this resource _views_ can be used.
+For this purpose resource _views_ can be used.
 
 Views are alternate ways to display resources, using separate sets of roles. The output of these API
 calls can then be modified using [remappers](/docs/reference/remapper).
@@ -165,8 +165,8 @@ the name of the person who placed the reservation, as well as the table that has
 the creator of the resource is allowed to view their resource, otherwise personal information might
 get leaked.
 
-When making reservations however it is still helpful to know which tables are already reserved. To
-do so views can be used. A view has a set of roles, as well as a
+When making reservations however, it is still helpful to know which tables are already reserved. To
+accomplish this, views can be used. A view has a set of roles, as well as a
 [remapper](/docs/reference/remapper) that’s used to transform the output.
 
 In this case only the resource ID, table name, and the creation date should be included. The

@@ -53,7 +53,7 @@ describe('resource.get', () => {
         type: 'resource.get',
         resource: 'pet',
         view: 'dogs',
-        query: { static: { $filter: 'type eq dog' } },
+        query: { static: { $filter: "type eq 'dog'" } },
       },
     });
     const result = await action({ id: 1 });

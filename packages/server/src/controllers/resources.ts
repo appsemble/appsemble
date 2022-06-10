@@ -115,7 +115,7 @@ async function verifyPermission(
     return;
   }
 
-  const [view] = [].concat(ctx.query.view);
+  const { view } = ctx.queryParams;
   let roles: string[] = [];
   roles = view
     ? resourceDefinition.views[view].roles
@@ -263,7 +263,7 @@ export async function queryResources(ctx: Context): Promise<void> {
     }),
   });
 
-  const [view] = [].concat(ctx.query.view);
+  const { view } = ctx.queryParams;
   const resourceDefinition = getResourceDefinition(app, resourceType, view);
   const userQuery = await verifyPermission(ctx, app, resourceType, 'query');
   const { order, query } = generateQuery(ctx);
