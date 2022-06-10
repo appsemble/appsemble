@@ -78,6 +78,7 @@ export * from './ResourceSubscription';
 export * from './ResourceSubscriptionUnsubscribeActionDefinition';
 export * from './Resource';
 export * from './ResourceUpdateActionDefinition';
+export * from './ResourceViewDefinition';
 export * from './SecurityDefaultDefinition';
 export * from './SecurityDefinition';
 export * from './SecurityRoleDefinition';

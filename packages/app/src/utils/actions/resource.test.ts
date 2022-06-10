@@ -41,13 +41,35 @@ describe('resource.get', () => {
     expect(request.data).toBeUndefined();
     expect(result).toStrictEqual({ type: 'cat' });
   });
+
+  it('should make a GET request with views', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'dog' }, {}];
+    });
+    const action = createTestAction({
+      app,
+      definition: {
+        type: 'resource.get',
+        resource: 'pet',
+        view: 'dogs',
+        query: { static: { $filter: "type eq 'dog'" } },
+      },
+    });
+    const result = await action({ id: 1 });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/1`);
+    expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual({ type: 'dog' });
+  });
 });
 
 describe('resource.query', () => {
   it('should make a GET request', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
-      return [200, [{ type: 'dog' }], {}];
+      return [200, [{ type: 'cat' }], {}];
     });
     const action = createTestAction({
       app,
@@ -58,7 +80,29 @@ describe('resource.query', () => {
     expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
     expect(request.params).toBeUndefined();
     expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual([{ type: 'dog' }]);
+    expect(result).toStrictEqual([{ type: 'cat' }]);
+  });
+
+  it('should make a GET request with views', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { type: 'dog' }, {}];
+    });
+    const action = createTestAction({
+      app,
+      definition: {
+        type: 'resource.query',
+        resource: 'pet',
+        view: 'dogs',
+        query: { static: { $filter: "type eq 'dog'" } },
+      },
+    });
+    const result = await action({ id: 1 });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet`);
+    expect(request.params).toStrictEqual({ $filter: "type eq 'dog'", view: 'dogs' });
+    expect(request.data).toBeUndefined();
+    expect(result).toStrictEqual({ type: 'dog' });
   });
 });
 

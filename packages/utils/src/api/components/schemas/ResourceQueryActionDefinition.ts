@@ -16,6 +16,10 @@ export const ResourceQueryActionDefinition = extendJSONSchema(
         type: 'string',
         description: 'The type of the resource to query.',
       },
+      view: {
+        type: 'string',
+        description: 'The view to use for the resource.',
+      },
     },
   },
   ['url'],

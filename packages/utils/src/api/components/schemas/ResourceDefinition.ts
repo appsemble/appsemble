@@ -222,5 +222,8 @@ name of the resource and how it should behave.
         },
       },
     },
+    views: {
+      $ref: '#/components/schemas/ResourceViewDefinition',
+    },
   },
 };
