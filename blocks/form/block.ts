@@ -55,6 +55,12 @@ interface FormRequirement extends BaseRequirement {
   isValid: string[];
 
   /**
+   * Whether the field should always be validated
+   * even if the previous value was valid and hasn’t changed.
+   */
+  alwaysValidate?: boolean;
+
+  /**
    * The name of the action to trigger when the requirement is checked.
    *
    * @format action
