@@ -1,7 +1,7 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, ActionType } from '@appsemble/types';
 import { defaultLocale, has, remap } from '@appsemble/utils';
-import { addBreadcrumb, Severity } from '@sentry/browser';
+import { addBreadcrumb } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { SetRequired } from 'type-fest';
 
@@ -45,9 +45,9 @@ export function createAction<T extends ActionDefinition['type']>({
     ? extraCreators[type]
     : actionCreators.noop;
 
+  // @ts-expect-error TS2345
   const [dispatch, properties] = actionCreator({
     ...params,
-    // @ts-expect-error TS2322
     definition,
     extraCreators,
     remap: localRemap,
@@ -97,7 +97,7 @@ export function createAction<T extends ActionDefinition['type']>({
       addBreadcrumb({
         category: 'appsemble.action',
         data: { failed: type },
-        level: Severity.Warning,
+        level: 'warning',
       });
       if (onError) {
         return onError(error, context);

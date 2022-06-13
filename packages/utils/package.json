@@ -35,7 +35,7 @@
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "ics": "^2.0.0",
-    "intl-messageformat": "^9.0.0",
+    "intl-messageformat": "^10.0.0",
     "jsonschema": "^1.0.0",
     "langmap": "^0.0.16",
     "language-tags": "^1.0.0",
