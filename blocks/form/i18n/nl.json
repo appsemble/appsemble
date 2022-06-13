@@ -1,4 +1,5 @@
 {
+  "confirmLabel": "Bevestigen",
   "fieldErrorLabel": "Een van de vereisten van dit veld is ongeldig.",
   "formRequirementError": "Een van de vereisten van dit formulier is ongeldig.",
   "invalidLabel": "Deze waarde is ongeldig",

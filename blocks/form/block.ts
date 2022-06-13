@@ -284,6 +284,13 @@ interface AbstractField {
  */
 export interface DateTimeField extends AbstractField {
   /**
+   * Whether the confirm button should be shown
+   *
+   * @default false
+   */
+  confirm?: boolean;
+
+  /**
    * The type of the field.
    */
   type: 'date-time';
@@ -320,6 +327,13 @@ export interface DateTimeField extends AbstractField {
  * A date/time picker that results in an exact date and time.
  */
 export interface DateField extends AbstractField {
+  /**
+   * Whether the confirm button should be shown
+   *
+   * @default false
+   */
+  confirm?: boolean;
+
   /**
    * The type of the field.
    */
@@ -882,6 +896,7 @@ declare module '@appsemble/sdk' {
   }
 
   interface Messages {
+    confirmLabel: never;
     submitLabel: never;
     submitError: never;
     optionalLabel: never;
