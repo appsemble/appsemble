@@ -2013,6 +2013,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "action",
             "type": "string",
           },
+          "alwaysValidate": {
+            "description": "Whether the field should always be validated even if the previous value was valid and hasn’t changed.",
+            "type": "boolean",
+          },
           "errorMessage": {
             "description": "The error message that is displayed when the requirement is not met.",
             "format": "remapper",
