@@ -1,4 +1,5 @@
 {
+  "confirmLabel": "Confirm",
   "fieldErrorLabel": "One of the requirements of this field is invalid.",
   "formRequirementError": "One of the requirements of this form is invalid.",
   "invalidLabel": "This value is invalid",

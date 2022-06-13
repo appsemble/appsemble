@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
+import { DateTimeField } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
@@ -25,6 +25,7 @@ export function DateInput({
   const { label, name, placeholder, readOnly, tag } = field;
 
   const dateLabel = utils.remap(label, value) as string;
+  const confirmLabel = utils.formatMessage('confirmLabel');
 
   const required = isRequired(field);
 
@@ -41,7 +42,9 @@ export function DateInput({
   const locale = useLocale(field);
 
   return (
-    <DateTimeComponent
+    <DateTimeField
+      confirm={field.confirm}
+      confirmLabel={confirmLabel}
       disable={disable}
       disabled={disabled}
       error={dirty && error}
