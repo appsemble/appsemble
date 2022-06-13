@@ -1340,6 +1340,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "confirmLabel": {
+      "description": undefined,
+    },
     "fieldErrorLabel": {
       "description": undefined,
     },
@@ -1590,6 +1593,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
+          "confirm": {
+            "default": false,
+            "description": "Whether the confirm button should be shown",
+            "type": "boolean",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1656,6 +1664,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
+          "confirm": {
+            "default": false,
+            "description": "Whether the confirm button should be shown",
+            "type": "boolean",
+          },
           "disableWeekends": {
             "description": "Whether weekends should be disabled.",
             "type": "boolean",
