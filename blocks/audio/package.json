@@ -2,7 +2,7 @@
   "name": "@appsemble/audio",
   "version": "0.20.7",
   "private": true,
-  "description": "Render a audio player",
+  "description": "A block that renders audio and emits it using url or events API.",
   "homepage": "https://appsemble.app",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
