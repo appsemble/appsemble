@@ -60,6 +60,7 @@ declare module 'koas-parameters' {
     $select: string;
     $top: number;
     code: string;
+    view: string;
   }
 }
 

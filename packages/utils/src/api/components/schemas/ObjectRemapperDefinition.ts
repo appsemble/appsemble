@@ -189,6 +189,34 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
         $ref: '#/components/schemas/RemapperDefinition',
       },
     },
+    'object.omit': {
+      description: `Remove properties from an existing object based on the given the object keys.
+
+Nested properties can be removed using arrays of keys.
+
+For example:
+\`\`\`yaml
+object.omit:
+  - foo   # Removes the property foo
+  - - bar # Removes the property baz inside of bar
+    - baz
+\`\`\`
+`,
+      type: 'array',
+      items: {
+        minItems: 1,
+        anyOf: [
+          { type: 'string' },
+          {
+            type: 'array',
+            minItems: 2,
+            items: {
+              type: 'string',
+            },
+          },
+        ],
+      },
+    },
     page: {
       enum: ['data', 'url'],
       description: `Get page metadata.
@@ -211,6 +239,37 @@ Supported properties:
       enum: [null],
       description:
         'Pick and return a random entry from an array. If the input is not an array, the input is returned as-is.',
+    },
+    'random.integer': {
+      type: 'array',
+      maxItems: 2,
+      minItems: 2,
+      items: {
+        type: 'integer',
+      },
+      description:
+        'Pick and return a random integer between the provided lowest and highest values.',
+    },
+    'random.float': {
+      type: 'array',
+      maxItems: 2,
+      minItems: 2,
+      items: {
+        type: 'number',
+      },
+      description:
+        'Pick and return a random number between the provided lowest and highest values.',
+    },
+    'random.string': {
+      type: 'object',
+      required: ['choice', 'length'],
+      additionalProperties: false,
+      properties: {
+        choice: { type: 'string', minLength: 1 },
+        length: { type: 'integer', minimum: 1 },
+      },
+      description:
+        'Pick and return a random string from a given length using characters from a given input string.',
     },
     root: {
       enum: [null],

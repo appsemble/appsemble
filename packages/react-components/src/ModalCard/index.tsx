@@ -54,6 +54,11 @@ interface ModalCardProps<T extends ElementType> {
   cardClassName?: string;
 
   /**
+   * The CSS class applied to the card.
+   */
+  wrapperClassName?: string;
+
+  /**
    * The CSS class applied to the body.
    */
   className?: string;
@@ -69,6 +74,7 @@ interface ModalCardProps<T extends ElementType> {
  */
 export function ModalCard<T extends ElementType = 'div'>({
   cardClassName,
+  wrapperClassName,
   children = null,
   className,
   closable = true,
@@ -100,7 +106,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${openClass}`}>
+    <div className={classNames(`is-active modal ${styles.root} ${openClass}`, wrapperClassName)}>
       <div
         className="modal-background"
         onClick={closable ? onClose : null}

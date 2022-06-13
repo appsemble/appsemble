@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.20.7",
+  "version": "0.20.8",
   "private": true,
   "description": "Reusable React components for internal use",
   "keywords": [
@@ -25,10 +25,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.7",
-    "@appsemble/types": "0.20.7",
-    "@appsemble/utils": "0.20.7",
-    "@appsemble/web-utils": "0.20.7",
+    "@appsemble/sdk": "0.20.8",
+    "@appsemble/types": "0.20.8",
+    "@appsemble/utils": "0.20.8",
+    "@appsemble/web-utils": "0.20.8",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^6.0.0",

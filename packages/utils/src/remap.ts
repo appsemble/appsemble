@@ -255,6 +255,25 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(mappers, (mapper) => remap(mapper, input, context)),
   }),
 
+  'object.omit'(keys, input: Record<string, any>) {
+    const result = { ...input };
+    for (const key of keys) {
+      if (Array.isArray(key)) {
+        key.reduce((acc, k, index) => {
+          if (index === key.length - 1) {
+            delete acc[k];
+          } else {
+            return acc?.[k];
+          }
+          return acc;
+        }, result);
+      } else {
+        delete result[key];
+      }
+    }
+    return result;
+  },
+
   'array.map': (mapper, input: any[], context) =>
     input?.map((item, index) =>
       remap(mapper, item, {
@@ -309,6 +328,27 @@ const mapperImplementations: MapperImplementations = {
 
   'random.choice': (args, input: any[]) =>
     Array.isArray(input) ? input[Math.floor(Math.random() * input.length)] : input,
+
+  'random.integer'(args) {
+    const min = Math.min(...args);
+    const max = Math.max(...args);
+    return Math.floor(Math.random() * (max - min) + min);
+  },
+
+  'random.float'(args) {
+    const min = Math.min(...args);
+    const max = Math.max(...args);
+    return Math.random() * (max - min) + min;
+  },
+
+  'random.string'(args) {
+    const result: string[] = [];
+    const characters = [...new Set(args.choice.split(''))];
+    for (let i = 0; i <= args.length; i += 1) {
+      result.push(characters[Math.floor(Math.random() * characters.length)]);
+    }
+    return result.join('');
+  },
 
   root: (args, input, context) => context.root,
 

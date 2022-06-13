@@ -492,6 +492,32 @@ describe('object.from', () => {
   });
 });
 
+describe('object.omit', () => {
+  runTests({
+    'omit properties from existing object': {
+      input: { foo: 'foo', bar: 'bar', baz: 'baz' },
+      mappers: {
+        'object.omit': ['bar'],
+      },
+      expected: { foo: 'foo', baz: 'baz' },
+    },
+    'delete nested properties': {
+      input: { foo: 1, bar: 'bar', baz: { test: 'foo', test2: 10 } },
+      mappers: {
+        'object.omit': ['bar', ['baz', 'test']],
+      },
+      expected: { foo: 1, baz: { test2: 10 } },
+    },
+    'handle non existing properties': {
+      input: { foo: 1, bar: 'bar', baz: { test: 'foo', test2: 10 } },
+      mappers: {
+        'object.omit': ['bar', ['baz', '5']],
+      },
+      expected: { foo: 1, baz: { test: 'foo', test2: 10 } },
+    },
+  });
+});
+
 describe('object.assign', () => {
   runTests({
     'assign to an object from remappers': {
@@ -688,6 +714,62 @@ describe('random.choice', () => {
       input: { input: [1, 2, 3, 4] },
       mappers: [{ 'random.choice': null }],
       expected: { input: [1, 2, 3, 4] },
+    },
+  });
+});
+
+describe('random.integer', () => {
+  beforeEach(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.integer': [5, 10] }],
+      expected: 7,
+    },
+  });
+});
+
+describe('random.float', () => {
+  beforeEach(() => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.float': [5, 10] }],
+      expected: 7.5,
+    },
+  });
+});
+
+describe('random.string', () => {
+  beforeEach(() => {
+    jest
+      .spyOn(Math, 'random')
+      .mockReturnValueOnce(0)
+      .mockReturnValueOnce(0.4)
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.6)
+      .mockReturnValueOnce(0.7)
+      .mockReturnValueOnce(0.8)
+      .mockReturnValueOnce(0.2)
+      .mockReturnValueOnce(0.3)
+      .mockReturnValueOnce(0.4)
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.7)
+      .mockReturnValueOnce(0.9)
+      .mockReturnValueOnce(0.6);
+  });
+
+  runTests({
+    'return the input if the input is not an array': {
+      input: { input: undefined },
+      mappers: [{ 'random.string': { choice: 'abcdefghijklmnopqrstuvwzyx', length: 12 } }],
+      expected: 'aknpsufhknszp',
     },
   });
 });

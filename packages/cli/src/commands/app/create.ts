@@ -30,7 +30,7 @@ interface CreateAppArguments extends BaseArguments {
 export const command = 'create <paths...>';
 export const description = 'Create a new App based on a specified YAML file or directory.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('paths', {
       describe: 'The paths to the apps to create.',

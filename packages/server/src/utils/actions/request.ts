@@ -1,4 +1,8 @@
-import { RequestLikeActionDefinition } from '@appsemble/types';
+import {
+  Remapper,
+  RequestLikeActionDefinition,
+  ResourceQueryActionDefinition,
+} from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
@@ -7,6 +11,14 @@ import { getRemapperContext } from '../app';
 
 export async function request({ action, app, data, user }: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
+  const definition = action as RequestLikeActionDefinition;
+  const query: Remapper = []
+    .concat(
+      definition?.query ?? action.type.startsWith('resource.')
+        ? app.definition.resources[(action as ResourceQueryActionDefinition).resource]?.query?.query
+        : undefined,
+    )
+    .filter(Boolean);
 
   if (!(action as RequestLikeActionDefinition).method) {
     switch (action.type) {
@@ -22,6 +34,10 @@ export async function request({ action, app, data, user }: ServerActionParameter
       default:
         method = 'GET';
     }
+
+    if ((action.type === 'resource.get' || action.type === 'resource.query') && action.view) {
+      query.push({ 'object.assign': { view: action.view } });
+    }
   }
 
   const context = await getRemapperContext(
@@ -35,7 +51,7 @@ export async function request({ action, app, data, user }: ServerActionParameter
     },
   );
   const axiosConfig = formatRequestAction(
-    { ...action, method },
+    { ...action, query: query.length ? query : undefined, method },
     data,
     (remapper, d) => remap(remapper, d, context),
     context.context,

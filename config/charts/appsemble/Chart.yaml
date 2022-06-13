@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.7
-appVersion: 0.20.7
+version: 0.20.8
+appVersion: 0.20.8
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -19,33 +19,41 @@ sources:
   - https://gitlab.com/appsemble/charts
 dependencies:
   - name: postgresql
-    version: 10.5.0
+    version: 11.6.3
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(table): Add alignment property to allow for setting the
-        alignment of dropdown fields."
+      description: "Block(action-button): Add title property."
     - kind: added
-      description: "App: Add lt and gt remappers for comparing if a value if greater
-        than or less than another value."
+      description: "Block(button-list): Add title property."
     - kind: added
-      description: "App: Add support for setting an end date for the ics remapper.
-        This is mutually exclusive with the property duration."
+      description: "Block(form): Add color and size properties to boolean fields."
     - kind: added
-      description: "Server: Add support for null in OData queries. For example:
-        /$filter=date eq null."
-    - kind: changed
-      description: "Block(tiles): Change default text color to be brighter."
-    - kind: changed
-      description: "Block(tiles): Rename asset to image. Any value that matches a
-        valid URL will be used as the source of the image, otherwise it will attempt
-        to load an asset based on either an alias or a UUID."
+      description: "Block(form): Add support for displaying boolean/checkbox fields as
+        switches."
+    - kind: added
+      description: "Block(table): Add disabled property for button columns."
+    - kind: added
+      description: "Block(table): Add title property to button fields."
+    - kind: added
+      description: "App: Add view property to resource.query and resource.get actions."
+    - kind: added
+      description: "Server: Add support for resource views."
+    - kind: added
+      description: "Utils: Add object.omit remapper."
+    - kind: added
+      description: "Utils: Add random.float random.integer random.string remapper."
     - kind: fixed
-      description: "Block(tiles): Fix background color. This used to assume the color
-        is a valid Bulma color. Instead it will display either a hex value, a valid
-        Bulma color, or default to primary."
+      description: "Block(form): Fix bug where icon would be ignored for date and
+        date-time fields."
+    - kind: fixed
+      description: "Block(table): Move alignment property specific to dropdown fields
+        to the dropdown field property. This was added to DropdownOption instead of
+        DropdownField by accident."
+    - kind: fixed
+      description: "App: Fix bug where register form was displayed twice."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

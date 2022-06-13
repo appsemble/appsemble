@@ -13,7 +13,7 @@ interface BuildBlockArguments extends BaseArguments {
 export const command = 'build <paths...>';
 export const description = 'Build a block without publishing.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs.positional('paths', {
     describe: 'The paths to the blocks to build.',
   });
