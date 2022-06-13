@@ -63,7 +63,7 @@
   "app.src.components.SideNavigation.logout": "Odjava",
   "app.src.components.SideNavigation.settings": "Postavke",
   "app.src.components.TeamInvite.TeamInvitePrompt.accept": "Prihvati",
-  "app.src.components.TeamInvite.TeamInvitePrompt.accepted": "Uspješno pridruživanje timu {teamName}",
+  "app.src.components.TeamInvite.TeamInvitePrompt.accepted": "Uspješno se pridružio/la {teamName}",
   "app.src.components.TeamInvite.TeamInvitePrompt.description": "Želiš li se pridružiti timu {teamName}?",
   "app.src.components.TeamInvite.TeamInvitePrompt.error": "Došlo je do problema prilikom učitavanja tvoje pozivnice.",
   "app.src.components.TeamInvite.TeamInvitePrompt.notFound": "Nije bilo moguće pronaći tvoju pozivnicu.",
