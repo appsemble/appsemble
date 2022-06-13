@@ -45,9 +45,9 @@ export function createAction<T extends ActionDefinition['type']>({
     ? extraCreators[type]
     : actionCreators.noop;
 
-  // @ts-expect-error TS2345
   const [dispatch, properties] = actionCreator({
     ...params,
+    // @ts-expect-error TS2345
     definition,
     extraCreators,
     remap: localRemap,
