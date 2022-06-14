@@ -48,7 +48,7 @@
     "normalize-path": "^3.0.0",
     "postcss": "^8.0.0",
     "postcss-import": "^14.0.0",
-    "postcss-load-config": "^3.0.0",
+    "postcss-load-config": "^4.0.0",
     "postcss-url": "^10.0.0",
     "read-pkg-up": "^7.0.0",
     "ts-json-schema-generator": "^1.0.0",

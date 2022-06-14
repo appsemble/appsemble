@@ -1,4 +1,4 @@
-import { addBreadcrumb, init, Severity } from '@sentry/browser';
+import { addBreadcrumb, init } from '@sentry/browser';
 
 export function setupSentry(dsn: string, environment: string): void {
   init({ dsn, environment, release: process.env.APPSEMBLE_VERSION });
@@ -8,6 +8,6 @@ export function setupSentry(dsn: string, environment: string): void {
   });
 
   window.addEventListener('offline', () => {
-    addBreadcrumb({ category: 'network', message: 'offline', level: Severity.Warning });
+    addBreadcrumb({ category: 'network', message: 'offline', level: 'warning' });
   });
 }
