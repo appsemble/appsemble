@@ -40,7 +40,7 @@
     "langmap": "^0.0.16",
     "language-tags": "^1.0.0",
     "lcm": "^0.0.3",
-    "openapi-types": "^11.0.0",
+    "openapi-types": "^12.0.0",
     "parse-duration": "^1.0.0",
     "postcss": "^8.0.0",
     "type-fest": "^2.0.0"
@@ -52,7 +52,7 @@
     "@types/lcm": "^0.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
     "bulma": "0.9.3",
-    "koas-core": "^0.6.0",
+    "koas-core": "^0.7.0",
     "yaml": "^2.0.0"
   },
   "engines": {

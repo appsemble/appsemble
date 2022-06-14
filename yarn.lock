@@ -8946,71 +8946,71 @@ koa@^2.0.0:
     type-is "^1.6.16"
     vary "^1.1.2"
 
-koas-body-parser@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-body-parser/-/koas-body-parser-0.6.0.tgz#ee2e9fabbc5b19fa55be46e97aea93350d0eeec3"
-  integrity sha512-8dsSD16hPT3ozpN8SrW7mqxuHT2f0O/hZjhK+0xT1tCzcWV/vWtUNl2l4b+Tl8JpO7X2plMsBQLe7h/0BjJU6w==
+koas-body-parser@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-body-parser/-/koas-body-parser-0.7.0.tgz#1241fc3cd160470755136fb6a3e215101468fb96"
+  integrity sha512-f4hR3G3WTijbdySIGYAqW8vPb+nSXXdlWMkoMeojBEDf5/A3QAyJ1MM5BKJmBFC9dmfwUbwATFg+1aCJ5lPEaA==
   dependencies:
     busboy "^1.0.0"
     inflation "^2.0.0"
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
     raw-body "^2.0.0"
     type-is "^1.0.0"
 
-koas-core@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-core/-/koas-core-0.6.0.tgz#3e58fe48714df1223fb662fb0d9ad224151a926a"
-  integrity sha512-ETFjpAbrKfER0Il294E75gh0sjsaclY/hqq+bpiCmd29v/691q4Yk2zdgAK2pbzcfkA/Mm2QWPpWgpBRbYcxzw==
+koas-core@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-core/-/koas-core-0.7.0.tgz#aeca623ed2d124b47cab59e2c8d6455d69d910a1"
+  integrity sha512-J+7v7srFHLxE9t2kalZHXY67nP/YT0r7oI47NNeryPFi6fjXn6E56d0iXbjckeyB/HcGJSoq0Ec5ACKVjT5u7Q==
   dependencies:
     "@types/koa" "^2.0.0"
     jsonschema "^1.0.0"
     koa-compose "^4.0.0"
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
 
-koas-operations@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-operations/-/koas-operations-0.6.0.tgz#f2dcf3f1894389abd2836c3729072a599a1ff572"
-  integrity sha512-8MWfDmAtm+ItqGPopCItx8Pr1gnW1JBzTkFKQKfDbhs4rMJNe5ItGg+ipRPugEZPuhzuIrItz9Ev8Qsmhcvhcw==
+koas-operations@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-operations/-/koas-operations-0.7.0.tgz#b38e7be71617fa18c482346b24f237edbc4c0b80"
+  integrity sha512-IZMQvmMtDOFh4GVIYTFDzvSRXIY2SrqD8k599h4wqtikrYmvoW62PQcqlUzbNPU9cnVuAX8JlI3JnkDE59CheA==
 
-koas-parameters@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-parameters/-/koas-parameters-0.6.0.tgz#23a249b1c57d7252a06e26f0122ef42e3b15c98a"
-  integrity sha512-EQGc/usb1Hn4H4EebZXpABQQp9djJ9ZKhXUK5qVOvKeJkok3OXi/BptPOa/wMAVsCbDYG2naRFQ0OIwFxIG/8w==
+koas-parameters@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-parameters/-/koas-parameters-0.7.0.tgz#faddd0157e5a26e2b5fdd51f704e36814b5b4d23"
+  integrity sha512-PsmZevF2805IztjCbSoiEStXgOBoeORbsUAlgIMo6Iz/6EFrZF2SfIW9bhNGVieXrGXRSdWVT+5SAGWArypwdg==
   dependencies:
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
 
-koas-security@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-security/-/koas-security-0.6.0.tgz#55d2e2dbda1bf8220bd641679d65ce34ea599a81"
-  integrity sha512-x326rPDucoh8Tm2JllufgjdY7CzqhchfIPEEsO7d5XRCurqj3Cl1s8rik5LN2fHrIibNaNtbVViinkk38Ax1vQ==
+koas-security@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-security/-/koas-security-0.7.0.tgz#e7436a362b603c9fbc568fb95944da0028638211"
+  integrity sha512-GR/KyQqMsqx7BjCaN+uBEutq7LZeTPz7LElwJsHlDm8K7dt1VX6zIsbmVyk0DEHfF5aL6M/PK1YZscjkteJVFA==
   dependencies:
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
     type-fest "^2.0.0"
 
-koas-serializer@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.6.0.tgz#a179f37f7442e981db7196cfea3cf51630ed5f6a"
-  integrity sha512-V6/Fj/JEcK3EWhtMCD0YhN7mv2c0dAr6UNIGT+mUPc1FtwQGy5mQ0+mCdi72eN+2X+nxJzhbLIRQK1G/RMF2bw==
+koas-serializer@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.7.0.tgz#16ab2d35bf37baafdb37d8ef42343a69f9fb2389"
+  integrity sha512-Om3ivSO7uJDWNNq6yv4ipcJVgtlZ+xK1pGWn7G5wjBHQmmdJjd14e3t4uF4ExReT0v7KAAQHfhngYV/qUK8GYg==
   dependencies:
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
     type-is "^1.0.0"
 
-koas-spec-handler@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-spec-handler/-/koas-spec-handler-0.6.0.tgz#9debb06d02617994283b5fe9f6653d00ea13e407"
-  integrity sha512-lA1JkN+VgtIr/sTRUvtfHtm+dYa1mqg24qLFpq08Ur6LkdhEUjDtgrWJk5VQNvP06CDWtcq1ds3G8H5BVzYueQ==
+koas-spec-handler@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-spec-handler/-/koas-spec-handler-0.7.0.tgz#ff04b7196ce46a854e7b1d45a2fb1f260edeb266"
+  integrity sha512-/fM/QevajlTdseo+w+zM4BEsE9zHGQWTK2ahtRA4xaJ2PW+sN5/1DxiZHICc+s2Xl4yZMfMRq6GUDf010bIxQw==
 
-koas-status-code@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-status-code/-/koas-status-code-0.6.0.tgz#a3171d7a2a28683953f2b0aa5481d3348860edb5"
-  integrity sha512-2sM5n7OtZPvALgdyOC1j3WUwMkgt6hcANv73YUUKGbMpOfr66mJMeMBwyAN8u/XtYvqQikClnA15hP4DBpEBlw==
+koas-status-code@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-status-code/-/koas-status-code-0.7.0.tgz#d7ad846749654991925999f6861b0dc5e2d01339"
+  integrity sha512-33dx0JO+qmHwhsu6aYa2123fn77WADrusjdaPkyy5dJU/hF0UE5slZw8G7AswvsRkMfB1iETGllqACgOTHgSzg==
   dependencies:
-    openapi-types "^11.0.0"
+    openapi-types "^12.0.0"
 
-koas-swagger-ui@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/koas-swagger-ui/-/koas-swagger-ui-0.6.0.tgz#ab2831e3f9e19e01391d68cfd35b8e834908c8b1"
-  integrity sha512-QeKFk8WRFiDn4w0y/zJk/H1e4XmOe8dS/Pkxa2UwxqvyvK6hu+Mzjdunup6A9K9gk0QDQ+7mQuwURQ9TYUEOpA==
+koas-swagger-ui@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/koas-swagger-ui/-/koas-swagger-ui-0.7.0.tgz#babe6d4238a71f9813605c252e7a8e9359f84aee"
+  integrity sha512-MAzAofh+GqxEw6lvpAUWBsvxCb246IYZl3SgtlZ4X7jk7AgURw3fIUnlNzeHb/DSim+ELgTa1313ny7JoF7veA==
   dependencies:
     swagger-ui-dist "^4.0.0"
 
@@ -11004,10 +11004,10 @@ open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openapi-types@^11.0.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-11.1.0.tgz#037969f3dfa5999423ee33bf889fb0d12984277e"
-  integrity sha512-ZW+Jf12flFF6DXSij8DGL3svDA4RtSyHXjC/xB/JAh18gg3uVfVIFLvCfScUMowrpvlkxsMMbErakbth2g3/iQ==
+openapi-types@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.0.0.tgz#458a99d048f9eae1c067e15d56a8bfb3726041f1"
+  integrity sha512-6Wd9k8nmGQHgCbehZCP6wwWcfXcvinhybUTBatuhjRsCxUIujuYFZc9QnGeae75CyHASewBtxs0HX/qwREReUw==
 
 optionator@^0.8.1:
   version "0.8.3"
@@ -15222,9 +15222,9 @@ vfile@^4.0.0:
     vfile-message "^2.0.0"
 
 vfile@^5.0.0:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/vfile/-/vfile-5.3.3.tgz#70b75779d99e0698a8cb6536a09361ac37f800a0"
-  integrity sha512-xwALvwUKmXzHOri5dGXqXNN8JDEvxPhf8avC+E+pJEl32e4/grLdRdsgx23HpK7QI0cwgR4+QfaM8D5KUnki3g==
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/vfile/-/vfile-5.3.4.tgz#bbb8c96b956693bbf70b2c67fdb5781dff769b93"
+  integrity sha512-KI+7cnst03KbEyN1+JE504zF5bJBZa+J+CrevLeyIMq0aPU681I2rQ5p4PlnQ6exFtWiUrg26QUdFMnAKR6PIw==
   dependencies:
     "@types/unist" "^2.0.0"
     is-buffer "^2.0.0"
