@@ -17,7 +17,7 @@ interface ResourceCellProps {
 }
 
 export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactElement {
-  const { valid } = validator.validate(value, { required, ...schema });
+  const { valid } = validator.validate(value, { required, ...schema }, { nestedErrors: true });
   const classes = [styles.root];
   let content: ReactNode;
   let title: string;
