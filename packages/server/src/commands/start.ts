@@ -172,7 +172,7 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
       )
     : http.createServer(callback);
 
-  httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
+  httpServer.listen(argv.port || PORT, '::', () => {
     logger.info(asciiLogo);
     logger.info(api(version, argv).info.description);
   });
