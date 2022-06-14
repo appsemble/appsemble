@@ -1,0 +1,57 @@
+name: Soundboard
+description: This app is displaying tiles which plays the sound when you click on them.
+defaultPage: Soundboard
+
+resources:
+  audio:
+    roles: [$public]
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - icon
+        - text
+        - color
+        - assetId
+      properties:
+        icon:
+          type: string
+        text:
+          type: string
+        color:
+          type: string
+        assetId:
+          type: string
+          format: binary
+pages:
+  - name: Soundboard
+    blocks:
+      - type: audio
+        version: 0.20.8
+        parameters:
+          src: { prop: assetId }
+        events:
+          listen:
+            onAudio: onClick
+      - type: data-loader
+        version: 0.20.8
+        actions:
+          onLoad:
+            type: resource.query
+            resource: audio
+        events:
+          emit:
+            data: sound
+      - type: tiles
+        version: 0.20.8
+        actions:
+          onClick:
+            type: event
+            event: onClick
+        events:
+          listen:
+            data: sound
+        parameters:
+          icon: { prop: icon }
+          text: { prop: text }
+          color: { prop: color }

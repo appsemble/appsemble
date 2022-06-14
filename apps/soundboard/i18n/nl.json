@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "Deze app laat tegels zien. Als je op deze tegels klikt, maakt de app een geluid.",
+    "name": "Soundboard",
+    "pages.soundboard": "Soundboard"
+  }
+}
