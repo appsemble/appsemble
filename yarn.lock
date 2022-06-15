@@ -19,6 +19,26 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
+"@appsemble/sdk@0.20.7":
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.20.7.tgz#77cd9de6d4b49cea3519c98f966133baabee2df7"
+  integrity sha512-I/YYKCOOzMWDThiUbTj+yr7zsOCqtJPWQmTcTFQAaHN+2YlWcLdfA+KEuxrtqyBrJqd/zRyjiqOSEsJrvOAYcg==
+  dependencies:
+    "@appsemble/types" "0.20.7"
+    "@fortawesome/fontawesome-common-types" "^6.0.0"
+    type-fest "^2.0.0"
+
+"@appsemble/types@0.20.7":
+  version "0.20.7"
+  resolved "https://registry.yarnpkg.com/@appsemble/types/-/types-0.20.7.tgz#a4f559d44a82b3c14fc855e3b2e7ca894ff86f82"
+  integrity sha512-BAviRTgLCQfPQbvDu77/tgJJOxU95O0S3WfCmSD/SmEwPHzQ1Rer4r5b0zG7WFBoEtX6MShNzLu8CdTHsPEUZg==
+  dependencies:
+    "@appsemble/sdk" "0.20.7"
+    "@fortawesome/fontawesome-common-types" "^6.0.0"
+    jsonschema "^1.0.0"
+    openapi-types "^11.0.0"
+    type-fest "^2.0.0"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.7":
   version "7.16.7"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.16.7.tgz#44416b6bd7624b998f5b1af5d470856c40138789"
@@ -11003,6 +11023,11 @@ open@^8.4.0:
     define-lazy-prop "^2.0.0"
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
+
+openapi-types@^11.0.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-11.1.0.tgz#037969f3dfa5999423ee33bf889fb0d12984277e"
+  integrity sha512-ZW+Jf12flFF6DXSij8DGL3svDA4RtSyHXjC/xB/JAh18gg3uVfVIFLvCfScUMowrpvlkxsMMbErakbth2g3/iQ==
 
 openapi-types@^12.0.0:
   version "12.0.0"
