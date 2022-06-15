@@ -64,7 +64,7 @@
   }
 
   &.hasSideMenu {
-    &:not(.right):not(.left) {
+    &:not(.right, .left) {
       @media screen and (min-width: 1024px) {
         /* The side menu has a width of 18rem */
         left: calc(50% + 9rem);

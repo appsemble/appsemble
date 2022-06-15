@@ -28,7 +28,7 @@
     "@appsemble/types": "0.20.8",
     "@appsemble/utils": "0.20.8",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@sentry/browser": "^6.0.0",
+    "@sentry/browser": "^7.0.0",
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^0.27.0",

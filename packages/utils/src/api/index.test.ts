@@ -176,7 +176,7 @@ describe('schemas', () => {
             ),
           );
           const instance = parse(buffer);
-          const result = validator.validate(instance, schema, { base: '#' });
+          const result = validator.validate(instance, schema, { base: '#', nestedErrors: true });
           expect(result.valid).toBe(true);
         });
       });
@@ -187,7 +187,7 @@ describe('schemas', () => {
         it.each(readdirSync(invalid))('%s', async (filename) => {
           const buffer = await fs.readFile(join(invalid, filename), 'utf8');
           const instance = parse(buffer);
-          const result = validator.validate(instance, schema, { base: '#' });
+          const result = validator.validate(instance, schema, { base: '#', nestedErrors: true });
           expect(result.valid).toBe(false);
         });
       });

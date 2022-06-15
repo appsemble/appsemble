@@ -1,4 +1,5 @@
 {
+  "confirmLabel": "",
   "fieldErrorLabel": "Et af kravene i dette felt er ugyldigt.",
   "formRequirementError": "Et af kravene i denne formular er ugyldigt.",
   "invalidLabel": "Denne værdi er ugyldig",

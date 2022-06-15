@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`patchApp should not allow invalid shared stylesheets when updating an app 1`] = `
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+  "data": {
+    "errors": [
+      {
+        "argument": [
+          "<#/components/schemas/PageDefinition>",
+          "<#/components/schemas/TabsPageDefinition>",
+          "<#/components/schemas/FlowPageDefinition>",
+        ],
+        "instance": {
+          "blocks": [
+            {
+              "type": "testblock",
+            },
+          ],
+          "name": "Test Page",
+        },
+        "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+        "name": "anyOf",
+        "path": [
+          "pages",
+          0,
+        ],
+        "property": "instance.pages[0]",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/PageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/TabsPageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/FlowPageDefinition",
+            },
+          ],
+        },
+        "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+      },
+    ],
+  },
+  "error": "Bad Request",
+  "message": "App validation failed",
+  "statusCode": 400,
+}
+`;
+
+exports[`patchApp should not allow invalid shared stylesheets when updating an app 2`] = `
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+  "data": {
+    "errors": [
+      {
+        "argument": [
+          "<#/components/schemas/PageDefinition>",
+          "<#/components/schemas/TabsPageDefinition>",
+          "<#/components/schemas/FlowPageDefinition>",
+        ],
+        "instance": {
+          "blocks": [
+            {
+              "type": "testblock",
+            },
+          ],
+          "name": "Test Page",
+        },
+        "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+        "name": "anyOf",
+        "path": [
+          "pages",
+          0,
+        ],
+        "property": "instance.pages[0]",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/PageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/TabsPageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/FlowPageDefinition",
+            },
+          ],
+        },
+        "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+      },
+    ],
+  },
+  "error": "Bad Request",
+  "message": "App validation failed",
+  "statusCode": 400,
+}
+`;
+
+exports[`setAppBlockStyle should not allow to update an app using non-existent blocks 1`] = `
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+  "data": {
+    "errors": [
+      {
+        "argument": [
+          "<#/components/schemas/PageDefinition>",
+          "<#/components/schemas/TabsPageDefinition>",
+          "<#/components/schemas/FlowPageDefinition>",
+        ],
+        "instance": {
+          "blocks": [
+            {
+              "type": "@non/existent",
+              "version": "0.0.0'",
+            },
+          ],
+          "name": "Test Page",
+        },
+        "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+        "name": "anyOf",
+        "path": [
+          "pages",
+          0,
+        ],
+        "property": "instance.pages[0]",
+        "schema": {
+          "anyOf": [
+            {
+              "$ref": "#/components/schemas/PageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/TabsPageDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/FlowPageDefinition",
+            },
+          ],
+        },
+        "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
+      },
+    ],
+  },
+  "error": "Bad Request",
+  "message": "App validation failed",
+  "statusCode": 400,
+}
+`;

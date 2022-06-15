@@ -64,7 +64,8 @@ bootstrap(
 
       // Filter requirements whose dependencies haven’t changed and whose dependencies are valid.
       const pendingRequirements = requirements?.filter(
-        ({ isValid }) => isValid.includes(lastChanged) && isFormValid(errors, isValid),
+        ({ alwaysValidate, isValid }) =>
+          alwaysValidate || (isValid.includes(lastChanged) && isFormValid(errors, isValid)),
       );
 
       // If there are no pending requirements checks, don’t run asynchronous validation.

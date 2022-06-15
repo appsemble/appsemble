@@ -1,8 +1,10 @@
 import 'flatpickr/dist/flatpickr.css';
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 
 import { useBlock } from '@appsemble/preact';
 import { Remapper } from '@appsemble/sdk';
 import flatpickr from 'flatpickr';
+import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -23,6 +25,18 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     | 'noCalendar'
   > &
   SharedFormComponentProps & {
+    /**
+     * Whether the confirm button should be shown.
+     */
+    confirm?: boolean;
+
+    /**
+     * The text shown on the confirm button.
+     *
+     * @default 'Confirm'
+     */
+    confirmLabel?: string;
+
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
@@ -54,6 +68,8 @@ export function DateTimeField({
   className,
   disable,
   disabled,
+  confirm,
+  confirmLabel = 'Confirm',
   enableTime,
   noCalendar,
   error,
@@ -125,6 +141,7 @@ export function DateTimeField({
       maxDate,
       minTime,
       maxTime,
+      plugins: confirm ? [confirmDatePlugin({ confirmText: confirmLabel })] : [],
       minuteIncrement,
       formatDate: (date) =>
         remap(
@@ -148,6 +165,8 @@ export function DateTimeField({
     };
   }, [
     dateFormat,
+    confirm,
+    confirmLabel,
     disable,
     disabled,
     enableTime,
