@@ -1593,18 +1593,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
-<<<<<<< HEAD
           "dateFormat": {
             "description": "The remapper used for formatting the date value’s label.
 
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
-=======
+          },
           "confirm": {
             "default": false,
             "description": "Whether the confirm button should be shown",
             "type": "boolean",
->>>>>>> main
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -1672,13 +1670,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
-<<<<<<< HEAD
           "dateFormat": {
             "description": "The remapper used for formatting the date value’s label.
 
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
-=======
+          },
           "confirm": {
             "default": false,
             "description": "Whether the confirm button should be shown",
@@ -1687,7 +1684,6 @@ The date value can be accessed using the \`root\` remapper.",
           "disableWeekends": {
             "description": "Whether weekends should be disabled.",
             "type": "boolean",
->>>>>>> main
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
