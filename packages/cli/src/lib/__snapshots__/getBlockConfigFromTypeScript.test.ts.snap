@@ -1590,8 +1590,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
-          "formatDate": {
-            "description": "The remapper used for formatting the date value’s label.",
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
           "icon": {
@@ -1660,8 +1662,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
-          "formatDate": {
-            "description": "The remapper used for formatting the date value’s label.",
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
           "icon": {
