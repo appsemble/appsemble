@@ -26,6 +26,7 @@ Add the following to the app definition at the root of the YAML:
 ```yaml copy
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
@@ -148,6 +149,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       required:
@@ -262,6 +264,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -408,6 +411,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false
