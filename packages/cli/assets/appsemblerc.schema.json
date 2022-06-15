@@ -133,6 +133,15 @@
             "description": "If template is specified, this will override --template passed on the command line.",
             "type": "boolean",
             "default": false
+          },
+          "sentryDsn": {
+            "type": "string",
+            "format": "uri",
+            "description": "A custom Sentry DSN to use for the app."
+          },
+          "sentryEnvironment": {
+            "type": "string",
+            "description": "A custom Sentry environment to use for the app."
           }
         }
       }
