@@ -50,6 +50,7 @@ export function DateTimeInput({
 
   return (
     <DateTimeComponent
+      dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
       enableTime={field.type === 'date-time'}

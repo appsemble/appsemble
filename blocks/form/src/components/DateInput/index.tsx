@@ -42,6 +42,7 @@ export function DateInput({
 
   return (
     <DateTimeComponent
+      dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
       error={dirty && error}

@@ -306,9 +306,11 @@ export interface DateTimeField extends AbstractField {
   minuteIncrement?: number;
 
   /**
-   * Whether weekends should be disabled.
+   * The remapper used for formatting the date value’s label.
+   *
+   * The date value can be accessed using the `root` remapper.
    */
-  disableWeekends?: boolean;
+  dateFormat?: Remapper;
 
   /**
    * All requirements that are applicable to this type of field.
@@ -333,6 +335,13 @@ export interface DateField extends AbstractField {
    * @default 1
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+  /**
+   * The remapper used for formatting the date value’s label.
+   *
+   * The date value can be accessed using the `root` remapper.
+   */
+  dateFormat?: Remapper;
 
   /**
    * All requirements that are applicable to this type of field.

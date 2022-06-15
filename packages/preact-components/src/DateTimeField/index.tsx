@@ -1,6 +1,7 @@
 import 'flatpickr/dist/flatpickr.css';
 
 import { useBlock } from '@appsemble/preact';
+import { Remapper } from '@appsemble/sdk';
 import flatpickr from 'flatpickr';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
@@ -41,9 +42,15 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
      * The current value as a Date object or an ISO8601 formatted string.
      */
     value: Date | string;
+
+    /**
+     * The remapper used for custom value labels.
+     */
+    dateFormat?: Remapper;
   };
 
 export function DateTimeField({
+  dateFormat,
   className,
   disable,
   disabled,
@@ -121,7 +128,7 @@ export function DateTimeField({
       minuteIncrement,
       formatDate: (date) =>
         remap(
-          {
+          dateFormat || {
             'string.format': {
               template,
               values: {
@@ -129,7 +136,7 @@ export function DateTimeField({
               },
             },
           },
-          null,
+          date,
         ) as string,
     });
 
@@ -140,6 +147,7 @@ export function DateTimeField({
       setPicker(null);
     };
   }, [
+    dateFormat,
     disable,
     disabled,
     enableTime,
