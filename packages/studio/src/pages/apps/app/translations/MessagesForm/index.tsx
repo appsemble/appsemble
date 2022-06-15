@@ -91,6 +91,14 @@ export function MessagesForm({
     };
   }, [appMessages, defaultAppMessages]);
 
+  const sortedMessageIds = useMemo(
+    () =>
+      Object.entries(defaultAppMessages.messages.messageIds).sort(([idA], [idB]) =>
+        idA.localeCompare(idB),
+      ),
+    [defaultAppMessages],
+  );
+
   return (
     <SimpleForm defaultValues={defaultValues} onSubmit={onSubmit}>
       <SimpleFormError>{() => <FormattedMessage {...messages.uploadError} />}</SimpleFormError>
@@ -98,7 +106,7 @@ export function MessagesForm({
       {Object.keys(defaultAppMessages.messages.messageIds).length ? (
         <Collapsible size={5} title={<FormattedMessage {...messages.messageIds} />}>
           <SimpleFormObject name="messageIds">
-            {Object.entries(defaultAppMessages.messages.messageIds).map(([id, defaultMessage]) => (
+            {sortedMessageIds.map(([id, defaultMessage]) => (
               <SimpleFormField
                 component={TextAreaField}
                 disabled={app.locked}
