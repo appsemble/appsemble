@@ -365,6 +365,7 @@ export function processResourceBody(
     {
       base: '#',
       preValidateProperty,
+      nestedErrors: true,
       rewrite(value, { format }, options, { path }) {
         if (
           Array.isArray(resource)
