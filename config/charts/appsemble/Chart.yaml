@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.7
-appVersion: 0.20.7
+version: 0.20.9
+appVersion: 0.20.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -19,33 +19,25 @@ sources:
   - https://gitlab.com/appsemble/charts
 dependencies:
   - name: postgresql
-    version: 10.5.0
+    version: 11.6.3
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(table): Add alignment property to allow for setting the
-        alignment of dropdown fields."
+      description: "Block(form): Add alwaysValidate option to form requirements. This
+        can be useful for fields that can also perform validation on fields that are
+        filled in at a later time."
     - kind: added
-      description: "App: Add lt and gt remappers for comparing if a value if greater
-        than or less than another value."
+      description: "Block(form): Add confirm option to date and date-time fields.
+        Enabling this will display a confirm button once a date has been selected."
     - kind: added
-      description: "App: Add support for setting an end date for the ics remapper.
-        This is mutually exclusive with the property duration."
+      description: "Block(form): Add dateFormat property to date and date-time fields
+        to customize the way these are shown to the user."
     - kind: added
-      description: "Server: Add support for null in OData queries. For example:
-        /$filter=date eq null."
+      description: "Block(image): Add image block."
     - kind: changed
-      description: "Block(tiles): Change default text color to be brighter."
-    - kind: changed
-      description: "Block(tiles): Rename asset to image. Any value that matches a
-        valid URL will be used as the source of the image, otherwise it will attempt
-        to load an asset based on either an alias or a UUID."
-    - kind: fixed
-      description: "Block(tiles): Fix background color. This used to assume the color
-        is a valid Bulma color. Instead it will display either a hex value, a valid
-        Bulma color, or default to primary."
+      description: "Studio: Sort custom messages section in app translations alphabetically."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

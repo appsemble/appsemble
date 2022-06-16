@@ -1,7 +1,10 @@
 import 'flatpickr/dist/flatpickr.css';
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 
 import { useBlock } from '@appsemble/preact';
+import { Remapper } from '@appsemble/sdk';
 import flatpickr from 'flatpickr';
+import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -23,6 +26,18 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   > &
   SharedFormComponentProps & {
     /**
+     * Whether the confirm button should be shown.
+     */
+    confirm?: boolean;
+
+    /**
+     * The text shown on the confirm button.
+     *
+     * @default 'Confirm'
+     */
+    confirmLabel?: string;
+
+    /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
      */
@@ -41,12 +56,20 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
      * The current value as a Date object or an ISO8601 formatted string.
      */
     value: Date | string;
+
+    /**
+     * The remapper used for custom value labels.
+     */
+    dateFormat?: Remapper;
   };
 
 export function DateTimeField({
+  dateFormat,
   className,
   disable,
   disabled,
+  confirm,
+  confirmLabel = 'Confirm',
   enableTime,
   noCalendar,
   error,
@@ -118,10 +141,11 @@ export function DateTimeField({
       maxDate,
       minTime,
       maxTime,
+      plugins: confirm ? [confirmDatePlugin({ confirmText: confirmLabel })] : [],
       minuteIncrement,
       formatDate: (date) =>
         remap(
-          {
+          dateFormat || {
             'string.format': {
               template,
               values: {
@@ -129,7 +153,7 @@ export function DateTimeField({
               },
             },
           },
-          null,
+          date,
         ) as string,
     });
 
@@ -140,6 +164,9 @@ export function DateTimeField({
       setPicker(null);
     };
   }, [
+    dateFormat,
+    confirm,
+    confirmLabel,
     disable,
     disabled,
     enableTime,

@@ -66,3 +66,48 @@ Get the protocol on which Appsemble is accessible.
 {{- define "appsemble.protocol" -}}
 http{{ if .Values.ingress.tls }}s{{ end }}://
 {{- end -}}
+
+{{/*
+Configure the environment variables for Appsemble to connect with the Postgres instance.
+*/}}
+{{- define "appsemble.postgres" -}}
+- name: DATABASE_HOST
+  value: {{ .Values.postgresql.fullnameOverride | quote }}
+{{ if .Values.postgresSSL }}
+- name: DATABASE_SSL
+  value: 'true'
+{{ end }}
+- name: DATABASE_PORT
+  value: {{ .Values.global.postgresql.service.ports.postgresql | quote }}
+- name: DATABASE_NAME
+  value: {{ .Values.global.postgresql.auth.database | quote }}
+- name: DATABASE_USER
+  value: {{ .Values.global.postgresql.auth.username | quote }}
+- name: DATABASE_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.global.postgresql.auth.existingSecret | quote }}
+      key: {{ .Values.global.postgresql.auth.secretKeys.userPasswordKey | quote }}
+{{- end -}}
+
+
+{{/*
+Configure the environment variables for Sentry.
+*/}}
+{{- define "appsemble.sentry" -}}
+{{ with .Values.sentry }}
+- name: SENTRY_DSN
+  valueFrom:
+    secretKeyRef:
+      name: {{ .secret | quote }}
+      key: dsn
+{{ with .environment }}
+- name: SENTRY_ENVIRONMENT
+  value: {{ . | quote }}
+{{ end }}
+{{ with .allowedDomains }}
+- name: SENTRY_ALLOWED_DOMAINS
+  value: {{ join "," . | quote }}
+{{ end }}
+{{ end }}
+{{- end -}}

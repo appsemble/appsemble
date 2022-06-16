@@ -16,7 +16,7 @@ interface CreateTeamArguments extends BaseArguments {
 export const command = 'create <name>';
 export const description = 'Create a new team for an app.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('name', {
       describe: 'The name of the team.',

@@ -1,15 +1,18 @@
-import { join } from 'path';
-
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-declare global {
-  /**
-   * This allows us to use puppeteer types without using the `dom` lib.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Element {}
-}
+import * as build from './commands/build';
+import * as cleanupEnvironments from './commands/cleanup-environments';
+import * as dockerMetadata from './commands/docker-metadata';
+import * as extractMessages from './commands/extract-messages';
+import * as getReleaseNotes from './commands/get-release-notes';
+import * as githubRelease from './commands/github-release';
+import * as gitlabRelease from './commands/gitlab-release';
+import * as release from './commands/release';
+import * as rewriteMessages from './commands/rewrite-messages';
+import * as twitter from './commands/twitter';
+import * as validate from './commands/validate';
+import * as waitForSsl from './commands/wait-for-ssl';
 
 function main(): void {
   yargs
@@ -24,7 +27,18 @@ function main(): void {
       type: 'count',
     })
     .middleware([configureLogger])
-    .commandDir(join(__dirname, 'commands'), { extensions: ['ts'] })
+    .command(build)
+    .command(cleanupEnvironments)
+    .command(dockerMetadata)
+    .command(extractMessages)
+    .command(getReleaseNotes)
+    .command(githubRelease)
+    .command(gitlabRelease)
+    .command(release)
+    .command(rewriteMessages)
+    .command(twitter)
+    .command(validate)
+    .command(waitForSsl)
     .demandCommand(1)
     .fail(handleError)
     .help()

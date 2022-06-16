@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.9](https://gitlab.com/appsemble/appsemble/-/releases/0.20.9)] - 2022-06-15
+
+### Added
+
+- Block(`form`): Add `alwaysValidate` option to form requirements. This can be useful for fields
+  that can also perform validation on fields that are filled in at a later time.
+- Block(`form`): Add `confirm` option to `date` and `date-time` fields. Enabling this will display a
+  confirm button once a date has been selected.
+- Block(`form`): Add `dateFormat` property to `date` and `date-time` fields to customize the way
+  these are shown to the user.
+- Block(`image`): Add `image` block.
+
+### Changed
+
+- Studio: Sort custom messages section in app translations alphabetically.
+
+## \[[0.20.8](https://gitlab.com/appsemble/appsemble/-/releases/0.20.8)] - 2022-06-12
+
+### Added
+
+- Block(`action-button`): Add `title` property.
+- Block(`button-list`): Add `title` property.
+- Block(`form`): Add `color` and `size` properties to `boolean` fields.
+- Block(`form`): Add support for displaying boolean/checkbox fields as switches.
+- Block(`table`): Add `disabled` property for button columns.
+- Block(`table`): Add `title` property to button fields.
+- App: Add `view` property to `resource.query` and `resource.get` actions.
+- Server: Add support for resource views.
+- Utils: Add `object.omit` remapper.
+- Utils: Add `random.float` `random.integer` `random.string` remapper.
+
+### Fixed
+
+- Block(`form`): Fix bug where `icon` would be ignored for `date` and `date-time` fields.
+- Block(`table`): Move `alignment` property specific to dropdown fields to the `dropdown` field
+  property. This was added to `DropdownOption` instead of `DropdownField` by accident.
+- App: Fix bug where register form was displayed twice.
+
 ## \[[0.20.7](https://gitlab.com/appsemble/appsemble/-/releases/0.20.7)] - 2022-05-25
 
 ### Added

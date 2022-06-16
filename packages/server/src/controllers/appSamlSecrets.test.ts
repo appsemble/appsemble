@@ -357,3 +357,70 @@ describe('updateAppSamlSecret', () => {
     `);
   });
 });
+
+describe('deleteAppSamlSecret', () => {
+  it('should generate SAML parameters', async () => {
+    authorizeStudio();
+    const secret = await AppSamlSecret.create({
+      AppId: app.id,
+      entityId: 'https://example.com/saml/metadata.xml',
+      ssoUrl: 'https://example.com/saml/login',
+      idpCertificate: '-----BEGIN CERTIFICATE-----\nIDP\n-----END CERTIFICATE-----',
+      icon: '',
+      name: '',
+      spCertificate: '-----BEGIN CERTIFICATE-----\nSP\n-----END CERTIFICATE-----',
+      spPrivateKey: '-----BEGIN PRIVATE KEY-----\nSP\n-----END PRIVATE KEY-----',
+      spPublicKey: '-----BEGIN PUBLIC KEY-----\nSP\n-----END PUBLIC KEY-----',
+    });
+    const response = await request.delete<AppSamlSecretType>(
+      `/api/apps/${app.id}/secrets/saml/${secret.id}`,
+    );
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should not throw status 404 for unknown apps', async () => {
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml/1`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "SAML secret not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should not throw status 404 for unknown secrets', async () => {
+    authorizeStudio();
+    const response = await request.delete('/api/apps/13/secrets/saml/1');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should require the EditApps and EditAppSettings permissions', async () => {
+    authorizeStudio();
+    await member.update({ role: 'Member' });
+    const response = await request.delete(`/api/apps/${app.id}/secrets/saml/34`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+});

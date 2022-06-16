@@ -8,7 +8,7 @@ import { BaseArguments } from '../types';
 export const command = 'start';
 export const description = 'Start the Appsemble development server.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('port', {
       desc: 'The HTTP server port to use. (Development only)',

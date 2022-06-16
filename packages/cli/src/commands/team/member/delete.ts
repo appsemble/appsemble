@@ -16,7 +16,7 @@ interface DeleteTeamArguments extends BaseArguments {
 export const command = 'delete <user>';
 export const description = 'Delete a new member to an existing team from an app.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .option('id', {
       describe: 'The ID of the team.',

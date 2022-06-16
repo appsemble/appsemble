@@ -1340,6 +1340,9 @@ Include an array of fields in \`fields\` to replace the current list of fields i
     },
   },
   "messages": {
+    "confirmLabel": {
+      "description": undefined,
+    },
     "fieldErrorLabel": {
       "description": undefined,
     },
@@ -1590,6 +1593,17 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
+          "confirm": {
+            "default": false,
+            "description": "Whether the confirm button should be shown",
+            "type": "boolean",
+          },
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1656,9 +1670,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "A date/time picker that results in an exact date and time.",
         "properties": {
-          "disableWeekends": {
-            "description": "Whether weekends should be disabled.",
+          "confirm": {
+            "default": false,
+            "description": "Whether the confirm button should be shown",
             "type": "boolean",
+          },
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
+            "format": "remapper",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2012,6 +2033,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The name of the action to trigger when the requirement is checked.",
             "format": "action",
             "type": "string",
+          },
+          "alwaysValidate": {
+            "description": "Whether the field should always be validated even if the previous value was valid and hasn’t changed.",
+            "type": "boolean",
           },
           "errorMessage": {
             "description": "The error message that is displayed when the requirement is not met.",
@@ -2854,6 +2879,48 @@ All elements specifying \`data-content\` will be updated each time this event is
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
+{
+  "actions": undefined,
+  "events": undefined,
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "alignment": {
+        "default": "left",
+        "description": "The alignment of the text content.",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
+      "alt": {
+        "description": "The alt text of the image.",
+        "format": "remapper",
+      },
+      "rounded": {
+        "description": "Is image rounded.",
+        "type": "boolean",
+      },
+      "url": {
+        "description": "The Url of the image.
+
+Note that this is ignored if the onImage event listener is set.",
+        "format": "remapper",
+      },
+    },
+    "required": [
+      "url",
+    ],
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks list 1`] = `
 {
   "actions": {
@@ -3350,6 +3417,12 @@ This does not trigger if the field has a different action specified.",
                 "$ref": "#/definitions/BulmaColor",
                 "default": "primary",
                 "description": "The color of the button.",
+              },
+              "disabled": {
+                "description": "Whether the button should be disabled.
+
+If the resulting remapper value is truthy, the button will be disabled.",
+                "format": "remapper",
               },
               "fullwidth": {
                 "description": "Whether the button should be full width or not.

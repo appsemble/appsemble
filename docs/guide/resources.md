@@ -119,8 +119,9 @@ person:
 
 Aside from including the query string parameters in the URL manually, it is also possible to define
 a `query` object in a resource definition. This allows for the URL to be easier to read. Note that
-if `query` is defined in the (`resource` action)[], the `query` remapper as defined in the action
-will take precedence over the one defined as the default for the resource’s method.
+if `query` is defined in the [`resource` action](/docs/reference/app#-resource-definition-query),
+the `query` [remapper](/docs/reference/remapper) as defined in the action will take precedence over
+the one defined as the default for the resource’s method.
 
 Below is an example of what the query object looks like when in use.
 
@@ -136,7 +137,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.query
@@ -147,6 +148,80 @@ pages:
         events:
           emit:
             data: people
+```
+
+## Views
+
+When using roles for resources to secure the access to a resource it is usually to protect sensitive
+data that you don’t want to expose to everyone, such as names or email addresses. Sometimes it is
+still desirable to know about parts of a resource despite of this sensitive data. For this purpose
+resource _views_ can be used.
+
+Views are alternate ways to display resources, using separate sets of roles. The output of these API
+calls can then be modified using [remappers](/docs/reference/remapper).
+
+Let’s use an example of a resource that tracks reservations for a restaurant. Our resource contains
+the name of the person who placed the reservation, as well as the table that has been reserved. Only
+the creator of the resource is allowed to view their resource, otherwise personal information might
+get leaked.
+
+When making reservations however, it is still helpful to know which tables are already reserved. To
+accomplish this, views can be used. A view has a set of roles, as well as a
+[remapper](/docs/reference/remapper) that’s used to transform the output.
+
+In this case only the resource ID, table name, and the creation date should be included. The
+`object.from` remapper is suitable for this:
+
+```yaml
+resources:
+  reservation:
+    query:
+      roles:
+        - $author
+    create:
+      roles:
+        - User
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        table:
+          type: string
+    views:
+      public:
+        roles:
+          - $public
+        remap:
+          object.from:
+            id:
+              prop: id
+            table:
+              prop: table
+            $created:
+              prop: $created
+```
+
+When calling the API endpoint for resources the query parameter `view` can be used to specify which
+view should be used: `/api/apps/1/resources/reservation?view=public`. Alternatively, the `resource`
+actions also support specifying views like so:
+
+```yaml
+type: resource.query
+resource: reservation
+view: public
+```
+
+When making a request using this view, the response will no longer include the `name` property.
+
+```json
+{
+  "id": 1,
+  "$created": "2022-06-02T09:00:00.000Z",
+  "table": "5A"
+}
 ```
 
 ## Expiring resources

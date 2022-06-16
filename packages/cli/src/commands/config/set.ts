@@ -15,7 +15,7 @@ interface ConfigSetArguments extends BaseArguments {
 export const command = 'set <key> <value>';
 export const description = 'Set an Appsemble configuration option in package.json.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('key', {
       describe: 'The key whose value to set',

@@ -9,7 +9,7 @@ import { Argv } from 'yargs';
 export const command = 'build';
 export const description = 'Build the Appsemble core using Webpack';
 
-export function builder(argv: Argv): Argv {
+export function builder(argv: Argv): Argv<any> {
   return argv
     .option('app', {
       type: 'boolean',

@@ -52,6 +52,13 @@ export function OAuth2Secrets(): ReactElement {
     [app, modal, setSecrets],
   );
 
+  const onDeleted = useCallback(
+    (secret: AppOAuth2Secret) => {
+      setSecrets((secrets) => secrets.filter((s) => s.id !== secret.id));
+    },
+    [setSecrets],
+  );
+
   return (
     <div className="mb-3">
       <HeaderControl
@@ -73,7 +80,12 @@ export function OAuth2Secrets(): ReactElement {
         {(secrets) => (
           <ul>
             {secrets.map((secret) => (
-              <OAuth2SecretItem key={secret.id} onUpdated={onUpdated} secret={secret} />
+              <OAuth2SecretItem
+                key={secret.id}
+                onDeleted={onDeleted}
+                onUpdated={onUpdated}
+                secret={secret}
+              />
             ))}
           </ul>
         )}

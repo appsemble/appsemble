@@ -11,7 +11,7 @@ interface ConfigGetArguments extends BaseArguments {
 export const command = 'get <key>';
 export const description = 'Get an Appsemble configuration option from package.json.';
 
-export function builder(yargs: Argv): Argv {
+export function builder(yargs: Argv): Argv<any> {
   return yargs.positional('key', {
     describe: 'The key whose value to get',
   });

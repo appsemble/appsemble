@@ -71,5 +71,15 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    delete: {
+      tags: ['secret'],
+      operationId: 'deleteAppSamlSecret',
+      security: [{ studio: [] }],
+      responses: {
+        204: {
+          description: 'The deleted SAML secret.',
+        },
+      },
+    },
   },
 };

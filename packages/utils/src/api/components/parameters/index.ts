@@ -15,3 +15,4 @@ export * from './organizationId';
 export * from './resourceId';
 export * from './resourceType';
 export * from './screenshotId';
+export * from './view';

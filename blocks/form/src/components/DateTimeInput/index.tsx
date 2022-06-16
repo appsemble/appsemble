@@ -32,6 +32,7 @@ export function DateTimeInput({
   const { label, name, placeholder, readOnly, tag } = field;
 
   const dateTimeLabel = utils.remap(label, value) as string;
+  const confirmLabel = utils.formatMessage('confirmLabel');
 
   const required = isRequired(field);
 
@@ -50,10 +51,14 @@ export function DateTimeInput({
 
   return (
     <DateTimeComponent
+      confirm={field.confirm}
+      confirmLabel={confirmLabel}
+      dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty && error}
+      icon={field.icon}
       id={name}
       iso
       label={dateTimeLabel}

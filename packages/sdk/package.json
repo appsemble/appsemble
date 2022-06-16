@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.20.7",
+  "version": "0.20.9",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -32,7 +32,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.7",
+    "@appsemble/types": "0.20.9",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^2.0.0"
   }

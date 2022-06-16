@@ -55,6 +55,12 @@ interface FormRequirement extends BaseRequirement {
   isValid: string[];
 
   /**
+   * Whether the field should always be validated
+   * even if the previous value was valid and hasn’t changed.
+   */
+  alwaysValidate?: boolean;
+
+  /**
    * The name of the action to trigger when the requirement is checked.
    *
    * @format action
@@ -284,6 +290,13 @@ interface AbstractField {
  */
 export interface DateTimeField extends AbstractField {
   /**
+   * Whether the confirm button should be shown
+   *
+   * @default false
+   */
+  confirm?: boolean;
+
+  /**
    * The type of the field.
    */
   type: 'date-time';
@@ -306,9 +319,11 @@ export interface DateTimeField extends AbstractField {
   minuteIncrement?: number;
 
   /**
-   * Whether weekends should be disabled.
+   * The remapper used for formatting the date value’s label.
+   *
+   * The date value can be accessed using the `root` remapper.
    */
-  disableWeekends?: boolean;
+  dateFormat?: Remapper;
 
   /**
    * All requirements that are applicable to this type of field.
@@ -320,6 +335,13 @@ export interface DateTimeField extends AbstractField {
  * A date/time picker that results in an exact date and time.
  */
 export interface DateField extends AbstractField {
+  /**
+   * Whether the confirm button should be shown
+   *
+   * @default false
+   */
+  confirm?: boolean;
+
   /**
    * The type of the field.
    */
@@ -333,6 +355,13 @@ export interface DateField extends AbstractField {
    * @default 1
    */
   startOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+  /**
+   * The remapper used for formatting the date value’s label.
+   *
+   * The date value can be accessed using the `root` remapper.
+   */
+  dateFormat?: Remapper;
 
   /**
    * All requirements that are applicable to this type of field.
@@ -882,6 +911,7 @@ declare module '@appsemble/sdk' {
   }
 
   interface Messages {
+    confirmLabel: never;
     submitLabel: never;
     submitError: never;
     optionalLabel: never;

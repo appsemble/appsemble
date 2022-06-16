@@ -26,6 +26,7 @@ Add the following to the app definition at the root of the YAML:
 ```yaml copy
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
@@ -83,7 +84,7 @@ pages:
   - name: People
     blocks:
       - type: table
-        version: 0.20.7
+        version: 0.20.9
         events:
           listen:
             data: people
@@ -124,7 +125,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.query
@@ -133,7 +134,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.7
+        version: 0.20.9
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -148,6 +149,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       required:
@@ -172,7 +174,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.query
@@ -181,7 +183,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.7
+        version: 0.20.9
         events:
           listen:
             data: people
@@ -205,7 +207,7 @@ Add a new page:
 - name: Register
   blocks:
     - type: form
-      version: 0.20.7
+      version: 0.20.9
       actions:
         onSubmit:
           type: resource.create
@@ -262,6 +264,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -287,7 +290,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.20.7
+        version: 0.20.9
         parameters:
         fields:
           - name: firstName
@@ -321,7 +324,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.query
@@ -330,7 +333,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.7
+        version: 0.20.9
         events:
           listen:
             data: people
@@ -356,7 +359,7 @@ Add a new page:
     - id
   blocks:
     - type: data-loader
-      version: 0.20.7
+      version: 0.20.9
       actions:
         onLoad:
           type: resource.get
@@ -365,7 +368,7 @@ Add a new page:
         emit:
           data: person
     - type: detail-viewer
-      version: 0.20.7
+      version: 0.20.9
       events:
         listen:
           data: person
@@ -408,6 +411,7 @@ defaultPage: People
 
 resources:
   person:
+    roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -433,7 +437,7 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onSubmit:
             type: resource.create
@@ -474,7 +478,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.query
@@ -483,7 +487,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onClick:
             type: link
@@ -505,7 +509,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.20.7
+        version: 0.20.9
         actions:
           onLoad:
             type: resource.get
@@ -514,7 +518,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.20.7
+        version: 0.20.9
         events:
           listen:
             data: person

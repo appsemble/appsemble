@@ -171,7 +171,9 @@ function validateBlocks(
         validator.customFormats['event-listener'] = (property) =>
           has(block.events?.listen, property);
         validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
-        const result = validator.validate(block.parameters || {}, version.parameters, {});
+        const result = validator.validate(block.parameters || {}, version.parameters, {
+          nestedErrors: true,
+        });
         if ('parameters' in block) {
           for (const error of result.errors) {
             report(error.instance, error.message, [...path, 'parameters', ...error.path]);
@@ -304,6 +306,16 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
         ['resources', resourceName, 'update'],
         [...defaultAllow, '$author'],
       );
+
+      if (resource.views) {
+        for (const [viewName, view] of Object.entries(resource.views)) {
+          checkRoles(
+            view,
+            ['resources', resourceName, 'views', viewName],
+            [...defaultAllow, '$author'],
+          );
+        }
+      }
     }
   }
   iterApp(definition, { onBlock: checkRoles, onPage: checkRoles });
@@ -441,7 +453,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type.startsWith('resource.')) {
         // All of the actions starting with `resource.` contain a property called `resource`.
-        const { resource: resourceName } = action as ResourceGetActionDefinition;
+        const { resource: resourceName, view } = action as ResourceGetActionDefinition;
         const resource = definition.resources?.[resourceName];
 
         if (!resource) {
@@ -473,6 +485,31 @@ function validateActions(definition: AppDefinition, report: Report): void {
               [...path, 'resource'],
             );
             return;
+          }
+
+          if ((type === 'get' || type === 'query') && view) {
+            if (!resource.views?.[view]) {
+              report(action.type, 'refers to a view that doesn’t exist', [...path, 'view']);
+              return;
+            }
+
+            const viewRoles = resource?.views?.[view].roles;
+            if (!viewRoles?.length) {
+              report(action.type, 'refers to a resource view that is currently set to private', [
+                ...path,
+                'view',
+              ]);
+              return;
+            }
+
+            if (viewRoles && !viewRoles.length && !definition.security) {
+              report(
+                action.type,
+                'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+                [...path, 'view'],
+              );
+              return;
+            }
           }
         }
       }
