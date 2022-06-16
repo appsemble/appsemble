@@ -8,13 +8,7 @@ Appsemble needs an app secret for various internal settings.
 
 ```sh
 kubectl create secret generic appsemble \
-  --from-literal "secret=$(openssl rand -base64 30)"
-```
-
-A separate secret is used for settings that are encrypted using AES.
-
-```sh
-kubectl create secret generic appsemble \
+  --from-literal "secret=$(openssl rand -base64 30)" \
   --from-literal "aes-secret=$(openssl rand -base64 32)"
 ```
 

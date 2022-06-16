@@ -2575,16 +2575,13 @@ describe('patchApp', () => {
   });
 
   it('should update the email settings', async () => {
-    const app = await App.create(
-      {
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        path: 'test-app',
-        vapidPublicKey: 'a',
-        vapidPrivateKey: 'b',
-        OrganizationId: organization.id,
-      },
-      { raw: true },
-    );
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
 
     authorizeStudio(user);
     const response = await request.patch(
