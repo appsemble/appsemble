@@ -2587,7 +2587,7 @@ describe('patchApp', () => {
     const response = await request.patch(
       `/api/apps/${app.id}`,
       createFormData({
-        emailName: 'Test!',
+        emailName: 'Test Email <test@example.com>',
         emailHost: 'smtp.google.com',
         emailUser: 'user',
         emailPassword: 'password',
@@ -2612,7 +2612,7 @@ describe('patchApp', () => {
           "name": "Test App",
         },
         "domain": null,
-        "emailName": "Test!",
+        "emailName": "Test Email <test@example.com>",
         "googleAnalyticsID": null,
         "hasIcon": false,
         "hasMaskableIcon": false,
@@ -2640,6 +2640,7 @@ describe('patchApp', () => {
 
       {
         "emailHost": "smtp.google.com",
+        "emailName": "Test Email <test@example.com>",
         "emailPassword": true,
         "emailPort": 123,
         "emailSecure": false,
@@ -3743,6 +3744,7 @@ describe('getAppEmailSettings', () => {
 
       {
         "emailHost": null,
+        "emailName": null,
         "emailPassword": false,
         "emailPort": 587,
         "emailSecure": true,
@@ -3760,6 +3762,7 @@ describe('getAppEmailSettings', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
       emailHost: 'smtp.gmail.com',
+      emailName: 'test@example.com',
       emailUser: 'example',
       password: encrypt('password', 'key'),
     });
@@ -3773,6 +3776,7 @@ describe('getAppEmailSettings', () => {
 
       {
         "emailHost": "smtp.gmail.com",
+        "emailName": "test@example.com",
         "emailPassword": false,
         "emailPort": 587,
         "emailSecure": true,

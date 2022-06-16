@@ -114,6 +114,7 @@ export async function email({
     }
   }
 
+  const { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser } = app;
   const { html, subject, text } = await renderEmail(body, {}, sub);
   await mailer.sendEmail({
     ...(to && { to }),
@@ -124,7 +125,7 @@ export async function email({
     html,
     text,
     attachments,
-    app,
+    app: { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser },
   });
 
   return data;

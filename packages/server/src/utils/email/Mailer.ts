@@ -73,7 +73,10 @@ export interface SendMailOptions {
   /**
    * An app containing custom SMTP settings.
    */
-  app?: App;
+  app?: Pick<
+    App,
+    'emailHost' | 'emailName' | 'emailPassword' | 'emailPort' | 'emailSecure' | 'emailUser'
+  >;
 }
 
 /**
