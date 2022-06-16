@@ -8,7 +8,7 @@ export const messages = defineMessages({
   emailSettings: 'Email settings',
   emailName: 'Email name',
   emailNameDescription:
-    'The name displayed for emails sent for this app. For example: John Doe <test@example.com>, or just ‘test@example.com’',
+    "The name displayed for emails sent for this app. For example: John Doe '<'test@example.com'>', or just ‘test@example.com’",
   emailUser: 'Email username',
   emailUserDescription: 'The username used for authentication for the custom SMTP server.',
   emailHost: 'Email host',
