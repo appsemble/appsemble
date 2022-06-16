@@ -2,6 +2,7 @@ import {
   AsyncCheckbox,
   CheckboxField,
   Content,
+  PasswordField,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
@@ -30,7 +31,7 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
-const passwordPlaceholder = '***********';
+const passwordPlaceholder = '●●●●●●●●●●●';
 
 export function SecretsPage(): ReactElement {
   useMeta(messages.title);
@@ -52,10 +53,6 @@ export function SecretsPage(): ReactElement {
     async (values: EmailFormParameters) => {
       const formData = new FormData();
       for (const [key, value] of Object.entries(values)) {
-        if (key === 'emailPassword' && value === passwordPlaceholder) {
-          continue;
-        }
-
         formData.set(key, value);
       }
       await axios.patch(`/api/apps/${app.id}`, formData);
@@ -110,7 +107,7 @@ export function SecretsPage(): ReactElement {
             <SimpleForm
               defaultValues={{
                 ...emailSettings,
-                emailPassword: emailSettings.emailPassword ? passwordPlaceholder : '',
+                emailPassword: '',
               }}
               onSubmit={onSaveEmailSettings}
             >
@@ -136,12 +133,12 @@ export function SecretsPage(): ReactElement {
               />
               <SimpleFormField
                 autoComplete="off"
+                component={PasswordField}
                 help={<FormattedMessage {...messages.emailPasswordDescription} />}
-                icon="unlock"
                 label={<FormattedMessage {...messages.emailPassword} />}
                 name="emailPassword"
+                placeholder={passwordPlaceholder}
                 required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
-                type="password"
               />
               <SimpleFormField
                 help={<FormattedMessage {...messages.emailPortDescription} />}
