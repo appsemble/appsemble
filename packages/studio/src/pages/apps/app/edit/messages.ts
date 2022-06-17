@@ -14,4 +14,5 @@ export const messages = defineMessages({
   coreStyle: 'Core style',
   sharedStyle: 'Shared style',
   cancel: 'Cancel',
+  notification: 'You have unsaved changes, do you wish to continue?',
 });
