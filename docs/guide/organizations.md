@@ -29,3 +29,31 @@ These roles are the following:
   create and delete apps, as well as inviting other users to the organization.
 - `Owner`: Owners are allowed to manage members by assigning roles or removing them from the
   organization, and update the name and icon of the organization.
+
+| Permissions                                 | Member | AppEditor | Maintainer | Owner |
+| ------------------------------------------- | :----: | :-------: | :--------: | :---: |
+| Create new apps                             |        |     ✓     |     ✓      |   ✓   |
+| Copy apps                                   |        |     ✓     |     ✓      |   ✓   |
+| Delete apps                                 |        |     ✓     |     ✓      |   ✓   |
+| Edit app's translations                     |        |     ✓     |     ✓      |   ✓   |
+| Edit app's settings                         |        |           |     ✓      |   ✓   |
+| Edit name of an organization                |        |           |            |   ✓   |
+| Edit logo of an organization                |        |           |            |   ✓   |
+| Invite new members into an organization     |        |           |            |   ✓   |
+| Remove existing invites                     |        |           |            |   ✓   |
+| Resending invites                           |        |           |            |   ✓   |
+| Create and delete assets                    |        |     ✓     |     ✓      |   ✓   |
+| Remove organization members                 |        |           |            |   ✓   |
+| Create resources                            |        |     ✓     |     ✓      |   ✓   |
+| Edit resources                              |        |     ✓     |     ✓      |   ✓   |
+| Delete resources                            |        |     ✓     |     ✓      |   ✓   |
+| Change roles of organization members        |        |           |            |   ✓   |
+| Create and delete teams                     |        |           |            |   ✓   |
+| Manage members on team                      |        |           |            |   ✓   |
+| Publish blocks                              |        |           |     ✓      |   ✓   |
+| Send manual push notifications              |        |     ✓     |     ✓      |   ✓   |
+| Read assets                                 |   ✓    |     ✓     |     ✓      |   ✓   |
+| Read resources                              |   ✓    |     ✓     |     ✓      |   ✓   |
+| Edit resources                              |        |           |     ✓      |   ✓   |
+| View private apps of an organization        |   ✓    |     ✓     |     ✓      |   ✓   |
+| View the list of members in an organization |        |           |            |   ✓   |
