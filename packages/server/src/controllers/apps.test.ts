@@ -29,10 +29,12 @@ let organization: Organization;
 let clock: InstalledClock;
 let user: User;
 
+const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
+
 useTestDatabase('apps');
 
 beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' });
+  setArgv(argv);
   const server = await createServer();
   await setTestApp(server);
 });
@@ -1974,12 +1976,12 @@ describe('createApp', () => {
     let mock: MockAdapter;
 
     beforeEach(() => {
-      setArgv({ host: 'http://localhost', remote: 'https://appsemble.example', secret: 'test' });
+      setArgv({ ...argv, remote: 'https://appsemble.example' });
       mock = new MockAdapter(axios);
     });
 
     afterEach(() => {
-      setArgv({ host: 'http://localhost', secret: 'test' });
+      setArgv(argv);
       mock.reset();
     });
 
