@@ -243,8 +243,8 @@ describe('createTemplateApp', () => {
     authorizeStudio();
     const response = await request.post<App>('/api/templates', {
       templateId: template.id,
-      name: undefined,
-      description: undefined,
+      name: 'Test app',
+      description: 'This is a test description',
       organizationId: 'testorganization',
       resources: true,
     });
