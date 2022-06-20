@@ -48,7 +48,7 @@ export function DateInput({
       dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
-      error={dirty && error}
+      error={dirty ? error : null}
       icon={field.icon}
       id={name}
       label={dateLabel}

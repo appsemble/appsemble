@@ -75,14 +75,14 @@ export function AppScreenshots(): ReactElement {
   return (
     <>
       <div className={`has-background-white-ter is-flex ${styles.wrapper}`}>
-        {mayManageScreenshots && (
+        {mayManageScreenshots ? (
           <Button
             className={`my-2 mr-5 ${styles.createScreenshotButton}`}
             onClick={screenshotModal.enable}
           >
             <FormattedMessage {...messages.addNewScreenshot} />
           </Button>
-        )}
+        ) : null}
         {app.screenshotUrls.length !== 0 && (
           <div className="my-4 is-flex">
             <Button
@@ -130,7 +130,7 @@ export function AppScreenshots(): ReactElement {
           name="screenshot"
           onChange={onScreenshotChange}
           preview={
-            uploadingScreenshot && (
+            uploadingScreenshot ? (
               <figure className={`mb-2 ${styles.screenshotPreview}`}>
                 <img
                   alt={formatMessage(messages.screenshot)}
@@ -138,7 +138,7 @@ export function AppScreenshots(): ReactElement {
                   src={uploadingScreenshotPreview}
                 />
               </figure>
-            )
+            ) : null
           }
           required
         />

@@ -49,16 +49,16 @@ export function AppRoutes(): ReactElement {
           <AppSettings />
         </Route>
 
-        {!isLoggedIn && !hasCustomLogin && (
+        {!isLoggedIn && !hasCustomLogin ? (
           <Route exact path="/:lang/Login" sensitive>
             <Login />
           </Route>
-        )}
-        {!isLoggedIn && !hasCustomRegister && (
+        ) : null}
+        {!isLoggedIn && !hasCustomRegister ? (
           <Route exact path="/:lang/Register" sensitive>
             {hasCustomRegister ? <Page /> : <Register />}
           </Route>
-        )}
+        ) : null}
         <Route exact path="/:lang/Team-Invite" sensitive>
           <TeamInvite />
         </Route>
@@ -74,11 +74,11 @@ export function AppRoutes(): ReactElement {
         <Route exact path="/:lang/Callback" sensitive>
           <OpenIDCallback />
         </Route>
-        {sentryDsn && (
+        {sentryDsn ? (
           <Route exact path="/:lang/Feedback" sensitive>
             <SentryFeedback />
           </Route>
-        )}
+        ) : null}
         <Route path="/:lang/:pageId">
           <Page />
         </Route>

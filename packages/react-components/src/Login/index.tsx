@@ -83,14 +83,14 @@ export function Login({
       />
       <FormButtons>
         <div>
-          {enableRegistration && (
+          {enableRegistration ? (
             <Link
               className="is-block"
               to={{ pathname: registerLink, search: location.search, hash: location.hash }}
             >
               <FormattedMessage {...messages.registerLink} />
             </Link>
-          )}
+          ) : null}
           <Link className="is-block" to={resetPasswordLink}>
             <FormattedMessage {...messages.forgotPasswordLink} />
           </Link>

@@ -25,12 +25,12 @@ export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
         <FormattedMessage {...messages.download} />
       </Button>
       <div className="box">
-        {isImage && <img alt={asset.filename || `Asset ${asset.id}`} src={url} />}
+        {isImage ? <img alt={asset.filename || `Asset ${asset.id}`} src={url} /> : null}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        {isAudio && <audio controls src={url} />}
+        {isAudio ? <audio controls src={url} /> : null}
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        {isVideo && <video controls src={url} />}
-        {!isImage && !isAudio && !isVideo && <FormattedMessage {...messages.notSupported} />}
+        {isVideo ? <video controls src={url} /> : null}
+        {!isImage && !isAudio && !isVideo ? <FormattedMessage {...messages.notSupported} /> : null}
       </div>
     </Content>
   );

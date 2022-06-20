@@ -69,22 +69,22 @@ export function ObjectInput({
                 onChange={changeArray}
                 value={val}
               />
-              {(!minLength || values.length > minLength) && (
+              {!minLength || values.length > minLength ? (
                 <FormButtons>
                   <Button icon="minus" name={String(index)} onClick={removeEntry}>
                     {utils.remap(field.removeLabel ?? 'Remove', val) as string}
                   </Button>
                 </FormButtons>
-              )}
+              ) : null}
             </div>
           ))}
-          {(!maxLength || values.length < maxLength) && (
+          {!maxLength || values.length < maxLength ? (
             <FormButtons className="mt-2">
               <Button icon="plus" onClick={addEntry}>
                 {utils.remap(field.addLabel ?? 'Add', value) as string}
               </Button>
             </FormButtons>
-          )}
+          ) : null}
         </>
       ) : (
         <ObjectEntry

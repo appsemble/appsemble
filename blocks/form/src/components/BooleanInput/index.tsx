@@ -31,7 +31,7 @@ export function BooleanInput({
       className={classNames('appsemble-boolean', { 'is-danger': error })}
       color={color}
       disabled={disabled}
-      error={dirty && error}
+      error={dirty ? error : null}
       label={checkboxLabel as string}
       name={name}
       onChange={onChange}

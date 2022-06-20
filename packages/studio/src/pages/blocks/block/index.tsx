@@ -124,14 +124,16 @@ export function BlockPage(): ReactElement {
       </SelectField>
 
       <Title level={4}>{untranslatedMessages.description}</Title>
-      {selectedBlockManifest.description && <Message>{selectedBlockManifest.description}</Message>}
-      {selectedBlockManifest.longDescription && (
+      {selectedBlockManifest.description ? (
+        <Message>{selectedBlockManifest.description}</Message>
+      ) : null}
+      {selectedBlockManifest.longDescription ? (
         <MarkdownContent
           className={styles.description}
           content={selectedBlockManifest.longDescription}
           lang={defaultLocale}
         />
-      )}
+      ) : null}
 
       {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
         <>
@@ -145,14 +147,14 @@ export function BlockPage(): ReactElement {
           <ActionTable manifest={selectedBlockManifest} />
         </>
       )}
-      {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
+      {selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen ? (
         <>
           <Title level={4}>{untranslatedMessages.events}</Title>
           <EventTable manifest={selectedBlockManifest} />
         </>
-      )}
+      ) : null}
 
-      {selectedBlockManifest.parameters?.definitions && (
+      {selectedBlockManifest.parameters?.definitions ? (
         <>
           <Title level={4}>{untranslatedMessages.definitions}</Title>
           {Object.entries(selectedBlockManifest.parameters.definitions).map(([key, definition]) => (
@@ -166,7 +168,7 @@ export function BlockPage(): ReactElement {
             </div>
           ))}
         </>
-      )}
+      ) : null}
     </Content>
   );
 }

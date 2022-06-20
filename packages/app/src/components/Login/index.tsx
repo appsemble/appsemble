@@ -91,14 +91,14 @@ export function Login(): ReactElement {
             src={`/icon-256.png?updated=${appUpdated}`}
           />
         </figure>
-        {showAppsembleLogin && (
+        {showAppsembleLogin ? (
           <PasswordLogin
             enableRegistration
             onPasswordLogin={onPasswordLogin}
             registerLink={`/${lang}/Register`}
             resetPasswordLink={`/${lang}/Reset-Password`}
           />
-        )}
+        ) : null}
         <OpenIDLogin disabled={busy.enabled} />
       </Content>
     </Main>

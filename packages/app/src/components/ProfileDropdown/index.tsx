@@ -68,21 +68,21 @@ export function ProfileDropdown(): ReactElement {
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       )}
-      {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn && (
+      {(layout?.feedback ?? 'navbar') === 'navbar' && sentryDsn ? (
         <NavbarItem icon="comment" to={`/${lang}/Feedback`}>
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
-      )}
-      {showLogin && (
+      ) : null}
+      {showLogin ? (
         <>
-          {(layout?.settings === 'navbar' || layout?.feedback === 'navbar') && (
+          {layout?.settings === 'navbar' || layout?.feedback === 'navbar' ? (
             <hr className="navbar-divider" />
-          )}
+          ) : null}
           <NavbarItem icon="sign-out-alt" onClick={logout}>
             <FormattedMessage {...messages.logoutButton} />
           </NavbarItem>
         </>
-      )}
+      ) : null}
     </NavbarDropdown>
   );
 }

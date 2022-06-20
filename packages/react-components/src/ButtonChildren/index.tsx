@@ -48,7 +48,7 @@ export function ButtonChildren({
   return icon ? (
     <>
       {iconPosition === 'left' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
-      {children && <span>{children}</span>}
+      {children ? <span>{children}</span> : null}
       {iconPosition === 'right' && <Icon icon={icon} iconSize={iconSizeModifier} size={iconSize} />}
     </>
   ) : (

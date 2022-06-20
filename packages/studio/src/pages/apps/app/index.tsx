@@ -91,7 +91,7 @@ export function AppRoutes(): ReactElement {
       <MenuSection
         label={
           <>
-            {app.locked && <Icon icon="lock" title={formatMessage(messages.locked)} />}
+            {app.locked ? <Icon icon="lock" title={formatMessage(messages.locked)} /> : null}
             <span className={classNames({ 'pl-1': !app.locked })}>{app.definition.name}</span>
           </>
         }
@@ -108,17 +108,17 @@ export function AppRoutes(): ReactElement {
             <FormattedMessage {...messages.definition} />
           </MenuItem>
         ) : null}
-        {editPermission && (
+        {editPermission ? (
           <MenuItem icon="layer-group" to={`${url}/assets`}>
             <FormattedMessage {...messages.assets} />
           </MenuItem>
-        )}
-        {mayEditResources && (
+        ) : null}
+        {mayEditResources ? (
           <MenuItem icon="cubes" to={`${url}/resources`}>
             <FormattedMessage {...messages.resources} />
           </MenuItem>
-        )}
-        {mayEditResources && (
+        ) : null}
+        {mayEditResources ? (
           <MenuSection>
             {resourceNames.sort(compareStrings).map((resource) => (
               <MenuItem key={resource} to={`${url}/resources/${resource}`}>
@@ -126,42 +126,42 @@ export function AppRoutes(): ReactElement {
               </MenuItem>
             ))}
           </MenuSection>
-        )}
-        {editMessagePermission && (
+        ) : null}
+        {editMessagePermission ? (
           <MenuItem icon="language" to={`${url}/translations`}>
             <FormattedMessage {...messages.translations} />
           </MenuItem>
-        )}
-        {pushNotificationPermission && (
+        ) : null}
+        {pushNotificationPermission ? (
           <MenuItem icon="paper-plane" to={`${url}/notifications`}>
             <FormattedMessage {...messages.notifications} />
           </MenuItem>
-        )}
-        {editPermission && app.definition.security && (
+        ) : null}
+        {editPermission && app.definition.security ? (
           <MenuItem icon="users" to={`${url}/users`}>
             <FormattedMessage {...messages.users} />
           </MenuItem>
-        )}
-        {editPermission && app.definition.security?.teams && (
+        ) : null}
+        {editPermission && app.definition.security?.teams ? (
           <MenuItem icon="hands-helping" to={`${url}/teams`}>
             <FormattedMessage {...messages.teams} />
           </MenuItem>
-        )}
-        {editPermission && (
+        ) : null}
+        {editPermission ? (
           <MenuItem icon="clock" to={`${url}/snapshots`}>
             <FormattedMessage {...messages.snapshots} />
           </MenuItem>
-        )}
-        {editPermission && (
+        ) : null}
+        {editPermission ? (
           <MenuItem icon="cogs" to={`${url}/settings`}>
             <FormattedMessage {...messages.settings} />
           </MenuItem>
-        )}
-        {editPermission && (
+        ) : null}
+        {editPermission ? (
           <MenuItem icon="key" to={`${url}/secrets`}>
             <FormattedMessage {...messages.secrets} />
           </MenuItem>
-        )}
+        ) : null}
       </MenuSection>
     ),
   );

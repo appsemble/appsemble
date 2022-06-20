@@ -19,7 +19,7 @@ interface EventTableProps {
 export function EventTable({ manifest }: EventTableProps): ReactElement {
   return (
     <>
-      {manifest.events.emit && (
+      {manifest.events.emit ? (
         <>
           <Title level={5}>{messages.emitEvents}</Title>
           <Table>
@@ -41,8 +41,8 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
             </tbody>
           </Table>
         </>
-      )}
-      {manifest.events.listen && (
+      ) : null}
+      {manifest.events.listen ? (
         <>
           <Title level={5}>{messages.listenEvents}</Title>
           <Table>
@@ -64,7 +64,7 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
             </tbody>
           </Table>
         </>
-      )}
+      ) : null}
     </>
   );
 }

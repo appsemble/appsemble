@@ -216,7 +216,7 @@ bootstrap(
 
     return (
       <Form className={`${styles.root} is-flex px-2 py-2`} data-path={path} onSubmit={onSubmit}>
-        {loading && <progress className="progress is-small is-primary" />}
+        {loading ? <progress className="progress is-small is-primary" /> : null}
         <Message
           className={classNames(styles.error, { [styles.hidden]: !formErrors.some(Boolean) })}
           color="danger"
@@ -242,11 +242,11 @@ bootstrap(
           />
         ))}
         <FormButtons className="mt-4">
-          {previous && (
+          {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
               {utils.formatMessage('previousLabel')}
             </Button>
-          )}
+          ) : null}
           <Button
             color="primary"
             disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}

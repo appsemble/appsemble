@@ -88,14 +88,14 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactElem
             >
               <Message className={styles.content} color={message.color || 'danger'}>
                 <span>{message?.body}</span>
-                {message.dismissable && (
+                {message.dismissable ? (
                   <button
                     aria-label={formatMessage(messages.dismiss)}
                     className={`delete ${styles.deleteButton}`}
                     onClick={message.dismiss}
                     type="button"
                   />
-                )}
+                ) : null}
               </Message>
             </CSSTransition>
           ))}

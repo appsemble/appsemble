@@ -161,14 +161,14 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
             <option value="unlisted">{formatMessage(messages.unlisted)}</option>
             <option value="private">{formatMessage(messages.private)}</option>
           </SimpleFormField>
-          {templates[selectedTemplate].resources && (
+          {templates[selectedTemplate].resources ? (
             <SimpleFormField
               component={CheckboxField}
               label={<FormattedMessage {...messages.resources} />}
               name="includeResources"
               title={<FormattedMessage {...messages.includeResources} />}
             />
-          )}
+          ) : null}
         </ModalCard>
       ) : (
         <CreateOrganizationModal

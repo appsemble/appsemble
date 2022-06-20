@@ -40,7 +40,7 @@ export function AppRatings(): ReactElement {
       <div className="card-content">
         <HeaderControl
           className="is-marginless"
-          control={userInfo && <RateApp app={app} className="mb-4" onRate={onRate} />}
+          control={userInfo ? <RateApp app={app} className="mb-4" onRate={onRate} /> : null}
           size={4}
         >
           <FormattedMessage {...messages.ratings} />
@@ -80,11 +80,11 @@ export function AppRatings(): ReactElement {
                   {index ? <hr /> : null}
                   <div className="is-block has-text-weight-bold">
                     {rating.name || <FormattedMessage {...messages.anonymous} />}
-                    {userInfo && rating.UserId === userInfo.sub && (
+                    {userInfo && rating.UserId === userInfo.sub ? (
                       <span className="tag is-success ml-2">
                         <FormattedMessage {...messages.you} />
                       </span>
-                    )}
+                    ) : null}
                   </div>
                   <StarRating className="is-inline" value={rating.rating} />
                   <span className="is-inline has-text-grey-light is-size-7 ml-2">

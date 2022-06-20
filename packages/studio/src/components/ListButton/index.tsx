@@ -41,17 +41,17 @@ export function ListButton({
           )}
         </figure>
         <div className={`ml-4 ${styles.content}`}>
-          {title && (
+          {title ? (
             <Title className="is-marginless" size={4}>
               {title}
             </Title>
-          )}
-          {subtitle && (
+          ) : null}
+          {subtitle ? (
             <Subtitle className="is-marginless" size={5}>
               {subtitle}
             </Subtitle>
-          )}
-          {description && <span className="has-text-grey">{description}</span>}
+          ) : null}
+          {description ? <span className="has-text-grey">{description}</span> : null}
         </div>
       </Wrapper>
     </li>

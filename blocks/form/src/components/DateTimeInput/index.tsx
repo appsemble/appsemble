@@ -57,7 +57,7 @@ export function DateTimeInput({
       disable={disable}
       disabled={disabled}
       enableTime={field.type === 'date-time'}
-      error={dirty && error}
+      error={dirty ? error : null}
       icon={field.icon}
       id={name}
       iso

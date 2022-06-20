@@ -267,7 +267,7 @@ export function ResourceRow({
         </td>
       )}
 
-      {has(app, 'resources') && !filter.has('$clonable') && (
+      {has(app, 'resources') && !filter.has('$clonable') ? (
         <td>
           <AsyncCheckbox
             id={`clonable${resource.id}`}
@@ -275,7 +275,7 @@ export function ResourceRow({
             value={resource.$clonable}
           />
         </td>
-      )}
+      ) : null}
 
       {Object.entries(schema?.properties ?? {})
         .filter(([key]) => !filteredKeys.has(key) && !filter.has(key))

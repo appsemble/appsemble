@@ -113,7 +113,7 @@ export function ShareDialog({
         >
           <FormattedMessage {...messages.shareOn} values={{ name: 'Telegram' }} />
         </Button>
-        {url && (
+        {url ? (
           <>
             <Button
               className={`${styles.linkedin} ${styles.light} is-fullwidth is-justify-content-start`}
@@ -142,7 +142,7 @@ export function ShareDialog({
               <FormattedMessage {...messages.shareOn} values={{ name: 'Facebook' }} />
             </Button>
           </>
-        )}
+        ) : null}
       </div>
     </ModalCard>
   );

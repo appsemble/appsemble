@@ -280,7 +280,9 @@ export function IndexPage(): ReactElement {
                   <Checkbox
                     className={`pr-2 is-inline-block ${styles.boolean} `}
                     indeterminate={
-                      selectedResources.length && selectedResources.length !== result.data?.length
+                      selectedResources.length
+                        ? selectedResources.length !== result.data?.length
+                        : null
                     }
                     name="select-all"
                     onChange={onSelectAll}
@@ -320,11 +322,11 @@ export function IndexPage(): ReactElement {
                     <FormattedMessage {...messages.updated} />
                   </th>
                 )}
-                {has(app, 'resources') && !hiddenProperties.has('$clonable') && (
+                {has(app, 'resources') && !hiddenProperties.has('$clonable') ? (
                   <th>
                     <FormattedMessage {...messages.clonable} />
                   </th>
-                )}
+                ) : null}
                 {keys
                   .filter((key) => !hiddenProperties.has(key))
                   .map((property) => {
