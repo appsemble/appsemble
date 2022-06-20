@@ -373,7 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Annuleren",
   "studio.src.pages.apps.app.edit.coreStyle": "Corestijl",
   "studio.src.pages.apps.app.edit.errorUpdate": "Er is iets misgegaan met het updaten van de appdefinitie.",
-  "studio.src.pages.apps.app.edit.notification": "",
+  "studio.src.pages.apps.app.edit.notification": "Je heeft niet-opgeslagen wijzigingen, wil je doorgaan?",
   "studio.src.pages.apps.app.edit.preview": "Voorbeeld",
   "studio.src.pages.apps.app.edit.publish": "Publiceren",
   "studio.src.pages.apps.app.edit.resourceWarning": "De resource-definitie in deze appdefinitie bevat andere gegevens dan voorheen. Dit kan onverwachte gevolgen veroorzaken met oudere data.",
