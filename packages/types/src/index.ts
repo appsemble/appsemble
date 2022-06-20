@@ -685,6 +685,11 @@ export interface BaseActionDefinition<T extends Action['type']> {
   remap?: Remapper;
 
   /**
+   * The remapper used to transfrom the output before passing it to the next action.
+   */
+  outputRemapper?: Remapper;
+
+  /**
    * Another action that is dispatched when the action has been dispatched successfully.
    */
   onSuccess?: ActionDefinition;

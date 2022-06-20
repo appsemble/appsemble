@@ -89,6 +89,10 @@ export function createAction<T extends ActionDefinition['type']>({
         has(definition, 'remap') ? localRemap(definition.remap, args, context) : args,
         context,
       );
+
+      if (has(definition, 'outputRemapper')) {
+        result = localRemap(definition.outputRemapper, result, context);
+      }
       addBreadcrumb({
         category: 'appsemble.action',
         data: { success: type },

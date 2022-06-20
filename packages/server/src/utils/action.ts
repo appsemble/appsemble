@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, remap } from '@appsemble/utils';
+import { defaultLocale, remap, RemapperContext } from '@appsemble/utils';
 
 import { actions, ServerActionParameters } from './actions';
 import { argv } from './argv';
@@ -13,25 +13,26 @@ export async function handleAction(
   url.hostname =
     params.app.domain || `${params.app.path}.${params.app.OrganizationId}.${url.hostname}`;
   const appUrl = String(url);
-
+  const context: RemapperContext = {
+    appId: params.app.id,
+    appUrl,
+    url: String(url),
+    context: {},
+    // XXX: Implement getMessage and default language selections
+    getMessage() {
+      return null;
+    },
+    userInfo: undefined,
+    locale: params.app.definition.defaultLanguage ?? defaultLocale,
+  };
   let data =
-    'remap' in params.action
-      ? remap(params.action.remap, params.data, {
-          appId: params.app.id,
-          appUrl,
-          url: String(url),
-          context: {},
-          // XXX: Implement getMessage and default language selections
-          getMessage() {
-            return null;
-          },
-          userInfo: undefined,
-          locale: params.app.definition.defaultLanguage ?? defaultLocale,
-        })
-      : params.data;
+    'remap' in params.action ? remap(params.action.remap, params.data, context) : params.data;
 
   try {
     data = await action({ ...params, data });
+    if ('outputRemapper' in params.action) {
+      data = remap(params.action.outputRemapper, data, context);
+    }
     if (params.action.onSuccess) {
       await handleAction(actions[params.action.onSuccess.type], {
         ...params,
