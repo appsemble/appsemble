@@ -31,8 +31,6 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
-const passwordPlaceholder = '●●●●●●●●●●●';
-
 export function SecretsPage(): ReactElement {
   useMeta(messages.title);
   const { app, setApp } = useApp();
@@ -137,7 +135,7 @@ export function SecretsPage(): ReactElement {
                 help={<FormattedMessage {...messages.emailPasswordDescription} />}
                 label={<FormattedMessage {...messages.emailPassword} />}
                 name="emailPassword"
-                placeholder={passwordPlaceholder}
+                placeholder="●●●●●●●●●●●"
                 required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
               />
               <SimpleFormField
