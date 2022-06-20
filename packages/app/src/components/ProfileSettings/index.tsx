@@ -45,7 +45,6 @@ export function ProfileSettings(): ReactElement {
       setUserInfo({
         ...userInfo,
         email: data.email,
-        sub: data.id,
         name: data.name,
         picture: data.picture,
       });
