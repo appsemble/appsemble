@@ -10,10 +10,2661 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 1,
+          "length": 74,
           "valid": {
             "disableFormat": false,
             "errors": [
+              {
+                "argument": "target",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"target\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "config": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper whose result will be sent to Google Analytics as additional context",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "target": {
+                      "description": "The name of the analytics target event to send.",
+                      "type": "string",
+                    },
+                    "type": {
+                      "description": "This action sends a Google Analytics event.
+
+It returns the input data.
+",
+                      "enum": [
+                        "analytics",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "target",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"target\\"",
+              },
+              {
+                "argument": [
+                  "analytics",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: analytics",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "This action sends a Google Analytics event.
+
+It returns the input data.
+",
+                  "enum": [
+                    "analytics",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: analytics",
+              },
+              {
+                "argument": "if",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"if\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "else": {
+                      "$ref": "#/components/schemas/ActionDefinition",
+                      "description": "This action is called if the \`if\` remapper yields a falsy value.",
+                    },
+                    "if": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper to determine the condition to check.
+
+If this yields a truthy value, the \`then\` action is called. Otherwise the \`else\` action is
+called.
+",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "then": {
+                      "$ref": "#/components/schemas/ActionDefinition",
+                      "description": "This action is called if the \`if\` remapper yields a truthy value.",
+                    },
+                    "type": {
+                      "description": "Run another action if a certain contition is met.",
+                      "enum": [
+                        "condition",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "if",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"if\\"",
+              },
+              {
+                "argument": [
+                  "condition",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: condition",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Run another action if a certain contition is met.",
+                  "enum": [
+                    "condition",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: condition",
+              },
+              {
+                "argument": "blocks",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"blocks\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "blocks": {
+                      "description": "A list of blocks to display in the dialog.",
+                      "items": {
+                        "$ref": "#/components/schemas/BlockDefinition",
+                      },
+                      "type": "array",
+                    },
+                    "closable": {
+                      "default": true,
+                      "description": "Whether users are allowed to close the dialog by clicking outside of it or on the close button.",
+                      "type": "boolean",
+                    },
+                    "fullscreen": {
+                      "default": false,
+                      "description": "Whether the dialog should be displayed full screen as if it’s a new page, or as a pop-up.",
+                      "type": "boolean",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "title": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "An optional title to set in the dialog header.",
+                    },
+                    "type": {
+                      "description": "This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks temporarily.
+
+Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
+[\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
+should be supported by the app.
+",
+                      "enum": [
+                        "dialog",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "blocks",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"blocks\\"",
+              },
+              {
+                "argument": [
+                  "dialog",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: dialog",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks temporarily.
+
+Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
+[\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
+should be supported by the app.
+",
+                  "enum": [
+                    "dialog",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: dialog",
+              },
+              {
+                "argument": [
+                  "dialog.error",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: dialog.error",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Close an open dialog.
+
+The dialog action that opened the dialog will be rejected with the data passed to this action.
+",
+                  "enum": [
+                    "dialog.error",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: dialog.error",
+              },
+              {
+                "argument": [
+                  "dialog.ok",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: dialog.ok",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Close an open dialog.
+
+The dialog action that opened the dialog will be rejected with the data passed to this action.
+",
+                  "enum": [
+                    "dialog.ok",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: dialog.ok",
+              },
+              {
+                "argument": "filename",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"filename\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "filename": {
+                      "description": "The filename to save the file as. This must include a file extension.",
+                      "pattern": "\\\\.",
+                      "type": "string",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "type": {
+                      "description": "Download the data as a file.",
+                      "enum": [
+                        "download",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "filename",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"filename\\"",
+              },
+              {
+                "argument": [
+                  "download",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: download",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Download the data as a file.",
+                  "enum": [
+                    "download",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: download",
+              },
+              {
+                "argument": "subject",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"subject\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "attachments": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The attachments to include in the email.
+
+The remapper must resolve to an object containing the following properties:
+
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
+- \`filename\`: The filename to include the attachment as.
+- \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
+
+If the attachment is a string, it will be treated as the target.",
+                    },
+                    "bcc": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Email addresses in the BCC are hidden from other recipients.",
+                    },
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The body of the email. The content of the body is converted to HTML using the Markdown syntax.",
+                    },
+                    "cc": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Every email address in the CC is visible to all recipients.",
+                    },
+                    "from": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The name of the sender of the email.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "subject": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The subject of the email.",
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The address the email should be sent to. Can be either in the format of \`test@example.com\`, or \`John Doe <test@example.com>\`",
+                    },
+                    "type": {
+                      "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+                      "enum": [
+                        "email",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "subject",
+                    "body",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"subject\\"",
+              },
+              {
+                "argument": "body",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"body\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "attachments": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The attachments to include in the email.
+
+The remapper must resolve to an object containing the following properties:
+
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
+- \`filename\`: The filename to include the attachment as.
+- \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
+
+If the attachment is a string, it will be treated as the target.",
+                    },
+                    "bcc": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Email addresses in the BCC are hidden from other recipients.",
+                    },
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The body of the email. The content of the body is converted to HTML using the Markdown syntax.",
+                    },
+                    "cc": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Every email address in the CC is visible to all recipients.",
+                    },
+                    "from": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The name of the sender of the email.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "subject": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The subject of the email.",
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The address the email should be sent to. Can be either in the format of \`test@example.com\`, or \`John Doe <test@example.com>\`",
+                    },
+                    "type": {
+                      "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+                      "enum": [
+                        "email",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "subject",
+                    "body",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"body\\"",
+              },
+              {
+                "argument": [
+                  "email",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: email",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+                  "enum": [
+                    "email",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: email",
+              },
+              {
+                "argument": "event",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"event\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "event": {
+                      "description": "The name of the event to emit.",
+                      "type": "string",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "type": {
+                      "description": "This action allows for other blocks to emit data upon triggering the action.
+
+This can be used to make blocks interact with each other, such as triggering the \`data-loader\`
+block to refresh itself by sending an event action that matches the name of what the block is
+listening to.
+",
+                      "enum": [
+                        "event",
+                      ],
+                    },
+                    "waitFor": {
+                      "description": "If specified, the action will wait for this event to have been emitted and respond with its data.",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "event",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"event\\"",
+              },
+              {
+                "argument": [
+                  "event",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: event",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "This action allows for other blocks to emit data upon triggering the action.
+
+This can be used to make blocks interact with each other, such as triggering the \`data-loader\`
+block to refresh itself by sending an event action that matches the name of what the block is
+listening to.
+",
+                  "enum": [
+                    "event",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: event",
+              },
+              {
+                "argument": [
+                  "flow.back",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: flow.back",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "On [flow pages](#flow-page-definition-sub-pages), return to the previous page if
+it is present. If this is called on the first page, nothing happens.
+",
+                  "enum": [
+                    "flow.back",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: flow.back",
+              },
+              {
+                "argument": [
+                  "flow.finish",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: flow.finish",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "On [flow pages](#flow-page-definition-sub-pages), triggers the
+[\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action on the page.
+",
+                  "enum": [
+                    "flow.finish",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: flow.finish",
+              },
+              {
+                "argument": [
+                  "flow.next",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: flow.next",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "On [flow pages](#flow-page-definition-sub-pages), proceed to the next page if it
+is present. Otherwise, the flow is considered to be complete and [\`flow.finish\`](#flowfinish) will
+be called instead.
+",
+                  "enum": [
+                    "flow.next",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: flow.next",
+              },
+              {
+                "argument": "step",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"step\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "step": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The name of the step to move to.
+
+This is a remapper which gets called with the action input and context.
+",
+                    },
+                    "type": {
+                      "description": "On [flow pages](#flow-page-definition-sub-pages), move to a specific step.",
+                      "enum": [
+                        "flow.to",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "step",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"step\\"",
+              },
+              {
+                "argument": [
+                  "flow.to",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: flow.to",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "On [flow pages](#flow-page-definition-sub-pages), move to a specific step.",
+                  "enum": [
+                    "flow.to",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: flow.to",
+              },
+              {
+                "argument": "to",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"to\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "to": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                        },
+                        {
+                          "items": {
+                            "type": "string",
+                          },
+                          "type": "array",
+                        },
+                      ],
+                      "description": "The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.",
+                    },
+                    "type": {
+                      "description": "The link action can be used to redirect the user to other pages or absolute URLs.",
+                      "enum": [
+                        "link",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "to",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"to\\"",
+              },
+              {
+                "argument": [
+                  "link",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: link",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "The link action can be used to redirect the user to other pages or absolute URLs.",
+                  "enum": [
+                    "link",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: link",
+              },
+              {
+                "argument": [
+                  "link.back",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: link.back",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Link back to the previous page in the browser history.",
+                  "enum": [
+                    "link.back",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: link.back",
+              },
+              {
+                "argument": [
+                  "link.next",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: link.next",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Link to the next page in the browser history.",
+                  "enum": [
+                    "link.next",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: link.next",
+              },
+              {
+                "argument": [
+                  "log",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: log",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Output the result of the action into the console.
+
+This is mostly useful for debugging blocks during development.
+",
+                  "enum": [
+                    "log",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: log",
+              },
+              {
+                "argument": "body",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"body\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The body of the message.",
+                    },
+                    "color": {
+                      "default": "info",
+                      "description": "The Bulma color to apply to the message.",
+                      "enum": [
+                        "dark",
+                        "primary",
+                        "link",
+                        "success",
+                        "info",
+                        "warning",
+                        "danger",
+                      ],
+                    },
+                    "dismissable": {
+                      "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
+                      "type": "boolean",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "timeout": {
+                      "default": 5000,
+                      "description": "The time in milliseconds how long the message should be visible.",
+                      "type": "integer",
+                    },
+                    "type": {
+                      "description": "Display a message to the user.
+
+This is useful in combination with action chaining to notify users they have performed a certain action.
+",
+                      "enum": [
+                        "message",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "body",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"body\\"",
+              },
+              {
+                "argument": [
+                  "message",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: message",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Display a message to the user.
+
+This is useful in combination with action chaining to notify users they have performed a certain action.
+",
+                  "enum": [
+                    "message",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: message",
+              },
+              {
+                "argument": [
+                  "noop",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: noop",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Do nothing when this action is triggered.
+
+This is the default action for block actions that are not required.
+",
+                  "enum": [
+                    "noop",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: noop",
+              },
+              {
+                "argument": "url",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"url\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Performs an HTTP request.
+
+This can be used to call the Appsemble API or an external API in order to fetch data or send data.
+When sending \`POST\`, \`PUT\`, \`DELETE\` and \`PATCH\` calls the data that is currently available
+in the block gets passed through.
+
+If the content type of the request is \`text/xml\` or \`application/xml\`, the data will be
+converted to JSON.
+",
+                      "enum": [
+                        "request",
+                      ],
+                    },
+                    "url": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in the URL to send the request to.
+
+Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, or an absolute URL
+(E.g. \`https://example.com\`) for usage with external sites.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "url",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"url\\"",
+              },
+              {
+                "argument": [
+                  "request",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: request",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Performs an HTTP request.
+
+This can be used to call the Appsemble API or an external API in order to fetch data or send data.
+When sending \`POST\`, \`PUT\`, \`DELETE\` and \`PATCH\` calls the data that is currently available
+in the block gets passed through.
+
+If the content type of the request is \`text/xml\` or \`application/xml\`, the data will be
+converted to JSON.
+",
+                  "enum": [
+                    "request",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: request",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to count.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Count the number of resources a similar \`resource.query\` action would return.",
+                      "enum": [
+                        "resource.count",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.count",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.count",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Count the number of resources a similar \`resource.query\` action would return.",
+                  "enum": [
+                    "resource.count",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.count",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to create.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Create a resource.",
+                      "enum": [
+                        "resource.create",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.create",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.create",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Create a resource.",
+                  "enum": [
+                    "resource.create",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.create",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to delete.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Delete a resource.",
+                      "enum": [
+                        "resource.delete",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.delete",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.delete",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Delete a resource.",
+                  "enum": [
+                    "resource.delete",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to get.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Get a single resource.",
+                      "enum": [
+                        "resource.get",
+                      ],
+                    },
+                    "view": {
+                      "description": "The view to use for the resource.",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.get",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.get",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get a single resource.",
+                  "enum": [
+                    "resource.get",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.get",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to query.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Query a list of resources.",
+                      "enum": [
+                        "resource.query",
+                      ],
+                    },
+                    "view": {
+                      "description": "The view to use for the resource.",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.query",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.query",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Query a list of resources.",
+                  "enum": [
+                    "resource.query",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.query",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "description": "The resource action type to get the subscription state for.",
+                      "enum": [
+                        "create",
+                        "delete",
+                        "update",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to get the subscription state for.",
+                      "type": "string",
+                    },
+                    "type": {
+                      "description": "Get the status of whether or not the user is subscriped to notifications for resource modifications.",
+                      "enum": [
+                        "resource.subscription.status",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.subscription.status",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.subscription.status",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get the status of whether or not the user is subscriped to notifications for resource modifications.",
+                  "enum": [
+                    "resource.subscription.status",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.status",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "description": "The resource action type to subscribe to.",
+                      "enum": [
+                        "create",
+                        "delete",
+                        "update",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to subscribe to.",
+                      "type": "string",
+                    },
+                    "type": {
+                      "description": "Subscribe to notifications on resource modifications.",
+                      "enum": [
+                        "resource.subscription.subscribe",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.subscription.subscribe",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.subscription.subscribe",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Subscribe to notifications on resource modifications.",
+                  "enum": [
+                    "resource.subscription.subscribe",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.subscribe",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "description": "The resource action type to toggle the subscription state for.",
+                      "enum": [
+                        "create",
+                        "delete",
+                        "update",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to toggle the subscription state for.",
+                      "type": "string",
+                    },
+                    "type": {
+                      "description": "Toggle whether or not to receive notifications on resource modifications.",
+                      "enum": [
+                        "resource.subscription.toggle",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.subscription.toggle",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.subscription.toggle",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Toggle whether or not to receive notifications on resource modifications.",
+                  "enum": [
+                    "resource.subscription.toggle",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.toggle",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "description": "The resource action type to unsubscribe from.",
+                      "enum": [
+                        "create",
+                        "delete",
+                        "update",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to unsubscribe from.",
+                      "type": "string",
+                    },
+                    "type": {
+                      "description": "Unsubscribe from notifications on resource modifications.",
+                      "enum": [
+                        "resource.subscription.unsubscribe",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.subscription.unsubscribe",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.subscription.unsubscribe",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Unsubscribe from notifications on resource modifications.",
+                  "enum": [
+                    "resource.subscription.unsubscribe",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.unsubscribe",
+              },
+              {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"resource\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remap": {},
+                    "resource": {
+                      "description": "The type of the resource to query.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Update a resource.",
+                      "enum": [
+                        "resource.update",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+              },
+              {
+                "argument": [
+                  "resource.update",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.update",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Update a resource.",
+                  "enum": [
+                    "resource.update",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
+              },
+              {
+                "argument": [
+                  "share",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: share",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
+
+Depending on whether the user’s browser supports a native share function it will either display a
+native dialog for sharing links, or display a more limited fallback in a dialog.
+",
+                  "enum": [
+                    "share",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+              },
+              {
+                "argument": [
+                  "share",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: share",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
+
+Depending on whether the user’s browser supports a native share function it will either display a
+native dialog for sharing links, or display a more limited fallback in a dialog.
+",
+                  "enum": [
+                    "share",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+              },
+              {
+                "argument": "value",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"value\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "type": {
+                      "description": "The \`static\` action returns static data defined in the action definition.
+
+This is useful for example for stubbing data.
+",
+                      "enum": [
+                        "static",
+                      ],
+                    },
+                    "value": {
+                      "description": "The static value to return.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+              },
+              {
+                "argument": [
+                  "static",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: static",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "The \`static\` action returns static data defined in the action definition.
+
+This is useful for example for stubbing data.
+",
+                  "enum": [
+                    "static",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: static",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"key\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to read the data from.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Read data from the app’s local storage.",
+                      "enum": [
+                        "storage.read",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+              },
+              {
+                "argument": [
+                  "storage.read",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.read",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Read data from the app’s local storage.",
+                  "enum": [
+                    "storage.read",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"key\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to read the data from.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Read data from the app’s local storage.",
+                      "enum": [
+                        "storage.read",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+              },
+              {
+                "argument": [
+                  "storage.read",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.read",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Read data from the app’s local storage.",
+                  "enum": [
+                    "storage.read",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"key\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to store the data.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Write data to the app’s local storage.",
+                      "enum": [
+                        "storage.write",
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write to the storage entry.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+              },
+              {
+                "argument": "value",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"value\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to store the data.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Write data to the app’s local storage.",
+                      "enum": [
+                        "storage.write",
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write to the storage entry.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+              },
+              {
+                "argument": [
+                  "storage.write",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.write",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Write data to the app’s local storage.",
+                  "enum": [
+                    "storage.write",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"key\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to store the data.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Write data to the app’s local storage.",
+                      "enum": [
+                        "storage.write",
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write to the storage entry.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+              },
+              {
+                "argument": "value",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"value\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remap": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to store the data.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Write data to the app’s local storage.",
+                      "enum": [
+                        "storage.write",
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write to the storage entry.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+              },
+              {
+                "argument": [
+                  "storage.write",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.write",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Write data to the app’s local storage.",
+                  "enum": [
+                    "storage.write",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+              },
+              {
+                "argument": [
+                  "team.invite",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: team.invite",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get a list of all of the user’s teams.",
+                  "enum": [
+                    "team.invite",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: team.invite",
+              },
+              {
+                "argument": [
+                  "team.join",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: team.join",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get a list of all of the user’s teams.",
+                  "enum": [
+                    "team.join",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: team.join",
+              },
+              {
+                "argument": [
+                  "team.list",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: team.list",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Get a list of all of the user’s teams.",
+                  "enum": [
+                    "team.list",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: team.list",
+              },
+              {
+                "argument": [
+                  "throw",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: throw",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "This action throws a new exception based on the data that is passed through.
+
+This can be used to create a custom error that ends up in the error action handler.
+",
+                  "enum": [
+                    "throw",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: throw",
+              },
+              {
+                "argument": [
+                  "user.login",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: user.login",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the user to login using an email address and a password.
+
+Does nothing if the user is already logged in.",
+                  "enum": [
+                    "user.login",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: user.login",
+              },
+              {
+                "argument": "email",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"email\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "displayName": {
+                      "description": "The display name of the user.",
+                    },
+                    "email": {
+                      "description": "The email to login with.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "password": {
+                      "description": "The password to login with.",
+                    },
+                    "picture": {
+                      "description": "The image to use for the profile picture of the user.",
+                    },
+                    "properties": {
+                      "description": "The custom properties for the user.
+
+Every value will be converted to a string.",
+                    },
+                    "remap": {},
+                    "type": {
+                      "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+                      "enum": [
+                        "user.register",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "email",
+                    "password",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"email\\"",
+              },
+              {
+                "argument": "password",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property \\"password\\"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "displayName": {
+                      "description": "The display name of the user.",
+                    },
+                    "email": {
+                      "description": "The email to login with.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "password": {
+                      "description": "The password to login with.",
+                    },
+                    "picture": {
+                      "description": "The image to use for the profile picture of the user.",
+                    },
+                    "properties": {
+                      "description": "The custom properties for the user.
+
+Every value will be converted to a string.",
+                    },
+                    "remap": {},
+                    "type": {
+                      "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+                      "enum": [
+                        "user.register",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "email",
+                    "password",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property \\"password\\"",
+              },
+              {
+                "argument": [
+                  "user.register",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: user.register",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+                  "enum": [
+                    "user.register",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: user.register",
+              },
+              {
+                "argument": [
+                  "user.update",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: user.update",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Allows the user to update their existing account.
+
+Does nothing if the user isn’t logged in.",
+                  "enum": [
+                    "user.update",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: user.update",
+              },
               {
                 "argument": [
                   "<#/components/schemas/AnalyticsActionDefinition>",
@@ -211,6 +2862,7 @@ Content-Type: application/json; charset=utf-8
             },
             "options": {
               "base": "#",
+              "nestedErrors": true,
             },
             "path": [
               "actions",
@@ -355,7 +3007,7 @@ Content-Type: application/json; charset=utf-8
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 1 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 74 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -518,7 +3170,2658 @@ Content-Type: application/json; charset=utf-8
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 1 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 74 error[s]:",
+      },
+      {
+        "argument": "target",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"target\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "config": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper whose result will be sent to Google Analytics as additional context",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "target": {
+              "description": "The name of the analytics target event to send.",
+              "type": "string",
+            },
+            "type": {
+              "description": "This action sends a Google Analytics event.
+
+It returns the input data.
+",
+              "enum": [
+                "analytics",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "target",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"target\\"",
+      },
+      {
+        "argument": [
+          "analytics",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: analytics",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "This action sends a Google Analytics event.
+
+It returns the input data.
+",
+          "enum": [
+            "analytics",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: analytics",
+      },
+      {
+        "argument": "if",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"if\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "else": {
+              "$ref": "#/components/schemas/ActionDefinition",
+              "description": "This action is called if the \`if\` remapper yields a falsy value.",
+            },
+            "if": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper to determine the condition to check.
+
+If this yields a truthy value, the \`then\` action is called. Otherwise the \`else\` action is
+called.
+",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "then": {
+              "$ref": "#/components/schemas/ActionDefinition",
+              "description": "This action is called if the \`if\` remapper yields a truthy value.",
+            },
+            "type": {
+              "description": "Run another action if a certain contition is met.",
+              "enum": [
+                "condition",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "if",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"if\\"",
+      },
+      {
+        "argument": [
+          "condition",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: condition",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Run another action if a certain contition is met.",
+          "enum": [
+            "condition",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: condition",
+      },
+      {
+        "argument": "blocks",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"blocks\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "blocks": {
+              "description": "A list of blocks to display in the dialog.",
+              "items": {
+                "$ref": "#/components/schemas/BlockDefinition",
+              },
+              "type": "array",
+            },
+            "closable": {
+              "default": true,
+              "description": "Whether users are allowed to close the dialog by clicking outside of it or on the close button.",
+              "type": "boolean",
+            },
+            "fullscreen": {
+              "default": false,
+              "description": "Whether the dialog should be displayed full screen as if it’s a new page, or as a pop-up.",
+              "type": "boolean",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "title": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "An optional title to set in the dialog header.",
+            },
+            "type": {
+              "description": "This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks temporarily.
+
+Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
+[\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
+should be supported by the app.
+",
+              "enum": [
+                "dialog",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "blocks",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"blocks\\"",
+      },
+      {
+        "argument": [
+          "dialog",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: dialog",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks temporarily.
+
+Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
+[\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
+should be supported by the app.
+",
+          "enum": [
+            "dialog",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: dialog",
+      },
+      {
+        "argument": [
+          "dialog.error",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: dialog.error",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Close an open dialog.
+
+The dialog action that opened the dialog will be rejected with the data passed to this action.
+",
+          "enum": [
+            "dialog.error",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: dialog.error",
+      },
+      {
+        "argument": [
+          "dialog.ok",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: dialog.ok",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Close an open dialog.
+
+The dialog action that opened the dialog will be rejected with the data passed to this action.
+",
+          "enum": [
+            "dialog.ok",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: dialog.ok",
+      },
+      {
+        "argument": "filename",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"filename\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "description": "The filename to save the file as. This must include a file extension.",
+              "pattern": "\\\\.",
+              "type": "string",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "type": {
+              "description": "Download the data as a file.",
+              "enum": [
+                "download",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "filename",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"filename\\"",
+      },
+      {
+        "argument": [
+          "download",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: download",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Download the data as a file.",
+          "enum": [
+            "download",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: download",
+      },
+      {
+        "argument": "subject",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"subject\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "attachments": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The attachments to include in the email.
+
+The remapper must resolve to an object containing the following properties:
+
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
+- \`filename\`: The filename to include the attachment as.
+- \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
+
+If the attachment is a string, it will be treated as the target.",
+            },
+            "bcc": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Email addresses in the BCC are hidden from other recipients.",
+            },
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The body of the email. The content of the body is converted to HTML using the Markdown syntax.",
+            },
+            "cc": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Every email address in the CC is visible to all recipients.",
+            },
+            "from": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The name of the sender of the email.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "subject": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The subject of the email.",
+            },
+            "to": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The address the email should be sent to. Can be either in the format of \`test@example.com\`, or \`John Doe <test@example.com>\`",
+            },
+            "type": {
+              "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+              "enum": [
+                "email",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "subject",
+            "body",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"subject\\"",
+      },
+      {
+        "argument": "body",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"body\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "attachments": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The attachments to include in the email.
+
+The remapper must resolve to an object containing the following properties:
+
+- \`target\`: The asset ID or link to download contents from to add as an attachment. This is mutually exclusive with \`content\`.
+- \`content\`: The raw content to include as the file content. This is mutually exclusive with \`target\`.
+- \`filename\`: The filename to include the attachment as.
+- \`accept\` If the target is a URL, this will be set as the HTTP \`Accept\` header when downloading the file.
+
+If the attachment is a string, it will be treated as the target.",
+            },
+            "bcc": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Email addresses in the BCC are hidden from other recipients.",
+            },
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The body of the email. The content of the body is converted to HTML using the Markdown syntax.",
+            },
+            "cc": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The list of additional email addresses email should be sent to. Uses the same format as \`to\`. Every email address in the CC is visible to all recipients.",
+            },
+            "from": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The name of the sender of the email.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "subject": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The subject of the email.",
+            },
+            "to": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The address the email should be sent to. Can be either in the format of \`test@example.com\`, or \`John Doe <test@example.com>\`",
+            },
+            "type": {
+              "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+              "enum": [
+                "email",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "subject",
+            "body",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"body\\"",
+      },
+      {
+        "argument": [
+          "email",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: email",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "The email action can be used to send emails via the Appsemble server.
+
+If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent but the action will still continue as normal.
+",
+          "enum": [
+            "email",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: email",
+      },
+      {
+        "argument": "event",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"event\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "event": {
+              "description": "The name of the event to emit.",
+              "type": "string",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "type": {
+              "description": "This action allows for other blocks to emit data upon triggering the action.
+
+This can be used to make blocks interact with each other, such as triggering the \`data-loader\`
+block to refresh itself by sending an event action that matches the name of what the block is
+listening to.
+",
+              "enum": [
+                "event",
+              ],
+            },
+            "waitFor": {
+              "description": "If specified, the action will wait for this event to have been emitted and respond with its data.",
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "event",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"event\\"",
+      },
+      {
+        "argument": [
+          "event",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: event",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "This action allows for other blocks to emit data upon triggering the action.
+
+This can be used to make blocks interact with each other, such as triggering the \`data-loader\`
+block to refresh itself by sending an event action that matches the name of what the block is
+listening to.
+",
+          "enum": [
+            "event",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: event",
+      },
+      {
+        "argument": [
+          "flow.back",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: flow.back",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "On [flow pages](#flow-page-definition-sub-pages), return to the previous page if
+it is present. If this is called on the first page, nothing happens.
+",
+          "enum": [
+            "flow.back",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: flow.back",
+      },
+      {
+        "argument": [
+          "flow.finish",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: flow.finish",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "On [flow pages](#flow-page-definition-sub-pages), triggers the
+[\`onFlowFinish\`](#flow-page-actions-definition-on-flow-finish) action on the page.
+",
+          "enum": [
+            "flow.finish",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: flow.finish",
+      },
+      {
+        "argument": [
+          "flow.next",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: flow.next",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "On [flow pages](#flow-page-definition-sub-pages), proceed to the next page if it
+is present. Otherwise, the flow is considered to be complete and [\`flow.finish\`](#flowfinish) will
+be called instead.
+",
+          "enum": [
+            "flow.next",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: flow.next",
+      },
+      {
+        "argument": "step",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"step\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "step": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The name of the step to move to.
+
+This is a remapper which gets called with the action input and context.
+",
+            },
+            "type": {
+              "description": "On [flow pages](#flow-page-definition-sub-pages), move to a specific step.",
+              "enum": [
+                "flow.to",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "step",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"step\\"",
+      },
+      {
+        "argument": [
+          "flow.to",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: flow.to",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "On [flow pages](#flow-page-definition-sub-pages), move to a specific step.",
+          "enum": [
+            "flow.to",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: flow.to",
+      },
+      {
+        "argument": "to",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"to\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "to": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "items": {
+                    "type": "string",
+                  },
+                  "type": "array",
+                },
+              ],
+              "description": "The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage.",
+            },
+            "type": {
+              "description": "The link action can be used to redirect the user to other pages or absolute URLs.",
+              "enum": [
+                "link",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "to",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"to\\"",
+      },
+      {
+        "argument": [
+          "link",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: link",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "The link action can be used to redirect the user to other pages or absolute URLs.",
+          "enum": [
+            "link",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: link",
+      },
+      {
+        "argument": [
+          "link.back",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: link.back",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Link back to the previous page in the browser history.",
+          "enum": [
+            "link.back",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: link.back",
+      },
+      {
+        "argument": [
+          "link.next",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: link.next",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Link to the next page in the browser history.",
+          "enum": [
+            "link.next",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: link.next",
+      },
+      {
+        "argument": [
+          "log",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: log",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Output the result of the action into the console.
+
+This is mostly useful for debugging blocks during development.
+",
+          "enum": [
+            "log",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: log",
+      },
+      {
+        "argument": "body",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"body\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The body of the message.",
+            },
+            "color": {
+              "default": "info",
+              "description": "The Bulma color to apply to the message.",
+              "enum": [
+                "dark",
+                "primary",
+                "link",
+                "success",
+                "info",
+                "warning",
+                "danger",
+              ],
+            },
+            "dismissable": {
+              "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
+              "type": "boolean",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "timeout": {
+              "default": 5000,
+              "description": "The time in milliseconds how long the message should be visible.",
+              "type": "integer",
+            },
+            "type": {
+              "description": "Display a message to the user.
+
+This is useful in combination with action chaining to notify users they have performed a certain action.
+",
+              "enum": [
+                "message",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "body",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"body\\"",
+      },
+      {
+        "argument": [
+          "message",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: message",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Display a message to the user.
+
+This is useful in combination with action chaining to notify users they have performed a certain action.
+",
+          "enum": [
+            "message",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: message",
+      },
+      {
+        "argument": [
+          "noop",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: noop",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Do nothing when this action is triggered.
+
+This is the default action for block actions that are not required.
+",
+          "enum": [
+            "noop",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: noop",
+      },
+      {
+        "argument": "url",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"url\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Performs an HTTP request.
+
+This can be used to call the Appsemble API or an external API in order to fetch data or send data.
+When sending \`POST\`, \`PUT\`, \`DELETE\` and \`PATCH\` calls the data that is currently available
+in the block gets passed through.
+
+If the content type of the request is \`text/xml\` or \`application/xml\`, the data will be
+converted to JSON.
+",
+              "enum": [
+                "request",
+              ],
+            },
+            "url": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in the URL to send the request to.
+
+Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, or an absolute URL
+(E.g. \`https://example.com\`) for usage with external sites.",
+            },
+          },
+          "required": [
+            "type",
+            "url",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"url\\"",
+      },
+      {
+        "argument": [
+          "request",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: request",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Performs an HTTP request.
+
+This can be used to call the Appsemble API or an external API in order to fetch data or send data.
+When sending \`POST\`, \`PUT\`, \`DELETE\` and \`PATCH\` calls the data that is currently available
+in the block gets passed through.
+
+If the content type of the request is \`text/xml\` or \`application/xml\`, the data will be
+converted to JSON.
+",
+          "enum": [
+            "request",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: request",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to count.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Count the number of resources a similar \`resource.query\` action would return.",
+              "enum": [
+                "resource.count",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.count",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.count",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Count the number of resources a similar \`resource.query\` action would return.",
+          "enum": [
+            "resource.count",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.count",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to create.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Create a resource.",
+              "enum": [
+                "resource.create",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.create",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.create",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Create a resource.",
+          "enum": [
+            "resource.create",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.create",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to delete.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Delete a resource.",
+              "enum": [
+                "resource.delete",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.delete",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.delete",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Delete a resource.",
+          "enum": [
+            "resource.delete",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.delete",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to get.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Get a single resource.",
+              "enum": [
+                "resource.get",
+              ],
+            },
+            "view": {
+              "description": "The view to use for the resource.",
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.get",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.get",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get a single resource.",
+          "enum": [
+            "resource.get",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.get",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to query.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Query a list of resources.",
+              "enum": [
+                "resource.query",
+              ],
+            },
+            "view": {
+              "description": "The view to use for the resource.",
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.query",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.query",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Query a list of resources.",
+          "enum": [
+            "resource.query",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.query",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "description": "The resource action type to get the subscription state for.",
+              "enum": [
+                "create",
+                "delete",
+                "update",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to get the subscription state for.",
+              "type": "string",
+            },
+            "type": {
+              "description": "Get the status of whether or not the user is subscriped to notifications for resource modifications.",
+              "enum": [
+                "resource.subscription.status",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.subscription.status",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.subscription.status",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get the status of whether or not the user is subscriped to notifications for resource modifications.",
+          "enum": [
+            "resource.subscription.status",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.status",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "description": "The resource action type to subscribe to.",
+              "enum": [
+                "create",
+                "delete",
+                "update",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to subscribe to.",
+              "type": "string",
+            },
+            "type": {
+              "description": "Subscribe to notifications on resource modifications.",
+              "enum": [
+                "resource.subscription.subscribe",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.subscription.subscribe",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.subscription.subscribe",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Subscribe to notifications on resource modifications.",
+          "enum": [
+            "resource.subscription.subscribe",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.subscribe",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "description": "The resource action type to toggle the subscription state for.",
+              "enum": [
+                "create",
+                "delete",
+                "update",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to toggle the subscription state for.",
+              "type": "string",
+            },
+            "type": {
+              "description": "Toggle whether or not to receive notifications on resource modifications.",
+              "enum": [
+                "resource.subscription.toggle",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.subscription.toggle",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.subscription.toggle",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Toggle whether or not to receive notifications on resource modifications.",
+          "enum": [
+            "resource.subscription.toggle",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.toggle",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "description": "The resource action type to unsubscribe from.",
+              "enum": [
+                "create",
+                "delete",
+                "update",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to unsubscribe from.",
+              "type": "string",
+            },
+            "type": {
+              "description": "Unsubscribe from notifications on resource modifications.",
+              "enum": [
+                "resource.subscription.unsubscribe",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.subscription.unsubscribe",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.subscription.unsubscribe",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Unsubscribe from notifications on resource modifications.",
+          "enum": [
+            "resource.subscription.unsubscribe",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.subscription.unsubscribe",
+      },
+      {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"resource\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remap": {},
+            "resource": {
+              "description": "The type of the resource to query.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Update a resource.",
+              "enum": [
+                "resource.update",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+      },
+      {
+        "argument": [
+          "resource.update",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.update",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Update a resource.",
+          "enum": [
+            "resource.update",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
+      },
+      {
+        "argument": [
+          "share",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: share",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
+
+Depending on whether the user’s browser supports a native share function it will either display a
+native dialog for sharing links, or display a more limited fallback in a dialog.
+",
+          "enum": [
+            "share",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+      },
+      {
+        "argument": [
+          "share",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: share",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
+
+Depending on whether the user’s browser supports a native share function it will either display a
+native dialog for sharing links, or display a more limited fallback in a dialog.
+",
+          "enum": [
+            "share",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+      },
+      {
+        "argument": "value",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"value\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "type": {
+              "description": "The \`static\` action returns static data defined in the action definition.
+
+This is useful for example for stubbing data.
+",
+              "enum": [
+                "static",
+              ],
+            },
+            "value": {
+              "description": "The static value to return.",
+            },
+          },
+          "required": [
+            "type",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+      },
+      {
+        "argument": [
+          "static",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: static",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "The \`static\` action returns static data defined in the action definition.
+
+This is useful for example for stubbing data.
+",
+          "enum": [
+            "static",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: static",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"key\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to read the data from.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Read data from the app’s local storage.",
+              "enum": [
+                "storage.read",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "key",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+      },
+      {
+        "argument": [
+          "storage.read",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.read",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Read data from the app’s local storage.",
+          "enum": [
+            "storage.read",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"key\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to read the data from.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Read data from the app’s local storage.",
+              "enum": [
+                "storage.read",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "key",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+      },
+      {
+        "argument": [
+          "storage.read",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.read",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Read data from the app’s local storage.",
+          "enum": [
+            "storage.read",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"key\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to store the data.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Write data to the app’s local storage.",
+              "enum": [
+                "storage.write",
+              ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write to the storage entry.",
+            },
+          },
+          "required": [
+            "type",
+            "key",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+      },
+      {
+        "argument": "value",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"value\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to store the data.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Write data to the app’s local storage.",
+              "enum": [
+                "storage.write",
+              ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write to the storage entry.",
+            },
+          },
+          "required": [
+            "type",
+            "key",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+      },
+      {
+        "argument": [
+          "storage.write",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.write",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Write data to the app’s local storage.",
+          "enum": [
+            "storage.write",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"key\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to store the data.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Write data to the app’s local storage.",
+              "enum": [
+                "storage.write",
+              ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write to the storage entry.",
+            },
+          },
+          "required": [
+            "type",
+            "key",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+      },
+      {
+        "argument": "value",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"value\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remap": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to store the data.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+              ],
+            },
+            "type": {
+              "description": "Write data to the app’s local storage.",
+              "enum": [
+                "storage.write",
+              ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write to the storage entry.",
+            },
+          },
+          "required": [
+            "type",
+            "key",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+      },
+      {
+        "argument": [
+          "storage.write",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.write",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Write data to the app’s local storage.",
+          "enum": [
+            "storage.write",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+      },
+      {
+        "argument": [
+          "team.invite",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: team.invite",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get a list of all of the user’s teams.",
+          "enum": [
+            "team.invite",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: team.invite",
+      },
+      {
+        "argument": [
+          "team.join",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: team.join",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get a list of all of the user’s teams.",
+          "enum": [
+            "team.join",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: team.join",
+      },
+      {
+        "argument": [
+          "team.list",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: team.list",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Get a list of all of the user’s teams.",
+          "enum": [
+            "team.list",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: team.list",
+      },
+      {
+        "argument": [
+          "throw",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: throw",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "This action throws a new exception based on the data that is passed through.
+
+This can be used to create a custom error that ends up in the error action handler.
+",
+          "enum": [
+            "throw",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: throw",
+      },
+      {
+        "argument": [
+          "user.login",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: user.login",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the user to login using an email address and a password.
+
+Does nothing if the user is already logged in.",
+          "enum": [
+            "user.login",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: user.login",
+      },
+      {
+        "argument": "email",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"email\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "description": "The display name of the user.",
+            },
+            "email": {
+              "description": "The email to login with.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "password": {
+              "description": "The password to login with.",
+            },
+            "picture": {
+              "description": "The image to use for the profile picture of the user.",
+            },
+            "properties": {
+              "description": "The custom properties for the user.
+
+Every value will be converted to a string.",
+            },
+            "remap": {},
+            "type": {
+              "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+              "enum": [
+                "user.register",
+              ],
+            },
+          },
+          "required": [
+            "email",
+            "password",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"email\\"",
+      },
+      {
+        "argument": "password",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property \\"password\\"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "displayName": {
+              "description": "The display name of the user.",
+            },
+            "email": {
+              "description": "The email to login with.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "password": {
+              "description": "The password to login with.",
+            },
+            "picture": {
+              "description": "The image to use for the profile picture of the user.",
+            },
+            "properties": {
+              "description": "The custom properties for the user.
+
+Every value will be converted to a string.",
+            },
+            "remap": {},
+            "type": {
+              "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+              "enum": [
+                "user.register",
+              ],
+            },
+          },
+          "required": [
+            "email",
+            "password",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property \\"password\\"",
+      },
+      {
+        "argument": [
+          "user.register",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: user.register",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the user to register a new account using an email address and a password.
+
+Does nothing if the user is already logged in.",
+          "enum": [
+            "user.register",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: user.register",
+      },
+      {
+        "argument": [
+          "user.update",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: user.update",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Allows the user to update their existing account.
+
+Does nothing if the user isn’t logged in.",
+          "enum": [
+            "user.update",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: user.update",
       },
       {
         "argument": [
