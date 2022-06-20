@@ -3,54 +3,54 @@
     "icon": "battery-empty",
     "text": "Quack",
     "color": "primary",
-    "assetId": "../assets/quack.mp3"
+    "assetId": "quack"
   },
   {
     "icon": "play",
     "text": "Wow",
     "color": "info",
-    "assetId": "../assets/wow.mp3"
+    "assetId": "wow"
   },
   {
     "icon": "drum",
     "text": "Drums",
     "color": "link",
-    "assetId": "../assets/drums.mp3"
+    "assetId": "drums"
   },
   {
     "icon": "compact-disc",
     "text": "Mixtape",
     "color": "default",
-    "assetId": "../assets/mixtape.mp3"
+    "assetId": "mixtape"
   },
   {
     "icon": "bullhorn",
     "text": "Horn",
     "color": "warning",
-    "assetId": "../assets/horn.mp3"
+    "assetId": "horn"
   },
   {
     "icon": "exclamation",
     "text": "Error",
     "color": "danger",
-    "assetId": "../assets/error.mp3"
+    "assetId": "error"
   },
   {
     "icon": "check",
     "text": "Idea",
     "color": "success",
-    "assetId": "../assets/idea.mp3"
+    "assetId": "idea"
   },
   {
     "icon": "hand-fist",
     "text": "Punch",
     "color": "dark",
-    "assetId": "../assets/punch.mp3"
+    "assetId": "punch"
   },
   {
     "icon": "play",
     "text": "Play",
     "color": "primary",
-    "assetId": "../assets/quack.mp3"
+    "assetId": "quack"
   }
 ]
