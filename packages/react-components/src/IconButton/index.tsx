@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/types';
 import { fa } from '@appsemble/web-utils';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';

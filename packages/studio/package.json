@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@appsemble/react-components": "0.20.9",
-    "@appsemble/sdk": "0.20.9",
     "@appsemble/types": "0.20.9",
     "@appsemble/utils": "0.20.9",
     "@appsemble/web-utils": "0.20.9",

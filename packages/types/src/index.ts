@@ -1,25 +1,30 @@
-import { Action, BaseMessage, HTTPMethods, LogAction, Theme } from '@appsemble/sdk/src/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
+import { Action, LogAction } from './action';
 import { AppVisibility, TeamsDefinition } from './app';
+import { BulmaColor } from './bulma';
+import { HTTPMethods } from './http';
+import { Theme } from './theme';
 
+export * from './action';
 export * from './app';
 export * from './appMember';
 export * from './asset';
 export * from './authentication';
 export * from './author';
+export * from './bulma';
+export * from './http';
 export * from './snapshot';
 export * from './resource';
 export * from './saml';
 export * from './ssl';
 export * from './team';
 export * from './template';
+export * from './theme';
 export * from './user';
-
-export { Theme };
 
 /**
  * A representation of a generated OAuth2 authorization code response.
@@ -1075,6 +1080,29 @@ export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
    * The value to return.
    */
   value: any;
+}
+
+export interface BaseMessage {
+  /**
+   * The color to use for the message.
+   *
+   * @default 'info'
+   */
+  color?: BulmaColor;
+
+  /**
+   * The timeout period for this message (in milliseconds).
+   *
+   * @default 5000
+   */
+  timeout?: number;
+
+  /**
+   * Whether or not to show the dismiss button.
+   *
+   * @default false
+   */
+  dismissable?: boolean;
 }
 
 export type MessageActionDefinition = BaseActionDefinition<'message'> &
