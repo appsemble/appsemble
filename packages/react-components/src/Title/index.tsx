@@ -54,11 +54,11 @@ export function Title({
       ref={ref}
       {...props}
     >
-      {id && anchor && (
+      {id && anchor ? (
         <a className={styles.anchor} href={`#${id}`}>
           <span className={`fas fa-link fa-xs has-text-grey-lighter mr-${size}`} />
         </a>
-      )}
+      ) : null}
       {children}
     </Component>
   );

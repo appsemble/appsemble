@@ -77,22 +77,22 @@ export function CodeBlock({
   return (
     <div className={classNames(styles.root, className)}>
       <div className={`pt-2 ${styles.buttons}`}>
-        {filename && (
+        {filename ? (
           <Button
             className="mr-2"
             icon="download"
             onClick={onDownload}
             title={formatMessage(messages.download, { filename })}
           />
-        )}
-        {copy && (
+        ) : null}
+        {copy ? (
           <Button
             className="mr-2"
             icon="clipboard"
             onClick={onCopy}
             title={formatMessage(messages.copy)}
           />
-        )}
+        ) : null}
       </div>
       <pre className={styles.pre}>
         {typeof code === 'string' ? (

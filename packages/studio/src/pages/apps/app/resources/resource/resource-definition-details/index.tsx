@@ -45,16 +45,18 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
           }}
         />
       </p>
-      {resource.schema?.description && <MarkdownContent content={resource.schema.description} />}
+      {resource.schema?.description ? (
+        <MarkdownContent content={resource.schema.description} />
+      ) : null}
       <hr />
-      {resource.schema && (
+      {resource.schema ? (
         <>
           <Title size={4}>
             <FormattedMessage {...messages.properties} />
           </Title>
           <Schema schema={resource.schema} />
         </>
-      )}
+      ) : null}
       <hr />
       <Title size={4}>
         <FormattedMessage {...messages.endpoints} />

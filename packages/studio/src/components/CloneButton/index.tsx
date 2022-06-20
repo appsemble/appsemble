@@ -91,8 +91,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
             component={SimpleForm}
             defaultValues={defaultValues}
             footer={
-              userInfo &&
-              createOrganizations.length && (
+              userInfo && createOrganizations.length ? (
                 <>
                   <CardFooterButton onClick={closeCloneDialog}>
                     <FormattedMessage {...messages.cancel} />
@@ -101,7 +100,7 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
                     <FormattedMessage {...messages.submit} />
                   </CardFooterButton>
                 </>
-              )
+              ) : null
             }
             isActive={hash === '#clone'}
             onClose={closeCloneDialog}
@@ -145,14 +144,14 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
               <option value="unlisted">{formatMessage(messages.unlisted)}</option>
               <option value="private">{formatMessage(messages.private)}</option>
             </SimpleFormField>
-            {app.resources && (
+            {app.resources ? (
               <SimpleFormField
                 component={CheckboxField}
                 label={<FormattedMessage {...messages.resources} />}
                 name="resources"
                 title={<FormattedMessage {...messages.resourcesDescription} />}
               />
-            )}
+            ) : null}
           </ModalCard>
         ) : (
           <CreateOrganizationModal

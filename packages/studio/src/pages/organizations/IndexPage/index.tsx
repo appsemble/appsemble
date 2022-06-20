@@ -31,7 +31,7 @@ export function IndexPage(): ReactElement {
     <>
       <HeaderControl
         control={
-          userInfo && (
+          userInfo ? (
             <Button
               disabled={!userInfo?.email_verified}
               onClick={modal.enable}
@@ -39,7 +39,7 @@ export function IndexPage(): ReactElement {
             >
               <FormattedMessage {...messages.createButton} />
             </Button>
-          )
+          ) : null
         }
         level={1}
       >
@@ -87,14 +87,14 @@ export function IndexPage(): ReactElement {
           )}
         </AsyncDataView>
       </Collapsible>
-      {userInfo?.email_verified && (
+      {userInfo?.email_verified ? (
         <CreateOrganizationModal
           isActive={modal.enabled}
           onClose={modal.disable}
           onCreateOrganization={onSubmitOrganization}
           title={<FormattedMessage {...messages.createTitle} />}
         />
-      )}
+      ) : null}
     </>
   );
 }

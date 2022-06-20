@@ -147,7 +147,9 @@ export function AssetsPage(): ReactElement {
                   <Checkbox
                     className={`pr-2 is-inline-block ${styles.boolean} `}
                     indeterminate={
-                      selectedAssets.length && selectedAssets.length !== assetsResult.data?.length
+                      selectedAssets.length
+                        ? selectedAssets.length !== assetsResult.data?.length
+                        : null
                     }
                     name="select-all"
                     onChange={onSelectAll}

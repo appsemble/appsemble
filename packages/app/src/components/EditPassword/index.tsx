@@ -38,13 +38,13 @@ export function EditPassword(): ReactElement {
         <FormattedMessage {...messages.title} />
       </Title>
       <EditPasswordForm onSubmit={onSubmit} />
-      {success && (
+      {success ? (
         <div className="is-flex is-justify-content-center">
           <Link className="button is-primary" to={`/${lang}`}>
             <FormattedMessage {...messages.returnToApp} />
           </Link>
         </div>
-      )}
+      ) : null}
     </Content>
   );
 }

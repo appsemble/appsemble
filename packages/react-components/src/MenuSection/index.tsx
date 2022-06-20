@@ -30,7 +30,7 @@ interface MenuSectionProps {
 export function MenuSection({ children, className, label }: MenuSectionProps): ReactElement {
   return (
     <>
-      {label && <p className={`menu-label pl-1 ${styles.label}`}>{label}</p>}
+      {label ? <p className={`menu-label pl-1 ${styles.label}`}>{label}</p> : null}
       <ul className={classNames('menu-list', { [className]: className })}>
         {Children.map(children, (child) => (
           <li>{child}</li>

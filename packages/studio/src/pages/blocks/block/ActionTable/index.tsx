@@ -29,7 +29,7 @@ export function ActionTable({ manifest }: ActionTableProps): ReactElement {
         {Object.entries(manifest.actions).map(([key, value]) => (
           <tr key={key}>
             <td>{key === '$any' ? messages.anyAction : key}</td>
-            <td>{value.required && <Icon className="has-text-success" icon="check" />}</td>
+            <td>{value.required ? <Icon className="has-text-success" icon="check" /> : null}</td>
             <td>{value.description}</td>
           </tr>
         ))}

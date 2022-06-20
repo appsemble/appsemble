@@ -67,7 +67,7 @@ export function MenuButton({
       title={title}
       type="button"
     >
-      {icon && <Icon className="mr-1" color={iconColor} icon={icon} size="medium" />}
+      {icon ? <Icon className="mr-1" color={iconColor} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
     </button>
   );

@@ -22,7 +22,7 @@ export function AppSettings(): ReactElement {
         <FormattedMessage {...messages.settings} />
       </TitleBar>
       <Main>
-        {isLoggedIn && <ProfileSettings />}
+        {isLoggedIn ? <ProfileSettings /> : null}
         <LanguagePreference />
         <AppSubscriptions />
       </Main>

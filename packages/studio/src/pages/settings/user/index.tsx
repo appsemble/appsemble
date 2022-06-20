@@ -220,11 +220,11 @@ export function UserPage(): ReactElement {
                 </div>
               </td>
               <td className={`has-text-right ${styles.buttonGroup}`}>
-                {verified && email !== userInfo.email && (
+                {verified && email !== userInfo.email ? (
                   <Button className="control" color="info" onClick={() => setPrimaryEmail(email)}>
                     <FormattedMessage {...messages.setPrimaryEmail} />
                   </Button>
-                )}
+                ) : null}
                 {!verified && <ResendEmailButton className="control is-outlined" email={email} />}
                 {email !== userInfo.email && (
                   <AsyncButton

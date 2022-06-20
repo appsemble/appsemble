@@ -99,7 +99,7 @@ export function BlockList({
 
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading ? <Loader /> : null}
       {blockList.map(([block, index]) => (
         <Block
           // As long as blocks are in a static list, using the index as a key should be fine.

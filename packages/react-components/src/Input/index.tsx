@@ -86,7 +86,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             'is-loading': loading,
           })}
           id={id}
-          list={datalist && `${id}-dataset`}
+          list={datalist ? `${id}-dataset` : null}
           name={name}
           onChange={handleChange}
           pattern={pattern instanceof RegExp ? pattern.source : pattern}
@@ -94,13 +94,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
         />
-        {datalist && (
-          <datalist id={datalist && `${id}-dataset`}>
+        {datalist ? (
+          <datalist id={datalist ? `${id}-dataset` : null}>
             {datalist.map((option) => (
               <option key={option} value={option} />
             ))}
           </datalist>
-        )}
+        ) : null}
       </>
     );
   },

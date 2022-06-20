@@ -150,13 +150,11 @@ export function IndexPage(): ReactElement {
         </p>
         <ul>
           {/* XXX We don’t make a distinction between these in our userinfo endpoint yet. */}
-          {(scopes.includes('email') ||
-            scopes.includes('openid') ||
-            scopes.includes('profile')) && (
+          {scopes.includes('email') || scopes.includes('openid') || scopes.includes('profile') ? (
             <li>
               <FormattedMessage {...messages.readProfile} />
             </li>
-          )}
+          ) : null}
           {scopes.includes('resources:manage') && (
             <li>
               <FormattedMessage {...messages.manageResource} />

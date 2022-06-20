@@ -54,7 +54,7 @@ export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
         <code>
           <span className="has-text-weight-bold">{method} </span>
           <span>{`${window.location.origin}/api/apps/${id}/resources/${resourceName}`}</span>
-          {postfix && (
+          {postfix ? (
             <>
               <span>/</span>
               {type === '$count' ? (
@@ -63,18 +63,18 @@ export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
                 <span className="has-text-weight-bold has-text-danger">{postfix}</span>
               )}
             </>
-          )}
+          ) : null}
           <span>
             {` HTTP/1.1
 Accept: application/json
 Authorization: Bearer `}
           </span>
           <span className="has-text-weight-bold has-text-danger">access_token</span>
-          {hasBody && (
+          {hasBody ? (
             <span>
               {`\n\n${JSON.stringify(generateDataFromSchema(resource.schema), undefined, 2)}`}
             </span>
-          )}
+          ) : null}
         </code>
       </pre>
     </div>

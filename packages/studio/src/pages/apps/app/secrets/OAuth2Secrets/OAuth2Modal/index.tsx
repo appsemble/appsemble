@@ -206,11 +206,11 @@ export function OAuth2Modal({
         label={<FormattedMessage {...messages.remapperLabel} />}
         name="remapper"
       />
-      {onDeleted && (
+      {onDeleted ? (
         <Button className={styles.deleteButton} color="danger" icon="trash" onClick={onDelete}>
           <FormattedMessage {...messages.deleteButton} />
         </Button>
-      )}
+      ) : null}
     </ModalCard>
   );
 }

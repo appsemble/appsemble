@@ -171,13 +171,13 @@ export function Card({ content, onUpdate }: CardProps): VNode {
         </div>
       </div>
       <div className="card-image">
-        {picture && typeof picture === 'string' && (
+        {picture && typeof picture === 'string' ? (
           <CardImage
             alt={(title || subtitle || heading || description) as string}
             src={utils.asset(picture)}
           />
-        )}
-        {pictures && Array.isArray(pictures) && pictures.length > 1 && (
+        ) : null}
+        {pictures && Array.isArray(pictures) && pictures.length > 1 ? (
           <div className={`${styles.images} px-1 py-1`}>
             {pictures.map((p) => (
               <CardImage
@@ -188,8 +188,8 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               />
             ))}
           </div>
-        )}
-        {(latitude && longitude) != null && marker && (
+        ) : null}
+        {(latitude && longitude) != null && marker ? (
           <Location
             className={styles.location}
             latitude={latitude as number}
@@ -201,7 +201,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             marker={marker}
             theme={theme}
           />
-        )}
+        ) : null}
       </div>
       <div className="card-content px-4 py-4">
         {isPreactChild(description) ? <p className="content">{description}</p> : null}
@@ -210,7 +210,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
             {parameters.buttonLabel ?? 'Click'}
           </Button>
         )}
-        {actions.onLoadReply.type !== 'noop' && replies && (
+        {actions.onLoadReply.type !== 'noop' && replies ? (
           <>
             <div className={styles.replies} ref={replyContainer}>
               {replies.map((reply: any) => {
@@ -247,7 +247,7 @@ export function Card({ content, onUpdate }: CardProps): VNode {
               />
             </form>
           </>
-        )}
+        ) : null}
       </div>
     </article>
   );

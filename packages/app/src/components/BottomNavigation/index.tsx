@@ -90,7 +90,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
               </NavLink>
             </li>
           )}
-          {definition.layout?.feedback === 'navigation' && sentryDsn && (
+          {definition.layout?.feedback === 'navigation' && sentryDsn ? (
             <li className="bottom-nav-item">
               <NavLink
                 activeClassName="is-active"
@@ -104,10 +104,9 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                 </span>
               </NavLink>
             </li>
-          )}
-          {definition.security &&
-            definition.layout?.login === 'navigation' &&
-            (isLoggedIn ? (
+          ) : null}
+          {definition.security && definition.layout?.login === 'navigation' ? (
+            isLoggedIn ? (
               <li className="bottom-nav-item">
                 <Button
                   className="bottom-nav-item-button is-flex-direction-column is-flex px-4 py-4 has-text-centered"
@@ -134,7 +133,8 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                   </span>
                 </NavLink>
               </li>
-            ))}
+            )
+          ) : null}
         </ul>
       </nav>
     )

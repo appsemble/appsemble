@@ -70,7 +70,7 @@ export function EnumInput({
     <SelectField
       className="appsemble-enum"
       disabled={disabled || loading || options.length === 0}
-      error={dirty && error}
+      error={dirty ? error : null}
       icon={icon}
       label={utils.remap(label, value) as string}
       loading={loading}

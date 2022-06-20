@@ -121,8 +121,8 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         })}
       >
         {children}
-        {icon && <Icon className="is-left" icon={icon} />}
-        {control && cloneElement(control, { className: 'is-right' })}
+        {icon ? <Icon className="is-left" icon={icon} /> : null}
+        {control ? cloneElement(control, { className: 'is-right' }) : null}
       </div>
     );
 
@@ -131,9 +131,9 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
         {label ? (
           <label className="label" htmlFor={id}>
             {label}
-            {(!required || tag) && (
+            {!required || tag ? (
               <span className="is-pulled-right has-text-weight-normal">{tag || optionalLabel}</span>
-            )}
+            ) : null}
           </label>
         ) : null}
         {addon ? (

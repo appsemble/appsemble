@@ -33,7 +33,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
     <div className={`appsemble-geocoordinates ${styles.root}`}>
       {isPreactChild(label) ? <h1 className="label">{label}</h1> : null}
 
-      {marker && (
+      {marker ? (
         <Location
           className={styles.map}
           latitude={lat}
@@ -41,7 +41,7 @@ export function GeoCoordinatesRenderer({ data, field }: RendererProps<GeoCoordin
           marker={marker}
           theme={theme}
         />
-      )}
+      ) : null}
     </div>
   );
 }

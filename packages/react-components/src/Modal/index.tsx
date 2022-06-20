@@ -108,14 +108,14 @@ export function Modal<T extends ElementType = 'div'>({
       <Component className={classNames('modal-content', className)} {...props}>
         {children}
       </Component>
-      {closable && (
+      {closable ? (
         <button
           aria-label={closeButtonLabel}
           className="modal-close is-large"
           onClick={onClose}
           type="button"
         />
-      )}
+      ) : null}
     </div>
   );
 }

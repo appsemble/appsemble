@@ -104,7 +104,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
       })}
       onSubmit={onSubmit}
     >
-      {highlightedField && (
+      {highlightedField ? (
         <FieldComponent
           className="mx-2 my-2"
           field={highlightedField}
@@ -113,8 +113,8 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
           onChange={onChange}
           value={values[highlightedField.name]}
         />
-      )}
-      {showModal && (
+      ) : null}
+      {showModal ? (
         <>
           <Button
             className={classNames('mx-2 my-2', { 'is-primary': true })}
@@ -141,9 +141,9 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
               (field) =>
                 field === highlightedField || (
                   <div className="field">
-                    {field.label && (
+                    {field.label ? (
                       <label className="label">{utils.remap(field.label, {}) as string}</label>
-                    )}
+                    ) : null}
                     <div className="control">
                       <FieldComponent
                         field={field}
@@ -157,7 +157,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
             )}
           </ModalCard>
         </>
-      )}
+      ) : null}
     </Form>
   );
 });

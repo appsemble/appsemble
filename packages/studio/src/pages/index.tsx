@@ -62,11 +62,11 @@ export function Routes(): ReactElement {
       <AnonymousRoute exact path={`${path}/login`}>
         <LoginPage />
       </AnonymousRoute>
-      {enableRegistration && (
+      {enableRegistration ? (
         <AnonymousRoute exact path={`${path}/register`}>
           <RegisterPage />
         </AnonymousRoute>
-      )}
+      ) : null}
       <Route exact path={`${path}/reset-password`}>
         <ResetPasswordPage />
       </Route>
