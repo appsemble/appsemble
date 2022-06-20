@@ -373,6 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Annuller",
   "studio.src.pages.apps.app.edit.coreStyle": "Kernestil",
   "studio.src.pages.apps.app.edit.errorUpdate": "Der gik noget galt ved at opdatere appens opskrift",
+  "studio.src.pages.apps.app.edit.notification": "",
   "studio.src.pages.apps.app.edit.preview": "Forhåndsvisning",
   "studio.src.pages.apps.app.edit.publish": "Udgiv",
   "studio.src.pages.apps.app.edit.resourceWarning": "Ressourcedefinitionerne i denne appopskrift indeholder andre data end originalen. Dette kan give uventede resultater, når du bruger ældre data.",
