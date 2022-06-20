@@ -1598,6 +1598,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether the confirm button should be shown",
             "type": "boolean",
           },
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1669,9 +1675,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether the confirm button should be shown",
             "type": "boolean",
           },
-          "disableWeekends": {
-            "description": "Whether weekends should be disabled.",
-            "type": "boolean",
+          "dateFormat": {
+            "description": "The remapper used for formatting the date value’s label.
+
+The date value can be accessed using the \`root\` remapper.",
+            "format": "remapper",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2865,6 +2873,48 @@ All elements specifying \`data-content\` will be updated each time this event is
     },
     "required": [
       "content",
+    ],
+    "type": "object",
+  },
+}
+`;
+
+exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
+{
+  "actions": undefined,
+  "events": undefined,
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "alignment": {
+        "default": "left",
+        "description": "The alignment of the text content.",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
+      "alt": {
+        "description": "The alt text of the image.",
+        "format": "remapper",
+      },
+      "rounded": {
+        "description": "Is image rounded.",
+        "type": "boolean",
+      },
+      "url": {
+        "description": "The Url of the image.
+
+Note that this is ignored if the onImage event listener is set.",
+        "format": "remapper",
+      },
+    },
+    "required": [
+      "url",
     ],
     "type": "object",
   },

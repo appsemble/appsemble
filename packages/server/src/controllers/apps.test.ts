@@ -3514,106 +3514,8 @@ describe('patchApp', () => {
     authorizeStudio();
     const responseB = await request.patch(`/api/apps/${app.id}`, formB);
 
-    expect(responseA).toMatchInlineSnapshot(`
-      HTTP/1.1 400 Bad Request
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "data": {
-          "errors": [
-            {
-              "argument": [
-                "<#/components/schemas/PageDefinition>",
-                "<#/components/schemas/TabsPageDefinition>",
-                "<#/components/schemas/FlowPageDefinition>",
-              ],
-              "instance": {
-                "blocks": [
-                  {
-                    "type": "testblock",
-                  },
-                ],
-                "name": "Test Page",
-              },
-              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-              "name": "anyOf",
-              "path": [
-                "pages",
-                0,
-              ],
-              "property": "instance.pages[0]",
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/PageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/TabsPageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/FlowPageDefinition",
-                  },
-                ],
-              },
-              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-            },
-          ],
-        },
-        "error": "Bad Request",
-        "message": "App validation failed",
-        "statusCode": 400,
-      }
-    `);
-    expect(responseB).toMatchInlineSnapshot(`
-      HTTP/1.1 400 Bad Request
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "data": {
-          "errors": [
-            {
-              "argument": [
-                "<#/components/schemas/PageDefinition>",
-                "<#/components/schemas/TabsPageDefinition>",
-                "<#/components/schemas/FlowPageDefinition>",
-              ],
-              "instance": {
-                "blocks": [
-                  {
-                    "type": "testblock",
-                  },
-                ],
-                "name": "Test Page",
-              },
-              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-              "name": "anyOf",
-              "path": [
-                "pages",
-                0,
-              ],
-              "property": "instance.pages[0]",
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/PageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/TabsPageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/FlowPageDefinition",
-                  },
-                ],
-              },
-              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-            },
-          ],
-        },
-        "error": "Bad Request",
-        "message": "App validation failed",
-        "statusCode": 400,
-      }
-    `);
+    expect(responseA).toMatchSnapshot();
+    expect(responseB).toMatchSnapshot();
   });
 });
 
@@ -4585,57 +4487,7 @@ describe('setAppBlockStyle', () => {
       }),
     );
 
-    expect(response).toMatchInlineSnapshot(`
-      HTTP/1.1 400 Bad Request
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "data": {
-          "errors": [
-            {
-              "argument": [
-                "<#/components/schemas/PageDefinition>",
-                "<#/components/schemas/TabsPageDefinition>",
-                "<#/components/schemas/FlowPageDefinition>",
-              ],
-              "instance": {
-                "blocks": [
-                  {
-                    "type": "@non/existent",
-                    "version": "0.0.0'",
-                  },
-                ],
-                "name": "Test Page",
-              },
-              "message": "is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-              "name": "anyOf",
-              "path": [
-                "pages",
-                0,
-              ],
-              "property": "instance.pages[0]",
-              "schema": {
-                "anyOf": [
-                  {
-                    "$ref": "#/components/schemas/PageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/TabsPageDefinition",
-                  },
-                  {
-                    "$ref": "#/components/schemas/FlowPageDefinition",
-                  },
-                ],
-              },
-              "stack": "instance.pages[0] is not any of <#/components/schemas/PageDefinition>,<#/components/schemas/TabsPageDefinition>,<#/components/schemas/FlowPageDefinition>",
-            },
-          ],
-        },
-        "error": "Bad Request",
-        "message": "App validation failed",
-        "statusCode": 400,
-      }
-    `);
+    expect(response).toMatchSnapshot();
   });
 
   it('should not allow to update an app using non-existent block versions', async () => {

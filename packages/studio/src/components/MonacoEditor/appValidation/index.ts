@@ -1,5 +1,5 @@
 import { BlockVersionsGetter } from '@appsemble/utils';
-import { editor, languages } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';
 
@@ -7,17 +7,17 @@ import { AppValidationWorker } from './worker';
 
 export const appValidationLabel = 'appValidation';
 
-const workerManager = createWorkerManager<AppValidationWorker>(
-  { editor },
-  { label: appValidationLabel, moduleId: appValidationLabel },
-);
+const workerManager = createWorkerManager<AppValidationWorker>(monaco, {
+  label: appValidationLabel,
+  moduleId: appValidationLabel,
+});
 
 export const getCachedBlockVersions: BlockVersionsGetter = async (blocks) => {
   const client = await workerManager.getWorker();
   return client.getCachedBlockVersions(blocks);
 };
 
-registerMarkerDataProvider({ editor }, 'yaml', {
+registerMarkerDataProvider(monaco, 'yaml', {
   owner: appValidationLabel,
 
   async provideMarkerData(model) {
@@ -29,8 +29,8 @@ registerMarkerDataProvider({ editor }, 'yaml', {
   },
 });
 
-editor.onDidCreateModel((model) => {
-  const modelMap = new WeakMap<editor.ITextModel, string[]>();
+monaco.editor.onDidCreateModel((model) => {
+  const modelMap = new WeakMap<monaco.editor.ITextModel, string[]>();
 
   const disposable = model.onDidChangeContent(async () => {
     if (String(model.uri) !== 'file:///app.yaml' || model.getLanguageId() !== 'yaml') {
@@ -54,7 +54,7 @@ function toHex(number: number): string {
     .padStart(2, '0');
 }
 
-languages.registerColorProvider('yaml', {
+monaco.languages.registerColorProvider('yaml', {
   provideColorPresentations(model, { color, range }) {
     const currentQuote = model.getValueInRange({
       startLineNumber: range.startLineNumber,

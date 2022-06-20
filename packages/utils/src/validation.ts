@@ -171,7 +171,9 @@ function validateBlocks(
         validator.customFormats['event-listener'] = (property) =>
           has(block.events?.listen, property);
         validator.customFormats['event-emitter'] = (property) => has(block.events?.emit, property);
-        const result = validator.validate(block.parameters || {}, version.parameters, {});
+        const result = validator.validate(block.parameters || {}, version.parameters, {
+          nestedErrors: true,
+        });
         if ('parameters' in block) {
           for (const error of result.errors) {
             report(error.instance, error.message, [...path, 'parameters', ...error.path]);

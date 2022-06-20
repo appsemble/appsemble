@@ -11,7 +11,6 @@ const scopes = {
 
 export const app: OpenAPIV3.OAuth2SecurityScheme = {
   type: 'oauth2',
-  // @ts-expect-error This is valid.
   description: `
     OAuth2 login for apps.
 

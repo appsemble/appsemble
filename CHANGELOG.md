@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.9](https://gitlab.com/appsemble/appsemble/-/releases/0.20.9)] - 2022-06-15
+
+### Added
+
+- Block(`form`): Add `alwaysValidate` option to form requirements. This can be useful for fields
+  that can also perform validation on fields that are filled in at a later time.
+- Block(`form`): Add `confirm` option to `date` and `date-time` fields. Enabling this will display a
+  confirm button once a date has been selected.
+- Block(`form`): Add `dateFormat` property to `date` and `date-time` fields to customize the way
+  these are shown to the user.
+- Block(`image`): Add `image` block.
+
+### Changed
+
+- Studio: Sort custom messages section in app translations alphabetically.
+
 ## \[[0.20.8](https://gitlab.com/appsemble/appsemble/-/releases/0.20.8)] - 2022-06-12
 
 ### Added

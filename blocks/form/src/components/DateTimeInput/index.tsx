@@ -53,6 +53,7 @@ export function DateTimeInput({
     <DateTimeComponent
       confirm={field.confirm}
       confirmLabel={confirmLabel}
+      dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
       enableTime={field.type === 'date-time'}

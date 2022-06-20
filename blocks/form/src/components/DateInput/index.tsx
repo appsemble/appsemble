@@ -45,6 +45,7 @@ export function DateInput({
     <DateTimeField
       confirm={field.confirm}
       confirmLabel={confirmLabel}
+      dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
       error={dirty && error}
