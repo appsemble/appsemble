@@ -373,7 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Cancel",
   "studio.src.pages.apps.app.edit.coreStyle": "Core style",
   "studio.src.pages.apps.app.edit.errorUpdate": "Something went wrong trying to update the app definition",
-  "studio.src.pages.apps.app.edit.notification": "You have unsaved changes, do you wish to continue?",
+  "studio.src.pages.apps.app.edit.notification": "You have unsaved changes. Do you wish to continue?",
   "studio.src.pages.apps.app.edit.preview": "Preview",
   "studio.src.pages.apps.app.edit.publish": "Publish",
   "studio.src.pages.apps.app.edit.resourceWarning": "The resource definitions in this app definition contain different data from the original. This may cause unexpected results when using older data.",
