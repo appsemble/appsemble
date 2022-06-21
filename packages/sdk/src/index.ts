@@ -1,5 +1,7 @@
-import { Action, BaseMessage, BulmaColor, BulmaSize, Remapper, Theme } from '@appsemble/types';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { Action, BaseMessage, BulmaColor, BulmaSize, Remapper, Theme } from '@appsemble/types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
 export { IconName };
