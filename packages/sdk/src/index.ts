@@ -1,11 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { Action, BaseMessage, BulmaColor, BulmaSize, Remapper, Theme } from '@appsemble/types';
+import type { Action, BaseMessage, BulmaColor, BulmaSize, Theme } from '@appsemble/types';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
 export { IconName };
-export { Action, BulmaColor, BulmaSize, Remapper, Theme };
+export { Action, BulmaColor, BulmaSize, Theme };
+
+/**
+ * A user defined remapper function.
+ */
+export type Remapper = object[] | boolean | number | object | string;
 
 /**
  * Actions defined on a block.
