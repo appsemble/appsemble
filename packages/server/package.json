@@ -78,6 +78,7 @@
     "language-tags": "^1.0.0",
     "lodash": "^4.0.0",
     "matcher": "^4.0.0",
+    "merge": "^2.0.0",
     "mime-types": "^2.0.0",
     "mustache": "^4.0.0",
     "node-forge": "^1.0.0",

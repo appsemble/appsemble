@@ -4,6 +4,7 @@ import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash';
+import stripIndent from 'strip-indent';
 
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models';
 import { setArgv } from '../utils/argv';
@@ -107,6 +108,7 @@ describe('queryBlocks', () => {
           "actions": null,
           "description": null,
           "events": null,
+          "examples": [],
           "iconUrl": null,
           "layout": null,
           "longDescription": null,
@@ -155,6 +157,7 @@ describe('queryBlocks', () => {
           "actions": null,
           "description": null,
           "events": null,
+          "examples": [],
           "iconUrl": null,
           "layout": null,
           "longDescription": null,
@@ -167,6 +170,7 @@ describe('queryBlocks', () => {
           "actions": null,
           "description": null,
           "events": null,
+          "examples": [],
           "iconUrl": null,
           "layout": null,
           "longDescription": null,
@@ -198,6 +202,7 @@ describe('publishBlock', () => {
     expect(data).toStrictEqual({
       actions: null,
       events: null,
+      examples: [],
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       iconUrl: null,
@@ -527,6 +532,14 @@ This will be used to validate app definitions.
                 },
                 type: 'object',
               },
+              examples: {
+                description:
+                  'A list of exmples how the block can be used within an app definition.',
+                items: {
+                  type: 'string',
+                },
+                type: 'array',
+              },
               files: {
                 description: 'A list of file assets that belong to the app version.',
                 items: {
@@ -637,6 +650,131 @@ considered invalid.
       message: 'Invalid content types found',
     });
     expect(status).toBe(400);
+  });
+
+  it('should allow block examples', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.2.3');
+    formData.append('files', createFixtureStream('standing.png'));
+    formData.append('events', JSON.stringify({ listen: { foo: {} }, emit: { bar: {} } }));
+    formData.append('actions', JSON.stringify({ onSubmit: {} }));
+    formData.append(
+      'parameters',
+      JSON.stringify({
+        type: 'object',
+        additionalProperties: false,
+        properties: { hello: { type: 'string' } },
+      }),
+    );
+    formData.append(
+      'examples',
+      stripIndent(`
+        parameters:
+          hello: world
+        actions:
+          onSubmit:
+            type: noop
+        events:
+          listen:
+            foo: ok
+          emit:
+            bar: ok
+      `),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "actions": {
+          "onSubmit": {},
+        },
+        "description": null,
+        "events": {
+          "emit": {
+            "bar": {},
+          },
+          "listen": {
+            "foo": {},
+          },
+        },
+        "examples": [
+          "
+      parameters:
+        hello: world
+      actions:
+        onSubmit:
+          type: noop
+      events:
+        listen:
+          foo: ok
+        emit:
+          bar: ok
+            ",
+        ],
+        "files": [
+          "standing.png",
+        ],
+        "iconUrl": null,
+        "languages": null,
+        "layout": null,
+        "longDescription": null,
+        "name": "@xkcd/standing",
+        "parameters": {
+          "additionalProperties": false,
+          "properties": {
+            "hello": {
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "version": "1.2.3",
+        "wildcardActions": false,
+      }
+    `);
+  });
+
+  it('should validate block examples', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.2.3');
+    formData.append('files', createFixtureStream('standing.png'));
+    formData.append('events', JSON.stringify({ listen: { foo: {} }, emit: { bar: {} } }));
+    formData.append('actions', JSON.stringify({ onSubmit: {} }));
+    formData.append(
+      'parameters',
+      JSON.stringify({
+        type: 'object',
+        additionalProperties: false,
+        properties: {},
+      }),
+    );
+    formData.append(
+      'examples',
+      stripIndent(`
+        parameters:
+          additional: forbidden
+        actions:
+          onSubmit:
+            type: invalid
+        events:
+          listen:
+            fooz: invalid
+          emit:
+            baz: invalid
+      `),
+    );
+
+    await authorizeClientCredentials('blocks:write');
+    const response = await request.post('/api/blocks', formData);
+
+    expect(response).toMatchSnapshot();
   });
 });
 
@@ -755,6 +893,7 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
+        examples: [],
         files: ['standing.png', 'testblock.js'],
         iconUrl: null,
         languages: null,
@@ -805,6 +944,7 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
+        examples: [],
         files: ['testblock.js'],
         iconUrl: null,
         languages: null,
@@ -819,6 +959,7 @@ describe('getBlockVersions', () => {
         longDescription: null,
         actions: null,
         events: null,
+        examples: [],
         files: ['testblock.js'],
         iconUrl: null,
         languages: ['en'],

@@ -1,0 +1,16 @@
+parameters:
+  fields:
+    - value: { prop: firstName }
+      label: First name
+    - value: { prop: lastName }
+      label: Last name
+    - value: { prop: email }
+      label: Email address
+    - value: { prop: description }
+      label: Description
+    - value: { prop: picture }
+      label: Picture
+      type: file
+events:
+  listen:
+    data: person

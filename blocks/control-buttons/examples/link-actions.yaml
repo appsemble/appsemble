@@ -1,0 +1,5 @@
+actions:
+  onBack:
+    type: link.back
+  onForward:
+    type: link.next

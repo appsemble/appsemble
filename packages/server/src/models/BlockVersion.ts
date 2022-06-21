@@ -72,6 +72,11 @@ export class BlockVersion extends Model {
   @Column(DataType.STRING)
   visibility: 'public' | 'unlisted';
 
+  @AllowNull(false)
+  @Default([])
+  @Column(DataType.JSONB)
+  examples: string[];
+
   @BelongsTo(() => Organization)
   Organization: Organization;
 

@@ -1248,6 +1248,8 @@ export interface BlockManifest {
    */
   languages: string[] | null;
 
+  examples?: string[];
+
   /**
    * Whether the block should be listed publicly
    * for users who aren’t part of the block’s organization.

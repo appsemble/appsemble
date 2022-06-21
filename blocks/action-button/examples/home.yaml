@@ -1,0 +1,6 @@
+actions:
+  onClick:
+    type: link
+    to: Home
+parameters:
+  icon: home

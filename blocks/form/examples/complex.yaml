@@ -1,0 +1,25 @@
+parameters:
+  fields:
+    - name: name
+      type: string
+      requirements:
+        - required: true
+    - name: birthdate
+      type: date
+      requirements:
+        - required: true
+    - species:
+      type: enum
+      enum:
+        - Cat
+        - Dog
+        - Rabbit
+        - Unicorn
+      requirements:
+        - required: true
+    - name: photo
+      type: file
+actions:
+  onSubmit:
+    type: resource.create
+    resource: pet
