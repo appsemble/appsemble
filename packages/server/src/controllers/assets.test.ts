@@ -239,6 +239,28 @@ describe('getAssetById', () => {
     });
   });
 
+  it('should be able to fetch an audio asset by name', async () => {
+    const data = Buffer.from('buffer');
+    const asset = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.mp3',
+      data,
+      name: 'test-asset',
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets/test-asset`);
+
+    expect(response).toMatchObject({
+      status: 302,
+      headers: expect.objectContaining({
+        location: `/api/apps/1/assets/${asset.id}`,
+        'content-type': 'text/plain; charset=utf-8',
+      }),
+      data: 'Found',
+    });
+  });
+
   it('should fallback to the asset id as the filename', async () => {
     const data = Buffer.from('buffer');
     const asset = await Asset.create({
