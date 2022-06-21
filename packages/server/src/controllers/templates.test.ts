@@ -43,7 +43,8 @@ beforeEach(async () => {
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
-  const yaml2 = '"name": Test App 2\ndescription: Description\n\n# comment\n\npages: []\n\n\n';
+  const yaml2 =
+    '"name": Test App 2\ndescription: Description\n\n# comment\n\npages: [{name: Test Page, blocks: []}]\n\n\n';
 
   const template = {
     path: 'test-template',
@@ -78,7 +79,11 @@ beforeEach(async () => {
     AppId: t2.id,
     language: 'nl-nl',
     messages: {
-      app: { name: 'Test app', description: 'this is test description' },
+      app: {
+        name: 'Test app',
+        description: 'this is test description',
+        'test-page': 'Testpagina',
+      },
       messageIds: { test: 'Dit is een testbericht' },
     },
   });
@@ -241,7 +246,9 @@ describe('createTemplateApp', () => {
   it('should remove name and description when cloning an app', async () => {
     const [, template] = templates;
     authorizeStudio();
-    const response = await request.post<App>('/api/templates', {
+    const {
+      data: { id },
+    } = await request.post<App>('/api/templates', {
       templateId: template.id,
       name: 'Test app',
       description: 'This is a test description',
@@ -249,12 +256,22 @@ describe('createTemplateApp', () => {
       resources: true,
     });
 
-    const { id } = response.data;
-    const { data } = await request.get<AppMessagesType>(`/api/apps/${id}/messages/nl-nl`);
+    const translations = await AppMessages.findOne({
+      where: { AppId: id, language: 'nl-nl' },
+    });
 
-    expect(data.language).toBe('nl-nl');
-    expect(data.messages?.app?.name).toBeUndefined();
-    expect(data.messages?.app?.description).toBeUndefined();
+    expect(translations.messages).toMatchInlineSnapshot(`
+      {
+        "app": {
+          "test-page": "Testpagina",
+        },
+        "messageIds": {
+          "test": "Dit is een testbericht",
+        },
+      }
+    `);
+    expect(translations.messages.app.name).toBeUndefined();
+    expect(translations.messages.app.description).toBeUndefined();
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
