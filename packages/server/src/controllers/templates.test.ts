@@ -260,16 +260,6 @@ describe('createTemplateApp', () => {
       where: { AppId: id, language: 'nl-nl' },
     });
 
-    expect(translations.messages).toMatchInlineSnapshot(`
-      {
-        "app": {
-          "test-page": "Testpagina",
-        },
-        "messageIds": {
-          "test": "Dit is een testbericht",
-        },
-      }
-    `);
     expect(translations.messages.app.name).toBeUndefined();
     expect(translations.messages.app.description).toBeUndefined();
   });
