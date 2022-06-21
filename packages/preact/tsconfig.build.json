@@ -3,8 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "outDir": "dist",
-    "rootDir": "src"
+    "lib": ["dom", "dom.iterable", "esnext"]
   }
 }

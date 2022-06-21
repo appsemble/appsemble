@@ -5,8 +5,6 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "null",
     "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src",
     "types": ["node"]
   }
 }

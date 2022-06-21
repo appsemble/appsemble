@@ -5,15 +5,15 @@
     "packages/*"
   ],
   "scripts": {
-    "appsemble": "ts-node -r tsconfig-paths/register -T packages/cli/src",
+    "appsemble": "ts-node -T packages/cli",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
-    "create-appsemble": "ts-node -r tsconfig-paths/register -T packages/create-appsemble/src",
+    "create-appsemble": "ts-node -T packages/create-appsemble",
     "e2e": "yarn workspace @appsemble/e2e e2e",
     "prepare": "husky install",
     "prettier": "prettier --check",
-    "scripts": "ts-node -r tsconfig-paths/register -T packages/scripts/src",
-    "start": "ts-node -r tsconfig-paths/register -T packages/cli/src start",
+    "scripts": "ts-node -T packages/scripts",
+    "start": "ts-node -T packages/cli start",
     "stylelint": "stylelint --report-needless-disables",
     "test": "jest"
   },
@@ -110,7 +110,6 @@
     "ts-jest": "^27.0.0",
     "ts-json-schema-generator": "^1.0.0",
     "ts-node": "^10.0.0",
-    "tsconfig-paths": "^4.0.0",
     "typescript": "^4.0.0",
     "unified": "^9.0.0"
   },

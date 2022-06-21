@@ -1,5 +1,5 @@
 {
-  "integrationFolder": "src",
+  "integrationFolder": ".",
   "viewportWidth": 1280,
   "viewportHeight": 720,
   "includeShadowDom": true,

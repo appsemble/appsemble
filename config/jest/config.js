@@ -13,7 +13,7 @@ module.exports = (rootDir) => {
 
   const setupFilesAfterEnv = [];
   const snapshotSerializers = [];
-  const moduleNameMapper = { [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src' };
+  const moduleNameMapper = {};
   const transform = {};
 
   // Mock CSS modules if they are enabled in the project types.

@@ -1,7 +1,4 @@
-overrides:
-  - files:
-      - 'src/**'
-    extends:
-      - remcohaszing/web
-    rules:
-      node/no-unpublished-import: off
+extends:
+  - remcohaszing/web
+rules:
+  node/no-unpublished-import: off
