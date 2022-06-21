@@ -35,7 +35,8 @@ Content-Type: application/json; charset=utf-8
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "target": {
                       "description": "The name of the analytics target event to send.",
                       "type": "string",
@@ -111,7 +112,8 @@ called.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "then": {
                       "$ref": "#/components/schemas/ActionDefinition",
                       "description": "This action is called if the \`if\` remapper yields a truthy value.",
@@ -186,7 +188,8 @@ called.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "title": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "An optional title to set in the dialog header.",
@@ -307,7 +310,8 @@ The dialog action that opened the dialog will be rejected with the data passed t
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "type": {
                       "description": "Download the data as a file.",
                       "enum": [
@@ -390,7 +394,8 @@ If the attachment is a string, it will be treated as the target.",
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "subject": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The subject of the email.",
@@ -464,7 +469,8 @@ If the attachment is a string, it will be treated as the target.",
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "subject": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The subject of the email.",
@@ -537,7 +543,8 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "type": {
                       "description": "This action allows for other blocks to emit data upon triggering the action.
 
@@ -675,7 +682,8 @@ be called instead.
                   "properties": {
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "step": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The name of the step to move to.
@@ -736,7 +744,8 @@ This is a remapper which gets called with the action input and context.
                   "properties": {
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "to": {
                       "anyOf": [
                         {
@@ -891,7 +900,8 @@ This is mostly useful for debugging blocks during development.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "timeout": {
                       "default": 5000,
                       "description": "The time in milliseconds how long the message should be visible.",
@@ -1012,7 +1022,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "schema": {
                       "$ref": "#/components/schemas/JSONSchema",
                       "description": "The name of the schema to validate against before submitting data.",
@@ -1125,7 +1136,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to count.",
                       "type": "string",
@@ -1219,7 +1231,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to create.",
                       "type": "string",
@@ -1313,7 +1326,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to delete.",
                       "type": "string",
@@ -1407,7 +1421,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to get.",
                       "type": "string",
@@ -1505,7 +1520,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to query.",
                       "type": "string",
@@ -1579,7 +1595,8 @@ disabled by setting this to \`false\`
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to get the subscription state for.",
                       "type": "string",
@@ -1645,7 +1662,8 @@ disabled by setting this to \`false\`
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to subscribe to.",
                       "type": "string",
@@ -1711,7 +1729,8 @@ disabled by setting this to \`false\`
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to toggle the subscription state for.",
                       "type": "string",
@@ -1777,7 +1796,8 @@ disabled by setting this to \`false\`
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to unsubscribe from.",
                       "type": "string",
@@ -1867,7 +1887,8 @@ disabled by setting this to \`false\`
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "resource": {
                       "description": "The type of the resource to query.",
                       "type": "string",
@@ -1979,7 +2000,8 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
                   "properties": {
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "type": {
                       "description": "The \`static\` action returns static data defined in the action definition.
 
@@ -2046,7 +2068,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to read the data from.",
@@ -2113,7 +2136,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to read the data from.",
@@ -2180,7 +2204,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to store the data.",
@@ -2231,7 +2256,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to store the data.",
@@ -2303,7 +2329,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to store the data.",
@@ -2354,7 +2381,8 @@ This is useful for example for stubbing data.
                     },
                     "onError": {},
                     "onSuccess": {},
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
                       "description": "The mechanism used to store the data.",
@@ -2549,7 +2577,8 @@ Does nothing if the user is already logged in.",
 
 Every value will be converted to a string.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "type": {
                       "description": "Allows the user to register a new account using an email address and a password.
 
@@ -2601,7 +2630,8 @@ Does nothing if the user is already logged in.",
 
 Every value will be converted to a string.",
                     },
-                    "remap": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
                     "type": {
                       "description": "Allows the user to register a new account using an email address and a password.
 
@@ -3028,7 +3058,11 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ActionDefinition",
                   "description": "Another action that is dispatched when the action has been dispatched successfully.",
                 },
-                "remap": {
+                "remapAfter": {
+                  "$ref": "#/components/schemas/RemapperDefinition",
+                  "description": "This may be used to remap data after it is passed into the action function.",
+                },
+                "remapBefore": {
                   "$ref": "#/components/schemas/RemapperDefinition",
                   "description": "This may be used to remap data before it is passed into the action function.",
                 },
@@ -3193,7 +3227,8 @@ Does nothing if the user isn’t logged in.",
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "target": {
               "description": "The name of the analytics target event to send.",
               "type": "string",
@@ -3269,7 +3304,8 @@ called.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "then": {
               "$ref": "#/components/schemas/ActionDefinition",
               "description": "This action is called if the \`if\` remapper yields a truthy value.",
@@ -3344,7 +3380,8 @@ called.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "title": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "An optional title to set in the dialog header.",
@@ -3465,7 +3502,8 @@ The dialog action that opened the dialog will be rejected with the data passed t
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "type": {
               "description": "Download the data as a file.",
               "enum": [
@@ -3548,7 +3586,8 @@ If the attachment is a string, it will be treated as the target.",
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "subject": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The subject of the email.",
@@ -3622,7 +3661,8 @@ If the attachment is a string, it will be treated as the target.",
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "subject": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The subject of the email.",
@@ -3695,7 +3735,8 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "type": {
               "description": "This action allows for other blocks to emit data upon triggering the action.
 
@@ -3833,7 +3874,8 @@ be called instead.
           "properties": {
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "step": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the step to move to.
@@ -3894,7 +3936,8 @@ This is a remapper which gets called with the action input and context.
           "properties": {
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "to": {
               "anyOf": [
                 {
@@ -4049,7 +4092,8 @@ This is mostly useful for debugging blocks during development.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "timeout": {
               "default": 5000,
               "description": "The time in milliseconds how long the message should be visible.",
@@ -4170,7 +4214,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "schema": {
               "$ref": "#/components/schemas/JSONSchema",
               "description": "The name of the schema to validate against before submitting data.",
@@ -4283,7 +4328,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to count.",
               "type": "string",
@@ -4377,7 +4423,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to create.",
               "type": "string",
@@ -4471,7 +4518,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to delete.",
               "type": "string",
@@ -4565,7 +4613,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to get.",
               "type": "string",
@@ -4663,7 +4712,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to query.",
               "type": "string",
@@ -4737,7 +4787,8 @@ disabled by setting this to \`false\`
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to get the subscription state for.",
               "type": "string",
@@ -4803,7 +4854,8 @@ disabled by setting this to \`false\`
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to subscribe to.",
               "type": "string",
@@ -4869,7 +4921,8 @@ disabled by setting this to \`false\`
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to toggle the subscription state for.",
               "type": "string",
@@ -4935,7 +4988,8 @@ disabled by setting this to \`false\`
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to unsubscribe from.",
               "type": "string",
@@ -5025,7 +5079,8 @@ disabled by setting this to \`false\`
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "resource": {
               "description": "The type of the resource to query.",
               "type": "string",
@@ -5137,7 +5192,8 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
           "properties": {
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "type": {
               "description": "The \`static\` action returns static data defined in the action definition.
 
@@ -5204,7 +5260,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to read the data from.",
@@ -5271,7 +5328,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to read the data from.",
@@ -5338,7 +5396,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to store the data.",
@@ -5389,7 +5448,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to store the data.",
@@ -5461,7 +5521,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to store the data.",
@@ -5512,7 +5573,8 @@ This is useful for example for stubbing data.
             },
             "onError": {},
             "onSuccess": {},
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "storage": {
               "default": "indexedDB",
               "description": "The mechanism used to store the data.",
@@ -5707,7 +5769,8 @@ Does nothing if the user is already logged in.",
 
 Every value will be converted to a string.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "type": {
               "description": "Allows the user to register a new account using an email address and a password.
 
@@ -5759,7 +5822,8 @@ Does nothing if the user is already logged in.",
 
 Every value will be converted to a string.",
             },
-            "remap": {},
+            "remapAfter": {},
+            "remapBefore": {},
             "type": {
               "description": "Allows the user to register a new account using an email address and a password.
 
