@@ -1,11 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type { Action, BaseMessage, BulmaColor, BulmaSize, Theme } from '@appsemble/types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import { Promisable } from 'type-fest';
 
-import { Action, BulmaColor, Message, Remapper, Theme } from './types';
-
-export * from './types';
 export { IconName };
+export { Action, BulmaColor, BulmaSize, Theme };
+
+/**
+ * A user defined remapper function.
+ */
+export type Remapper = object[] | boolean | number | object | string;
 
 /**
  * Actions defined on a block.
@@ -129,6 +134,13 @@ export interface MenuItem {
    * Whether the item is considered active.
    */
   active?: boolean;
+}
+
+export interface Message extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { MouseEventHandler, ReactElement, ReactNode } from 'react';

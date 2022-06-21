@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 

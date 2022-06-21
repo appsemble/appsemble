@@ -1,4 +1,4 @@
-import { BaseMessage } from '@appsemble/sdk';
+import { BaseMessage } from '@appsemble/types';
 import { createContext, ReactElement, ReactNode, useCallback, useContext, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';

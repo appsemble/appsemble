@@ -1,5 +1,4 @@
-import { Action } from '@appsemble/sdk';
-import { ActionDefinition } from '@appsemble/types';
+import { Action, ActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
 import { analytics } from './analytics';

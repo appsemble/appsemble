@@ -1,4 +1,4 @@
-import { HTTPMethods } from '@appsemble/sdk';
+import { HTTPMethods } from '@appsemble/types';
 import { formatRequestAction } from '@appsemble/utils';
 import { serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';

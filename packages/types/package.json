@@ -30,7 +30,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.9",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "jsonschema": "^1.0.0",
     "openapi-types": "^12.0.0",
