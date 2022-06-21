@@ -187,8 +187,8 @@ describe('makeActions', () => {
         actions: {
           onClick: {
             type: 'noop',
-            remap: { prop: 'foo' },
-            outputRemapper: { prop: 0 },
+            remapBefore: { prop: 'foo' },
+            remapAfter: { prop: 0 },
           },
         },
       },

@@ -86,12 +86,14 @@ export function createAction<T extends ActionDefinition['type']>({
 
     try {
       result = await dispatch(
-        has(definition, 'remap') ? localRemap(definition.remap, args, context) : args,
+        has(definition, 'remap') || has(definition, 'remapBefore')
+          ? localRemap(definition.remapBefore || definition.remap, args, context)
+          : args,
         context,
       );
 
-      if (has(definition, 'outputRemapper')) {
-        result = localRemap(definition.outputRemapper, result, context);
+      if (has(definition, 'remapAfter')) {
+        result = localRemap(definition.remapAfter, result, context);
       }
       addBreadcrumb({
         category: 'appsemble.action',

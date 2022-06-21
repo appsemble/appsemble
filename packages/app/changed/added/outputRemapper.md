@@ -1,1 +1,1 @@
-Add `outputRemapper` to actions
+Add `remapAfter` and `remapBefore` to actions.

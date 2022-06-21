@@ -30,8 +30,8 @@ export async function handleAction(
 
   try {
     data = await action({ ...params, data });
-    if ('outputRemapper' in params.action) {
-      data = remap(params.action.outputRemapper, data, context);
+    if ('remapAfter' in params.action) {
+      data = remap(params.action.remapAfter, data, context);
     }
     if (params.action.onSuccess) {
       await handleAction(actions[params.action.onSuccess.type], {

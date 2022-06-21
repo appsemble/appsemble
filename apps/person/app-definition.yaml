@@ -71,7 +71,7 @@ pages:
           onSubmit:
             type: resource.create
             resource: person
-            remap: { null.strip }
+            remapBefore: { null.strip }
             onSuccess:
               type: link
               to: Person List
