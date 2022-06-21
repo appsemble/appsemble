@@ -8,7 +8,8 @@ Appsemble needs an app secret for various internal settings.
 
 ```sh
 kubectl create secret generic appsemble \
-  --from-literal "secret=$(openssl rand -base64 30)"
+  --from-literal "secret=$(openssl rand -base64 30)" \
+  --from-literal "aes-secret=$(openssl rand -base64 32)"
 ```
 
 It is recommended to create a PostgreSQL secret beforehand.

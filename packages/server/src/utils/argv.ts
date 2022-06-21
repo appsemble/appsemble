@@ -35,9 +35,14 @@ export interface Argv {
   proxy: boolean;
 
   /**
-   * The app secret. This is used for varipus things.
+   * The app secret. This is used for various things.
    */
   secret: string;
+
+  /**
+   * The key used for all the data that is encrypted using AES.
+   */
+  aesSecret: string;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // DNS                                                                                          //
@@ -260,6 +265,7 @@ const defaults: Argv = {
   port: 9999,
   proxy: false,
   secret: undefined,
+  aesSecret: undefined,
   appDomainStrategy: undefined,
   serviceName: undefined,
   servicePort: undefined,

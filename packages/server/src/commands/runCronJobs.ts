@@ -66,13 +66,21 @@ export async function handler(): Promise<void> {
     handleDBError(error as Error);
   }
 
-  const mailer = new Mailer();
+  const mailer = new Mailer(argv);
 
   // 1 hour ago
   const startDate = Date.now() - 60 * 60 * 1e3;
 
   for await (const app of iterTable(App, {
-    attributes: ['definition', 'id'],
+    attributes: [
+      'definition',
+      'id',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+    ],
     where: { definition: { cron: { [Op.not]: null } } },
   })) {
     let lastId;
