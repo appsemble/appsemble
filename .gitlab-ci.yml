@@ -583,6 +583,7 @@ provision review:
     - yarn scripts release patch
     - yarn appsemble config set context review
     - yarn appsemble config set remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"
+    - yarn scripts wait-for-api
     - yarn appsemble organization create appsemble
       --description 'The open source low-code app building platform'
       --email support@appsemble.com
