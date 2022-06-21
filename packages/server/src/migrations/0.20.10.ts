@@ -38,6 +38,9 @@ export async function up(db: Sequelize): Promise<void> {
     type: DataTypes.BOOLEAN,
     defaultValue: true,
   });
+
+  logger.info('Adding column `BlockVersion`.`examples`');
+  await queryInterface.addColumn('BlockVersion', 'examples', { type: DataTypes.JSONB });
 }
 
 /**
@@ -49,6 +52,10 @@ export async function up(db: Sequelize): Promise<void> {
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
+
+  logger.info('Removing column `BlockVersion`.`examples`');
+  await queryInterface.removeColumn('BlockVersion', 'examples');
+
   logger.warn('Removing column `emailHost` from `App`');
   await queryInterface.removeColumn('App', 'emailHost');
 
