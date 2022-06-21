@@ -373,6 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Odustani",
   "studio.src.pages.apps.app.edit.coreStyle": "Osnovni stil",
   "studio.src.pages.apps.app.edit.errorUpdate": "Dogodila se greška tijekom pokušaja aktualiziranja programa",
+  "studio.src.pages.apps.app.edit.notification": "",
   "studio.src.pages.apps.app.edit.preview": "Pregled",
   "studio.src.pages.apps.app.edit.publish": "Objavi",
   "studio.src.pages.apps.app.edit.resourceWarning": "Definicije resursa u ovoj definiciji programa sadrže drugačije podatke od izvornog resursa. To može prouzročiti neočekivane rezultate prilikom upotrebe starijih podataka.",

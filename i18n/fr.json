@@ -373,6 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Annuler",
   "studio.src.pages.apps.app.edit.coreStyle": "Style de base",
   "studio.src.pages.apps.app.edit.errorUpdate": "Quelque chose a mal tourné en essayant de mettre à jour la recette de l’application",
+  "studio.src.pages.apps.app.edit.notification": "",
   "studio.src.pages.apps.app.edit.preview": "Aperçu",
   "studio.src.pages.apps.app.edit.publish": "Publier",
   "studio.src.pages.apps.app.edit.resourceWarning": "Les définitions des ressources dans cette recette de l’application contiennent des données différentes de l’original. Cela peut entraîner des résultats inattendus lors de l’utilisation de données plus anciennes.",

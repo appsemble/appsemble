@@ -373,6 +373,7 @@
   "studio.src.pages.apps.app.edit.cancel": "Abbrechen",
   "studio.src.pages.apps.app.edit.coreStyle": "Kern-Stil",
   "studio.src.pages.apps.app.edit.errorUpdate": "Beim Versuch, das Definition der App zu aktualisieren, ist etwas schief gelaufen",
+  "studio.src.pages.apps.app.edit.notification": "",
   "studio.src.pages.apps.app.edit.preview": "Vorschau",
   "studio.src.pages.apps.app.edit.publish": "Veröffentlichen",
   "studio.src.pages.apps.app.edit.resourceWarning": "Die Ressourcendefinitionen in diesem App-Definition enthalten andere Daten als das Original. Dies kann zu unerwarteten Ergebnissen führen, wenn Sie ältere Daten verwenden.",
