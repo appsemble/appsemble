@@ -86,11 +86,9 @@ export function createAction<T extends ActionDefinition['type']>({
 
     try {
       result = await dispatch(
-        has(definition, 'remap') || has(definition, 'remapBefore')
-          ? localRemap(definition.remapBefore || definition.remap, args, context)
         has(definition, 'remapBefore')
           ? localRemap(definition.remapBefore, args, context)
-          : has(definition, 'remap') ?
+          : has(definition, 'remap')
           ? localRemap(definition.remap, args, context)
           : args,
         context,
