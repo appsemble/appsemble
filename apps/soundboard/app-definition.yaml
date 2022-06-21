@@ -1,5 +1,5 @@
 name: Soundboard
-description: This app is displaying tiles which plays the sound when you click on them.
+description: This app displays buttons which play sounds when you click on them.
 defaultPage: Soundboard
 
 resources:
