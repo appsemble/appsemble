@@ -43,7 +43,8 @@ beforeEach(async () => {
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
-  const yaml2 = '"name": Test App 2\ndescription: Description\n\n# comment\n\npages: []\n\n\n';
+  const yaml2 =
+    '"name": Test App 2\ndescription: Description\n\n# comment\n\npages: [{name: Test Page, blocks: []}]\n\n\n';
 
   const template = {
     path: 'test-template',
@@ -77,7 +78,14 @@ beforeEach(async () => {
   await AppMessages.create({
     AppId: t2.id,
     language: 'nl-nl',
-    messages: { messageIds: { test: 'Dit is een testbericht' } },
+    messages: {
+      app: {
+        name: 'Test app',
+        description: 'this is test description',
+        'test-page': 'Testpagina',
+      },
+      messageIds: { test: 'Dit is een testbericht' },
+    },
   });
   t2.AppBlockStyles = [
     await AppBlockStyle.create({
@@ -233,6 +241,27 @@ describe('createTemplateApp', () => {
 
     expect(messages.language).toBe('nl-nl');
     expect(messages.messages.messageIds).toStrictEqual({ test: 'Dit is een testbericht' });
+  });
+
+  it('should remove name and description when cloning an app', async () => {
+    const [, template] = templates;
+    authorizeStudio();
+    const {
+      data: { id },
+    } = await request.post<App>('/api/templates', {
+      templateId: template.id,
+      name: 'Test app',
+      description: 'This is a test description',
+      organizationId: 'testorganization',
+      resources: true,
+    });
+
+    const translations = await AppMessages.findOne({
+      where: { AppId: id, language: 'nl-nl' },
+    });
+
+    expect(translations.messages.app.name).toBeUndefined();
+    expect(translations.messages.app.description).toBeUndefined();
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
