@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.10](https://gitlab.com/appsemble/appsemble/-/releases/0.20.10)] - 2022-06-21
+
+### Added
+
+- App: Add `remapAfter` and `remapBefore` to actions.
+- App: Add support for custom SMTP settings for apps. These can be found in the app secrets page.
+- Server: Support block examples.
+- Studio: Show block examples.
+
+### Changed
+
+- Studio: Change Import from CSV button to also accept JSON files.
+
+### Deprecated
+
+- App: Deprecate `remap` on actions, `remapBefore` may be used instead. Existing apps that still use
+  `remap` will continue to work.
+
 ## \[[0.20.9](https://gitlab.com/appsemble/appsemble/-/releases/0.20.9)] - 2022-06-15
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.20.9",
+  "version": "0.20.10",
   "description": "Bootstrap an Appsemble project",
   "keywords": [
     "app",
@@ -31,7 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.9",
+    "@appsemble/node-utils": "0.20.10",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.0.0",
     "type-fest": "^2.0.0",
