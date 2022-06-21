@@ -7,10 +7,15 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
       description: 'The base properties of an action definition.',
       additionalProperties: true,
       properties: {
-        remap: {
+        remapBefore: {
           $ref: '#/components/schemas/RemapperDefinition',
           description:
             'This may be used to remap data before it is passed into the action function.',
+        },
+        remapAfter: {
+          $ref: '#/components/schemas/RemapperDefinition',
+          description:
+            'This may be used to remap data after it is passed into the action function.',
         },
         onSuccess: {
           $ref: '#/components/schemas/ActionDefinition',

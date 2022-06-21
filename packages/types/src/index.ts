@@ -686,8 +686,21 @@ export interface BaseActionDefinition<T extends Action['type']> {
   /**
    * A remapper function. This may be used to remap data before it is passed into the action
    * function.
+   *
+   * @deprecated Since 0.20.10, use {@link remapBefore} instead.
    */
   remap?: Remapper;
+
+  /**
+   * A remapper function. This may be used to remap data before it is passed into the action
+   * function.
+   */
+  remapBefore?: Remapper;
+
+  /**
+   * The remapper used to transfrom the output before passing it to the next action.
+   */
+  remapAfter?: Remapper;
 
   /**
    * Another action that is dispatched when the action has been dispatched successfully.

@@ -178,6 +178,25 @@ describe('makeActions', () => {
     expect(result).toBe('bar');
   });
 
+  it('should output the result before passing it to next action', async () => {
+    pageReady();
+    const actions = makeActions({
+      ...testDefaults,
+      actions: { onClick: {} },
+      context: {
+        actions: {
+          onClick: {
+            type: 'noop',
+            remapBefore: { prop: 'foo' },
+            remapAfter: { prop: 0 },
+          },
+        },
+      },
+    });
+    const result = await actions.onClick({ foo: 'bar' });
+    expect(result).toBe('b');
+  });
+
   it('should update the prefix for actions', async () => {
     pageReady();
     let prefix: string;
