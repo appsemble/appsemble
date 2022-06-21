@@ -12,6 +12,7 @@ import * as release from './commands/release';
 import * as rewriteMessages from './commands/rewrite-messages';
 import * as twitter from './commands/twitter';
 import * as validate from './commands/validate';
+import * as waitForApi from './commands/wait-for-api';
 import * as waitForSsl from './commands/wait-for-ssl';
 
 function main(): void {
@@ -38,6 +39,7 @@ function main(): void {
     .command(rewriteMessages)
     .command(twitter)
     .command(validate)
+    .command(waitForApi)
     .command(waitForSsl)
     .demandCommand(1)
     .fail(handleError)
