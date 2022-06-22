@@ -1,0 +1,8 @@
+parameters:
+  content: |
+    ![My city](https://example.com/img/urlId)
+    # Header
+    ### Header smallersamp
+    You can write text here:
+
+    Visit the <a target="_blank" href="https://appsemble.com">website</a>

@@ -1,0 +1,21 @@
+parameters:
+  highlight: fieldName
+  fields:
+    - name: fieldName
+      type: enum
+      enum:
+        - value: Dog
+        - value: Cat
+        - value: Horse
+        - value: Sheep
+events:
+  emit:
+    filtered: filterResults
+    refreshed: refreshResults
+actions:
+  onLoad:
+    type: resource.query
+    resource: resourceName
+    query:
+      object.from:
+        $filter: { prop: $filter }

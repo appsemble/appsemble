@@ -1,0 +1,11 @@
+actions:
+  onClick:
+    type: event
+    event: onClick
+events:
+  listen:
+    data: data
+parameters:
+  icon: { prop: icon }
+  text: { prop: text }
+  color: { prop: color }

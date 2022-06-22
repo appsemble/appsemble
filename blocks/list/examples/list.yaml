@@ -1,0 +1,15 @@
+parameters:
+  header: { prop: name }
+  icon: fontawesomeIcon
+  image:
+    - prop: photos
+    - prop: 0
+  fields:
+    - value: { prop: value }
+actions:
+  onClick:
+    type: link
+    to: Details page
+events:
+  listen:
+    data: data
