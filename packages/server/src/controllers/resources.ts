@@ -866,8 +866,8 @@ export async function deleteResource(ctx: Context): Promise<void> {
 
 export async function deleteResources(ctx: Context): Promise<void> {
   const {
-    body,
     pathParams: { appId, resourceType },
+    request: { body },
     user,
   } = ctx;
 
