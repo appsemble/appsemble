@@ -64,6 +64,28 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }, {}, { cli: ['assets:write'] }],
     },
+    delete: {
+      tags: ['asset'],
+      description: 'Delete multiple app assets.',
+      operationId: 'deleteAssets',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              description: 'An array of asset IDs to remove.',
+              items: { $ref: '#/components/schemas/Asset/properties/id' },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The app assets have been deleted successfully.',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
   },
   '/api/apps/{appId}/assets/{assetId}': {
     parameters: [

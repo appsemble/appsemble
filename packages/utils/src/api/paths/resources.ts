@@ -156,7 +156,7 @@ export const paths: OpenAPIV3.PathsObject = {
             schema: {
               type: 'array',
               description: 'An array of resource IDs to remove.',
-              items: { type: 'number' },
+              items: { $ref: '#/components/schemas/Resource/properties/id' },
             },
           },
         },

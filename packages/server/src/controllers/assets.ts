@@ -157,3 +157,23 @@ export async function deleteAsset(ctx: Context): Promise<void> {
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   await asset.destroy();
 }
+
+export async function deleteAssets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    request: { body },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
+  await Asset.destroy({ where: { id: body } });
+
+  ctx.status = 204;
+}
