@@ -58,12 +58,12 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
             />
             <span className="file-cta">
               <Icon icon={icon} />
-              {fileButtonLabel && <span className="file-label">{fileButtonLabel}</span>}
+              {fileButtonLabel ? <span className="file-label">{fileButtonLabel}</span> : null}
             </span>
             {fileName ? <span className="file-name">{fileName}</span> : null}
           </label>
         </div>
-        {help && <p className="help">{help}</p>}
+        {help ? <p className="help">{help}</p> : null}
       </FormComponent>
     );
   },

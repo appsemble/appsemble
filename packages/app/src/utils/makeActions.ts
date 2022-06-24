@@ -1,5 +1,4 @@
-import { Action } from '@appsemble/sdk';
-import { ActionDefinition, ActionType } from '@appsemble/types';
+import { Action, ActionDefinition, ActionType } from '@appsemble/types';
 import { defaultLocale, has, remap } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
@@ -86,9 +85,17 @@ export function createAction<T extends ActionDefinition['type']>({
 
     try {
       result = await dispatch(
-        has(definition, 'remap') ? localRemap(definition.remap, args, context) : args,
+        has(definition, 'remapBefore')
+          ? localRemap(definition.remapBefore, args, context)
+          : has(definition, 'remap')
+          ? localRemap(definition.remap, args, context)
+          : args,
         context,
       );
+
+      if (has(definition, 'remapAfter')) {
+        result = localRemap(definition.remapAfter, result, context);
+      }
       addBreadcrumb({
         category: 'appsemble.action',
         data: { success: type },

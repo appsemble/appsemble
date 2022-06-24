@@ -1,0 +1,5 @@
+events:
+  emit:
+    data: updatedMessates
+  listen:
+    data: newMessages

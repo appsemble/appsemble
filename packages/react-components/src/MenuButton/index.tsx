@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { MouseEventHandler, ReactElement, ReactNode } from 'react';
@@ -67,7 +67,7 @@ export function MenuButton({
       title={title}
       type="button"
     >
-      {icon && <Icon className="mr-1" color={iconColor} icon={icon} size="medium" />}
+      {icon ? <Icon className="mr-1" color={iconColor} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
     </button>
   );

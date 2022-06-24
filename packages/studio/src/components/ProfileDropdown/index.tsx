@@ -66,16 +66,16 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
         )
       }
     >
-      {userInfo && (
+      {userInfo ? (
         <NavbarItem icon="wrench" to={`${url}/settings`}>
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
-      )}
-      {sentryDsn && (
+      ) : null}
+      {sentryDsn ? (
         <NavbarItem icon="comment" to={`${url}/feedback`}>
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
-      )}
+      ) : null}
       <hr className="navbar-divider" />
       {userInfo ? (
         <NavbarItem icon="sign-out-alt" onClick={logout}>

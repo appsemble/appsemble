@@ -14,7 +14,7 @@ import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { Prompt, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { useApp } from '..';
@@ -212,7 +212,7 @@ export default function EditPage(): ReactElement {
           />
         </div>
       </div>
-
+      <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
       <AppPreview app={app} iframeRef={frame} />
     </div>
   );

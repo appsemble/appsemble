@@ -44,7 +44,7 @@ export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps)
       title={title}
       to={to}
     >
-      {icon && <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" />}
+      {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
     </NavLink>
   );

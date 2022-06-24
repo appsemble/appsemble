@@ -364,6 +364,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
           name: member.name || 'null',
           appName: app.definition.name,
         },
+        app,
       })
       .catch((error: Error) => {
         logger.error(error);
@@ -440,7 +441,18 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   let user: User;
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'domain', 'OrganizationId', 'emailName', 'path'],
+    attributes: [
+      'definition',
+      'domain',
+      'OrganizationId',
+      'emailName',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+      'path',
+    ],
     include: {
       model: AppMember,
       attributes: {
@@ -522,6 +534,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
         appName: app.definition.name,
         name: name || 'null',
       },
+      app,
     })
     .catch((error: Error) => {
       logger.error(error);
@@ -577,7 +590,17 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
   const email = request.body.email.toLowerCase();
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'domain', 'path', 'OrganizationId'],
+    attributes: [
+      'definition',
+      'domain',
+      'path',
+      'OrganizationId',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+    ],
     include: [
       { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
     ],
@@ -598,6 +621,7 @@ export async function resendMemberEmailVerification(ctx: Context): Promise<void>
           name: app.AppMembers[0].name || 'null',
           appName: app.definition.name,
         },
+        app,
       })
       .catch((error: Error) => {
         logger.error(error);
@@ -615,7 +639,18 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'domain', 'path', 'emailName', 'OrganizationId'],
+    attributes: [
+      'definition',
+      'domain',
+      'path',
+      'emailName',
+      'emailHost',
+      'emailUser',
+      'emailPassword',
+      'emailPort',
+      'emailSecure',
+      'OrganizationId',
+    ],
     include: [
       { model: AppMember, attributes: { exclude: ['picture'] }, where: { email }, required: false },
     ],
@@ -641,6 +676,7 @@ export async function requestMemberResetPassword(ctx: Context): Promise<void> {
           appName: app.definition.name,
           name: member.name || 'null',
         },
+        app,
       })
       .catch((error: Error) => {
         logger.error(error);

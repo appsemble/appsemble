@@ -27,7 +27,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
 
   return (
     <>
-      {showAppsembleOAuth2Login && (
+      {showAppsembleOAuth2Login ? (
         <OAuth2LoginButton
           authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
           className={buttonProps.className}
@@ -36,7 +36,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
         >
           <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
         </OAuth2LoginButton>
-      )}
+      ) : null}
       {logins?.map(({ icon, id, name, type }) => (
         <OAuth2LoginButton
           authorizationUrl={String(new URL(`/connect/authorize/${type}/${id}`, apiUrl))}

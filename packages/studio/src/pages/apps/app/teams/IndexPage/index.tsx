@@ -69,11 +69,11 @@ export function IndexPage(): ReactElement {
     <>
       <HeaderControl
         control={
-          mayCreateTeam && (
+          mayCreateTeam ? (
             <Button onClick={modal.enable}>
               <FormattedMessage {...messages.createButton} />
             </Button>
-          )
+          ) : null
         }
       >
         <FormattedMessage {...messages.teams} />

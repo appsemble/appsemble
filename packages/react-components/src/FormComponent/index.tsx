@@ -102,8 +102,8 @@ export function FormComponent({
       })}
     >
       {children}
-      {icon && <Icon className="is-left" icon={icon} />}
-      {control && cloneElement(control, { className: 'is-right' })}
+      {icon ? <Icon className="is-left" icon={icon} /> : null}
+      {control ? cloneElement(control, { className: 'is-right' }) : null}
     </div>
   );
 
@@ -121,9 +121,9 @@ export function FormComponent({
       ) : null}
       {addonLeft || addonRight ? (
         <div className="field is-marginless has-addons">
-          {addonLeft && <div className="control">{addonLeft}</div>}
+          {addonLeft ? <div className="control">{addonLeft}</div> : null}
           {controls}
-          {addonRight && <div className="control">{addonRight}</div>}
+          {addonRight ? <div className="control">{addonRight}</div> : null}
         </div>
       ) : (
         controls

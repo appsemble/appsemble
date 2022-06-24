@@ -1,0 +1,9 @@
+actions:
+  onLoad:
+    type: resource.query
+    resource: report
+events:
+  emit:
+    data: reports
+  listen:
+    refresh: refresh

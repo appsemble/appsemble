@@ -203,6 +203,20 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     form.append('messages', JSON.stringify(messagesResult));
   }
 
+  if (files.includes('examples')) {
+    await opendirSafe(
+      join(dir, 'examples'),
+      async (file, stat) => {
+        if (!stat.isFile() || !file.endsWith('.yaml')) {
+          throw new AppsembleError(`Expected ${file} to be a YAML file`);
+        }
+        logger.info(`Adding example file ${file}`);
+        form.append('examples', await fs.readFile(file, 'utf8'));
+      },
+      { allowMissing: true },
+    );
+  }
+
   await opendirSafe(
     distPath,
     (fullpath, stat) => {

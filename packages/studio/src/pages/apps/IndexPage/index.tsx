@@ -91,10 +91,10 @@ export function IndexPage(): ReactElement {
             {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
           </option>
         </SelectField>
-        {userInfo && <CreateAppButton className={styles.createAppButton} />}
+        {userInfo ? <CreateAppButton className={styles.createAppButton} /> : null}
       </div>
 
-      {userInfo && (
+      {userInfo ? (
         <CollapsibleAppList
           filter={filter}
           reverse={sort?.reverse}
@@ -102,7 +102,7 @@ export function IndexPage(): ReactElement {
           target={`/api/user/apps?language=${lang}`}
           title={<FormattedMessage {...messages.myApps} />}
         />
-      )}
+      ) : null}
       <CollapsibleAppList
         filter={filter}
         reverse={sort?.reverse}

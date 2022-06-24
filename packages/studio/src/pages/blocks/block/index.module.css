@@ -15,3 +15,7 @@
   height: 64px;
   width: 64px;
 }
+
+.examples {
+  overflow-x: scroll;
+}

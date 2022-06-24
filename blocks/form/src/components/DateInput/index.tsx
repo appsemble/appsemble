@@ -45,10 +45,12 @@ export function DateInput({
     <DateTimeField
       confirm={field.confirm}
       confirmLabel={confirmLabel}
+      // @ts-expect-error There’s a mismatch between the `Remapper` type in the shared types and
+      // the SDK.
       dateFormat={field.dateFormat}
       disable={disable}
       disabled={disabled}
-      error={dirty && error}
+      error={dirty ? error : null}
       icon={field.icon}
       id={name}
       label={dateLabel}

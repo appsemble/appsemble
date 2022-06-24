@@ -60,7 +60,7 @@ export function RadioGroup({
     >
       <ValuePickerProvider name={name} onChange={onChange} value={value}>
         {children}
-        {error && <p className="help is-danger">{error}</p>}
+        {error ? <p className="help is-danger">{error}</p> : null}
       </ValuePickerProvider>
     </FormComponent>
   );

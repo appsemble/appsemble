@@ -151,5 +151,12 @@ English (\`en\`) messages are required.
         format: 'binary',
       },
     },
+    examples: {
+      type: 'array',
+      description: 'A list of exmples how the block can be used within an app definition.',
+      items: {
+        type: 'string',
+      },
+    },
   },
 };

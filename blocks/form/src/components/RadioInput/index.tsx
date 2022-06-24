@@ -28,7 +28,7 @@ export function RadioInput({
     <RadioGroup
       className="appsemble-radio"
       disabled={disabled}
-      error={dirty && error}
+      error={dirty ? error : null}
       label={utils.remap(label, value) as string}
       name={name}
       onChange={onChange}

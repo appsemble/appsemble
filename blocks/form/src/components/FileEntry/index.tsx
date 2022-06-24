@@ -41,7 +41,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
 
   return (
     <div className={`appsemble-file file mr-3 ${styles.root}`}>
-      {value && url && (
+      {value && url ? (
         <Modal isActive={modal.enabled} onClose={modal.disable}>
           <figure className="image">
             <img
@@ -51,9 +51,9 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
             />
           </figure>
         </Modal>
-      )}
+      ) : null}
       <label className="file-label">
-        {(!value || !url) && (
+        {!value || !url ? (
           <input
             accept={getAccept(field)}
             className={`file-input ${styles.input}`}
@@ -61,7 +61,7 @@ export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNo
             onChange={onSelect}
             type="file"
           />
-        )}
+        ) : null}
         {url ? (
           <>
             <button className={styles.button} onClick={modal.enable} type="button">

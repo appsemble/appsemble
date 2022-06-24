@@ -63,7 +63,7 @@ export function IndexPage(): ReactElement {
       >
         <AppScreenshots />
       </CardHeaderControl>
-      {app.longDescription && (
+      {app.longDescription ? (
         <div
           className={classNames('card my-3 card-content', {
             [styles.descriptionHidden]: !descriptionToggle.enabled,
@@ -81,7 +81,7 @@ export function IndexPage(): ReactElement {
           </Button>
           <MarkdownContent content={app.longDescription} lang={appLang} />
         </div>
-      )}
+      ) : null}
       <AppRatings />
     </main>
   );

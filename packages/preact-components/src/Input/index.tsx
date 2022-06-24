@@ -75,13 +75,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
         />
-        {datalist && (
-          <datalist id={datalist && `${id}-dataset`}>
+        {datalist ? (
+          <datalist id={datalist ? `${id}-dataset` : null}>
             {datalist.map((option) => (
               <option key={option} value={option} />
             ))}
           </datalist>
-        )}
+        ) : null}
       </>
     );
   },

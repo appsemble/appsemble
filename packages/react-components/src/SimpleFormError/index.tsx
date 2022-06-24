@@ -16,7 +16,7 @@ export function SimpleFormError({ children: Children }: SimpleFormErrorProps): R
       className={classNames(styles.root, { [`${styles.hidden} mb-0`]: !submitError })}
       color="danger"
     >
-      {submitError && <Children error={submitError} />}
+      {submitError ? <Children error={submitError} /> : null}
     </Message>
   );
 }

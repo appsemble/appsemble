@@ -100,15 +100,15 @@ export function Schema({
               name
             )}
           </Title>
-          {(required || mergedSchema.required === true) && (
+          {required || mergedSchema.required === true ? (
             <span className="ml-2 tag is-info">
               <FormattedMessage {...messages.required} />
             </span>
-          )}
+          ) : null}
         </div>
       ) : null}
-      {nested &&
-        (mergedSchema.$ref || mergedSchema.type ? (
+      {nested ? (
+        mergedSchema.$ref || mergedSchema.type ? (
           <SchemaDescriptor label={<FormattedMessage {...messages.type} />}>
             <code>
               {mergedSchema.$ref
@@ -128,7 +128,8 @@ export function Schema({
                 : mergedSchema.type}
             </code>
           </SchemaDescriptor>
-        ) : null)}
+        ) : null
+      ) : null}
       {mergedSchema.default != null && (
         <SchemaDescriptor label={<FormattedMessage {...messages.default} />}>
           <code>{JSON.stringify(mergedSchema.default)}</code>
@@ -184,11 +185,11 @@ export function Schema({
           {mergedSchema.maximum}
         </SchemaDescriptor>
       )}
-      {mergedSchema.pattern && (
+      {mergedSchema.pattern ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.pattern} />}>
           <code>{mergedSchema.pattern}</code>
         </SchemaDescriptor>
-      )}
+      ) : null}
       {description ? <MarkdownContent content={description} /> : null}
       {mergedSchema.type === 'object' && (
         <>
@@ -246,24 +247,23 @@ export function Schema({
           type="oneOf"
         />
       ) : null}
-      {mergedSchema.type === 'array' &&
-        mergedSchema.items &&
-        !Array.isArray(mergedSchema.items) &&
-        Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
-          <Schema
-            anchors={anchors}
-            idPrefix={id}
-            key={propertyName}
-            name={propertyName}
-            nested
-            renderRef={RenderRef}
-            required={
-              typeof (schema.items as SchemaType).required === 'object' &&
-              ((schema.items as SchemaType).required as string[]).includes(propertyName)
-            }
-            schema={property}
-          />
-        ))}
+      {mergedSchema.type === 'array' && mergedSchema.items && !Array.isArray(mergedSchema.items)
+        ? Object.entries(mergedSchema.items.properties ?? {}).map(([propertyName, property]) => (
+            <Schema
+              anchors={anchors}
+              idPrefix={id}
+              key={propertyName}
+              name={propertyName}
+              nested
+              renderRef={RenderRef}
+              required={
+                typeof (schema.items as SchemaType).required === 'object' &&
+                ((schema.items as SchemaType).required as string[]).includes(propertyName)
+              }
+              schema={property}
+            />
+          ))
+        : null}
     </div>
   );
 }

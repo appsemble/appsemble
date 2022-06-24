@@ -27,7 +27,7 @@ bootstrap(({ events, parameters: { fields }, utils: { fa, remap } }) => {
               <div className="has-text-weight-bold mx-0 mt-2 mb-1">
                 {remap(value, data) as string}
               </div>
-              {remappedLabel && <div>{remappedLabel as string}</div>}
+              {remappedLabel ? <div>{remappedLabel as string}</div> : null}
             </div>
           );
         }),

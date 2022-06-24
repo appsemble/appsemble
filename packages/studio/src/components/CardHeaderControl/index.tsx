@@ -73,11 +73,11 @@ export function CardHeaderControl({
                 {subtitle}
               </Subtitle>
             </header>
-            {description && (
+            {description ? (
               <p className={styles.ellipsis} title={description}>
                 {description}
               </p>
-            )}
+            ) : null}
             {details}
           </div>
           <div className={`is-flex ${styles.buttonContainer}`}>{controls}</div>

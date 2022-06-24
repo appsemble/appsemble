@@ -39,16 +39,16 @@ export function OrganizationRoutes(): ReactElement {
         <MenuItem exact icon="briefcase" to={url}>
           <FormattedMessage {...messages.organization} />
         </MenuItem>
-        {userOrganization && (
+        {userOrganization ? (
           <MenuItem exact icon="users" to={`${url}/members`}>
             <FormattedMessage {...messages.members} />
           </MenuItem>
-        )}
-        {mayEdit && (
+        ) : null}
+        {mayEdit ? (
           <MenuItem exact icon="cog" to={`${url}/settings`}>
             <FormattedMessage {...messages.settings} />
           </MenuItem>
-        )}
+        ) : null}
       </MenuSection>
     ),
   );
@@ -79,11 +79,11 @@ export function OrganizationRoutes(): ReactElement {
               organization={userOrganization ?? organization}
             />
           </ProtectedRoute>
-          {userOrganization && (
+          {userOrganization ? (
             <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
               <MembersPage />
             </ProtectedRoute>
-          )}
+          ) : null}
           <Redirect to={path} />
         </MetaSwitch>
       )}

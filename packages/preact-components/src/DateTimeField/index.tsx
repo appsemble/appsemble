@@ -2,7 +2,7 @@ import 'flatpickr/dist/flatpickr.css';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 
 import { useBlock } from '@appsemble/preact';
-import { Remapper } from '@appsemble/sdk';
+import { Remapper } from '@appsemble/types';
 import flatpickr from 'flatpickr';
 import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
 import { ComponentProps, JSX, VNode } from 'preact';

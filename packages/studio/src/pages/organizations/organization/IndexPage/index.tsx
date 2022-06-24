@@ -38,22 +38,22 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
       <CardHeaderControl
         controls={
           <>
-            {mayEditOrganization && (
+            {mayEditOrganization ? (
               <Button className="mb-3 ml-4" component={Link} to={`${url}/settings`}>
                 <FormattedMessage {...messages.editOrganization} />
               </Button>
-            )}
-            {userOrganization && (
+            ) : null}
+            {userOrganization ? (
               <Button className="mb-3 ml-4" component={Link} to={`${url}/members`}>
                 <FormattedMessage {...messages.viewMembers} />
               </Button>
-            )}
+            ) : null}
           </>
         }
         description={organization.description}
         details={
           <>
-            {organization.website && (
+            {organization.website ? (
               <div className={styles.icon}>
                 <Icon icon="globe" />
                 <a
@@ -65,15 +65,15 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
                   {organization.website.replace(/^(https?:|)\/\//, '')}
                 </a>
               </div>
-            )}
-            {organization.email && (
+            ) : null}
+            {organization.email ? (
               <div className={styles.icon}>
                 <Icon icon="envelope" />
                 <a href={`mailto:${organization.email}`} title={organization.email}>
                   {organization.email}
                 </a>
               </div>
-            )}
+            ) : null}
           </>
         }
         icon={

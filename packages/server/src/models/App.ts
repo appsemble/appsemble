@@ -122,6 +122,23 @@ export class App extends Model {
   emailName: string;
 
   @Column
+  emailHost: string;
+
+  @Column
+  emailUser: string;
+
+  @Column
+  emailPassword: Buffer;
+
+  @Default(587)
+  @Column
+  emailPort: number;
+
+  @Default(true)
+  @Column
+  emailSecure: boolean;
+
+  @Column
   googleAnalyticsID: string;
 
   @Column

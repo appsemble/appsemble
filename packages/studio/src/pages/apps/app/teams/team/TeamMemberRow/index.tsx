@@ -46,7 +46,7 @@ export function TeamMemberRow({
         ) : (
           <FormattedMessage {...messages[member.role]} />
         )}
-        {mayInvite && (
+        {mayInvite ? (
           <Button
             className="ml-2"
             color="danger"
@@ -54,7 +54,7 @@ export function TeamMemberRow({
             onClick={remove}
             title={formatMessage(messages.removeMember)}
           />
-        )}
+        ) : null}
       </td>
     </tr>
   );

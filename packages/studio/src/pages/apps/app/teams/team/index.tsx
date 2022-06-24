@@ -124,7 +124,7 @@ export function TeamPage(): ReactElement {
         <>
           <HeaderControl
             control={
-              mayEditTeam && (
+              mayEditTeam ? (
                 <div>
                   <Button onClick={editModal.enable}>
                     <FormattedMessage {...messages.editButton} />
@@ -137,7 +137,7 @@ export function TeamPage(): ReactElement {
                     title={formatMessage(messages.deleteTeam)}
                   />
                 </div>
-              )
+              ) : null
             }
             level={4}
           >
@@ -145,11 +145,11 @@ export function TeamPage(): ReactElement {
           </HeaderControl>
           <HeaderControl
             control={
-              mayInvite && (
+              mayInvite ? (
                 <Button onClick={addModal.enable}>
                   <FormattedMessage {...messages.addMember} />
                 </Button>
-              )
+              ) : null
             }
             level={5}
           >
@@ -187,7 +187,7 @@ export function TeamPage(): ReactElement {
               </Table>
             )}
           </AsyncDataView>
-          {mayEditTeam && (
+          {mayEditTeam ? (
             <ModalCard
               component={SimpleForm}
               defaultValues={defaultValues}
@@ -215,10 +215,10 @@ export function TeamPage(): ReactElement {
               </Title>
               <SimpleFormField component={AnnotationsTable} name="annotations" />
             </ModalCard>
-          )}
-          {mayInvite && (
+          ) : null}
+          {mayInvite ? (
             <AddTeamMemberModal onAdd={onAdd} teamMembers={memberResult.data} toggle={addModal} />
-          )}
+          ) : null}
         </>
       )}
     </AsyncDataView>

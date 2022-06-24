@@ -127,17 +127,17 @@ function createSamlResponse({
             </ds:X509Data>
           </ds:KeyInfo>
         </ds:Signature>
-        {subject && (
+        {subject ? (
           <saml:Subject>
-            {subject.nameId && (
+            {subject.nameId ? (
               <saml:NameID
                 Format="urn:oasis:names:tc:SAML:2.0:nameid-format:email"
                 SPNameQualifier="http://localhost:9999/api/apps/7/saml/1/metadata.xml"
               >
                 alex@example.com
               </saml:NameID>
-            )}
-            {subject.loginId && (
+            ) : null}
+            {subject.loginId ? (
               <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
                 <saml:SubjectConfirmationData
                   InResponseTo="id27748888-5253-48bf-8cf5-b65f793b7643"
@@ -145,9 +145,9 @@ function createSamlResponse({
                   Recipient="http://localhost:9999/api/apps/7/saml/1/acs"
                 />
               </saml:SubjectConfirmation>
-            )}
+            ) : null}
           </saml:Subject>
-        )}
+        ) : null}
         <saml:Conditions
           NotBefore="2020-11-20T10:23:11.008603+00:00"
           NotOnOrAfter="2020-11-20T10:41:11.008603+00:00"

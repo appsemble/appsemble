@@ -26,10 +26,6 @@ beforeEach(() => {
   clock = install();
 });
 
-afterEach(() => {
-  clock.uninstall();
-});
-
 beforeEach(async () => {
   const user = await createTestUser();
   const organization = await Organization.create({
@@ -51,6 +47,10 @@ beforeEach(async () => {
     },
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+});
+
+afterEach(() => {
+  clock.uninstall();
 });
 
 describe('createAppOAuth2Secret', () => {

@@ -23,7 +23,7 @@ export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps):
       onClose={dialog?.close}
       title={remap(dialog?.title, {}, {})}
     >
-      {dialog && (
+      {dialog ? (
         <BlockList
           blocks={dialog.blocks}
           data={dialog.data}
@@ -33,7 +33,7 @@ export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps):
           remap={remap}
           {...props}
         />
-      )}
+      ) : null}
     </ModalCard>
   );
 }

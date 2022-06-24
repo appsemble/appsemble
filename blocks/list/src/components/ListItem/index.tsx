@@ -37,18 +37,18 @@ export function ListItem({ item }: ListItemProps): VNode {
       item={item}
       onClick={onItemClick}
     >
-      {img && (
+      {img ? (
         <figure className={`image is-48x48 mr-2 ${styles.image}`}>
           <img alt="list icon" src={/^(https?:)?\/\//.test(img) ? img : asset(img)} />
         </figure>
-      )}
+      ) : null}
       <div className="is-inline-block">
-        {(isPreactChild(icon) || isPreactChild(headerValue)) && (
+        {isPreactChild(icon) || isPreactChild(headerValue) ? (
           <div className={classNames({ [styles.header]: fields?.length })}>
             {isPreactChild(icon) ? <Icon icon={icon} /> : null}
             {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
           </div>
-        )}
+        ) : null}
         {fields?.map((field) => {
           let value;
           let label;
@@ -65,18 +65,18 @@ export function ListItem({ item }: ListItemProps): VNode {
             // There is nothing that is guaranteed to be unique in these items.
             // eslint-disable-next-line react/jsx-key
             <span className={`${styles.itemField} mr-1 is-inline-block`}>
-              {field.icon && <Icon icon={field.icon} />}
+              {field.icon ? <Icon icon={field.icon} /> : null}
               {label == null ? null : (
                 <span>
                   {label}
-                  {value && ': '}
+                  {value ? ': ' : null}
                 </span>
               )}
-              {value && (
+              {value ? (
                 <strong className="has-text-bold">
                   {typeof value === 'string' ? value : JSON.stringify(value)}
                 </strong>
-              )}
+              ) : null}
             </span>
           );
         })}

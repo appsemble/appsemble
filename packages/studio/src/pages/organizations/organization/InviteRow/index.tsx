@@ -69,19 +69,19 @@ export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): Rea
     <tr>
       <td>{invite.email}</td>
       <td align="right">
-        {mayInvite && (
+        {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>
             <FormattedMessage {...messages.resend} />
           </AsyncButton>
-        )}
-        {mayInvite && (
+        ) : null}
+        {mayInvite ? (
           <AsyncButton
             color="danger"
             icon="trash-alt"
             onClick={deleteInvite}
             title={formatMessage(messages.deleteInvite)}
           />
-        )}
+        ) : null}
         {mayInvite || <FormattedMessage {...messages.invited} />}
       </td>
     </tr>

@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.9
-appVersion: 0.20.9
+version: 0.20.10
+appVersion: 0.20.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,19 +25,19 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add alwaysValidate option to form requirements. This
-        can be useful for fields that can also perform validation on fields that are
-        filled in at a later time."
+      description: "App: Add remapAfter and remapBefore to actions."
     - kind: added
-      description: "Block(form): Add confirm option to date and date-time fields.
-        Enabling this will display a confirm button once a date has been selected."
+      description: "App: Add support for custom SMTP settings for apps. These can be
+        found in the app secrets page."
     - kind: added
-      description: "Block(form): Add dateFormat property to date and date-time fields
-        to customize the way these are shown to the user."
+      description: "Server: Support block examples."
     - kind: added
-      description: "Block(image): Add image block."
+      description: "Studio: Show block examples."
     - kind: changed
-      description: "Studio: Sort custom messages section in app translations alphabetically."
+      description: "Studio: Change Import from CSV button to also accept JSON files."
+    - kind: deprecated
+      description: "App: Deprecate remap on actions, remapBefore may be used instead.
+        Existing apps that still use remap will continue to work."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

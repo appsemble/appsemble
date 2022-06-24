@@ -69,14 +69,13 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             <FormattedMessage {...messages.settings} />
           </MenuItem>
         )}
-        {layout?.feedback === 'navigation' && sentryDsn && (
+        {layout?.feedback === 'navigation' && sentryDsn ? (
           <MenuItem icon="comment" title={formatMessage(messages.feedback)} to={`${url}/Feedback`}>
             <FormattedMessage {...messages.feedback} />
           </MenuItem>
-        )}
-        {security &&
-          layout?.login === 'navigation' &&
-          (isLoggedIn ? (
+        ) : null}
+        {security && layout?.login === 'navigation' ? (
+          isLoggedIn ? (
             <Button
               className={styles.button}
               icon="sign-out-alt"
@@ -90,7 +89,8 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             <MenuItem icon="sign-in-alt" title={formatMessage(messages.login)} to={`${url}/Login`}>
               <FormattedMessage {...messages.login} />
             </MenuItem>
-          ))}
+          )
+        ) : null}
       </MenuSection>
       {blockMenus.map((menu) => (
         <MenuSection key={menu.path} label={menu.header}>

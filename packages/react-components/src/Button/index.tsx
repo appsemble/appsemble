@@ -1,4 +1,4 @@
-import { BulmaColor, BulmaSize } from '@appsemble/sdk';
+import { BulmaColor, BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
 

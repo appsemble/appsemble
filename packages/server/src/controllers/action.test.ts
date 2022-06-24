@@ -358,6 +358,14 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
@@ -387,6 +395,14 @@ describe('handleEmail', () => {
 `,
       text: 'Test\n',
       attachments: [],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
@@ -416,6 +432,14 @@ describe('handleEmail', () => {
 `,
       text: 'Test\n',
       attachments: [],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
@@ -472,6 +496,14 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [{ path: 'https://via.placeholder.com/150' }],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
@@ -492,6 +524,14 @@ describe('handleEmail', () => {
         { target: 'https://via.placeholder.com/150', accept: 'text/csv', filename: 'example.csv' },
         { target: asset.id, filename: 'test.json' },
       ],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
@@ -519,11 +559,19 @@ describe('handleEmail', () => {
         },
         { content: buffer, filename: 'test.json' },
       ],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
 
-  it('should acceot assets from content', async () => {
+  it('should accept assets from content', async () => {
     const spy = jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
@@ -549,6 +597,14 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [{ content: 'Hello attachment!', filename: 'hello.txt' }],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
   });
 
@@ -585,6 +641,14 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [{ content: buffer, filename: 'test.txt' }],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });
@@ -615,6 +679,14 @@ describe('handleEmail', () => {
 `,
       text: 'Body\n',
       attachments: [],
+      app: {
+        emailHost: null,
+        emailName: null,
+        emailPassword: null,
+        emailPort: 587,
+        emailSecure: true,
+        emailUser: null,
+      },
     });
     spy.mockRestore();
   });

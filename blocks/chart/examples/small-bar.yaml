@@ -1,0 +1,9 @@
+events:
+  listen:
+    replace: statistics
+parameters:
+  type: bar
+  yAxis:
+    min: 0
+    max: 10
+    step: 1

@@ -129,6 +129,7 @@
     "host": "http://localhost:9999",
     "migrate-to": "next",
     "remote": "http://localhost:9999",
-    "secret": "Local Appsemble development secret"
+    "secret": "Local Appsemble development secret",
+    "aes-secret": "Local Appsmeble development AES secret"
   }
 }

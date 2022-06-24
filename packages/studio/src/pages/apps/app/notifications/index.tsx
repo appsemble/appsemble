@@ -45,7 +45,7 @@ export function NotificationsPage(): ReactElement {
         <FormattedMessage {...messages.title} />
       </Title>
       <div className="content">
-        {disabled && (
+        {disabled ? (
           <p>
             <FormattedMessage
               {...messages.enableInstructions}
@@ -65,7 +65,7 @@ export function NotificationsPage(): ReactElement {
               }}
             />
           </p>
-        )}
+        ) : null}
 
         <SimpleForm defaultValues={{ title: '', body: '' }} onSubmit={submit} resetOnSuccess>
           <SimpleFormField

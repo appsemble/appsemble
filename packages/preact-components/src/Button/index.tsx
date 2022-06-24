@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { BulmaColor } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
@@ -54,7 +54,7 @@ export function Button({
       {icon ? (
         <>
           <Icon icon={icon} />
-          {children && <span>{children}</span>}
+          {children ? <span>{children}</span> : null}
         </>
       ) : (
         children

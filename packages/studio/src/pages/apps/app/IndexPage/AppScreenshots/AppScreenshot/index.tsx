@@ -32,14 +32,14 @@ export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps)
 
   return (
     <div className={`mr-6 ${styles.screenshotWrapper}`} key={url}>
-      {mayManageScreenshots && (
+      {mayManageScreenshots ? (
         <Button
           className={`${styles.deleteScreenshotButton} mx-2 my-2 is-rounded is-small`}
           color="danger"
           icon="trash-alt"
           onClick={onDeleteScreenshotClick}
         />
-      )}
+      ) : null}
       <button
         className={`${styles.button} ${styles.screenshot}`}
         onClick={modal.enable}

@@ -105,7 +105,12 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
       result.path = `${path}-${randomBytes(5).toString('hex')}`;
     }
 
+    for (const m of result.AppMessages) {
+      delete m.messages?.app?.name;
+      delete m.messages?.app?.description;
+    }
     const record = await App.create(result, { include: [Resource, AppMessages] });
+
     const doc = parseDocument(template.AppSnapshots[0].yaml);
     doc.setIn(['description'], result.definition.description);
     doc.setIn(['name'], result.definition.name);

@@ -203,21 +203,28 @@ export function IndexPage(): ReactElement {
   const uploadCsv = useCallback(() => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'text/csv';
+    input.accept = 'text/csv, application/json';
     input.click();
     input.addEventListener('change', () => {
-      const [csv] = input.files;
+      const [file] = input.files;
       axios
-        .post<Resource[]>(resourceURL, csv, {
-          headers: { 'content-type': 'text/csv' },
+        .post<Resource[]>(resourceURL, file, {
+          headers: { 'content-type': file.type },
         })
         .then(
           ({ data }) => {
-            setResources((oldResources) => [...oldResources, ...data]);
+            const newResources = [].concat(data);
+            setResources((oldResources) => [...newResources, ...oldResources]);
+            push({
+              body: formatMessage(messages.importSuccess, {
+                ids: newResources.map((r) => r.id).join(', '),
+              }) as string,
+              color: 'success',
+            });
           },
           () => {
             push({
-              body: formatMessage(messages.csvError),
+              body: formatMessage(messages.importError),
               color: 'danger',
             });
           },
@@ -280,7 +287,9 @@ export function IndexPage(): ReactElement {
                   <Checkbox
                     className={`pr-2 is-inline-block ${styles.boolean} `}
                     indeterminate={
-                      selectedResources.length && selectedResources.length !== result.data?.length
+                      selectedResources.length
+                        ? selectedResources.length !== result.data?.length
+                        : null
                     }
                     name="select-all"
                     onChange={onSelectAll}
@@ -320,11 +329,11 @@ export function IndexPage(): ReactElement {
                     <FormattedMessage {...messages.updated} />
                   </th>
                 )}
-                {has(app, 'resources') && !hiddenProperties.has('$clonable') && (
+                {has(app, 'resources') && !hiddenProperties.has('$clonable') ? (
                   <th>
                     <FormattedMessage {...messages.clonable} />
                   </th>
-                )}
+                ) : null}
                 {keys
                   .filter((key) => !hiddenProperties.has(key))
                   .map((property) => {

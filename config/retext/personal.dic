@@ -32,6 +32,7 @@ unconfigure/reconfigure
 workspace/mare
 
 # Technical slang and libraries
+AES
 API/URL
 Airbnb
 Automattic
