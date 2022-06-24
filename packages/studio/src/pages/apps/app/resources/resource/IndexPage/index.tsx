@@ -100,7 +100,7 @@ export function IndexPage(): ReactElement {
 
   const onConfirmDelete = useCallback(async () => {
     try {
-      await Promise.all(selectedResources.map((id) => axios.delete(`${resourceURL}/${id}`)));
+      await axios.delete(resourceURL, { data: selectedResources });
       setResources((resources) =>
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );

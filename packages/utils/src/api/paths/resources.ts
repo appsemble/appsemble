@@ -146,6 +146,28 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
+    delete: {
+      tags: ['resource'],
+      description: 'Delete multiple app resources.',
+      operationId: 'deleteResources',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              description: 'An array of resource IDs to remove.',
+              items: { $ref: '#/components/schemas/Resource/properties/id' },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The app resources have been deleted successfully.',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
   },
   // XXX: Temporary workaround until this is fixed in Koas
   // See https://gitlab.com/remcohaszing/koas/-/issues/2
