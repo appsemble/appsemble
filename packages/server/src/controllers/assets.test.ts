@@ -222,7 +222,7 @@ describe('getAssetById', () => {
     const asset = await Asset.create({
       AppId: app.id,
       mime: 'application/octet-stream',
-      filename: 'test.bin',
+      filename: 'test.mp3',
       data,
       name: 'test-asset',
     });
@@ -233,9 +233,9 @@ describe('getAssetById', () => {
       status: 302,
       headers: expect.objectContaining({
         location: `/api/apps/1/assets/${asset.id}`,
-        'content-type': 'text/html; charset=utf-8',
+        'content-type': 'text/plain; charset=utf-8',
       }),
-      data: `Redirecting to <a href="/api/apps/1/assets/${asset.id}">/api/apps/1/assets/${asset.id}</a>.`,
+      data: 'Found',
     });
   });
 

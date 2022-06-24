@@ -1,0 +1,57 @@
+name: Soundboard
+description: This app displays buttons which play sounds when you click on them.
+defaultPage: Soundboard
+
+resources:
+  audio:
+    query:
+      roles: [$public]
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - icon
+        - text
+        - color
+        - asset
+      properties:
+        icon:
+          type: string
+        text:
+          type: string
+        color:
+          type: string
+        asset:
+          type: string
+pages:
+  - name: Soundboard
+    blocks:
+      - type: data-loader
+        version: 0.20.10
+        actions:
+          onLoad:
+            type: resource.query
+            resource: audio
+        events:
+          emit:
+            data: sound
+      - type: audio
+        version: 0.20.10
+        parameters:
+          src: { prop: asset }
+        events:
+          listen:
+            onAudio: onClick
+      - type: tiles
+        version: 0.20.10
+        actions:
+          onClick:
+            type: event
+            event: onClick
+        events:
+          listen:
+            data: sound
+        parameters:
+          icon: { prop: icon }
+          text: { prop: text }
+          color: { prop: color }

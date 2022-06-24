@@ -1,0 +1,56 @@
+[
+  {
+    "icon": "battery-empty",
+    "text": "Quack",
+    "color": "primary",
+    "asset": "quack"
+  },
+  {
+    "icon": "play",
+    "text": "Wow",
+    "color": "info",
+    "asset": "wow"
+  },
+  {
+    "icon": "drum",
+    "text": "Drums",
+    "color": "link",
+    "asset": "drums"
+  },
+  {
+    "icon": "compact-disc",
+    "text": "Mixtape",
+    "color": "default",
+    "asset": "mixtape"
+  },
+  {
+    "icon": "bullhorn",
+    "text": "Horn",
+    "color": "warning",
+    "asset": "horn"
+  },
+  {
+    "icon": "exclamation",
+    "text": "Error",
+    "color": "danger",
+    "asset": "error"
+  },
+  {
+    "icon": "check",
+    "text": "Idea",
+    "color": "success",
+    "asset": "idea"
+  },
+  {
+    "icon": "hand-fist",
+    "text": "Punch",
+    "color": "dark",
+    "asset": "punch"
+  },
+  {
+    "icon": "play",
+    "text": "Play",
+    "color": "primary",
+    "asset": "quack"
+  }
+]

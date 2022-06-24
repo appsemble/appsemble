@@ -72,7 +72,8 @@ export async function getAssetById(ctx: Context): Promise<void> {
 
   if (assetId !== asset.id) {
     // Redirect to asset using current asset ID
-    ctx.redirect(`/api/apps/${appId}/assets/${asset.id}`);
+    ctx.status = 302;
+    ctx.set('location', `/api/apps/${appId}/assets/${asset.id}`);
     return;
   }
 
