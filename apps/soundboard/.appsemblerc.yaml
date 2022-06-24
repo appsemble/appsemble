@@ -1,5 +1,6 @@
 context:
   development:
+    id: 11
     organization: appsemble
     remote: http://localhost:9999
     template: true
@@ -13,7 +14,7 @@ context:
     template: true
     visibility: public
   staging:
-    visibility: public
+    organization: appsemble
     remote: https://staging.appsemble.review
     template: true
-    organization: appsemble
+    visibility: public

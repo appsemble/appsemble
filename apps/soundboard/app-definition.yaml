@@ -4,7 +4,8 @@ defaultPage: Soundboard
 
 resources:
   audio:
-    roles: [$public]
+    query:
+      roles: [$public]
     schema:
       type: object
       additionalProperties: false
@@ -12,7 +13,7 @@ resources:
         - icon
         - text
         - color
-        - assetId
+        - asset
       properties:
         icon:
           type: string
@@ -20,21 +21,13 @@ resources:
           type: string
         color:
           type: string
-        assetId:
+        asset:
           type: string
-          format: binary
 pages:
   - name: Soundboard
     blocks:
-      - type: audio
-        version: 0.20.9
-        parameters:
-          src: { prop: assetId }
-        events:
-          listen:
-            onAudio: onClick
       - type: data-loader
-        version: 0.20.9
+        version: 0.20.10
         actions:
           onLoad:
             type: resource.query
@@ -42,8 +35,15 @@ pages:
         events:
           emit:
             data: sound
+      - type: audio
+        version: 0.20.10
+        parameters:
+          src: { prop: asset }
+        events:
+          listen:
+            onAudio: onClick
       - type: tiles
-        version: 0.20.9
+        version: 0.20.10
         actions:
           onClick:
             type: event
