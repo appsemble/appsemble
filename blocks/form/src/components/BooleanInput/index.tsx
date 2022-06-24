@@ -12,6 +12,7 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
  * An input element for a boolean value.
  */
 export function BooleanInput({
+  className,
   dirty,
   disabled,
   error,
@@ -28,7 +29,7 @@ export function BooleanInput({
 
   return (
     <CheckboxField
-      className={classNames('appsemble-boolean', { 'is-danger': error })}
+      className={classNames('appsemble-boolean', className, { 'is-danger': error })}
       color={color}
       disabled={disabled}
       error={dirty ? error : null}

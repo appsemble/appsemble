@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { InputField, TextAreaField } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, StringField } from '../../../block';
@@ -11,6 +12,7 @@ type StringInputProps = InputProps<string, StringField>;
  * An input element for a text type schema.
  */
 export function StringInput({
+  className,
   dirty,
   disabled,
   error,
@@ -24,7 +26,7 @@ export function StringInput({
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
-    className: 'appsemble-string',
+    className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
     iconLeft: icon,

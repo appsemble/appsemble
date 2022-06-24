@@ -1,5 +1,6 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { InputField, SliderField } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, NumberField } from '../../../block';
@@ -11,6 +12,7 @@ type NumberInputProps = InputProps<number, NumberField>;
  * An input element for a number type schema.
  */
 export function NumberInput({
+  className,
   dirty,
   disabled,
   error,
@@ -23,7 +25,7 @@ export function NumberInput({
   const { bottomLabels, display, icon, label, placeholder, readOnly, tag, topLabels } = field;
 
   const commonProps = {
-    className: 'appsemble-number',
+    className: classNames('appsemble-number', className),
     disabled,
     error: dirty && error,
     icon,

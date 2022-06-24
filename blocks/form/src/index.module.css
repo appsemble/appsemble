@@ -17,3 +17,7 @@
     max-height: 0;
   }
 }
+
+.collapsed :global(.help) {
+  min-height: unset;
+}

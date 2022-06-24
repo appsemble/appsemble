@@ -1,5 +1,6 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, RadioField } from '../../../block';
@@ -12,6 +13,7 @@ type RadioInputProps = InputProps<any, RadioField>;
  * An input element for a radio button.
  */
 export function RadioInput({
+  className,
   dirty,
   disabled,
   error,
@@ -26,7 +28,7 @@ export function RadioInput({
 
   return (
     <RadioGroup
-      className="appsemble-radio"
+      className={classNames('appsemble-radio', className)}
       disabled={disabled}
       error={dirty ? error : null}
       label={utils.remap(label, value) as string}

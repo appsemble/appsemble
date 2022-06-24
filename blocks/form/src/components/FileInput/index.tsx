@@ -12,6 +12,7 @@ import styles from './index.module.css';
 type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
 
 export function FileInput({
+  className,
   dirty,
   disabled,
   error,
@@ -41,7 +42,7 @@ export function FileInput({
 
   return (
     <FormComponent
-      className="appsemble-file"
+      className={classNames('appsemble-file', className)}
       icon={icon}
       label={remappedLabel as string}
       optionalLabel={<FormattedMessage id="optionalLabel" />}

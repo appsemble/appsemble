@@ -16,7 +16,7 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { fields: initialFields, previous, requirements },
+    parameters: { collapsed = true, fields: initialFields, previous, requirements },
     path,
     ready,
     utils,
@@ -232,6 +232,7 @@ bootstrap(
         </Message>
         {fields?.map((f) => (
           <FormInput
+            className={classNames({ [styles.collapsed]: collapsed })}
             disabled={dataLoading || submitting}
             error={errors[f.name]}
             field={f}

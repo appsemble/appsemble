@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
@@ -14,6 +15,7 @@ type DateTimeInputProps = InputProps<string, DateField>;
  * An input element for a date value.
  */
 export function DateInput({
+  className,
   dirty,
   disabled,
   error,
@@ -43,6 +45,7 @@ export function DateInput({
 
   return (
     <DateTimeField
+      className={classNames(className)}
       confirm={field.confirm}
       confirmLabel={confirmLabel}
       // @ts-expect-error There’s a mismatch between the `Remapper` type in the shared types and
