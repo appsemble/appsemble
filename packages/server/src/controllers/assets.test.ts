@@ -556,3 +556,157 @@ describe('deleteAsset', () => {
     `);
   });
 });
+
+describe('deleteAssets', () => {
+  it('should delete existing assets', async () => {
+    const assetA = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    const assetB = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    authorizeStudio();
+    const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: [assetA.id, assetB.id],
+    });
+    const newAssetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+
+    expect(assetsResponse).toMatchInlineSnapshot(
+      {
+        data: [
+          { id: expect.stringMatching(uuid4Pattern) },
+          { id: expect.stringMatching(uuid4Pattern) },
+          { id: expect.stringMatching(uuid4Pattern) },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+      ]
+    `,
+    );
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(newAssetsResponse).toMatchInlineSnapshot(
+      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+      ]
+    `,
+    );
+  });
+
+  it('should ignore non-existent IDs when deleting multiple existing assets', async () => {
+    const assetA = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    const assetB = await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    authorizeStudio();
+    const assetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+    const response = await request.delete(`/api/apps/${app.id}/assets`, {
+      data: [assetA.id, assetB.id],
+    });
+    const newAssetsResponse = await request.get(`/api/apps/${app.id}/assets`);
+
+    expect(assetsResponse).toMatchInlineSnapshot(
+      {
+        data: [
+          { id: expect.stringMatching(uuid4Pattern) },
+          { id: expect.stringMatching(uuid4Pattern) },
+          { id: expect.stringMatching(uuid4Pattern) },
+        ],
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+      ]
+    `,
+    );
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(newAssetsResponse).toMatchInlineSnapshot(
+      { data: [{ id: expect.stringMatching(uuid4Pattern) }] },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "filename": "test.bin",
+          "id": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+          "mime": "application/octet-stream",
+        },
+      ]
+    `,
+    );
+  });
+});

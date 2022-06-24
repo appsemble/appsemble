@@ -21,6 +21,7 @@ import {
 } from '../models';
 import { getRemapperContext } from '../utils/app';
 import { checkRole } from '../utils/checkRole';
+import { iterTable } from '../utils/database';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
 import {
   extractResourceBody,
@@ -861,4 +862,41 @@ export async function deleteResource(ctx: Context): Promise<void> {
 
   processReferenceHooks(user, app, resource, action);
   processHooks(user, app, resource, action);
+}
+
+export async function deleteResources(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, resourceType },
+    request: { body },
+    user,
+  } = ctx;
+
+  const action = 'delete';
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
+  });
+
+  getResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+
+  for await (const resource of iterTable(Resource, {
+    where: { id: body, type: resourceType, AppId: appId, ...userQuery },
+  })) {
+    await resource.destroy();
+    processReferenceHooks(user, app, resource, action);
+    processHooks(user, app, resource, action);
+  }
+
+  ctx.status = 204;
 }

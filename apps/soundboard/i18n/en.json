@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "This app displays buttons which play sounds when you click on them.",
+    "name": "Soundboard",
+    "pages.soundboard": "Soundboard"
+  }
+}

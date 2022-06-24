@@ -82,9 +82,7 @@ export function AssetsPage(): ReactElement {
     confirmLabel: <FormattedMessage {...messages.delete} />,
     color: 'danger',
     async action() {
-      await Promise.all(
-        selectedAssets.map((asset) => axios.delete(`/api/apps/${app.id}/assets/${asset}`)),
-      );
+      await axios.delete(`/api/apps/${app.id}/assets`, { data: selectedAssets });
 
       push({
         body: formatMessage(messages.deleteSuccess, {

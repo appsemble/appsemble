@@ -3992,6 +3992,99 @@ describe('updateResource', () => {
   });
 });
 
+describe('deleteResources', () => {
+  it('should be able to delete multiple resources', async () => {
+    const app = await exampleApp(organization.id);
+    const resourceA = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+    const resourceB = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+    await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Three.' },
+    });
+
+    const responseGetA = await request.get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(responseGetA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo.",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Too.",
+          "id": 2,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Three.",
+          "id": 3,
+        },
+      ]
+    `);
+
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: [resourceA.id, resourceB.id],
+    });
+    const responseGetEmpty = await request.get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseGetEmpty).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Three.",
+          "id": 3,
+        },
+      ]
+    `);
+  });
+
+  it('should ignore non-existent resources.', async () => {
+    const app = await exampleApp(organization.id);
+    const resourceA = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: [resourceA.id, 2, 3, 4, 5],
+    });
+    const responseGetEmpty = await request.get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseGetEmpty).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      []
+    `);
+  });
+});
+
 describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
     const app = await exampleApp(organization.id);

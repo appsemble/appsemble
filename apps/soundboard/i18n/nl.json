@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "Deze app laat knoppen zien die geluiden afspelen wanneer je er op klikt.",
+    "name": "Soundboard",
+    "pages.soundboard": "Soundboard"
+  }
+}
