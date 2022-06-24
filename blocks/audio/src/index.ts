@@ -1,11 +1,11 @@
 import { bootstrap } from '@appsemble/sdk';
 
 bootstrap(({ events, parameters: { src }, utils }) => {
-  let audio: HTMLAudioElement;
+  const audio = document.createElement('audio');
 
   events.on.onAudio((data) => {
     const remappedSrc = utils.remap(src, data) as string;
-    audio = document.createElement('audio');
+
     try {
       audio.src = String(new URL(remappedSrc));
     } catch {
@@ -16,7 +16,6 @@ bootstrap(({ events, parameters: { src }, utils }) => {
   });
 
   events.on.stop(() => {
-    audio?.pause();
-    audio = undefined;
+    audio.pause();
   });
 });
