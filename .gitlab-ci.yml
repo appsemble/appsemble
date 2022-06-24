@@ -594,7 +594,8 @@ provision review:
     - yarn create-appsemble block --organization appsemble --template preact --name template-preact
     - yarn create-appsemble block --organization appsemble --template mini-jsx --name template-mini-jsx
     - yarn appsemble -vv block publish blocks/*
-    - yarn appsemble -vv app create apps/* --resources
+    - yarn appsemble -vv app create apps/* --resources --modify-context
+    - yarn appsemble -vv asset create --app apps/soundboard apps/soundboard/assets/*
 
 # Provision the staging environment with the blocks that were built in the build stage.
 provision staging:
@@ -615,7 +616,8 @@ provision staging:
       --name Appsemble
       --website https://appsemble.com
     - yarn appsemble -vv block publish blocks/*
-    - yarn appsemble -vv app create apps/* --resources
+    - yarn appsemble -vv app create apps/* --resources --modify-context
+    - yarn appsemble -vv asset create --app apps/soundboard apps/soundboard/assets/*
 
 # Provision the production environment with the blocks that were built in the build stage.
 provision production:
