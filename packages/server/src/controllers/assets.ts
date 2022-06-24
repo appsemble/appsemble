@@ -74,6 +74,7 @@ export async function getAssetById(ctx: Context): Promise<void> {
     // Redirect to asset using current asset ID
     ctx.status = 302;
     ctx.set('location', `/api/apps/${appId}/assets/${asset.id}`);
+    ctx.type = null;
     return;
   }
 
