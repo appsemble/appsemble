@@ -668,9 +668,9 @@ lighthouse:
     paths:
       - .lighthouseci
 
-e2e:
+cypress:
   stage: end 2 end
-  image: cypress/browsers:node14.17.0-chrome91-ff89
+  image: cypress/browsers:node16.14.2-slim-chrome100-ff99-edge
   needs:
     - job: provision review
       optional: true
