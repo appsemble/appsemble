@@ -33,6 +33,37 @@ Describe what the button does. This helps with accessibility for people using sc
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks audio 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "onAudio": {
+        "description": "The event to listen on for new data.
+
+The result must be either a audio URL or an object containing a property \`url\`.",
+      },
+      "stop": {
+        "description": "The event to stop listening to audio.",
+      },
+    },
+  },
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "src": {
+        "description": "The source of the player.",
+        "format": "remapper",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
 {
   "actions": {
@@ -2803,6 +2834,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       },
     },
     "properties": {
+      "dense": {
+        "default": false,
+        "description": "Whether or not space should be reserved for the help text.
+
+If this is set to \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
+        "type": "boolean",
+      },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",
         "items": {
