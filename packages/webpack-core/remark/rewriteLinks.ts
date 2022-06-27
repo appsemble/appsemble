@@ -1,11 +1,10 @@
 import { relative, resolve } from 'path';
 
-import { Link, Root } from 'mdast';
-import { Attacher } from 'unified';
+import { Link } from 'mdast';
+import { Plugin, Transformer } from 'unified';
 import visit from 'unist-util-visit';
-import { VFile } from 'vfile';
 
-function transformer(ast: Root, vfile: VFile): void {
+const transformer: Transformer = (ast, vfile) => {
   visit<Link>(ast, { type: 'link' }, (node) => {
     if (/^(https?:\/)?\//.test(node.url)) {
       // External URLs or absolute URLs to Appsemble Studio
@@ -31,9 +30,9 @@ function transformer(ast: Root, vfile: VFile): void {
     // eslint-disable-next-line no-param-reassign
     node.url = chunks.join('#');
   });
-}
+};
 
 /**
  * This remark plugin rewrites links to they can be resolved at runtime by Appsemble Studio.
  */
-export const remarkRewriteLinks: Attacher = () => transformer;
+export const remarkRewriteLinks: Plugin = () => transformer;

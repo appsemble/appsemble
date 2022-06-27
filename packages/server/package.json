@@ -120,7 +120,7 @@
     "@sinonjs/fake-timers": "^9.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
-    "@types/jest-image-snapshot": "^4.0.0",
+    "@types/jest-image-snapshot": "^5.0.0",
     "@types/jsonwebtoken": "^8.0.0",
     "@types/koa": "^2.0.0",
     "@types/koa-compress": "^4.0.0",
