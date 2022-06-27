@@ -89,11 +89,15 @@ Returns \`true\` if the first entry is greater than the second entry.`,
       type: 'object',
       description: 'Create a calendar event',
       additionalProperties: false,
-      required: ['start', 'duration', 'title'],
+      required: ['start', 'title'],
       properties: {
         start: {
           $ref: '#/components/schemas/RemapperDefinition',
           description: 'The start of the icalendar event.',
+        },
+        end: {
+          $ref: '#/components/schemas/RemapperDefinition',
+          description: 'The end of the icalendar event.',
         },
         duration: {
           $ref: '#/components/schemas/RemapperDefinition',
