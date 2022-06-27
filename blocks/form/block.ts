@@ -940,14 +940,14 @@ declare module '@appsemble/sdk' {
     previous?: boolean;
 
     /**
-     * Whether or not the help text should be collapsed or not.
+     * Whether or not space should be reserved for the help text.
      *
-     * If this is set to `true`, any help text appearing
-     * will cause the form input to jump around due to layout changes.
+     * If this is set to `true`, any help text appearing will cause the form input to jump around
+     * due to layout changes.
      *
-     * @default true
+     * @default false
      */
-    collapsed?: boolean;
+    dense?: boolean;
 
     /**
      * A list of requirements that are checked across all of the form data.

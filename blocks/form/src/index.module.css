@@ -18,6 +18,6 @@
   }
 }
 
-.collapsed :global(.help) {
+.dense :global(.help) {
   min-height: unset;
 }
