@@ -1,5 +1,5 @@
 parameters:
-  url: https://onlyVimeoUrl.com/exampleId/
+  url: https://vimeo.com/example
   autoplay: false
   volume: 50
   muted: false
@@ -9,5 +9,5 @@ parameters:
   maxHeight: 150px
 actions:
   onFinish:
-  type: link
-  to: next vimeo video url
+    type: link
+    to: next vimeo video url
