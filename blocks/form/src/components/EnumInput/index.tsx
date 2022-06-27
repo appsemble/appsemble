@@ -1,5 +1,6 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Option, SelectField } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
@@ -12,6 +13,7 @@ type EnumInputProps = InputProps<string, EnumField>;
  * Render a select box which offers choices a JSON schema enum.
  */
 export function EnumInput({
+  className,
   dirty,
   disabled,
   field,
@@ -68,7 +70,7 @@ export function EnumInput({
 
   return (
     <SelectField
-      className="appsemble-enum"
+      className={classNames('appsemble-enum', className)}
       disabled={disabled || loading || options.length === 0}
       error={dirty ? error : null}
       icon={icon}

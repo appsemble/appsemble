@@ -797,6 +797,11 @@ export interface FieldErrorMap {
 
 export interface InputProps<T, F extends Field> {
   /**
+   * Any additional classnames that should be applied.
+   */
+  className?: string;
+
+  /**
    * Whether or not the field should be disabled.
    */
   disabled?: boolean;
@@ -933,6 +938,16 @@ declare module '@appsemble/sdk' {
      * Whether the previous button should be shown.
      */
     previous?: boolean;
+
+    /**
+     * Whether or not space should be reserved for the help text.
+     *
+     * If this is set to `true`, any help text appearing will cause the form input to jump around
+     * due to layout changes.
+     *
+     * @default false
+     */
+    dense?: boolean;
 
     /**
      * A list of requirements that are checked across all of the form data.
