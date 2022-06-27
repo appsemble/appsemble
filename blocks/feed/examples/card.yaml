@@ -11,7 +11,7 @@ parameters:
       values:
         date: [{ prop: $created }, { date.parse }]
   picture: [{ prop: photos }, { prop: 0 }]
-  pictures: [{ prop: photos }]
+  pictures: { prop: photos }
   reply:
     content: { prop: content }
     author: { prop: author }
@@ -26,9 +26,6 @@ actions:
   onLoadReply:
     type: resource.query
     resource: resourceName
-    query:
-      object.form:
-        $filter: { prop: $filter }
   onSubmitReply:
     type: resource.create
     resource: resourceName
