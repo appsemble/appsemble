@@ -818,6 +818,53 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "AssetMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on an existing asset.",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "asset": {
+            "description": "The id of an asset to use.",
+            "type": "string",
+          },
+          "latitude": {
+            "description": "The latitude of the marker.",
+            "format": "remapper",
+          },
+          "longitude": {
+            "description": "The longitude of the marker.",
+            "format": "remapper",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "asset",
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -831,6 +878,58 @@ Compatible data that is received will be displayed.",
           "white",
         ],
         "type": "string",
+      },
+      "FontAwesomeMarkerIcon": {
+        "additionalProperties": false,
+        "description": "A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).",
+        "properties": {
+          "anchor": {
+            "description": "The anchor X and Y offset used for positioning the image.
+
+By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
+
+The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
+
+- \`map-marker\`
+- \`map-marker-alt\`
+- \`map-pin\`
+- \`thumbtrack\`",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color to apply to the icon.",
+          },
+          "icon": {
+            "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "latitude": {
+            "description": "The latitude of the marker.",
+            "format": "remapper",
+          },
+          "longitude": {
+            "description": "The longitude of the marker.",
+            "format": "remapper",
+          },
+          "size": {
+            "default": 28,
+            "description": "The height of marker icons in pixels.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "latitude",
+          "longitude",
+        ],
+        "type": "object",
       },
       "Reply": {
         "additionalProperties": false,
@@ -878,101 +977,10 @@ Compatible data that is received will be displayed.",
       "marker": {
         "anyOf": [
           {
-            "additionalProperties": false,
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "asset": {
-                "description": "The id of an asset to use.",
-                "type": "string",
-              },
-              "latitude": {
-                "description": "The latitude of the marker.",
-                "format": "remapper",
-              },
-              "longitude": {
-                "description": "The longitude of the marker.",
-                "format": "remapper",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "asset",
-              "latitude",
-              "longitude",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/AssetMarkerIcon",
           },
           {
-            "additionalProperties": false,
-            "properties": {
-              "anchor": {
-                "description": "The anchor X and Y offset used for positioning the image.
-
-By default, the center of the icon will be used to mark the location. For many icons, it may be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a  height of 16, you’ll probably want to set this to \`[5, 16]\`
-
-The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are treated in a special way, since they are often used to represent a location:
-
-- \`map-marker\`
-- \`map-marker-alt\`
-- \`map-pin\`
-- \`thumbtrack\`",
-                "items": {
-                  "type": "number",
-                },
-                "maxItems": 2,
-                "minItems": 2,
-                "type": "array",
-              },
-              "color": {
-                "$ref": "#/definitions/BulmaColor",
-                "default": "primary",
-                "description": "The color to apply to the icon.",
-              },
-              "icon": {
-                "description": "A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.",
-                "format": "fontawesome",
-                "type": "string",
-              },
-              "latitude": {
-                "description": "The latitude of the marker.",
-                "format": "remapper",
-              },
-              "longitude": {
-                "description": "The longitude of the marker.",
-                "format": "remapper",
-              },
-              "size": {
-                "default": 28,
-                "description": "The height of marker icons in pixels.",
-                "type": "number",
-              },
-            },
-            "required": [
-              "latitude",
-              "longitude",
-            ],
-            "type": "object",
+            "$ref": "#/definitions/FontAwesomeMarkerIcon",
           },
         ],
         "description": "The location marker that is displayed on the card.",
