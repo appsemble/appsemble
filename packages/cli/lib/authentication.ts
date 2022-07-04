@@ -1,7 +1,13 @@
+import { AddressInfo, Server } from 'net';
+import { hostname } from 'os';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
 import axios from 'axios';
 import { prompt } from 'inquirer';
+import Koa, { Context } from 'koa';
+import open from 'open';
+import raw from 'raw-body';
 
 import { BaseArguments } from '../types';
 
@@ -15,6 +21,47 @@ function validate(credentials: string): boolean {
 
 function getService(remote: string): string {
   return `appsemble://${new URL(remote).host}`;
+}
+
+function waitForCredentials(url: URL): Promise<string> {
+  return new Promise((resolve) => {
+    const app = new Koa();
+    // eslint-disable-next-line prefer-const
+    let server: Server;
+    app.use(async (ctx: Context) => {
+      ctx.set({
+        'access-control-allow-headers': '*',
+        'access-control-allow-methods': 'post',
+        'access-control-allow-origin': url.origin,
+      });
+      if (ctx.method === 'OPTIONS') {
+        ctx.status = 204;
+        return;
+      }
+      ctx.assert(ctx.path === '/', 404);
+      ctx.assert(ctx.method === 'POST', 405);
+      ctx.assert(ctx.is('json'), 415);
+      let credentials: string;
+      try {
+        ({ credentials } = JSON.parse(await raw(ctx.req, { encoding: 'utf8' })));
+      } catch {
+        ctx.throw(400, 'Invalid JSON');
+      }
+      ctx.assert(
+        typeof credentials === 'string' && validate(credentials),
+        400,
+        'Invalid client credentials',
+      );
+      ctx.status = 204;
+      server.close();
+      resolve(credentials);
+    });
+    server = app.listen();
+
+    url.searchParams.set('callback', String((server.address() as AddressInfo).port));
+    url.searchParams.set('description', hostname());
+    open(String(url));
+  });
 }
 
 async function getKeytar(): Promise<typeof import('keytar')> {
@@ -73,15 +120,8 @@ export async function login({ clientCredentials, remote }: BaseArguments): Promi
     }
     credentials = clientCredentials;
   } else {
-    logger.info(`Client credentials can be registered on ${url}`);
-    ({ credentials } = await prompt([
-      {
-        name: 'credentials',
-        type: 'password',
-        message: 'Enter client credentials',
-        validate,
-      },
-    ]));
+    logger.info(`Opening ${url}`);
+    credentials = await waitForCredentials(url);
   }
   const [clientId, clientSecret] = credentials.split(':');
   await setPassword(getService(remote), clientId, clientSecret);

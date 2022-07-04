@@ -24,12 +24,17 @@ import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages';
 
 export function ClientCredentialsPage(): ReactElement {
   useMeta(messages.title);
+  const location = useLocation();
+  const search = new URLSearchParams(location.search);
+  const callback = search.get('callback');
+  const suggestedDescription = search.get('description');
 
   const { formatMessage } = useIntl();
   const {
@@ -40,7 +45,7 @@ export function ClientCredentialsPage(): ReactElement {
     setData: setClients,
   } = useData<OAuth2ClientCredentials[]>('/api/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = useState<string>(null);
-  const modal = useToggle();
+  const modal = useToggle(Boolean(callback));
 
   const resetModal = useCallback(() => {
     modal.disable();
@@ -58,10 +63,20 @@ export function ClientCredentialsPage(): ReactElement {
         expires: expires ? new Date(expires) : undefined,
         scopes,
       });
-      setNewClientCredentials(`${data.id}:${data.secret}`);
-      setClients([...clients, data]);
+      const newCredentials = `${data.id}:${data.secret}`;
+      if (/^\d{4,5}$/.test(callback)) {
+        try {
+          // It may be tempting to use localhost here, but that’s insecure, as it may be mapped to
+          // another IP address.
+          await axios.post(`http://127.0.0.1:${callback}`, { credentials: newCredentials });
+        } catch {
+          // If this fails, let the user copy-paste as usual.
+        }
+      }
+      setNewClientCredentials(newCredentials);
+      setClients((oldClients) => [...oldClients, data]);
     },
-    [clients, setClients],
+    [callback, setClients],
   );
 
   const onDelete = useConfirmation({
@@ -108,7 +123,7 @@ export function ClientCredentialsPage(): ReactElement {
       <ModalCard
         component={SimpleForm}
         defaultValues={{
-          description: '',
+          description: suggestedDescription,
           expires: '',
           'blocks:write': false,
           'organizations:write': false,
