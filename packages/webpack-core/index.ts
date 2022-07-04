@@ -1,4 +1,4 @@
-import { dirname, join } from 'path';
+import { dirname, join, resolve } from 'path';
 
 import { logger } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
@@ -246,7 +246,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
       chunks: [],
     }),
     new InjectManifest({
-      swSrc: require.resolve('@appsemble/service-worker'),
+      swSrc: resolve(__dirname, '..', 'service-worker', 'index.ts'),
       swDest: 'service-worker.js',
       injectionPoint: 'appAssets',
       manifestTransforms: [
