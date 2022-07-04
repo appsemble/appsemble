@@ -1,5 +1,2 @@
-overrides:
-  - files:
-      - 'src/**'
-    extends:
-      - remcohaszing/web
+extends:
+  - remcohaszing/web

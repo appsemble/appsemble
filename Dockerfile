@@ -33,7 +33,7 @@ ARG date
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 COPY i18n /app/i18n
-RUN ln -s /app/packages/server/dist/index.js /usr/bin/appsemble
+RUN ln -s /app/packages/server/index.js /usr/bin/appsemble
 WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.

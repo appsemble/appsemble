@@ -20,10 +20,9 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "main": "dist",
-  "bin": "dist/index.js",
+  "bin": "./index.js",
   "files": [
-    "dist"
+    "*.js"
   ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",

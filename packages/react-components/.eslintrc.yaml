@@ -1,10 +1,7 @@
-overrides:
-  - files:
-      - 'src/**'
-    extends:
-      - remcohaszing/react
-      - remcohaszing/web
-    rules:
-      node/no-unpublished-import: off
-      react/prop-types: off
-      react/require-default-props: off
+extends:
+  - remcohaszing/react
+  - remcohaszing/web
+rules:
+  node/no-unpublished-import: off
+  react/prop-types: off
+  react/require-default-props: off

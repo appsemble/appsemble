@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.build",
   "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src"
+    "module": "commonjs"
   }
 }

@@ -20,10 +20,10 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
-  "main": "dist",
   "files": [
-    "dist",
-    "types.d.ts"
+    "**/*.d.ts",
+    "**/*.js",
+    "!*.config.js"
   ],
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json",
@@ -39,7 +39,6 @@
     "postcss-loader": "^7.0.0",
     "svgo-loader": "^3.0.0",
     "ts-loader": "^9.0.0",
-    "tsconfig-paths-webpack-plugin": "^3.0.0",
     "webpack": "^5.0.0"
   },
   "devDependencies": {

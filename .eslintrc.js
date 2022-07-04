@@ -12,7 +12,8 @@ module.exports = {
     },
     node: {
       convertPath: {
-        'src/**': ['src/(.+?).tsx?$', 'dist/$1.js'],
+        '**/*.ts': ['(.+)\\.ts$', '$1.js'],
+        '**/*.tsx': ['(.+)\\.tsx$', '$1.js'],
       },
     },
   },
@@ -60,12 +61,18 @@ module.exports = {
       files: ['**/__fixtures__/**'],
       rules: {
         'import/no-extraneous-dependencies': 'off',
+
+        'node/no-extraneous-import': 'off',
       },
     },
     {
-      files: ['**/*.md/*.js'],
+      files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.tsx'],
       rules: {
         'no-undef': 'off',
+
+        'import/no-extraneous-dependencies': 'off',
+
+        'node/no-extraneous-import': 'off',
       },
     },
   ],

@@ -34,3 +34,8 @@ junit.xml
 
 # Helm charts hosted on GitLab pages
 public/
+
+*.d.ts
+*.js
+*.map
+!*.config.js

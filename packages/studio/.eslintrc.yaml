@@ -1,9 +1,6 @@
-overrides:
-  - files:
-      - 'src/**'
-    extends:
-      - remcohaszing/react
-      - remcohaszing/web
-    rules:
-      react/prop-types: off
-      react/require-default-props: off
+extends:
+  - remcohaszing/react
+  - remcohaszing/web
+rules:
+  react/prop-types: off
+  react/require-default-props: off

@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-unpublished-import
 import 'fake-indexeddb/auto';
 
 window.settings = {
