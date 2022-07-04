@@ -18,7 +18,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   const filename = production ? '/service-worker.js' : '/app/service-worker.js';
   const serviceWorker = await (production
     ? fs.readFile(
-        resolve(__dirname, '..', '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
+        resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
         'utf8',
       )
     : ctx.fs.promises.readFile(filename, 'utf8'));
