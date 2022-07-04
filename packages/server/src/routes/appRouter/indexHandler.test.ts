@@ -14,7 +14,7 @@ let clock: InstalledClock;
 
 useTestDatabase('approuter');
 
-beforeAll(async () => {
+beforeEach(async () => {
   await Organization.create({ id: 'test' });
   await Organization.create({ id: 'appsemble' });
 
@@ -155,10 +155,6 @@ afterEach(() => {
   clock.uninstall();
 });
 
-afterEach(() => {
-  clock.uninstall();
-});
-
 it('should render the index page', async () => {
   await App.create({
     OrganizationId: 'test',
@@ -295,6 +291,24 @@ it('should redirect if only the organization id is given', async () => {
   const { headers, status } = await request.get('/');
   expect(status).toBe(302);
   expect(headers.location).toBe('http://host.example/organizations/org');
+});
+
+it('should if the app has a custom domain', async () => {
+  requestURL = new URL('http://app.test.host.example');
+  await App.create({
+    OrganizationId: 'test',
+    definition: {
+      name: 'Test App',
+      pages: [],
+    },
+    path: 'app',
+    domain: 'custom.example',
+    vapidPublicKey: '',
+    vapidPrivateKey: '',
+  });
+  const { headers, status } = await request.get('/en?query=param');
+  expect(status).toBe(302);
+  expect(headers.location).toBe('http://custom.example/en?query=param');
 });
 
 it('should redirect to the app root if the organization id is disallowed', async () => {
