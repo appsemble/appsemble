@@ -1,0 +1,5 @@
+parameters:
+  placeholders:
+    testDataContent: Placeholders data content
+  content: |
+    <span data-content="testDataContent" />

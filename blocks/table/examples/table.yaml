@@ -1,0 +1,15 @@
+parameters:
+  fields:
+    - value: { prop: date }
+      label: { translate: date }
+    - value: { prop: name }
+      label: { string.format: { messageId: name, values: { locale: EN } } }
+    - value: { prop: localName }
+      label: { string.format: { messageId: name, values: { locale: NL } } }
+events:
+  listen:
+    data: source
+actions:
+  onClick:
+    type: link
+    to: sourceUrl

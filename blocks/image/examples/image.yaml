@@ -1,0 +1,5 @@
+parameters:
+  url: https://exampleImg.com/exampleId/
+  alt: Alt text for image
+  rounded: true
+  alignment: center

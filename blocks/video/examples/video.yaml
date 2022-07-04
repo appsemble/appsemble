@@ -1,0 +1,13 @@
+parameters:
+  url: https://vimeo.com/example
+  autoplay: false
+  volume: 50
+  muted: false
+  width: 100px
+  height: 70px
+  maxWidth: 200px
+  maxHeight: 150px
+actions:
+  onFinish:
+    type: link
+    to: next vimeo video url

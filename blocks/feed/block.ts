@@ -21,10 +21,46 @@ interface Reply {
   content?: Remapper;
 }
 
+interface BaseMarkerIcon {
+  /**
+   * The latitude of the marker.
+   */
+  latitude: Remapper;
+
+  /**
+   * The longitude of the marker.
+   */
+  longitude: Remapper;
+
+  /**
+   * The anchor X and Y offset used for positioning the image.
+   *
+   * By default, the center of the icon will be used to mark the location.
+   * For many icons, it may be desirable to customize this. For example, for a symmetric pin
+   * which has a width of 10, and a  height of 16, you’ll probably want to set this to `[5, 16]`
+   *
+   * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
+   * treated in a special way, since they are often used to represent a location:
+   *
+   * - `map-marker`
+   * - `map-marker-alt`
+   * - `map-pin`
+   * - `thumbtrack`
+   */
+  anchor?: [number, number];
+
+  /**
+   * The height of marker icons in pixels.
+   *
+   * @default 28
+   */
+  size?: number;
+}
+
 /**
  * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
  */
-interface FontAwesomeMarkerIcon {
+interface FontAwesomeMarkerIcon extends BaseMarkerIcon {
   /**
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
@@ -41,7 +77,7 @@ interface FontAwesomeMarkerIcon {
 /**
  * A marker based on an existing asset.
  */
-interface AssetMarkerIcon {
+interface AssetMarkerIcon extends BaseMarkerIcon {
   /**
    * The id of an asset to use.
    */
@@ -122,41 +158,7 @@ declare module '@appsemble/sdk' {
     /**
      * The location marker that is displayed on the card.
      */
-    marker?: {
-      /**
-       * The latitude of the marker.
-       */
-      latitude: Remapper;
-
-      /**
-       * The longitude of the marker.
-       */
-      longitude: Remapper;
-
-      /**
-       * The anchor X and Y offset used for positioning the image.
-       *
-       * By default, the center of the icon will be used to mark the location.
-       * For many icons, it may be desirable to customize this. For example, for a symmetric pin
-       * which has a width of 10, and a  height of 16, you’ll probably want to set this to `[5, 16]`
-       *
-       * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
-       * treated in a special way, since they are often used to represent a location:
-       *
-       * - `map-marker`
-       * - `map-marker-alt`
-       * - `map-pin`
-       * - `thumbtrack`
-       */
-      anchor?: [number, number];
-
-      /**
-       * The height of marker icons in pixels.
-       *
-       * @default 28
-       */
-      size?: number;
-    } & (AssetMarkerIcon | FontAwesomeMarkerIcon);
+    marker?: AssetMarkerIcon | FontAwesomeMarkerIcon;
   }
 
   interface Actions {

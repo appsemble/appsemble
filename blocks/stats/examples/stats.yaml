@@ -1,0 +1,14 @@
+parameters:
+  fields:
+    - value: { prop: value }
+      icon: fontawesomeIcon
+      label: Dog
+    - value: { prop: value }
+      icon: fontawesomeIcon
+      label: Cat
+    - value: { prop: value }
+      icon: fontawesomeIcon
+      label: Horse
+events:
+  listen:
+    data: status

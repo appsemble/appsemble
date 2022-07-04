@@ -1,0 +1,31 @@
+events:
+  listen:
+    data: updateForm
+parameters:
+  buttonLabel: Details
+  title: { prop: type }
+  subtitle: { prop: subType }
+  heading:
+    string.format:
+      template: '{date, date, long} {date, time, short}'
+      values:
+        date: [{ prop: $created }, { date.parse }]
+  picture: [{ prop: photos }, { prop: 0 }]
+  pictures: { prop: photos }
+  reply:
+    content: { prop: content }
+    author: { prop: author }
+    parentId: resourceRefId
+  marker:
+    longitude: [{ prop: location }, { prop: longitude }]
+    latitude: [{ prop: location }, { prop: latitude }]
+actions:
+  onButtonClick:
+    type: link
+    to: Details page
+  onLoadReply:
+    type: resource.query
+    resource: resourceName
+  onSubmitReply:
+    type: resource.create
+    resource: resourceName
