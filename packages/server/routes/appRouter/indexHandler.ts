@@ -17,7 +17,7 @@ import {
   BlockAsset,
   BlockVersion,
 } from '../../models';
-import { getApp } from '../../utils/app';
+import { getApp, getAppUrl } from '../../utils/app';
 import { argv } from '../../utils/argv';
 import { organizationBlocklist } from '../../utils/organizationBlocklist';
 import { createGtagCode, createSettings, makeCSP, render } from '../../utils/render';
@@ -31,7 +31,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * @returns void
  */
 export async function indexHandler(ctx: Context): Promise<void> {
-  const { hostname } = ctx;
+  const { hostname, path } = ctx;
   const { host } = argv;
 
   const { app, appPath, organizationId } = await getApp(ctx, {
@@ -42,6 +42,8 @@ export async function indexHandler(ctx: Context): Promise<void> {
       'sentryDsn',
       'sentryEnvironment',
       'id',
+      'path',
+      'OrganizationId',
       'sharedStyle',
       'coreStyle',
       'vapidPublicKey',
@@ -79,6 +81,14 @@ export async function indexHandler(ctx: Context): Promise<void> {
       faURL,
       message: 'The app you are looking for could not be found.',
     });
+  }
+
+  const appUrl = getAppUrl(app);
+  if (appUrl.hostname !== hostname) {
+    appUrl.pathname = path;
+    appUrl.search = ctx.querystring;
+    ctx.redirect(String(appUrl));
+    return;
   }
 
   const blocks = getAppBlocks(app.definition);
@@ -161,13 +171,9 @@ export async function indexHandler(ctx: Context): Promise<void> {
 
   ctx.set('Content-Security-Policy', makeCSP(csp));
 
-  const url = new URL(host);
-  url.hostname = app.domain || `${appPath}.${organizationId}.${url.hostname}`;
-  const appUrl = String(url);
-
   return render(ctx, 'app/index.html', {
     app,
-    appUrl,
+    appUrl: String(appUrl),
     host,
     locale: defaultLanguage,
     locales: languages.filter((lang) => lang !== defaultLanguage),
