@@ -1,9 +1,2 @@
-plugins:
-  - cypress
-env:
-  cypress/globals: true
 extends:
   - plugin:cypress/recommended
-rules:
-  jest/valid-expect: off
-  jest/expect-expect: off
