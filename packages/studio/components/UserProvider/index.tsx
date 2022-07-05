@@ -55,11 +55,12 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
   });
+  const [accessToken, setAccessToken] = useState(localStorage.access_token);
 
   const setToken = useCallback((response: TokenResponse) => {
-    axios.defaults.headers.common.authorization = `Bearer ${response.access_token}`;
     localStorage.access_token = response.access_token;
     localStorage.refresh_token = response.refresh_token;
+    setAccessToken(response.access_token);
     setTokenResponse(response);
   }, []);
 
@@ -86,7 +87,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     setUser(null);
     setUserInfo(null);
     setOrganizations([]);
-    delete axios.defaults.headers.common.authorization;
+    setAccessToken(null);
     delete localStorage.access_token;
     delete localStorage.refresh_token;
   }, []);
@@ -104,13 +105,30 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   );
 
   useEffect(() => {
+    if (accessToken) {
+      const interceptor = axios.interceptors.request.use((config) => {
+        // Only add the authorization headers for internal requests.
+        if (config.url.startsWith('/')) {
+          // eslint-disable-next-line no-param-reassign
+          config.headers.authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+      });
+
+      return () => {
+        axios.interceptors.request.eject(interceptor);
+      };
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
       logout();
       setInitialized(true);
       return;
     }
 
-    axios.defaults.headers.common.authorization = `Bearer ${tokenResponse.access_token}`;
+    setAccessToken(tokenResponse.access_token);
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
