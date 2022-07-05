@@ -1,6 +1,7 @@
 import { has } from '@appsemble/utils';
 import { defaultParser, Token, TokenType } from '@odata/parser';
 import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
+// eslint-disable-next-line import/no-unresolved
 import { Col, Fn, Json, Where } from 'sequelize/types/utils';
 
 type PartialModel = Pick<typeof Model, 'tableName'>;
