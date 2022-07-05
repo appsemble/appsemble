@@ -1,8 +1,0 @@
-{
-  "extends": "../../tsconfig.build",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "lib": ["dom", "dom.iterable", "esnext"]
-  }
-}

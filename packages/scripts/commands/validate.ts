@@ -214,26 +214,6 @@ async function validate(
   }
 
   /**
-   * Validate tsconfig.build.json
-   */
-  const tsConfigBuild = await readJson(join(dir, 'tsconfig.build.json')).catch(() => null);
-  if (!pkg.private) {
-    assert(tsConfigBuild, 'tsconfig.build.json', 'Public projects should have tsconfig.build.json');
-  }
-  if (tsConfigBuild) {
-    assert(
-      tsConfigBuild.extends === '../../tsconfig.build',
-      'tsconfig.build.json',
-      'Should extend "../../tsconfig.build"',
-    );
-    assert(
-      isEqual(Object.keys(tsConfigBuild), ['extends', 'compilerOptions']),
-      'tsconfig.build.json',
-      'Only specifies "extends" and "compilerOptions" with "extends" first',
-    );
-  }
-
-  /**
    * Validate jest.config.js exists
    */
   assert(
