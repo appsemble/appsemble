@@ -21,7 +21,7 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
+    "prepack": "tsc --noEmit false",
     "test": "jest"
   },
   "dependencies": {

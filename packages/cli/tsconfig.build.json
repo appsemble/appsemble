@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.build",
-  "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "null",
-    "module": "commonjs"
-  }
-}

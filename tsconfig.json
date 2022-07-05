@@ -1,8 +1,21 @@
-// This tsconfig should be extended by every workspace tsconfig.json.
 {
-  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "noEmit": true
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "lib": ["esnext"],
+    "module": "es2020",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
+    "target": "es2019",
+    "types": ["jest"]
   },
   "exclude": ["**/dist", "**/templates", "**/__fixtures__"]
 }

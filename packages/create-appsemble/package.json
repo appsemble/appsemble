@@ -28,7 +28,7 @@
     "templates"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json",
+    "prepack": "tsc --noEmit false",
     "test": "jest"
   },
   "dependencies": {
