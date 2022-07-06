@@ -23,7 +23,7 @@ import {
   createRoot,
   dumpMarkdown,
 } from '../lib/mdast';
-import { readPackageJson } from '../lib/readPackageJson';
+import pkg from '../package.json';
 
 export const command = 'release <increment>';
 export const description = 'Prepare files for a new release.';
@@ -50,14 +50,14 @@ interface Changes {
 async function updatePkg(dir: string, version: string): Promise<void> {
   const filepath = join(dir, 'package.json');
   logger.info(`Updating ${filepath}`);
-  const [pkg] = await readData<PackageJson>(filepath);
-  if (pkg.name?.startsWith('@types/')) {
+  const [pack] = await readData<PackageJson>(filepath);
+  if (pack.name?.startsWith('@types/')) {
     return;
   }
 
   await writeData(
     filepath,
-    mapValues(pkg, (value, key) => {
+    mapValues(pack, (value, key) => {
       switch (key) {
         case 'version':
           return version;
@@ -254,7 +254,6 @@ export function builder(yargs: Argv): Argv<any> {
 
 export async function handler({ increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
-  const pkg = readPackageJson();
   logger.info(`Old version: ${pkg.version}`);
   const version = semver.inc(pkg.version, increment);
   logger.info(`New version: ${version}`);

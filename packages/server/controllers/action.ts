@@ -12,11 +12,9 @@ import { get, pick } from 'lodash';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization } from '../models';
+import pkg from '../package.json';
 import { email } from '../utils/actions/email';
 import { getRemapperContext } from '../utils/app';
-import { readPackageJson } from '../utils/readPackageJson';
-
-const { version } = readPackageJson();
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -121,7 +119,7 @@ async function handleRequestProxy(
   if (useBody) {
     axiosConfig.data = data;
   }
-  axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
+  axiosConfig.headers['user-agent'] = `AppsembleServer/${pkg.version}`;
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
 

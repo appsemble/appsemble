@@ -10,8 +10,8 @@ import * as migrate from './commands/migrate';
 import * as restore from './commands/restore';
 import * as runCronJobs from './commands/runCronJobs';
 import * as start from './commands/start';
+import pkg from './package.json';
 import { setArgv } from './utils/argv';
-import { readPackageJson } from './utils/readPackageJson';
 import { configureSentry } from './utils/sentry';
 
 /**
@@ -36,8 +36,7 @@ export {
  * @param argv - The argument vector passed in from the command line.
  */
 function main(argv: string[]): void {
-  const { version } = readPackageJson();
-  configureAxios('AppsembleServer', version);
+  configureAxios('AppsembleServer', pkg.version);
 
   yargs
     .usage('Usage:\n  $0 [command]')

@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import pkg from '../../package.json';
 import { ProfileDropdown } from '../ProfileDropdown';
 import styles from './index.module.css';
 import { LanguageDropdown } from './LanguageDropdown';
@@ -24,11 +25,11 @@ export function Toolbar(): ReactElement {
         </Link>
         <a
           className={`is-rounded is-warning tag mx-1 my-1 ${styles.tag}`}
-          href={`https://gitlab.com/appsemble/appsemble/-/releases/${process.env.APPSEMBLE_VERSION}`}
+          href={`https://gitlab.com/appsemble/appsemble/-/releases/${pkg.version}`}
           rel="noopener noreferrer"
           target="_blank"
         >
-          {process.env.APPSEMBLE_VERSION}
+          {pkg.version}
         </a>
       </div>
 

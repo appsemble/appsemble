@@ -3,12 +3,11 @@ import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-te
 import Koa, { ParameterizedContext } from 'koa';
 
 import { App, Asset, Organization } from '../models';
+import pkg from '../package.json';
 import { setArgv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
-import { readPackageJson } from '../utils/readPackageJson';
 import { useTestDatabase } from '../utils/test/testSchema';
 
-const { version } = readPackageJson();
 let server: Koa;
 
 useTestDatabase('apps');
@@ -158,7 +157,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
+      'user-agent': `AppsembleServer/${pkg.version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -180,7 +179,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
+      'user-agent': `AppsembleServer/${pkg.version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -202,7 +201,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
+      'user-agent': `AppsembleServer/${pkg.version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -224,7 +223,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
+      'user-agent': `AppsembleServer/${pkg.version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -246,7 +245,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${version}`,
+      'user-agent': `AppsembleServer/${pkg.version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });

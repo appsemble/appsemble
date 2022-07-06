@@ -25,11 +25,11 @@ import { appMapper } from '../middleware/appMapper';
 import { boomMiddleware } from '../middleware/boom';
 import { conditional } from '../middleware/conditional';
 import { frontend } from '../middleware/frontend';
+import pkg from '../package.json';
 import { appRouter, studioRouter } from '../routes';
 import { argv } from './argv';
 import { authentication } from './authentication';
 import { Mailer } from './email/Mailer';
-import { readPackageJson } from './readPackageJson';
 
 const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, options, ctx) => {
   const buffer = await bufferParser(body, mediaTypeObject, options, ctx);
@@ -91,7 +91,7 @@ export async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        koas(api(readPackageJson().version, argv), [
+        koas(api(pkg.version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
           security(authentication() as SecurityOptions),

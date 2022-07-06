@@ -1,8 +1,8 @@
 import { init } from '@sentry/node';
 import matcher from 'matcher';
 
+import pkg from '../package.json';
 import { argv } from './argv';
-import { readPackageJson } from './readPackageJson';
 
 interface SentrySettings {
   /**
@@ -64,7 +64,6 @@ export function getSentryClientSettings(
  */
 export function configureSentry(): void {
   if (argv.sentryDsn) {
-    const { version } = readPackageJson();
-    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
+    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: pkg.version });
   }
 }

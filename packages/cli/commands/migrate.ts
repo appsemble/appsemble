@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
 
-import { readPackageJson } from '../lib/readPackageJson';
 import { serverImport } from '../lib/serverImport';
+import pkg from '../package.json';
 import { BaseArguments } from '../types';
 
 export const command = 'migrate [migrate-to]';
@@ -11,7 +11,7 @@ export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('migrate-to', {
       desc: 'The database version to migrate to.',
-      default: readPackageJson().version,
+      default: pkg.version,
     })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',

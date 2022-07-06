@@ -7,7 +7,7 @@ import { prompt } from 'inquirer';
 import { PackageJson } from 'type-fest';
 import { Argv } from 'yargs';
 
-import { readPackageJson } from '../lib/readPackageJson';
+import pkg from '../package.json';
 
 const templateDir = resolve(__dirname, '../templates');
 
@@ -58,7 +58,7 @@ export async function handler(args: BlockArgs): Promise<void> {
   const name = answers.name || args.name;
   const template = answers.template || args.template;
 
-  const { version } = await readPackageJson();
+  const { version } = pkg;
   const outputPath = join(process.cwd(), 'blocks', name);
   const inputPath = join(templateDir, template);
   const pkgPath = join(inputPath, 'package.json');

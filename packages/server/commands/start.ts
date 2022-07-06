@@ -9,11 +9,11 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
+import pkg from '../package.json';
 import { argv } from '../utils/argv';
 import { createServer } from '../utils/createServer';
 import { configureDNS } from '../utils/dns';
 import { migrate } from '../utils/migrate';
-import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
@@ -122,7 +122,6 @@ export function builder(yargs: Argv): Argv {
 }
 
 export async function handler({ webpackConfigs }: AdditionalArguments = {}): Promise<void> {
-  const { version } = readPackageJson();
   try {
     initDB({
       host: argv.databaseHost,
@@ -174,6 +173,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   httpServer.listen(argv.port || PORT, '::', () => {
     logger.info(asciiLogo);
-    logger.info(api(version, argv).info.description);
+    logger.info(api(pkg.version, argv).info.description);
   });
 }
