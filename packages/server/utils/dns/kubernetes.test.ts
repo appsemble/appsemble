@@ -5,6 +5,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { vol } from 'memfs';
 
 import { App, Organization } from '../../models';
+import pkg from '../../package.json';
 import { setArgv } from '../argv';
 import { useTestDatabase } from '../test/testSchema';
 import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
@@ -22,7 +23,6 @@ beforeEach(() => {
     '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt': ca,
     '/var/run/secrets/kubernetes.io/serviceaccount/namespace': 'test',
     '/var/run/secrets/kubernetes.io/serviceaccount/token': 'kubenetes.serviceaccount.token',
-    [require.resolve('../../package.json')]: JSON.stringify({ version: '1.2.3' }),
   });
 });
 
@@ -60,7 +60,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': '1.2.3',
+          'app.kubernetes.io/version': pkg.version,
         },
         name: 'testorg-host-example',
       },
@@ -122,7 +122,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': '1.2.3',
+          'app.kubernetes.io/version': pkg.version,
         },
         name: 'example-com',
       },
@@ -201,7 +201,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': '1.2.3',
+          'app.kubernetes.io/version': pkg.version,
         },
         name: 'foo-host-example',
       },
@@ -288,7 +288,7 @@ describe('restoreDNS', () => {
             'app.kubernetes.io/managed-by': 'review-service',
             'app.kubernetes.io/name': 'appsemble',
             'app.kubernetes.io/part-of': 'review-service',
-            'app.kubernetes.io/version': '1.2.3',
+            'app.kubernetes.io/version': pkg.version,
           },
           name: 'test-host-example',
         },
@@ -319,7 +319,7 @@ describe('restoreDNS', () => {
             'app.kubernetes.io/managed-by': 'review-service',
             'app.kubernetes.io/name': 'appsemble',
             'app.kubernetes.io/part-of': 'review-service',
-            'app.kubernetes.io/version': '1.2.3',
+            'app.kubernetes.io/version': pkg.version,
           },
           name: 'app-example',
         },
