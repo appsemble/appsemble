@@ -1,8 +1,8 @@
 import { configureAxios, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
+import pkg from '../package.json';
 import { BaseArguments } from '../types';
-import { readPackageJson } from './readPackageJson';
 
 /**
  * Configure the default axios URL.
@@ -10,8 +10,7 @@ import { readPackageJson } from './readPackageJson';
  * @param argv - The parsed command line arguments.
  */
 export function initAxios({ remote }: BaseArguments): void {
-  const { version } = readPackageJson();
   axios.defaults.baseURL = remote;
   logger.verbose(`Request remote set to ${remote}`);
-  configureAxios('AppsembleCLI', version);
+  configureAxios('AppsembleCLI', pkg.version);
 }

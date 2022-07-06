@@ -4,9 +4,9 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations';
 import { initDB } from '../models';
+import pkg from '../package.json';
 import { argv } from '../utils/argv';
 import { migrate } from '../utils/migrate';
-import { readPackageJson } from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import { databaseBuilder } from './builder/database';
 
@@ -16,7 +16,7 @@ export const description = 'Migrate the Appsemble database.';
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs).positional('migrate-to', {
     desc: 'The database version to migrate to.',
-    default: readPackageJson().version,
+    default: pkg.version,
   });
 }
 

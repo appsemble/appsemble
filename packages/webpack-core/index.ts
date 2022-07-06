@@ -18,11 +18,10 @@ import { remarkMdxImages } from 'remark-mdx-images';
 import { remarkMermaid } from 'remark-mermaidjs';
 import { Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
-import { Configuration, EnvironmentPlugin } from 'webpack';
+import { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
 import './types';
-import studioPkg from './package.json';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
 
 interface CliConfigOptions {
@@ -88,10 +87,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
         minify,
       }),
       new CaseSensitivePathsPlugin(),
-      new EnvironmentPlugin({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        APPSEMBLE_VERSION: studioPkg.version,
-      }),
       new MiniCssExtractPlugin({
         filename: production ? '[contenthash].css' : `${env}.css`,
       }),

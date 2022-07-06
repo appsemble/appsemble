@@ -10,9 +10,9 @@ import matcher from 'matcher';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models';
+import pkg from '../../package.json';
 import { argv } from '../argv';
 import { iterTable } from '../database';
-import { readPackageJson } from '../readPackageJson';
 
 interface KubernetesMetadata {
   /**
@@ -222,7 +222,6 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
  */
 async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
   const { ingressAnnotations, ingressClassName, serviceName, servicePort } = argv;
-  const { version } = readPackageJson();
   const namespace = await readK8sSecret('namespace');
   const config = await getAxiosConfig();
   const annotations = ingressAnnotations ? JSON.parse(ingressAnnotations) : undefined;
@@ -243,7 +242,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
               'app.kubernetes.io/managed-by': serviceName,
               'app.kubernetes.io/name': 'appsemble',
               'app.kubernetes.io/part-of': serviceName,
-              'app.kubernetes.io/version': version,
+              'app.kubernetes.io/version': pkg.version,
             },
             name,
           },

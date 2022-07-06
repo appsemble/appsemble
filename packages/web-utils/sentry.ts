@@ -1,7 +1,9 @@
 import { addBreadcrumb, init } from '@sentry/browser';
 
+import pkg from './package.json';
+
 export function setupSentry(dsn: string, environment: string): void {
-  init({ dsn, environment, release: process.env.APPSEMBLE_VERSION });
+  init({ dsn, environment, release: pkg.version });
 
   window.addEventListener('online', () => {
     addBreadcrumb({ category: 'network', message: 'online' });
