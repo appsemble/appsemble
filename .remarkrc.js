@@ -2,11 +2,11 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 
 const dictionary = require('dictionary-en');
-const english = require('retext-english');
-const quotes = require('retext-quotes');
-const repeatedWords = require('retext-repeated-words');
-const spell = require('retext-spell');
-const syntaxURLs = require('retext-syntax-urls');
+const retextEnglish = require('retext-english');
+const retextQuotes = require('retext-quotes');
+const retextRepeatedWords = require('retext-repeated-words');
+const retextSpell = require('retext-spell');
+const retextSyntaxURLs = require('retext-syntax-urls');
 const unified = require('unified');
 
 module.exports = {
@@ -27,14 +27,14 @@ module.exports = {
     [
       'remark-retext',
       unified()
-        .use(english)
-        .use(syntaxURLs)
-        .use(spell, {
+        .use(retextEnglish)
+        .use(retextSyntaxURLs)
+        .use(retextSpell, {
           dictionary,
           personal: readFileSync(join(__dirname, 'config/retext/personal.dic')),
         })
-        .use(repeatedWords)
-        .use(quotes),
+        .use(retextRepeatedWords)
+        .use(retextQuotes),
     ],
   ],
 };
