@@ -1,7 +1,6 @@
-import 'leaflet/dist/leaflet.css';
-
 import { useBlock } from '@appsemble/preact';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 

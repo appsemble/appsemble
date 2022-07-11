@@ -1,5 +1,3 @@
-import 'leaflet/dist/leaflet.css';
-
 import { BlockProps, withBlock } from '@appsemble/preact';
 import { Theme } from '@appsemble/types';
 import {
@@ -12,6 +10,7 @@ import {
   Marker,
   TileLayer,
 } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Component, createRef, VNode } from 'preact';
 
 export interface LocationProps {

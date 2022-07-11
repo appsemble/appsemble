@@ -10,9 +10,9 @@ const loadedBlocks = new Set<string>();
 /**
  * Register a bootstrap function for a block.
  *
- * @param scriptNode - The script node on which to register the bootstrap function.
- * @param event - the event that was used to register the bootstrap function.
- * @param blockDefId - The id of the block definition for which a boostrap function is being
+ * @param scriptNode The script node on which to register the bootstrap function.
+ * @param event the event that was used to register the bootstrap function.
+ * @param blockDefId The id of the block definition for which a boostrap function is being
  * registered.
  */
 export function register(
@@ -63,8 +63,8 @@ function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
 /**
  * Call the bootstrap function for a block definition
  *
- * @param manifest - The block manifest whose bootstrap function to call.
- * @param params - any named parameters that will be passed to the block boostrap function.
+ * @param manifest The block manifest whose bootstrap function to call.
+ * @param params any named parameters that will be passed to the block boostrap function.
  */
 export async function callBootstrap(
   manifest: BlockManifest,

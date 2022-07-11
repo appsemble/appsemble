@@ -18,8 +18,8 @@ interface JSONFieldProps
   /**
    * This is called when he input has changed to match a new valid JSON value.
    *
-   * @param event - The original event.
-   * @param value - The new value.
+   * @param event The original event.
+   * @param value The new value.
    */
   onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
 

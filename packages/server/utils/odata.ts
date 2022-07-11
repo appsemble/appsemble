@@ -26,7 +26,7 @@ enum Edm {
 /**
  * A function which accepts the name in the filter, and returns a name to replace it with.
  *
- * @param name - The original name. This uses `/` as a separator.
+ * @param name The original name. This uses `/` as a separator.
  * @returns The new name to use instead.
  */
 type Rename = (name: string) => string;
@@ -197,9 +197,9 @@ function processToken(
  * - `or`
  * - `not`
  *
- * @param token - The token to process.
- * @param model - The model to do a query for.
- * @param rename - A rename function.
+ * @param token The token to process.
+ * @param model The model to do a query for.
+ * @param rename A rename function.
  * @returns The Sequelize query that matches the given token.
  */
 function processLogicalExpression(token: Token, model: PartialModel, rename: Rename): WhereOptions {
@@ -229,9 +229,9 @@ function processLogicalExpression(token: Token, model: PartialModel, rename: Ren
 /**
  * https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html
  *
- * @param query - The OData query to convert to a Sequelize query.
- * @param model - The model to do a query for.
- * @param rename - A function for renaming incoming property names.
+ * @param query The OData query to convert to a Sequelize query.
+ * @param model The model to do a query for.
+ * @param rename A function for renaming incoming property names.
  * @returns The OData filter converted to a Sequelize query.
  */
 export function odataFilterToSequelize(

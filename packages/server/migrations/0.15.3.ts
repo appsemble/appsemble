@@ -7,7 +7,7 @@ export const key = '0.15.3';
  * Summary:
  * - Add the `locale` column to User
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -21,7 +21,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove the `locale` column from User.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

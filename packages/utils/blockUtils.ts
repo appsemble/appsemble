@@ -10,7 +10,7 @@ const prefix = '@appsemble/';
 /**
  * Normalize a block name by prefixing it with `@appsemble` if necessary.
  *
- * @param name - The input block name.
+ * @param name The input block name.
  * @returns The normalized block name.
  */
 export function normalizeBlockName(name: string): string {
@@ -23,7 +23,7 @@ export function normalizeBlockName(name: string): string {
 /**
  * Return a block name without the organization prefix.
  *
- * @param name - The input block name.
+ * @param name The input block name.
  * @returns The prettified block name.
  */
 export function stripBlockName(name: string): string {
@@ -36,7 +36,7 @@ export function stripBlockName(name: string): string {
 /**
  * Parse a block name into a tuple of organization id and block id.
  *
- * @param name - The block name to parse.
+ * @param name The block name to parse.
  * @returns A tuple containing the organization id and block id.
  */
 export function parseBlockName(name: string): [string, string] {
@@ -49,7 +49,7 @@ export function parseBlockName(name: string): [string, string] {
 /**
  * Find unique block types in an app.
  *
- * @param definition - The app definition to find unique blocks for.
+ * @param definition The app definition to find unique blocks for.
  * @returns Partial unique blocks. Only the type and version are returned.
  */
 export function getAppBlocks(definition: AppDefinition): IdentifiableBlock[] {

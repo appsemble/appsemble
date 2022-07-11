@@ -27,9 +27,9 @@ interface Email {
 /**
  * Render a markdown email.
  *
- * @param template - The body of the template to render.
- * @param values - Values to pass to the template for rendering.
- * @param sub - The subject of the email to send. If omitted, this is extracted from the markdown
+ * @param template The body of the template to render.
+ * @param values Values to pass to the template for rendering.
+ * @param sub The subject of the email to send. If omitted, this is extracted from the markdown
  * email body.
  * @returns An email object that may be sent.
  */

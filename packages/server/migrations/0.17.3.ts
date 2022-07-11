@@ -8,7 +8,7 @@ export const key = '0.17.3';
  * - Add column App.maskableIcon
  * - Add column App.iconBackground
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -25,7 +25,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column App.maskableIcon
  * - Remove column App.iconBackground
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

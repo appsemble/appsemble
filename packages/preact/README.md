@@ -27,8 +27,9 @@ called when the block is done rendering. Actions won’t be finalized for any bl
 until all blocks are ready.
 
 ```tsx
-import { bootstrap } from '@appsemble/preact';
 import { useEffect } from 'preact/hooks';
+
+import { bootstrap } from '@appsemble/preact';
 
 bootstrap(({ actions }) => {
   useEffect(() => {
@@ -52,8 +53,9 @@ Get the block context. This is available for components that are rendered within
 component rendered by [`bootstrap`](#bootstrap)
 
 ```tsx
-import { useBlock } from '@appsemble/preact';
 import { VNode } from 'preact';
+
+import { useBlock } from '@appsemble/preact';
 
 export function MyButton(): VNode {
   const { actions } = useBlock();
@@ -71,8 +73,9 @@ export function MyButton(): VNode {
 This helper component renders a translated message ID.
 
 ```tsx
-import { FormattedMessage } from '@appsemble/preact';
 import { VNode } from 'preact';
+
+import { FormattedMessage } from '@appsemble/preact';
 
 interface MyButtonProps {
   name: string;

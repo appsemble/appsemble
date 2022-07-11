@@ -6,7 +6,7 @@ type Header = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 /**
  * Create a header component that is scrolled to automatically if the id matches the location hash.
  *
- * @param Component - The header component to create.
+ * @param Component The header component to create.
  * @returns A header component which is automaticall scrolled into view if the location hash
  * matches the element id.
  */

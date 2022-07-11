@@ -6,10 +6,10 @@ type Options = AddEventListenerOptions | boolean;
 /**
  * Attach an event listener to an event target.
  *
- * @param target - The target to add the event listener to.
- * @param type - The type of the event listener to add
- * @param listener - The event listener callback function.
- * @param options - Additional event listener options.
+ * @param target The target to add the event listener to.
+ * @param type The type of the event listener to add
+ * @param listener The event listener callback function.
+ * @param options Additional event listener options.
  */
 export function useEventListener<K extends keyof DocumentEventMap>(
   target: Document,

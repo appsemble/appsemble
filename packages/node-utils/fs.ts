@@ -12,8 +12,8 @@ import { AppsembleError } from '.';
 /**
  * Test if the error is a NodeJS errno exception.
  *
- * @param error - The value to check
- * @param code - If specified, theck if the code matches
+ * @param error The value to check
+ * @param code If specified, theck if the code matches
  * @returns Whether or not the error is a NodeJS errno exception.
  */
 export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoException {
@@ -30,7 +30,7 @@ export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoExc
 /**
  * Read the content of a JSON or YAML file.
  *
- * @param path - The path to the file to read.
+ * @param path The path to the file to read.
  * @returns A tuple of the parsed content and the content as a string.
  */
 export async function readData<R>(path: string): Promise<[R, string]> {
@@ -73,9 +73,9 @@ interface WriteDataOptions {
  *
  * If `prettier` is available, the content is also formatted.
  *
- * @param path - The file path to write the data to.
- * @param data - The data to write to the file.
- * @param options - Additional options for processing the data.
+ * @param path The file path to write the data to.
+ * @param data The data to write to the file.
+ * @param options Additional options for processing the data.
  * @returns The formatted content.
  */
 export async function writeData(
@@ -110,10 +110,10 @@ interface OpenDirSafeOptions {
 /**
  * Read the contents of a directory.
  *
- * @param directory - The path of the directory to open.
- * @param onFile - A callback which will get called for every file. This will be called with the
- * full file path as its first argument and its `Dirent` object as the second argument.
- * @param options - Additional options.
+ * @param directory The path of the directory to open.
+ * @param onFile A callback which will get called for every file. This will be called with the full
+ * file path as its first argument and its `Dirent` object as the second argument.
+ * @param options Additional options.
  */
 export async function opendirSafe(
   directory: string,

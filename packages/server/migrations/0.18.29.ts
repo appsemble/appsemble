@@ -9,7 +9,7 @@ export const key = '0.18.29';
  * - Migrate data into consent column
  * - Remove OAuth2Consent table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -35,7 +35,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Migrate consent data from AppMember
  * - Remove columns `consent`, `password`, `resetKey`, and `emailKey` from AppMember
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

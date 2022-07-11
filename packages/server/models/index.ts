@@ -171,7 +171,7 @@ export function getDB(): Sequelize {
  *
  * If the callback function fails, the transaction will be rolled back.
  *
- * @param callback - The function that will be called with a transaction.
+ * @param callback The function that will be called with a transaction.
  * @returns The result of the callback function.
  */
 export function transactional<T>(callback: (transaction: Transaction) => Promise<T>): Promise<T> {

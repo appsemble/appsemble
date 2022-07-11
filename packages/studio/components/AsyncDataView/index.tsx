@@ -9,7 +9,7 @@ interface AsyncDataViewProps<T> {
   /**
    * How to render the data.
    *
-   * @param data - The resulting data from the axios result.
+   * @param data The resulting data from the axios result.
    */
   children: (data: T) => ReactNode;
 

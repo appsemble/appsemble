@@ -7,7 +7,7 @@ export const key = '0.19.4';
  * Summary:
  * - Update JSON of apps that contain subPages
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const apps = await db.query<{

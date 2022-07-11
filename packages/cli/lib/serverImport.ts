@@ -13,7 +13,7 @@ ${PROMPT} ${COMMAND} @appsemble/server
 /**
  * Import an exported member of @appsemble/server.
  *
- * @param members - The names of the exported member to import.
+ * @param members The names of the exported member to import.
  * @returns The exported member.
  */
 export async function serverImport<

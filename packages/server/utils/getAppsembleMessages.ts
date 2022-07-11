@@ -13,8 +13,8 @@ export async function getSupportedLanguages(): Promise<Set<string>> {
 /**
  * Fetch and merge the Appsemble core messages based on a language and a base language.
  *
- * @param language - The language to get the messages of.
- * @param baseLanguage - The base language of the language to get the messages of.
+ * @param language The language to get the messages of.
+ * @param baseLanguage The base language of the language to get the messages of.
  * @returns The Appsemble core messages.
  */
 export async function getAppsembleMessages(

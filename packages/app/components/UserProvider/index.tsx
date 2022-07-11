@@ -110,8 +110,8 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   /**
    * Conveniently fetch an access token.
    *
-   * @param grantType - The grant type to authenticate with
-   * @param params - Additional parameters, which depend on the grant type.
+   * @param grantType The grant type to authenticate with
+   * @param params Additional parameters, which depend on the grant type.
    */
   const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
     const {
@@ -136,8 +136,8 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   /**
    * Fetch an access token, the user info, and member role, or log out if any step fails.
    *
-   * @param grantType - The grant type to authenticate with
-   * @param params - Additional parameters, which depend on the grant type.
+   * @param grantType The grant type to authenticate with
+   * @param params Additional parameters, which depend on the grant type.
    */
   const login = useCallback(
     async <P extends {}>(grantType: string, params: P) => {
@@ -181,7 +181,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   /**
    * Login using the discouraged password grant type.
    *
-   * @param credentials - The username and password.
+   * @param credentials The username and password.
    */
   const passwordLogin = useCallback(
     (credentials: PasswordLoginParams) => login('password', credentials),
@@ -191,7 +191,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   /**
    * Login using an OAuth2 authorization code.
    *
-   * @param credentials - The authorization code and redirect uri.
+   * @param credentials The authorization code and redirect uri.
    */
   const authorizationCodeLogin = useCallback(
     (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),

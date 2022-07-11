@@ -27,7 +27,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  * @returns void
  */
 export async function indexHandler(ctx: Context): Promise<void> {

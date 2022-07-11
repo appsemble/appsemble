@@ -8,9 +8,9 @@ import { logger } from './logger';
  *
  * HTTP errors are formatted nicely. For other errors, the stack trace is logged.
  *
- * @param message - Unused.
- * @param error - The error that was thrown.
- * @param yargs - The active yargs instance.
+ * @param message Unused.
+ * @param error The error that was thrown.
+ * @param yargs The active yargs instance.
  */
 export function handleError(message: string, error: Error, yargs: Argv): void {
   if (typeof message === 'string') {

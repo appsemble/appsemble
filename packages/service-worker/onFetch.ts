@@ -5,7 +5,7 @@ import { cacheFirst, requestFirst } from './utils';
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
  *
- * @param event - The request map.
+ * @param event The request map.
  */
 export function onFetch(event: FetchEvent): void {
   const { request } = event;

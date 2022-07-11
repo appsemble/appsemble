@@ -31,12 +31,12 @@ type Validator = (
 /**
  * Validate a field based on its set of requirements.
  *
- * @param field - The field to validate.
- * @param value - The value of the field.
- * @param utils - Utility functions used in the validation process.
- * @param defaultError - The default error message if a specific one
+ * @param field The field to validate.
+ * @param value The value of the field.
+ * @param utils Utility functions used in the validation process.
+ * @param defaultError The default error message if a specific one
  * isn’t defined for a specific requirement.
- * @param defaultValue - The default value of this field.
+ * @param defaultValue The default value of this field.
  * @returns - A string containing an error message
  * or a boolean value indicating that there is an error.
  */

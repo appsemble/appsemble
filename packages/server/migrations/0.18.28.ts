@@ -11,7 +11,7 @@ export const key = '0.18.28';
  * and `AppOAuth2Authorization`, referring to `AppMember` through `AppMember.UserId`
  * - Copy over `User` information into `AppMember` and generate IDs.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

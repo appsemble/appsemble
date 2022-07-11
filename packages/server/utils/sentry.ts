@@ -29,9 +29,9 @@ interface SentrySettings {
 /**
  * Get client side Sentry settings to inject into the context for the given domain.
  *
- * @param domain - The domain name to check.
- * @param sentryDsn - The custom Sentry DSN to use.
- * @param sentryEnvironment - The custom Sentry environment to use.
+ * @param domain The domain name to check.
+ * @param sentryDsn The custom Sentry DSN to use.
+ * @param sentryEnvironment The custom Sentry environment to use.
  * @returns Sentry DSN and environment if it matches the `--sentry-allowed-domains` option.
  */
 export function getSentryClientSettings(

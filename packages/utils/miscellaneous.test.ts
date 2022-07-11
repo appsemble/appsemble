@@ -3,7 +3,7 @@ import { identity, rethrow, stripNullValues } from './miscellaneous';
 /**
  * Return the input data.
  *
- * @param data - The data to return.
+ * @param data The data to return.
  * @returns The input data.
  */
 describe('identity', () => {
@@ -16,7 +16,7 @@ describe('identity', () => {
 /**
  * Throw the input data.
  *
- * @param data - The data to throw.
+ * @param data The data to throw.
  * @throws The input data.
  */
 describe('rethrow', () => {

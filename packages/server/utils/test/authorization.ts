@@ -18,7 +18,7 @@ let testUser: User;
  *
  * The test user and authorizations will be reset after each test.
  *
- * @param email - The email address to assign to the test user.
+ * @param email The email address to assign to the test user.
  * @returns The test user.
  * @see getTestUser
  */
@@ -44,7 +44,7 @@ export function getTestUser(): User {
 /**
  * Get an authorization header from an access token response.
  *
- * @param response - The access token response to create a bearer authorization header from.
+ * @param response The access token response to create a bearer authorization header from.
  * @returns A bearer authorization header.
  */
 function bearer(response: { access_token: string }): string {
@@ -54,8 +54,8 @@ function bearer(response: { access_token: string }): string {
 /**
  * Authorize the default axios test instance as if its logged in using an app user.
  *
- * @param app - The app to login as.
- * @param user - The user to login as.
+ * @param app The app to login as.
+ * @param user The user to login as.
  */
 export function authorizeApp(app: App, user = testUser): void {
   const tokens = createJWTResponse(user.id, {
@@ -71,8 +71,8 @@ export function authorizeApp(app: App, user = testUser): void {
 /**
  * Authorize the default axios test instance as if its logged in using a client credentials user.
  *
- * @param scope - The OAuth2 scopes to assign
- * @param user - The user to login as
+ * @param scope The OAuth2 scopes to assign
+ * @param user The user to login as
  * @returns The client credentials model that was created.
  */
 export async function authorizeClientCredentials(
@@ -95,7 +95,7 @@ export async function authorizeClientCredentials(
 /**
  * Authorize the default axios test instance as if its logged in using an Appsemble studio user.
  *
- * @param user - The user to login as
+ * @param user The user to login as
  * @returns The access token response.
  */
 export function authorizeStudio(user = testUser): TokenResponse {

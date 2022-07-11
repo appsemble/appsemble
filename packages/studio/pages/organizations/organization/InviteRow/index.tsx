@@ -18,7 +18,7 @@ interface InviteRowProps {
   /**
    * This is called when the invite has been deleted.
    *
-   * @param invite - The invite that has been deleted.
+   * @param invite The invite that has been deleted.
    */
   onDeleted: (invite: OrganizationInvite) => void;
 }

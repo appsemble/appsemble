@@ -19,7 +19,7 @@ interface QueryResult {
  * - Add column `mime` to table `AppScreenshot`.
  * - Add `width`, `height`, and `mime` to existing entries.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -105,7 +105,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column `width` from table `AppScreenshot`.
  * - Remove column `name` from table `Asset`.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

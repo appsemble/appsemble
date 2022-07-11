@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 /**
  * Scroll to an element if the id matches the location hash.
  *
- * @param ref - A React ref which holds the the element to scroll to.
+ * @param ref A React ref which holds the the element to scroll to.
  */
 export function useScrollTo(ref: MutableRefObject<HTMLElement>): void {
   const { hash } = useLocation();

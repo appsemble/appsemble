@@ -8,7 +8,7 @@
  *
  * For examples, see the test cases.
  *
- * @param languages - The languages to sort. For example `navigator.languages`.
+ * @param languages The languages to sort. For example `navigator.languages`.
  * @returns A sorted list of lower case languages in order of preference.
  */
 export function sortLocales(languages: readonly string[]): string[] {
@@ -30,8 +30,8 @@ export function sortLocales(languages: readonly string[]): string[] {
 }
 
 /**
- * @param languages - A list of languages supported by the application.
- * @param choices - A list of languages preferred by the user in order of preference.
+ * @param languages A list of languages supported by the application.
+ * @param choices A list of languages preferred by the user in order of preference.
  * @returns The best match
  */
 export function detectLocale(

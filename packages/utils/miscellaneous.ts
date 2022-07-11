@@ -1,7 +1,7 @@
 /**
  * Return the input data.
  *
- * @param data - The data to return.
+ * @param data The data to return.
  * @returns The input data.
  */
 export function identity<T>(data: T): T {
@@ -11,7 +11,7 @@ export function identity<T>(data: T): T {
 /**
  * Throw the input data.
  *
- * @param data - The data to throw.
+ * @param data The data to throw.
  * @throws The input data.
  */
 export function rethrow(data: unknown): never {
@@ -30,8 +30,8 @@ export interface StripNullValuesOptions {
 /**
  * Strip all null, undefined, and empty array values from an object.
  *
- * @param value - The value to strip.
- * @param options - Additional options for stripping null values.
+ * @param value The value to strip.
+ * @param options Additional options for stripping null values.
  * @returns A copy of the input, but with all nullish values removed recursively.
  */
 export function stripNullValues(

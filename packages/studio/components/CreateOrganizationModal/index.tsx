@@ -21,9 +21,9 @@ import { messages } from './messages';
 /**
  * Calculate an organization id based on a given organization name.
  *
- * @param name - The name to base the ID on.
- * @param newValues - The new values to apply the ID on.
- * @param oldValues - The old values to compare the ID to.
+ * @param name The name to base the ID on.
+ * @param newValues The new values to apply the ID on.
+ * @param oldValues The old values to compare the ID to.
  * @returns An updated organization object containing the new ID.
  */
 export function preprocessOrganization(
@@ -93,7 +93,7 @@ const defaults = {
 /**
  * Strip a website link protocol.
  *
- * @param link - The website link to strip the protocol from.
+ * @param link The website link to strip the protocol from.
  * @returns The website link without protocol.
  */
 function preprocessWebsite(link: string): string {

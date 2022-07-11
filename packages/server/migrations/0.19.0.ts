@@ -9,7 +9,7 @@ export const key = '0.19.0';
  * - Renames column `showAppsembleLogin` to `showAppsembleOAuth2Login` in `App`
  * - Adds column `showAppsembleLogin` to `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -51,7 +51,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column `showAppsembleLogin` from `App`
  * - Rename column `showAppsembleOAuth2Login` to `showAppsembleLogin` in `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

@@ -17,7 +17,7 @@ export const key = '0.13.0';
  * - Rename newId to id
  * - Re-add foreign key constraints in related tables
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

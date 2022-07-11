@@ -55,7 +55,6 @@ export function FlowPage({
   useMeta(name === `{${id}}` ? null : name);
 
   // XXX Something weird is going on here.
-  // eslint-disable-next-line prefer-const
   let actions: BootstrapParams['actions'];
 
   const finish = useCallback(

@@ -8,9 +8,9 @@ import { has } from '../../../has';
  * This creates a new schema based on the input schema, where `required` and `properties` are
  * inherited from the `base` schema.
  *
- * @param base - The base schema whose properties to inherit.
- * @param schema - The schema overriding the base schema.
- * @param omit - Properties to omit from the base schema.
+ * @param base The base schema whose properties to inherit.
+ * @param schema The schema overriding the base schema.
+ * @param omit Properties to omit from the base schema.
  * @returns The schema which extends the base schema.
  */
 export function extendJSONSchema(

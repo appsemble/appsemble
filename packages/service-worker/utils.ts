@@ -30,7 +30,7 @@ async function tryCached(
  *
  * If no response could be found in the cache, the resource is requested anyway and cached.
  *
- * @param request - The request for which to get a response.
+ * @param request The request for which to get a response.
  * @returns The fetch response object.
  */
 export function cacheFirst(request: Request): Promise<Response> {
@@ -45,7 +45,7 @@ export function cacheFirst(request: Request): Promise<Response> {
  *
  * If the request fails for whatever reason, a cached response is returned.
  *
- * @param request - The request for which to get a response.
+ * @param request The request for which to get a response.
  * @returns The fetch response object.
  */
 export async function requestFirst(request: Request): Promise<Response> {

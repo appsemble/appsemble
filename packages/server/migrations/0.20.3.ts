@@ -75,7 +75,7 @@ function processAppsAndMessages(
  * - Add table `TeamInvite`
  * - Convert all path references for apps to use the page name instead of the index.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -170,7 +170,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Convert all path references for apps to use the page index instead of the name.
  * - Remove table `TeamInvite`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

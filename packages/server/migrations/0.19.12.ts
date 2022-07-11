@@ -9,7 +9,7 @@ export const key = '0.19.12';
  * - Make column `Resource`.`data` non nullable.
  * - Make column `Resource`.`AppId` non nullable.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -42,7 +42,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Make column `Resource`.`data` nullable.
  * - Make column `Resource`.`type` nullable.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

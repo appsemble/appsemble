@@ -6,7 +6,7 @@ import { isValidElement, VNode } from 'preact';
  * A value is considered a valid child if it is a non-emptu string, a finite number, or a Preact
  * VNode.
  *
- * @param value - The value to check
+ * @param value The value to check
  * @returns Whether or not a value is a valid preact child.
  */
 export function isPreactChild(value: unknown): value is VNode | number | string {

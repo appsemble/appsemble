@@ -175,9 +175,9 @@ interface UpdateAppParams {
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
- * @param path - The path of the app directory to traverse.
- * @param context - The Context to use from `.appsemblerc.yaml`.
- * @param formData - The FormData object to append the results into..
+ * @param path The path of the app directory to traverse.
+ * @param context The Context to use from `.appsemblerc.yaml`.
+ * @param formData The FormData object to append the results into..
  * @returns The context from `.appsemblerc.yaml` if a match was found.
  */
 export async function traverseAppDirectory(
@@ -279,10 +279,10 @@ export async function traverseAppDirectory(
 /**
  * Upload messages for an app.
  *
- * @param path - The path to the app directory.
- * @param appId - The app id to upload the messages for.
- * @param remote - The remote to upload the messages to.
- * @param force - Whether or not to force the update for locked apps.
+ * @param path The path to the app directory.
+ * @param appId The app id to upload the messages for.
+ * @param remote The remote to upload the messages to.
+ * @param force Whether or not to force the update for locked apps.
  */
 export async function uploadMessages(
   path: string,
@@ -322,11 +322,11 @@ export async function uploadMessages(
 }
 
 /**
- * @param path - The path to the app directory.
- * @param languages - A list of languages for which translations should be added in addition to the
+ * @param path The path to the app directory.
+ * @param languages A list of languages for which translations should be added in addition to the
  * existing ones.
- * @param verify - A list of languages to verify.
- * @param format - The file format that should be used for the output.
+ * @param verify A list of languages to verify.
+ * @param format The file format that should be used for the output.
  */
 export async function writeAppMessages(
   path: string,
@@ -512,7 +512,7 @@ This block version is not used in the app`,
 /**
  * Update an existing app.
  *
- * @param argv - The command line options used for updating the app.
+ * @param argv The command line options used for updating the app.
  */
 export async function updateApp({
   clientCredentials,
@@ -598,7 +598,7 @@ export async function updateApp({
 /**
  * Create a new App.
  *
- * @param options - The options to use for creating an app.
+ * @param options The options to use for creating an app.
  */
 export async function createApp({
   clientCredentials,
@@ -760,10 +760,10 @@ export async function createApp({
 /**
  * Resolve the app’s ID and remote based on the app context.
  *
- * @param appPath - The path to the app.
- * @param name - Which context to use in the AppsembleRC file.
- * @param defaultRemote - The remote to fall back to.
- * @param defaultAppId - The app ID to fall back to.
+ * @param appPath The path to the app.
+ * @param name Which context to use in the AppsembleRC file.
+ * @param defaultRemote The remote to fall back to.
+ * @param defaultAppId The app ID to fall back to.
  * @returns The resolved app ID and remote.
  */
 export async function resolveAppIdAndRemote(

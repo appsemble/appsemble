@@ -9,7 +9,7 @@ export const key = '0.15.8';
  * - Create table `SamlLoginRequest`
  * - Create table `AppSamlAuthorization`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -92,7 +92,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Drop table `SamlLoginRequest`
  * - Drop table `AppSamlSecret`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

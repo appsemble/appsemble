@@ -17,7 +17,7 @@ const sizeMap = new Map<string, Promise<[number, number]>>();
  *
  * The value is memoized.
  *
- * @param url - The URL for which to get the image dimensions.
+ * @param url The URL for which to get the image dimensions.
  * @returns The natural width and height as a tuple.
  */
 function getIconSize(url: string): Promise<[number, number]> {
@@ -38,7 +38,7 @@ function getIconSize(url: string): Promise<[number, number]> {
 /**
  * Create a leaflet icon based on an asset id or a font awesome icon.
  *
- * @param blockParams - The block parameters.
+ * @param blockParams The block parameters.
  * @returns The leaflet icon.
  */
 export async function createIcon({

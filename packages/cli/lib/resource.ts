@@ -81,7 +81,7 @@ export async function createResource({
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
   const url = new URL(`/apps/${appId}/resources/${resourceName}/`, remote);
   logger.info(
-    `Successfully created ${ids.length ? ids.length : '1'} resource(s) at: \n${ids
+    `Successfully created ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
       .map((id) => `${url}${id}`)
       .join('\n')}`,
   );

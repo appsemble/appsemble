@@ -39,7 +39,7 @@ declare module 'jsonschema' {
  * The generated data doesn’t necessarily conform to the JSON schema. This is useful to prefill
  * forms that are based on a JSON schema, but where user input is still needed to verify the data.
  *
- * @param schema - The JSON schema to generate data from.
+ * @param schema The JSON schema to generate data from.
  * @returns A JSON value estimated from the schema.
  */
 export function generateDataFromSchema(schema?: Schema): JsonValue {
@@ -95,7 +95,7 @@ export function generateDataFromSchema(schema?: Schema): JsonValue {
  * The main purpose of this function is to combine a schema using `allOf` into one schema that can
  * be rendered. Do not use this for actual validation. Use the original `allOf` schema instead.
  *
- * @param schemas - The schemas to combine.
+ * @param schemas The schemas to combine.
  * @returns The combined schema.
  */
 export function combineSchemas(...schemas: Schema[]): Schema {
@@ -168,8 +168,8 @@ export function combineSchemas(...schemas: Schema[]): Schema {
 /**
  * Recursively iterate over a JSON schema and call the callback with every sub schema found.
  *
- * @param schema - The JSON schema to iterate.
- * @param onSchema - The callback to call with the found JSON schema.
+ * @param schema The JSON schema to iterate.
+ * @param onSchema The callback to call with the found JSON schema.
  */
 export function iterJSONSchema(schema: Schema, onSchema: (schema: Schema) => void): void {
   if (!schema) {

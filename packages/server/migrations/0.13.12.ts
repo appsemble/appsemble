@@ -7,7 +7,7 @@ export const key = '0.13.12';
  * Symmary:
  * - Rename style to coreStyle in App
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

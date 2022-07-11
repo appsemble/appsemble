@@ -21,8 +21,8 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
-import './types';
 import { remarkRewriteLinks } from './remark/rewriteLinks';
+import './types';
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -49,8 +49,8 @@ const rootDir = dirname(packagesDir);
 /**
  * This webpack configuration is used by the Appsemble core parts.
  *
- * @param env - The name of the environment to build.
- * @param argv - Webpack arguments.
+ * @param env The name of the environment to build.
+ * @param argv Webpack arguments.
  * @returns A partial webpack configuration.
  */
 function shared(env: string, { mode }: CliConfigOptions): Configuration {
@@ -228,7 +228,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
 /**
  * Create a Webpack configuration for Appsemble app.
  *
- * @param argv - Webpack arguments.
+ * @param argv Webpack arguments.
  * @returns The Webpack configuration for Appsemble app.
  */
 export function createAppConfig(argv: CliConfigOptions): Configuration {
@@ -259,7 +259,7 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
 /**
  * Create a Webpack configuration for Appsemble Studio.
  *
- * @param argv - Webpack arguments.
+ * @param argv Webpack arguments.
  * @returns The Webpack configuration for Appsemble Studio.
  */
 export function createStudioConfig(argv: CliConfigOptions): Configuration {

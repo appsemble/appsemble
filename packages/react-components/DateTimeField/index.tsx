@@ -1,8 +1,7 @@
-import 'flatpickr/dist/flatpickr.css';
-
 import { months, weekdays } from '@appsemble/utils';
 import classNames from 'classnames';
 import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -25,9 +24,9 @@ type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> 
     /**
      * The change handler.
      *
-     * @param event - An object with the properties `target` and `currentTarget` set to the input
+     * @param event An object with the properties `target` and `currentTarget` set to the input
      * element, to emulate an event.
-     * @param value - The value that was selected.
+     * @param value The value that was selected.
      */
     onChange?: (
       event: { target: HTMLInputElement; currentTarget: HTMLInputElement },

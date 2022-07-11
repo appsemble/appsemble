@@ -6,6 +6,7 @@ describe('event', () => {
   let ee: EventEmitter;
 
   beforeEach(() => {
+    // eslint-disable-next-line unicorn/prefer-event-target
     ee = new EventEmitter();
     jest.spyOn(ee, 'once');
   });

@@ -6,7 +6,7 @@ import { normalize } from './normalize';
 /**
  * Recursively find `string.format` remapper message IDs.
  *
- * @param obj - The object to search.
+ * @param obj The object to search.
  * @returns All message IDs found
  */
 export function findMessageIds(obj: unknown): Record<string, string> {
@@ -33,8 +33,8 @@ export function findMessageIds(obj: unknown): Record<string, string> {
 /**
  * Extract translatable message IDs from an app definition.
  *
- * @param app - The app definition to extract nessage IDs from
- * @param onBlock - A function to extract block messages. This is needed, because block messages may
+ * @param app The app definition to extract nessage IDs from
+ * @param onBlock A function to extract block messages. This is needed, because block messages may
  * be extracted based on different contexts.
  * @returns A list of message IDs
  */

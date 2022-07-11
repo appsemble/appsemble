@@ -9,7 +9,7 @@ export const key = '0.13.11';
  * - Remove column sharedStyle from Organization.
  * - Drop the OrganizationBlockStyle table.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

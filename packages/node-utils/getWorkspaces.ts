@@ -8,7 +8,7 @@ import fg from 'fast-glob';
  *
  * Both Lerna and Yarn workspaces are supported.
  *
- * @param cwd - The project root in which to find workspaces.
+ * @param cwd The project root in which to find workspaces.
  * @returns Discovered Appsemble blocks.
  */
 export async function getWorkspaces(cwd: string): Promise<string[]> {

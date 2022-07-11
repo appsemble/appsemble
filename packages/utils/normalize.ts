@@ -5,8 +5,8 @@
  * - Non-alphanumeric is replaced with a hyphen;
  * - The resulting string is lower case.
  *
- * @param input - The input string to normalize.
- * @param stripTrailingHyphen - Strip a trailing hyphen. Disable for example when processing user
+ * @param input The input string to normalize.
+ * @param stripTrailingHyphen Strip a trailing hyphen. Disable for example when processing user
  * input directly while the user is typing.
  * @returns The normalized string.
  */

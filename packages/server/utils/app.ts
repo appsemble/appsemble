@@ -47,9 +47,9 @@ interface GetAppValue {
 /**
  * Get an app from the database based on the Koa context and URL.
  *
- * @param ctx - The Koa context.
- * @param queryOptions - Additional Sequelize query options. `where` will be overwritten.
- * @param url - The URL to find the app for. This defaults to the context request origin.
+ * @param ctx The Koa context.
+ * @param queryOptions Additional Sequelize query options. `where` will be overwritten.
+ * @param url The URL to find the app for. This defaults to the context request origin.
  * @returns The app matching the url.
  */
 export async function getApp(
@@ -99,9 +99,9 @@ export function getAppUrl(app: App): URL {
  *
  * This allows to use remappers with the context of an app on the server.
  *
- * @param app - The app for which to get the remapper context.
- * @param language - The preferred language for the context.
- * @param userInfo - The OAuth2 compatible user information.
+ * @param app The app for which to get the remapper context.
+ * @param language The preferred language for the context.
+ * @param userInfo The OAuth2 compatible user information.
  * @returns A localized remapper context for the app.
  */
 export async function getRemapperContext(
@@ -140,8 +140,8 @@ export async function getRemapperContext(
 /**
  * Sort apps by rating, in descending order.
  *
- * @param a - The first app to compare.
- * @param b - The second app to compare.
+ * @param a The first app to compare.
+ * @param b The second app to compare.
  * @returns Whether the first or second app goes first in terms of sorting.
  */
 export function compareApps(a: App, b: App): number {
@@ -159,7 +159,7 @@ export function compareApps(a: App, b: App): number {
 /**
  * Extracts and parses the language from the query string of a request.
  *
- * @param input - The language string to parse.
+ * @param input The language string to parse.
  * @returns An object containing the language, base language, and Sequelize filter
  * to filter AppMessages by these languages.
  */
@@ -207,9 +207,9 @@ export function parseLanguage(input: string[] | string): {
  *
  * Note that this mutates `app`.
  *
- * @param app - The app to apply the messages to.
- * @param language - The language to search for within AppMessages.
- * @param baseLanguage - The base language to search for within AppMessages.
+ * @param app The app to apply the messages to.
+ * @param language The language to search for within AppMessages.
+ * @param baseLanguage The base language to search for within AppMessages.
  */
 export function applyAppMessages(app: App, language: string, baseLanguage: string): void {
   if (app.AppMessages?.length) {

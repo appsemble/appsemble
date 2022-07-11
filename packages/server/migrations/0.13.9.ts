@@ -7,7 +7,7 @@ export const key = '0.13.9';
  * Summary:
  * - Add the AppScreenshot table.
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -34,7 +34,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove the AppScreenshot table.
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

@@ -35,7 +35,7 @@ function populateNode(
 }
 
 /**
- * @param {Object} block - The block as it was specified by the app creator.
+ * @param {Object} block The block as it was specified by the app creator.
  */
 bootstrap(({ data, events, parameters, path, utils }) => {
   const node = document.createElement('div');

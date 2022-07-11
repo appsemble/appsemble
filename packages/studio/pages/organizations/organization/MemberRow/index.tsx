@@ -33,14 +33,14 @@ interface MemberRowProps {
   /**
    * This is called when the member data has changed.
    *
-   * @param member - The member that has been changed.
+   * @param member The member that has been changed.
    */
   onChanged: (member: Member) => void;
 
   /**
    * This is called when the member has been deleted.
    *
-   * @param member - The member that has been deleted.
+   * @param member The member that has been deleted.
    */
   onDeleted: (member: Member) => void;
 

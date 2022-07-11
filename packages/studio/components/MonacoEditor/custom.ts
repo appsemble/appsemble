@@ -1,7 +1,5 @@
 import { mapValues, schemas } from '@appsemble/utils';
 import { Schema } from 'jsonschema';
-import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
-import { setDiagnosticsOptions } from 'monaco-yaml';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions';
@@ -12,8 +10,10 @@ import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding';
 import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions';
 import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover';
 import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletionsContribution';
+import { Environment } from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
+import { setDiagnosticsOptions } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation';
 
@@ -47,7 +47,7 @@ window.MonacoEnvironment = {
 /**
  * Create a deep clone of a JSON schema with `markdownDescriptions` set to the description.
  *
- * @param schema - The schema to process.
+ * @param schema The schema to process.
  * @returns The schema with a markdown description.
  */
 function addMarkdownDescriptions(schema: Schema): Schema {

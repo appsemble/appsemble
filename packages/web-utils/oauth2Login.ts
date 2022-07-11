@@ -45,8 +45,8 @@ export interface OAuth2LoginOptions
 /**
  * Initiate the login process using OAuth2.
  *
- * @param options - OAuth2 login options.
- * @param data - Additional data to store in `sessionStorage`. This data will be available after the
+ * @param options OAuth2 login options.
+ * @param data Additional data to store in `sessionStorage`. This data will be available after the
  * user has been redirected back.
  */
 export function startOAuth2Login(
@@ -83,7 +83,7 @@ export function loadOAuth2State<T extends OAuth2State = OAuth2State>(): T {
 /**
  * Append additional data in the oauth2 state in `sessionStorage`.
  *
- * @param extras - The extra data to store.
+ * @param extras The extra data to store.
  */
 export function appendOAuth2State(extras: Record<string, unknown>): void {
   const session = loadOAuth2State();

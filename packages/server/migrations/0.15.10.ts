@@ -9,7 +9,7 @@ export const key = '0.15.10';
  * - Add Team table
  * - Add TeamMember table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -66,7 +66,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Drop the Team table.
  * - Drop the TeamMember table.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

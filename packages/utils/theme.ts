@@ -14,7 +14,7 @@ declare class URLSearchParams {
 /**
  * Merge multiple partial themes and the base theme into one resulting theme.
  *
- * @param themes - The themes to merge. The later a theme is specified, the higher its priority.
+ * @param themes The themes to merge. The later a theme is specified, the higher its priority.
  * @returns A combination of all themes.
  */
 export function mergeThemes(...themes: Partial<Theme>[]): Theme {
@@ -26,7 +26,7 @@ export function mergeThemes(...themes: Partial<Theme>[]): Theme {
 /**
  * Create a Bulma URL for an Appsemble theme.
  *
- * @param theme - The theme to create a URL for.
+ * @param theme The theme to create a URL for.
  * @returns The URL to the Bulma theme.
  */
 export function createThemeURL(theme: Theme): string {

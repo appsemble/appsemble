@@ -9,9 +9,9 @@ import { Configuration } from 'webpack';
  * or asynchronous function which returns a webpack configuration object. This function supports
  * all 3 use cases.
  *
- * @param block - The path to the webpack configuration file.
- * @param mode - The env that would be passed to webpack by invoking `webpack --env $env`.
- * @param outputPath - The path where the build will be output on disk.
+ * @param block The path to the webpack configuration file.
+ * @param mode The env that would be passed to webpack by invoking `webpack --env $env`.
+ * @param outputPath The path where the build will be output on disk.
  * @returns The webpack configuration as exposed by the webpack configuration file.
  */
 export async function loadWebpackConfig(

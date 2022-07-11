@@ -10,7 +10,7 @@ import { argv } from './argv';
 /**
  * Resolves the icon url for an app based on whether it’s present and when it was updated.
  *
- * @param app - The app to resolve the icon url for.
+ * @param app The app to resolve the icon url for.
  * @returns A URL that can be safely cached.
  */
 export function resolveIconUrl(app: models.App): string {

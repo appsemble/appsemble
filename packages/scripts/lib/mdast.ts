@@ -15,7 +15,7 @@ import prettier from 'prettier';
 /**
  * Ensure a node is valid by converting a string to a text node.
  *
- * @param value - The node or string to ensure the type for.
+ * @param value The node or string to ensure the type for.
  * @returns The original node or a text node.
  */
 function ensureNode<T>(value: T | string): T | Text {
@@ -25,8 +25,8 @@ function ensureNode<T>(value: T | string): T | Text {
 /**
  * Convenience function for creating an mdast heading.
  *
- * @param depth - The level of the heading.
- * @param children - Child nodes to append to the heading.
+ * @param depth The level of the heading.
+ * @param children Child nodes to append to the heading.
  * @returns A heading node.
  */
 export function createHeading(
@@ -39,8 +39,8 @@ export function createHeading(
 /**
  * Convenience function for creating an mdast link reference.
  *
- * @param url - The URL to link to.
- * @param children - Child nodes to append to the link reference.
+ * @param url The URL to link to.
+ * @param children Child nodes to append to the link reference.
  * @returns A link reference node.
  */
 export function createLink(url: string, children: (StaticPhrasingContent | string)[]): Link {
@@ -54,7 +54,7 @@ export function createLink(url: string, children: (StaticPhrasingContent | strin
 /**
  * Convenience function for creating an mdast list.
  *
- * @param children - List items to append.
+ * @param children List items to append.
  * @returns A list node.
  */
 export function createList(children: ListItem[]): List {
@@ -64,7 +64,7 @@ export function createList(children: ListItem[]): List {
 /**
  * Convenience function for creating an mdast list item.
  *
- * @param children - Child nodes to append to the list item.
+ * @param children Child nodes to append to the list item.
  * @returns A list item node.
  */
 export function createListItem(children: BlockContent[]): ListItem {
@@ -74,7 +74,7 @@ export function createListItem(children: BlockContent[]): ListItem {
 /**
  * Convenience function for creating an mdast root.
  *
- * @param children - Child nodes to append to the root.
+ * @param children Child nodes to append to the root.
  * @returns A root node.
  */
 export function createRoot(children: BlockContent[]): Root {
@@ -84,8 +84,8 @@ export function createRoot(children: BlockContent[]): Root {
 /**
  * Format an mdast root using Prettier.
  *
- * @param mdast - The mdast root to format.
- * @param filename - The filename to use for looking up the Prettier configuration.
+ * @param mdast The mdast root to format.
+ * @param filename The filename to use for looking up the Prettier configuration.
  * @returns The formatted markdown.
  */
 export async function dumpMarkdown(mdast: Root, filename: string): Promise<string> {

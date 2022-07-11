@@ -36,7 +36,7 @@ export interface UseAxiosResult<T> {
  *
  * Whenever the URL is changed, new data is loaded.
  *
- * @param url - Either the URL from which to fetch data.
+ * @param url Either the URL from which to fetch data.
  * @returns A state which holds the target data and some utility functions.
  */
 export function useData<T>(url: string): UseAxiosResult<T> {

@@ -7,7 +7,7 @@ export const key = '0.19.14';
  * Summary:
  * - Add ResourceVersion table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -29,7 +29,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove ResourceVersion table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

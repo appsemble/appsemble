@@ -10,9 +10,9 @@ import { appId, sentryDsn } from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useAppMessages } from '../AppMessagesProvider';
 import { useUser } from '../UserProvider';
+import './index.css';
 import styles from './index.module.css';
 import { messages } from './messages';
-import './index.css';
 
 interface BottomNavigationProps {
   pages: PageDefinition[];

@@ -49,7 +49,7 @@ function checkTokenRequestParameters(
  *
  * This handler is written to be compliant with [rfc6749](https://tools.ietf.org/html/rfc6749).
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function tokenHandler(ctx: Context): Promise<void> {
   const { header } = ctx;

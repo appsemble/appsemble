@@ -1,12 +1,11 @@
-import 'leaflet/dist/leaflet.css';
-import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
-import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
-import './index.css';
-
 import { bootstrap } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
+import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
+import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
+import './index.css';
 import { loadMarkers, makeFilter } from './loadMarkers';
 
 bootstrap((params) => {

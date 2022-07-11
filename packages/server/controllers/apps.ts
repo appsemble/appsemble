@@ -1035,7 +1035,7 @@ export async function getAppBlockStyle(ctx: Context): Promise<void> {
     },
   });
 
-  ctx.body = blockStyle?.style ? blockStyle.style : '';
+  ctx.body = blockStyle?.style || '';
   ctx.type = 'css';
   ctx.status = 200;
 }

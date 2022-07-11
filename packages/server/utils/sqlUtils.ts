@@ -10,7 +10,7 @@ import {
 /**
  * Log an SQL statement using syntax highlighting.
  *
- * @param statement - The SQL statement to log.
+ * @param statement The SQL statement to log.
  */
 export function logSQL(statement: string): void {
   logger.silly(highlight(statement, { language: 'sql', ignoreIllegals: true }));

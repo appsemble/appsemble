@@ -8,7 +8,7 @@ export const key = '0.20.10';
  * - Add columns `emailHost`, `emailUser`,
  * `emailPassword`, `emailPort`, and `emailSecure` to table `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -48,7 +48,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove columns `emailHost`, `emailUser`,
  * `emailPassword`, `emailPort`, and `emailSecure` from table `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

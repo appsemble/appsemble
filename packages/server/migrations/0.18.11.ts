@@ -15,7 +15,7 @@ interface NewMessages {
  * - Add enum options "APIUser", "APIReader", "Translator"
  * - Migrate all app messages to use the new format.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   logger.info('Adding enum value "APIUser" to "enum_Member_role"');
@@ -72,7 +72,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove enum options "APIUser", "APIReader", "Translator"
  * - Migrate all app messages to use the old format.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   logger.info('Setting role of all APIUsers, APIReaders, and Translators to Member');

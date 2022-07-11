@@ -31,7 +31,7 @@ interface SettingsPageProps {
 /**
  * Strip a website link protocol.
  *
- * @param link - The website link to strip the protocol from.
+ * @param link The website link to strip the protocol from.
  * @returns The website link without protocol.
  */
 function preprocessWebsite(link: string): string {

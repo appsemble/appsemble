@@ -9,7 +9,7 @@ export const key = '0.13.5';
  * - Add the AppOAuth2Secret table.
  * - Add the AppOAuth2Authorization table.
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

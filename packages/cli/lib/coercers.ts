@@ -8,7 +8,7 @@ import normalizePath from 'normalize-path';
  * Ip addresses and localhost use the http://` protocol by default. Others use the `https://`
  * protocol by default. The path, search parameters, and hash are stripped.
  *
- * @param value - The raw remote as specified by the CLI user.
+ * @param value The raw remote as specified by the CLI user.
  * @returns The normalized URL.
  */
 export function coerceRemote(value: string): string {
@@ -35,7 +35,7 @@ export function coerceRemote(value: string): string {
 /**
  * Get a stream based on the filepath.
  *
- * @param value - The filepath of the file to read.
+ * @param value The filepath of the file to read.
  * @returns A stream of the file.
  */
 export function coerceFile(value: string): NodeJS.ReadStream | ReadStream {

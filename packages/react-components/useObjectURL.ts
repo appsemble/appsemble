@@ -5,7 +5,7 @@ import { useEffect, useMemo } from 'react';
  *
  * The Object URL is cleaned up automatically.
  *
- * @param obj - The object to represent as a URL.
+ * @param obj The object to represent as a URL.
  * @returns If the input is a Blob, an object URL to represent the blob. Otherwise the raw input.
  */
 export function useObjectURL(obj: Blob | string): string {

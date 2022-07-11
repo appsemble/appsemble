@@ -9,8 +9,8 @@ import { render as renderTemplate } from 'mustache';
 /**
  * Render settings as an HTML script tag.
  *
- * @param settings - The settings to render. This must be a JSON serializable object.
- * @param statements - Custom JavaScript statemets to append.
+ * @param settings The settings to render. This must be a JSON serializable object.
+ * @param statements Custom JavaScript statemets to append.
  * @returns A tuple of the digest and the HTML script tag. The digest should be added to the CSP
  * `script-src`.
  */
@@ -30,7 +30,7 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
  *
  * Any falsy values will be excluded.
  *
- * @param csp - The CSP object to convert
+ * @param csp The CSP object to convert
  * @returns The CSP object as a string
  */
 export function makeCSP(csp: ContentSecurityPolicy): string {
@@ -57,7 +57,7 @@ export async function render(
 /**
  * Create a snippet of JavaScript code to initialize Google Analytics.
  *
- * @param id - The Google Analytics ID to generate the gtag code for.
+ * @param id The Google Analytics ID to generate the gtag code for.
  * @returns The code to initialize Google Analytics.
  */
 export function createGtagCode(id: string): string[] {
