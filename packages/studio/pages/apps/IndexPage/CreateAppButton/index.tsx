@@ -80,7 +80,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
       <Button className={className} onClick={openCreateDialog}>
         <FormattedMessage {...messages.createApp} />
       </Button>
-      {createOrganizations.length ? (
+      {createOrganizations?.length ? (
         <ModalCard
           component={SimpleForm}
           defaultValues={{
