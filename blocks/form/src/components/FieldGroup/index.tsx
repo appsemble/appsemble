@@ -28,9 +28,9 @@ interface FieldGroupProps {
   /**
    * This is called whenever the input changes.
    *
-   * @param name - The name of the input group.
-   * @param value - The updated value.
-   * @param errors - The errors that apply to the field group
+   * @param name The name of the input group.
+   * @param value The updated value.
+   * @param errors The errors that apply to the field group
    */
   onChange: (name: string, value: Values) => void;
 

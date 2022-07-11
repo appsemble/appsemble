@@ -11,7 +11,7 @@ import { getApp } from '../../utils/app';
 /**
  * A handler used to serve the service worker output from Webpack from the client root.
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   const production = process.env.NODE_ENV === 'production';

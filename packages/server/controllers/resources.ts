@@ -42,7 +42,7 @@ const specialRoles = new Set([
 /**
  * Generate Sequelize filter objects based on ODATA filters present in the request.
  *
- * @param ctx - The Context to extract the parameters from.
+ * @param ctx The context to extract the parameters from.
  * @returns An object containing the generated order and query options.
  */
 function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
@@ -84,11 +84,11 @@ function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
  * Verifies whether or not the user has sufficient permissions to perform a resource call.
  * Will throw an 403 error if the user does not satisfy the requirements.
  *
- * @param ctx - Koa context of the request
- * @param app - App as fetched from the database.
+ * @param ctx Koa context of the request
+ * @param app App as fetched from the database.
  * This must include the app member and organization relationships.
- * @param resourceType - The resource type to check the role for.
- * @param action - The resource action to theck the role for.
+ * @param resourceType The resource type to check the role for.
+ * @param action The resource action to theck the role for.
  * @returns Query options to filter the resource for the user context.
  */
 async function verifyPermission(

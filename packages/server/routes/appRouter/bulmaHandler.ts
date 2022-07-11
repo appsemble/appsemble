@@ -26,7 +26,7 @@ function getQueryParameter<T>(value: T | T[]): T {
 /**
  * Process SASS styles based on given parameters.
  *
- * @param theme - The theme object to turn into a SASS file.
+ * @param theme The theme object to turn into a SASS file.
  * @returns SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(theme: QueryParamTheme): string {
@@ -85,7 +85,7 @@ function processStyle(theme: QueryParamTheme): string {
 /**
  * Serve the minified Bulma CSS.
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function bulmaHandler(ctx: Context): Promise<void> {
   const { query } = ctx;

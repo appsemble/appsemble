@@ -157,9 +157,9 @@ export interface Utils {
   /**
    * Remap data based in a user defined remapper function.
    *
-   * @param remapper - The user defined remapper function.
-   * @param data - The data to remap.
-   * @param context - The context to retrieve contextual data from.
+   * @param remapper The user defined remapper function.
+   * @param data The data to remap.
+   * @param context The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
   remap: (remapper: Remapper, data: unknown, context?: Record<string, unknown>) => unknown;
@@ -180,7 +180,7 @@ export interface Utils {
   /**
    * Get a URL serving an asset for the given asset id.
    *
-   * @param assetId - The id of the asset whose URL to get.
+   * @param assetId The id of the asset whose URL to get.
    * @returns The URL that matches the given asset id.
    */
   asset: (assetId: string) => string;
@@ -188,14 +188,14 @@ export interface Utils {
   /**
    * Convert a FontAwesome icon name into a valid FontAwesome CSS class.
    *
-   * @param icon - The FontAwesome icon.
+   * @param icon The FontAwesome icon.
    * @returns String containing the FontAwesome classes for the icon.
    */
   fa: (icon: IconName) => string;
 
   /**
-   * @param items - The list of menu items to display.
-   * @param header - A header that can be used to separate from other block menus.
+   * @param items The list of menu items to display.
+   * @param header A header that can be used to separate from other block menus.
    */
   menu: (items: MenuItem[], header?: string) => void;
 }
@@ -204,8 +204,8 @@ export interface Events {
   /**
    * Emit an Appsemble event.
    *
-   * @param type - The type of event to emit.
-   * @param data - Data to emit with the event.
+   * @param type The type of event to emit.
+   * @param data Data to emit with the event.
    * @returns Boolean indicating whether an emitter is implemented or not.
    */
   emit: { [K in keyof EventEmitters]: (data: unknown, error?: string) => Promise<boolean> };
@@ -213,8 +213,8 @@ export interface Events {
   /**
    * Remove an event listener for an Appsemble event.
    *
-   * @param type - The type of event to listen remove the listener from.
-   * @param callback - The callback to remove.
+   * @param type The type of event to listen remove the listener from.
+   * @param callback The callback to remove.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   off: {
@@ -224,8 +224,8 @@ export interface Events {
   /**
    * Add an event listener for an Appsemble event.
    *
-   * @param type - The type of event to listen on.
-   * @param callback - A callback to register for the event.
+   * @param type The type of event to listen on.
+   * @param callback A callback to register for the event.
    * @returns Boolean indicating whether a listener is implemented or not.
    */
   on: {
@@ -306,7 +306,7 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
 /**
  * Register a boostrap function.
  *
- * @param fn - The bootstrap function to register
+ * @param fn The bootstrap function to register
  *
  * If the function returns an element, it’s appended to the shadow root.
  */

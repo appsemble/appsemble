@@ -26,7 +26,7 @@ function getService(remote: string): string {
 function waitForCredentials(url: URL): Promise<string> {
   return new Promise((resolve) => {
     const app = new Koa();
-    // eslint-disable-next-line prefer-const
+
     let server: Server;
     app.use(async (ctx: Context) => {
       ctx.set({
@@ -154,10 +154,10 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
 /**
  * Login to the server using OAuth2 client credentials.
  *
- * @param remote - Host to fetch token from.
- * @param scope - The OAuth2 scope to request. This may be space separated to request
+ * @param remote Host to fetch token from.
+ * @param scope The OAuth2 scope to request. This may be space separated to request
  * multiple scopes.
- * @param inputCredentials - Client credentials passed from the command line.
+ * @param inputCredentials Client credentials passed from the command line.
  */
 export async function authenticate(
   remote: string,

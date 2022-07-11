@@ -51,7 +51,7 @@ export async function restoreDNS(): Promise<void> {
  *
  * If no implementation exists, a status of `unknown` is returned.
  *
- * @param domains - The domain names to get a status for.
+ * @param domains The domain names to get a status for.
  * @returns A mapping of domain names to the status of the SSL certificate.
  */
 export function getSSLStatus(domains: string[]): Promisable<SSLStatusMap> {

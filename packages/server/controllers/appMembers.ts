@@ -37,9 +37,9 @@ import { serveIcon } from '../utils/icon';
 /**
  * Create an app member as JSON output from an app.
  *
- * @param app - The app to output. A single app member should be present.
- * @param language - The language to use.
- * @param baseLanguage - The base language to use.
+ * @param app The app to output. A single app member should be present.
+ * @param language The language to use.
+ * @param baseLanguage The base language to use.
  * @returns The app member of the app.
  */
 function outputAppMember(app: App, language: string, baseLanguage: string): AppAccount {

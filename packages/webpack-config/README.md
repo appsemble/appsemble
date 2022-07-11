@@ -48,8 +48,9 @@ overridden by simply calling it from a file named `webpack.config.js` in the blo
 modifying the result.
 
 ```js
-const createConfig = require('@appsemble/webpack-config');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+
+const createConfig = require('@appsemble/webpack-config');
 
 module.exports = (blockConfig, options) => {
   const config = createConfig(blockConfig, options);

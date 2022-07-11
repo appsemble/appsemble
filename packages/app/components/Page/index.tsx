@@ -61,6 +61,7 @@ export function Page(): ReactElement {
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
+    // eslint-disable-next-line unicorn/prefer-event-target
     ee.current = new EventEmitter();
   }
 

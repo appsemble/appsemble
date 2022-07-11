@@ -7,8 +7,8 @@ import { initDB, InitDBParams } from '../../models';
  *
  * The database will be truncated after each test. It will be deleted after all tests have run.
  *
- * @param spec - The name of the test case.
- * @param options - Additional sequelize options.
+ * @param spec The name of the test case.
+ * @param options Additional sequelize options.
  */
 export function useTestDatabase(spec: string, options: InitDBParams = {}): void {
   let dbName: string;

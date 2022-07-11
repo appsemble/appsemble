@@ -7,7 +7,7 @@ import { BaseArguments } from '../types';
 /**
  * Configure the default axios URL.
  *
- * @param argv - The parsed command line arguments.
+ * @param argv The parsed command line arguments.
  */
 export function initAxios({ remote }: BaseArguments): void {
   axios.defaults.baseURL = remote;

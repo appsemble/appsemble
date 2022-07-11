@@ -3,10 +3,10 @@ import { Security, TeamMember } from '@appsemble/types';
 /**
  * Check if the given user has access to any of the given scopes.
  *
- * @param securityDefinition - The security definition to use for checking the role.
- * @param role - The role the user is checked against.
- * @param userRole - The role the user has.
- * @param teams - The teams the user is in.
+ * @param securityDefinition The security definition to use for checking the role.
+ * @param role The role the user is checked against.
+ * @param userRole The role the user has.
+ * @param teams The teams the user is in.
  * @returns Whether or not the user has the role.
  */
 export function checkAppRole(

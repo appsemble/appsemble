@@ -12,7 +12,7 @@ export const key = '0.13.1';
  * Data hasn’t been migrated, because there is no data in this table in production. The table is
  * wiped, just to be sure.
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

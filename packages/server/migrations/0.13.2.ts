@@ -9,7 +9,7 @@ export const key = '0.13.2';
  * - Parse them back into JS objects
  * - Convert all event emitters and listeners to empty objects
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const blocks = await db.query<{

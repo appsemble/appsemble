@@ -8,7 +8,7 @@ export const key = '0.17.7';
  * Summary:
  * - Hash all OAuth2 client secrets.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const credentials = await db.query<{ secret: string }>(
@@ -31,7 +31,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove all OAuth2ClientCredentials
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

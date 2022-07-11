@@ -10,7 +10,7 @@ export const key = '0.19.8';
  * - Add column `visibility` to `App`
  * - Remove column `private` from `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -50,7 +50,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Add column `private` to `App`
  * - Remove column `visibility` from `App`
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

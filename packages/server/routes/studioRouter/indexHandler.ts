@@ -10,7 +10,7 @@ import { getSentryClientSettings } from '../../utils/sentry';
 /**
  * Serve `index.html` for editor related routes.
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  * @returns void
  */
 export function indexHandler(ctx: Context): Promise<void> {

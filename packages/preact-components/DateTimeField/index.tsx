@@ -1,10 +1,9 @@
-import 'flatpickr/dist/flatpickr.css';
-import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
-
 import { useBlock } from '@appsemble/preact';
 import { Remapper } from '@appsemble/types';
 import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
@@ -46,9 +45,9 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     /**
      * The change handler.
      *
-     * @param event - An object with the properties `target` and `currentTarget` set to the input
+     * @param event An object with the properties `target` and `currentTarget` set to the input
      * element, to emulate an event.
-     * @param value - The value that was selected.
+     * @param value The value that was selected.
      */
     onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
 

@@ -32,9 +32,9 @@ import { sendNotification, SendNotificationOptions } from './sendNotification';
  *
  * If there is no match, a 404 HTTP error is thrown.
  *
- * @param app - The app to get the resource definition of
- * @param resourceType - The name of the resource definition to get.
- * @param view - The view that’s being used.
+ * @param app The app to get the resource definition of
+ * @param resourceType The name of the resource definition to get.
+ * @param view The view that’s being used.
  * @returns The matching resource definition.
  */
 export function getResourceDefinition(
@@ -267,7 +267,7 @@ interface PreparedAsset extends Pick<Asset, 'data' | 'data' | 'filename' | 'id' 
 /**
  * Extracts the IDs of resource request body.
  *
- * @param ctx - The Koa context to extract the body from.
+ * @param ctx The Koa context to extract the body from.
  * @returns A tuple which consists of:
  *
  * 1. One or more resources processed from the request body.
@@ -306,10 +306,10 @@ export function extractResourceBody(
  *
  * This handles JSON schema validation, resource expiration, and asset linking and validation.
  *
- * @param ctx - The Koa context to process.
- * @param definition - The resource definition to use for processing the request body.
- * @param knownAssetIds - A list of asset IDs that are already known to be linked to the resource.
- * @param knownExpires - A previously known expires value.
+ * @param ctx The Koa context to process.
+ * @param definition The resource definition to use for processing the request body.
+ * @param knownAssetIds A list of asset IDs that are already known to be linked to the resource.
+ * @param knownExpires A previously known expires value.
  * @returns A tuple which consists of:
  *
  * 1. One or more resources processed from the request body.

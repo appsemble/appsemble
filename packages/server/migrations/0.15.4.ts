@@ -7,7 +7,7 @@ export const key = '0.15.4';
  * Symmary:
  * - Add `icon` to Organization
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -20,7 +20,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Symmary:
  * - Drop the `icon` column from Organization
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

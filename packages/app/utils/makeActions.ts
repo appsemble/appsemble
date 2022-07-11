@@ -25,7 +25,7 @@ type CreateActionParams<T extends ActionDefinition['type']> = MakeActionParamete
 /**
  * Create a callable action for an action definition and context.
  *
- * @param params - The context to create an action for.
+ * @param params The context to create an action for.
  * @returns An action as it is injected into a block by the SDK.
  */
 export function createAction<T extends ActionDefinition['type']>({
@@ -133,7 +133,7 @@ export function createAction<T extends ActionDefinition['type']>({
  *
  * Typically the return value is passed to a block built using `@appsemble/sdk`.
  *
- * @param params - Parameters which define how to implement the actions.
+ * @param params Parameters which define how to implement the actions.
  * @returns A mapping of action definitions.
  */
 export function makeActions({

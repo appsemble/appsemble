@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 /**
  * Get the SSL status for the specified domain names.
  *
- * @param domains - The domain names to get the status for.
+ * @param domains The domain names to get the status for.
  * @returns An SSL status map which maps domain names to their SSL status.
  */
 export function useSSLStatus(...domains: string[]): SSLStatusMap {

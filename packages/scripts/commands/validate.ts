@@ -61,9 +61,9 @@ interface Result {
 /**
  * Assert if a check fails or passes.
  *
- * @param assertion - Whether the assertion passed.
- * @param filename - On which file name the assertion applies.
- * @param message - A description of the assertion that was run.
+ * @param assertion Whether the assertion passed.
+ * @param filename On which file name the assertion applies.
+ * @param message A description of the assertion that was run.
  */
 type Assert = (assertion: boolean, filename: string, message: string, workspace?: string) => void;
 

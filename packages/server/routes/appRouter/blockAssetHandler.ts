@@ -6,7 +6,7 @@ import { BlockAsset, BlockVersion } from '../../models';
 /**
  * Serve a block asset.
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function blockAssetHandler(ctx: Context): Promise<void> {
   const {

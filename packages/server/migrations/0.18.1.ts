@@ -9,7 +9,7 @@ export const key = '0.18.1';
  * - Create AppSnapshot table
  * - Remove yaml field from App
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -68,7 +68,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Add yaml column to App
  * - Remove all AppSnapshot
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

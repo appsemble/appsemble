@@ -7,7 +7,7 @@ import { getApp } from '../../utils/app';
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function screenshotHandler(ctx: Context): Promise<void> {
   const { id } = ctx.params;

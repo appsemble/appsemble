@@ -6,7 +6,7 @@
  */
 export class AppsembleError extends Error {
   /**
-   * @param message - The error message to show to the user.
+   * @param message The error message to show to the user.
    */
   constructor(message: string) {
     super(message);

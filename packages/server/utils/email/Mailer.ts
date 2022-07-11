@@ -233,9 +233,9 @@ export class Mailer {
   /**
    * Send an email using the configured SMTP transport.
    *
-   * @param to - The email
-   * @param templateName - The name of the Markdown email template to send
-   * @param values - A key/value pair of values to use for rendering the email.
+   * @param to The email
+   * @param templateName The name of the Markdown email template to send
+   * @param values A key/value pair of values to use for rendering the email.
    */
   async sendTemplateEmail(
     to: Recipient,
@@ -259,7 +259,7 @@ export class Mailer {
   /**
    * Send an email using the configured SMTP transport.
    *
-   * @param options - The options specifying the contents and metadata of the email
+   * @param options The options specifying the contents and metadata of the email
    */
   async sendEmail({
     to,

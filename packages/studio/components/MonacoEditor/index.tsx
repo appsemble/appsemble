@@ -35,9 +35,9 @@ interface MonacoEditorProps {
   /**
    * This is called whenever the value of the editor changes.
    *
-   * @param event - The monaco change event.
-   * @param value - The new value.
-   * @param model - The monaco model which changed.
+   * @param event The monaco change event.
+   * @param value The new value.
+   * @param model The monaco model which changed.
    */
   onChange?: (
     event: editor.IModelContentChangedEvent,

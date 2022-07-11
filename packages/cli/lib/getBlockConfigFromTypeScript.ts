@@ -32,8 +32,8 @@ import {
 /**
  * Get the tsdoc comment for a TypeScript node.
  *
- * @param checker - The type checker instance to use.
- * @param node - The node for which to get the tsdoc.
+ * @param checker The type checker instance to use.
+ * @param node The node for which to get the tsdoc.
  * @returns The tsdoc comment as a string, if present.
  */
 function getNodeComments(checker: TypeChecker, node: TypeElement): string {
@@ -57,9 +57,9 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
  *
  * This asserts only index signature members and regular alphanumerical properties are used.
  *
- * @param iface - The TypeScript interface to check.
- * @param checker - The TypeScript type checker.
- * @param convert - A function for converting extracted data to a value. It will be called with the
+ * @param iface The TypeScript interface to check.
+ * @param checker The TypeScript type checker.
+ * @param convert A function for converting extracted data to a value. It will be called with the
  * name and JSDoc description. The name is `undefined` for index signatures. The function should
  * return a tuple of key and value.
  * @returns A record created from the returned key/value pairs.
@@ -129,8 +129,8 @@ function processInterface<T>(
 /**
  * Get an actions object based on a TypeScript interface node.
  *
- * @param iface - The node to base the actions on.
- * @param checker - The TypeScript type checker.
+ * @param iface The node to base the actions on.
+ * @param checker The TypeScript type checker.
  * @returns The action manifest to upload.
  */
 function processActions(
@@ -143,9 +143,9 @@ function processActions(
 /**
  * Get an events object based on TypeScript interface nodes.
  *
- * @param eventListenerInterface - The node to base the event listeners on.
- * @param eventEmitterInterface - The node to base the event emitters on.
- * @param checker - The TypeScript type checker.
+ * @param eventListenerInterface The node to base the event listeners on.
+ * @param eventEmitterInterface The node to base the event emitters on.
+ * @param checker The TypeScript type checker.
  * @returns The events manifest to upload.
  */
 function processEvents(
@@ -168,8 +168,8 @@ function processEvents(
 /**
  * Get the JSON schema for parameters based on a TypeScript program.
  *
- * @param program - The TypeScript program from which to extract parameters.
- * @param iface - The interface node from which to extract parameters.
+ * @param program The TypeScript program from which to extract parameters.
+ * @param iface The interface node from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
 function processParameters(program: Program, iface: InterfaceDeclaration): Schema {
@@ -202,8 +202,8 @@ function processParameters(program: Program, iface: InterfaceDeclaration): Schem
 /**
  * Get a messages object based on a TypeScript interface node.
  *
- * @param iface - The node to base the messages on.
- * @param checker - The TypeScript type checker.
+ * @param iface The node to base the messages on.
+ * @param checker The TypeScript type checker.
  * @returns The action manifest to upload.
  */
 function processMessages(
@@ -216,7 +216,7 @@ function processMessages(
 /**
  * Get the TypeScript program for a given path.
  *
- * @param blockPath - The path for which to get the TypeScript program.
+ * @param blockPath The path for which to get the TypeScript program.
  * @returns The TypeScript program.
  */
 function getProgram(blockPath: string): Program {
@@ -268,7 +268,7 @@ function getProgram(blockPath: string): Program {
  *
  * Uses the .appsemblerc file and the type definitions of the block.
  *
- * @param blockConfig - The block configuration
+ * @param blockConfig The block configuration
  * @returns The block configuration appended from the TypeScript project.
  */
 export function getBlockConfigFromTypeScript(

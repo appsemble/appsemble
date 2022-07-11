@@ -27,7 +27,7 @@ interface AddMembersModalProps {
   /**
    * This is called when new people have been invited.
    *
-   * @param invites - The newly added invites.
+   * @param invites The newly added invites.
    */
   onInvited: (invites: OrganizationInvite[]) => void;
 }

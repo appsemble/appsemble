@@ -10,7 +10,7 @@ export const key = '0.19.1';
  * - Add columns `picture` to AppMember
  * - Add column `locale` to AppMember
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -43,7 +43,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column `picture` from AppMember
  * - Remove column `locale` from AppMember
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

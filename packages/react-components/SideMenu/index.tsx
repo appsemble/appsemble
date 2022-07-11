@@ -127,7 +127,7 @@ export function SideMenuButton(): ReactElement {
 /**
  * Add a section to the side menu.
  *
- * @param menu - The menu section to add to the side navigation.
+ * @param menu The menu section to add to the side navigation.
  */
 export function useSideMenu(menu: ReactElement): void {
   const { setMenu } = useContext(Context);

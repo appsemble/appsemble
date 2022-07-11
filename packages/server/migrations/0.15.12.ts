@@ -7,7 +7,7 @@ export const key = '0.15.12';
  * Symmary:
  * - Add annotations to Team table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -22,7 +22,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Symmary:
  * - Remove annotations from Team table
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

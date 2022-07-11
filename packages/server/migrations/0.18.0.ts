@@ -12,7 +12,7 @@ export const key = '0.18.0';
  * - Add unique constraint of OrganizationId, name, version to BlockVersion
  * - Change content and filename in BlockAsset to be non-nullable
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

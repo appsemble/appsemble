@@ -1,8 +1,8 @@
 /**
  * Inject CSS into a root node using using a `link` tag.
  *
- * @param parent - The parent node to insert the CSS into. I.e. a shadow root.
- * @param url - The URL of the stylesheet to insert.
+ * @param parent The parent node to insert the CSS into. I.e. a shadow root.
+ * @param url The URL of the stylesheet to insert.
  */
 export async function injectCSS(parent: DocumentFragment, url?: string): Promise<void> {
   await new Promise<void>((resolve) => {

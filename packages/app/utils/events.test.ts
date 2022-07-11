@@ -10,6 +10,7 @@ describe('createEvents', () => {
   let ready: () => Promise<void>;
 
   beforeEach(() => {
+    // eslint-disable-next-line unicorn/prefer-event-target
     ee = new EventEmitter();
     jest.spyOn(ee, 'emit');
     promise = new Promise((resolvePromise) => {

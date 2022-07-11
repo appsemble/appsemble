@@ -9,7 +9,7 @@ type FieldWithRequirements = Field & { requirements?: any[] };
 /**
  * Check if a field is required.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns Whether or not the field is required.
  */
 export function isRequired(field: FieldWithRequirements): boolean {
@@ -19,7 +19,7 @@ export function isRequired(field: FieldWithRequirements): boolean {
 /**
  * Check if a given date is a valid.
  *
- * @param date - The date to check
+ * @param date The date to check
  * @returns Whether the date is a valid date object.
  */
 export function isValidDate(date: Date): boolean {
@@ -29,7 +29,7 @@ export function isValidDate(date: Date): boolean {
 /**
  * Check if a given time string is a valid time between 00:00 and 23:59.
  *
- * @param time - The time string to check.
+ * @param time The time string to check.
  * @returns Whether the time string is valid.
  */
 export function isValidTime(time: string): boolean {
@@ -39,8 +39,8 @@ export function isValidTime(time: string): boolean {
 /**
  * Get the earliest date of a field.
  *
- * @param field - The field to check.
- * @param utils - The Appsemble SDK utils.
+ * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
  * @returns A date object matching the earliest date.
  */
 export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
@@ -56,7 +56,7 @@ export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | u
 /**
  * Get the earliest time out of the time requirements.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns A string matching the earliest time.
  */
 export function getMinTime(field: FieldWithRequirements): string {
@@ -74,7 +74,7 @@ export function getMinTime(field: FieldWithRequirements): string {
 /**
  * Get the latest time out of the time requirements.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns A string matching the latest time.
  */
 export function getMaxTime(field: FieldWithRequirements): string {
@@ -92,8 +92,8 @@ export function getMaxTime(field: FieldWithRequirements): string {
 /**
  * Get the last date of a field.
  *
- * @param field - The field to check.
- * @param utils - The Appsemble SDK utils.
+ * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
  * @returns A date object matching the last date.
  */
 export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
@@ -136,7 +136,7 @@ export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => 
 /**
  * Get the absolute minimum length of a field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The minimum length of the field.
  */
 export function getMinLength(field: FieldWithRequirements): number | undefined {
@@ -149,7 +149,7 @@ export function getMinLength(field: FieldWithRequirements): number | undefined {
 /**
  * Get the absolute maximum length of a field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The maximum length of the field.
  */
 export function getMaxLength(field: FieldWithRequirements): number | undefined {
@@ -162,7 +162,7 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
 /**
  * Get the absolute minumum value of a field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The minumum value of the field.
  */
 export function getMin(field: FieldWithRequirements): number | undefined {
@@ -175,7 +175,7 @@ export function getMin(field: FieldWithRequirements): number | undefined {
 /**
  * Get the absolute maximum value of a field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The maximum value of the field.
  */
 export function getMax(field: FieldWithRequirements): number | undefined {
@@ -188,7 +188,7 @@ export function getMax(field: FieldWithRequirements): number | undefined {
 /**
  * Get the minimum step of a field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The minumum step.
  */
 export function getStep(field: FieldWithRequirements): number | undefined {
@@ -201,7 +201,7 @@ export function getStep(field: FieldWithRequirements): number | undefined {
 /**
  * Get the joined accept value for the field.
  *
- * @param field - The field to check.
+ * @param field The field to check.
  * @returns The accept attribute
  */
 export function getAccept(field: FieldWithRequirements): string {

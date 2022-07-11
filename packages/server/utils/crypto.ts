@@ -7,8 +7,8 @@ const AUTH_TAG_LENGTH = 16;
 /**
  * Encrypts a string using AES-256-GCM.
  *
- * @param input - The input string to encrypt.
- * @param key - The key used in the encryption algorithm.
+ * @param input The input string to encrypt.
+ * @param key The key used in the encryption algorithm.
  * @returns The encrypted data.
  */
 export function encrypt(input: string, key: string): Buffer {
@@ -30,8 +30,8 @@ export function encrypt(input: string, key: string): Buffer {
 /**
  * Decrypts a previously encrypted string using AES-256 GCM.
  *
- * @param input - The encrypted data.
- * @param key - The key that was used to encrypt the data.
+ * @param input The encrypted data.
+ * @param key The key that was used to encrypt the data.
  * @returns The decrypted string.
  */
 export function decrypt(input: Buffer, key: string): string {

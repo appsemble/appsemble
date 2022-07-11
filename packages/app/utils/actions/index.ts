@@ -29,7 +29,7 @@ type ActionProperties<T extends ActionDefinition['type']> = Omit<
 /**
  * A type which takes some parameters and returns an action of the specified type.
  *
- * @param params - The input params passed in by `makeActions`.
+ * @param params The input params passed in by `makeActions`.
  * @returns An tuple containing the action implementation and additional properties, if relevant.
  */
 export type ActionCreator<T extends ActionDefinition['type']> = (

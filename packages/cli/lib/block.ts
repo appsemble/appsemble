@@ -27,7 +27,7 @@ import { processCss } from './processCss';
 /**
  * Builds a block using Webpack.
  *
- * @param config - The config of the block to build.
+ * @param config The config of the block to build.
  * @returns The Webpack stats object.
  */
 export async function buildBlock(config: BlockConfig): Promise<Stats> {
@@ -57,7 +57,7 @@ export async function buildBlock(config: BlockConfig): Promise<Stats> {
 /**
  * Get the block configuration from a block directory.
  *
- * @param dir - The directory in which to search for the configuration file.
+ * @param dir The directory in which to search for the configuration file.
  * @returns The block configuration.
  */
 export async function getBlockConfig(dir: string): Promise<BlockConfig> {
@@ -99,7 +99,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
  *
  * Both Lerna and Yarn workspaces are supported.
  *
- * @param root - The project root in which to find workspaces.
+ * @param root The project root in which to find workspaces.
  * @returns Discovered Appsemble blocks.
  */
 export async function discoverBlocks(root: string): Promise<BlockConfig[]> {
@@ -117,7 +117,7 @@ export async function discoverBlocks(root: string): Promise<BlockConfig[]> {
 /**
  * Configure the payload for a new block version upload.
  *
- * @param config - The block configuration
+ * @param config The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
 export async function makePayload(config: BlockConfig): Promise<FormData> {
@@ -239,8 +239,8 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
 /**
  * Publish a new block version.
  *
- * @param config - The block configuration
- * @param ignoreConflict - Prevent the command from crashing when a conflict has been detected.
+ * @param config The block configuration
+ * @param ignoreConflict Prevent the command from crashing when a conflict has been detected.
  */
 export async function publishBlock(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
   logger.info(`Publishing ${config.name}@${config.version}…`);
@@ -261,12 +261,12 @@ export async function publishBlock(config: BlockConfig, ignoreConflict: boolean)
 /**
  * Uploads an app block theme
  *
- * @param filePath - The path of the index.css file
- * @param organization - The ID of the organization the block belongs to.
- * @param appId - The ID of the app to upload the theme for.
- * @param block - The name of the block.
- * @param remote - The HTTP origin to upload the theme to.
- * @param force - Force update the theme if the app is locked.
+ * @param filePath The path of the index.css file
+ * @param organization The ID of the organization the block belongs to.
+ * @param appId The ID of the app to upload the theme for.
+ * @param block The name of the block.
+ * @param remote The HTTP origin to upload the theme to.
+ * @param force Force update the theme if the app is locked.
  */
 export async function uploadAppBlockTheme(
   filePath: string,
@@ -292,10 +292,10 @@ export async function uploadAppBlockTheme(
 /**
  * Traverses the directory at a given path for app block themes and uploads them.
  *
- * @param path - The path of the app.
- * @param appId - The ID of the app.
- * @param remote - The HTTP origin to upload the themes to.
- * @param force - Force update the theme if the app is locked.
+ * @param path The path of the app.
+ * @param appId The ID of the app.
+ * @param remote The HTTP origin to upload the themes to.
+ * @param force Force update the theme if the app is locked.
  */
 export async function traverseBlockThemes(
   path: string,

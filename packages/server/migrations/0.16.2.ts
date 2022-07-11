@@ -8,7 +8,7 @@ export const key = '0.16.2';
  * - Add column AppSamlSecret.emailAttribute
  * - Add column AppSamlSecret.nameAttribute
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -25,7 +25,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Remove column AppSamlSecret.nameAttribute
  * - Remove column AppSamlSecret.emailAttribute
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

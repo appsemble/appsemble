@@ -1,11 +1,10 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-import './bulma.scss';
-import './index.css';
-
 import { setupSentry } from '@appsemble/web-utils';
+import '@fortawesome/fontawesome-free/css/all.css';
 import { render } from 'react-dom';
 
+import './bulma.scss';
 import { App } from './components/App';
+import './index.css';
 import { sentryDsn, sentryEnvironment } from './utils/settings';
 
 setupSentry(sentryDsn, sentryEnvironment);

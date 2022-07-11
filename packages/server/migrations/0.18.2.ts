@@ -8,7 +8,7 @@ export const key = '0.18.2';
  * - Add columns description, email, and website to table Organization.
  * - Add column role to OrganizationInvite
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -45,7 +45,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove columns description, email, and website from table Organization.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

@@ -1,5 +1,3 @@
-import './index.css';
-
 import { useBlock } from '@appsemble/preact';
 import { isPreactChild, Location } from '@appsemble/preact-components';
 import { DivIcon, Icon } from 'leaflet';
@@ -8,6 +6,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { GeoCoordinatesField, RendererProps } from '../../../block';
 import { createIcon } from '../utils/createIcon';
+import './index.css';
 import styles from './index.module.css';
 
 /**

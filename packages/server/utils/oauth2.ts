@@ -7,8 +7,8 @@ import { decode } from 'jsonwebtoken';
 /**
  * Check if all required scopes are granted.
  *
- * @param grantedScopes - The scopes that have been granted to the client.
- * @param requiredScopes - The scopes that are required to perform an operation.
+ * @param grantedScopes The scopes that have been granted to the client.
+ * @param requiredScopes The scopes that are required to perform an operation.
  * @returns If the client is allowed to perform the operation based on the scopes.
  */
 export function hasScope(grantedScopes: string, requiredScopes: string): boolean {
@@ -20,11 +20,11 @@ export function hasScope(grantedScopes: string, requiredScopes: string): boolean
 /**
  * Fetch an access token as part of the authorization code OAuth2 flow.
  *
- * @param tokenUrl - The URL from which to request the access token.
- * @param code - The authorization code to exchange for an access token.
- * @param redirectUri - The redirect URI used to get the authorization code.
- * @param clientId - The OAuth2 client id.
- * @param clientSecret - The OAuth2 client secret.
+ * @param tokenUrl The URL from which to request the access token.
+ * @param code The authorization code to exchange for an access token.
+ * @param redirectUri The redirect URI used to get the authorization code.
+ * @param clientId The OAuth2 client id.
+ * @param clientSecret The OAuth2 client secret.
  * @returns The data from an access token response.
  */
 export async function getAccessToken(
@@ -64,11 +64,11 @@ export async function getAccessToken(
  * 2. If the information is still incomplete, extract information from the access token.
  * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
  *
- * @param accessToken - The access token from which to extract user data. or to request user info
+ * @param accessToken The access token from which to extract user data. or to request user info
  * with.
- * @param idToken - The ID token from which to extract user data.
- * @param userInfoUrl - The URL from which to request userinfo, if needed.
- * @param remapper - An optional remapper to apply onto the response from the user infoendpoint.
+ * @param idToken The ID token from which to extract user data.
+ * @param userInfoUrl The URL from which to request userinfo, if needed.
+ * @param remapper An optional remapper to apply onto the response from the user infoendpoint.
  * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
 export async function getUserInfo(

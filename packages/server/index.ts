@@ -2,7 +2,6 @@
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
-import './types';
 import * as cleanup from './commands/cleanup';
 import * as cleanupResources from './commands/cleanupResources';
 import * as health from './commands/health';
@@ -11,6 +10,7 @@ import * as restore from './commands/restore';
 import * as runCronJobs from './commands/runCronJobs';
 import * as start from './commands/start';
 import pkg from './package.json';
+import './types';
 import { setArgv } from './utils/argv';
 import { configureSentry } from './utils/sentry';
 
@@ -33,7 +33,7 @@ export {
 /**
  * The main entry point for the Appsemble production server.
  *
- * @param argv - The argument vector passed in from the command line.
+ * @param argv The argument vector passed in from the command line.
  */
 function main(argv: string[]): void {
   configureAxios('AppsembleServer', pkg.version);

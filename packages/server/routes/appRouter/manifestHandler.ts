@@ -11,7 +11,7 @@ const iconSizes = [48, 144, 192, 512];
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  *
- * @param ctx - The Koa context.
+ * @param ctx The Koa context.
  */
 export async function manifestHandler(ctx: Context): Promise<void> {
   const { app } = await getApp(ctx, {

@@ -65,7 +65,7 @@ export interface AppValidationWorker {
   /**
    * Get color information from a given URI.
    *
-   * @param uri - The URI to get color information for.
+   * @param uri The URI to get color information for.
    * @returns Monaco color information.
    */
   doDocumentColors: (uri: string) => languages.IColorInformation[];
@@ -73,7 +73,7 @@ export interface AppValidationWorker {
   /**
    * Fetch and cache block manifests usng a local cache.
    *
-   * @param blocks - Identifiable blocks to get the manifest for.
+   * @param blocks Identifiable blocks to get the manifest for.
    * @returns A list of block manifest that match the block manifests. If not matching manifest is
    * found, it’s ignored.
    */
@@ -83,7 +83,7 @@ export interface AppValidationWorker {
   /**
    * Get editor decorations to render inline in the app editor.
    *
-   * @param uri - The URI of the model to get decorations for.
+   * @param uri The URI of the model to get decorations for.
    * @returns editor decorations for an app definition.
    */
   getDecorations: (uri: string) => editor.IModelDeltaDecoration[];
@@ -92,8 +92,8 @@ export interface AppValidationWorker {
 /**
  * Get the Monaco editor range for a node from the YAML AST.
  *
- * @param node - The YAML node to get the range for.
- * @param lineCounter - A line counter used when parsing the YAML document.
+ * @param node The YAML node to get the range for.
+ * @param lineCounter A line counter used when parsing the YAML document.
  * @returns The Monaco range that matches the YAML node
  */
 function getNodeRange(node: Node, lineCounter: LineCounter): IRange {
@@ -113,7 +113,7 @@ const black = { red: 0, green: 0, blue: 0, alpha: 1 };
 /**
  * Parse a hexadecimal color as a Monaco color
  *
- * @param color - The hex color to parse.
+ * @param color The hex color to parse.
  * @returns The color as a Monaco color, or black if the hex color is invalid.
  */
 function parseColor(color: unknown): languages.IColor {

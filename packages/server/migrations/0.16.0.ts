@@ -7,7 +7,7 @@ export const key = '0.16.0';
  * Summary:
  * - Change the type of Asset.id to string.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

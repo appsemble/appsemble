@@ -13,7 +13,7 @@ export const key = '0.12.4';
  * - Renames "BlockDefinitionId" in OrganizationBlockStyle and AppBlockStyle to "block"
  * - Removes the paranoid "deleted" column and "updated" columns in BlockVersion and BlockAsset
  *
- * @param db - The sequelize Database.
+ * @param db The sequelize Database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

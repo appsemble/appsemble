@@ -6,9 +6,9 @@ import { isValidDate } from '../requirements';
 /**
  * Validates a date time based on a set of requirements.
  *
- * @param field - The field to validate.
- * @param value - The value of the field.
- * @param remap - The remap function to use within the validators.
+ * @param field The field to validate.
+ * @param value The value of the field.
+ * @param remap The remap function to use within the validators.
  * @returns The first requirement that failed validation.
  */
 export function validateDateTime(

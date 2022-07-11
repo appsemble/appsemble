@@ -101,7 +101,7 @@ export const logger = winston.createLogger({
 /**
  * Set the logging level using a string or numeric value.
  *
- * @param level - The logger level to set.
+ * @param level The logger level to set.
  */
 export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
   logger.level = Number.isNaN(Number(level))
@@ -115,7 +115,7 @@ export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
  *
  * Use this in conjunction with `yargs`.
  *
- * @param argv - The processed command line arguments.
+ * @param argv The processed command line arguments.
  */
 export function configureLogger({ quiet = 0, verbose = 0 }: ConfigureLoggerParams): void {
   process.on('warning', (warning) => {

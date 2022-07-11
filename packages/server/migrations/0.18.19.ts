@@ -7,7 +7,7 @@ export const key = '0.18.19';
  * Summary:
  * - Remove column `resources` from table `BlockVersion`.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -19,7 +19,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Add column `resources` to table `BlockVersion`.
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

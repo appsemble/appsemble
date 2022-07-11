@@ -3,8 +3,8 @@ import { EnumField, RadioField, RequiredRequirement } from '../../../block';
 /**
  * Validates an enum picker based on a set of requirements.
  *
- * @param field - The field to validate.
- * @param value - The value of the field.
+ * @param field The field to validate.
+ * @param value The value of the field.
  * @returns The first requirement that failed validation.
  */
 export function validateEnum(field: EnumField, value?: any): RequiredRequirement {
@@ -18,8 +18,8 @@ export function validateEnum(field: EnumField, value?: any): RequiredRequirement
 /**
  * Validates an radio picker based on a set of requirements.
  *
- * @param field - The field to validate.
- * @param value - The value of the field.
+ * @param field The field to validate.
+ * @param value The value of the field.
  * @returns The first requirement that failed validation.
  */
 export function validateRadio(field: RadioField, value?: any): RequiredRequirement {

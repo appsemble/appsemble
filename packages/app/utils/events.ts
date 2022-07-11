@@ -8,10 +8,10 @@ import { addBreadcrumb } from '@sentry/browser';
 /**
  * Create the events object that is passed to a block.
  *
- * @param ee - The internal event emitter to use.
- * @param ready - A promise to wait for before emitting any events.
- * @param manifest - The block manifest.
- * @param definition - The block definition.
+ * @param ee The internal event emitter to use.
+ * @param ready A promise to wait for before emitting any events.
+ * @param manifest The block manifest.
+ * @param definition The block definition.
  * @returns An events object that may be passed into a block.
  */
 export function createEvents(

@@ -26,8 +26,8 @@ interface AppSecretCardProps {
   /**
    * Called when the provider has been updated successfully.
    *
-   * @param newProvider - The new provider values.
-   * @param oldProvider - The old provider values to replace..
+   * @param newProvider The new provider values.
+   * @param oldProvider The old provider values to replace..
    */
   onSubmit: (values: AppOAuth2Secret) => Promise<void>;
 

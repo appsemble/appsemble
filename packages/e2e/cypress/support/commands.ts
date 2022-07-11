@@ -8,14 +8,14 @@ declare global {
       /**
        * Perform a login in Appsemble Studio using a user flow.
        *
-       * @param redirect - The URL to navigate to after logging in.
+       * @param redirect The URL to navigate to after logging in.
        */
       login: (redirect: string) => void;
 
       /**
        * Intercept and wait for an API call to have finished.
        *
-       * @param params - Object containing the method and url of the API method.
+       * @param params Object containing the method and url of the API method.
        */
       waitForAPICall: (params: { method?: string; url: string }) => void;
 

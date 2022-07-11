@@ -5,8 +5,8 @@ import { has } from './has';
 /**
  * Resolve role security inheritance based on priority.
  *
- * @param app - The app to resolve role priority for.
- * @param role - The role to resolve
+ * @param app The app to resolve role priority for.
+ * @param role The role to resolve
  * @returns A list of tuples of role name and role definition. The roles are sorted by priority.
  */
 export function resolveRoleInheritance(

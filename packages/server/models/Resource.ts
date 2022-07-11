@@ -95,7 +95,7 @@ export class Resource extends Model {
   /**
    * Represent a resource as JSON output
    *
-   * @param options - Serialization options.
+   * @param options Serialization options.
    * @returns A JSON representation of the resource.
    */
   toJSON({ exclude = ['$clonable'], include }: ResourceToJsonOptions = {}): ResourceType {

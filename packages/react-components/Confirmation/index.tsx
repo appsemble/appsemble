@@ -93,7 +93,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
 /**
  * A hook to easily create a configmration dialog.
  *
- * @param options - The configuration options for the modal.
+ * @param options The configuration options for the modal.
  * @returns A function which triggers the confirmation dialog when called.
  */
 export function useConfirmation<T, A extends any[]>(

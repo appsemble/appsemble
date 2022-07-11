@@ -7,7 +7,7 @@ export const key = '0.17.0';
  * Summary:
  * - Add column SamlLoginRequest.email
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -23,7 +23,7 @@ export async function up(db: Sequelize): Promise<void> {
  * Summary:
  * - Remove column SamlLoginRequest.email
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();

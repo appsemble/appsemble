@@ -19,7 +19,7 @@ type Report = (instance: unknown, message: string, path: (number | string)[]) =>
 /**
  * Check whether or not the given link represents a link related to the Appsemble core.
  *
- * @param link - The link to check
+ * @param link The link to check
  * @returns Whether or not the given link represents a link related to the Appsemble core.
  */
 export function isAppLink(link: string[] | string): boolean {
@@ -252,8 +252,8 @@ function checkCyclicRoleInheritance(
 /**
  * Validate security related definitions within the app definition.
  *
- * @param definition - The definition of the app
- * @param report - A function used to report a value.
+ * @param definition The definition of the app
+ * @param report A function used to report a value.
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
   const { security } = definition;
@@ -337,8 +337,8 @@ function validateSecurity(definition: AppDefinition, report: Report): void {
 /**
  * Validates the hooks in resource definition to ensure its properties are valid.
  *
- * @param definition - The definition of the app
- * @param report - A function used to report a value.
+ * @param definition The definition of the app
+ * @param report A function used to report a value.
  */
 function validateHooks(definition: AppDefinition, report: Report): void {
   if (!definition.resources) {
@@ -690,9 +690,9 @@ export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<
  *
  * This check various conditions which can’t be validated using basic JSON schema validation.
  *
- * @param definition - The app validation to check.
- * @param getBlockVersions - A function for getting block manifests from block versions.
- * @param validatorResult - If specified, error messages will be applied to this existing validator
+ * @param definition The app validation to check.
+ * @param getBlockVersions A function for getting block manifests from block versions.
+ * @param validatorResult If specified, error messages will be applied to this existing validator
  * result.
  * @returns A validator result which contains all app validation violations.
  */

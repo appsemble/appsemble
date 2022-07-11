@@ -351,7 +351,7 @@ export async function restoreDNS(): Promise<void> {
 /**
  * Get the SSL status for all given domain names based on Kubernetes cert-manager certificates.
  *
- * @param domains - The domain names to get a status for.
+ * @param domains The domain names to get a status for.
  * @returns A mapping of domain names to the status of the SSL certificate.
  */
 export async function getSSLStatus(domains: string[]): Promise<SSLStatusMap> {

@@ -210,7 +210,7 @@ export class App extends Model {
   /**
    * Normalizes an app record for consistent return values.
    *
-   * @param omittedValues - A list of fields to omit from the result.
+   * @param omittedValues A list of fields to omit from the result.
    * @returns An app resource that can be safely returned from the API.
    */
   toJSON(omittedValues: (keyof AppType)[] = []): AppType {

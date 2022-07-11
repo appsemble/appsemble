@@ -17,7 +17,7 @@ declare const console: {
   /**
    * Log an error message to the console.
    *
-   * @param args - The message to render to the console.
+   * @param args The message to render to the console.
    */
   error: (...args: unknown[]) => void;
 };
@@ -30,7 +30,7 @@ export interface IntlMessage {
 /**
  * Get a message format instance based on a message id and default message.
  *
- * @param msg - The message to get the message format instance for.
+ * @param msg The message to get the message format instance for.
  * @returns A message format instance.
  */
 export type MessageGetter = (msg: IntlMessage) => IntlMessageFormat;

@@ -15,7 +15,7 @@ const { CI_COMMIT_TAG } = process.env;
 /**
  * Read `package.json` for all packages in the given directory.
  *
- * @param dirname - The directory to read package names from.
+ * @param dirname The directory to read package names from.
  * @returns A list of package.json file contents.
  */
 async function readPackages(dirname: string): Promise<PackageJson[]> {

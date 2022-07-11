@@ -44,8 +44,8 @@ interface Changes {
 /**
  * Update `package.json` in a directory.
  *
- * @param dir - The directory whose `package.json` to update.
- * @param version - The new version to set.
+ * @param dir The directory whose `package.json` to update.
+ * @param version The new version to set.
  */
 async function updatePkg(dir: string, version: string): Promise<void> {
   const filepath = join(dir, 'package.json');
@@ -79,7 +79,7 @@ async function updatePkg(dir: string, version: string): Promise<void> {
 /**
  * Update `publiccode.yml`.
  *
- * @param version - The software version to set
+ * @param version The software version to set
  */
 async function updatePublicCodeYml(version: string): Promise<void> {
   const [publicCode] = await readData<any>('publiccode.yml');
@@ -109,9 +109,9 @@ async function updatePublicCodeYml(version: string): Promise<void> {
 /**
  * Replace content of a file.
  *
- * @param filename - The filename of the file to replace.
- * @param oldVersion - The content to replace.
- * @param newVersion - The content to replace the old content with.
+ * @param filename The filename of the file to replace.
+ * @param oldVersion The content to replace.
+ * @param newVersion The content to replace the old content with.
  */
 async function replaceFile(
   filename: string,

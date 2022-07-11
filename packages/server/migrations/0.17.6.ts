@@ -11,7 +11,7 @@ export const key = '0.17.6';
  * - Remove soft deleted resources.
  * - Remove column Resource.deleted
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function up(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
@@ -38,7 +38,7 @@ export async function up(db: Sequelize): Promise<void> {
  * - Add column Resource.deleted
  * - Add column Asset.deleted
  *
- * @param db - The sequelize database.
+ * @param db The sequelize database.
  */
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
