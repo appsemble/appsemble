@@ -1,12 +1,12 @@
-import { promises as fs } from 'fs';
+import { readdir } from 'fs/promises';
 import { join, parse } from 'path';
 
+import { readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { transformFileAsync } from '@babel/core';
 import FormatJsPlugin from 'babel-plugin-formatjs';
 import { Options as FormatJsPluginOptions } from 'babel-plugin-formatjs/types';
 import ReactIntlAutoPlugin from 'babel-plugin-react-intl-auto';
-import { readJson } from 'fs-extra';
 import globby from 'globby';
 
 type Translations = Record<string, Record<string, string>>;
@@ -25,7 +25,7 @@ const serverMessageKeys = [
 export async function extractMessages(): Promise<Translations> {
   const translationsDir = 'i18n';
 
-  const filenames = await fs.readdir(translationsDir);
+  const filenames = await readdir(translationsDir);
   const locales = filenames.map((filename) => parse(filename).name);
   const paths = await globby('packages/**/messages.ts');
 
@@ -33,7 +33,7 @@ export async function extractMessages(): Promise<Translations> {
     await Promise.all(
       filenames.map(async (filename) => [
         parse(filename).name,
-        await readJson(join(translationsDir, filename)),
+        (await readData(join(translationsDir, filename)))[0],
       ]),
     ),
   );

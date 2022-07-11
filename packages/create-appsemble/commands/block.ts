@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readdir } from 'fs/promises';
 import { join, resolve } from 'path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
@@ -21,7 +21,7 @@ interface BlockArgs {
 }
 
 export async function builder(yargs: Argv): Promise<Argv<any>> {
-  const choices = await fs.readdir(templateDir);
+  const choices = await readdir(templateDir);
 
   return yargs
     .option('organization', {
@@ -37,7 +37,7 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
 }
 
 export async function handler(args: BlockArgs): Promise<void> {
-  const choices = await fs.readdir(templateDir);
+  const choices = await readdir(templateDir);
   const answers = await prompt(
     [
       !args.organization && {

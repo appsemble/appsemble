@@ -43,7 +43,6 @@
     "cosmiconfig": "^7.0.0",
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.0",
-    "fs-extra": "^10.0.0",
     "inquirer": "^8.0.0",
     "jsonschema": "^1.0.0",
     "koa": "^2.0.0",
@@ -65,7 +64,6 @@
   "devDependencies": {
     "@appsemble/types": "0.20.10",
     "@types/concat-stream": "^2.0.0",
-    "@types/fs-extra": "^9.0.0",
     "@types/inquirer": "^8.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^14.0.0",

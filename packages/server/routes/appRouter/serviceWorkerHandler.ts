@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 
 import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
@@ -17,7 +17,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   const production = process.env.NODE_ENV === 'production';
   const filename = production ? '/service-worker.js' : '/app/service-worker.js';
   const serviceWorker = await (production
-    ? fs.readFile(
+    ? readFile(
         resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
         'utf8',
       )

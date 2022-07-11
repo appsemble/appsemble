@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
@@ -34,7 +34,7 @@ export const description = `Fix i18n message keys for moved files. Open ${__file
 const translationdDir = 'i18n';
 
 export async function handler(): Promise<void> {
-  const filenames = await fs.readdir(translationdDir);
+  const filenames = await readdir(translationdDir);
 
   if (!replacements.length) {
     throw new AppsembleError(`Implement replacements in ${__filename} to run this command.`);
@@ -43,7 +43,7 @@ export async function handler(): Promise<void> {
   await Promise.all(
     filenames.map(async (filepath) => {
       const path = join(translationdDir, filepath);
-      const pldMessages = JSON.parse(await fs.readFile(path, 'utf8'));
+      const pldMessages = JSON.parse(await readFile(path, 'utf8'));
       const newMessages = Object.fromEntries(
         Object.entries(pldMessages).map(([oldKey, value]) => {
           const replacement = replacements.find(([pattern]) => pattern.test(oldKey));
@@ -55,7 +55,7 @@ export async function handler(): Promise<void> {
           return [oldKey, value];
         }),
       );
-      await fs.writeFile(
+      await writeFile(
         path,
         `${JSON.stringify(newMessages, Object.keys(newMessages).sort(compareStrings), 2)}\n`,
       );

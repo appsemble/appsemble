@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 
 import postcss from 'postcss';
 import postcssImport from 'postcss-import';
@@ -12,7 +12,7 @@ import postcssUrl from 'postcss-url';
  * @returns Processed CSS files concatenated into a single value.
  */
 export async function processCss(path: string): Promise<string> {
-  const data = await fs.readFile(path, 'utf8');
+  const data = await readFile(path, 'utf8');
 
   const postcssConfig = await postcssrc();
   const postCss = postcss(postcssConfig.plugins);

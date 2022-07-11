@@ -1,4 +1,5 @@
-import { createReadStream, existsSync, promises as fs, ReadStream } from 'fs';
+import { createReadStream, existsSync, ReadStream } from 'fs';
+import { mkdir, readdir, readFile, stat } from 'fs/promises';
 import { join, parse, relative, resolve } from 'path';
 import { inspect } from 'util';
 
@@ -7,7 +8,6 @@ import { App, AppDefinition, AppsembleMessages, AppVisibility, Messages } from '
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import { readdir } from 'fs-extra';
 
 import { AppsembleContext, AppsembleRC } from '../types';
 import { authenticate } from './authentication';
@@ -192,8 +192,8 @@ export async function traverseAppDirectory(
   let yaml: string;
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
-  await opendirSafe(path, async (filepath, stat) => {
-    switch (stat.name.toLowerCase()) {
+  await opendirSafe(path, async (filepath, filestat) => {
+    switch (filestat.name.toLowerCase()) {
       case '.appsemblerc.yaml': {
         logger.info(`Reading app settings from ${filepath}`);
         [rc] = await readData<AppsembleRC>(filepath);
@@ -230,7 +230,7 @@ export async function traverseAppDirectory(
 
       case 'readme.md':
         logger.info(`Including longDescription from ${filepath}`);
-        formData.append('longDescription', await fs.readFile(filepath, 'utf8'));
+        formData.append('longDescription', await readFile(filepath, 'utf8'));
         return;
 
       case 'screenshots':
@@ -339,8 +339,8 @@ export async function writeAppMessages(
   let i18nDir = join(path, 'i18n');
   const messageFiles = new Set<string>();
 
-  await opendirSafe(path, async (filepath, stat) => {
-    switch (stat.name.toLowerCase()) {
+  await opendirSafe(path, async (filepath, filestat) => {
+    switch (filestat.name.toLowerCase()) {
       case 'app-definition.yaml': {
         [app] = await readData<AppDefinition>(filepath);
         break;
@@ -348,7 +348,7 @@ export async function writeAppMessages(
       case 'i18n': {
         // For case insensitivity
         i18nDir = filepath;
-        const i18nFiles = await fs.readdir(filepath);
+        const i18nFiles = await readdir(filepath);
         for (const f of i18nFiles) {
           messageFiles.add(join(filepath, f));
         }
@@ -362,7 +362,7 @@ export async function writeAppMessages(
     throw new AppsembleError(`Couldn’t find app definition for ${path}`);
   }
   // Ensure the i18n directory exists.
-  await fs.mkdir(i18nDir, { recursive: true });
+  await mkdir(i18nDir, { recursive: true });
 
   for (const lang of [...languages, ...verify]) {
     messageFiles.add(join(i18nDir, `${lang}.${format}`));
@@ -521,7 +521,7 @@ export async function updateApp({
   path,
   ...options
 }: UpdateAppParams): Promise<void> {
-  const file = await fs.stat(path);
+  const file = await stat(path);
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
 
@@ -609,7 +609,7 @@ export async function createApp({
   resources,
   ...options
 }: CreateAppParams): Promise<void> {
-  const file = await fs.stat(path);
+  const file = await stat(path);
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
   let rc: AppsembleRC;
@@ -712,7 +712,7 @@ export async function createApp({
     if (resources && existsSync(join(path, 'resources'))) {
       const resourcePath = join(path, 'resources');
       try {
-        const resourceFiles = await fs.readdir(resourcePath, { withFileTypes: true });
+        const resourceFiles = await readdir(resourcePath, { withFileTypes: true });
         for (const resource of resourceFiles) {
           if (resource.isFile()) {
             const { name } = parse(resource.name);

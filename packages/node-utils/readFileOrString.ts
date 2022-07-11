@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 
 import { isErrno } from '.';
 
@@ -10,7 +10,7 @@ import { isErrno } from '.';
  */
 export async function readFileOrString(string: Buffer | string): Promise<Buffer | string> {
   try {
-    return await fs.readFile(string);
+    return await readFile(string);
   } catch (error: unknown) {
     if (isErrno(error, 'ENOENT')) {
       return string;

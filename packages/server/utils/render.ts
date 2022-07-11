@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
@@ -48,7 +48,7 @@ export async function render(
   data: Record<string, unknown>,
 ): Promise<void> {
   const template = await (process.env.NODE_ENV === 'production'
-    ? fs.readFile(resolve(__dirname, '..', '..', '..', 'dist', filename), 'utf8')
+    ? readFile(resolve(__dirname, '..', '..', '..', 'dist', filename), 'utf8')
     : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
   ctx.body = renderTemplate(template, data);
   ctx.type = 'html';

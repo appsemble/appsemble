@@ -1,10 +1,10 @@
-import { promises as fs } from 'fs';
+import { readdir, readFile, rm, writeFile } from 'fs/promises';
 import { basename, dirname, join, parse } from 'path';
 
 import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
-import { ensureFile, remove } from 'fs-extra';
+import { ensureFile } from 'fs-extra';
 import globby from 'globby';
 import { capitalize, mapValues } from 'lodash';
 import { BlockContent, ListItem } from 'mdast';
@@ -83,7 +83,7 @@ async function updatePkg(dir: string, version: string): Promise<void> {
  */
 async function updatePublicCodeYml(version: string): Promise<void> {
   const [publicCode] = await readData<any>('publiccode.yml');
-  const i18nFiles = await fs.readdir('i18n');
+  const i18nFiles = await readdir('i18n');
   const availableLanguages = i18nFiles.map((f) => parse(f).name).sort();
   await writeData(
     'publiccode.yml',
@@ -119,18 +119,18 @@ async function replaceFile(
   newVersion: string,
 ): Promise<void> {
   logger.info(`Updating ${filename}`);
-  const content = await fs.readFile(filename, 'utf8');
+  const content = await readFile(filename, 'utf8');
   const updated = content.split(oldVersion).join(newVersion);
-  await fs.writeFile(filename, updated);
+  await writeFile(filename, updated);
 }
 
 async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
   await ensureFile(join(dir, '.gitkeep'));
 
-  const filenames = await fs.readdir(dir);
+  const filenames = await readdir(dir);
   const absoluteFiles = filenames.filter((f) => f !== '.gitkeep').map((f) => join(dir, f));
-  const lines = await Promise.all(absoluteFiles.map((f) => fs.readFile(f, 'utf8')));
-  await Promise.all(absoluteFiles.map((f) => remove(f)));
+  const lines = await Promise.all(absoluteFiles.map((f) => readFile(f, 'utf8')));
+  await Promise.all(absoluteFiles.map((f) => rm(f, { force: true, recursive: true })));
   return lines
     .filter(Boolean)
     .sort()
@@ -173,7 +173,7 @@ async function getAllChanges(directories: string[]): Promise<Changes> {
 }
 
 async function updateChangelog(changesByCategory: Changes, version: string): Promise<void> {
-  const changelog = fromMarkdown(await fs.readFile('CHANGELOG.md', 'utf8'));
+  const changelog = fromMarkdown(await readFile('CHANGELOG.md', 'utf8'));
   const changesSection = [
     createHeading(2, [
       '[',
@@ -195,7 +195,7 @@ async function updateChangelog(changesByCategory: Changes, version: string): Pro
     }
   });
   logger.info(await dumpMarkdown(createRoot(changesSection), 'CHANGELOG.md'));
-  await fs.writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
+  await writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
 }
 
 async function updateHelmChart(changes: Changes, version: string): Promise<void> {
@@ -271,7 +271,7 @@ export async function handler({ increment }: Args): Promise<void> {
     { absolute: true, gitignore: true },
   );
   const templateDir = 'packages/create-appsemble/templates';
-  const templates = await fs.readdir(templateDir);
+  const templates = await readdir(templateDir);
   await Promise.all(templates.map((t) => updatePkg(join(process.cwd(), templateDir, t), version)));
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
