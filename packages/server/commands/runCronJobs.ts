@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { parseExpression } from 'cron-parser';
+import cron from 'cron-parser';
 import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
@@ -92,7 +92,7 @@ export async function handler(): Promise<void> {
 
       for (const [id, job] of Object.entries(app.definition.cron)) {
         lastId = id;
-        const schedule = parseExpression(job.schedule, { startDate });
+        const schedule = cron.parseExpression(job.schedule, { startDate });
 
         if (!schedule.hasPrev()) {
           logger.info(`Skipping ${id}. Next scheduled run: ${schedule.next().toISOString()}`);

@@ -14,7 +14,7 @@ const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
-jest.mock('fs');
+jest.mock('fs/promises');
 
 useTestDatabase('kubernetes');
 

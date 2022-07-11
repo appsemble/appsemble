@@ -14,7 +14,7 @@ import {
 import { BlockConfig } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
-import { cyan, green, underline } from 'chalk';
+import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import FormData from 'form-data';
 import { PackageJson } from 'type-fest';
@@ -71,9 +71,9 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
   if (!pkg.private) {
     logger.warn(
-      `It is ${underline.yellow('highly recommended')} to set “${green('"private"')}: ${cyan(
-        'true',
-      )}” in package.json`,
+      `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
+        '"private"',
+      )}: ${chalk.cyan('true')}” in package.json`,
     );
   }
   let longDescription: string;

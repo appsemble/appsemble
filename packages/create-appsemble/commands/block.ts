@@ -3,7 +3,7 @@ import { join, resolve } from 'path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
 import { copy } from 'fs-extra';
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 import { PackageJson } from 'type-fest';
 import { Argv } from 'yargs';
 
@@ -38,7 +38,7 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
 
 export async function handler(args: BlockArgs): Promise<void> {
   const choices = await readdir(templateDir);
-  const answers = await prompt(
+  const answers = await inquirer.prompt(
     [
       !args.organization && {
         name: 'organization',

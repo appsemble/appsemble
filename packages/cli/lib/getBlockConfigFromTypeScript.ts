@@ -6,28 +6,7 @@ import { parse } from 'comment-parser';
 import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import { createFormatter, createParser, SchemaGenerator } from 'ts-json-schema-generator';
-import {
-  createProgram,
-  findConfigFile,
-  forEachChild,
-  formatDiagnostic,
-  FormatDiagnosticsHost,
-  formatDiagnosticsWithColorAndContext,
-  getLeadingCommentRanges,
-  getPreEmitDiagnostics,
-  InterfaceDeclaration,
-  isIdentifier,
-  isIndexSignatureDeclaration,
-  isInterfaceDeclaration,
-  isModuleDeclaration,
-  isPropertySignature,
-  parseJsonConfigFileContent,
-  Program,
-  readConfigFile,
-  sys,
-  TypeChecker,
-  TypeElement,
-} from 'typescript';
+import ts from 'typescript';
 
 /**
  * Get the tsdoc comment for a TypeScript node.
@@ -36,7 +15,7 @@ import {
  * @param node The node for which to get the tsdoc.
  * @returns The tsdoc comment as a string, if present.
  */
-function getNodeComments(checker: TypeChecker, node: TypeElement): string {
+function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string {
   const symbol = checker.getSymbolAtLocation(node.name);
   if (!symbol) {
     return;
@@ -65,8 +44,8 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
  * @returns A record created from the returned key/value pairs.
  */
 function processInterface<T>(
-  iface: InterfaceDeclaration,
-  checker: TypeChecker,
+  iface: ts.InterfaceDeclaration,
+  checker: ts.TypeChecker,
   convert: (name: string, description: string) => [string, T],
 ): Record<string, T> {
   if (!iface?.members.length) {
@@ -78,9 +57,9 @@ function processInterface<T>(
   return Object.fromEntries(
     iface.members.map((member) => {
       const description = getNodeComments(checker, member);
-      if (isIndexSignatureDeclaration(member)) {
+      if (ts.isIndexSignatureDeclaration(member)) {
         // Comments aren’t properly extracted for index signatures.
-        const commentRanges = getLeadingCommentRanges(source, member.pos);
+        const commentRanges = ts.getLeadingCommentRanges(source, member.pos);
         if (commentRanges) {
           const comments = commentRanges?.map((r) => source.slice(r.pos, r.end)) ?? [];
           const [block] = parse(comments[0]);
@@ -95,7 +74,7 @@ function processInterface<T>(
         return convert(undefined, description);
       }
 
-      if (!isPropertySignature(member)) {
+      if (!ts.isPropertySignature(member)) {
         throw new AppsembleError(
           `Only property and index signatures are allowed as ${
             iface.name
@@ -105,7 +84,7 @@ function processInterface<T>(
 
       const { name } = member;
 
-      if (!isIdentifier(name)) {
+      if (!ts.isIdentifier(name)) {
         throw new AppsembleError(
           `Only property and index signatures are allowed as ${
             iface.name
@@ -134,8 +113,8 @@ function processInterface<T>(
  * @returns The action manifest to upload.
  */
 function processActions(
-  iface: InterfaceDeclaration,
-  checker: TypeChecker,
+  iface: ts.InterfaceDeclaration,
+  checker: ts.TypeChecker,
 ): BlockManifest['actions'] {
   return processInterface(iface, checker, (name, description) => [name ?? '$any', { description }]);
 }
@@ -149,9 +128,9 @@ function processActions(
  * @returns The events manifest to upload.
  */
 function processEvents(
-  eventListenerInterface: InterfaceDeclaration,
-  eventEmitterInterface: InterfaceDeclaration,
-  checker: TypeChecker,
+  eventListenerInterface: ts.InterfaceDeclaration,
+  eventEmitterInterface: ts.InterfaceDeclaration,
+  checker: ts.TypeChecker,
 ): BlockManifest['events'] {
   const listen = processInterface(eventListenerInterface, checker, (name, description) => [
     name ?? '$any',
@@ -172,7 +151,7 @@ function processEvents(
  * @param iface The interface node from which to extract parameters.
  * @returns The JSON schema for the block parameters.
  */
-function processParameters(program: Program, iface: InterfaceDeclaration): Schema {
+function processParameters(program: ts.Program, iface: ts.InterfaceDeclaration): Schema {
   if (!iface) {
     return;
   }
@@ -207,8 +186,8 @@ function processParameters(program: Program, iface: InterfaceDeclaration): Schem
  * @returns The action manifest to upload.
  */
 function processMessages(
-  iface: InterfaceDeclaration,
-  checker: TypeChecker,
+  iface: ts.InterfaceDeclaration,
+  checker: ts.TypeChecker,
 ): BlockManifest['messages'] {
   return processInterface(iface, checker, (name, description) => [name, { description }]);
 }
@@ -219,23 +198,25 @@ function processMessages(
  * @param blockPath The path for which to get the TypeScript program.
  * @returns The TypeScript program.
  */
-function getProgram(blockPath: string): Program {
-  const diagnosticHost: FormatDiagnosticsHost = {
-    getNewLine: () => sys.newLine,
-    getCurrentDirectory: sys.getCurrentDirectory,
+function getProgram(blockPath: string): ts.Program {
+  const diagnosticHost: ts.FormatDiagnosticsHost = {
+    getNewLine: () => ts.sys.newLine,
+    getCurrentDirectory: ts.sys.getCurrentDirectory,
     getCanonicalFileName: (x) => x,
   };
-  const tsConfigPath = findConfigFile(blockPath, sys.fileExists);
-  const { config, error } = readConfigFile(tsConfigPath, sys.readFile);
+  const tsConfigPath = ts.findConfigFile(blockPath, ts.sys.fileExists);
+  const { config, error } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
   if (error) {
-    throw new AppsembleError(formatDiagnostic(error, diagnosticHost));
+    throw new AppsembleError(ts.formatDiagnostic(error, diagnosticHost));
   }
   if (!config.files || !config.include) {
-    config.files = sys.readDirectory(blockPath, ['.ts', '.tsx']).map((f) => relative(blockPath, f));
+    config.files = ts.sys
+      .readDirectory(blockPath, ['.ts', '.tsx'])
+      .map((f) => relative(blockPath, f));
   }
-  const { errors, fileNames, options } = parseJsonConfigFileContent(
+  const { errors, fileNames, options } = ts.parseJsonConfigFileContent(
     config,
-    sys,
+    ts.sys,
     blockPath,
     undefined,
     tsConfigPath,
@@ -243,7 +224,7 @@ function getProgram(blockPath: string): Program {
   // Filter: 'rootDir' is expected to contain all source files.
   const diagnostics = errors.filter(({ code }) => code !== 6059);
   if (diagnostics.length) {
-    throw new AppsembleError(formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
+    throw new AppsembleError(ts.formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
   }
 
   options.noEmit = true;
@@ -253,11 +234,11 @@ function getProgram(blockPath: string): Program {
   delete options.declaration;
   delete options.declarationDir;
   delete options.declarationMap;
-  const program = createProgram(fileNames, options);
-  const preEmitDiagnostics = getPreEmitDiagnostics(program);
+  const program = ts.createProgram(fileNames, options);
+  const preEmitDiagnostics = ts.getPreEmitDiagnostics(program);
   if (preEmitDiagnostics.length) {
     throw new AppsembleError(
-      formatDiagnosticsWithColorAndContext(preEmitDiagnostics, diagnosticHost),
+      ts.formatDiagnosticsWithColorAndContext(preEmitDiagnostics, diagnosticHost),
     );
   }
   return program;
@@ -281,11 +262,11 @@ export function getBlockConfigFromTypeScript(
   const program = getProgram(blockConfig.dir);
   const checker = program.getTypeChecker();
 
-  let actionInterface: InterfaceDeclaration;
-  let eventEmitterInterface: InterfaceDeclaration;
-  let eventListenerInterface: InterfaceDeclaration;
-  let messagesInterface: InterfaceDeclaration;
-  let patametersInterface: InterfaceDeclaration;
+  let actionInterface: ts.InterfaceDeclaration;
+  let eventEmitterInterface: ts.InterfaceDeclaration;
+  let eventListenerInterface: ts.InterfaceDeclaration;
+  let messagesInterface: ts.InterfaceDeclaration;
+  let patametersInterface: ts.InterfaceDeclaration;
 
   for (const sourceFile of program.getSourceFiles()) {
     const fileName = relative(process.cwd(), sourceFile.fileName);
@@ -296,18 +277,18 @@ export function getBlockConfigFromTypeScript(
     }
     logger.verbose(`Searching metadata in: ${fileName}`);
     // eslint-disable-next-line @typescript-eslint/no-loop-func
-    forEachChild(sourceFile, (mod) => {
+    ts.forEachChild(sourceFile, (mod) => {
       // This node doesn’t override SDK types
-      if (!isModuleDeclaration(mod)) {
+      if (!ts.isModuleDeclaration(mod)) {
         return;
       }
       // This module defines other types
       if (mod.name.text !== '@appsemble/sdk') {
         return;
       }
-      forEachChild(mod.body, (iface) => {
+      ts.forEachChild(mod.body, (iface) => {
         // Appsemble only uses module interface augmentation.
-        if (!isInterfaceDeclaration(iface)) {
+        if (!ts.isInterfaceDeclaration(iface)) {
           return;
         }
         const { line } = sourceFile.getLineAndCharacterOfPosition(iface.getStart(sourceFile));

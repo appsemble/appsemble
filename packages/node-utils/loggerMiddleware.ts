@@ -1,4 +1,4 @@
-import { bold, cyan, green, grey, red, white, yellow } from 'chalk';
+import chalk from 'chalk';
 import { ParameterizedContext } from 'koa';
 import * as compose from 'koa-compose';
 
@@ -22,8 +22,8 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
   return (ctx, next) => {
     const { href, res } = ctx;
     const start = Date.now();
-    const method = bold(ctx.method);
-    logger.info(`${method} ${href} — ${white(ctx.ip)}`);
+    const method = chalk.bold(ctx.method);
+    logger.info(`${method} ${href} — ${chalk.white(ctx.ip)}`);
 
     function logResponse(): void {
       res.removeListener('finish', logResponse);
@@ -41,17 +41,17 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
       const duration = Date.now() - start;
 
       const formatDuration = rangeFormat(duration, {
-        100: green,
-        1000: yellow,
-        default: red,
+        100: chalk.green,
+        1000: chalk.yellow,
+        default: chalk.red,
       });
 
       const formatStatus = rangeFormat(status, {
-        200: red,
-        300: green,
-        400: cyan,
-        500: yellow,
-        default: red,
+        200: chalk.red,
+        300: chalk.green,
+        400: chalk.cyan,
+        500: chalk.yellow,
+        default: chalk.red,
       });
 
       const level = rangeFormat(status, {
@@ -75,12 +75,14 @@ export function loggerMiddleware(): compose.Middleware<ParameterizedContext> {
 
       const duration = Date.now() - start;
       const formatDuration = rangeFormat(duration, {
-        100: green,
-        1000: yellow,
-        default: red,
+        100: chalk.green,
+        1000: chalk.yellow,
+        default: chalk.red,
       });
 
-      logger.warn(`${method} ${href} ${grey('Cancelled')} ${formatDuration(`${duration}ms`)}`);
+      logger.warn(
+        `${method} ${href} ${chalk.grey('Cancelled')} ${formatDuration(`${duration}ms`)}`,
+      );
     }
 
     res.once('finish', logResponse);
