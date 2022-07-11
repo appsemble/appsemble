@@ -15,39 +15,33 @@ import * as validate from './commands/validate';
 import * as waitForApi from './commands/wait-for-api';
 import * as waitForSsl from './commands/wait-for-ssl';
 
-function main(): void {
-  yargs
-    .option('verbose', {
-      alias: 'v',
-      describe: 'Increase verbosity',
-      type: 'count',
-    })
-    .option('quiet', {
-      alias: 'q',
-      describe: 'Decrease verbosity',
-      type: 'count',
-    })
-    .middleware([configureLogger])
-    .command(build)
-    .command(cleanupEnvironments)
-    .command(dockerMetadata)
-    .command(extractMessages)
-    .command(getReleaseNotes)
-    .command(githubRelease)
-    .command(gitlabRelease)
-    .command(release)
-    .command(rewriteMessages)
-    .command(twitter)
-    .command(validate)
-    .command(waitForApi)
-    .command(waitForSsl)
-    .demandCommand(1)
-    .fail(handleError)
-    .help()
-    .completion()
-    .parse(process.argv.slice(2));
-}
-
-if (require.main === module) {
-  main();
-}
+yargs
+  .option('verbose', {
+    alias: 'v',
+    describe: 'Increase verbosity',
+    type: 'count',
+  })
+  .option('quiet', {
+    alias: 'q',
+    describe: 'Decrease verbosity',
+    type: 'count',
+  })
+  .middleware([configureLogger])
+  .command(build)
+  .command(cleanupEnvironments)
+  .command(dockerMetadata)
+  .command(extractMessages)
+  .command(getReleaseNotes)
+  .command(githubRelease)
+  .command(gitlabRelease)
+  .command(release)
+  .command(rewriteMessages)
+  .command(twitter)
+  .command(validate)
+  .command(waitForApi)
+  .command(waitForSsl)
+  .demandCommand(1)
+  .fail(handleError)
+  .help()
+  .completion()
+  .parse(process.argv.slice(2));

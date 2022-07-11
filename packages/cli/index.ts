@@ -20,7 +20,9 @@ import { CREDENTIALS_ENV_VAR } from './lib/authentication';
 import { coerceRemote } from './lib/coercers';
 import { initAxios } from './lib/initAxios';
 
-export async function main(argv: string[]): Promise<void> {
+process.title = 'appsemble';
+
+async function main(argv: string[]): Promise<void> {
   const explorer = cosmiconfig('appsembleServer');
   const found = await explorer.search(process.cwd());
 
@@ -69,7 +71,4 @@ export async function main(argv: string[]): Promise<void> {
   parser.parse(argv);
 }
 
-if (require.main === module) {
-  process.title = 'appsemble';
-  main(process.argv.slice(2));
-}
+main(process.argv.slice(2));
