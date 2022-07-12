@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.11](https://gitlab.com/appsemble/appsemble/-/releases/0.20.11)] - 2022-07-12
+
+### Added
+
+- Block(`audio`): Add `audio` block.
+- Block(`form`): Add `dense` property.
+- Server: If a user requests an app through an Appsemble domain, but the app has a custom domain,
+  the user is redirected to the custom domain.
+
+### Changed
+
+- Cli: Automate the login flow.
+
+### Removed
+
+- Webpack-config: Remove support for the `paths` property in `tsconfig.json`.
+
 ## \[[0.20.10](https://gitlab.com/appsemble/appsemble/-/releases/0.20.10)] - 2022-06-21
 
 ### Added

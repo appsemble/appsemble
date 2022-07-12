@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/web-utils",
-  "version": "0.20.10",
+  "version": "0.20.11",
   "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
   "keywords": [
@@ -25,8 +25,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.10",
-    "@appsemble/utils": "0.20.10",
+    "@appsemble/types": "0.20.11",
+    "@appsemble/utils": "0.20.11",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^7.0.0",
     "@types/mdast": "^3.0.0",
