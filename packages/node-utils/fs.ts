@@ -1,4 +1,5 @@
-import { Dirent, promises as fs, Stats } from 'fs';
+import { Dirent, Stats } from 'fs';
+import { mkdir, opendir, readFile, stat, writeFile } from 'fs/promises';
 import { dirname, extname, join } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
@@ -37,7 +38,7 @@ export async function readData<R>(path: string): Promise<[R, string]> {
   let content: string;
   const ext = extname(path);
   try {
-    content = await fs.readFile(path, 'utf8');
+    content = await readFile(path, 'utf8');
   } catch {
     throw new AppsembleError(`Error reading file ${path}`);
   }
@@ -97,8 +98,8 @@ export async function writeData(
     buffer =
       ext === '.yml' || ext === '.yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
   }
-  await fs.mkdir(dirname(path), { recursive: true });
-  await fs.writeFile(path, buffer);
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, buffer);
   return buffer;
 }
 
@@ -122,7 +123,7 @@ export async function opendirSafe(
 ): Promise<void> {
   let stats: Stats;
   try {
-    stats = await fs.stat(directory);
+    stats = await stat(directory);
   } catch (err: unknown) {
     if (options.allowMissing && isErrno(err, 'ENOENT')) {
       return;
@@ -132,7 +133,7 @@ export async function opendirSafe(
   if (!stats.isDirectory()) {
     throw new AppsembleError(`Expected ${directory} to be a directory`);
   }
-  const dir = await fs.opendir(directory);
+  const dir = await opendir(directory);
   for await (const file of dir) {
     const fullPath = join(directory, file.name);
     await onFile(fullPath, file);

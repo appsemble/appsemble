@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 import { Agent } from 'https';
 import { join } from 'path';
 
@@ -193,7 +193,7 @@ interface Certificate extends AbstractKubernetesResource {
 }
 
 function readK8sSecret(filename: string): Promise<string> {
-  return fs.readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf8');
+  return readFile(join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf8');
 }
 
 /**

@@ -2,7 +2,7 @@ import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { addYears } from 'date-fns';
 import { Context } from 'koa';
-import { pki } from 'node-forge';
+import forge from 'node-forge';
 
 import { App, AppSamlSecret } from '../models';
 import { argv } from '../utils/argv';
@@ -27,12 +27,12 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
-  const { privateKey, publicKey } = await new Promise<pki.rsa.KeyPair>((resolve, reject) => {
-    pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
+  const { privateKey, publicKey } = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
+    forge.pki.rsa.generateKeyPair({ bits: 2048 }, (error, result) =>
       error ? reject(error) : resolve(result),
     );
   });
-  const cert = pki.createCertificate();
+  const cert = forge.pki.createCertificate();
   cert.publicKey = publicKey;
   cert.privateKey = privateKey;
   cert.validity.notBefore = new Date();
@@ -45,12 +45,12 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
   cert.setIssuer(attrs);
   cert.sign(privateKey);
 
-  const secret = { ...body, spCertificate: pki.certificateToPem(cert).trim() };
+  const secret = { ...body, spCertificate: forge.pki.certificateToPem(cert).trim() };
   const { id } = await AppSamlSecret.create({
     ...secret,
     AppId: appId,
-    spPrivateKey: pki.privateKeyToPem(privateKey).trim(),
-    spPublicKey: pki.publicKeyToPem(publicKey).trim(),
+    spPrivateKey: forge.pki.privateKeyToPem(privateKey).trim(),
+    spPublicKey: forge.pki.publicKeyToPem(publicKey).trim(),
   });
   ctx.body = { ...secret, id };
 }

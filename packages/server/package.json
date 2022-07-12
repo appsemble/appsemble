@@ -21,7 +21,7 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "bin": {
-    "appsemble": "index.js"
+    "appsemble": "bin.js"
   },
   "files": [
     "**/*.d.ts",

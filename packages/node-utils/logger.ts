@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import { inspect } from 'util';
 
 import axios, { AxiosError } from 'axios';
-import { blue, red } from 'chalk';
+import chalk from 'chalk';
 import { highlight } from 'cli-highlight';
 import { TransformableInfo } from 'logform';
 import winston from 'winston';
@@ -30,7 +30,7 @@ function headerCase(header: string): string {
 function httpErrorToString(error: AxiosError): string {
   const { config, request, response } = error;
   return [
-    blue.bold('Request:'),
+    chalk.blue.bold('Request:'),
     highlight(
       [
         `${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/${
@@ -44,7 +44,7 @@ function httpErrorToString(error: AxiosError): string {
       { language: 'http', ignoreIllegals: true },
     ),
     '',
-    blue.bold('Response:'),
+    chalk.blue.bold('Response:'),
     response
       ? highlight(
           [
@@ -59,7 +59,7 @@ function httpErrorToString(error: AxiosError): string {
           ].join(EOL),
           { language: 'http', ignoreIllegals: true },
         )
-      : red.bold('No response from server'),
+      : chalk.red.bold('No response from server'),
   ].join(EOL);
 }
 

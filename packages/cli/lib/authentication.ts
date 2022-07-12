@@ -4,7 +4,7 @@ import { hostname } from 'os';
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
 import axios from 'axios';
-import { prompt } from 'inquirer';
+import inquirer from 'inquirer';
 import Koa, { Context } from 'koa';
 import open from 'open';
 import raw from 'raw-body';
@@ -96,7 +96,7 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
   if (choices.length === 1) {
     [choice] = choices;
   } else {
-    ({ choice } = await prompt([
+    ({ choice } = await inquirer.prompt([
       {
         name: 'choice',
         message: 'Select client id to use',
@@ -135,7 +135,7 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
     logger.warn('No client credentials are currently in use.');
     return;
   }
-  const { clientIds } = await prompt<{ clientIds: string[] }>([
+  const { clientIds } = await inquirer.prompt<{ clientIds: string[] }>([
     {
       name: 'clientIds',
       message: 'Select client ids to delete',

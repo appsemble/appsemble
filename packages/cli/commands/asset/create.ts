@@ -24,7 +24,6 @@ export const description = 'Create assets for an existing app.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
-
     .positional('paths', {
       describe: 'The path to the resources to create',
       normalize: true,

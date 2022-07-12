@@ -1,4 +1,5 @@
-import { promises as fs, readdirSync } from 'fs';
+import { readdirSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { join, parse } from 'path';
 
 import { assetDir } from '../readAsset';
@@ -46,7 +47,7 @@ it.each(readdirSync(join(assetDir, 'email')).map((f) => parse(f).name))(
 
 describe.each(Object.entries(tests))('%s', (name, testValues: Record<string, any>[]) => {
   it.each(testValues)(`should render ${name} %#`, async (values) => {
-    const template = await fs.readFile(join(assetDir, 'email', `${name}.md`), 'utf8');
+    const template = await readFile(join(assetDir, 'email', `${name}.md`), 'utf8');
     const { html, text } = await renderEmail(template, values);
     expect(text).toMatchSnapshot('text');
     expect(html).toMatchSnapshot('html');

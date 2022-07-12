@@ -8,7 +8,7 @@ import { notFound } from '@hapi/boom';
 import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 import { Context } from 'koa';
-import { md, pki } from 'node-forge';
+import forge from 'node-forge';
 import { v4 } from 'uuid';
 import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
@@ -25,7 +25,6 @@ import { createOAuth2AuthorizationCode } from '../utils/model';
  */
 enum NS {
   ds = 'http://www.w3.org/2000/09/xmldsig#',
-  // eslint-disable-next-line @typescript-eslint/no-shadow
   md = 'urn:oasis:names:tc:SAML:2.0:metadata',
   saml = 'urn:oasis:names:tc:SAML:2.0:assertion',
   samlp = 'urn:oasis:names:tc:SAML:2.0:protocol',
@@ -97,9 +96,9 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
   redirect.searchParams.set('RelayState', argv.host);
   redirect.searchParams.set('SigAlg', 'http://www.w3.org/2000/09/xmldsig#rsa-sha1');
 
-  const privateKey = pki.privateKeyFromPem(secret.spPrivateKey);
+  const privateKey = forge.pki.privateKeyFromPem(secret.spPrivateKey);
 
-  const sha = md.sha1.create().update(String(redirect.searchParams));
+  const sha = forge.md.sha1.create().update(String(redirect.searchParams));
   const signatureBinary = privateKey.sign(sha);
   const signature = Buffer.from(signatureBinary).toString('base64');
   redirect.searchParams.set('Signature', signature);

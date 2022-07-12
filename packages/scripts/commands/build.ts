@@ -1,8 +1,8 @@
+import { rm } from 'fs/promises';
 import { resolve } from 'path';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
-import { rm } from 'fs-extra';
 import { Configuration, MultiStats, webpack } from 'webpack';
 import { Argv } from 'yargs';
 

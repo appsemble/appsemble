@@ -1,7 +1,8 @@
+import { ReadStream } from 'fs';
+
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import { ReadStream } from 'fs-extra';
 
 interface CreateOrganizationArguments {
   description: string;

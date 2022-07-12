@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { readFile } from 'fs/promises';
 
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
@@ -14,7 +14,7 @@ const { DOCKER_HUB_PASSWORD, DOCKER_HUB_USERNAME } = process.env;
  * Update the release on Docker Hub.
  */
 export async function handler(): Promise<void> {
-  const readme = await fs.readFile(require.resolve('@appsemble/server/README.md'), 'utf8');
+  const readme = await readFile(require.resolve('@appsemble/server/README.md'), 'utf8');
   const docker = axios.create({ baseURL: String(new URL('/v2', DOCKER_HUB_URL)) });
 
   logger.info(`Logging in to ${DOCKER_HUB_URL}`);

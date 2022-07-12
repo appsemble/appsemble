@@ -1,4 +1,5 @@
-import { createReadStream, promises as fs, ReadStream } from 'fs';
+import { createReadStream, ReadStream } from 'fs';
+import { readFile } from 'fs/promises';
 import { join } from 'path';
 
 import normalizePath from 'normalize-path';
@@ -42,7 +43,7 @@ export function resolveFixture(path: string): string {
 export function readFixture(path: string): Promise<Buffer>;
 export function readFixture(path: string, encoding: BufferEncoding): Promise<string>;
 export function readFixture(path: string, encoding?: BufferEncoding): Promise<Buffer | string> {
-  return fs.readFile(resolveFixture(path), encoding);
+  return readFile(resolveFixture(path), encoding);
 }
 
 /**

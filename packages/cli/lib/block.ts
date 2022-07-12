@@ -1,4 +1,5 @@
-import { createReadStream, existsSync, promises as fs } from 'fs';
+import { createReadStream, existsSync } from 'fs';
+import { mkdir, readdir, readFile, rm } from 'fs/promises';
 import { basename, join, relative, resolve as resolvePath } from 'path';
 import { inspect } from 'util';
 
@@ -13,10 +14,9 @@ import {
 import { BlockConfig } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
-import { cyan, green, underline } from 'chalk';
+import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import FormData from 'form-data';
-import { pathExists, remove } from 'fs-extra';
 import { PackageJson } from 'type-fest';
 import { Stats, webpack } from 'webpack';
 
@@ -33,9 +33,9 @@ import { processCss } from './processCss';
 export async function buildBlock(config: BlockConfig): Promise<Stats> {
   const conf = await loadWebpackConfig(config, 'production', join(config.dir, config.output));
 
-  if (await pathExists(conf.output.path)) {
+  if (existsSync(conf.output.path)) {
     logger.warn(`Removing ${conf.output.path}`);
-    await remove(conf.output.path);
+    await rm(conf.output.path, { force: true, recursive: true });
   }
   logger.info(`Building ${config.name}@${config.version} 🔨`);
 
@@ -71,14 +71,14 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
   if (!pkg.private) {
     logger.warn(
-      `It is ${underline.yellow('highly recommended')} to set “${green('"private"')}: ${cyan(
-        'true',
-      )}” in package.json`,
+      `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
+        '"private"',
+      )}: ${chalk.cyan('true')}” in package.json`,
     );
   }
   let longDescription: string;
   if (existsSync(join(dir, 'README.md'))) {
-    longDescription = await fs.readFile(join(dir, 'README.md'), 'utf8');
+    longDescription = await readFile(join(dir, 'README.md'), 'utf8');
   }
 
   const result = {
@@ -126,7 +126,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   const form = new FormData();
   const { description, layout, longDescription, name, version, visibility } = config;
   const { actions, events, messages, parameters } = getBlockConfigFromTypeScript(config);
-  const files = await fs.readdir(dir);
+  const files = await readdir(dir);
   const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
 
   function append(field: string, value: any): void {
@@ -168,7 +168,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     const messagesResult: Record<string, Record<string, string>> = {};
     const messagesPath = join(dir, 'i18n');
 
-    const translations = (await fs.readdir(messagesPath)).map((language) => language.toLowerCase());
+    const translations = (await readdir(messagesPath)).map((language) => language.toLowerCase());
     if (!translations.includes('en.json')) {
       throw new AppsembleError('Could not find ‘en.json’. Try running extract-messages');
     }
@@ -211,7 +211,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
           throw new AppsembleError(`Expected ${file} to be a YAML file`);
         }
         logger.info(`Adding example file ${file}`);
-        form.append('examples', await fs.readFile(file, 'utf8'));
+        form.append('examples', await readFile(file, 'utf8'));
       },
       { allowMissing: true },
     );
@@ -343,8 +343,8 @@ export async function processBlockMessages(
   languages: string[],
 ): Promise<void> {
   const path = join(config.dir, 'i18n');
-  await fs.mkdir(path, { recursive: true });
-  const dir = await fs.readdir(path);
+  await mkdir(path, { recursive: true });
+  const dir = await readdir(path);
   const { messages } = getBlockConfigFromTypeScript(config);
 
   if (!messages) {
