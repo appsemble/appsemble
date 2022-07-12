@@ -1,5 +1,6 @@
 import { Content, Register, RegistrationFormValues, useMeta } from '@appsemble/react-components';
 import { TokenResponse } from '@appsemble/types';
+import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 
@@ -12,7 +13,7 @@ export function RegisterPage(): ReactElement {
   const { login } = useUser();
   const register = useCallback(
     async (values: RegistrationFormValues) => {
-      const { data } = await axios.post<TokenResponse>('/api/email', values);
+      const { data } = await axios.post<TokenResponse>('/api/email', { ...values, timezone });
       login(data);
     },
     [login],

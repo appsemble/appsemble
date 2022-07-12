@@ -28,4 +28,6 @@ export const messages = defineMessages({
   primary: 'Primary',
   preferredLanguage: 'Preferred language',
   preferredLanguageHelp: 'The preferred language to use for the Appsemble Studio.',
+  timezone: 'Time zone',
+  timezoneHelp: 'The time zone used for formatting time in emails',
 });

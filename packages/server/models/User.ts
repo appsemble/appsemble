@@ -1,4 +1,5 @@
 import {
+  AllowNull,
   BelongsToMany,
   Column,
   CreatedAt,
@@ -46,6 +47,10 @@ export class User extends Model {
 
   @Column
   locale: string;
+
+  @AllowNull(false)
+  @Column
+  timezone: string;
 
   @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];

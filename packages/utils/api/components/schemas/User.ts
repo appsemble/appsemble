@@ -22,5 +22,9 @@ export const User: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'The locale of the user.',
     },
+    timezone: {
+      type: 'string',
+      description: 'The time zone of the user.',
+    },
   },
 };

@@ -84,16 +84,18 @@ export async function getUserInfo(
   let picture: string;
   let sub: string;
   let locale: string;
+  let zoneinfo: string;
 
   function assign(info: UserInfo): void {
-    email = email ?? info.email;
-    emailVerified = emailVerified ?? info.email_verified;
-    name = name ?? info.name;
-    profile = profile ?? info.profile;
-    picture = picture ?? info.picture;
-    locale = locale ?? info.locale;
+    email ??= info.email;
+    emailVerified ??= info.email_verified;
+    name ??= info.name;
+    profile ??= info.profile;
+    picture ??= info.picture;
+    locale ??= info.locale;
+    zoneinfo ??= info.zoneinfo;
     // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
-    sub = sub ?? (typeof info.sub === 'number' ? String(info.sub) : info.sub);
+    sub ??= typeof info.sub === 'number' ? String(info.sub) : info.sub;
   }
 
   function shouldTryNext(): boolean {
@@ -130,5 +132,14 @@ export async function getUserInfo(
     throw new AppsembleError('No subject could be found while logging in using OAuth2');
   }
 
-  return { email, email_verified: Boolean(emailVerified), name, picture, profile, sub, locale };
+  return {
+    email,
+    email_verified: Boolean(emailVerified),
+    name,
+    picture,
+    profile,
+    sub,
+    locale,
+    zoneinfo,
+  };
 }

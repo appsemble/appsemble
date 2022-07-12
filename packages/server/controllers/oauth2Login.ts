@@ -95,7 +95,7 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
   let {
     mailer,
     request: {
-      body: { authorizationUrl, code },
+      body: { authorizationUrl, code, timezone },
     },
     user,
   } = ctx;
@@ -135,7 +135,11 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
     );
     await transactional(async (transaction) => {
       user = await User.create(
-        { name: userInfo.name, primaryEmail: userInfo.email },
+        {
+          name: userInfo.name,
+          primaryEmail: userInfo.email,
+          timezone: userInfo.zoneinfo || timezone,
+        },
         { transaction },
       );
       await authorization.update({ UserId: user.id }, { transaction });

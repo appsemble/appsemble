@@ -61,10 +61,11 @@ export async function getUserInfo(ctx: Context): Promise<void> {
         : getGravatarUrl(appMember.email),
       sub: user.id,
       locale: user.locale,
+      zoneinfo: user.timezone,
     };
   } else {
     await user.reload({
-      attributes: ['primaryEmail', 'name', 'locale'],
+      attributes: ['primaryEmail', 'name', 'locale', 'timezone'],
       include: [
         {
           required: false,
@@ -89,6 +90,7 @@ export async function getUserInfo(ctx: Context): Promise<void> {
       picture: getGravatarUrl(user.primaryEmail),
       sub: user.id,
       locale: user.locale,
+      zoneinfo: user.timezone,
     };
   }
 }
