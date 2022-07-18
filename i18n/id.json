@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Tetapkan sebagai utama",
   "studio.pages.settings.user.submitError": "Terjadi kesalahan saat mencoba memperbarui profil Anda.",
   "studio.pages.settings.user.submitSuccess": "Profil berhasil diperbarui.",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "Profil",
   "studio.pages.settings.user.unverified": "Tidak diverifikasi",
   "studio.pages.settings.user.verified": "Diverifikasi",

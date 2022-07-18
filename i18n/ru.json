@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "",
   "studio.pages.settings.user.submitError": "",
   "studio.pages.settings.user.submitSuccess": "",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "",
   "studio.pages.settings.user.unverified": "",
   "studio.pages.settings.user.verified": "",

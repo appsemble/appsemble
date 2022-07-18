@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Angiv som primær",
   "studio.pages.settings.user.submitError": "Der gik noget galt ved at opdatere din profil.",
   "studio.pages.settings.user.submitSuccess": "Opdateret profil.",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "Profil",
   "studio.pages.settings.user.unverified": "Ikke bekræftet",
   "studio.pages.settings.user.verified": "Bekræftet",

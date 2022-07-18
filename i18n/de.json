@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Als Standard festlegen",
   "studio.pages.settings.user.submitError": "Beim Versuch, Ihr Profil zu aktualisieren, ist etwas schief gelaufen.",
   "studio.pages.settings.user.submitSuccess": "Successfully updated profile.",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "Profil",
   "studio.pages.settings.user.unverified": "Nicht überprüft",
   "studio.pages.settings.user.verified": "Überprüft",

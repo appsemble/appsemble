@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Postavi kao glavnu",
   "studio.pages.settings.user.submitError": "Dogodila se greška tijekom pokušaja aktualiziranja tvog profila.",
   "studio.pages.settings.user.submitSuccess": "Profil je uspješno aktualiziran.",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "Profil",
   "studio.pages.settings.user.unverified": "Nije provjeren",
   "studio.pages.settings.user.verified": "Provjereno",

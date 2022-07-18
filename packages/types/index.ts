@@ -167,7 +167,7 @@ export interface UserInfo {
   /**
    * The end-user’s time zone.
    */
-  zoneinfo: string;
+  zoneinfo?: string;
 }
 
 /**

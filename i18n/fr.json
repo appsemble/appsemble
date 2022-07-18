@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Définir comme principale",
   "studio.pages.settings.user.submitError": "Quelque chose s’est mal passé en essayant de mettre à jour votre profil.",
   "studio.pages.settings.user.submitSuccess": "Profil mis à jour avec succès.",
+  "studio.pages.settings.user.timezone": "",
+  "studio.pages.settings.user.timezoneHelp": "",
   "studio.pages.settings.user.title": "Profil",
   "studio.pages.settings.user.unverified": "Non vérifié",
   "studio.pages.settings.user.verified": "Vérifié",
