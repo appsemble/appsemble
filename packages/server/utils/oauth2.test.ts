@@ -66,6 +66,7 @@ describe('getUserInfo', () => {
           profile: 'https://example.com/me',
           picture: 'https://example.com/me.png',
           sub: '42',
+          zoneinfo: 'Europe/Amsterdam',
         },
         'secret',
       ),
@@ -78,6 +79,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/me.png',
       sub: '42',
       locale: undefined,
+      zoneinfo: 'Europe/Amsterdam',
     });
   });
 
@@ -91,6 +93,7 @@ describe('getUserInfo', () => {
           profile: 'https://example.com/user',
           picture: 'https://example.com/user.png',
           locale: undefined,
+          zoneinfo: undefined,
         },
         'secret',
       ),
@@ -103,6 +106,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/user.png',
       sub: '1337',
       locale: undefined,
+      zoneinfo: undefined,
     });
   });
 
@@ -116,6 +120,7 @@ describe('getUserInfo', () => {
         profile: 'https://example.com/user',
         picture: 'https://example.com/user.png',
         locale: undefined,
+        zoneinfo: undefined,
       },
     ]);
     const userInfo = await getUserInfo('', sign({ sub: '1337' }, 'secret'), '/userinfo');
@@ -127,6 +132,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/user.png',
       sub: '1337',
       locale: undefined,
+      zoneinfo: undefined,
     });
   });
 
@@ -139,6 +145,7 @@ describe('getUserInfo', () => {
         profileUrl: 'https://example.com/user',
         avatarUrl: 'https://example.com/user.png',
         userId: 1337,
+        zoneinfo: undefined,
       },
     ]);
     const userInfo = await getUserInfo('', null, '/user', [
@@ -160,6 +167,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/user.png',
       sub: '1337',
       locale: undefined,
+      zoneinfo: undefined,
     });
   });
 

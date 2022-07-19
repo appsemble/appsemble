@@ -197,6 +197,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: '',
       code: '',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 501,
@@ -212,6 +213,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 404,
@@ -234,6 +236,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 200,
@@ -249,7 +252,7 @@ describe('connectPendingOAuth2Profile', () => {
   });
 
   it('should throw if the authorization is linked to another user', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const oauthAuthorization = await OAuthAuthorization.create({
       UserId: userB.id,
       accessToken: '',
@@ -261,6 +264,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 403,
@@ -293,6 +297,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 200,
@@ -308,7 +313,10 @@ describe('connectPendingOAuth2Profile', () => {
   });
 
   it('should throw a conflict if the email address conflicts with another user', async () => {
-    const userB = await User.create({ primaryEmail: 'me@example.com' });
+    const userB = await User.create({
+      primaryEmail: 'me@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({ UserId: userB.id, email: 'me@example.com' });
     await OAuthAuthorization.create({
       accessToken: sign(
@@ -328,6 +336,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 409,
@@ -358,6 +367,7 @@ describe('connectPendingOAuth2Profile', () => {
     const response = await request.post('/api/oauth2/connect/pending', {
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchObject({
       status: 200,
@@ -385,7 +395,7 @@ describe('getConnectedAccounts', () => {
       sub: 'aubA',
     });
 
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuthAuthorization.create({
       UserId: userB.id,
       accessToken: '',
@@ -426,7 +436,7 @@ describe('unlinkConnectedAccount', () => {
   });
 
   it('should not delete a linked account for another user', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuthAuthorization.create({
       UserId: userB.id,
       accessToken: '',

@@ -246,7 +246,16 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
         // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
         // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
         // account.
-        user = loginRequest.User || (await User.create({ name: name || nameId }, { transaction }));
+        user =
+          loginRequest.User ||
+          (await User.create(
+            {
+              name: name || nameId,
+              // XXX This time zone should not be hardcoded.
+              timezone: 'Europe/Amsterdam',
+            },
+            { transaction },
+          ));
 
         member = await AppMember.findOne({
           where: { UserId: user.id, AppId: appId },

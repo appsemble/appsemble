@@ -76,7 +76,7 @@ describe('registerOAuth2ClientCredentials', () => {
 
 describe('listOAuth2ClientCredentials', () => {
   it('should list register OAuth2 client credentials for the authenticated user', async () => {
-    const otherUser = await User.create();
+    const otherUser = await User.create({ timezone: 'Europe/Amsterdam' });
     await OAuth2ClientCredentials.create({
       description: 'Test client',
       expires: new Date('2000-02-02T00:00:00Z'),

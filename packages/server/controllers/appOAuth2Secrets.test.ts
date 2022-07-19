@@ -466,6 +466,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       code: 'authorization_code',
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -485,6 +486,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       code: 'authorization_code',
       redirectUri: 'http://localhost',
       scope: 'resources:manage',
+      timezone: 'Europe/Amsterdam',
     });
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -502,7 +504,12 @@ describe('verifyAppOAuth2SecretCode', () => {
     authorizeStudio();
     const response = await request.post(
       `/api/apps/9999/secrets/oauth2/${secret.id}/verify`,
-      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
       { headers: { referer: 'http://localhost' } },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -521,7 +528,12 @@ describe('verifyAppOAuth2SecretCode', () => {
     authorizeStudio();
     const response = await request.post(
       `/api/apps/${app.id}/secrets/oauth2/9999/verify`,
-      { code: 'authorization_code', redirectUri: 'http://localhost', scope: 'resources:manage' },
+      {
+        code: 'authorization_code',
+        redirectUri: 'http://localhost',
+        scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
+      },
       { headers: { referer: 'http://localhost' } },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -562,6 +574,7 @@ describe('verifyAppOAuth2SecretCode', () => {
         code: 'authorization_code',
         redirectUri: 'http://app.appsemble.localhost',
         scope: 'resources:manage',
+        timezone: 'Europe/Amsterdam',
       },
       { headers: { referer: 'http://localhost' } },
     );
