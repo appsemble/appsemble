@@ -84,7 +84,9 @@ export function AppRoutes(): ReactElement {
     organization && checkRole(organization.role, Permission.PushNotifications);
 
   const resourceNames = app?.definition.resources && Object.keys(app?.definition.resources);
-  const mayEditResources = Boolean(editPermission && resourceNames?.length);
+  const mayViewResources = organization && checkRole(organization.role, Permission.ReadResources);
+  const mayViewAssets = organization && checkRole(organization.role, Permission.ReadAssets);
+  const canViewResources = Boolean(mayViewResources && resourceNames?.length);
 
   useSideMenu(
     app && (
@@ -108,17 +110,17 @@ export function AppRoutes(): ReactElement {
             <FormattedMessage {...messages.definition} />
           </MenuItem>
         ) : null}
-        {editPermission ? (
+        {mayViewAssets ? (
           <MenuItem icon="layer-group" to={`${url}/assets`}>
             <FormattedMessage {...messages.assets} />
           </MenuItem>
         ) : null}
-        {mayEditResources ? (
+        {canViewResources ? (
           <MenuItem icon="cubes" to={`${url}/resources`}>
             <FormattedMessage {...messages.resources} />
           </MenuItem>
         ) : null}
-        {mayEditResources ? (
+        {canViewResources ? (
           <MenuSection>
             {resourceNames.sort(compareStrings).map((resource) => (
               <MenuItem key={resource} to={`${url}/resources/${resource}`}>
