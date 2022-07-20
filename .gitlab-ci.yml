@@ -126,42 +126,6 @@ stylelint:
   script:
     - yarn stylelint .
 
-# Run unittests using NodeJS 14.
-test node 14:
-  interruptible: true
-  image: node:14-bullseye-slim
-  services:
-    - postgres:14
-  variables:
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - yarn --frozen-lockfile
-    - yarn jest
-  artifacts:
-    reports:
-      junit: junit.xml
-
-# Run unittests using NodeJS 16.
-test node 16:
-  interruptible: true
-  image: node:16-bullseye-slim
-  services:
-    - postgres:14
-  variables:
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: admin
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
-  script:
-    - yarn --frozen-lockfile
-    - yarn jest
-  artifacts:
-    reports:
-      junit: junit.xml
-
 # Run unittests using NodeJS 18.
 test node 18:
   interruptible: true
@@ -680,7 +644,9 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    - yarn --frozen-lockfile
+    # We use a Node.js 16 based Docker image, because no newer image is available for Cypress yet.
+    # Our packages require at least Node.js 18, but for end-to-end tests we can still use Node.js 16.
+    - yarn --frozen-lockfile --ignore-engines
     - yarn scripts wait-for-ssl
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
