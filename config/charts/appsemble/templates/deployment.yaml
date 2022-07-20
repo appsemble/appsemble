@@ -66,7 +66,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secretSecret | quote }}
                   key: secret
-            - name: SECRET
+            - name: AES_SECRET
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secretSecret | quote }}
