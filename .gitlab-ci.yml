@@ -634,6 +634,9 @@ lighthouse:
 
 cypress:
   stage: end 2 end
+  # We use a Node.js 16 based Docker image, because no newer image is available for Cypress yet.
+  # Our packages require at least Node.js 18, but for end-to-end tests we can still use Node.js 16.
+  # Remove .yarnrc once https://github.com/cypress-io/cypress-docker-images/pull/712 is merged.
   image: cypress/browsers:node16.14.2-slim-chrome100-ff99-edge
   needs:
     - job: provision review
@@ -644,13 +647,9 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    # We use a Node.js 16 based Docker image, because no newer image is available for Cypress yet.
-    # Our packages require at least Node.js 18, but for end-to-end tests we can still use Node.js 16.
-    # Remove the --ignore-engines once https://github.com/cypress-io/cypress-docker-images/pull/712
-    # is merged.
-    - yarn --ignore-engines --frozen-lockfile
-    - yarn --ignore-engines scripts wait-for-ssl
-    - yarn --ignore-engines workspace @appsemble/e2e run e2e
+    - yarn --frozen-lockfile
+    - yarn scripts wait-for-ssl
+    - yarn workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: Cypress videos and screenshots
     when: always
