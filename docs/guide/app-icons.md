@@ -11,9 +11,7 @@ Regular icons may be used for various purposes. Some example usages are:
 - Icon in the login screen of the app
 
 For app icons it’s generally recommended to use a transparent icon that looks good on any dark or
-light background. If no icon is specified, the organization logo will be used as a fallback. If no
-organization logo is specified either, the Appsemble logo is used.
-![Appsemble logo](../../config/assets/logo.svg 'Appsemble logo')
+light background.
 
 In addition to regular icons, Appsemble also supports maskable icons, sometimes referred to as
 adaptive icons. Some example usages are:
