@@ -646,9 +646,11 @@ cypress:
   script:
     # We use a Node.js 16 based Docker image, because no newer image is available for Cypress yet.
     # Our packages require at least Node.js 18, but for end-to-end tests we can still use Node.js 16.
-    - yarn --frozen-lockfile --ignore-engines
-    - yarn scripts wait-for-ssl
-    - yarn workspace @appsemble/e2e run e2e
+    # Remove the --ignore-engines once https://github.com/cypress-io/cypress-docker-images/pull/712
+    # is merged.
+    - yarn --ignore-engines --frozen-lockfile
+    - yarn --ignore-engines scripts wait-for-ssl
+    - yarn --ignore-engines workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: Cypress videos and screenshots
     when: always
