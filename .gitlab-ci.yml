@@ -647,9 +647,9 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    - yarn --frozen-lockfile
-    - yarn scripts wait-for-ssl
-    - yarn workspace @appsemble/e2e run e2e
+    - yarn --frozen-lockfile --ignore-engines
+    - yarn --ignore-engines scripts wait-for-ssl
+    - yarn workspace --ignore-engines @appsemble/e2e run e2e
   artifacts:
     expose_as: Cypress videos and screenshots
     when: always
