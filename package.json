@@ -67,7 +67,6 @@
     "eslint-plugin-unicorn": "^43.0.0",
     "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "install-chrome-dependencies": "^1.0.0",
     "jest": "^27.0.0",
     "jest-junit": "^14.0.0",
     "lint-staged": "^13.0.0",

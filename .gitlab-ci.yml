@@ -609,6 +609,7 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true
@@ -622,7 +623,6 @@ lighthouse:
     - if: $CI_COMMIT_TAG
   script:
     - yarn --frozen-lockfile
-    - yarn install-chrome-dependencies
     - yarn scripts wait-for-ssl
     - yarn lhci collect
     - yarn lhci assert
@@ -634,10 +634,7 @@ lighthouse:
 
 cypress:
   stage: end 2 end
-  # We use a Node.js 16 based Docker image, because no newer image is available for Cypress yet.
-  # Our packages require at least Node.js 18, but for end-to-end tests we can still use Node.js 16.
-  # Remove .yarnrc once https://github.com/cypress-io/cypress-docker-images/pull/712 is merged.
-  image: cypress/browsers:node16.14.2-slim-chrome100-ff99-edge
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true
@@ -647,9 +644,9 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    - yarn --frozen-lockfile --ignore-engines
-    - yarn --ignore-engines scripts wait-for-ssl
-    - yarn workspace --ignore-engines @appsemble/e2e run e2e
+    - yarn --frozen-lockfile
+    - yarn scripts wait-for-ssl
+    - yarn workspace @appsemble/e2e run e2e
   artifacts:
     expose_as: Cypress videos and screenshots
     when: always
