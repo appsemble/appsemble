@@ -645,7 +645,7 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
-  image: $CI_REGISTRY:appsemble/docker-node-chrome
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true
@@ -670,7 +670,7 @@ lighthouse:
 
 cypress:
   stage: end 2 end
-  image: $CI_REGISTRY:appsemble/docker-node-chrome
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true
