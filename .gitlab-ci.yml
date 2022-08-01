@@ -645,6 +645,7 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true
@@ -658,7 +659,6 @@ lighthouse:
     - if: $CI_COMMIT_TAG
   script:
     - yarn --frozen-lockfile
-    - yarn install-chrome-dependencies
     - yarn scripts wait-for-ssl
     - yarn lhci collect
     - yarn lhci assert
@@ -670,7 +670,7 @@ lighthouse:
 
 cypress:
   stage: end 2 end
-  image: cypress/browsers:node16.14.2-slim-chrome100-ff99-edge
+  image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
       optional: true

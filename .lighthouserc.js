@@ -1,7 +1,5 @@
 const { readdirSync } = require('fs');
 
-const puppeteer = require('puppeteer');
-
 const { CI, CI_COMMIT_TAG, CI_MERGE_REQUEST_IID } = process.env;
 const domain = CI_COMMIT_TAG
   ? 'appsemble.app'
@@ -10,7 +8,6 @@ const domain = CI_COMMIT_TAG
 module.exports = {
   ci: {
     collect: {
-      chromePath: puppeteer.executablePath(),
       settings: {
         chromeFlags: ['--headless', CI && '--no-sandbox'].filter(Boolean).join(' '),
       },

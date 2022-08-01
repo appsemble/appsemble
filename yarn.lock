@@ -7780,11 +7780,6 @@ inquirer@^8.0.0:
     through "^2.3.6"
     wrap-ansi "^7.0.0"
 
-install-chrome-dependencies@^1.0.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/install-chrome-dependencies/-/install-chrome-dependencies-1.1.2.tgz#b06b99a4545647f84ee69043adeb3195f2ac368a"
-  integrity sha512-fPwOo7IA/kDzF3nBl9r2qTztvKjw8A9TMFXfudwJFcTu5loLqKslPLgn9vz9G8j15M7rKJJAOGi/zMogC6VlEw==
-
 internal-slot@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/internal-slot/-/internal-slot-1.0.3.tgz#7347e307deeea2faac2ac6205d4bc7d34967f59c"
