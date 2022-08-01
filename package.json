@@ -74,6 +74,7 @@
     "postcss-preset-env": "^7.0.0",
     "prettier": "^2.0.0",
     "prettier-plugin-packagejson": "^2.0.0",
+    "puppeteer": "^15.0.0",
     "remark-cli": "^11.0.0",
     "remark-frontmatter": "^3.0.0",
     "remark-gfm": "^1.0.0",
