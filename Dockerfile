@@ -1,9 +1,8 @@
 # Build production files
-FROM node:18-bullseye-slim AS build
+FROM registry.gitlab.com/appsemble/docker-node-chrome AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
-RUN yarn install-chrome-dependencies
 RUN yarn scripts build
 RUN yarn workspace @appsemble/types prepack
 RUN yarn workspace @appsemble/sdk prepack
