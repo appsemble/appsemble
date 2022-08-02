@@ -26,6 +26,9 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'string',
                   minLength: 8,
                 },
+                timezone: {
+                  enum: Intl.supportedValuesOf('timeZone'),
+                },
               },
             },
           },

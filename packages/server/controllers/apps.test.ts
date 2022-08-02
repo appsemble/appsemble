@@ -244,7 +244,7 @@ describe('queryApps', () => {
   });
 
   it('should sort apps by its rating', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const appA = await App.create({
       path: 'test-app',
       definition: { name: 'Test App', defaultPage: 'Test Page' },

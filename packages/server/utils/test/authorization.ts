@@ -24,7 +24,12 @@ let testUser: User;
  */
 export async function createTestUser(email = 'test@example.com'): Promise<User> {
   const password = await hash('testpassword', 10);
-  testUser = await User.create({ password, name: 'Test User', primaryEmail: email });
+  testUser = await User.create({
+    password,
+    name: 'Test User',
+    primaryEmail: email,
+    timezone: 'Europe/Amsterdam',
+  });
   testUser.EmailAuthorizations = [
     await EmailAuthorization.create({ UserId: testUser.id, email, verified: true }),
   ];

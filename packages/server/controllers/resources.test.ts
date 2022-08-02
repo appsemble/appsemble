@@ -451,7 +451,7 @@ describe('getResourceById', () => {
   it('should be able to fetch a resource you are a team member of', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -492,7 +492,7 @@ describe('getResourceById', () => {
   it('should not be able to fetch a resource you are not a team member of', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
@@ -943,7 +943,7 @@ describe('queryResources', () => {
   it('should be possible to query resources as author', async () => {
     const app = await exampleApp(organization.id);
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
 
     await Resource.create({
@@ -988,8 +988,8 @@ describe('queryResources', () => {
   it('should only fetch resources from team members', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -1058,8 +1058,8 @@ describe('queryResources', () => {
     // These should not be included in the result.
     const teamC = await Team.create({ name: 'Test Team different app', AppId: appB.id });
 
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: teamB.id, UserId: userB.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userC.id, role: TeamRole.Member });
@@ -1328,7 +1328,7 @@ describe('queryResources', () => {
 
   it('should be able to filter by author', async () => {
     const app = await exampleApp(organization.id);
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1868,8 +1868,8 @@ describe('countResources', () => {
   it('should only count resources from team members', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -1907,8 +1907,8 @@ describe('countResources', () => {
   it('should only count resources from team members based on the member team filter as a member', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -1948,8 +1948,8 @@ describe('countResources', () => {
   it('should only count resources from team members based on the member team filter as a manager', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -1989,8 +1989,8 @@ describe('countResources', () => {
   it('should not count resources from team members based on the member team filter as not a member', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -2029,8 +2029,8 @@ describe('countResources', () => {
   it('should only count resources from team members based on the manager team filter as a member', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -2070,8 +2070,8 @@ describe('countResources', () => {
   it('should only count resources from team members based on the manager team filter as a manager', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
@@ -2127,8 +2127,8 @@ describe('countResources', () => {
   it('should not count resources from team members based on the manager team filter as not a team member', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
-    const userC = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -3158,7 +3158,7 @@ describe('updateResource', () => {
   it('should be able to update an existing resource from another team', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -3208,7 +3208,7 @@ describe('updateResource', () => {
   it('should not be able to update an existing resource from another team if not part of the team', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
@@ -4136,7 +4136,7 @@ describe('deleteResource', () => {
   it('should delete another team member’s resource', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -4159,7 +4159,7 @@ describe('deleteResource', () => {
   it('should not delete resources if not part of the same team', async () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 

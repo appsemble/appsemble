@@ -1,6 +1,6 @@
 import { Content, Loader, Message, useLocationString, useQuery } from '@appsemble/react-components';
 import { AppOAuth2Secret } from '@appsemble/types';
-import { startOAuth2Login } from '@appsemble/web-utils';
+import { startOAuth2Login, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -34,6 +34,7 @@ export function TypePage(): ReactElement {
           redirectUri: qs.get('redirect_uri'),
           scope: qs.get('scope'),
           state: qs.get('state'),
+          timezone,
         })
         .then(({ data }) => window.location.replace(data.redirect))
         .catch(() => setHasError(true));

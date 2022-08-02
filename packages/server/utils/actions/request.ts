@@ -48,6 +48,7 @@ export async function request({ action, app, data, user }: ServerActionParameter
       name: user.name,
       email: user.primaryEmail,
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      zoneinfo: user.timezone,
     },
   );
   const axiosConfig = formatRequestAction(

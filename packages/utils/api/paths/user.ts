@@ -262,7 +262,7 @@ export const paths: OpenAPIV3.PathsObject = {
           'multipart/form-data': {
             schema: {
               type: 'object',
-              required: ['email', 'password'],
+              required: ['email', 'password', 'timezone'],
               properties: {
                 name: {
                   type: 'string',
@@ -285,6 +285,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   additionalProperties: { type: 'string' },
                   description: 'The member’s custom properties.',
                 },
+                timezone: { type: 'string' },
               },
             },
           },

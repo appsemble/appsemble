@@ -19,6 +19,7 @@ export const paths: OpenAPIV3.PathsObject = {
                 redirectUri: { type: 'string' },
                 scope: { type: 'string' },
                 state: { type: 'string' },
+                timezone: { enum: Intl.supportedValuesOf('timeZone') },
               },
             },
           },

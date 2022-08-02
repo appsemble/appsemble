@@ -43,9 +43,10 @@ export function UserPage(): ReactElement {
     loading,
     setData: setEmails,
   } = useData<UserEmail[]>('/api/user/email');
+  const timezones = useData<string[]>('/api/timezones');
 
   const onSaveProfile = useCallback(
-    async (values: { name: string; locale: string }) => {
+    async (values: { name: string; locale: string; timezone: string }) => {
       localStorage.setItem('preferredLanguage', values.locale);
       await axios.put('/api/user', values);
       refreshUserInfo();
@@ -123,6 +124,7 @@ export function UserPage(): ReactElement {
             locale: has(supportedLanguages, userInfo.locale?.toLowerCase())
               ? userInfo.locale?.toLowerCase()
               : localStorage.getItem('preferredLanguage') || defaultLocale,
+            timezone: userInfo.zoneinfo,
           }}
           onSubmit={onSaveProfile}
         >
@@ -137,7 +139,7 @@ export function UserPage(): ReactElement {
           <SimpleFormField
             component={SelectField}
             help={<FormattedMessage {...messages.preferredLanguageHelp} />}
-            icon="globe"
+            icon="language"
             label={<FormattedMessage {...messages.preferredLanguage} />}
             name="locale"
             required
@@ -145,6 +147,21 @@ export function UserPage(): ReactElement {
             {Object.entries(supportedLanguages).map(([code, name]) => (
               <option key={code} value={code}>
                 {name}
+              </option>
+            ))}
+          </SimpleFormField>
+          <SimpleFormField
+            component={SelectField}
+            help={<FormattedMessage {...messages.timezoneHelp} />}
+            icon="globe"
+            label={<FormattedMessage {...messages.timezone} />}
+            loading={timezones.loading}
+            name="timezone"
+            required
+          >
+            {timezones.data?.map((timezone) => (
+              <option key={timezone} value={timezone}>
+                {timezone}
               </option>
             ))}
           </SimpleFormField>

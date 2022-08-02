@@ -698,7 +698,11 @@ describe('getMembers', () => {
 describe('getInvites', () => {
   it('should fetch organization invites', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', {
+      primaryEmail: 'test2@example.com',
+      name: 'John',
+      timezone: 'Europe/Amsterdam',
+    });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
@@ -721,7 +725,11 @@ describe('getInvites', () => {
   it('should return forbidden if the user is a member but does not have invite permissions', async () => {
     await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', {
+      primaryEmail: 'test2@example.com',
+      name: 'John',
+      timezone: 'Europe/Amsterdam',
+    });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
@@ -761,11 +769,17 @@ describe('inviteMembers', () => {
   });
 
   it('should throw a bad request of all invitees are already in the organization', async () => {
-    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    const userA = await User.create({
+      primaryEmail: 'a@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
     await Member.create({ OrganizationId: organization.id, UserId: userA.id });
 
-    const userB = await User.create({ primaryEmail: 'b@example.com' });
+    const userB = await User.create({
+      primaryEmail: 'b@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({ UserId: userB.id, email: 'b@example.com' });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id });
 
@@ -786,7 +800,10 @@ describe('inviteMembers', () => {
   });
 
   it('should throw a bad request of all new invitees are have already been invited', async () => {
-    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    const userA = await User.create({
+      primaryEmail: 'a@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
     await Member.create({ OrganizationId: organization.id, UserId: userA.id });
 
@@ -813,7 +830,10 @@ describe('inviteMembers', () => {
   });
 
   it('should invite users by their primary email', async () => {
-    const userA = await User.create({ primaryEmail: 'a@example.com' });
+    const userA = await User.create({
+      primaryEmail: 'a@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await EmailAuthorization.create({ UserId: userA.id, email: 'a@example.com' });
     await EmailAuthorization.create({ UserId: userA.id, email: 'aa@example.com' });
 
@@ -901,7 +921,11 @@ describe('resendInvitation', () => {
   it('should not resend an invitation if the user does not have the right permissions', async () => {
     await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', {
+      primaryEmail: 'test2@example.com',
+      name: 'John',
+      timezone: 'Europe/Amsterdam',
+    });
 
     authorizeStudio();
     await request.post('/api/organizations/testorganization/invites', {
@@ -925,7 +949,11 @@ describe('resendInvitation', () => {
 
   it('should not resend an invitation to a member who has not been invited', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', {
+      primaryEmail: 'test2@example.com',
+      name: 'John',
+      timezone: 'Europe/Amsterdam',
+    });
 
     authorizeStudio();
     const response = await request.post('/api/organizations/testorganization/invites/resend', {
@@ -1015,7 +1043,11 @@ describe('removeInvite', () => {
   it('should not revoke an invite for an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', {
+      primaryEmail: 'test2@example.com',
+      name: 'John',
+      timezone: 'Europe/Amsterdam',
+    });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
@@ -1041,7 +1073,7 @@ describe('removeMember', () => {
     // Set member role to the lowest available role, since this should not require any permissions
     await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
 
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     authorizeStudio();
@@ -1051,7 +1083,7 @@ describe('removeMember', () => {
   });
 
   it('should remove other members from an organization', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     authorizeStudio();
@@ -1076,7 +1108,7 @@ describe('removeMember', () => {
   });
 
   it('should not remove non-members or non-existing users from an organization', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     authorizeStudio();
     const responseA = await request.delete(
       `/api/organizations/testorganization/members/${userB.id}`,
@@ -1097,7 +1129,11 @@ describe('removeMember', () => {
 
 describe('setRole', () => {
   it('should change the role of other members', async () => {
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'test2@example.com' });
+    const userB = await User.create({
+      name: 'Foo',
+      primaryEmail: 'test2@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     authorizeStudio();

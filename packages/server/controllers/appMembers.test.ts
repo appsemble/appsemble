@@ -356,7 +356,11 @@ describe('setAppMember', () => {
       OrganizationId: organization.id,
     });
 
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    const userB = await User.create({
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
 
     authorizeStudio();
     const response = await request.post<AppMember>(`/api/apps/${app.id}/members/${userB.id}`, {
@@ -464,7 +468,7 @@ describe('deleteAppMember', () => {
       OrganizationId: organization.id,
     });
     await member.update({ role: 'Member' });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
@@ -502,7 +506,7 @@ describe('deleteAppMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
 
@@ -533,7 +537,7 @@ describe('deleteAppMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     authorizeStudio(userB);
     const response = await request.delete(`/api/apps/${app.id}/members/${userB.id}`);
@@ -566,7 +570,7 @@ describe('deleteAppMember', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const appMember = await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Reader' });
     const samlSecret = await AppSamlSecret.create({
       AppId: app.id,
@@ -1032,7 +1036,11 @@ describe('registerMemberEmail', () => {
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'test@example.com', password: 'password' }),
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
     );
 
     expect(response).toMatchInlineSnapshot(
@@ -1066,7 +1074,12 @@ describe('registerMemberEmail', () => {
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'test@example.com', name: 'Me', password: 'password' }),
+      createFormData({
+        email: 'test@example.com',
+        name: 'Me',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
     );
 
     expect(response).toMatchInlineSnapshot(
@@ -1103,6 +1116,7 @@ describe('registerMemberEmail', () => {
         name: 'Me',
         password: 'password',
         picture: createFixtureStream('tux.png'),
+        timezone: 'Europe/Amsterdam',
       }),
     );
 
@@ -1143,7 +1157,7 @@ describe('registerMemberEmail', () => {
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'foo', password: 'bar' }),
+      createFormData({ email: 'foo', password: 'bar', timezone: 'Europe/Amsterdam' }),
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -1200,7 +1214,11 @@ describe('registerMemberEmail', () => {
 
     const response = await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'test@example.com', password: 'password' }),
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
     );
 
     expect(response).toMatchInlineSnapshot(`
@@ -1222,7 +1240,11 @@ describe('verifyMemberEmail', () => {
 
     await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'test@example.com', password: 'password' }),
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
     );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
@@ -1305,7 +1327,7 @@ describe('requestMemberResetPassword', () => {
   it('should create a password reset token', async () => {
     const app = await createDefaultApp(organization);
 
-    const data = { email: 'test@example.com', password: 'password' };
+    const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
     await request.post(`/api/user/apps/${app.id}/account`, createFormData(data));
 
     const responseA = await request.post(`/api/user/apps/${app.id}/account/reset/request`, {
@@ -1368,6 +1390,7 @@ describe('getAppMemberPicture', () => {
         email: 'test@example.com',
         password: 'password',
         picture: createFixtureStream('tux.png'),
+        timezone: 'Europe/Amsterdam',
       }),
     );
 
@@ -1383,7 +1406,11 @@ describe('getAppMemberPicture', () => {
     const app = await createDefaultApp(organization);
     await request.post(
       `/api/user/apps/${app.id}/account`,
-      createFormData({ email: 'test@example.com', password: 'password' }),
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
     );
 
     const m = await AppMember.findOne({ where: { email: 'test@example.com' } });

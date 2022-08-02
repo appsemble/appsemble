@@ -7,7 +7,7 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import { TokenResponse, UserInfo } from '@appsemble/types';
-import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
+import { appendOAuth2State, clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -67,6 +67,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
           {
             code,
             authorizationUrl: session.authorizationUrl,
+            timezone,
           },
         );
         if ('access_token' in data) {
@@ -99,6 +100,7 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
       const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {
         code,
         authorizationUrl: session.authorizationUrl,
+        timezone,
       });
       finalizeLogin(data);
     } catch (err) {

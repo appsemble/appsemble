@@ -138,7 +138,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
     headers,
     pathParams: { appId, appOAuth2SecretId },
     request: {
-      body: { code, redirectUri, scope },
+      body: { code, redirectUri, scope, timezone },
     },
     user,
   } = ctx;
@@ -197,7 +197,7 @@ export async function verifyAppOAuth2SecretCode(ctx: Context): Promise<void> {
   });
 
   const authorizationCode = await transactional(async (transaction) => {
-    const { id: UserId } = user ?? (await User.create({ transaction }));
+    const { id: UserId } = user ?? (await User.create({ timezone }, { transaction }));
     const role = app.definition.security?.default?.role;
     let appMember = await AppMember.findOne({
       attributes: ['id'],

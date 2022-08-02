@@ -7,7 +7,9 @@ useTestDatabase('apps');
 describe('iterTable', () => {
   it('should iterate if the length is not divisible by chunk size', async () => {
     jest.spyOn(User, 'findAll');
-    const created = await User.bulkCreate(Array.from({ length: 5 }, () => ({})));
+    const created = await User.bulkCreate(
+      Array.from({ length: 5 }, () => ({ timezone: 'Europe/Amsterdam' })),
+    );
     const retrieved: User[] = [];
     // This should fetch fhe following chunks:
     // [{ id: 0}, { id: 1 }]
@@ -28,7 +30,9 @@ describe('iterTable', () => {
 
   it('should iterate if the length is divisible by chunk size', async () => {
     jest.spyOn(User, 'findAll');
-    const created = await User.bulkCreate(Array.from({ length: 6 }, () => ({})));
+    const created = await User.bulkCreate(
+      Array.from({ length: 6 }, () => ({ timezone: 'Europe/Amsterdam' })),
+    );
     const retrieved: User[] = [];
     // This should fetch fhe following chunks:
     // [{ id: 0}, { id: 1 }]

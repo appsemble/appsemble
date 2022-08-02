@@ -39,7 +39,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
     request: {
-      body: { redirectUri, scope, state },
+      body: { redirectUri, scope, state, timezone },
     },
     user,
   } = ctx;
@@ -110,6 +110,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     redirectUri,
     state,
     scope,
+    timezone,
   });
 
   ctx.body = { redirect: String(redirect) };
@@ -246,7 +247,15 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
         // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
         // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
         // account.
-        user = loginRequest.User || (await User.create({ name: name || nameId }, { transaction }));
+        user =
+          loginRequest.User ||
+          (await User.create(
+            {
+              name: name || nameId,
+              timezone: loginRequest.timezone,
+            },
+            { transaction },
+          ));
 
         member = await AppMember.findOne({
           where: { UserId: user.id, AppId: appId },

@@ -121,7 +121,7 @@ describe('getAppRatings', () => {
   });
 
   it('should list all app ratings', async () => {
-    const userB = await User.create();
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     await AppRating.create({
       AppId: app.id,
       UserId: user.id,

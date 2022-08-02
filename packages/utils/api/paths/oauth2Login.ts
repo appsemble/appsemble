@@ -43,12 +43,16 @@ export const paths: OpenAPIV3.PathsObject = {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['code', 'authorizationUrl'],
+              additionalProperties: false,
+              required: ['code', 'authorizationUrl', 'timezone'],
               properties: {
                 code: {
                   type: 'string',
                 },
                 authorizationUrl: {
+                  type: 'string',
+                },
+                timezone: {
                   type: 'string',
                 },
               },

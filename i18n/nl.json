@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Instellen als primair",
   "studio.pages.settings.user.submitError": "Er is iets misgegaan bij het updaten van jouw profiel.",
   "studio.pages.settings.user.submitSuccess": "Profiel succesvol gewijzigd.",
+  "studio.pages.settings.user.timezone": "Tijdzone",
+  "studio.pages.settings.user.timezoneHelp": "De tijdzone die wordt gebruikt in e-mails",
   "studio.pages.settings.user.title": "Profiel",
   "studio.pages.settings.user.unverified": "Niet geverifieerd",
   "studio.pages.settings.user.verified": "Geverifieerd",

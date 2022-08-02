@@ -13,7 +13,6 @@ import {
   literal,
   Op,
   UniqueConstraintError,
-  WhereValue,
 } from 'sequelize';
 
 import {
@@ -172,9 +171,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
       include: [
         {
           model: User,
-          // XXX remove type cast when https://github.com/sequelize/sequelize/pull/14022 or
-          // https://github.com/sequelize/sequelize/pull/14087 has been released
-          where: { id: { [Op.not]: app.AppMembers.map((member) => member.UserId) } as WhereValue },
+          where: { id: { [Op.not]: app.AppMembers.map((member) => member.UserId) } },
           required: false,
         },
       ],
@@ -431,7 +428,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password, picture, locale, properties = {} },
+      body: { name, password, picture, locale, properties = {}, timezone },
     },
   } = ctx;
 
@@ -483,6 +480,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
       user = await User.create(
         {
           name,
+          timezone,
         },
         { transaction },
       );

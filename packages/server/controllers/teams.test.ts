@@ -535,6 +535,7 @@ describe('getTeamMembers', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
 
@@ -753,6 +754,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
       await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
@@ -777,6 +779,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
       await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
@@ -801,6 +804,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
       await Member.update(
@@ -830,6 +834,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
       await Member.update(
@@ -853,6 +858,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
       const team = await Team.create({ name: 'A', AppId: app.id });
@@ -874,6 +880,7 @@ describe('addTeamMember', () => {
         password: user.password,
         name: 'Test User',
         primaryEmail: 'testuser@example.com',
+        timezone: 'Europe/Amsterdam',
       });
       const team = await Team.create({ name: 'A', AppId: app.id });
       const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/members`, {
@@ -896,6 +903,7 @@ describe('removeTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -913,6 +921,7 @@ describe('removeTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -930,6 +939,7 @@ describe('removeTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     await Member.update({ role: 'Member' }, { where: { UserId: user.id, OrganizationId: app.id } });
@@ -949,6 +959,7 @@ describe('removeTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     await Member.update(
@@ -973,6 +984,7 @@ describe('removeTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -995,6 +1007,7 @@ describe('updateTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -1021,6 +1034,7 @@ describe('updateTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });
@@ -1050,6 +1064,7 @@ describe('updateTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     await Member.update(
@@ -1081,6 +1096,7 @@ describe('updateTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     await Member.update(
@@ -1108,6 +1124,7 @@ describe('updateTeamMember', () => {
       password: user.password,
       name: 'Test User',
       primaryEmail: 'testuser@example.com',
+      timezone: 'Europe/Amsterdam',
     });
     await Member.create({ OrganizationId: organization.id, UserId: userB.id, role: 'Member' });
     const team = await Team.create({ name: 'A', AppId: app.id });

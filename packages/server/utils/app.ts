@@ -17,15 +17,8 @@ import { App, AppMessages } from '../models';
 import { argv } from './argv';
 import { mergeMessages } from './mergeMessages';
 
-const formatters = {
-  getNumberFormat: memoize(
-    // XXX The type cast will be unnecessary as of TypeScript 4.6
-    // https://github.com/microsoft/TypeScript/pull/46740
-    (locale, opts) => new Intl.NumberFormat(locale, opts as Intl.NumberFormatOptions),
-  ),
-  getDateTimeFormat: memoize((locale, opts) => new Intl.DateTimeFormat(locale, opts)),
-  getPluralRules: memoize((locale, opts) => new Intl.PluralRules(locale, opts)),
-};
+const getNumberFormat = memoize((locale, opts) => new Intl.NumberFormat(locale, opts));
+const getPluralRules = memoize((locale, opts) => new Intl.PluralRules(locale, opts));
 
 interface GetAppValue {
   /**
@@ -117,8 +110,19 @@ export async function getRemapperContext(
       language: { [Op.or]: languages.map((lang, i) => languages.slice(0, i + 1).join('-')) },
     },
   });
+
   const cache = objectCache(
-    (message) => new IntlMessageFormat(message, language, undefined, { formatters }),
+    (message) =>
+      new IntlMessageFormat(message, language, undefined, {
+        formatters: {
+          getNumberFormat,
+          getPluralRules,
+          getDateTimeFormat: memoize(
+            (locale, opts) =>
+              new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo.zoneinfo }),
+          ),
+        },
+      }),
   );
   const appUrl = String(getAppUrl(app));
 

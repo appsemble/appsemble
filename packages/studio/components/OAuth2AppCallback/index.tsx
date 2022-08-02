@@ -1,4 +1,5 @@
 import { Loader, useQuery } from '@appsemble/react-components';
+import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useEffect } from 'react';
 
@@ -29,6 +30,7 @@ export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactEle
         code,
         scope: appRequest.get('scope'),
         redirectUri: appRequest.get('redirect_uri'),
+        timezone,
       })
       .then(({ data }) => oauth2Redirect(appRequest, data))
       .catch((err) =>

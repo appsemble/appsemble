@@ -188,7 +188,7 @@
           "type": "object",
           "description": "The account to create.",
           "additionalProperties": false,
-          "required": ["clientCredentials", "email", "name", "password"],
+          "required": ["clientCredentials", "email", "name", "password", "timezone"],
           "properties": {
             "clientCredentials": {
               "type": "string",
@@ -206,6 +206,10 @@
             "password": {
               "type": "string",
               "description": "The password of the user account."
+            },
+            "timezone": {
+              "type": "string",
+              "description": "The timezone of the user account"
             }
           }
         }

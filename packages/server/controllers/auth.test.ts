@@ -17,7 +17,7 @@ beforeAll(async () => {
 
 describe('registerEmail', () => {
   it('should register valid email addresses', async () => {
-    const data = { email: 'test@example.com', password: 'password' };
+    const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
     const response = await request.post('/api/email', data);
 
     expect(response).toMatchInlineSnapshot(
@@ -48,7 +48,12 @@ describe('registerEmail', () => {
   });
 
   it('should accept a display name', async () => {
-    const data = { email: 'test@example.com', name: 'Me', password: 'password' };
+    const data = {
+      email: 'test@example.com',
+      name: 'Me',
+      password: 'password',
+      timezone: 'Europe/Amsterdam',
+    };
     const response = await request.post('/api/email', data);
 
     expect(response).toMatchInlineSnapshot(
@@ -78,7 +83,11 @@ describe('registerEmail', () => {
   });
 
   it('should not register invalid email addresses', async () => {
-    const response = await request.post('/api/email', { email: 'foo', password: 'bar' });
+    const response = await request.post('/api/email', {
+      email: 'foo',
+      password: 'bar',
+      timezone: 'Europe/Amsterdam',
+    });
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
@@ -123,10 +132,14 @@ describe('registerEmail', () => {
   });
 
   it('should not register duplicate email addresses', async () => {
-    await EmailAuthorization.create({ email: 'test@example.com', password: 'unhashed' });
+    await EmailAuthorization.create({
+      email: 'test@example.com',
+      password: 'unhashed',
+    });
     const response = await request.post('/api/email', {
       email: 'test@example.com',
       password: 'password',
+      timezone: 'Europe/Amsterdam',
     });
 
     expect(response).toMatchInlineSnapshot(`
@@ -144,7 +157,11 @@ describe('registerEmail', () => {
 
 describe('verifyEmail', () => {
   it('should verify existing email addresses', async () => {
-    await request.post('/api/email', { email: 'test@example.com', password: 'password' });
+    await request.post('/api/email', {
+      email: 'test@example.com',
+      password: 'password',
+      timezone: 'Europe/Amsterdam',
+    });
     const email = await EmailAuthorization.findByPk('test@example.com');
 
     expect(email.verified).toBe(false);
@@ -215,7 +232,7 @@ describe('verifyEmail', () => {
 
 describe('requestResetPassword', () => {
   it('should create a password reset token', async () => {
-    const data = { email: 'test@example.com', password: 'password' };
+    const data = { email: 'test@example.com', password: 'password', timezone: 'Europe/Amsterdam' };
     await request.post('/api/email', data);
 
     const responseA = await request.post('/api/email/reset/request', { email: data.email });

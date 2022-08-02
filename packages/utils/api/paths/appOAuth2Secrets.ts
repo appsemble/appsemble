@@ -117,11 +117,12 @@ export const paths: OpenAPIV3.PathsObject = {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['code', 'scope', 'redirectUri'],
+              required: ['code', 'scope', 'redirectUri', 'timezone'],
               properties: {
                 code: { type: 'string' },
                 scope: { type: 'string' },
                 redirectUri: { type: 'string' },
+                zimezone: { type: 'string' },
               },
             },
           },

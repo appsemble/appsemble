@@ -163,6 +163,11 @@ export interface UserInfo {
    * The end-user’s locale, represented as a BCP47 language tag.
    */
   locale?: string;
+
+  /**
+   * The end-user’s time zone.
+   */
+  zoneinfo?: string;
 }
 
 /**

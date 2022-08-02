@@ -1025,6 +1025,8 @@
   "studio.pages.settings.user.setPrimaryEmail": "Set as primary",
   "studio.pages.settings.user.submitError": "Something went wrong trying to update your profile.",
   "studio.pages.settings.user.submitSuccess": "Successfully updated profile.",
+  "studio.pages.settings.user.timezone": "Time zone",
+  "studio.pages.settings.user.timezoneHelp": "The time zone used for formatting time in emails",
   "studio.pages.settings.user.title": "Profile",
   "studio.pages.settings.user.unverified": "Not verified",
   "studio.pages.settings.user.verified": "Verified",

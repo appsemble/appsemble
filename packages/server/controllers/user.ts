@@ -44,6 +44,7 @@ export async function getUser(ctx: Context): Promise<void> {
       primary: user.primaryEmail === email,
     })),
     locale: user.locale,
+    timezone: user.timezone,
   };
 }
 
@@ -79,7 +80,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
 export async function updateUser(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { locale, name },
+      body: { locale, name, timezone },
     },
     user,
   } = ctx;
@@ -108,7 +109,7 @@ export async function updateUser(ctx: Context): Promise<void> {
     }
   }
 
-  await dbUser.update({ name, primaryEmail: email, locale });
+  await dbUser.update({ name, primaryEmail: email, locale, timezone });
 
   ctx.body = {
     id: dbUser.id,
