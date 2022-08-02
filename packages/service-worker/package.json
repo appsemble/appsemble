@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/service-worker",
-  "version": "0.20.11",
+  "version": "0.20.12",
   "private": true,
   "description": "The service worker that makes sure Appsemble apps work offline",
   "keywords": [
@@ -24,7 +24,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/utils": "0.20.11",
+    "@appsemble/utils": "0.20.12",
     "type-fest": "^2.0.0"
   },
   "devDependencies": {

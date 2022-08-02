@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.12](https://gitlab.com/appsemble/appsemble/-/releases/0.20.12)] - 2022-08-02
+
+### Added
+
+- Server: Save user time zones for localization emails.
+
+### Fixed
+
+- Studio: Fix permission check for viewing resources and assets.
+
 ## \[[0.20.11](https://gitlab.com/appsemble/appsemble/-/releases/0.20.11)] - 2022-07-12
 
 ### Added

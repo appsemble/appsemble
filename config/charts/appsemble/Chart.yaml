@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.11
-appVersion: 0.20.11
+version: 0.20.12
+appVersion: 0.20.12
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,16 +25,9 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(audio): Add audio block."
-    - kind: added
-      description: "Block(form): Add dense property."
-    - kind: added
-      description: "Server: If a user requests an app through an Appsemble domain, but
-        the app has a custom domain, the user is redirected to the custom domain."
-    - kind: changed
-      description: "Cli: Automate the login flow."
-    - kind: removed
-      description: "Webpack-config: Remove support for the paths property in tsconfig.json."
+      description: "Server: Save user time zones for localization emails."
+    - kind: fixed
+      description: "Studio: Fix permission check for viewing resources and assets."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
