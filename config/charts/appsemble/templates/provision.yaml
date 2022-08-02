@@ -25,11 +25,12 @@ spec:
             - "--command"
             - |
               BEGIN;
-                INSERT INTO "User" (id, name, "primaryEmail", password, created, updated) VALUES (
+                INSERT INTO "User" (id, name, "primaryEmail", password, created, updated, timezone) VALUES (
                   {{ $userId | squote }},
                   {{ .Values.provision.account.name | squote }},
                   {{ .Values.provision.account.email | squote }},
                   {{ (.Values.provision.account.password | htpasswd "" | split ":")._1 | squote }},
+                  {{ .Values.provision.account.timezone | squote }},
                   NOW(),
                   NOW()
                 );
