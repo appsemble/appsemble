@@ -23,9 +23,41 @@ These roles are the following:
 
 - `Member`: The default role for new members. Organization members are able to view private apps
   that belong to the organization.
+- `API Reader`: A role that has permissions to view the app’s resources and assets, particularly
+  useful if the user wants to use the app’s API.
+- `API User`: Similar to `API Reader`, but with additional write permissions for the app’s resources
+  and assets.
 - `AppEditor`: App editors are allowed to edit existing apps, manage an app’s resources, provide
   translations, as well as sending manual push notifications.
 - `Maintainer`: Maintainers can publish new blocks, create new apps, change an app’s settings,
   create and delete apps, as well as inviting other users to the organization.
 - `Owner`: Owners are allowed to manage members by assigning roles or removing them from the
   organization, and update the name and icon of the organization.
+
+| Permissions                                 | Member | API Reader | API User | AppEditor | Maintainer | Owner |
+| ------------------------------------------- | :----: | :--------: | :------: | :-------: | :--------: | :---: |
+| Create new apps                             |        |            |          |           |     ✓      |   ✓   |
+| Copy apps                                   |        |            |          |           |     ✓      |   ✓   |
+| Delete apps                                 |        |            |          |           |     ✓      |   ✓   |
+| Edit app's translations                     |        |            |          |     ✓     |     ✓      |   ✓   |
+| Edit app's settings                         |        |            |          |           |     ✓      |   ✓   |
+| Edit name of an organization                |        |            |          |           |            |   ✓   |
+| Edit logo of an organization                |        |            |          |           |            |   ✓   |
+| Invite new members into an organization     |        |            |          |           |     ✓      |   ✓   |
+| Remove existing invites                     |        |            |          |           |     ✓      |   ✓   |
+| Resending invites                           |        |            |          |           |     ✓      |   ✓   |
+| Create and delete assets                    |        |            |    ✓     |     ✓     |     ✓      |   ✓   |
+| Remove organization members                 |        |            |          |           |            |   ✓   |
+| Create resources                            |        |            |    ✓     |     ✓     |     ✓      |   ✓   |
+| Edit resources                              |        |            |    ✓     |     ✓     |     ✓      |   ✓   |
+| Delete resources                            |        |            |    ✓     |     ✓     |     ✓      |   ✓   |
+| Change roles of organization members        |        |            |          |           |            |   ✓   |
+| Create and delete teams                     |        |            |          |           |     ✓      |   ✓   |
+| Manage members on team                      |        |            |          |           |     ✓      |   ✓   |
+| Publish blocks                              |        |            |          |           |     ✓      |   ✓   |
+| Send manual push notifications              |        |            |          |     ✓     |     ✓      |   ✓   |
+| Read assets                                 |        |     ✓      |    ✓     |     ✓     |     ✓      |   ✓   |
+| Read resources                              |        |     ✓      |    ✓     |     ✓     |     ✓      |   ✓   |
+| Edit resources                              |        |            |    ✓     |     ✓     |     ✓      |   ✓   |
+| View private apps of an organization        |   ✓    |     ✓      |    ✓     |     ✓     |     ✓      |   ✓   |
+| View the list of members in an organization |   ✓    |     ✓      |    ✓     |     ✓     |     ✓      |   ✓   |
