@@ -62,6 +62,7 @@ export async function email({
       name: appMember.name,
       email: appMember.email,
       email_verified: appMember.emailVerified,
+      zoneinfo: user.timezone,
     },
   );
 

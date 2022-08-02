@@ -82,7 +82,7 @@ async function handleRequestProxy(
   }
 
   await user?.reload({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'timezone'],
     include: [
       {
         required: false,
@@ -103,6 +103,7 @@ async function handleRequestProxy(
       name: user.name,
       email: user.primaryEmail,
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      zoneinfo: user.timezone,
     },
   );
   const axiosConfig = formatRequestAction(

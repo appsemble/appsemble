@@ -162,7 +162,7 @@ export async function processHooks(
   const resourceDefinition = app.definition.resources[resource.type];
 
   await user?.reload({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'timezone'],
     include: [
       {
         required: false,
@@ -194,6 +194,7 @@ export async function processHooks(
         name: user.name,
         email: user.primaryEmail,
         email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+        zoneinfo: user.timezone,
       },
     );
 

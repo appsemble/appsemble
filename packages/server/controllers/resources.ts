@@ -302,6 +302,7 @@ export async function queryResources(ctx: Context): Promise<void> {
         name: user.name,
         email: user.primaryEmail,
         email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+        zoneinfo: user.timezone,
       },
     );
     ctx.body = mappedResources.map((resource) =>
@@ -407,6 +408,7 @@ export async function getResourceById(ctx: Context): Promise<void> {
         name: user.name,
         email: user.primaryEmail,
         email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+        zoneinfo: user.timezone,
       },
     );
 
