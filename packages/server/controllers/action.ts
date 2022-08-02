@@ -40,7 +40,7 @@ async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition
   }
 
   await user?.reload({
-    attributes: ['primaryEmail', 'name'],
+    attributes: ['primaryEmail', 'name', 'timezone'],
     include: [
       {
         required: false,
