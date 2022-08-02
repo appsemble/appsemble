@@ -226,6 +226,7 @@ describe('createAuthnRequest', () => {
         redirectUri: 'https://app.example',
         scope: 'email openid profile',
         state: 'secret state',
+        timezone: 'Europe/Amsterdam',
       },
     );
     expect(response).toMatchObject({

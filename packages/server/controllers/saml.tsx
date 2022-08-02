@@ -39,7 +39,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
     request: {
-      body: { redirectUri, scope, state },
+      body: { redirectUri, scope, state, timezone },
     },
     user,
   } = ctx;
@@ -110,6 +110,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     redirectUri,
     state,
     scope,
+    timezone,
   });
 
   ctx.body = { redirect: String(redirect) };
@@ -251,8 +252,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
           (await User.create(
             {
               name: name || nameId,
-              // XXX This time zone should not be hardcoded.
-              timezone: 'Europe/Amsterdam',
+              timezone: loginRequest.timezone,
             },
             { transaction },
           ));

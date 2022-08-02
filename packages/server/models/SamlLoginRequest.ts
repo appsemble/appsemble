@@ -56,6 +56,13 @@ export class SamlLoginRequest extends Model {
   redirectUri: string;
 
   /**
+   * The timezone of the browser used during the login flow.
+   */
+  @AllowNull(false)
+  @Column
+  timezone: string;
+
+  /**
    * The ID of the app’s SAML secret.
    */
   @ForeignKey(() => AppSamlSecret)
