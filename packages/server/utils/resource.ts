@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import {
   NotificationDefinition,
   ResourceDefinition,
@@ -11,7 +13,6 @@ import { Context } from 'koa';
 import { File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 import { Op } from 'sequelize';
-import { v4 } from 'uuid';
 
 import {
   App,
@@ -329,7 +330,7 @@ export function processResourceBody(
   const assetUsedMap = new Map<number, boolean>();
   const reusedAssets = new Set<string>();
   const preparedAssets = assets.map<PreparedAsset>(({ contents, filename, mime }, index) => {
-    const id = v4();
+    const id = randomUUID();
     assetIdMap.set(index, id);
     assetUsedMap.set(index, false);
     return { data: contents, filename, id, mime };

@@ -1,9 +1,8 @@
 import { randomBytes } from 'crypto';
 
-import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
+import { checkAppRole, Permission, TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
-import { validate } from 'uuid';
 
 import {
   App,
@@ -326,7 +325,7 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     user,
   } = ctx;
   const userQuery = {
-    [validate(id) ? 'id' : 'primaryEmail']: id,
+    [uuid4Pattern.test(id) ? 'id' : 'primaryEmail']: id,
   };
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
@@ -411,7 +410,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     pathParams: { appId, memberId, teamId },
   } = ctx;
 
-  const isUuid = validate(memberId);
+  const isUuid = uuid4Pattern.test(memberId);
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
@@ -448,7 +447,7 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
       body: { role },
     },
   } = ctx;
-  const isUuid = validate(memberId);
+  const isUuid = uuid4Pattern.test(memberId);
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
