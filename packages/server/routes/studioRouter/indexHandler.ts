@@ -58,7 +58,7 @@ export function indexHandler(ctx: Context): Promise<void> {
     // This is needed for Webpack.
     'connect-src':
       process.env.NODE_ENV === 'production'
-        ? [sentryDsn && 'https://sentry.io', sentryOrigin, "'self'"]
+        ? [sentryDsn && 'https://sentry.io', sentryOrigin, "'self'", '127.0.0.1']
         : ['*'],
     'default-src': ["'self'", sentryOrigin],
     'img-src': ['blob:', 'data:', '*'],
