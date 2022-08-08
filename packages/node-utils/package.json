@@ -54,7 +54,7 @@
     "@types/parse-json": "^4.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
     "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^5.0.0"
+    "axios-test-instance": "^6.0.0"
   },
   "peerDependencies": {
     "prettier": "^2"
