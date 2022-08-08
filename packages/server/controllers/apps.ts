@@ -1,4 +1,5 @@
 import { randomBytes } from 'crypto';
+import { isDeepStrictEqual } from 'util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { App as AppType, BlockManifest } from '@appsemble/types';
@@ -15,7 +16,6 @@ import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { isEqual } from 'lodash';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -836,7 +836,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
 
   return serveIcon(ctx, {
     background: maskable ? app.iconBackground || '#ffffff' : undefined,
-    cache: isEqual(parseISO(updated as string), dbUpdated),
+    cache: isDeepStrictEqual(parseISO(updated as string), dbUpdated),
     fallback: 'mobile-alt-solid.png',
     height: size && Number.parseInt(size as string),
     icon: app.icon || app.Organization.icon,

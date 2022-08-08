@@ -1,9 +1,9 @@
 import { basename, dirname, join, relative } from 'path';
+import { isDeepStrictEqual } from 'util';
 
 import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { existsSync, readJson } from 'fs-extra';
-import { isEqual } from 'lodash';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { PackageJson } from 'type-fest';
@@ -94,7 +94,7 @@ async function validateTranslations(assert: Assert): Promise<void> {
     const messages = translations[language];
     if (language === defaultLocale) {
       assert(
-        isEqual(messages, translatedMessages[language]),
+        isDeepStrictEqual(messages, translatedMessages[language]),
         path,
         `${defaultLocale} messages should be equal when extracted`,
       );
@@ -105,7 +105,10 @@ async function validateTranslations(assert: Assert): Promise<void> {
       assert(untranslatedMessages.length === 0, path, 'Messages should be translated');
     } else {
       assert(
-        isEqual(Object.keys(messages).sort(), Object.keys(translatedMessages[language]).sort()),
+        isDeepStrictEqual(
+          Object.keys(messages).sort(),
+          Object.keys(translatedMessages[language]).sort(),
+        ),
         path,
         'Keys should be the same',
       );
@@ -207,7 +210,7 @@ async function validate(
       'Should extend "../../tsconfig"',
     );
     assert(
-      isEqual(Object.keys(tsConfig), ['extends', 'compilerOptions']),
+      isDeepStrictEqual(Object.keys(tsConfig), ['extends', 'compilerOptions']),
       'tsconfig.json',
       'Only specifies "extends" and "compilerOptions" with "extends" first',
     );
