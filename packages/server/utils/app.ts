@@ -119,7 +119,7 @@ export async function getRemapperContext(
           getPluralRules,
           getDateTimeFormat: memoize(
             (locale, opts) =>
-              new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo.zoneinfo }),
+              new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
           ),
         },
       }),
