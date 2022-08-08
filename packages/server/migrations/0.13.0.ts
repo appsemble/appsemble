@@ -1,6 +1,7 @@
+import { randomUUID } from 'crypto';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
-import { v4 } from 'uuid';
 
 export const key = '0.13.0';
 
@@ -49,7 +50,7 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info('Generating IDs');
-  const ids = users.map((u) => ({ id: u.id, newId: v4() }));
+  const ids = users.map((u) => ({ id: u.id, newId: randomUUID() }));
   await Promise.all(
     ids.map((id) =>
       db.query('UPDATE "User" SET "newId" = ? WHERE id = ?', { replacements: [id.newId, id.id] }),

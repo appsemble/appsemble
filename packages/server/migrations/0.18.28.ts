@@ -1,6 +1,7 @@
+import { randomUUID } from 'crypto';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
-import { v4 } from 'uuid';
 
 export const key = '0.18.28';
 
@@ -123,7 +124,7 @@ export async function up(db: Sequelize): Promise<void> {
     appMembers.map((appMember) =>
       db.query('UPDATE "AppMember" SET id = ? WHERE "AppId" = ? AND "UserId" = ?', {
         type: QueryTypes.UPDATE,
-        replacements: [v4(), appMember.AppId, appMember.UserId],
+        replacements: [randomUUID(), appMember.AppId, appMember.UserId],
       }),
     ),
   );
@@ -151,7 +152,7 @@ export async function up(db: Sequelize): Promise<void> {
       if (result.AppMemberId) {
         memberId = result.AppMemberId;
       } else {
-        memberId = v4();
+        memberId = randomUUID();
         await db.query(
           'INSERT INTO "AppMember" (id, role, "AppId", "UserId", created, updated) VALUES (?, ?, ?, ?, NOW(), NOW())',
           {
@@ -195,7 +196,7 @@ export async function up(db: Sequelize): Promise<void> {
       if (result.AppMemberId) {
         memberId = result.AppMemberId;
       } else {
-        memberId = v4();
+        memberId = randomUUID();
         await db.query(
           'INSERT INTO "AppMember" (id, role, "AppId", "UserId", created, updated) VALUES (?, ?, ?, ?, NOW(), NOW())',
           {

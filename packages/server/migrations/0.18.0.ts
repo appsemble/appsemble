@@ -1,6 +1,7 @@
+import { randomUUID } from 'crypto';
+
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
-import { v4 } from 'uuid';
 
 export const key = '0.18.0';
 
@@ -23,7 +24,7 @@ export async function up(db: Sequelize): Promise<void> {
       'SELECT "OrganizationId", version, name FROM "BlockVersion"',
       { raw: true, type: QueryTypes.SELECT },
     )
-  ).map((version) => ({ ...version, id: v4() }));
+  ).map((version) => ({ ...version, id: randomUUID() }));
 
   logger.info('Adding column id to BlockVersion');
   await queryInterface.addColumn('BlockVersion', 'id', {

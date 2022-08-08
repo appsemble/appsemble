@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { deflateRaw } from 'zlib';
 
@@ -9,7 +10,6 @@ import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 import { Context } from 'koa';
 import forge from 'node-forge';
-import { v4 } from 'uuid';
 import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
@@ -67,7 +67,7 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     throw notFound('SAML secret not found');
   }
 
-  const loginId = `id${v4()}`;
+  const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
   const samlUrl = new URL(`/api/apps/${appId}/saml/${appSamlSecretId}`, argv.host);
 
