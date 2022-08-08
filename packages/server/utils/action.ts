@@ -26,7 +26,9 @@ export async function handleAction(
     locale: params.app.definition.defaultLanguage ?? defaultLocale,
   };
   let data =
-    'remap' in params.action ? remap(params.action.remap, params.data, context) : params.data;
+    'remapBefore' in params.action
+      ? remap(params.action.remapBefore, params.data, context)
+      : params.data;
 
   try {
     data = await action({ ...params, data });
@@ -40,7 +42,7 @@ export async function handleAction(
         data,
       });
     }
-  } catch (error: unknown) {
+  } catch (error) {
     logger.error(`Error running action: ${params.action.type}`);
     if (params.action.onError) {
       return handleAction(actions[params.action.onError.type], {
