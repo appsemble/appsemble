@@ -2,7 +2,7 @@ import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Card } from './components/Card';
+import { Card } from './components/Card/index.js';
 import styles from './index.module.css';
 
 interface Item {

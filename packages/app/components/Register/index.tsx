@@ -8,9 +8,9 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function Register(): ReactElement {
   useMeta(messages.register);

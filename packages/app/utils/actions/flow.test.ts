@@ -1,5 +1,5 @@
-import { FlowActions } from '../../types';
-import { createTestAction } from '../makeActions';
+import { FlowActions } from '../../types.js';
+import { createTestAction } from '../makeActions.js';
 
 let flowActions: FlowActions;
 

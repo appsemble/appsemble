@@ -9,7 +9,7 @@ import Koa, { Context } from 'koa';
 import open from 'open';
 import raw from 'raw-body';
 
-import { BaseArguments } from '../types';
+import { BaseArguments } from '../types.js';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 

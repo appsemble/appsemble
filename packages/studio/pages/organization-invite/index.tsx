@@ -16,10 +16,10 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useUser } from '../../components/UserProvider';
-import { Organization } from '../../types';
+import { useUser } from '../../components/UserProvider/index.js';
+import { Organization } from '../../types.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function OrganizationInvitePage(): ReactElement {
   const { formatMessage } = useIntl();

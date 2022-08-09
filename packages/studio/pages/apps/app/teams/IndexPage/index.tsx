@@ -15,13 +15,13 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { ListButton } from '../../../../../components/ListButton';
-import { useUser } from '../../../../../components/UserProvider';
-import { checkRole } from '../../../../../utils/checkRole';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { ListButton } from '../../../../../components/ListButton/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
+import { useApp } from '../../index.js';
+import { messages } from './messages.js';
 
 /**
  * The representation of a team that the user is a member of.

@@ -1,9 +1,9 @@
 import { setupSentry } from '@appsemble/web-utils';
 import { render } from 'react-dom';
 
-import { App } from './components/App';
+import { App } from './components/App/index.js';
 import './index.css';
-import { sentryDsn, sentryEnvironment } from './utils/settings';
+import { sentryDsn, sentryEnvironment } from './utils/settings.js';
 
 setupSentry(sentryDsn, sentryEnvironment);
 

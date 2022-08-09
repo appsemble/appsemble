@@ -18,11 +18,11 @@ import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
-import { checkRole } from '../../utils/checkRole';
-import { CreateOrganizationModal } from '../CreateOrganizationModal';
-import { ResendEmailButton } from '../ResendEmailButton';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { checkRole } from '../../utils/checkRole.js';
+import { CreateOrganizationModal } from '../CreateOrganizationModal/index.js';
+import { ResendEmailButton } from '../ResendEmailButton/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 interface CloneButtonProps {
   /**

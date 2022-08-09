@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { GeoCoordinatesField, InputProps } from '../../../block';
+import { GeoCoordinatesField, InputProps } from '../../../block.js';
 import styles from './index.module.css';
 
 type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;

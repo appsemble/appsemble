@@ -4,11 +4,11 @@ import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../components/UserProvider';
-import { CollapsibleAppList } from './CollapsibleAppList';
-import { CreateAppButton } from './CreateAppButton';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { CollapsibleAppList } from './CollapsibleAppList/index.js';
+import { CreateAppButton } from './CreateAppButton/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 const sortFunctions = {
   organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),

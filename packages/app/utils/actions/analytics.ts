@@ -1,4 +1,4 @@
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const analytics: ActionCreator<'analytics'> = ({
   definition: { config, target },

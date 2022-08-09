@@ -1,4 +1,4 @@
-import { AppsembleError } from './AppsembleError';
+import { AppsembleError } from './AppsembleError.js';
 
 it('should define AppsembleError as its name', () => {
   const error = new AppsembleError('message');

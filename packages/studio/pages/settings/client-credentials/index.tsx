@@ -27,7 +27,7 @@ import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function ClientCredentialsPage(): ReactElement {
   useMeta(messages.title);

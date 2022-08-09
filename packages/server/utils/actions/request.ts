@@ -6,8 +6,8 @@ import {
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
-import { ServerActionParameters } from '.';
-import { getRemapperContext } from '../app';
+import { getRemapperContext } from '../app.js';
+import { ServerActionParameters } from './index.js';
 
 export async function request({ action, app, data, user }: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'POST' | 'PUT';

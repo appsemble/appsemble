@@ -2,7 +2,7 @@ import { useQuery } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, RouteProps, useParams } from 'react-router-dom';
 
-import { useUser } from '../UserProvider';
+import { useUser } from '../UserProvider/index.js';
 
 /**
  * Render a route that is only available if the user is not logged in.

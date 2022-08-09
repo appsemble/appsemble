@@ -3,10 +3,10 @@ import { App } from '@appsemble/types';
 import { ReactElement, Ref } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { getAppUrl } from '../../utils/getAppUrl';
-import { useSSLStatus } from '../useSSLStatus';
+import { getAppUrl } from '../../utils/getAppUrl.js';
+import { useSSLStatus } from '../useSSLStatus.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface AppPreviewProps {
   /**

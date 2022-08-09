@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function EditPasswordPage(): ReactElement {
   useMeta(messages.title);

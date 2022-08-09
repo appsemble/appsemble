@@ -4,7 +4,7 @@ import { join, resolve } from 'path';
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import ts from 'typescript';
 
-import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
+import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 
 beforeEach(() => {
   jest.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));

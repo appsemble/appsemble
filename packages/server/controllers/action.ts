@@ -11,10 +11,10 @@ import { Context, Middleware } from 'koa';
 import { get, pick } from 'lodash';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization } from '../models';
+import { App, EmailAuthorization } from '../models/index.js';
 import pkg from '../package.json';
-import { email } from '../utils/actions/email';
-import { getRemapperContext } from '../utils/app';
+import { email } from '../utils/actions/email.js';
+import { getRemapperContext } from '../utils/app.js';
 
 /**
  * These response headers are forwarded when proxying requests.

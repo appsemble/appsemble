@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { roles } from '../../../constants';
+import { roles } from '../../../constants/index.js';
 
 export const Member: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

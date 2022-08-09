@@ -1,7 +1,7 @@
 import { OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
 import { ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
 
-import { Button } from '..';
+import { Button } from '../index.js';
 
 type OAuth2LoginButtonProps = ComponentPropsWithoutRef<typeof Button> & OAuth2LoginOptions;
 

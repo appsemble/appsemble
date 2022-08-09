@@ -2,9 +2,9 @@ import { MetaSwitch, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
-import { TeamPage } from './team';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
+import { TeamPage } from './team/index.js';
 
 export function TeamsRoutes(): ReactElement {
   useMeta(messages.title);

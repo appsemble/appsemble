@@ -3,11 +3,11 @@ import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
-import { EmailAuthorization, OAuthAuthorization, User } from '../models';
-import { argv, setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { EmailAuthorization, OAuthAuthorization, User } from '../models/index.js';
+import { argv, setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 const mock = new MockAdapter(axios);
 let user: User;

@@ -2,8 +2,8 @@ import { useLocationString } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { useUser } from '../UserProvider';
-import { TeamInvitePrompt } from './TeamInvitePrompt';
+import { useUser } from '../UserProvider/index.js';
+import { TeamInvitePrompt } from './TeamInvitePrompt/index.js';
 
 export function TeamInvite(): ReactElement {
   const { isLoggedIn } = useUser();

@@ -34,6 +34,11 @@ export = function createWebpackConfig(
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
+      extensionAlias: {
+        '.js': ['.js', '.ts', '.tsx'],
+        '.cjs': ['.cjs', '.cts'],
+        '.mjs': ['.mjs', '.mts'],
+      },
       alias: {
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',

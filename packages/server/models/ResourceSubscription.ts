@@ -8,7 +8,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSubscription, Resource } from '.';
+import { AppSubscription, Resource } from './index.js';
 
 @Table({ tableName: 'ResourceSubscription' })
 export class ResourceSubscription extends Model {

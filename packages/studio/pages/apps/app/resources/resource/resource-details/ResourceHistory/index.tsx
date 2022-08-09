@@ -4,10 +4,10 @@ import { ReactElement, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { AsyncDataView } from '../../../../../../../components/AsyncDataView';
-import { CodeBlock } from '../../../../../../../components/CodeBlock';
-import { ListButton } from '../../../../../../../components/ListButton';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../../../components/AsyncDataView/index.js';
+import { CodeBlock } from '../../../../../../../components/CodeBlock/index.js';
+import { ListButton } from '../../../../../../../components/ListButton/index.js';
+import { messages } from './messages.js';
 
 export function ResourceHistory(): ReactElement {
   const { id, resourceId, resourceName } = useParams<{

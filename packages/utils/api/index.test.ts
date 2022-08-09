@@ -2,10 +2,10 @@ import { readdirSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-import { createValidator } from 'koas-core/lib/validation';
+import { createValidator } from 'koas-core/lib/validation.js';
 import { parse } from 'yaml';
 
-import { api, schemas } from '.';
+import { api, schemas } from './index.js';
 
 describe('schemas', () => {
   const document = api('');

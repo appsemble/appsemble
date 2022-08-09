@@ -2,10 +2,10 @@ import { ReadStream } from 'fs';
 
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication';
-import { coerceFile } from '../../lib/coercers';
-import { updateOrganization } from '../../lib/organization';
-import { BaseArguments } from '../../types';
+import { authenticate } from '../../lib/authentication.js';
+import { coerceFile } from '../../lib/coercers.js';
+import { updateOrganization } from '../../lib/organization.js';
+import { BaseArguments } from '../../types.js';
 
 interface UpdateOrganizationArguments extends BaseArguments {
   description: string;

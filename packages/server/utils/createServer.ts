@@ -20,16 +20,16 @@ import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
 import { Configuration } from 'webpack';
 
-import * as controllers from '../controllers';
-import { appMapper } from '../middleware/appMapper';
-import { boomMiddleware } from '../middleware/boom';
-import { conditional } from '../middleware/conditional';
-import { frontend } from '../middleware/frontend';
+import * as controllers from '../controllers/index.js';
+import { appMapper } from '../middleware/appMapper.js';
+import { boomMiddleware } from '../middleware/boom.js';
+import { conditional } from '../middleware/conditional.js';
+import { frontend } from '../middleware/frontend.js';
 import pkg from '../package.json';
-import { appRouter, studioRouter } from '../routes';
-import { argv } from './argv';
-import { authentication } from './authentication';
-import { Mailer } from './email/Mailer';
+import { appRouter, studioRouter } from '../routes/index.js';
+import { argv } from './argv.js';
+import { authentication } from './authentication.js';
+import { Mailer } from './email/Mailer.js';
 
 const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, options, ctx) => {
   const buffer = await bufferParser(body, mediaTypeObject, options, ctx);

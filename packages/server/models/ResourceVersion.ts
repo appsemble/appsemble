@@ -13,7 +13,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { Resource, User } from '.';
+import { Resource, User } from './index.js';
 
 @Table({ tableName: 'ResourceVersion', updatedAt: false })
 export class ResourceVersion extends Model {

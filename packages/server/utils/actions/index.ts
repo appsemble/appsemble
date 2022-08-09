@@ -1,13 +1,13 @@
 import { ActionDefinition } from '@appsemble/types';
 
-import { App, User } from '../../models';
-import { Mailer } from '../email/Mailer';
-import { condition } from './condition';
-import { email } from './email';
-import { noop } from './noop';
-import { request } from './request';
-import { staticAction } from './static';
-import { throwAction } from './throw';
+import { App, User } from '../../models/index.js';
+import { Mailer } from '../email/Mailer.js';
+import { condition } from './condition.js';
+import { email } from './email.js';
+import { noop } from './noop.js';
+import { request } from './request.js';
+import { staticAction } from './static.js';
+import { throwAction } from './throw.js';
 
 export interface ServerActionParameters<T extends ActionDefinition = ActionDefinition> {
   app: App;

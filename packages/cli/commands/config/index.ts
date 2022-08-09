@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
 
-import * as get from './get';
-import * as set from './set';
+import * as get from './get.js';
+import * as set from './set.js';
 
 export { noop as handler } from '@appsemble/utils';
 

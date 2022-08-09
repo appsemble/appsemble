@@ -3,9 +3,9 @@ import { Asset } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../..';
+import { useApp } from '../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
   const { app } = useApp();

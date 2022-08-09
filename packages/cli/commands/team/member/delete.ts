@@ -1,9 +1,9 @@
 import { Argv } from 'yargs';
 
-import { resolveAppIdAndRemote } from '../../../lib/app';
-import { authenticate } from '../../../lib/authentication';
-import { deleteMember } from '../../../lib/team';
-import { BaseArguments } from '../../../types';
+import { resolveAppIdAndRemote } from '../../../lib/app.js';
+import { authenticate } from '../../../lib/authentication.js';
+import { deleteMember } from '../../../lib/team.js';
+import { BaseArguments } from '../../../types.js';
 
 interface DeleteTeamArguments extends BaseArguments {
   appId: number;

@@ -4,15 +4,15 @@ import {
   ResourceGetActionDefinition,
   RoleDefinition,
 } from '@appsemble/types';
-import { parseExpression } from 'cron-parser';
+import cronParser from 'cron-parser';
 import { Schema, ValidationError, Validator, ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
 import { Promisable } from 'type-fest';
 
-import { partialNormalized } from '.';
-import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils';
-import { has } from './has';
-import { iterApp, Prefix } from './iterApp';
+import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
+import { has } from './has.js';
+import { partialNormalized } from './index.js';
+import { iterApp, Prefix } from './iterApp.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -430,7 +430,7 @@ function validateCronJobs({ cron }: AppDefinition, report: Report): void {
       continue;
     }
     try {
-      parseExpression(job.schedule);
+      cronParser.parseExpression(job.schedule);
     } catch {
       report(job.schedule, 'contains an invalid expression', ['cron', id, 'schedule']);
     }

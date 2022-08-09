@@ -1,4 +1,4 @@
-import { urlB64ToUint8Array } from './urlB64ToUint8Array';
+import { urlB64ToUint8Array } from './urlB64ToUint8Array.js';
 
 const tests: [string, Uint8Array][] = [
   ['', Uint8Array.from([])],

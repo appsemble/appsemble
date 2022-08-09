@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { TeamRole } from '../../../constants';
+import { TeamRole } from '../../../constants/index.js';
 
 export const $team: OpenAPIV3.ParameterObject = {
   name: '$team',

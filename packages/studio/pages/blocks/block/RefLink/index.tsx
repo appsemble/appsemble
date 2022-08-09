@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 
-import { RenderRefProps } from '../../../../components/Schema';
+import { RenderRefProps } from '../../../../components/Schema/index.js';
 
 export function RefLink({ isArray, jsonRef }: RenderRefProps): ReactElement {
   const name = jsonRef.split('/').pop();

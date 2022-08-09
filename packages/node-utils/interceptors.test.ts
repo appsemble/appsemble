@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
-import { configureAxios, formData, logger, requestLogger, responseLogger } from '.';
+import { configureAxios, formData, logger, requestLogger, responseLogger } from './index.js';
 
 function h(content: string): string {
   return highlight(content, { language: 'http' });

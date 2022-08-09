@@ -2,8 +2,8 @@ import { readdirSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { join, parse } from 'path';
 
-import { assetDir } from '../readAsset';
-import { renderEmail } from './renderEmail';
+import { assetDir } from '../readAsset.js';
+import { renderEmail } from './renderEmail.js';
 
 const tests = {
   emailAdded: [

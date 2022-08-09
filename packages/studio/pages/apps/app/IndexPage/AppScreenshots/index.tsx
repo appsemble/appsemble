@@ -11,12 +11,12 @@ import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '../..';
-import { useUser } from '../../../../../components/UserProvider';
-import { checkRole } from '../../../../../utils/checkRole';
-import { AppScreenshot } from './AppScreenshot';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
+import { useApp } from '../../index.js';
+import { AppScreenshot } from './AppScreenshot/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function AppScreenshots(): ReactElement {
   const { app, setApp } = useApp();

@@ -10,7 +10,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { BlockVersion } from '.';
+import { BlockVersion } from './index.js';
 
 @Table({ tableName: 'BlockMessages' })
 export class BlockMessages extends Model {

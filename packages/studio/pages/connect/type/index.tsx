@@ -6,7 +6,7 @@ import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function TypePage(): ReactElement {
   const { id, type } = useParams<{ id: string; type: 'oauth2' | 'saml' }>();

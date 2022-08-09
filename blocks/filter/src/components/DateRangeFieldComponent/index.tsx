@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { DateRangeField, FieldComponentProps } from '../../../block';
+import { DateRangeField, FieldComponentProps } from '../../../block.js';
 import styles from './index.module.css';
 
 export function DateRangeFieldComponent({

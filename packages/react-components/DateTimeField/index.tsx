@@ -5,8 +5,8 @@ import 'flatpickr/dist/flatpickr.css';
 import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { FormComponent, Input, SharedFormComponentProps } from '..';
-import { useCombinedRefs } from '../useCombinedRefs';
+import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
+import { useCombinedRefs } from '../useCombinedRefs.js';
 import styles from './index.module.css';
 
 type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];

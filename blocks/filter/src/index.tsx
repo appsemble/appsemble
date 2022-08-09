@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import { JSX } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import { FilterValue, FilterValues } from '../block';
-import { FieldComponent } from './components/FieldComponent';
+import { FilterValue, FilterValues } from '../block.js';
+import { FieldComponent } from './components/FieldComponent/index.js';
 import styles from './index.module.css';
-import { toOData } from './utils/toOData';
+import { toOData } from './utils/toOData.js';
 
 bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils }) => {
   const modal = useToggle();

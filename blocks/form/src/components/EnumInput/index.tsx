@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Choice, EnumField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/requirements';
+import { Choice, EnumField, InputProps } from '../../../block.js';
+import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
 

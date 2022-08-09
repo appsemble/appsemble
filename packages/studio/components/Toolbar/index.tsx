@@ -4,10 +4,10 @@ import { useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import pkg from '../../package.json';
-import { ProfileDropdown } from '../ProfileDropdown';
+import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import styles from './index.module.css';
-import { LanguageDropdown } from './LanguageDropdown';
-import { messages } from './messages';
+import { LanguageDropdown } from './LanguageDropdown/index.js';
+import { messages } from './messages.js';
 
 export function Toolbar(): ReactElement {
   const { formatMessage } = useIntl();

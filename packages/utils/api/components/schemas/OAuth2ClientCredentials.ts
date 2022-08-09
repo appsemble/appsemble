@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { scopes } from '../../../constants';
+import { scopes } from '../../../constants/index.js';
 
 export const OAuth2ClientCredentials: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

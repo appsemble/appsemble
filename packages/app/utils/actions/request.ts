@@ -3,9 +3,9 @@ import { formatRequestAction } from '@appsemble/utils';
 import { serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 
-import { ActionCreator } from '.';
-import { apiUrl, appId } from '../settings';
-import { xmlToJson } from '../xmlToJson';
+import { apiUrl, appId } from '../settings.js';
+import { xmlToJson } from '../xmlToJson.js';
+import { ActionCreator } from './index.js';
 
 export const request: ActionCreator<'request'> = ({ definition, prefixIndex, remap }) => {
   const { body, method: uncasedMethod = 'GET', proxy = true, schema, url } = definition;

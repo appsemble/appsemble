@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, forwardRef, ReactNode } from 'react';
 
-import { Checkbox, FormComponent, SharedFormComponentProps } from '..';
+import { Checkbox, FormComponent, SharedFormComponentProps } from '../index.js';
 
 type CheckboxFieldProps = Omit<ComponentPropsWithoutRef<typeof Checkbox>, 'error'> &
   SharedFormComponentProps & {

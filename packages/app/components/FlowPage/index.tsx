@@ -6,13 +6,13 @@ import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
 import { ReactElement, useCallback, useMemo, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types';
-import { makeActions } from '../../utils/makeActions';
-import { useAppMessages } from '../AppMessagesProvider';
-import { BlockList } from '../BlockList';
-import { DotProgressBar } from '../DotProgressBar';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
-import { useUser } from '../UserProvider';
+import { ShowDialogAction, ShowShareDialog } from '../../types.js';
+import { makeActions } from '../../utils/makeActions.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { BlockList } from '../BlockList/index.js';
+import { DotProgressBar } from '../DotProgressBar/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface FlowPageProps {
   data: unknown;

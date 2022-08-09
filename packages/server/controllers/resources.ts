@@ -18,11 +18,11 @@ import {
   TeamMember,
   transactional,
   User,
-} from '../models';
-import { getRemapperContext } from '../utils/app';
-import { checkRole } from '../utils/checkRole';
-import { iterTable } from '../utils/database';
-import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata';
+} from '../models/index.js';
+import { getRemapperContext } from '../utils/app.js';
+import { checkRole } from '../utils/checkRole.js';
+import { iterTable } from '../utils/database.js';
+import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata.js';
 import {
   extractResourceBody,
   getResourceDefinition,
@@ -30,7 +30,7 @@ import {
   processReferenceHooks,
   processResourceBody,
   renameOData,
-} from '../utils/resource';
+} from '../utils/resource.js';
 
 const specialRoles = new Set([
   '$author',

@@ -5,16 +5,16 @@ import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
 
-import { AppCard } from '../../../../components/AppCard';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { BlockCard } from '../../../../components/BlockCard';
-import { CardHeaderControl } from '../../../../components/CardHeaderControl';
-import { Collapsible } from '../../../../components/Collapsible';
-import { useUser } from '../../../../components/UserProvider';
-import { Organization } from '../../../../types';
-import { checkRole } from '../../../../utils/checkRole';
+import { AppCard } from '../../../../components/AppCard/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { BlockCard } from '../../../../components/BlockCard/index.js';
+import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
+import { Collapsible } from '../../../../components/Collapsible/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { Organization } from '../../../../types.js';
+import { checkRole } from '../../../../utils/checkRole.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface IndexPageProps {
   organization: Organization;

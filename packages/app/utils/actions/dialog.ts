@@ -1,4 +1,4 @@
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const dialog: ActionCreator<'dialog'> = ({
   definition: { blocks, closable = true, fullscreen = false, title },

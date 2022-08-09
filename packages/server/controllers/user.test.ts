@@ -2,11 +2,11 @@ import { User as APIUser } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { EmailAuthorization, Member, Organization, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let clock: InstalledClock;
 let user: User;

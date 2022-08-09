@@ -10,8 +10,8 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { TextAreaField } from '..';
-import { messages } from './messages';
+import { TextAreaField } from '../index.js';
+import { messages } from './messages.js';
 
 interface JSONFieldProps
   extends Omit<ComponentPropsWithoutRef<typeof TextAreaField>, 'onChange' | 'value'> {

@@ -13,10 +13,10 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../components/UserProvider';
-import { enableRegistration, logins } from '../../utils/settings';
+import { useUser } from '../../components/UserProvider/index.js';
+import { enableRegistration, logins } from '../../utils/settings.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function LoginPage(): ReactElement {
   useMeta(messages.title, messages.description);

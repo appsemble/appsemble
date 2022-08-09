@@ -7,7 +7,7 @@ import {
   stripBlockName,
   validateAppDefinition,
 } from '@appsemble/utils';
-import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { initialize } from 'monaco-worker-manager/worker';
 import { Document, isMap, isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
 

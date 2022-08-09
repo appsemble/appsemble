@@ -4,7 +4,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 /**
  * This is used to set a request id, so the request and response can be matched in the logs.

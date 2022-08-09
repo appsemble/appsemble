@@ -1,9 +1,9 @@
 import { UserInfo } from '@appsemble/types';
 
-import { App, AppMessages, Organization } from '../models';
-import { compareApps, getApp, getRemapperContext } from './app';
-import { setArgv } from './argv';
-import { useTestDatabase } from './test/testSchema';
+import { App, AppMessages, Organization } from '../models/index.js';
+import { compareApps, getApp, getRemapperContext } from './app.js';
+import { setArgv } from './argv.js';
+import { useTestDatabase } from './test/testSchema.js';
 
 useTestDatabase('getapp');
 

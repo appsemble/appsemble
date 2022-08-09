@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-import { useEventListener } from '.';
+import { useEventListener } from './index.js';
 
 /**
  * Prompt for the user to be sure if they want to leave the page.

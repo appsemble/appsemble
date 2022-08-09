@@ -6,11 +6,11 @@ import { FC, ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { MarkdownContent } from '../MarkdownContent';
-import { AnyOfSchema } from './AnyOfSchema';
+import { MarkdownContent } from '../MarkdownContent/index.js';
+import { AnyOfSchema } from './AnyOfSchema/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
-import { SchemaDescriptor } from './SchemaDescriptor';
+import { messages } from './messages.js';
+import { SchemaDescriptor } from './SchemaDescriptor/index.js';
 
 export interface RenderRefProps {
   isArray: boolean;

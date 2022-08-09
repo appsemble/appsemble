@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, forwardRef } from 'react';
 
-import { FormComponent, Select, SharedFormComponentProps } from '..';
+import { FormComponent, Select, SharedFormComponentProps } from '../index.js';
 
 type SelectFieldProps = Omit<
   ComponentPropsWithoutRef<typeof Select>,

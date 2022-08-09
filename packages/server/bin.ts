@@ -1,18 +1,17 @@
-#!/usr/bin/env node
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
-import * as cleanup from './commands/cleanup';
-import * as cleanupResources from './commands/cleanupResources';
-import * as health from './commands/health';
-import * as migrate from './commands/migrate';
-import * as restore from './commands/restore';
-import * as runCronJobs from './commands/runCronJobs';
-import * as start from './commands/start';
+import * as cleanup from './commands/cleanup.js';
+import * as cleanupResources from './commands/cleanupResources.js';
+import * as health from './commands/health.js';
+import * as migrate from './commands/migrate.js';
+import * as restore from './commands/restore.js';
+import * as runCronJobs from './commands/runCronJobs.js';
+import * as start from './commands/start.js';
 import pkg from './package.json';
-import './types';
-import { setArgv } from './utils/argv';
-import { configureSentry } from './utils/sentry';
+import './types.js';
+import { setArgv } from './utils/argv.js';
+import { configureSentry } from './utils/sentry.js';
 
 process.title = 'appsemble';
 

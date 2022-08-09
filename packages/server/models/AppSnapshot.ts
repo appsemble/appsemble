@@ -11,7 +11,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, User } from './index.js';
 
 @Table({ tableName: 'AppSnapshot', updatedAt: false })
 export class AppSnapshot extends Model {

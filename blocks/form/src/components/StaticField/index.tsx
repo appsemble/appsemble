@@ -3,7 +3,7 @@ import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { InputProps, StaticField as StaticFieldType } from '../../../block';
+import { InputProps, StaticField as StaticFieldType } from '../../../block.js';
 
 type StaticFieldProps = Omit<InputProps<string, StaticFieldType>, 'onChange'>;
 

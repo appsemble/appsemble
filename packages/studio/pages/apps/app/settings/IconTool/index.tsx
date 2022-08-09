@@ -13,11 +13,11 @@ import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useEffect, useS
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { useUser } from '../../../../../components/UserProvider';
-import { IconPicker } from '../IconPicker';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { useApp } from '../../index.js';
+import { IconPicker } from '../IconPicker/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 const shapes = {
   minimal: 'inset(10% round 40%)',

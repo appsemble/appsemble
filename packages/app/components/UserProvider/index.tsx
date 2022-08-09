@@ -16,10 +16,10 @@ import {
   useState,
 } from 'react';
 
-import { UpdateTeam } from '../../types';
-import { oauth2Scope } from '../../utils/constants';
-import { apiUrl, appId } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
+import { UpdateTeam } from '../../types.js';
+import { oauth2Scope } from '../../utils/constants.js';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface JwtPayload {
   exp: number;

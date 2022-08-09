@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 
-import { Loader } from '.';
+import { Loader } from './index.js';
 
 describe('Loader', () => {
   it('should match its snapshot', () => {

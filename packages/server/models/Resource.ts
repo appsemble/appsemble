@@ -15,8 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, Asset, ResourceSubscription, User } from '.';
-import { ResourceVersion } from './ResourceVersion';
+import { App, Asset, ResourceSubscription, ResourceVersion, User } from './index.js';
 
 interface ResourceToJsonOptions {
   /**

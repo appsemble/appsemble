@@ -4,8 +4,8 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 
-import { languages } from '../../../utils/settings';
-import { messages } from './messages';
+import { languages } from '../../../utils/settings.js';
+import { messages } from './messages.js';
 
 export function LanguagePreference(): ReactElement {
   const history = useHistory();

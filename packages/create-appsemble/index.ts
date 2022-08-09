@@ -2,7 +2,7 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-import * as block from './commands/block';
+import * as block from './commands/block.js';
 
 yargs
   .option('verbose', {

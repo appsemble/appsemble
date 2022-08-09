@@ -4,7 +4,7 @@ import { resolve } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
 import { Context } from 'koa';
-import { render as renderTemplate } from 'mustache';
+import mustache from 'mustache';
 
 /**
  * Render settings as an HTML script tag.
@@ -50,7 +50,7 @@ export async function render(
   const template = await (process.env.NODE_ENV === 'production'
     ? readFile(resolve(__dirname, '..', '..', '..', 'dist', filename), 'utf8')
     : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
-  ctx.body = renderTemplate(template, data);
+  ctx.body = mustache.render(template, data);
   ctx.type = 'html';
 }
 

@@ -1,6 +1,6 @@
 import { AppDefinition, RoleDefinition } from '@appsemble/types';
 
-import { has } from './has';
+import { has } from './has.js';
 
 /**
  * Resolve role security inheritance based on priority.

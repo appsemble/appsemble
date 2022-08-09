@@ -1,5 +1,5 @@
-import { BaseJSONSchema } from './BaseJSONSchema';
-import { extendJSONSchema } from './utils';
+import { BaseJSONSchema } from './BaseJSONSchema.js';
+import { extendJSONSchema } from './utils.js';
 
 export const JSONPointer = extendJSONSchema(BaseJSONSchema, {
   type: 'object',

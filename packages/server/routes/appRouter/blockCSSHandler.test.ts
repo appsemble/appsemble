@@ -1,11 +1,11 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { appRouter } from '.';
-import { boomMiddleware } from '../../middleware/boom';
-import { App, AppBlockStyle, Organization } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { boomMiddleware } from '../../middleware/boom.js';
+import { App, AppBlockStyle, Organization } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 useTestDatabase('blockcsshandler');
 

@@ -1,4 +1,4 @@
-import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema';
+import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema.js';
 
 describe('generateDataFromSchema', () => {
   it('should not crash if no schema is defined', () => {

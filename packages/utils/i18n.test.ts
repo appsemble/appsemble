@@ -1,4 +1,4 @@
-import { detectLocale, sortLocales } from './i18n';
+import { detectLocale, sortLocales } from './i18n.js';
 
 describe('sortLocales', () => {
   const tests: [string[], string[]][] = [

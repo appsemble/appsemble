@@ -1,8 +1,8 @@
 import { AppsembleError } from '@appsemble/node-utils';
 
-import { getDB, Meta } from '../models';
-import { migrate, Migration } from './migrate';
-import { useTestDatabase } from './test/testSchema';
+import { getDB, Meta } from '../models/index.js';
+import { migrate, Migration } from './migrate.js';
+import { useTestDatabase } from './test/testSchema.js';
 
 let m000: Migration;
 let m001: Migration;

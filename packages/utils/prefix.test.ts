@@ -1,4 +1,4 @@
-import { prefix } from './prefix';
+import { prefix } from './prefix.js';
 
 it('should prefix a string if the prefix is truthy', () => {
   const result = prefix('bar', 'foo');

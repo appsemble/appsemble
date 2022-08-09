@@ -14,21 +14,21 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogParams, ShowShareDialog } from '../../types';
-import { getDefaultPageName } from '../../utils/getDefaultPageName';
-import { apiUrl, appId } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
-import { BlockList } from '../BlockList';
-import { FlowPage } from '../FlowPage';
-import { usePage } from '../MenuProvider';
-import { PageDialog } from '../PageDialog';
-import { TabsPage } from '../TabsPage';
-import { TitleBar } from '../TitleBar';
-import { useUser } from '../UserProvider';
+import { ShowDialogParams, ShowShareDialog } from '../../types.js';
+import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { BlockList } from '../BlockList/index.js';
+import { FlowPage } from '../FlowPage/index.js';
+import { usePage } from '../MenuProvider/index.js';
+import { PageDialog } from '../PageDialog/index.js';
+import { TabsPage } from '../TabsPage/index.js';
+import { TitleBar } from '../TitleBar/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
-import { ShareDialog, ShareDialogState } from './ShareDialog';
+import { messages } from './messages.js';
+import { ShareDialog, ShareDialogState } from './ShareDialog/index.js';
 
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();

@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, forwardRef, useCallback, useRef } from 'react';
 
-import { IconButton, InputField, TextAreaField, useCombinedRefs, useMessages } from '..';
+import { IconButton, InputField, TextAreaField, useCombinedRefs, useMessages } from '../index.js';
 
 interface FormOutputProps
   extends Omit<

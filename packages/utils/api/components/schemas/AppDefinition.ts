@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { defaultLocale } from '../../../constants';
+import { defaultLocale } from '../../../constants/index.js';
 
 export const AppDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @DefaultScope(() => ({
   attributes: [

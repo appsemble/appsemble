@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react';
 
-import { useCombinedRefs } from '..';
+import { useCombinedRefs } from '../index.js';
 
 type CheckboxProps = Omit<
   ComponentPropsWithoutRef<'input'>,

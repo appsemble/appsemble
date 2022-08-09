@@ -1,4 +1,4 @@
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 describe('log', () => {
   beforeEach(() => {

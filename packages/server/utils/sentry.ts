@@ -2,7 +2,7 @@ import { init } from '@sentry/node';
 import matcher from 'matcher';
 
 import pkg from '../package.json';
-import { argv } from './argv';
+import { argv } from './argv.js';
 
 interface SentrySettings {
   /**

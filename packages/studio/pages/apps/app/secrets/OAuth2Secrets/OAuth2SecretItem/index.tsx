@@ -3,9 +3,9 @@ import { AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 
-import { useApp } from '../../..';
-import { ListButton } from '../../../../../../components/ListButton';
-import { OAuth2Modal } from '../OAuth2Modal';
+import { ListButton } from '../../../../../../components/ListButton/index.js';
+import { useApp } from '../../../index.js';
+import { OAuth2Modal } from '../OAuth2Modal/index.js';
 
 interface OAuth2SecretItemProps {
   /**

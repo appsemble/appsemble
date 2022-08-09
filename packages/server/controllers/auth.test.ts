@@ -2,10 +2,10 @@ import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
-import { EmailAuthorization, ResetPasswordToken, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase('auth');
 

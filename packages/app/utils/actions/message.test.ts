@@ -1,6 +1,6 @@
 import { remap } from '@appsemble/utils';
 
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 describe('message', () => {
   it('should return the input data', async () => {

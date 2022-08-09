@@ -8,12 +8,12 @@ import {
   Field,
   FieldComponentProps,
   StringField,
-} from '../../../block';
-import { ButtonsFieldComponent } from '../ButtonsFieldComponent';
-import { DateFieldComponent } from '../DateFieldComponent';
-import { DateRangeFieldComponent } from '../DateRangeFieldComponent';
-import { EnumFieldComponent } from '../EnumFieldComponent';
-import { StringFieldComponent } from '../StringFieldComponent';
+} from '../../../block.js';
+import { ButtonsFieldComponent } from '../ButtonsFieldComponent/index.js';
+import { DateFieldComponent } from '../DateFieldComponent/index.js';
+import { DateRangeFieldComponent } from '../DateRangeFieldComponent/index.js';
+import { EnumFieldComponent } from '../EnumFieldComponent/index.js';
+import { StringFieldComponent } from '../StringFieldComponent/index.js';
 
 export function FieldComponent(props: FieldComponentProps<Field>): VNode {
   const { field } = props;

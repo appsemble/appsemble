@@ -15,7 +15,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
-import { BlockAsset, BlockMessages, Organization } from '.';
+import { BlockAsset, BlockMessages, Organization } from './index.js';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
 export class BlockVersion extends Model {

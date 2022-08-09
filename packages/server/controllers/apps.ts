@@ -34,15 +34,15 @@ import {
   Resource,
   transactional,
   User,
-} from '../models';
-import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
-import { argv } from '../utils/argv';
-import { blockVersionToJson, syncBlock } from '../utils/block';
-import { checkAppLock } from '../utils/checkAppLock';
-import { checkRole } from '../utils/checkRole';
-import { encrypt } from '../utils/crypto';
-import { serveIcon } from '../utils/icon';
-import { handleValidatorResult } from '../utils/jsonschema';
+} from '../models/index.js';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
+import { argv } from '../utils/argv.js';
+import { blockVersionToJson, syncBlock } from '../utils/block.js';
+import { checkAppLock } from '../utils/checkAppLock.js';
+import { checkRole } from '../utils/checkRole.js';
+import { encrypt } from '../utils/crypto.js';
+import { serveIcon } from '../utils/icon.js';
+import { handleValidatorResult } from '../utils/jsonschema.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {

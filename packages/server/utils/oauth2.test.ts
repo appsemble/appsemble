@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { sign } from 'jsonwebtoken';
 
-import { getAccessToken, getUserInfo, hasScope } from './oauth2';
+import { getAccessToken, getUserInfo, hasScope } from './oauth2.js';
 
 const mock = new MockAdapter(axios);
 

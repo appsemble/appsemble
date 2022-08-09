@@ -2,9 +2,9 @@ import { MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { BlockPage } from './block';
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
+import { BlockPage } from './block/index.js';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
 
 /**
  * Render routes related to blocks.

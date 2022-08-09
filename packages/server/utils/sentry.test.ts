@@ -1,5 +1,5 @@
-import { setArgv } from './argv';
-import { getSentryClientSettings } from './sentry';
+import { setArgv } from './argv.js';
+import { getSentryClientSettings } from './sentry.js';
 
 describe('getSentryClientSettings', () => {
   it('should be able to convert hosted sentry DSNs', () => {

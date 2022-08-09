@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import { ActionCreator } from '.';
-import { apiUrl, appId } from '../settings';
+import { apiUrl, appId } from '../settings.js';
+import { ActionCreator } from './index.js';
 
 export const email: ActionCreator<'email'> = ({ prefixIndex }) => [
   async (data) => {

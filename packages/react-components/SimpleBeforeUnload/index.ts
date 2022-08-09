@@ -1,4 +1,4 @@
-import { useBeforeUnload, useSimpleForm } from '..';
+import { useBeforeUnload, useSimpleForm } from '../index.js';
 
 export function SimpleBeforeUnload(): null {
   const { pristine, submitting } = useSimpleForm();

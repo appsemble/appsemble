@@ -2,7 +2,7 @@ import { Input, Table, useSimpleForm } from '@appsemble/react-components';
 import { ChangeEvent, forwardRef, ReactElement, ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface AnnotationsTableProps {
   disabled?: boolean;

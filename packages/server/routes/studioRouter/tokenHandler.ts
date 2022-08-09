@@ -2,14 +2,14 @@ import querystring from 'querystring';
 
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
-import { JwtPayload, verify } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Context } from 'koa';
 import raw from 'raw-body';
 
-import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models';
-import { argv } from '../../utils/argv';
-import { createJWTResponse } from '../../utils/createJWTResponse';
-import { hasScope } from '../../utils/oauth2';
+import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models/index.js';
+import { argv } from '../../utils/argv.js';
+import { createJWTResponse } from '../../utils/createJWTResponse.js';
+import { hasScope } from '../../utils/oauth2.js';
 
 class GrantError extends Error {
   status: number;
@@ -148,7 +148,7 @@ export async function tokenHandler(ctx: Context): Promise<void> {
       case 'refresh_token': {
         const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
         try {
-          const payload = verify(token, argv.secret) as JwtPayload;
+          const payload = jwt.verify(token, argv.secret) as JwtPayload;
           ({ scope, sub } = payload);
           aud = payload.aud as string;
           refreshToken = true;

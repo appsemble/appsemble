@@ -12,8 +12,8 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { RatingField } from '../RatingField';
-import { messages } from './messages';
+import { RatingField } from '../RatingField/index.js';
+import { messages } from './messages.js';
 
 interface RateAppProps {
   app: App;

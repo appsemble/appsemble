@@ -1,4 +1,4 @@
-import { identity, rethrow, stripNullValues } from './miscellaneous';
+import { identity, rethrow, stripNullValues } from './miscellaneous.js';
 
 /**
  * Return the input data.

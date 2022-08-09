@@ -21,12 +21,12 @@ import { Fragment, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
-import { AppIcon } from '../../../../components/AppIcon';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { CardHeaderControl } from '../../../../components/CardHeaderControl';
-import { useUser } from '../../../../components/UserProvider';
-import { messages } from './messages';
-import { PicturePreview } from './PicturePreview';
+import { AppIcon } from '../../../../components/AppIcon/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { messages } from './messages.js';
+import { PicturePreview } from './PicturePreview/index.js';
 
 export function DetailsPage(): ReactElement {
   const { appId, lang } = useParams<{ appId: string; lang: string }>();

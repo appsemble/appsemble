@@ -4,10 +4,10 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
-import { useApp } from '../../..';
-import { ListButton } from '../../../../../../components/ListButton';
-import { SamlModal } from '../SamlModal';
-import { messages } from './messages';
+import { ListButton } from '../../../../../../components/ListButton/index.js';
+import { useApp } from '../../../index.js';
+import { SamlModal } from '../SamlModal/index.js';
+import { messages } from './messages.js';
 
 interface SamlSecretItemProps {
   /**

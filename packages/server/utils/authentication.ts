@@ -1,10 +1,10 @@
 import { compare } from 'bcrypt';
-import { JwtPayload, verify } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
-import { argv } from './argv';
+import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
+import { argv } from './argv.js';
 
 interface AuthenticationCheckers {
   basic: GetHttpUser<User>;
@@ -27,7 +27,7 @@ export function authentication(): AuthenticationCheckers {
     },
 
     app(accessToken: string) {
-      const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
+      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
       // XXX use origin check when default app domains are implemented.
       const [prefix, id] = (aud as string).split(':');
       if (prefix !== 'app') {
@@ -38,7 +38,7 @@ export function authentication(): AuthenticationCheckers {
     },
 
     async cli(accessToken) {
-      const { aud, scope, sub } = verify(accessToken, secret) as JwtPayload;
+      const { aud, scope, sub } = jwt.verify(accessToken, secret) as JwtPayload;
       const credentials = await OAuth2ClientCredentials.count({
         where: {
           id: aud,
@@ -53,7 +53,7 @@ export function authentication(): AuthenticationCheckers {
     },
 
     studio(accessToken) {
-      const { sub } = verify(accessToken, secret, { audience: host }) as JwtPayload;
+      const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
       return new User({ id: sub });
     },
   };

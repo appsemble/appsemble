@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { BlockAsset, BlockVersion } from '../../models';
+import { BlockAsset, BlockVersion } from '../../models/index.js';
 
 /**
  * Serve a block asset.

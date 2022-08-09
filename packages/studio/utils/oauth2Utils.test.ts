@@ -1,4 +1,4 @@
-import { oauth2Redirect, verifyOAuth2LoginRequest } from './oauth2Utils';
+import { oauth2Redirect, verifyOAuth2LoginRequest } from './oauth2Utils.js';
 
 let originalLocation: Location;
 

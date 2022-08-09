@@ -1,24 +1,26 @@
 #!/usr/bin/env node
+import process from 'process';
+
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
 import yargs from 'yargs';
 
-import * as app from './commands/app';
-import * as asset from './commands/asset';
-import * as block from './commands/block';
-import * as cleanupResources from './commands/cleanupResources';
-import * as config from './commands/config';
-import * as login from './commands/login';
-import * as logout from './commands/logout';
-import * as migrate from './commands/migrate';
-import * as organization from './commands/organization';
-import * as resource from './commands/resource';
-import * as runCronJobs from './commands/runCronJobs';
-import * as start from './commands/start';
-import * as team from './commands/team';
-import { CREDENTIALS_ENV_VAR } from './lib/authentication';
-import { coerceRemote } from './lib/coercers';
-import { initAxios } from './lib/initAxios';
+import * as app from './commands/app/index.js';
+import * as asset from './commands/asset/index.js';
+import * as block from './commands/block/index.js';
+import * as cleanupResources from './commands/cleanupResources.js';
+import * as config from './commands/config/index.js';
+import * as login from './commands/login.js';
+import * as logout from './commands/logout.js';
+import * as migrate from './commands/migrate.js';
+import * as organization from './commands/organization/index.js';
+import * as resource from './commands/resource/index.js';
+import * as runCronJobs from './commands/runCronJobs.js';
+import * as start from './commands/start.js';
+import * as team from './commands/team/index.js';
+import { CREDENTIALS_ENV_VAR } from './lib/authentication.js';
+import { coerceRemote } from './lib/coercers.js';
+import { initAxios } from './lib/initAxios.js';
 
 process.title = 'appsemble';
 

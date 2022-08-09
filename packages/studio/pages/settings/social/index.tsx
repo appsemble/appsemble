@@ -16,9 +16,9 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { logins } from '../../../utils/settings';
+import { logins } from '../../../utils/settings.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface ConnectedAccount {
   authorizationUrl: string;

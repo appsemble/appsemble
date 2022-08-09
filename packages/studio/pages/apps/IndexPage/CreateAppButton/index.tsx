@@ -17,11 +17,11 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal';
-import { ResendEmailButton } from '../../../../components/ResendEmailButton';
-import { useUser } from '../../../../components/UserProvider';
-import { checkRole } from '../../../../utils/checkRole';
-import { messages } from './messages';
+import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal/index.js';
+import { ResendEmailButton } from '../../../../components/ResendEmailButton/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../utils/checkRole.js';
+import { messages } from './messages.js';
 
 interface Template {
   id: number;

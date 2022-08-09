@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { normalized } from '../../../constants';
+import { normalized } from '../../../constants/index.js';
 
 export const Asset: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

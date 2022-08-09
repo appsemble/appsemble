@@ -13,9 +13,9 @@ import {
   TeamMember,
   transactional,
   User,
-} from '../models';
-import { getAppUrl } from '../utils/app';
-import { checkRole } from '../utils/checkRole';
+} from '../models/index.js';
+import { getAppUrl } from '../utils/app.js';
+import { checkRole } from '../utils/checkRole.js';
 
 async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
   const {

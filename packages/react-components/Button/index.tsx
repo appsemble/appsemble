@@ -2,7 +2,7 @@ import { BulmaColor, BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
 
-import { ButtonChildren } from '..';
+import { ButtonChildren } from '../index.js';
 
 type ButtonProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C> &
   ComponentPropsWithoutRef<typeof ButtonChildren> & {

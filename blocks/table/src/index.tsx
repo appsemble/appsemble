@@ -3,7 +3,7 @@ import { Loader } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import { ItemRow } from './components/ItemRow';
+import { ItemRow } from './components/ItemRow/index.js';
 
 interface Item {
   id?: number;

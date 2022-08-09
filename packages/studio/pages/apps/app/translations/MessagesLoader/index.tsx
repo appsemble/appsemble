@@ -3,10 +3,10 @@ import { AppMessages } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { MessagesForm } from '../MessagesForm';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { useApp } from '../../index.js';
+import { MessagesForm } from '../MessagesForm/index.js';
+import { messages } from './messages.js';
 
 interface MessagesLoaderProps {
   /**

@@ -3,11 +3,11 @@ import { App } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { AppCard } from '../../../../components/AppCard';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { Collapsible } from '../../../../components/Collapsible';
+import { AppCard } from '../../../../components/AppCard/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { Collapsible } from '../../../../components/Collapsible/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface CollapsibleAppListProps {
   /**

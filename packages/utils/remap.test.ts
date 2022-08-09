@@ -2,7 +2,7 @@ import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { IntlMessageFormat } from 'intl-messageformat';
 
-import { remap } from './remap';
+import { remap } from './remap.js';
 
 interface TestCase {
   input: any;

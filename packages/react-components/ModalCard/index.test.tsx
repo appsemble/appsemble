@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 
-import { ModalCard } from '.';
+import { ModalCard } from './index.js';
 
 jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');

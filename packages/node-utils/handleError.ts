@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
 
-import { AppsembleError } from './AppsembleError';
-import { logger } from './logger';
+import { AppsembleError } from './AppsembleError.js';
+import { logger } from './logger.js';
 
 /**
  * Handle a fatal error.

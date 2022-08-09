@@ -5,7 +5,7 @@ import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { supportedLanguages } from '../../utils/constants';
+import { supportedLanguages } from '../../utils/constants.js';
 
 interface IntlMessagesProviderProps {
   children: ReactNode;

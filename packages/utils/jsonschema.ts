@@ -2,7 +2,7 @@ import { Schema } from 'jsonschema';
 import lcm from 'lcm';
 import { JsonArray, JsonValue } from 'type-fest';
 
-import { mapValues } from './mapValues';
+import { mapValues } from './mapValues.js';
 
 declare module 'jsonschema' {
   /**

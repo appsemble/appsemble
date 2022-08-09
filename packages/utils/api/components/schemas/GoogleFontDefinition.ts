@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { baseTheme, googleFonts } from '../../../constants';
+import { baseTheme, googleFonts } from '../../../constants/index.js';
 
 export const GoogleFontDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

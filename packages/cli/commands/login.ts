@@ -1,4 +1,4 @@
-export { login as handler } from '../lib/authentication';
+export { login as handler } from '../lib/authentication.js';
 
 export const command = 'login';
 export const description =

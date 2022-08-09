@@ -1,4 +1,4 @@
-import { configureLogger, logger, setLogLevel } from './logger';
+import { configureLogger, logger, setLogLevel } from './logger.js';
 
 describe('setLogLevel', () => {
   afterEach(() => {

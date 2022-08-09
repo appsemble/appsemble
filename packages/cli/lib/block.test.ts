@@ -1,7 +1,7 @@
 import { resolveFixture } from '@appsemble/node-utils';
 import concat from 'concat-stream';
 
-import { makePayload } from './block';
+import { makePayload } from './block.js';
 
 describe('makePayload', () => {
   it('should create a form-data payload', async () => {

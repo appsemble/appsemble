@@ -42,7 +42,7 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
   const configurations: Configuration[] = [];
   let appConfig: Configuration;
   let studioConfig: Configuration;
-  const outputDir = resolve(__dirname, '..', '..', '..', '..', 'dist');
+  const outputDir = resolve(__dirname, '..', '..', '..', 'dist');
   logger.warn(`Removing directory: ${outputDir}`);
   await rm(outputDir, { force: true, recursive: true });
   if (app) {

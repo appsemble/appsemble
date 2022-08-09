@@ -8,7 +8,7 @@ import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { PackageJson } from 'type-fest';
 
-import { extractMessages } from '../lib/i18n';
+import { extractMessages } from '../lib/i18n.js';
 
 export const command = 'validate';
 export const description = 'Validate all workspaces have a proper configuration';

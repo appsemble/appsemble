@@ -3,7 +3,7 @@ import semver from 'semver';
 import { Sequelize } from 'sequelize';
 import { Promisable } from 'type-fest';
 
-import { getDB, Meta } from '../models';
+import { getDB, Meta } from '../models/index.js';
 
 export interface Migration {
   key: string;

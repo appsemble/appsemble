@@ -2,7 +2,7 @@ import { Content, ResetPassword, useMeta } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function ResetPasswordPage(): ReactElement {
   useMeta(messages.title, messages.description);

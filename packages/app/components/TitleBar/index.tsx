@@ -1,11 +1,11 @@
 import { Portal, SideMenuButton } from '@appsemble/react-components';
 import { ReactChild, ReactElement } from 'react';
 
-import { shouldShowMenu } from '../../utils/layout';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { usePage } from '../MenuProvider';
-import { ProfileDropdown } from '../ProfileDropdown';
-import { useUser } from '../UserProvider';
+import { shouldShowMenu } from '../../utils/layout.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { usePage } from '../MenuProvider/index.js';
+import { ProfileDropdown } from '../ProfileDropdown/index.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface TitleBarProps {
   children?: ReactChild;

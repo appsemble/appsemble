@@ -2,8 +2,8 @@ import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Field } from './components/Field';
-import { FieldGroup } from './components/FieldGroup';
+import { Field } from './components/Field/index.js';
+import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
 
 bootstrap(({ data: blockData, events, parameters, ready }) => {

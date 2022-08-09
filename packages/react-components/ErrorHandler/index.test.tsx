@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { ErrorHandler } from '.';
+import { ErrorHandler } from './index.js';
 
 it('should render its children if no errors are thrown', () => {
   function Child(): ReactElement {

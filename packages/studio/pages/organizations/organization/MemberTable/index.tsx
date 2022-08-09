@@ -5,15 +5,15 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { HeaderControl } from '../../../../components/HeaderControl';
-import { useUser } from '../../../../components/UserProvider';
-import { Member } from '../../../../types';
-import { checkRole } from '../../../../utils/checkRole';
-import { AddMembersModal } from '../AddMembersModal';
-import { InviteRow } from '../InviteRow';
-import { MemberRow } from '../MemberRow';
+import { HeaderControl } from '../../../../components/HeaderControl/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { Member } from '../../../../types.js';
+import { checkRole } from '../../../../utils/checkRole.js';
+import { AddMembersModal } from '../AddMembersModal/index.js';
+import { InviteRow } from '../InviteRow/index.js';
+import { MemberRow } from '../MemberRow/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function MemberTable(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();

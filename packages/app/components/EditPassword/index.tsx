@@ -10,8 +10,8 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings';
-import { messages } from './messages';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { messages } from './messages.js';
 
 export function EditPassword(): ReactElement {
   useMeta(messages.title);

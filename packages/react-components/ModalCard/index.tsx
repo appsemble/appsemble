@@ -9,7 +9,7 @@ import {
   useCallback,
 } from 'react';
 
-import { useAnimation } from '..';
+import { useAnimation } from '../index.js';
 import styles from './index.module.css';
 
 interface ModalCardProps<T extends ElementType> {

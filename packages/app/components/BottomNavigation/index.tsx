@@ -5,14 +5,14 @@ import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
-import { shouldShowMenu } from '../../utils/layout';
-import { appId, sentryDsn } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
-import { useUser } from '../UserProvider';
+import { shouldShowMenu } from '../../utils/layout.js';
+import { appId, sentryDsn } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 import './index.css';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface BottomNavigationProps {
   pages: PageDefinition[];

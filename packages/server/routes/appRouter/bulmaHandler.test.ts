@@ -5,11 +5,11 @@ import Koa from 'koa';
 import { omit } from 'lodash';
 import sass from 'sass';
 
-import { appRouter } from '.';
-import { boomMiddleware } from '../../middleware/boom';
-import { Theme } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { boomMiddleware } from '../../middleware/boom.js';
+import { Theme } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 useTestDatabase('bulmahandler');
 

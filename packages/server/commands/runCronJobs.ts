@@ -3,14 +3,14 @@ import cron from 'cron-parser';
 import { Op } from 'sequelize';
 import { Argv } from 'yargs';
 
-import { App, initDB } from '../models';
-import { handleAction } from '../utils/action';
-import { actions } from '../utils/actions';
-import { argv } from '../utils/argv';
-import { iterTable } from '../utils/database';
-import { Mailer } from '../utils/email/Mailer';
-import { handleDBError } from '../utils/sqlUtils';
-import { databaseBuilder } from './builder/database';
+import { App, initDB } from '../models/index.js';
+import { handleAction } from '../utils/action.js';
+import { actions } from '../utils/actions/index.js';
+import { argv } from '../utils/argv.js';
+import { iterTable } from '../utils/database.js';
+import { Mailer } from '../utils/email/Mailer.js';
+import { handleDBError } from '../utils/sqlUtils.js';
+import { databaseBuilder } from './builder/database.js';
 
 export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';

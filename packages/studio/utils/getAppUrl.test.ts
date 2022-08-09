@@ -1,4 +1,4 @@
-import { getAppUrl } from './getAppUrl';
+import { getAppUrl } from './getAppUrl.js';
 
 let originalLocation: Location;
 

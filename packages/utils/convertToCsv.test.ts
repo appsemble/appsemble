@@ -1,4 +1,4 @@
-import { convertToCsv } from './convertToCsv';
+import { convertToCsv } from './convertToCsv.js';
 
 describe('convertToCsv', () => {
   it('should throw an error if input is null', () => {

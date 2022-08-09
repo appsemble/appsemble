@@ -1,5 +1,5 @@
-import { ShowDialogParams } from '../../types';
-import { createTestAction } from '../makeActions';
+import { ShowDialogParams } from '../../types.js';
+import { createTestAction } from '../makeActions.js';
 
 describe('dialog', () => {
   let close: jest.Mock<void, []>;

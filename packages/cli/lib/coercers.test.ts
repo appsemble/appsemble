@@ -1,4 +1,4 @@
-import { coerceRemote } from './coercers';
+import { coerceRemote } from './coercers.js';
 
 describe('coerceRemote', () => {
   const tests: [string, string][] = [

@@ -3,8 +3,8 @@ import { InputField, SliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { InputProps, NumberField } from '../../../block';
-import { getMax, getMin, getStep, isRequired } from '../../utils/requirements';
+import { InputProps, NumberField } from '../../../block.js';
+import { getMax, getMin, getStep, isRequired } from '../../utils/requirements.js';
 
 type NumberInputProps = InputProps<number, NumberField>;
 

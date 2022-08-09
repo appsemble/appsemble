@@ -1,8 +1,8 @@
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { AppScreenshot } from '../../models';
-import { getApp } from '../../utils/app';
+import { AppScreenshot } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest

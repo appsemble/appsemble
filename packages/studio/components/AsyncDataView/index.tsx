@@ -3,7 +3,7 @@ import { ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface AsyncDataViewProps<T> {
   /**

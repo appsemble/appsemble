@@ -1,7 +1,7 @@
 import { useMeta } from '@appsemble/react-components';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-import { BlockList } from '../../BlockList';
+import { BlockList } from '../../BlockList/index.js';
 
 interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
   /**

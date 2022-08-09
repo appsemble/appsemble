@@ -7,7 +7,7 @@ import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { FormComponent, Input, SharedFormComponentProps } from '..';
+import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
 
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   Pick<

@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 
-import { Modal } from '.';
+import { Modal } from './index.js';
 
 jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');

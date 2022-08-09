@@ -12,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, User } from './index.js';
 
 @Table({ tableName: 'AppRating' })
 export class AppRating extends Model {

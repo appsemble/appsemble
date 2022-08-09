@@ -5,18 +5,18 @@ import faPkg from '@fortawesome/fontawesome-free/package.json';
 import mount from 'koa-mount';
 import serve from 'koa-static';
 
-import { tinyRouter } from '../../middleware/tinyRouter';
-import { staticHandler } from '../static';
-import { blockAssetHandler } from './blockAssetHandler';
-import { blockCSSHandler } from './blockCSSHandler';
-import { bulmaHandler } from './bulmaHandler';
-import { cssHandler } from './cssHandler';
-import { iconHandler } from './iconHandler';
-import { indexHandler } from './indexHandler';
-import { manifestHandler } from './manifestHandler';
-import { robotsHandler } from './robotsHandler';
-import { screenshotHandler } from './screenshotHandler';
-import { serviceWorkerHandler } from './serviceWorkerHandler';
+import { tinyRouter } from '../../middleware/tinyRouter.js';
+import { staticHandler } from '../static.js';
+import { blockAssetHandler } from './blockAssetHandler.js';
+import { blockCSSHandler } from './blockCSSHandler.js';
+import { bulmaHandler } from './bulmaHandler.js';
+import { cssHandler } from './cssHandler.js';
+import { iconHandler } from './iconHandler.js';
+import { indexHandler } from './indexHandler.js';
+import { manifestHandler } from './manifestHandler.js';
+import { robotsHandler } from './robotsHandler.js';
+import { screenshotHandler } from './screenshotHandler.js';
+import { serviceWorkerHandler } from './serviceWorkerHandler.js';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 

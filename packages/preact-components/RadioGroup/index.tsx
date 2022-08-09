@@ -1,6 +1,6 @@
 import { ComponentChild, JSX, VNode } from 'preact';
 
-import { FormComponent, ValuePickerProvider } from '..';
+import { FormComponent, ValuePickerProvider } from '../index.js';
 
 interface RadioGroupProps
   extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> {

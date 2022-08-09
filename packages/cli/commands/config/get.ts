@@ -2,7 +2,7 @@ import { has } from '@appsemble/utils';
 import readPkgUp from 'read-pkg-up';
 import { Argv } from 'yargs';
 
-import { BaseArguments, MonoRepoPackageJson } from '../../types';
+import { BaseArguments, MonoRepoPackageJson } from '../../types.js';
 
 interface ConfigGetArguments extends BaseArguments {
   key: string;

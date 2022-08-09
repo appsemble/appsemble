@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { Form } from '..';
+import { Form } from '../index.js';
 
 interface SimpleFormProps<T>
   extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {

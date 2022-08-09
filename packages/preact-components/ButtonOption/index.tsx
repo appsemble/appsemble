@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Button, useValuePicker } from '..';
+import { Button, useValuePicker } from '../index.js';
 
 interface ButtonOptionProps extends Omit<ComponentProps<typeof Button>, 'value'> {
   activeClassName: string;

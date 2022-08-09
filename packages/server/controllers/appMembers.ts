@@ -25,13 +25,13 @@ import {
   Organization,
   transactional,
   User,
-} from '../models';
-import { applyAppMessages, getAppUrl, parseLanguage } from '../utils/app';
-import { argv } from '../utils/argv';
-import { checkRole } from '../utils/checkRole';
-import { createJWTResponse } from '../utils/createJWTResponse';
-import { getGravatarUrl } from '../utils/gravatar';
-import { serveIcon } from '../utils/icon';
+} from '../models/index.js';
+import { applyAppMessages, getAppUrl, parseLanguage } from '../utils/app.js';
+import { argv } from '../utils/argv.js';
+import { checkRole } from '../utils/checkRole.js';
+import { createJWTResponse } from '../utils/createJWTResponse.js';
+import { getGravatarUrl } from '../utils/gravatar.js';
+import { serveIcon } from '../utils/icon.js';
 
 /**
  * Create an app member as JSON output from an app.

@@ -1,7 +1,7 @@
 import { IDBPDatabase, openDB } from 'idb';
 
-import { ActionCreator } from '.';
-import { appId } from '../settings';
+import { appId } from '../settings.js';
+import { ActionCreator } from './index.js';
 
 let dbPromise: Promise<IDBPDatabase>;
 

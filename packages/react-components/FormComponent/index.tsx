@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import { cloneElement, isValidElement, ReactElement, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Icon } from '..';
+import { Icon } from '../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.

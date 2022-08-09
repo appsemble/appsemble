@@ -14,12 +14,12 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { apiUrl, appId } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { BottomNavigation } from '../BottomNavigation';
-import { SideNavigation } from '../SideNavigation';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { BottomNavigation } from '../BottomNavigation/index.js';
+import { SideNavigation } from '../SideNavigation/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 export interface BlockMenuItem {
   path: string;

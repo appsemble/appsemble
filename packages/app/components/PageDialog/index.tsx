@@ -2,8 +2,8 @@ import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-import { ShowDialogParams } from '../../types';
-import { BlockList } from '../BlockList';
+import { ShowDialogParams } from '../../types.js';
+import { BlockList } from '../BlockList/index.js';
 import styles from './index.module.css';
 
 interface PageDialogProps

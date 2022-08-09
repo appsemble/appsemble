@@ -1,6 +1,6 @@
 import { version } from 'bulma/package.json';
 
-import { createThemeURL, mergeThemes } from './theme';
+import { createThemeURL, mergeThemes } from './theme.js';
 
 describe('mergeThemes', () => {
   it('should use the base theme as default', () => {

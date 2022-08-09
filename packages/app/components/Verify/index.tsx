@@ -4,9 +4,9 @@ import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings';
+import { apiUrl, appId } from '../../utils/settings.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function Verify(): ReactElement {
   useMeta(messages.title);

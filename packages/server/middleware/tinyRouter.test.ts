@@ -3,7 +3,7 @@ import { Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa, { Context } from 'koa';
 
-import { tinyRouter } from './tinyRouter';
+import { tinyRouter } from './tinyRouter.js';
 
 let app: Koa;
 let context: Context;

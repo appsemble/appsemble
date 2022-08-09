@@ -1,4 +1,4 @@
-import { resolveRoleInheritance } from './appSecurity';
+import { resolveRoleInheritance } from './appSecurity.js';
 
 describe('resolveRoleInheritance', () => {
   it('should return an empty array if no security definition is defined', () => {

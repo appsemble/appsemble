@@ -15,7 +15,7 @@ import { Dispatch } from 'react';
 import { match as Match, RouteComponentProps } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
 
-import { ActionCreators } from './utils/actions';
+import { ActionCreators } from './utils/actions/index.js';
 
 declare module '@appsemble/sdk' {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style

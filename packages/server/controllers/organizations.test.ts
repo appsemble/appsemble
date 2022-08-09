@@ -14,12 +14,12 @@ import {
   Organization,
   OrganizationInvite,
   User,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { organizationBlocklist } from '../utils/organizationBlocklist';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { organizationBlocklist } from '../utils/organizationBlocklist.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
 let server: Koa;

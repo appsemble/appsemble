@@ -3,12 +3,18 @@ import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { sign } from 'jsonwebtoken';
 
-import { App, AppOAuth2Secret, Member, OAuth2AuthorizationCode, Organization } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import * as oauth2 from '../utils/oauth2';
-import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import {
+  App,
+  AppOAuth2Secret,
+  Member,
+  OAuth2AuthorizationCode,
+  Organization,
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import * as oauth2 from '../utils/oauth2.js';
+import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
 let clock: InstalledClock;

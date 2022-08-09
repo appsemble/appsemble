@@ -22,7 +22,7 @@ import {
   createListItem,
   createRoot,
   dumpMarkdown,
-} from '../lib/mdast';
+} from '../lib/mdast.js';
 import pkg from '../package.json';
 
 export const command = 'release <increment>';

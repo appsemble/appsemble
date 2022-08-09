@@ -25,6 +25,7 @@ import {
 } from 'sequelize-typescript';
 import { stringify } from 'yaml';
 
+import { resolveIconUrl } from '../utils/model.js';
 import {
   AppBlockStyle,
   AppMember,
@@ -39,8 +40,7 @@ import {
   Organization,
   Resource,
   Team,
-} from '.';
-import { resolveIconUrl } from '../utils/model';
+} from './index.js';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {

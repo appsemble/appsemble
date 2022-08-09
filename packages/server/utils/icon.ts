@@ -1,7 +1,7 @@
 import { Context } from 'koa';
 import sharp, { RGBA } from 'sharp';
 
-import { readAsset } from './readAsset';
+import { readAsset } from './readAsset.js';
 
 interface ServeIconOptions {
   /**

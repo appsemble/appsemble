@@ -2,9 +2,9 @@ import { Message } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { ResendEmailButton } from '../ResendEmailButton';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { ResendEmailButton } from '../ResendEmailButton/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function VerifyBanner(): ReactElement {
   const { userInfo } = useUser();

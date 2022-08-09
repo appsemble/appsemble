@@ -1,4 +1,4 @@
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const message: ActionCreator<'message'> = ({
   definition: { body, color = 'info', dismissable, timeout },

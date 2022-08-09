@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { User } from '.';
+import { User } from './index.js';
 
 @Table({ tableName: 'ResetPasswordToken' })
 export class ResetPasswordToken extends Model {

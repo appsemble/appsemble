@@ -4,8 +4,8 @@ import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 
-import { useUser } from '../../components/UserProvider';
-import { messages } from './messages';
+import { useUser } from '../../components/UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function RegisterPage(): ReactElement {
   useMeta(messages.title, messages.description);

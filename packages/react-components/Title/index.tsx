@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement, useRef } from 'react';
 
-import { useScrollTo } from '../useScrollTo';
+import { useScrollTo } from '../useScrollTo.js';
 import styles from './index.module.css';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
