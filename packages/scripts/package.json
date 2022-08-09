@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.20.12",
+  "version": "0.20.13",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -24,10 +24,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.12",
-    "@appsemble/types": "0.20.12",
-    "@appsemble/utils": "0.20.12",
-    "@appsemble/webpack-core": "0.20.12",
+    "@appsemble/node-utils": "0.20.13",
+    "@appsemble/types": "0.20.13",
+    "@appsemble/utils": "0.20.13",
+    "@appsemble/webpack-core": "0.20.13",
     "@babel/core": "^7.0.0",
     "@types/fs-extra": "^9.0.0",
     "@types/mdast": "^3.0.0",

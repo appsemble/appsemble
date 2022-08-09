@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.13](https://gitlab.com/appsemble/appsemble/-/releases/0.20.13)] - 2022-08-09
+
+### Fixed
+
+- Server: Fix regression in message formatting in `email` actions in cronjobs.
+
 ## \[[0.20.12](https://gitlab.com/appsemble/appsemble/-/releases/0.20.12)] - 2022-08-02
 
 ### Added
