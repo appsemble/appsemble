@@ -266,6 +266,7 @@ export async function handler({ increment }: Args): Promise<void> {
       'docs/*.mdx',
       'docs/**/*.mdx',
       'blocks/**/*.md',
+      'packages/**/*.md',
       'Dockerfile',
     ],
     { absolute: true, gitignore: true },
