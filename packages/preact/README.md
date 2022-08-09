@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.18.23/config/assets/logo.svg) Appsemble Preact SDK
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.12/config/assets/logo.svg) Appsemble Preact SDK
 
 > Build your own blocks using Preact
 
 [![npm](https://img.shields.io/npm/v/@appsemble/preact)](https://www.npmjs.com/package/@appsemble/preact)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.18.23/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.18.23)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.18.23/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.12/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.12)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.12/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
@@ -92,5 +92,5 @@ export function MyButton({ name }: MyButtonProps): VNode {
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.18.23/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.12/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
