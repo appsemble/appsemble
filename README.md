@@ -31,6 +31,8 @@ In order to run the Appsemble project in development mode, the following must be
 
 Clone and setup the project.
 
+> Note: your CLI should have elevated privileges when setting up and starting the app
+
 ```sh
 git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
@@ -70,8 +72,9 @@ yarn appsemble login
 
 #### Registering an Organization
 
-To get started developing locally, the `appsemble` organization needs to be created. This
-organization can be created either in Appsemble Studio, or using the following CLI command.
+To get started developing locally, an `appsemble` organization named “appsemble” needs to be
+created. This organization can be created either in Appsemble Studio, or using the following CLI
+command.
 
 ```sh
 yarn appsemble organization create --name Appsemble appsemble
