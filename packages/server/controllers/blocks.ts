@@ -6,7 +6,6 @@ import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { cloneDeep } from 'lodash-es';
 import { OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
@@ -181,7 +180,7 @@ export async function publishBlock(ctx: Context): Promise<void> {
       if (!example || typeof example !== 'object') {
         continue;
       }
-      const { required, ...blockSchema } = cloneDeep(
+      const { required, ...blockSchema } = structuredClone(
         ctx.openApi.document.components.schemas.BlockDefinition,
       ) as OpenAPIV3.NonArraySchemaObject;
 
