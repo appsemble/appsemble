@@ -23,7 +23,6 @@ export async function serverImport<
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore Because the the server isn’t built and published, an error is expected here at
     // build time, but while type checking.
-    // eslint-disable-next-line n/no-extraneous-import
     const mod = await import('@appsemble/server');
     for (const member of members) {
       if (!has(mod, member)) {

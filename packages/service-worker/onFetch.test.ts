@@ -1,4 +1,3 @@
-// eslint-disable-next-line n/no-unpublished-import
 import makeServiceWorkerEnv from 'service-worker-mock';
 
 import { onFetch } from './onFetch.js';
