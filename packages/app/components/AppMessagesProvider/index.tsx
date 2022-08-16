@@ -5,13 +5,13 @@ import {
   detectLocale,
   has,
   IntlMessage,
+  IntlMessageFormat,
   MessageGetter,
   normalize,
   objectCache,
 } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
 import axios from 'axios';
-import { IntlMessageFormat } from 'intl-messageformat';
 import {
   createContext,
   ReactElement,

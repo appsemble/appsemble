@@ -1,4 +1,5 @@
-import { AppsembleMessages, Messages as MessagesType } from '@appsemble/types';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type AppsembleMessages, Messages as MessagesType } from '@appsemble/types';
 import {
   BelongsTo,
   Column,
@@ -21,7 +22,7 @@ export class AppMessages extends Model implements MessagesType {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @PrimaryKey
   @Column

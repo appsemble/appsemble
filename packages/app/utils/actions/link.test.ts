@@ -5,19 +5,19 @@ import { createTestAction } from '../makeActions.js';
 let history: RouteComponentProps['history'];
 
 beforeEach(() => {
-  jest.spyOn(window, 'open').mockImplementation();
+  import.meta.jest.spyOn(window, 'open').mockImplementation();
   history = {
     action: null,
     block: null,
-    createHref: jest.fn(),
-    go: jest.fn(),
-    goBack: jest.fn(),
-    goForward: jest.fn(),
+    createHref: import.meta.jest.fn(),
+    go: import.meta.jest.fn(),
+    goBack: import.meta.jest.fn(),
+    goForward: import.meta.jest.fn(),
     length: 0,
-    listen: jest.fn(),
+    listen: import.meta.jest.fn(),
     location: null,
-    push: jest.fn(),
-    replace: jest.fn(),
+    push: import.meta.jest.fn(),
+    replace: import.meta.jest.fn(),
   };
 });
 

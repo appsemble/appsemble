@@ -8,11 +8,11 @@ import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
 import { Context, Middleware } from 'koa';
-import { get, pick } from 'lodash';
+import { get, pick } from 'lodash-es';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization } from '../models/index.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { email } from '../utils/actions/email.js';
 import { getRemapperContext } from '../utils/app.js';
 

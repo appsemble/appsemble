@@ -10,7 +10,7 @@ describe('team.join', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    updateTeam = jest.fn();
+    updateTeam = import.meta.jest.fn();
   });
 
   it('should join a team and update the state', async () => {

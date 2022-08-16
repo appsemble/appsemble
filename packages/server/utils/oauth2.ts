@@ -2,7 +2,7 @@ import { AppsembleError, basicAuth } from '@appsemble/node-utils';
 import { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
-import { decode } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 /**
  * Check if all required scopes are granted.
@@ -104,7 +104,7 @@ export async function getUserInfo(
 
   if (idToken) {
     try {
-      assign(decode(idToken) as UserInfo);
+      assign(jwt.decode(idToken) as UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to using the access token instead.
@@ -113,7 +113,7 @@ export async function getUserInfo(
 
   if (shouldTryNext()) {
     try {
-      assign(decode(accessToken) as UserInfo);
+      assign(jwt.decode(accessToken) as UserInfo);
     } catch {
       // No ID token was provided, or it was invalid.
       // Fall back to requesting user info instead.

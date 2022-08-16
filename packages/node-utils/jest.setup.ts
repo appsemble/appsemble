@@ -3,5 +3,5 @@
 import { setLogLevel } from './logger.js';
 import { setFixtureBase } from './testFixtures.js';
 
-setFixtureBase(__dirname);
+setFixtureBase(import.meta);
 setLogLevel(0);

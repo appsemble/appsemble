@@ -20,8 +20,9 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/react-components": "0.20.13",
@@ -48,7 +49,6 @@
     "classnames": "^2.0.0",
     "events": "^3.0.0",
     "idb": "^7.0.0",
-    "intl-messageformat": "^10.0.0",
     "jwt-decode": "^3.0.0",
     "openapi-types": "^12.0.0",
     "react": "^17.0.0",

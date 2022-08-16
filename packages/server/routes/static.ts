@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 import { Middleware } from 'koa';
 import serve from 'koa-static';
@@ -8,7 +8,7 @@ import serve from 'koa-static';
  * @returns Koa middleware which serves the specified dist directory.
  */
 export function staticHandler(name: string): Middleware {
-  return serve(resolve(__dirname, '..', '..', '..', 'dist', name), {
+  return serve(fileURLToPath(new URL(`../../../dist/${name}`, import.meta.url)), {
     index: false,
     maxAge: 365 * 24 * 60 * 60 * 1000,
   });

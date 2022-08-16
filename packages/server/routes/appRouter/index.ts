@@ -1,7 +1,8 @@
+import { createRequire } from 'module';
 import { dirname } from 'path';
 
 import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json';
+import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
 import mount from 'koa-mount';
 import serve from 'koa-static';
 
@@ -17,6 +18,8 @@ import { manifestHandler } from './manifestHandler.js';
 import { robotsHandler } from './robotsHandler.js';
 import { screenshotHandler } from './screenshotHandler.js';
 import { serviceWorkerHandler } from './serviceWorkerHandler.js';
+
+const require = createRequire(import.meta.url);
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 

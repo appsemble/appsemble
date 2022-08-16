@@ -38,7 +38,7 @@ export class TeamInvite extends Model {
   key: string;
 
   @BelongsTo(() => Team)
-  Team: Team;
+  Team: Awaited<Team>;
 
   @CreatedAt
   created: Date;

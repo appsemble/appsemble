@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { Argv, CommandModule } from 'yargs';
 
 import * as deleteMember from './delete.js';
 import * as invite from './invite.js';
@@ -10,5 +10,9 @@ export const command = 'member';
 export const description = 'Commands related to app team members.';
 
 export function builder(yargs: Argv): Argv {
-  return yargs.command(deleteMember).command(invite).command(update).demandCommand(1);
+  return yargs
+    .command(deleteMember as unknown as CommandModule)
+    .command(invite as unknown as CommandModule)
+    .command(update as unknown as CommandModule)
+    .demandCommand(1);
 }

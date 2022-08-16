@@ -20,13 +20,14 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "bin": "./index.js",
   "files": [
     "*.js"
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/cli": "0.20.13"

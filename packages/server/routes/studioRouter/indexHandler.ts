@@ -1,4 +1,5 @@
-import { randomBytes } from 'crypto';
+// eslint-disable-next-line unicorn/import-style
+import crypto from 'crypto';
 
 import { Context } from 'koa';
 
@@ -44,7 +45,7 @@ export function indexHandler(ctx: Context): Promise<void> {
       scope: googlePreset.scope,
     });
   }
-  const nonce = randomBytes(16).toString('base64');
+  const nonce = crypto.randomBytes(16).toString('base64');
   const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
     getSentryClientSettings(hostname);
   const [settingsHash, settings] = createSettings({

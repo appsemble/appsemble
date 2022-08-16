@@ -1,21 +1,20 @@
 {
   "private": true,
+  "type": "module",
   "workspaces": [
     "blocks/*",
     "packages/*"
   ],
   "scripts": {
-    "appsemble": "ts-node -T packages/cli",
-    "build:app": "webpack --config config/webpack/app.js --mode production",
-    "build:studio": "webpack --config config/webpack/studio.js --mode production",
-    "create-appsemble": "ts-node -T packages/create-appsemble",
+    "appsemble": "ts-node-esm -T packages/cli/index.ts",
+    "create-appsemble": "ts-node-esm -T packages/create-appsemble/index.ts",
     "e2e": "yarn workspace @appsemble/e2e e2e",
     "prepare": "husky install",
     "prettier": "prettier --check",
-    "scripts": "ts-node -T packages/scripts",
-    "start": "ts-node -T packages/cli start",
+    "scripts": "ts-node-esm -T packages/scripts/index.ts",
+    "start": "ts-node-esm -T packages/cli/index.ts start",
     "stylelint": "stylelint --report-needless-disables",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "lint-staged": {
     "*.css": [
@@ -37,13 +36,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.0.0",
     "@lhci/cli": "^0.9.0",
     "@testing-library/jest-dom": "^5.0.0",
-    "@types/jest": "^27.0.0",
+    "@types/jest": "^28.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "babel-jest": "^27.0.0",
+    "babel-jest": "^28.0.0",
     "babel-plugin-react-intl-auto": "^3.0.0",
     "dictionary-en": "^3.0.0",
     "eslint": "^8.0.0",
@@ -66,7 +64,8 @@
     "eslint-plugin-unicorn": "^43.0.0",
     "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^27.0.0",
+    "jest": "^28.0.0",
+    "jest-environment-jsdom": "^28.0.0",
     "jest-junit": "^14.0.0",
     "lint-staged": "^13.0.0",
     "postcss": "^8.0.0",
@@ -105,7 +104,7 @@
     "stylelint-no-unsupported-browser-features": "^5.0.0",
     "stylelint-order": "^5.0.0",
     "stylelint-prettier": "^2.0.0",
-    "ts-jest": "^27.0.0",
+    "ts-jest": "^28.0.0",
     "ts-json-schema-generator": "^1.0.0",
     "ts-node": "^10.0.0",
     "typescript": "^4.0.0",

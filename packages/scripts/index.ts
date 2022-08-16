@@ -1,5 +1,5 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs from 'yargs';
+import yargs, { CommandModule } from 'yargs';
 
 import * as build from './commands/build.js';
 import * as cleanupEnvironments from './commands/cleanup-environments.js';
@@ -15,7 +15,7 @@ import * as validate from './commands/validate.js';
 import * as waitForApi from './commands/wait-for-api.js';
 import * as waitForSsl from './commands/wait-for-ssl.js';
 
-yargs
+yargs()
   .option('verbose', {
     alias: 'v',
     describe: 'Increase verbosity',
@@ -27,14 +27,14 @@ yargs
     type: 'count',
   })
   .middleware([configureLogger])
-  .command(build)
+  .command(build as unknown as CommandModule)
   .command(cleanupEnvironments)
   .command(dockerMetadata)
   .command(extractMessages)
   .command(getReleaseNotes)
   .command(githubRelease)
   .command(gitlabRelease)
-  .command(release)
+  .command(release as unknown as CommandModule)
   .command(rewriteMessages)
   .command(twitter)
   .command(validate)

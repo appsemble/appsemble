@@ -7,8 +7,8 @@ describe('dialog', () => {
   let showDialog: jest.Mock<() => void, [ShowDialogParams]>;
 
   beforeEach(() => {
-    close = jest.fn();
-    showDialog = jest.fn().mockImplementation((opts) => {
+    close = import.meta.jest.fn();
+    showDialog = import.meta.jest.fn().mockImplementation((opts) => {
       options = opts;
       return close;
     });

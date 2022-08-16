@@ -35,7 +35,7 @@ export class Team extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @BelongsToMany(() => User, () => TeamMember)
   Users: User[];

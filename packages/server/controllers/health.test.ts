@@ -28,7 +28,7 @@ describe('checkHealth', () => {
   });
 
   it('should fail if the database is disconnected', async () => {
-    jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
+    import.meta.jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
     const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`
