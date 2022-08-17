@@ -62,12 +62,28 @@ pages:
             type: dialog
             closable: true
             blocks:
-              - type: detail-viewer
+              - type: form
                 version: 0.20.13
                 parameters:
                   fields:
-                    - label: { prop: title }
-                      value: { prop: body }
+                    - type: string
+                      name: title
+                      label: { translate: title }
+                      requirements:
+                        - required: true
+                    - type: string
+                      name: body
+                      label: { translate: body }
+                      multiline: true
+                actions:
+                  onSubmit:
+                    type: resource.update
+                    resource: note
+                    onSuccess:
+                      type: dialog.ok
+            onSuccess:
+              type: event
+              event: refreshNotes
       - type: action-button
         version: 0.20.13
         parameters:
