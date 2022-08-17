@@ -142,7 +142,7 @@
     "@types/web-push": "^3.0.0",
     "@types/xml-crypto": "^1.0.0",
     "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^5.0.0",
+    "axios-test-instance": "^6.0.0",
     "express-to-koa": "^2.0.0",
     "jest-axios-snapshot": "^1.0.0",
     "jest-image-snapshot": "^5.0.0",
