@@ -1,8 +1,8 @@
 import { Argv } from 'yargs';
 
-import { AppsembleError } from './AppsembleError';
-import { handleError } from './handleError';
-import { logger } from './logger';
+import { AppsembleError } from './AppsembleError.js';
+import { handleError } from './handleError.js';
+import { logger } from './logger.js';
 
 let yargs: Argv;
 

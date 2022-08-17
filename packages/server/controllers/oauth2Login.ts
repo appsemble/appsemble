@@ -3,12 +3,12 @@ import { randomBytes } from 'crypto';
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
-import { argv } from '../utils/argv';
-import { createJWTResponse } from '../utils/createJWTResponse';
-import { Recipient } from '../utils/email/Mailer';
-import { getAccessToken, getUserInfo } from '../utils/oauth2';
-import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
+import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { createJWTResponse } from '../utils/createJWTResponse.js';
+import { Recipient } from '../utils/email/Mailer.js';
+import { getAccessToken, getUserInfo } from '../utils/oauth2.js';
+import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets.js';
 
 export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   const {

@@ -2,12 +2,12 @@ import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { Transporter } from 'nodemailer';
 
-import { App, AppMessages, Organization } from '../../models';
-import { argv, setArgv } from '../argv';
-import { createServer } from '../createServer';
-import { useTestDatabase } from '../test/testSchema';
-import { Mailer } from './Mailer';
-import * as RenderEmail from './renderEmail';
+import { App, AppMessages, Organization } from '../../models/index.js';
+import { argv, setArgv } from '../argv.js';
+import { createServer } from '../createServer.js';
+import { useTestDatabase } from '../test/testSchema.js';
+import { Mailer } from './Mailer.js';
+import * as RenderEmail from './renderEmail.js';
 
 let mailer: Mailer;
 

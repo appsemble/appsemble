@@ -13,9 +13,9 @@ import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
-import { App, AppMessages } from '../models';
-import { argv } from './argv';
-import { mergeMessages } from './mergeMessages';
+import { App, AppMessages } from '../models/index.js';
+import { argv } from './argv.js';
+import { mergeMessages } from './mergeMessages.js';
 
 const getNumberFormat = memoize((locale, opts) => new Intl.NumberFormat(locale, opts));
 const getPluralRules = memoize((locale, opts) => new Intl.PluralRules(locale, opts));

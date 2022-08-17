@@ -1,7 +1,7 @@
 import { ComponentChild, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { useValuePicker } from '..';
+import { useValuePicker } from '../index.js';
 
 interface RadioButtonProps<T>
   extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {

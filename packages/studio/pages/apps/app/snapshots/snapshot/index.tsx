@@ -12,14 +12,16 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 import { parse } from 'yaml';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { CodeBlock } from '../../../../../components/CodeBlock';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { CodeBlock } from '../../../../../components/CodeBlock/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useApp } from '../../index.js';
+import { messages } from './messages.js';
 
 const CodeDiffBlock = lazy(() =>
-  import('../../../../../components/CodeDiffBlock').then((m) => ({ default: m.CodeDiffBlock })),
+  import('../../../../../components/CodeDiffBlock/index.js').then((m) => ({
+    default: m.CodeDiffBlock,
+  })),
 );
 
 export function SnapshotPage(): ReactElement {

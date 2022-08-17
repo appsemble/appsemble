@@ -6,18 +6,20 @@ import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from '
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../../..';
-import { AsyncDataView } from '../../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../../components/HeaderControl';
-import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
+import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
+import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
+import { useApp } from '../../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
-import { ResourceHistory } from './ResourceHistory';
+import { messages } from './messages.js';
+import { ResourceHistory } from './ResourceHistory/index.js';
 
 const tabOptions = new Set(['#history', '#json', '#properties']);
 
 const MonacoEditor = lazy(() =>
-  import('../../../../../../components/MonacoEditor').then((m) => ({ default: m.MonacoEditor })),
+  import('../../../../../../components/MonacoEditor/index.js').then((m) => ({
+    default: m.MonacoEditor,
+  })),
 );
 
 export function ResourceDetailsPage(): ReactElement {

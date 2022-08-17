@@ -1,8 +1,8 @@
 import { Argv } from 'yargs';
 
-import * as build from './build';
-import * as extractMessages from './extract-messages';
-import * as publish from './publish';
+import * as build from './build.js';
+import * as extractMessages from './extract-messages.js';
+import * as publish from './publish.js';
 
 export { noop as handler } from '@appsemble/utils';
 

@@ -3,7 +3,7 @@ import { forbidden, unauthorized } from '@hapi/boom';
 import { Context } from 'koa';
 import { FindOptions } from 'sequelize';
 
-import { Member } from '../models';
+import { Member } from '../models/index.js';
 
 /**
  * Check if the authenticated user has permission to perform an action within an organization.

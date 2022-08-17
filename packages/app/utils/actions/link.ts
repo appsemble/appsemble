@@ -1,7 +1,7 @@
 import { SubPage } from '@appsemble/types';
 import { isAppLink, normalize, partialNormalized } from '@appsemble/utils';
 
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 

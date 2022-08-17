@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react';
 
-import { Role } from '../../types';
+import { Role } from '../../types.js';
 
 interface UserProviderProps {
   children: ReactNode;

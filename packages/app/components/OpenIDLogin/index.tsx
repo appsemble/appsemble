@@ -2,10 +2,10 @@ import { OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-compone
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { oauth2Scope } from '../../utils/constants';
-import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings';
+import { oauth2Scope } from '../../utils/constants.js';
+import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface OpenIDLoginProps {
   disabled: boolean;

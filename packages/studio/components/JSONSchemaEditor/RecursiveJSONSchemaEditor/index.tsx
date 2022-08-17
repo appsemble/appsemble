@@ -1,13 +1,13 @@
 import { ReactElement } from 'react';
 
-import { JSONSchemaArrayEditor } from '../JSONSchemaArrayEditor';
-import { JSONSchemaBooleanEditor } from '../JSONSchemaBooleanEditor';
-import { JSONSchemaEnumEditor } from '../JSONSchemaEnumEditor';
-import { JSONSchemaNumberEditor } from '../JSONSchemaNumberEditor';
-import { JSONSchemaObjectEditor } from '../JSONSchemaObjectEditor';
-import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor';
-import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor';
-import { CommonJSONSchemaEditorProps } from '../types';
+import { JSONSchemaArrayEditor } from '../JSONSchemaArrayEditor/index.js';
+import { JSONSchemaBooleanEditor } from '../JSONSchemaBooleanEditor/index.js';
+import { JSONSchemaEnumEditor } from '../JSONSchemaEnumEditor/index.js';
+import { JSONSchemaNumberEditor } from '../JSONSchemaNumberEditor/index.js';
+import { JSONSchemaObjectEditor } from '../JSONSchemaObjectEditor/index.js';
+import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor/index.js';
+import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor/index.js';
+import { CommonJSONSchemaEditorProps } from '../types.js';
 
 export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactElement {
   const { schema } = props;

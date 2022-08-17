@@ -4,13 +4,13 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { AsyncDataView } from '../../../components/AsyncDataView';
-import { Collapsible } from '../../../components/Collapsible';
-import { CreateOrganizationModal } from '../../../components/CreateOrganizationModal';
-import { HeaderControl } from '../../../components/HeaderControl';
-import { ListButton } from '../../../components/ListButton';
-import { useUser } from '../../../components/UserProvider';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
+import { Collapsible } from '../../../components/Collapsible/index.js';
+import { CreateOrganizationModal } from '../../../components/CreateOrganizationModal/index.js';
+import { HeaderControl } from '../../../components/HeaderControl/index.js';
+import { ListButton } from '../../../components/ListButton/index.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const result = useData<Organization[]>('/api/organizations');

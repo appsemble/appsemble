@@ -1,5 +1,5 @@
-import { Remapper } from '.';
-import { HTTPMethods } from './http';
+import { HTTPMethods } from './http.js';
+import { Remapper } from './index.js';
 
 interface BaseAction<T extends string> {
   /**

@@ -6,11 +6,11 @@ import FormData from 'form-data';
 import { omit } from 'lodash';
 import stripIndent from 'strip-indent';
 
-import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase('blocks');
 

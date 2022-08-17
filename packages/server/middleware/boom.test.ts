@@ -2,7 +2,7 @@ import { notFound, unauthorized } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { boomMiddleware } from './boom';
+import { boomMiddleware } from './boom.js';
 
 describe('boomMiddleware', () => {
   let app: Koa;

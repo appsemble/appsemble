@@ -3,8 +3,8 @@ import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { InputProps, RadioField } from '../../../block';
-import { isRequired } from '../../utils/requirements';
+import { InputProps, RadioField } from '../../../block.js';
+import { isRequired } from '../../utils/requirements.js';
 import styles from './index.module.css';
 
 type RadioInputProps = InputProps<any, RadioField>;

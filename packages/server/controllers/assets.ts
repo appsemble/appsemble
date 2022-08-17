@@ -4,8 +4,8 @@ import { Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 
-import { App, Asset, Resource } from '../models';
-import { checkRole } from '../utils/checkRole';
+import { App, Asset, Resource } from '../models/index.js';
+import { checkRole } from '../utils/checkRole.js';
 
 export async function getAssets(ctx: Context): Promise<void> {
   const {

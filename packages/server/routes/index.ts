@@ -1,2 +1,2 @@
-export { appRouter } from './appRouter';
-export { studioRouter } from './studioRouter';
+export { appRouter } from './appRouter/index.js';
+export { studioRouter } from './studioRouter/index.js';

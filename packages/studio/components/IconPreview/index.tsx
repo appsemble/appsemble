@@ -4,7 +4,7 @@ import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface IconPreviewProps {
   /**

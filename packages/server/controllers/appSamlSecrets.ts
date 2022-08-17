@@ -4,10 +4,10 @@ import { addYears } from 'date-fns';
 import { Context } from 'koa';
 import forge from 'node-forge';
 
-import { App, AppSamlSecret } from '../models';
-import { argv } from '../utils/argv';
-import { checkAppLock } from '../utils/checkAppLock';
-import { checkRole } from '../utils/checkRole';
+import { App, AppSamlSecret } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { checkAppLock } from '../utils/checkAppLock.js';
+import { checkRole } from '../utils/checkRole.js';
 
 export async function createAppSamlSecret(ctx: Context): Promise<void> {
   const {

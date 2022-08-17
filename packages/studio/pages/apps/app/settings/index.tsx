@@ -21,12 +21,12 @@ import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useHistory, useParams } from 'react-router-dom';
 
-import { useApp } from '..';
-import { useSSLStatus } from '../../../../components/useSSLStatus';
-import { IconTool } from './IconTool';
+import { useSSLStatus } from '../../../../components/useSSLStatus.js';
+import { useApp } from '../index.js';
+import { IconTool } from './IconTool/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
-import { FormValues } from './types';
+import { messages } from './messages.js';
+import { FormValues } from './types.js';
 
 function preprocessDomain(domain: string): string {
   return domain

@@ -4,12 +4,12 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { messages } from './messages';
-import { OAuth2Modal } from './OAuth2Modal';
-import { OAuth2SecretItem } from './OAuth2SecretItem';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useApp } from '../../index.js';
+import { messages } from './messages.js';
+import { OAuth2Modal } from './OAuth2Modal/index.js';
+import { OAuth2SecretItem } from './OAuth2SecretItem/index.js';
 
 const initialSecret: AppOAuth2Secret = {
   authorizationUrl: '',

@@ -4,11 +4,11 @@ import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { vol } from 'memfs';
 
-import { App, Organization } from '../../models';
+import { App, Organization } from '../../models/index.js';
 import pkg from '../../package.json';
-import { setArgv } from '../argv';
-import { useTestDatabase } from '../test/testSchema';
-import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
+import { setArgv } from '../argv.js';
+import { useTestDatabase } from '../test/testSchema.js';
+import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes.js';
 
 const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----

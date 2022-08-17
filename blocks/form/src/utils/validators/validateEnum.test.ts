@@ -1,5 +1,5 @@
-import { EnumField, RadioField } from '../../../block';
-import { validateEnum, validateRadio } from './validateEnum';
+import { EnumField, RadioField } from '../../../block.js';
+import { validateEnum, validateRadio } from './validateEnum.js';
 
 describe('validateEnum', () => {
   it('should return the first requirement that does not validate', () => {

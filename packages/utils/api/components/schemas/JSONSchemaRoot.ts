@@ -1,5 +1,5 @@
-import { JSONSchemaObject } from './JSONSchemaObject';
-import { extendJSONSchema } from './utils';
+import { JSONSchemaObject } from './JSONSchemaObject.js';
+import { extendJSONSchema } from './utils.js';
 
 export const JSONSchemaRoot = extendJSONSchema(JSONSchemaObject, {
   type: 'object',

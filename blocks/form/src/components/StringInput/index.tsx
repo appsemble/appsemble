@@ -3,8 +3,8 @@ import { InputField, TextAreaField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { InputProps, StringField } from '../../../block';
-import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements';
+import { InputProps, StringField } from '../../../block.js';
+import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
 
 type StringInputProps = InputProps<string, StringField>;
 

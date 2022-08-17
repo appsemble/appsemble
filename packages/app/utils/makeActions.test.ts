@@ -1,6 +1,6 @@
 import { identity, remap } from '@appsemble/utils';
 
-import { makeActions, MakeActionsParams } from './makeActions';
+import { makeActions, MakeActionsParams } from './makeActions.js';
 
 describe('makeActions', () => {
   let testDefaults: Omit<MakeActionsParams, 'actions'>;

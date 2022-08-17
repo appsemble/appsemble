@@ -15,10 +15,10 @@ import {
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { useToggle } from '..';
-import { useEventListener } from '../useEventListener';
+import { useToggle } from '../index.js';
+import { useEventListener } from '../useEventListener.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface SideMenuContext {
   isOpen: boolean;

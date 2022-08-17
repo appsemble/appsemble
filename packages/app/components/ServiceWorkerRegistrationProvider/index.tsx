@@ -11,8 +11,8 @@ import {
   useState,
 } from 'react';
 
-import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
-import { apiUrl, appId, vapidPublicKey } from '../../utils/settings';
+import { Permission, ServiceWorkerRegistrationContextType } from '../../types.js';
+import { apiUrl, appId, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {
   children: ReactNode;

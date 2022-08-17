@@ -5,9 +5,9 @@ import { DivIcon, Icon } from 'leaflet';
 import { JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { AvatarWrapper } from '../AvatarWrapper';
-import { CardImage } from '../CardImage';
-import { createIcon } from '../utils/createIcon';
+import { AvatarWrapper } from '../AvatarWrapper/index.js';
+import { CardImage } from '../CardImage/index.js';
+import { createIcon } from '../utils/createIcon.js';
 import styles from './index.module.css';
 
 export interface CardProps {

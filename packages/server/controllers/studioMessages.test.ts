@@ -1,8 +1,8 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { setArgv } from '..';
-import { AppMessages } from '../models';
-import { createServer } from '../utils/createServer';
+import { setArgv } from '../index.js';
+import { AppMessages } from '../models/index.js';
+import { createServer } from '../utils/createServer.js';
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

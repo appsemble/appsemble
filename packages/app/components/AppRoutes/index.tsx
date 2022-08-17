@@ -3,21 +3,21 @@ import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { getDefaultPageName } from '../../utils/getDefaultPageName';
-import { sentryDsn } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
-import { AppSettings } from '../AppSettings';
-import { EditPassword } from '../EditPassword';
-import { Login } from '../Login';
-import { OpenIDCallback } from '../OpenIDCallback';
-import { Page } from '../Page';
-import { Register } from '../Register';
-import { ResetPassword } from '../ResetPassword';
-import { SentryFeedback } from '../SentryFeedback';
-import { TeamInvite } from '../TeamInvite';
-import { useUser } from '../UserProvider';
-import { Verify } from '../Verify';
+import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { sentryDsn } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { AppSettings } from '../AppSettings/index.js';
+import { EditPassword } from '../EditPassword/index.js';
+import { Login } from '../Login/index.js';
+import { OpenIDCallback } from '../OpenIDCallback/index.js';
+import { Page } from '../Page/index.js';
+import { Register } from '../Register/index.js';
+import { ResetPassword } from '../ResetPassword/index.js';
+import { SentryFeedback } from '../SentryFeedback/index.js';
+import { TeamInvite } from '../TeamInvite/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { Verify } from '../Verify/index.js';
 
 /**
  * The main body of the loaded app.

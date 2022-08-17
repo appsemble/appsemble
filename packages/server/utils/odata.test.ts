@@ -1,6 +1,6 @@
 import { and, col, fn, json, Op, or, Order, where, WhereOptions } from 'sequelize';
 
-import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata';
+import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 
 describe('odataFilterToSequelize', () => {
   const cases: Record<string, WhereOptions> = {

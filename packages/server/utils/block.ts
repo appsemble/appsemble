@@ -3,8 +3,8 @@ import { BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 
-import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models';
-import { argv } from './argv';
+import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
+import { argv } from './argv.js';
 
 export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const {

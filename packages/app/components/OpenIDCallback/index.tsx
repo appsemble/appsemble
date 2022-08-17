@@ -5,13 +5,13 @@ import { ReactElement, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 
-import { getDefaultPageName } from '../../utils/getDefaultPageName';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { Main } from '../Main';
-import { TitleBar } from '../TitleBar';
-import { useUser } from '../UserProvider';
+import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { Main } from '../Main/index.js';
+import { TitleBar } from '../TitleBar/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 /**
  * Handle the OAuth2 callback.

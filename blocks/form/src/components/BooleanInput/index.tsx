@@ -3,8 +3,8 @@ import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { BooleanField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/requirements';
+import { BooleanField, InputProps } from '../../../block.js';
+import { isRequired } from '../../utils/requirements.js';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
 

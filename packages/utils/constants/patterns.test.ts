@@ -1,4 +1,9 @@
-import { domainPattern, googleAnalyticsIDPattern, normalized, partialNormalized } from './patterns';
+import {
+  domainPattern,
+  googleAnalyticsIDPattern,
+  normalized,
+  partialNormalized,
+} from './patterns.js';
 
 describe('partialNormalized', () => {
   it.each([

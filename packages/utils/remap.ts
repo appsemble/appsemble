@@ -5,10 +5,10 @@ import { createEvent, EventAttributes } from 'ics';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
-import { has } from './has';
-import { getDuration, processLocation } from './ics';
-import { mapValues } from './mapValues';
-import { stripNullValues } from './miscellaneous';
+import { has } from './has.js';
+import { getDuration, processLocation } from './ics.js';
+import { mapValues } from './mapValues.js';
+import { stripNullValues } from './miscellaneous.js';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.

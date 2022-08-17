@@ -5,10 +5,10 @@ import { OpenAPIV3 } from 'openapi-types';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Schema } from '../../../../components/Schema';
+import { Schema } from '../../../../components/Schema/index.js';
 import Introduction from './introduction.md';
-import { messages } from './messages';
-import { Ref } from './Ref';
+import { messages } from './messages.js';
+import { Ref } from './Ref/index.js';
 
 const [base, definitions] = schemas.ActionDefinition.allOf;
 

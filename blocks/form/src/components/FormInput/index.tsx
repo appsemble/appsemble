@@ -1,18 +1,18 @@
 import { VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import { Field, InputProps } from '../../../block';
-import { BooleanInput } from '../BooleanInput';
-import { DateInput } from '../DateInput';
-import { DateTimeInput } from '../DateTimeInput';
-import { EnumInput } from '../EnumInput';
-import { FileInput } from '../FileInput';
-import { GeoCoordinatesInput } from '../GeoCoordinatesInput';
-import { NumberInput } from '../NumberInput';
-import { ObjectInput } from '../ObjectInput';
-import { RadioInput } from '../RadioInput';
-import { StaticField } from '../StaticField';
-import { StringInput } from '../StringInput';
+import { Field, InputProps } from '../../../block.js';
+import { BooleanInput } from '../BooleanInput/index.js';
+import { DateInput } from '../DateInput/index.js';
+import { DateTimeInput } from '../DateTimeInput/index.js';
+import { EnumInput } from '../EnumInput/index.js';
+import { FileInput } from '../FileInput/index.js';
+import { GeoCoordinatesInput } from '../GeoCoordinatesInput/index.js';
+import { NumberInput } from '../NumberInput/index.js';
+import { ObjectInput } from '../ObjectInput/index.js';
+import { RadioInput } from '../RadioInput/index.js';
+import { StaticField } from '../StaticField/index.js';
+import { StringInput } from '../StringInput/index.js';
 
 type FormInputProps = Omit<InputProps<any, Field>, 'dirty'>;
 

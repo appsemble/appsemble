@@ -13,8 +13,8 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useApp } from '..';
-import { messages } from './messages';
+import { useApp } from '../index.js';
+import { messages } from './messages.js';
 
 export function NotificationsPage(): ReactElement {
   useMeta(messages.title);

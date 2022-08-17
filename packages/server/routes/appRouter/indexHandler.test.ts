@@ -1,11 +1,11 @@
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, BlockAsset, BlockVersion, Organization } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { createServer } from '../../utils/createServer';
-import * as render from '../../utils/render';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { App, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { createServer } from '../../utils/createServer.js';
+import * as render from '../../utils/render.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let templateName: string;
 let templateParams: any;

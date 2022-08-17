@@ -4,11 +4,11 @@ import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
 import { SendMailOptions } from 'nodemailer';
 
-import { ServerActionParameters } from '.';
-import { AppMember, Asset } from '../../models';
-import { getRemapperContext } from '../app';
-import { iterTable } from '../database';
-import { renderEmail } from '../email/renderEmail';
+import { AppMember, Asset } from '../../models/index.js';
+import { getRemapperContext } from '../app.js';
+import { iterTable } from '../database.js';
+import { renderEmail } from '../email/renderEmail.js';
+import { ServerActionParameters } from './index.js';
 
 interface ContentAttachment {
   filename?: string;

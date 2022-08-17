@@ -18,10 +18,10 @@ import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '..';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { messages } from './messages';
-import { MessagesLoader } from './MessagesLoader';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useApp } from '../index.js';
+import { messages } from './messages.js';
+import { MessagesLoader } from './MessagesLoader/index.js';
 
 /**
  * The page for translating app messages.

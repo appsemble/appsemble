@@ -1,25 +1,25 @@
 import { Action, ActionDefinition } from '@appsemble/types';
 
-import { MakeActionParameters } from '../../types';
-import { analytics } from './analytics';
-import { condition } from './condition';
-import { dialog } from './dialog';
-import { download } from './download';
-import { email } from './email';
-import { event } from './event';
-import * as flow from './flow';
-import { back, link, next } from './link';
-import { log } from './log';
-import { message } from './message';
-import { noop } from './noop';
-import { request } from './request';
-import * as resource from './resource';
-import { share } from './share';
-import { staticAction } from './static';
-import { read, write } from './storage';
-import { teamInvite, teamJoin, teamList } from './team';
-import { throwAction } from './throw';
-import { login, register, update } from './user';
+import { MakeActionParameters } from '../../types.js';
+import { analytics } from './analytics.js';
+import { condition } from './condition.js';
+import { dialog } from './dialog.js';
+import { download } from './download.js';
+import { email } from './email.js';
+import { event } from './event.js';
+import * as flow from './flow.js';
+import { back, link, next } from './link.js';
+import { log } from './log.js';
+import { message } from './message.js';
+import { noop } from './noop.js';
+import { request } from './request.js';
+import * as resource from './resource.js';
+import { share } from './share.js';
+import { staticAction } from './static.js';
+import { read, write } from './storage.js';
+import { teamInvite, teamJoin, teamList } from './team.js';
+import { throwAction } from './throw.js';
+import { login, register, update } from './user.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
   Extract<Action, { type: T }>,

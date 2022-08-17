@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @Table({ tableName: 'AppMessages', paranoid: false })
 export class AppMessages extends Model implements MessagesType {

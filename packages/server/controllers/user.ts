@@ -1,13 +1,13 @@
 import { randomBytes } from 'crypto';
 
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
-import { JwtPayload, verify } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Context } from 'koa';
 import { literal } from 'sequelize';
 
-import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
-import { argv } from '../utils/argv';
-import { createJWTResponse } from '../utils/createJWTResponse';
+import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { createJWTResponse } from '../utils/createJWTResponse.js';
 
 export async function getUser(ctx: Context): Promise<void> {
   const { user } = ctx;
@@ -207,7 +207,7 @@ export function refreshToken(ctx: Context): void {
   } = ctx;
   let sub: string;
   try {
-    ({ sub } = verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
+    ({ sub } = jwt.verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
   } catch {
     throw unauthorized('Invalid refresh token');
   }

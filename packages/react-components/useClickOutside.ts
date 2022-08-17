@@ -1,6 +1,6 @@
 import { RefObject, useCallback } from 'react';
 
-import { useEventListener } from '.';
+import { useEventListener } from './index.js';
 
 /**
  * Run a function when the user clicks outside of an element.

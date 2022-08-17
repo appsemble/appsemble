@@ -1,8 +1,8 @@
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { AppBlockStyle } from '../../models';
-import { getApp } from '../../utils/app';
+import { AppBlockStyle } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
 
 export async function blockCSSHandler(ctx: Context): Promise<void> {
   const {

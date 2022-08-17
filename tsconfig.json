@@ -17,5 +17,8 @@
     "target": "es2019",
     "types": ["jest"]
   },
+  "ts-node": {
+    "experimentalResolver": true
+  },
   "exclude": ["**/dist", "**/templates", "**/__fixtures__"]
 }

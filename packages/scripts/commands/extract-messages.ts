@@ -2,7 +2,7 @@ import { join } from 'path';
 
 import { logger, writeData } from '@appsemble/node-utils';
 
-import { extractMessages } from '../lib/i18n';
+import { extractMessages } from '../lib/i18n.js';
 
 export const command = 'extract-messages';
 export const description = 'Extract new messages for currently supported locales';

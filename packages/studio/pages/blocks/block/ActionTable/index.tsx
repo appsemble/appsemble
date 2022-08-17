@@ -3,7 +3,7 @@ import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface ActionTableProps {
   /**

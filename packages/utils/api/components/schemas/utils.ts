@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { has } from '../../../has';
+import { has } from '../../../has.js';
 
 /**
  * Extend a JSON schema by copying its properties.

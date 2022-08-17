@@ -4,9 +4,9 @@ import { ChangeEvent, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { AssetPreview } from '../AssetPreview';
-import { messages } from './messages';
+import { useApp } from '../../index.js';
+import { AssetPreview } from '../AssetPreview/index.js';
+import { messages } from './messages.js';
 
 interface AssetRowProps {
   /**

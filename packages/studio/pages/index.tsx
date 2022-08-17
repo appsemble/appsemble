@@ -1,25 +1,25 @@
 import { ReactElement } from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import { AnonymousRoute } from '../components/AnonymousRoute';
-import { ProtectedRoute } from '../components/ProtectedRoute';
-import { enableRegistration } from '../utils/settings';
-import { AppsRoutes } from './apps';
-import { BlockRoutes } from './blocks';
-import { CallbackPage } from './callback';
-import { ConnectRoutes } from './connect';
-import { DocsRoutes } from './docs';
-import { EditPasswordPage } from './edit-password';
-import { FeedbackPage } from './feedback';
-import { LoginPage } from './login';
-import { OrganizationInvitePage } from './organization-invite';
-import { OrganizationsRoutes } from './organizations';
-import { PrivacyPolicyPage } from './privacy';
-import { RegisterPage } from './register';
-import { ResetPasswordPage } from './reset-password';
-import { SAMLResponsePage } from './saml';
-import { SettingsRoutes } from './settings';
-import { VerifyPage } from './verify';
+import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
+import { ProtectedRoute } from '../components/ProtectedRoute/index.js';
+import { enableRegistration } from '../utils/settings.js';
+import { AppsRoutes } from './apps/index.js';
+import { BlockRoutes } from './blocks/index.js';
+import { CallbackPage } from './callback/index.js';
+import { ConnectRoutes } from './connect/index.js';
+import { DocsRoutes } from './docs/index.js';
+import { EditPasswordPage } from './edit-password/index.js';
+import { FeedbackPage } from './feedback/index.js';
+import { LoginPage } from './login/index.js';
+import { OrganizationInvitePage } from './organization-invite/index.js';
+import { OrganizationsRoutes } from './organizations/index.js';
+import { PrivacyPolicyPage } from './privacy/index.js';
+import { RegisterPage } from './register/index.js';
+import { ResetPasswordPage } from './reset-password/index.js';
+import { SAMLResponsePage } from './saml/index.js';
+import { SettingsRoutes } from './settings/index.js';
+import { VerifyPage } from './verify/index.js';
 
 /**
  * Render all top level routes.

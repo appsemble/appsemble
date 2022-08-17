@@ -1,4 +1,4 @@
-import { randomString } from './randomString';
+import { randomString } from './randomString.js';
 
 it('should generate a random string', () => {
   const result = randomString();

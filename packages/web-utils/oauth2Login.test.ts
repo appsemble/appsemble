@@ -4,7 +4,7 @@ import {
   loadOAuth2State,
   startOAuth2Login,
   storageKey,
-} from './oauth2Login';
+} from './oauth2Login.js';
 
 afterEach(clearOAuth2State);
 

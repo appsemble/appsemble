@@ -4,8 +4,8 @@ import { join } from 'path';
 import { logger, readData } from '@appsemble/node-utils';
 import { PackageJson } from 'type-fest';
 
-import { getReleaseNotes } from '../lib/changelog';
-import { AssetLink, gitlab, Release } from '../lib/gitlab';
+import { getReleaseNotes } from '../lib/changelog.js';
+import { AssetLink, gitlab, Release } from '../lib/gitlab.js';
 
 export const command = 'gitlab-release';
 export const description = 'Create a GitLab release.';

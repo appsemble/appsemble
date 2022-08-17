@@ -13,10 +13,10 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
-import { PicturePreview } from './PicturePreview';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
+import { PicturePreview } from './PicturePreview/index.js';
 
 export function ProfileSettings(): ReactElement {
   const { formatMessage } = useIntl();

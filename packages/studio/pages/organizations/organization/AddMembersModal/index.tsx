@@ -15,8 +15,8 @@ import { ChangeEvent, ClipboardEvent, ReactElement, useCallback, useState } from
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../../components/UserProvider';
-import { messages } from './messages';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { messages } from './messages.js';
 
 interface AddMembersModalProps {
   /**

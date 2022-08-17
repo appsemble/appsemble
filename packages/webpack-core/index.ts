@@ -21,8 +21,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
-import { remarkRewriteLinks } from './remark/rewriteLinks';
-import './types';
+import { remarkRewriteLinks } from './remark/rewriteLinks.js';
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -72,6 +71,11 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
+      extensionAlias: {
+        '.js': ['.js', '.ts', '.tsx'],
+        '.cjs': ['.cjs', '.cts'],
+        '.mjs': ['.mjs', '.mts'],
+      },
       fallback: {
         path: false,
       },

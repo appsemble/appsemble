@@ -9,10 +9,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 import matcher from 'matcher';
 import { Op } from 'sequelize';
 
-import { App, Organization } from '../../models';
+import { App, Organization } from '../../models/index.js';
 import pkg from '../../package.json';
-import { argv } from '../argv';
-import { iterTable } from '../database';
+import { argv } from '../argv.js';
+import { iterTable } from '../database.js';
 
 interface KubernetesMetadata {
   /**

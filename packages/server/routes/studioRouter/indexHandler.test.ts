@@ -1,9 +1,9 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { studioRouter } from '.';
-import { setArgv } from '../../utils/argv';
-import * as render from '../../utils/render';
+import { setArgv } from '../../utils/argv.js';
+import * as render from '../../utils/render.js';
+import { studioRouter } from './index.js';
 
 let templateName: string;
 let templateData: Record<string, unknown>;

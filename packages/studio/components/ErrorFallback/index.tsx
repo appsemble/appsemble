@@ -3,10 +3,10 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { sentryDsn } from '../../utils/settings';
-import { Toolbar } from '../Toolbar';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { sentryDsn } from '../../utils/settings.js';
+import { Toolbar } from '../Toolbar/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 interface ErrorFallbackProps {
   /**

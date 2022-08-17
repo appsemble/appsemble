@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
-import { App, AppSubscription } from '../models';
-import { argv } from './argv';
+import { App, AppSubscription } from '../models/index.js';
+import { argv } from './argv.js';
 
 export interface SendNotificationOptions {
   title: string;

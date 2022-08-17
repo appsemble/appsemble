@@ -1,7 +1,7 @@
 import { FormComponent } from '@appsemble/react-components';
 import { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
 
-import { StarRating } from '../StarRating';
+import { StarRating } from '../StarRating/index.js';
 
 type RatingFieldProps = ComponentPropsWithoutRef<typeof StarRating> &
   Omit<ComponentPropsWithoutRef<typeof FormComponent>, 'children'>;

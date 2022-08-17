@@ -2,7 +2,7 @@ import { Content } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface ConfigurationErrorProps {
   message: MessageDescriptor;

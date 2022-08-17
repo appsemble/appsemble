@@ -18,16 +18,16 @@ import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { useUser } from '../../../../../components/UserProvider';
-import { TeamMember } from '../../../../../types';
-import { checkRole } from '../../../../../utils/checkRole';
-import { AddTeamMemberModal } from './AddTeamMemberModal';
-import { AnnotationsTable } from './AnnotationsTable';
-import { messages } from './messages';
-import { TeamMemberRow } from './TeamMemberRow';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { TeamMember } from '../../../../../types.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
+import { useApp } from '../../index.js';
+import { AddTeamMemberModal } from './AddTeamMemberModal/index.js';
+import { AnnotationsTable } from './AnnotationsTable/index.js';
+import { messages } from './messages.js';
+import { TeamMemberRow } from './TeamMemberRow/index.js';
 
 export function TeamPage(): ReactElement {
   const { teamId } = useParams<{ teamId: string }>();

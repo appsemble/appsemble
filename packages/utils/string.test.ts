@@ -1,4 +1,4 @@
-import { camelToHyphen, decodeJSONRef, toUpperCase } from './string';
+import { camelToHyphen, decodeJSONRef, toUpperCase } from './string.js';
 
 describe('camelToHyphen', () => {
   it('should convert camel case to hyphenated', () => {

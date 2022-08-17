@@ -10,9 +10,9 @@ import {
   SimpleFormField,
   SimpleSubmit,
   useToggle,
-} from '..';
+} from '../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export interface LoginFormValues {
   email: string;

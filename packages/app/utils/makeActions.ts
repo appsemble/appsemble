@@ -4,9 +4,9 @@ import { addBreadcrumb } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { SetRequired } from 'type-fest';
 
-import { MakeActionParameters } from '../types';
-import { actionCreators } from './actions';
-import { appId } from './settings';
+import { MakeActionParameters } from '../types.js';
+import { actionCreators } from './actions/index.js';
+import { appId } from './settings.js';
 
 /**
  * Parameters to pass to `makeActions`.

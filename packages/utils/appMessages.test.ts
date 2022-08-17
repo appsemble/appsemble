@@ -1,4 +1,4 @@
-import { extractAppMessages, findMessageIds } from './appMessages';
+import { extractAppMessages, findMessageIds } from './appMessages.js';
 
 describe('findMessageIds', () => {
   it('should ignore null', () => {

@@ -1,4 +1,4 @@
-import { objectCache } from './objectCache';
+import { objectCache } from './objectCache.js';
 
 describe('objectCache', () => {
   it('should cache reslts', () => {

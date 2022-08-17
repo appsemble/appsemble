@@ -3,7 +3,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';
 
-import { AppValidationWorker } from './worker';
+import { AppValidationWorker } from './worker.js';
 
 export const appValidationLabel = 'appValidation';
 

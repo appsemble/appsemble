@@ -6,7 +6,7 @@ import { isPast, parseISO } from 'date-fns';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { OAuth2ClientCredentials } from '../models';
+import { OAuth2ClientCredentials } from '../models/index.js';
 
 export async function registerOAuth2ClientCredentials(ctx: Context): Promise<void> {
   const {

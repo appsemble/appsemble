@@ -7,8 +7,8 @@ import { UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 import { parseDocument } from 'yaml';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
-import { checkRole } from '../utils/checkRole';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models/index.js';
+import { checkRole } from '../utils/checkRole.js';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
   const templates = await App.findAll({

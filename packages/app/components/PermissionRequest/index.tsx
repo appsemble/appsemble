@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import styles from './index.module.css';
 
 /**

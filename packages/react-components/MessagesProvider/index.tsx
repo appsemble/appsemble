@@ -3,9 +3,9 @@ import { createContext, ReactElement, ReactNode, useCallback, useContext, useRef
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import { Message, useForceUpdate } from '..';
+import { Message, useForceUpdate } from '../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export interface Msg extends BaseMessage {
   /**

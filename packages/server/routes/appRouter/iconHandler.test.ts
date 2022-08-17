@@ -2,10 +2,10 @@ import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { appRouter } from '.';
-import { App, Organization } from '../../models';
-import * as appUtils from '../../utils/app';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { App, Organization } from '../../models/index.js';
+import * as appUtils from '../../utils/app.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 useTestDatabase('iconHandler');
 

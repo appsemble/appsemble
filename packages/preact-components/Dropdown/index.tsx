@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ComponentChild, ComponentChildren, VNode } from 'preact';
 import { useCallback, useRef } from 'preact/hooks';
 
-import { Button, useClickOutside, useToggle } from '..';
+import { Button, useClickOutside, useToggle } from '../index.js';
 
 interface DropdownProps {
   /**

@@ -1,4 +1,4 @@
-import { AppsembleError, isErrno, opendirSafe, readData, resolveFixture } from '.';
+import { AppsembleError, isErrno, opendirSafe, readData, resolveFixture } from './index.js';
 
 describe('isErrno', () => {
   it('should return false for null', () => {

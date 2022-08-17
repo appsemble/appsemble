@@ -9,13 +9,13 @@ import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-import { AppsembleContext, AppsembleRC } from '../types';
-import { authenticate } from './authentication';
-import { traverseBlockThemes } from './block';
-import { coerceRemote } from './coercers';
-import { printAxiosError } from './output';
-import { processCss } from './processCss';
-import { createResource } from './resource';
+import { AppsembleContext, AppsembleRC } from '../types.js';
+import { authenticate } from './authentication.js';
+import { traverseBlockThemes } from './block.js';
+import { coerceRemote } from './coercers.js';
+import { printAxiosError } from './output.js';
+import { processCss } from './processCss.js';
+import { createResource } from './resource.js';
 
 interface CreateAppParams {
   /**

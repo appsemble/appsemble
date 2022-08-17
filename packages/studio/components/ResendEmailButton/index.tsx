@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ComponentProps, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface ResendEmailButtonProps extends ComponentProps<typeof Button> {
   /**

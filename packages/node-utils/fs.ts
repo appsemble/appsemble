@@ -8,7 +8,7 @@ import sortKeys from 'sort-keys';
 import { Promisable } from 'type-fest';
 import { parse, stringify } from 'yaml';
 
-import { AppsembleError } from '.';
+import { AppsembleError } from './index.js';
 
 /**
  * Test if the error is a NodeJS errno exception.

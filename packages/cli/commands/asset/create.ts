@@ -5,10 +5,10 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { resolveAppIdAndRemote } from '../../lib/app';
-import { createAsset } from '../../lib/asset';
-import { authenticate } from '../../lib/authentication';
-import { BaseArguments } from '../../types';
+import { resolveAppIdAndRemote } from '../../lib/app.js';
+import { createAsset } from '../../lib/asset.js';
+import { authenticate } from '../../lib/authentication.js';
+import { BaseArguments } from '../../types.js';
 
 interface CreateAssetArguments extends BaseArguments {
   name: string;

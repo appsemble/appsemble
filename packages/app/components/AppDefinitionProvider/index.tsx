@@ -14,7 +14,7 @@ import {
   apiUrl,
   blockManifests as initialBlockManifests,
   definition as initialDefinition,
-} from '../../utils/settings';
+} from '../../utils/settings.js';
 
 interface AppDefinitionContext {
   blockManifests: BlockManifest[];

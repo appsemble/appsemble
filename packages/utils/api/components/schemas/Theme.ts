@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { baseTheme, hexColor } from '../../../constants';
+import { baseTheme, hexColor } from '../../../constants/index.js';
 
 export const Theme: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

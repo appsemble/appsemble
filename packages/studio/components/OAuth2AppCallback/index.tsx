@@ -3,8 +3,8 @@ import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useEffect } from 'react';
 
-import { ExtendedOAuth2State } from '../../types';
-import { oauth2Redirect } from '../../utils/oauth2Utils';
+import { ExtendedOAuth2State } from '../../types.js';
+import { oauth2Redirect } from '../../utils/oauth2Utils.js';
 
 interface OAuth2AppCallbackProps {
   session: ExtendedOAuth2State;

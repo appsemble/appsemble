@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { noop } from '@appsemble/utils';
 
-import { createEvents } from './events';
+import { createEvents } from './events.js';
 
 describe('createEvents', () => {
   let ee: EventEmitter;

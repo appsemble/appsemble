@@ -1,7 +1,7 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
 
-import { onFetch } from './onFetch';
-import * as utils from './utils';
+import { onFetch } from './onFetch.js';
+import * as utils from './utils.js';
 
 jest.mock('./utils');
 

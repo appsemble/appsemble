@@ -1,6 +1,6 @@
 import { ReactChild, ReactElement, ReactNode, useCallback, useMemo } from 'react';
 
-import { SimpleFormProvider, useSimpleForm } from '..';
+import { SimpleFormProvider, useSimpleForm } from '../index.js';
 
 interface SimpleFormObjectProps {
   /**

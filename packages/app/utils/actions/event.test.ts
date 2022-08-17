@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 describe('event', () => {
   let ee: EventEmitter;

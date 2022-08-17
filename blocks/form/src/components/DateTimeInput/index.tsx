@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { DateTimeField, InputProps } from '../../../block';
-import { useLocale } from '../../hooks/useLocale';
-import { extractDate } from '../../utils/extractDate';
+import { DateTimeField, InputProps } from '../../../block.js';
+import { useLocale } from '../../hooks/useLocale.js';
+import { extractDate } from '../../utils/extractDate.js';
 import {
   getDisabledDays,
   getMaxDate,
@@ -14,7 +14,7 @@ import {
   getMinDate,
   getMinTime,
   isRequired,
-} from '../../utils/requirements';
+} from '../../utils/requirements.js';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
 

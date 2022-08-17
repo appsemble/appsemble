@@ -3,9 +3,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication';
-import { buildBlock, getBlockConfig, publishBlock } from '../../lib/block';
-import { BaseArguments } from '../../types';
+import { authenticate } from '../../lib/authentication.js';
+import { buildBlock, getBlockConfig, publishBlock } from '../../lib/block.js';
+import { BaseArguments } from '../../types.js';
 
 interface PublishBlockArguments extends BaseArguments {
   paths: string[];

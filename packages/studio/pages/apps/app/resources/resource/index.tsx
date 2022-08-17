@@ -3,11 +3,11 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
-import { ResourceDefinitionDetailsPage } from './resource-definition-details';
-import { ResourceDetailsPage } from './resource-details';
+import { useApp } from '../../index.js';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
+import { ResourceDefinitionDetailsPage } from './resource-definition-details/index.js';
+import { ResourceDetailsPage } from './resource-details/index.js';
 
 export function ResourceRoutes(): ReactElement {
   const { app } = useApp();

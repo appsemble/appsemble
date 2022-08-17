@@ -1,6 +1,6 @@
 import { downloadBlob } from '@appsemble/web-utils';
 
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 jest.mock('@appsemble/web-utils', () => ({
   downloadBlob: jest.fn(),

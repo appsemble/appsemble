@@ -11,11 +11,11 @@ import {
   Member,
   Organization,
   Resource,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let templates: App[];
 let clock: InstalledClock;

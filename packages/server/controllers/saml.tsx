@@ -14,11 +14,11 @@ import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
 
-import { App, AppMember, AppSamlSecret, transactional, User } from '../models';
-import { AppSamlAuthorization } from '../models/AppSamlAuthorization';
-import { SamlLoginRequest } from '../models/SamlLoginRequest';
-import { argv } from '../utils/argv';
-import { createOAuth2AuthorizationCode } from '../utils/model';
+import { AppSamlAuthorization } from '../models/AppSamlAuthorization.js';
+import { App, AppMember, AppSamlSecret, transactional, User } from '../models/index.js';
+import { SamlLoginRequest } from '../models/SamlLoginRequest.js';
+import { argv } from '../utils/argv.js';
+import { createOAuth2AuthorizationCode } from '../utils/model.js';
 
 /**
  * An enum for managing known XML namespaces.

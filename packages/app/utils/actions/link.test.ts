@@ -1,6 +1,6 @@
 import { RouteComponentProps } from 'react-router-dom';
 
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 let history: RouteComponentProps['history'];
 

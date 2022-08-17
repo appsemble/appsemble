@@ -10,15 +10,15 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { AsyncDataView } from '../../../components/AsyncDataView';
-import { ProtectedRoute } from '../../../components/ProtectedRoute';
-import { useUser } from '../../../components/UserProvider';
-import { Organization } from '../../../types';
-import { checkRole } from '../../../utils/checkRole';
-import { IndexPage } from './IndexPage';
-import { MembersPage } from './MembersPage';
-import { messages } from './messages';
-import { SettingsPage } from './SettingsPage';
+import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
+import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { Organization } from '../../../types.js';
+import { checkRole } from '../../../utils/checkRole.js';
+import { IndexPage } from './IndexPage/index.js';
+import { MembersPage } from './MembersPage/index.js';
+import { messages } from './messages.js';
+import { SettingsPage } from './SettingsPage/index.js';
 
 /**
  * Render routes related to apps.

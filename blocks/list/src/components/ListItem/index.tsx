@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Item } from '../../../block';
-import { ListItemWrapper } from '../ListItemWrapper';
+import { Item } from '../../../block.js';
+import { ListItemWrapper } from '../ListItemWrapper/index.js';
 import styles from './index.module.css';
 
 interface ListItemProps {

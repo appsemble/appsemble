@@ -4,8 +4,8 @@ import { DivIcon, Icon } from 'leaflet';
 import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { GeoCoordinatesField, RendererProps } from '../../../block';
-import { createIcon } from '../utils/createIcon';
+import { GeoCoordinatesField, RendererProps } from '../../../block.js';
+import { createIcon } from '../utils/createIcon.js';
 import './index.css';
 import styles from './index.module.css';
 

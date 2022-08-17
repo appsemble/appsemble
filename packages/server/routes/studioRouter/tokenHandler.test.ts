@@ -5,12 +5,12 @@ import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { decode } from 'jsonwebtoken';
 
-import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { createJWTResponse } from '../../utils/createJWTResponse';
-import { createServer } from '../../utils/createServer';
-import { createTestUser } from '../../utils/test/authorization';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { createJWTResponse } from '../../utils/createJWTResponse.js';
+import { createServer } from '../../utils/createServer.js';
+import { createTestUser } from '../../utils/test/authorization.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let clock: InstalledClock;
 let user: User;

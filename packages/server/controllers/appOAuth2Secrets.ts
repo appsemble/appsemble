@@ -13,11 +13,11 @@ import {
   OAuth2AuthorizationCode,
   transactional,
   User,
-} from '../models';
-import { argv } from '../utils/argv';
-import { checkAppLock } from '../utils/checkAppLock';
-import { checkRole } from '../utils/checkRole';
-import { getAccessToken, getUserInfo } from '../utils/oauth2';
+} from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { checkAppLock } from '../utils/checkAppLock.js';
+import { checkRole } from '../utils/checkRole.js';
+import { getAccessToken, getUserInfo } from '../utils/oauth2.js';
 
 export async function createAppOAuth2Secret(ctx: Context): Promise<void> {
   const {

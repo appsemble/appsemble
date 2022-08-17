@@ -1,4 +1,4 @@
-import { StringField, StringRequirement } from '../../../block';
+import { StringField, StringRequirement } from '../../../block.js';
 
 /**
  * Validates a string based on a set of requirements.

@@ -1,9 +1,9 @@
 import { VNode } from 'preact';
 
-import { Field as FieldType, RendererProps } from '../../../block';
-import { FileRenderer } from '../FileRenderer';
-import { GeoCoordinatesRenderer } from '../GeoCoordinatesRenderer';
-import { StringRenderer } from '../StringRenderer';
+import { Field as FieldType, RendererProps } from '../../../block.js';
+import { FileRenderer } from '../FileRenderer/index.js';
+import { GeoCoordinatesRenderer } from '../GeoCoordinatesRenderer/index.js';
+import { StringRenderer } from '../StringRenderer/index.js';
 
 const renderers = {
   file: FileRenderer,

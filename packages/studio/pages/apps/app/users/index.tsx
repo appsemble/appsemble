@@ -5,10 +5,10 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useApp } from '..';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { MemberRow } from './MemberRow';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useApp } from '../index.js';
+import { MemberRow } from './MemberRow/index.js';
+import { messages } from './messages.js';
 
 export interface Member {
   id: string;

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ReactElement, ReactNode, useCallback } from 'react';
 
-import { useValuePicker } from '..';
+import { useValuePicker } from '../index.js';
 
 interface TabProps {
   /**

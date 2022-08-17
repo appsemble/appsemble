@@ -1,12 +1,12 @@
 import { logger } from '@appsemble/node-utils';
 import { BlockDefinition, BlockManifest } from '@appsemble/types';
-import { Permission } from '@appsemble/utils';
+import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { cloneDeep, has } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
@@ -19,12 +19,12 @@ import {
   getDB,
   Organization,
   transactional,
-} from '../models';
-import { blockVersionToJson } from '../utils/block';
-import { checkRole } from '../utils/checkRole';
-import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
-import { serveIcon } from '../utils/icon';
-import { handleValidatorResult } from '../utils/jsonschema';
+} from '../models/index.js';
+import { blockVersionToJson } from '../utils/block.js';
+import { checkRole } from '../utils/checkRole.js';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
+import { serveIcon } from '../utils/icon.js';
+import { handleValidatorResult } from '../utils/jsonschema.js';
 
 export async function getBlock(ctx: Context): Promise<void> {
   const {

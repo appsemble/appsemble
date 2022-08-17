@@ -5,8 +5,8 @@ import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../../models';
-import { getApp } from '../../utils/app';
+import { BlockAsset, BlockVersion } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
 
 /**
  * A handler used to serve the service worker output from Webpack from the client root.

@@ -9,8 +9,8 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Form, FormButtons } from '..';
-import { messages } from './messages';
+import { Button, Form, FormButtons } from '../index.js';
+import { messages } from './messages.js';
 
 const Context = createContext<StepperProps>(null);
 

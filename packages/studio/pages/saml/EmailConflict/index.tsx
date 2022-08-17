@@ -14,8 +14,8 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useUser } from '../../../components/UserProvider';
-import { messages } from './messages';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function EmailConflict(): ReactElement {
   const { lang } = useParams<{ lang: string }>();

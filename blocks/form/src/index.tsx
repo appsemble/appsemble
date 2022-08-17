@@ -4,12 +4,12 @@ import classNames from 'classnames';
 import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 
-import { FieldEventParameters, Values } from '../block';
-import { FormInput } from './components/FormInput';
+import { FieldEventParameters, Values } from '../block.js';
+import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
-import { generateDefaultValidity } from './utils/generateDefaultValidity';
-import { generateDefaultValues } from './utils/generateDefaultValues';
-import { isFormValid } from './utils/validity';
+import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
+import { generateDefaultValues } from './utils/generateDefaultValues.js';
+import { isFormValid } from './utils/validity.js';
 
 bootstrap(
   ({

@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
-import { HighlightedCode, HighlightedCodeProps } from '../HighlightedCode';
+import { HighlightedCode, HighlightedCodeProps } from '../HighlightedCode/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface CodeBlockProps {
   /**

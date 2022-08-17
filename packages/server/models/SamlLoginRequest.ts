@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSamlSecret, User } from '.';
+import { AppSamlSecret, User } from './index.js';
 
 @Table({ tableName: 'SamlLoginRequest', paranoid: false })
 export class SamlLoginRequest extends Model {

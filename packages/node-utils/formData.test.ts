@@ -1,4 +1,4 @@
-import { createFormData } from './formData';
+import { createFormData } from './formData.js';
 
 describe('createFormData', () => {
   it('should handle strings', () => {

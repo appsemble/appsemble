@@ -16,9 +16,9 @@ import axios from 'axios';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '../../..';
+import { useApp } from '../../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface AppSecretCardProps {
   /**

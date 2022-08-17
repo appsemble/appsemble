@@ -1,9 +1,9 @@
 import { isEqual, parseISO } from 'date-fns';
 import { Context } from 'koa';
 
-import { Organization } from '../../models';
-import { getApp } from '../../utils/app';
-import { serveIcon } from '../../utils/icon';
+import { Organization } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
+import { serveIcon } from '../../utils/icon.js';
 
 export async function iconHandler(ctx: Context): Promise<void> {
   const {

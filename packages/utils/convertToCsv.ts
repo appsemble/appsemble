@@ -1,4 +1,4 @@
-import { compareStrings } from '.';
+import { compareStrings } from './index.js';
 
 /**
  * Converts an object or an array of objects to a valid CSV format.

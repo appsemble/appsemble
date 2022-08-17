@@ -29,13 +29,13 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../../..';
-import { AsyncDataView } from '../../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../../components/HeaderControl';
-import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor';
+import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
+import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
+import { useApp } from '../../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
-import { ResourceRow } from './ResourceRow';
+import { messages } from './messages.js';
+import { ResourceRow } from './ResourceRow/index.js';
 
 export interface RouteParams {
   id: string;

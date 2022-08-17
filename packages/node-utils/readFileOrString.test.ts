@@ -1,5 +1,5 @@
-import { readFileOrString } from './readFileOrString';
-import { resolveFixture } from './testFixtures';
+import { readFileOrString } from './readFileOrString.js';
+import { resolveFixture } from './testFixtures.js';
 
 it('should return file content if it resolves to a file', async () => {
   const result = await readFileOrString(resolveFixture('hello.txt'));

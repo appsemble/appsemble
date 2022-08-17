@@ -1,4 +1,4 @@
-import { bootstrap } from '.';
+import { bootstrap } from './index.js';
 
 let event: CustomEvent;
 let originalCurrentScript: HTMLOrSVGScriptElement;

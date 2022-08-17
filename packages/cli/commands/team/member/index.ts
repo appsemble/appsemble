@@ -1,8 +1,8 @@
 import { Argv } from 'yargs';
 
-import * as deleteMember from './delete';
-import * as invite from './invite';
-import * as update from './update';
+import * as deleteMember from './delete.js';
+import * as invite from './invite.js';
+import * as update from './update.js';
 
 export { noop as handler } from '@appsemble/utils';
 

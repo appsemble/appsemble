@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 
-import { initDB, InitDBParams } from '../../models';
+import { initDB, InitDBParams } from '../../models/index.js';
 
 /**
  * Create a temporary test database for each test in a test module or describe block.

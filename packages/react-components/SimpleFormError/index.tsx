@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ComponentType, ReactElement } from 'react';
 
-import { Message, useSimpleForm } from '..';
+import { Message, useSimpleForm } from '../index.js';
 import styles from './index.module.css';
 
 interface SimpleFormErrorProps {

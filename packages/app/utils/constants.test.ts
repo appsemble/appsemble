@@ -1,7 +1,7 @@
 import { api } from '@appsemble/utils';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { oauth2Scope } from './constants';
+import { oauth2Scope } from './constants.js';
 
 describe('oauth2Scope', () => {
   it('should match the allowed scopes in the API', () => {

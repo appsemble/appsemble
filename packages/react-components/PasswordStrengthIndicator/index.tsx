@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useSimpleForm } from '..';
+import { useSimpleForm } from '../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 type PartialResult = Pick<ZxcvbnResult, 'feedback' | 'score'>;
 

@@ -1,6 +1,6 @@
 import { Argv } from 'yargs';
 
-import * as create from './create';
+import * as create from './create.js';
 
 export { noop as handler } from '@appsemble/utils';
 

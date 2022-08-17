@@ -4,10 +4,10 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { AppCard } from '../../../../components/AppCard';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
+import { AppCard } from '../../../../components/AppCard/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const result = useData<AppAccount[]>('/api/user/apps/accounts');

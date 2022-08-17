@@ -1,8 +1,8 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa, { Context, Middleware } from 'koa';
 
-import { setArgv } from '../utils/argv';
-import { appMapper } from './appMapper';
+import { setArgv } from '../utils/argv.js';
+import { appMapper } from './appMapper.js';
 
 let platformMiddleware: Middleware;
 let appMiddleware: Middleware;

@@ -1,5 +1,5 @@
-import { StringField } from '../../../block';
-import { validateString } from './validateString';
+import { StringField } from '../../../block.js';
+import { validateString } from './validateString.js';
 
 describe('validateString', () => {
   it('should return the first requirement that does not validate', () => {

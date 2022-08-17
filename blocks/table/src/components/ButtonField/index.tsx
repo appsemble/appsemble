@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Fragment, VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { Button as ButtonFieldType } from '../../../block';
+import { Button as ButtonFieldType } from '../../../block.js';
 
 interface ButtonFieldProps {
   field: ButtonFieldType;

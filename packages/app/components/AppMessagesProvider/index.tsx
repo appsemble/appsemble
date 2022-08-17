@@ -25,8 +25,8 @@ import {
 import { IntlProvider } from 'react-intl';
 import { useHistory, useParams } from 'react-router-dom';
 
-import { apiUrl, appId, languages } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
+import { apiUrl, appId, languages } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface IntlMessagesProviderProps {
   children: ReactNode;

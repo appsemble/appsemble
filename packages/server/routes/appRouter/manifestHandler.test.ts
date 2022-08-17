@@ -1,9 +1,9 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { appRouter } from '.';
-import { App } from '../../models';
-import * as appUtils from '../../utils/app';
+import { App } from '../../models/index.js';
+import * as appUtils from '../../utils/app.js';
+import { appRouter } from './index.js';
 
 beforeAll(async () => {
   await setTestApp(new Koa().use(appRouter));

@@ -9,10 +9,10 @@ import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useRouteMatch } from 'react-router-dom';
 
-import { sentryDsn } from '../../utils/settings';
-import { useUser } from '../UserProvider';
+import { sentryDsn } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface LanguageDropdownProps {
   /**

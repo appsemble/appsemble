@@ -2,7 +2,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
-import { Button, Icon, useClickOutside, useToggle } from '..';
+import { Button, Icon, useClickOutside, useToggle } from '../index.js';
 
 interface DropdownProps {
   /**

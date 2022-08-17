@@ -2,11 +2,11 @@ import { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 
-import { App, Asset, Organization } from '../models';
+import { App, Asset, Organization } from '../models/index.js';
 import pkg from '../package.json';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 

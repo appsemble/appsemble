@@ -16,7 +16,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from '.';
+import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from './index.js';
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {

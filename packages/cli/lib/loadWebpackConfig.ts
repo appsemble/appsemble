@@ -26,7 +26,6 @@ export async function loadWebpackConfig(
   } else {
     try {
       // This is resolved relative to the block root, not to this file.
-      // eslint-disable-next-line node/no-unpublished-require
       configPath = require.resolve('./webpack.config', requireOptions);
     } catch (error: unknown) {
       if (

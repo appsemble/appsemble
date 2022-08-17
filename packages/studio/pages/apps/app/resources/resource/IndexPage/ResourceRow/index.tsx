@@ -20,12 +20,12 @@ import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { RouteParams } from '..';
-import { useApp } from '../../../..';
-import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor';
-import { ResourceCell } from '../ResourceCell';
+import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor/index.js';
+import { useApp } from '../../../../index.js';
+import { RouteParams } from '../index.js';
+import { ResourceCell } from '../ResourceCell/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface ResourceRowProps {
   /**

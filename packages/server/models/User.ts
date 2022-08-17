@@ -25,7 +25,7 @@ import {
   Organization,
   ResetPasswordToken,
   TeamMember,
-} from '.';
+} from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
 export class User extends Model {

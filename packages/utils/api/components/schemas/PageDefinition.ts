@@ -1,5 +1,5 @@
-import { BasePageDefinition } from './BasePageDefinition';
-import { extendJSONSchema } from './utils';
+import { BasePageDefinition } from './BasePageDefinition.js';
+import { extendJSONSchema } from './utils.js';
 
 export const PageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',

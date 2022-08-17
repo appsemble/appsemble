@@ -1,6 +1,6 @@
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
 
-import { FormComponent, ValuePickerProvider } from '..';
+import { FormComponent, ValuePickerProvider } from '../index.js';
 
 interface RadioGroupProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange' | 'value'> {

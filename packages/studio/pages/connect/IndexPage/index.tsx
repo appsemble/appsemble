@@ -5,9 +5,9 @@ import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2Utils';
+import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2Utils.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 /**
  * Handle login to apps using OAuth2.

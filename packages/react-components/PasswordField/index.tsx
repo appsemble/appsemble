@@ -1,8 +1,8 @@
 import { ComponentPropsWithoutRef, forwardRef, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { IconButton, InputField, useCombinedRefs } from '..';
-import { messages } from './messages';
+import { IconButton, InputField, useCombinedRefs } from '../index.js';
+import { messages } from './messages.js';
 
 type PasswordFieldProps = Omit<
   ComponentPropsWithoutRef<typeof InputField>,

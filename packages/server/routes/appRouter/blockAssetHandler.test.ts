@@ -2,10 +2,10 @@ import { readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { appRouter } from '.';
-import { boomMiddleware } from '../../middleware/boom';
-import { BlockAsset, BlockVersion, Organization } from '../../models';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { boomMiddleware } from '../../middleware/boom.js';
+import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 useTestDatabase('blockassethandler');
 

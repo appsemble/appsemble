@@ -5,7 +5,7 @@ import { ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface BlockCardProps {
   /**

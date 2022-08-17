@@ -4,8 +4,8 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../../../..';
-import { messages } from './messages';
+import { useApp } from '../../../../index.js';
+import { messages } from './messages.js';
 
 interface EndpointProps {
   hasBody?: boolean;

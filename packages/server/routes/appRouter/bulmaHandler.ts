@@ -6,7 +6,7 @@ import { Context } from 'koa';
 import sass from 'sass';
 import stripBom from 'strip-bom';
 
-import { Theme } from '../../models';
+import { Theme } from '../../models/index.js';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');

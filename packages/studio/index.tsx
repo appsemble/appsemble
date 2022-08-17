@@ -3,9 +3,9 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import { render } from 'react-dom';
 
 import './bulma.scss';
-import { App } from './components/App';
+import { App } from './components/App/index.js';
 import './index.css';
-import { sentryDsn, sentryEnvironment } from './utils/settings';
+import { sentryDsn, sentryEnvironment } from './utils/settings.js';
 
 setupSentry(sentryDsn, sentryEnvironment);
 

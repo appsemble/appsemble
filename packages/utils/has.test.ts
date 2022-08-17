@@ -1,4 +1,4 @@
-import { has } from './has';
+import { has } from './has.js';
 
 describe('has', () => {
   it('should return false for null targets', () => {

@@ -10,8 +10,8 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-} from '..';
-import { messages } from './messages';
+} from '../index.js';
+import { messages } from './messages.js';
 
 export interface EditPasswordValues {
   password: string;

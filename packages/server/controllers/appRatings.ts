@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { App, AppRating, User } from '../models';
+import { App, AppRating, User } from '../models/index.js';
 
 export async function getAppRatings(ctx: Context): Promise<void> {
   const {

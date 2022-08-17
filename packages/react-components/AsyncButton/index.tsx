@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, MouseEvent, ReactElement, useCallback, useState } from 'react';
 
-import { Button } from '..';
+import { Button } from '../index.js';
 
 interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
   /**

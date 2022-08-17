@@ -4,7 +4,7 @@ import { ReactElement, ReactNode } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 const validator = new Validator();
 const firstLineRegex = /^(.*)\n?/;

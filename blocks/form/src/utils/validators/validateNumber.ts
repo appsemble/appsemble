@@ -1,4 +1,4 @@
-import { NumberField, NumberRequirement } from '../../../block';
+import { NumberField, NumberRequirement } from '../../../block.js';
 
 export function validateNumber(field: NumberField, value: number): NumberRequirement {
   return field.requirements?.find((requirement) => {

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { createTestAction } from '../makeActions';
-import { apiUrl, appId } from '../settings';
+import { createTestAction } from '../makeActions.js';
+import { apiUrl, appId } from '../settings.js';
 
 describe('user.register', () => {
   let mock: MockAdapter;

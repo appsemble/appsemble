@@ -22,11 +22,11 @@ import {
   Resource,
   ResourceSubscription,
   User,
-} from '../models';
-import { getRemapperContext } from './app';
-import { preProcessCSV } from './csv';
-import { handleValidatorResult } from './jsonschema';
-import { sendNotification, SendNotificationOptions } from './sendNotification';
+} from '../models/index.js';
+import { getRemapperContext } from './app.js';
+import { preProcessCSV } from './csv.js';
+import { handleValidatorResult } from './jsonschema.js';
+import { sendNotification, SendNotificationOptions } from './sendNotification.js';
 
 /**
  * Get the resource definition of an app by name.

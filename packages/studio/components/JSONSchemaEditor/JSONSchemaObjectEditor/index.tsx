@@ -1,10 +1,10 @@
 import { Title } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 
-import { Collapsible } from '../../Collapsible';
-import { JSONSchemaLabel } from '../JSONSchemaLabel';
-import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
-import { CommonJSONSchemaEditorProps } from '../types';
+import { Collapsible } from '../../Collapsible/index.js';
+import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
+import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
+import { CommonJSONSchemaEditorProps } from '../types.js';
 import styles from './index.module.css';
 
 export function JSONSchemaObjectEditor({

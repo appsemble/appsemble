@@ -1,7 +1,7 @@
 import { BulmaColor } from '@appsemble/types';
 import { createContext, ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 
-import { CardFooterButton, ModalCard } from '..';
+import { CardFooterButton, ModalCard } from '../index.js';
 import styles from './index.module.css';
 
 interface ConfirmationOptions<T, A extends any[]> {

@@ -1,6 +1,6 @@
 import { createRef } from 'react';
 
-import { applyRefs } from './applyRefs';
+import { applyRefs } from './applyRefs.js';
 
 it('should apply function refs', () => {
   const spy = jest.fn();

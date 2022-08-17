@@ -1,4 +1,4 @@
-import { StyleValidationError, validateStyle } from './validateStyle';
+import { StyleValidationError, validateStyle } from './validateStyle.js';
 
 describe('validateStyle', () => {
   it('should validate correct CSS', () => {

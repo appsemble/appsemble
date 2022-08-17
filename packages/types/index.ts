@@ -3,28 +3,28 @@ import { Schema } from 'jsonschema';
 import { OpenAPIV3 } from 'openapi-types';
 import { JsonObject, RequireExactlyOne } from 'type-fest';
 
-import { Action, LogAction } from './action';
-import { AppVisibility, TeamsDefinition } from './app';
-import { BulmaColor } from './bulma';
-import { HTTPMethods } from './http';
-import { Theme } from './theme';
+import { Action, LogAction } from './action.js';
+import { AppVisibility, TeamsDefinition } from './app.js';
+import { BulmaColor } from './bulma.js';
+import { HTTPMethods } from './http.js';
+import { Theme } from './theme.js';
 
-export * from './action';
-export * from './app';
-export * from './appMember';
-export * from './asset';
-export * from './authentication';
-export * from './author';
-export * from './bulma';
-export * from './http';
-export * from './snapshot';
-export * from './resource';
-export * from './saml';
-export * from './ssl';
-export * from './team';
-export * from './template';
-export * from './theme';
-export * from './user';
+export * from './action.js';
+export * from './app.js';
+export * from './appMember.js';
+export * from './asset.js';
+export * from './authentication.js';
+export * from './author.js';
+export * from './bulma.js';
+export * from './http.js';
+export * from './snapshot.js';
+export * from './resource.js';
+export * from './saml.js';
+export * from './ssl.js';
+export * from './team.js';
+export * from './template.js';
+export * from './theme.js';
+export * from './user.js';
 
 /**
  * A representation of a generated OAuth2 authorization code response.

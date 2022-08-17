@@ -6,7 +6,7 @@ import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import './index.css';
-import { loadMarkers, makeFilter } from './loadMarkers';
+import { loadMarkers, makeFilter } from './loadMarkers.js';
 
 bootstrap((params) => {
   const {

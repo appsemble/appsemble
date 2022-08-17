@@ -2,9 +2,9 @@ import { MetaSwitch, useMeta } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { DetailsPage } from './details';
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
+import { DetailsPage } from './details/index.js';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
 
 export function AppsRoutes(): ReactElement {
   useMeta(messages.title);
