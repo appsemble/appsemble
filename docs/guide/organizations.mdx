@@ -1,4 +1,4 @@
-import {roles, Permission} from '@appsemble/utils';
+import { roles, Permission } from '@appsemble/utils';
 
 # Organizations
 
@@ -38,27 +38,25 @@ These roles are the following:
 
 <table>
   <thead>
-  <tr>
-    <th>Permissions</th>
-    {
-      Object.keys(roles).map((role) => (
-        <th>{role}</th>
-      ))
-    }
-  </tr>
+    <tr>
+      <th>Permissions</th>
+      {Object.keys(roles).map((role) => (
+        <th key={role}>{role}</th>
+      ))}
+    </tr>
   </thead>
   <tbody>
-      {
-        Object.keys(Permission).filter((permission) => isNaN(Number(permission))).map((permission) => (
-          <tr>
-            <td>{permission}</td>
-            {
-              Object.keys(roles).map((role) => (
-                <td align="center" >{roles[role].includes(Permission[permission]) ? '✓' : ''}</td>
-              ))
-            }
-          </tr>
-        ))
-      }
+    {Object.keys(Permission)
+      .filter((permission) => isNaN(Number(permission)))
+      .map((permission) => (
+        <tr key={permission}>
+          <td>{permission}</td>
+          {Object.keys(roles).map((role) => (
+            <td key={role} align="center">
+              {roles[role].includes(Permission[permission]) ? '✓' : ''}
+            </td>
+          ))}
+        </tr>
+      ))}
   </tbody>
 </table>
