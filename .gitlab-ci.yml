@@ -654,6 +654,7 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
+    - yarn cypress install
     - yarn scripts wait-for-ssl
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
