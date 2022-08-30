@@ -1,4 +1,4 @@
-describe('Notes', () => {
+describe.skip('Notes', () => {
   beforeEach(() => {
     const { host, protocol } = new URL(Cypress.config().baseUrl);
     const url = `${protocol}//notes.appsemble.${host}`;
