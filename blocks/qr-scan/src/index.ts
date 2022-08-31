@@ -54,18 +54,16 @@ bootstrap(({ events, parameters: { drawQr = false, height = 0, width = 0 }, them
       if (code) {
         if (drawQr) {
           // Draw rectangle on canvas
-          drawLine(code.location.topLeftCorner, code.location.topRightCorner, theme.primaryColor);
-          drawLine(
-            code.location.topRightCorner,
-            code.location.bottomRightCorner,
-            theme.primaryColor,
-          );
-          drawLine(
-            code.location.bottomRightCorner,
-            code.location.bottomLeftCorner,
-            theme.primaryColor,
-          );
-          drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, theme.primaryColor);
+          const square = code.location;
+          canvas.beginPath();
+          canvas.moveTo(square.topLeftCorner.x, square.topLeftCorner.y);
+          canvas.lineTo(square.topRightCorner.x, square.topRightCorner.y);
+          canvas.lineTo(square.bottomRightCorner.x, square.bottomRightCorner.y);
+          canvas.lineTo(square.bottomLeftCorner.x, square.bottomLeftCorner.y);
+          canvas.closePath();
+          canvas.lineWidth = 4;
+          canvas.strokeStyle = theme.primaryColor;
+          canvas.stroke();
         }
 
         // Emit event with QR URL
