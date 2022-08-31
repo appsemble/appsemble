@@ -39,5 +39,5 @@ export class EmailAuthorization extends Model {
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 }

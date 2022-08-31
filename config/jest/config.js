@@ -1,11 +1,14 @@
-const { existsSync, readFileSync } = require('fs');
-const { join } = require('path');
+import { existsSync, readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 /**
  * Generate a proper Jest configuration based on a project context.
+ *
+ * @param {ImportMeta} meta The import module meta object.
+ * @returns {import('jest').Config} A jest configuration for the project.
  */
-module.exports = (rootDir) => {
-  const readJSON = (path) => JSON.parse(readFileSync(join(rootDir, path)));
+export function createJestConfig({ url }) {
+  const readJSON = (path) => JSON.parse(readFileSync(new URL(path, url)));
 
   const pkg = readJSON('package.json');
   const dependencies = { ...pkg.devDependencies, ...pkg.dependencies, ...pkg.peerDependencies };
@@ -22,9 +25,9 @@ module.exports = (rootDir) => {
   }
 
   // Load jest.setup.ts if it exists, otherwise skip it.
-  const setup = join(rootDir, 'jest.setup.ts');
+  const setup = new URL('jest.setup.ts', url);
   if (existsSync(setup)) {
-    setupFilesAfterEnv.push(setup);
+    setupFilesAfterEnv.push(fileURLToPath(setup));
   }
 
   // If the types define testing library, add it to the setup files
@@ -45,8 +48,15 @@ module.exports = (rootDir) => {
     coveragePathIgnorePatterns: ['.d.ts$'],
     clearMocks: true,
     displayName: pkg.name,
-    globals: { 'ts-jest': { isolatedModules: true } },
+    extensionsToTreatAsEsm: ['.ts', '.tsx'],
+    globals: {
+      'ts-jest': {
+        isolatedModules: true,
+        useESM: true,
+      },
+    },
     moduleNameMapper,
+    passWithNoTests: true,
     preset: 'ts-jest',
     resetMocks: true,
     restoreMocks: true,
@@ -58,6 +68,10 @@ module.exports = (rootDir) => {
     // Use the jsdom environment if the project uses dom or webworker types. Otherwise default to
     // node.
     testEnvironment: lib.includes('dom') || lib.includes('webworker') ? 'jsdom' : 'node',
+    testEnvironmentOptions: {
+      // Prevent jest-environment-jsdom from using the browser field, which often leads to faux ESM.
+      customExportConditions: ['node', 'node-addons'],
+    },
     transform,
   };
-};
+}

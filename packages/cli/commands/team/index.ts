@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { Argv, CommandModule } from 'yargs';
 
 import * as create from './create.js';
 import * as deleteTeam from './delete.js';
@@ -11,5 +11,10 @@ export const command = 'team';
 export const description = 'Commands related to app teams.';
 
 export function builder(yargs: Argv): Argv {
-  return yargs.command(create).command(deleteTeam).command(member).command(update).demandCommand(1);
+  return yargs
+    .command(create as unknown as CommandModule)
+    .command(deleteTeam as unknown as CommandModule)
+    .command(member)
+    .command(update as unknown as CommandModule)
+    .demandCommand(1);
 }

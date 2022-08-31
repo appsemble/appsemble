@@ -1,6 +1,6 @@
 import { readdirSync } from 'fs';
 import { readFile } from 'fs/promises';
-import { join, parse } from 'path';
+import { parse } from 'path';
 
 import { assetDir } from '../readAsset.js';
 import { renderEmail } from './renderEmail.js';
@@ -37,7 +37,7 @@ const tests = {
   teamInvite: [{ teamName: 'Test Team', appName: 'Test App', url: 'https://example.com' }],
 };
 
-it.each(readdirSync(join(assetDir, 'email')).map((f) => parse(f).name))(
+it.each(readdirSync(new URL('email/', assetDir)).map((f) => parse(f).name))(
   'should have tests for %s',
   (name) => {
     expect(tests).toHaveProperty(name);
@@ -47,7 +47,7 @@ it.each(readdirSync(join(assetDir, 'email')).map((f) => parse(f).name))(
 
 describe.each(Object.entries(tests))('%s', (name, testValues: Record<string, any>[]) => {
   it.each(testValues)(`should render ${name} %#`, async (values) => {
-    const template = await readFile(join(assetDir, 'email', `${name}.md`), 'utf8');
+    const template = await readFile(new URL(`email/${name}.md`, assetDir), 'utf8');
     const { html, text } = await renderEmail(template, values);
     expect(text).toMatchSnapshot('text');
     expect(html).toMatchSnapshot('html');

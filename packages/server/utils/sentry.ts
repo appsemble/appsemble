@@ -1,7 +1,7 @@
 import { init } from '@sentry/node';
 import matcher from 'matcher';
 
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { argv } from './argv.js';
 
 interface SentrySettings {

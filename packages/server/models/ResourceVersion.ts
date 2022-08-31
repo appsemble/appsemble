@@ -32,14 +32,14 @@ export class ResourceVersion extends Model {
   ResourceId: number;
 
   @BelongsTo(() => Resource)
-  Resource: Resource;
+  Resource: Awaited<Resource>;
 
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @CreatedAt
   created: Date;

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs from 'yargs';
+import yargs, { CommandModule } from 'yargs';
 
 import * as block from './commands/block.js';
 
-yargs
+yargs()
   .option('verbose', {
     alias: 'v',
     describe: 'Increase verbosity',
@@ -16,7 +16,7 @@ yargs
     type: 'count',
   })
   .middleware([configureLogger])
-  .command(block)
+  .command(block as unknown as CommandModule)
   .demandCommand(1)
   .fail(handleError)
   .help()

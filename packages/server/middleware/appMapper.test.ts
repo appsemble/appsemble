@@ -11,8 +11,8 @@ let context: Context;
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost:1337' });
-  platformMiddleware = jest.fn();
-  appMiddleware = jest.fn();
+  platformMiddleware = import.meta.jest.fn();
+  appMiddleware = import.meta.jest.fn();
   fakeHostname = 'localhost';
   const app = new Koa();
   app.use((ctx, next) => {

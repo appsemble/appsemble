@@ -14,7 +14,7 @@ let instance: AxiosInstance;
 let mock: MockAdapter;
 let clock: InstalledClock;
 
-jest.mock('os');
+import.meta.jest.mock('os');
 
 beforeEach(() => {
   clock = install();
@@ -65,7 +65,7 @@ describe('requestLogger', () => {
   });
 
   it('should log requests', async () => {
-    jest.spyOn(logger, 'verbose');
+    import.meta.jest.spyOn(logger, 'verbose');
     await instance.get('/');
     expect(logger.verbose).toHaveBeenCalledWith(`> 0 ${h('GET / HTTP/1.1')}`);
   });
@@ -80,7 +80,7 @@ describe('responseLogger', () => {
   });
 
   it('should log responses', async () => {
-    jest.spyOn(logger, 'verbose');
+    import.meta.jest.spyOn(logger, 'verbose');
     await instance.get('/');
     expect(logger.verbose).toHaveBeenCalledWith(expect.any(String));
   });
@@ -88,8 +88,8 @@ describe('responseLogger', () => {
 
 describe('configureAxios', () => {
   beforeEach(() => {
-    jest.spyOn(axios.interceptors.request, 'use').mockImplementation();
-    jest.spyOn(axios.interceptors.response, 'use').mockImplementation();
+    import.meta.jest.spyOn(axios.interceptors.request, 'use').mockImplementation();
+    import.meta.jest.spyOn(axios.interceptors.response, 'use').mockImplementation();
   });
 
   it('should set the correct user agent', () => {

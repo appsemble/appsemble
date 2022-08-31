@@ -9,7 +9,7 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';

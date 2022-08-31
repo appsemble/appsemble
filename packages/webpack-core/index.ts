@@ -1,8 +1,9 @@
-import { dirname, join, resolve } from 'path';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { logger } from '@appsemble/node-utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json';
-import bulmaPkg from 'bulma/package.json';
+import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
+import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
@@ -42,8 +43,8 @@ const minify: MinifyOptions = {
   useShortDoctype: true,
 };
 
-const packagesDir = dirname(__dirname);
-const rootDir = dirname(packagesDir);
+const packagesDir = new URL('../', import.meta.url);
+const rootDir = new URL('../', packagesDir);
 
 /**
  * This webpack configuration is used by the Appsemble core parts.
@@ -54,19 +55,20 @@ const rootDir = dirname(packagesDir);
  */
 function shared(env: string, { mode }: CliConfigOptions): Configuration {
   const production = mode === 'production';
-  const projectDir = join(packagesDir, env);
-  const configFile = join(projectDir, 'tsconfig.json');
+  const projectURL = new URL(`${env}/`, packagesDir);
+  const projectDir = fileURLToPath(new URL(env, packagesDir));
+  const configFile = fileURLToPath(new URL('tsconfig.json', projectURL));
   const publicPath = production ? '/' : `/${env}/`;
 
   return {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: { [env]: [projectDir] },
+    entry: { [env]: [join(projectDir, 'index.tsx')] },
     output: {
       filename: production ? '[contenthash].js' : `${env}-[name].js`,
       publicPath,
-      path: production ? join(rootDir, 'dist', env) : `/${env}/`,
+      path: production ? fileURLToPath(new URL(`dist/${env}`, rootDir)) : `/${env}/`,
       chunkFilename: production ? '[contenthash].js' : '[id].js',
     },
     resolve: {
@@ -82,7 +84,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: join(projectDir, 'index.html'),
+        template: fileURLToPath(new URL('index.html', projectURL)),
         templateParameters: {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,
@@ -239,13 +241,13 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: join(packagesDir, 'app', 'error.html'),
+      template: fileURLToPath(new URL('app/error.html', packagesDir)),
       filename: 'error.html',
       minify,
       chunks: [],
     }),
     new InjectManifest({
-      swSrc: resolve(__dirname, '..', 'service-worker', 'index.ts'),
+      swSrc: fileURLToPath(new URL('../service-worker/index.ts', import.meta.url)),
       swDest: 'service-worker.js',
       injectionPoint: 'appAssets',
       manifestTransforms: [

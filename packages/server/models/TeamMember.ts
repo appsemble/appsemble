@@ -33,10 +33,10 @@ export class TeamMember extends Model {
   role: TeamRole;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @BelongsTo(() => Team)
-  Team: Team;
+  Team: Awaited<Team>;
 
   @CreatedAt
   created: Date;

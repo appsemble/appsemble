@@ -64,7 +64,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   const explorer = cosmiconfig('appsemble', { stopDir: dir });
   const found = await explorer.search(dir);
   if (!found) {
-    throw new AppsembleError('No Appsemble configuration file found.');
+    throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
   }
   const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);

@@ -1,5 +1,6 @@
 import { ActionType, EventType } from '@appsemble/types';
-import { Schema } from 'jsonschema';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type Schema } from 'jsonschema';
 import {
   AllowNull,
   BelongsTo,
@@ -78,7 +79,7 @@ export class BlockVersion extends Model {
   examples: string[];
 
   @BelongsTo(() => Organization)
-  Organization: Organization;
+  Organization: Awaited<Organization>;
 
   @HasMany(() => BlockAsset)
   BlockAssets?: BlockAsset[];

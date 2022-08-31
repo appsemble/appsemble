@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import { join } from 'path';
 
 import { BlockConfig } from '@appsemble/types';
@@ -5,6 +6,8 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { Configuration } from 'webpack';
+
+const require = createRequire(import.meta.url);
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -17,7 +20,7 @@ const loaders = {
   ts: require.resolve('ts-loader'),
 };
 
-export = function createWebpackConfig(
+export default function createWebpackConfig(
   { dir, name }: BlockConfig,
   { mode }: CliConfigOptions,
 ): Configuration {
@@ -97,4 +100,4 @@ export = function createWebpackConfig(
       minimizer: ['...', new CssMinimizerPlugin()],
     },
   };
-};
+}

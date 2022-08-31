@@ -6,7 +6,7 @@ import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';

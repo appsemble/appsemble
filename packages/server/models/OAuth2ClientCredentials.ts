@@ -42,5 +42,5 @@ export class OAuth2ClientCredentials extends Model {
   UserId: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: User;
+  User: Awaited<User>;
 }

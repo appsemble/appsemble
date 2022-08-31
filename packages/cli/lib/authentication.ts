@@ -66,7 +66,8 @@ function waitForCredentials(url: URL): Promise<string> {
 
 async function getKeytar(): Promise<typeof import('keytar')> {
   try {
-    return await import('keytar');
+    const { default: keytar } = await import('keytar');
+    return keytar;
   } catch {
     throw new AppsembleError(
       'Couldn’t find module keytar. Either install libsecret and reinstall @appsemble/cli, or pass --client-credentials on the command line.',

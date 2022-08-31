@@ -34,7 +34,7 @@ export class AppSamlAuthorization extends Model {
    * The linked app SAML secret.
    */
   @BelongsTo(() => AppSamlSecret)
-  AppSamlSecret: AppSamlSecret;
+  AppSamlSecret: Awaited<AppSamlSecret>;
 
   /**
    * The id of the linked app user.
@@ -48,7 +48,7 @@ export class AppSamlAuthorization extends Model {
    * The app user.
    */
   @BelongsTo(() => AppMember)
-  AppMember: AppMember;
+  AppMember: Awaited<AppMember>;
 
   @CreatedAt
   created: Date;

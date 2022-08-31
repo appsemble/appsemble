@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { compareStrings } from '@appsemble/utils';
@@ -28,8 +29,9 @@ import { compareStrings } from '@appsemble/utils';
  */
 const replacements: [RegExp, string][] = [];
 
+const filename = fileURLToPath(import.meta.url);
 export const command = 'rewrite-messages';
-export const description = `Fix i18n message keys for moved files. Open ${__filename} for details`;
+export const description = `Fix i18n message keys for moved files. Open ${filename} for details`;
 
 const translationdDir = 'i18n';
 
@@ -37,7 +39,7 @@ export async function handler(): Promise<void> {
   const filenames = await readdir(translationdDir);
 
   if (!replacements.length) {
-    throw new AppsembleError(`Implement replacements in ${__filename} to run this command.`);
+    throw new AppsembleError(`Implement replacements in ${filename} to run this command.`);
   }
 
   await Promise.all(

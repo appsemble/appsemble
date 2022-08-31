@@ -1,4 +1,4 @@
 import { setFixtureBase, setLogLevel } from '@appsemble/node-utils';
 
-setFixtureBase(__dirname);
+setFixtureBase(import.meta);
 setLogLevel(0);

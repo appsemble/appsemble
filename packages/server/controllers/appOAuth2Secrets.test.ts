@@ -1,7 +1,9 @@
 import { LoginCodeResponse, OAuth2ClientCredentials } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import {
   App,
@@ -12,12 +14,12 @@ import {
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import * as oauth2 from '../utils/oauth2.js';
 import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
 let clock: InstalledClock;
+let mock: MockAdapter;
 let member: Member;
 
 useTestDatabase('appnotifications');
@@ -30,6 +32,10 @@ beforeAll(async () => {
 
 beforeEach(() => {
   clock = install();
+});
+
+beforeEach(() => {
+  mock = new MockAdapter(axios);
 });
 
 beforeEach(async () => {
@@ -555,7 +561,7 @@ describe('verifyAppOAuth2SecretCode', () => {
   });
 
   it('should trade the authorization code for an Appsemble authorization code', async () => {
-    const accessToken = sign(
+    const accessToken = jwt.sign(
       {
         email: 'user@example.com',
         emailVerified: true,
@@ -566,7 +572,7 @@ describe('verifyAppOAuth2SecretCode', () => {
       },
       'random',
     );
-    jest.spyOn(oauth2, 'getAccessToken').mockResolvedValue({
+    mock.onPost('https://example.com/oauth/token').reply(200, {
       access_token: accessToken,
       id_token: '',
       refresh_token: '',

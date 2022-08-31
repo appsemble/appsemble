@@ -27,10 +27,10 @@ export class ResourceSubscription extends Model {
   AppSubscriptionId: number;
 
   @BelongsTo(() => AppSubscription)
-  AppSubscription: AppSubscription;
+  AppSubscription: Awaited<AppSubscription>;
 
   @BelongsTo(() => Resource)
-  Resource: Resource;
+  Resource: Awaited<Resource>;
 
   @CreatedAt
   created: Date;
