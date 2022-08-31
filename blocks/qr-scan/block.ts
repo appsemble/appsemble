@@ -9,9 +9,15 @@ declare module '@appsemble/sdk' {
      * @default false
      */
     drawQr?: boolean;
-    // Video Element Height
+
+    /**
+     * Video Element Height
+     */
     height?: number;
-    // Video Element Width
+
+    /**
+     * Video Element Width
+     */
     width?: number;
   }
 
