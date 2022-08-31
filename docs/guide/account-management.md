@@ -8,7 +8,7 @@ Multiple email addresses can be used to log into your account. You can designate
 as your primary email address which will be used for email communication. Having multiple email
 addresses associated with your account makes it easier for organizations to send you an invite.
 
-In order to be able to create a new [organization](organizations.md), you must first ensure that
+In order to be able to create a new [organization](organizations.mdx), you must first ensure that
 your primary email address is verified. To resend the verification email you may click on the resend
 button.
 
