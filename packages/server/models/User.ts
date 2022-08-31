@@ -85,9 +85,9 @@ export class User extends Model {
   @DeletedAt
   deleted: Date;
 
-  TeamMember: TeamMember;
+  TeamMember: Awaited<TeamMember>;
 
-  AppMember: AppMember;
+  AppMember: Awaited<AppMember>;
 
-  Member: Member;
+  Member: Awaited<Member>;
 }

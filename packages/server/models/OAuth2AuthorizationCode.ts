@@ -36,7 +36,7 @@ export class OAuth2AuthorizationCode extends Model {
   UserId: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: User;
+  User: Awaited<User>;
 
   @AllowNull(false)
   @ForeignKey(() => App)
@@ -44,5 +44,5 @@ export class OAuth2AuthorizationCode extends Model {
   AppId: number;
 
   @BelongsTo(() => App, { onDelete: 'CASCADE' })
-  App: App;
+  App: Awaited<App>;
 }

@@ -4,8 +4,8 @@ import { iterAction, iterApp, iterBlock, iterBlockList, iterPage } from './iterA
 
 describe('iterAction', () => {
   it('should call the appropriate callbacks', () => {
-    const onAction = jest.fn();
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'dialog',
@@ -20,8 +20,8 @@ describe('iterAction', () => {
   });
 
   it('should abort if the onAction callback returns true', () => {
-    const onAction = jest.fn().mockReturnValue(true);
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn().mockReturnValue(true);
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'dialog',
@@ -36,8 +36,8 @@ describe('iterAction', () => {
   });
 
   it('should call onAction for onSuccess', () => {
-    const onAction = jest.fn();
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'noop',
@@ -55,8 +55,10 @@ describe('iterAction', () => {
   });
 
   it('should return true if onAction returns true for onSuccess', () => {
-    const onAction = jest.fn().mockImplementation((a, [prefix]) => prefix === 'onSuccess');
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest
+      .fn()
+      .mockImplementation((a, [prefix]) => prefix === 'onSuccess');
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'noop',
@@ -74,8 +76,8 @@ describe('iterAction', () => {
   });
 
   it('should call onAction for onError', () => {
-    const onAction = jest.fn();
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'noop',
@@ -93,8 +95,10 @@ describe('iterAction', () => {
   });
 
   it('should return true if onAction returns true for onError', () => {
-    const onAction = jest.fn().mockImplementation((a, [prefix]) => prefix === 'onError');
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest
+      .fn()
+      .mockImplementation((a, [prefix]) => prefix === 'onError');
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'noop',
@@ -112,7 +116,7 @@ describe('iterAction', () => {
   });
 
   it('should call then and else for conditional actions', () => {
-    const onAction = jest.fn();
+    const onAction = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'condition',
@@ -130,8 +134,8 @@ describe('iterAction', () => {
   });
 
   it('should return the return value of iterBlockList', () => {
-    const onAction = jest.fn();
-    const onBlockList = jest.fn().mockReturnValue(true);
+    const onAction = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn().mockReturnValue(true);
 
     const action: ActionDefinition = {
       type: 'dialog',
@@ -149,8 +153,8 @@ describe('iterAction', () => {
   });
 
   it('should not call iterBlockList if the action has no blocks', () => {
-    const onAction = jest.fn();
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const action: ActionDefinition = {
       type: 'log',
@@ -169,8 +173,8 @@ describe('iterAction', () => {
 
 describe('iterBlock', () => {
   it('should call the appropriate callbacks', () => {
-    const onAction = jest.fn();
-    const onBlock = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onBlock = import.meta.jest.fn();
 
     const block: BlockDefinition = {
       type: 'list',
@@ -190,8 +194,8 @@ describe('iterBlock', () => {
   });
 
   it('should abort if onBlock returns true', () => {
-    const onAction = jest.fn();
-    const onBlock = jest.fn().mockReturnValue(true);
+    const onAction = import.meta.jest.fn();
+    const onBlock = import.meta.jest.fn().mockReturnValue(true);
 
     const block: BlockDefinition = {
       type: 'list',
@@ -211,8 +215,8 @@ describe('iterBlock', () => {
   });
 
   it('should return the return value of onAction', () => {
-    const onAction = jest.fn().mockReturnValue(true);
-    const onBlock = jest.fn();
+    const onAction = import.meta.jest.fn().mockReturnValue(true);
+    const onBlock = import.meta.jest.fn();
 
     const block: BlockDefinition = {
       type: 'list',
@@ -234,8 +238,8 @@ describe('iterBlock', () => {
 
 describe('iterBlockList', () => {
   it('should call the appropriate callbacks', () => {
-    const onBlock = jest.fn();
-    const onBlockList = jest.fn();
+    const onBlock = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const blocks: BlockDefinition[] = [
       {
@@ -257,8 +261,8 @@ describe('iterBlockList', () => {
   });
 
   it('should abort if onBlockList returns true', () => {
-    const onBlock = jest.fn();
-    const onBlockList = jest.fn().mockReturnValue(true);
+    const onBlock = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn().mockReturnValue(true);
 
     const blocks: BlockDefinition[] = [
       {
@@ -282,8 +286,8 @@ describe('iterBlockList', () => {
 
 describe('iterPage', () => {
   it('should iterate over a page', () => {
-    const onBlockList = jest.fn();
-    const onPage = jest.fn();
+    const onBlockList = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn();
 
     const page: PageDefinition = {
       name: 'Page',
@@ -298,8 +302,8 @@ describe('iterPage', () => {
   });
 
   it('should abort if onPage returns true', () => {
-    const onBlockList = jest.fn();
-    const onPage = jest.fn().mockReturnValue(true);
+    const onBlockList = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn().mockReturnValue(true);
 
     const page: PageDefinition = {
       name: 'Page',
@@ -314,8 +318,8 @@ describe('iterPage', () => {
   });
 
   it('should iterate a flow page', () => {
-    const onBlockList = jest.fn();
-    const onPage = jest.fn();
+    const onBlockList = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn();
 
     const page: PageDefinition = {
       name: 'Page',
@@ -336,8 +340,8 @@ describe('iterPage', () => {
   });
 
   it('should iterate a tabs page', () => {
-    const onBlockList = jest.fn();
-    const onPage = jest.fn();
+    const onBlockList = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn();
 
     const page: PageDefinition = {
       name: 'Page',
@@ -358,8 +362,8 @@ describe('iterPage', () => {
   });
 
   it('should call onAction for page actions', () => {
-    const onAction = jest.fn();
-    const onPage = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn();
 
     const page: PageDefinition = {
       name: 'Page',
@@ -380,9 +384,9 @@ describe('iterPage', () => {
   });
 
   it('should call onAction and onBlockList for pages with actions and subpages', () => {
-    const onAction = jest.fn();
-    const onPage = jest.fn();
-    const onBlockList = jest.fn();
+    const onAction = import.meta.jest.fn();
+    const onPage = import.meta.jest.fn();
+    const onBlockList = import.meta.jest.fn();
 
     const page: PageDefinition = {
       name: 'Page',
@@ -421,7 +425,7 @@ describe('iterPage', () => {
 
 describe('iterApp', () => {
   it('should iterate over the page of an app', () => {
-    const onPage = jest.fn();
+    const onPage = import.meta.jest.fn();
 
     const app: AppDefinition = {
       name: 'App',
@@ -441,7 +445,7 @@ describe('iterApp', () => {
   });
 
   it('should abort page iteration if a callback returns true', () => {
-    const onPage = jest.fn().mockReturnValue(true);
+    const onPage = import.meta.jest.fn().mockReturnValue(true);
 
     const app: AppDefinition = {
       name: 'App',
@@ -466,7 +470,7 @@ describe('iterApp', () => {
   });
 
   it('should iterate over cron jobs', () => {
-    const onAction = jest.fn();
+    const onAction = import.meta.jest.fn();
 
     const app: AppDefinition = {
       name: 'App',
@@ -487,7 +491,7 @@ describe('iterApp', () => {
   });
 
   it('should abort cron iteration if a callback returns true', () => {
-    const onAction = jest.fn().mockReturnValue(true);
+    const onAction = import.meta.jest.fn().mockReturnValue(true);
 
     const app: AppDefinition = {
       name: 'App',

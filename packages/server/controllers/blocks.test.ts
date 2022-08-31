@@ -3,7 +3,7 @@ import { BlockManifest } from '@appsemble/types';
 import { install } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import stripIndent from 'strip-indent';
 
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';

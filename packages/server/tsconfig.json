@@ -3,7 +3,6 @@
   "compilerOptions": {
     "jsx": "react",
     "jsxFactory": "h",
-    "jsxFragmentFactory": "null",
-    "module": "commonjs"
+    "jsxFragmentFactory": "null"
   }
 }

@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import { EmailAuthorization, OAuthAuthorization, User } from '../models/index.js';
 import { argv, setArgv } from '../utils/argv.js';
@@ -83,7 +83,7 @@ describe('registerOAuth2Connection', () => {
         200,
         {
           access_token: 'access.token',
-          id_token: sign(
+          id_token: jwt.sign(
             {
               sub: '123',
               name: 'User',
@@ -140,7 +140,7 @@ describe('registerOAuth2Connection', () => {
         200,
         {
           access_token: 'access.token',
-          id_token: sign(
+          id_token: jwt.sign(
             {
               sub: '123',
               name: 'User',
@@ -280,7 +280,7 @@ describe('connectPendingOAuth2Profile', () => {
 
   it('should create a new user if the user isn’t logged in', async () => {
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: sign(
+      accessToken: jwt.sign(
         {
           email: 'me@example.com',
           name: 'Me',
@@ -319,7 +319,7 @@ describe('connectPendingOAuth2Profile', () => {
     });
     await EmailAuthorization.create({ UserId: userB.id, email: 'me@example.com' });
     await OAuthAuthorization.create({
-      accessToken: sign(
+      accessToken: jwt.sign(
         {
           email: 'me@example.com',
           name: 'Me',
@@ -350,7 +350,7 @@ describe('connectPendingOAuth2Profile', () => {
 
   it('should create an email authorization if a new email address is registered', async () => {
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: sign(
+      accessToken: jwt.sign(
         {
           email: 'me@example.com',
           name: 'Me',

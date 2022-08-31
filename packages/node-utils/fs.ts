@@ -34,9 +34,9 @@ export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoExc
  * @param path The path to the file to read.
  * @returns A tuple of the parsed content and the content as a string.
  */
-export async function readData<R>(path: string): Promise<[R, string]> {
+export async function readData<R>(path: URL | string): Promise<[R, string]> {
   let content: string;
-  const ext = extname(path);
+  const ext = extname(String(path));
   try {
     content = await readFile(path, 'utf8');
   } catch {

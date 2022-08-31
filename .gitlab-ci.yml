@@ -14,6 +14,8 @@ variables:
   JEST_JUNIT_CLASSNAME: '{classname}'
   JEST_JUNIT_SUITE_NAME: '{filepath}'
   JEST_JUNIT_TITLE: '{title}'
+  # Suppress Node.js warnings caused by jest using experimental APIs
+  NODE_NO_WARNINGS: 1
 
 workflow:
   rules:
@@ -145,7 +147,8 @@ test node 18:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --coverage
+    - yarn test --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  parallel: 5
   artifacts:
     paths:
       - coverage

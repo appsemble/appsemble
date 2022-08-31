@@ -1,5 +1,4 @@
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
 
 import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Context } from 'koa';
@@ -17,10 +16,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   const production = process.env.NODE_ENV === 'production';
   const filename = production ? '/service-worker.js' : '/app/service-worker.js';
   const serviceWorker = await (production
-    ? readFile(
-        resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
-        'utf8',
-      )
+    ? readFile(new URL('../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
     : ctx.fs.promises.readFile(filename, 'utf8'));
   const { app } = await getApp(ctx, {
     attributes: ['definition'],

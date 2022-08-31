@@ -3,12 +3,12 @@ import {
   defaultLocale,
   extractAppMessages,
   has,
+  IntlMessageFormat,
   objectCache,
   RemapperContext,
 } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
 import { badRequest } from '@hapi/boom';
-import { IntlMessageFormat } from 'intl-messageformat';
 import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
@@ -17,8 +17,14 @@ import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
 import { mergeMessages } from './mergeMessages.js';
 
-const getNumberFormat = memoize((locale, opts) => new Intl.NumberFormat(locale, opts));
-const getPluralRules = memoize((locale, opts) => new Intl.PluralRules(locale, opts));
+// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
+const getNumberFormat = memoize.default(
+  (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
+);
+// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
+const getPluralRules = memoize.default(
+  (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
+);
 
 interface GetAppValue {
   /**
@@ -117,8 +123,9 @@ export async function getRemapperContext(
         formatters: {
           getNumberFormat,
           getPluralRules,
-          getDateTimeFormat: memoize(
-            (locale, opts) =>
+          // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
+          getDateTimeFormat: memoize.default(
+            (locale: string, opts: Intl.DateTimeFormatOptions) =>
               new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
           ),
         },

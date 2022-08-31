@@ -36,7 +36,7 @@ export class AppBlockStyle extends Model {
   style: string;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @CreatedAt
   created: Date;

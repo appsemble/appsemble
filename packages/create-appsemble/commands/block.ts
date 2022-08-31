@@ -1,15 +1,14 @@
-import { readdir } from 'fs/promises';
-import { join, resolve } from 'path';
+import { cp, readdir } from 'fs/promises';
+import { join } from 'path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
-import { copy } from 'fs-extra';
 import inquirer from 'inquirer';
 import { PackageJson } from 'type-fest';
 import { Argv } from 'yargs';
 
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 
-const templateDir = resolve(__dirname, '../templates');
+const templateDir = new URL('../templates/', import.meta.url);
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
@@ -60,15 +59,20 @@ export async function handler(args: BlockArgs): Promise<void> {
 
   const { version } = pkg;
   const outputPath = join(process.cwd(), 'blocks', name);
-  const inputPath = join(templateDir, template);
-  const pkgPath = join(inputPath, 'package.json');
+  const inputPath = new URL(`${template}/`, templateDir);
+  const pkgPath = new URL('package.json', inputPath);
   const [inputPkg] = await readData<PackageJson>(pkgPath);
   const outputPkg = {
     name: `@${organization}/${name}`,
     version,
     ...inputPkg,
   };
-  await copy(inputPath, outputPath, { filter: (src) => src !== pkgPath });
+  await cp(inputPath, outputPath, {
+    errorOnExist: true,
+    filter: (src) => !src.endsWith('package.json'),
+    force: false,
+    recursive: true,
+  });
   await writeData(join(outputPath, 'package.json'), outputPkg);
   logger.info(`Successfully created @${organization}/${name}/${version} at ${outputPath}`);
 }

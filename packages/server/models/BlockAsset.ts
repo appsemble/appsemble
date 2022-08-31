@@ -47,5 +47,5 @@ export class BlockAsset extends Model {
   created: Date;
 
   @BelongsTo(() => BlockVersion)
-  BlockVersion: BlockVersion;
+  BlockVersion: Awaited<BlockVersion>;
 }

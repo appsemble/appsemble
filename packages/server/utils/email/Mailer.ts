@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, has } from '@appsemble/utils';
+import { defaultLocale, has, IntlMessageFormat } from '@appsemble/utils';
 import addrs, { ParsedMailbox } from 'email-addresses';
-import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
 import { Options } from 'nodemailer/lib/smtp-transport';

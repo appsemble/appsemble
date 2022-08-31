@@ -1,9 +1,8 @@
 import { rm } from 'fs/promises';
-import { resolve } from 'path';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
-import { Configuration, MultiStats, webpack } from 'webpack';
+import webpack, { Configuration, MultiStats } from 'webpack';
 import { Argv } from 'yargs';
 
 export const command = 'build';
@@ -42,7 +41,7 @@ export async function handler({ app, appStats, studio, studioStats }: Args): Pro
   const configurations: Configuration[] = [];
   let appConfig: Configuration;
   let studioConfig: Configuration;
-  const outputDir = resolve(__dirname, '..', '..', '..', 'dist');
+  const outputDir = new URL('../../../dist/', import.meta.url);
   logger.warn(`Removing directory: ${outputDir}`);
   await rm(outputDir, { force: true, recursive: true });
   if (app) {

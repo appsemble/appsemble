@@ -1,4 +1,4 @@
-describe('Holidays', () => {
+describe.skip('Holidays', () => {
   let cached = false;
 
   beforeEach(() => {

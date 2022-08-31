@@ -3,7 +3,7 @@ import { TokenResponse } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
-import { decode } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
@@ -257,7 +257,7 @@ describe('authorization_code', () => {
     await expect(authCode.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'app:1',
       exp: 946_688_400,
@@ -372,7 +372,7 @@ describe('client_credentials', () => {
         token_type: 'bearer',
       },
     });
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'testClientId',
       exp: 946_688_400,
@@ -420,7 +420,7 @@ describe('refresh_token', () => {
         token_type: 'bearer',
       },
     });
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'http://localhost',
       exp: 946_688_400,

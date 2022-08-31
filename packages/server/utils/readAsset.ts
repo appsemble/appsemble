@@ -1,7 +1,6 @@
 import { readFile } from 'fs/promises';
-import { join, resolve } from 'path';
 
-export const assetDir = resolve(__dirname, '../assets');
+export const assetDir = new URL('../assets/', import.meta.url);
 
 /**
  * Read a file from the server assets directory.
@@ -13,5 +12,5 @@ export const assetDir = resolve(__dirname, '../assets');
 export function readAsset(filename: string): Promise<Buffer>;
 export function readAsset(filename: string, encoding: BufferEncoding): Promise<string>;
 export function readAsset(filename: string, encoding?: BufferEncoding): Promise<Buffer | string> {
-  return readFile(join(assetDir, filename), encoding);
+  return readFile(new URL(filename, assetDir), encoding);
 }

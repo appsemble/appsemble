@@ -1,7 +1,7 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
 import { install, InstalledClock } from '@sinonjs/fake-timers';
-import { IntlMessageFormat } from 'intl-messageformat';
 
+import { IntlMessageFormat } from './intl-messageformat.js';
 import { remap } from './remap.js';
 
 interface TestCase {
@@ -720,7 +720,7 @@ describe('random.choice', () => {
 
 describe('random.integer', () => {
   beforeEach(() => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    import.meta.jest.spyOn(Math, 'random').mockReturnValue(0.5);
   });
 
   runTests({
@@ -734,7 +734,7 @@ describe('random.integer', () => {
 
 describe('random.float', () => {
   beforeEach(() => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    import.meta.jest.spyOn(Math, 'random').mockReturnValue(0.5);
   });
 
   runTests({
@@ -748,7 +748,7 @@ describe('random.float', () => {
 
 describe('random.string', () => {
   beforeEach(() => {
-    jest
+    import.meta.jest
       .spyOn(Math, 'random')
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(0.4)

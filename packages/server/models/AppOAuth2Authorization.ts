@@ -28,7 +28,7 @@ export class AppOAuth2Authorization extends Model {
   AppOAuth2SecretId: number;
 
   @BelongsTo(() => AppOAuth2Secret)
-  AppOAuth2Secret: AppOAuth2Secret;
+  AppOAuth2Secret: Awaited<AppOAuth2Secret>;
 
   /**
    * The access token assigned to Appsemble linked to the subject.
@@ -67,5 +67,5 @@ export class AppOAuth2Authorization extends Model {
    * The App user.
    */
   @BelongsTo(() => AppMember)
-  AppMember: AppMember;
+  AppMember: Awaited<AppMember>;
 }

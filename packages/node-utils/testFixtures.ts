@@ -1,8 +1,6 @@
 import { createReadStream, ReadStream } from 'fs';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
-
-import normalizePath from 'normalize-path';
+import { fileURLToPath } from 'url';
 
 let baseDir: string;
 
@@ -11,14 +9,14 @@ let baseDir: string;
  *
  * This is typically called in `jest.setup.ts`.
  *
- * @param dir The base directory
+ * @param meta The module meta object
  * @example
  * ```ts
- * setFixtureBase(__dirname);
+ * setFixtureBase(import.meta);
  * ```
  */
-export function setFixtureBase(dir: string): void {
-  baseDir = join(dir, '__fixtures__');
+export function setFixtureBase(meta: ImportMeta): void {
+  baseDir = meta.url;
 }
 
 /**
@@ -29,7 +27,7 @@ export function setFixtureBase(dir: string): void {
  * @returns The full path to the fixture path.
  */
 export function resolveFixture(path: string): string {
-  return join(baseDir, normalizePath(path));
+  return fileURLToPath(new URL(`__fixtures__/${path}`, baseDir));
 }
 
 /**

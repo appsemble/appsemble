@@ -6,7 +6,7 @@ useTestDatabase('apps');
 
 describe('iterTable', () => {
   it('should iterate if the length is not divisible by chunk size', async () => {
-    jest.spyOn(User, 'findAll');
+    import.meta.jest.spyOn(User, 'findAll');
     const created = await User.bulkCreate(
       Array.from({ length: 5 }, () => ({ timezone: 'Europe/Amsterdam' })),
     );
@@ -29,7 +29,7 @@ describe('iterTable', () => {
   });
 
   it('should iterate if the length is divisible by chunk size', async () => {
-    jest.spyOn(User, 'findAll');
+    import.meta.jest.spyOn(User, 'findAll');
     const created = await User.bulkCreate(
       Array.from({ length: 6 }, () => ({ timezone: 'Europe/Amsterdam' })),
     );

@@ -17,8 +17,8 @@ let app: Koa;
 let clock: InstalledClock;
 
 beforeEach(async () => {
-  jest.spyOn(logger, 'info').mockImplementation(() => logger);
-  jest.spyOn(logger, 'log').mockImplementation(() => logger);
+  import.meta.jest.spyOn(logger, 'info').mockImplementation(() => logger);
+  import.meta.jest.spyOn(logger, 'log').mockImplementation(() => logger);
   clock = install();
   app = new Koa();
   app.use(async (ctx, next) => {
@@ -136,7 +136,7 @@ it('should log extremely long request lengths red', async () => {
 });
 
 it('should log errors as internal server errors and rethrow', async () => {
-  const spy = jest.fn();
+  const spy = import.meta.jest.fn();
   const error = new Error('fail');
   let context;
   app.on('error', spy);

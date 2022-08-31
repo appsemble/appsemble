@@ -4,7 +4,7 @@ import { Argv } from 'yargs';
 
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { argv } from '../utils/argv.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';

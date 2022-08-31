@@ -25,7 +25,7 @@ import { appMapper } from '../middleware/appMapper.js';
 import { boomMiddleware } from '../middleware/boom.js';
 import { conditional } from '../middleware/conditional.js';
 import { frontend } from '../middleware/frontend.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { appRouter, studioRouter } from '../routes/index.js';
 import { argv } from './argv.js';
 import { authentication } from './authentication.js';

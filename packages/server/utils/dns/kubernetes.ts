@@ -10,7 +10,7 @@ import matcher from 'matcher';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models/index.js';
-import pkg from '../../package.json';
+import pkg from '../../package.json' assert { type: 'json' };
 import { argv } from '../argv.js';
 import { iterTable } from '../database.js';
 

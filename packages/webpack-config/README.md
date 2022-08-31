@@ -48,10 +48,10 @@ overridden by simply calling it from a file named `webpack.config.js` in the blo
 modifying the result.
 
 ```js
-const createConfig = require('@appsemble/webpack-config');
-const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+import createConfig from '@appsemble/webpack-config';
+import ImageMinimizerPlugin from 'image-minimizer-webpack-plugin';
 
-module.exports = (blockConfig, options) => {
+export default function webpackConfig(blockConfig, options) {
   const config = createConfig(blockConfig, options);
 
   // Add a plugin for example
@@ -61,7 +61,7 @@ module.exports = (blockConfig, options) => {
   config.resolve.alias.fallback.fs = false;
 
   return config;
-};
+}
 ```
 
 ## License

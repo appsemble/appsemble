@@ -1,4 +1,4 @@
-import { version } from 'bulma/package.json';
+import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
 
 import { createThemeURL, mergeThemes } from './theme.js';
 
@@ -82,7 +82,7 @@ describe('createThemeURL', () => {
       warningColor: '#fed719',
     });
     expect(result).toBe(
-      `/bulma/${version}/bulma.min.css` +
+      `/bulma/${bulmaPkg.version}/bulma.min.css` +
         '?dangerColor=%23ff2800' +
         '&fontFamily=Open+Sans' +
         '&fontSource=google' +

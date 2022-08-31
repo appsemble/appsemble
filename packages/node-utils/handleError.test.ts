@@ -7,10 +7,10 @@ import { logger } from './logger.js';
 let yargs: Argv;
 
 beforeEach(() => {
-  yargs = { showHelp: jest.fn() } as Partial<Argv> as Argv;
-  jest.spyOn(console, 'error').mockImplementation();
-  jest.spyOn(process, 'exit').mockImplementation();
-  jest.spyOn(logger, 'error').mockImplementation();
+  yargs = { showHelp: import.meta.jest.fn() } as Partial<Argv> as Argv;
+  import.meta.jest.spyOn(console, 'error').mockImplementation();
+  import.meta.jest.spyOn(process, 'exit').mockImplementation();
+  import.meta.jest.spyOn(logger, 'error').mockImplementation();
 });
 
 it('should show the help message if it is passed a yargs message', () => {

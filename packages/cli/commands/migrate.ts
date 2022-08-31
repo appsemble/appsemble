@@ -1,7 +1,7 @@
 import { Argv } from 'yargs';
 
 import { serverImport } from '../lib/serverImport.js';
-import pkg from '../package.json';
+import pkg from '../package.json' assert { type: 'json' };
 import { BaseArguments } from '../types.js';
 
 export const command = 'migrate [migrate-to]';

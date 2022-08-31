@@ -1,12 +1,16 @@
+import { createRequire } from 'module';
+
 import { logger } from '@appsemble/node-utils';
 import { Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
-import bulma from 'bulma/package.json';
+import bulma from 'bulma/package.json' assert { type: 'json' };
 import { Context } from 'koa';
 import sass from 'sass';
 import stripBom from 'strip-bom';
 
 import { Theme } from '../../models/index.js';
+
+const require = createRequire(import.meta.url);
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');

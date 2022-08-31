@@ -49,7 +49,7 @@ export class Organization extends Model {
   OrganizationId: string;
 
   @HasOne(() => Organization)
-  Organization: Organization;
+  Organization: Awaited<Organization>;
 
   @HasMany(() => App)
   Apps: App[];
@@ -66,5 +66,5 @@ export class Organization extends Model {
   @DeletedAt
   deleted: Date;
 
-  Member: Member;
+  Member: Awaited<Member>;
 }

@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { Argv, CommandModule } from 'yargs';
 
 import * as create from './create.js';
 
@@ -8,5 +8,5 @@ export const command = 'asset';
 export const description = 'Commands related to app assets.';
 
 export function builder(yargs: Argv): Argv {
-  return yargs.command(create).demandCommand(1);
+  return yargs.command(create as unknown as CommandModule).demandCommand(1);
 }

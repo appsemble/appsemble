@@ -71,5 +71,5 @@ export class OAuthAuthorization extends Model {
    * The Appsemble user.
    */
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 }
