@@ -1,4 +1,3 @@
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import {
@@ -15,7 +14,6 @@ import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
-let clock: InstalledClock;
 let organization: Organization;
 let user: User;
 
@@ -71,7 +69,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
 
   user = await createTestUser();
   organization = await Organization.create({
@@ -79,10 +77,6 @@ beforeEach(async () => {
     name: 'Test Organization',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('getSubscription', () => {
@@ -181,8 +175,8 @@ describe('addSubscription', () => {
       auth: 'def',
       AppId: app.id,
       UserId: user.id,
-      created: new Date(clock.now),
-      updated: new Date(clock.now),
+      created: new Date(),
+      updated: new Date(),
     });
   });
 });

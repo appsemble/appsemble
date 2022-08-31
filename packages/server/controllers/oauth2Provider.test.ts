@@ -1,6 +1,5 @@
 import { LoginCodeResponse, UserInfo } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import {
@@ -16,7 +15,6 @@ import { createServer } from '../utils/createServer.js';
 import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
-let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('oauth2provider');
@@ -28,13 +26,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
-  clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+  import.meta.jest.useFakeTimers({ now: new Date('2000-01-01T00:00:00Z') });
   user = await createTestUser();
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('getUserInfo', () => {

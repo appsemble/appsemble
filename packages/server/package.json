@@ -117,7 +117,6 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^9.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
     "@types/jest-image-snapshot": "^5.0.0",
@@ -138,7 +137,6 @@
     "@types/sass": "^1.0.0",
     "@types/semver": "^7.0.0",
     "@types/sharp": "^0.30.0",
-    "@types/sinonjs__fake-timers": "^8.0.0",
     "@types/validator": "^13.0.0",
     "@types/web-push": "^3.0.0",
     "@types/xml-crypto": "^1.0.0",

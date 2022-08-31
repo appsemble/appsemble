@@ -48,11 +48,9 @@
     "type-fest": "^2.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^9.0.0",
     "@types/langmap": "^0.0.1",
     "@types/language-tags": "^1.0.0",
     "@types/lcm": "^0.0.0",
-    "@types/sinonjs__fake-timers": "^8.0.0",
     "bulma": "0.9.3",
     "koas-core": "^0.7.0",
     "yaml": "^2.0.0"

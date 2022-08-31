@@ -1,5 +1,4 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 
 import { IntlMessageFormat } from './intl-messageformat.js';
 import { remap } from './remap.js';
@@ -131,14 +130,8 @@ describe('context', () => {
 });
 
 describe('date.now', () => {
-  let clock: InstalledClock;
-
   beforeEach(() => {
-    clock = install();
-  });
-
-  afterEach(() => {
-    clock.uninstall();
+    import.meta.jest.useFakeTimers({ now: 0 });
   });
 
   runTests({
@@ -151,14 +144,8 @@ describe('date.now', () => {
 });
 
 describe('date.add', () => {
-  let clock: InstalledClock;
-
   beforeEach(() => {
-    clock = install();
-  });
-
-  afterEach(() => {
-    clock.uninstall();
+    import.meta.jest.useFakeTimers({ now: 0 });
   });
 
   runTests({

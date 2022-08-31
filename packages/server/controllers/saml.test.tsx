@@ -3,7 +3,6 @@ import { inflateRaw } from 'zlib';
 
 import { readFixture } from '@appsemble/node-utils';
 import { SAMLRedirectResponse } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import toXml from 'xast-util-to-xml';
 import h from 'xastscript';
@@ -15,7 +14,6 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization.js'
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
-let clock: InstalledClock;
 let secret: AppSamlSecret;
 let user: User;
 
@@ -185,7 +183,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
 });
 
 beforeEach(async () => {
@@ -211,10 +209,6 @@ beforeEach(async () => {
     spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
     spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
   });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('createAuthnRequest', () => {

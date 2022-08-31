@@ -1,7 +1,6 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'crypto';
 
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
@@ -10,7 +9,6 @@ import { createServer } from '../../utils/createServer.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let requestURL: URL;
-let clock: InstalledClock;
 
 useTestDatabase('approuter');
 
@@ -142,12 +140,8 @@ beforeEach(async () => {
 });
 
 beforeEach(() => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
   requestURL = new URL('http://app.test.host.example');
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 it('should render the index page', async () => {
