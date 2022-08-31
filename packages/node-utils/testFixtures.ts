@@ -30,12 +30,14 @@ export function resolveFixture(path: string): string {
   return fileURLToPath(new URL(`__fixtures__/${path}`, baseDir));
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Read a test fixture.
  *
  * @param path The path to resolve relative to the fixture base. It will be normalized for the
  * operating system.
- * @param encoding The text encoding of the file.
+ *
+ * param encoding The text encoding of the file.
  * @returns The file contents as a string or buffer.
  */
 export function readFixture(path: string): Promise<Buffer>;

@@ -8,15 +8,15 @@ import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import autolink from 'rehype-autolink-headings';
-import { rehypeMdxTitle } from 'rehype-mdx-title';
-import slug from 'rehype-slug';
-import frontmatter from 'remark-frontmatter';
-import gfm from 'remark-gfm';
-import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
-import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
-import { remarkMdxImages } from 'remark-mdx-images';
-import { remarkMermaid } from 'remark-mermaidjs';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeMdxTitle from 'rehype-mdx-title';
+import rehypeSlug from 'rehype-slug';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import remarkMdxCodeMeta from 'remark-mdx-code-meta';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import remarkMdxImages from 'remark-mdx-images';
+import remarkMermaid from 'remark-mermaidjs';
 import { Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration } from 'webpack';
@@ -168,9 +168,14 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
               options: {
                 providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
-                  frontmatter,
-                  gfm,
-                  production && remarkMermaid,
+                  remarkFrontmatter,
+                  remarkGfm,
+                  production && [
+                    remarkMermaid,
+                    {
+                      launchOptions: { executablePath: process.env.CHROME_BIN || 'google-chrome' },
+                    },
+                  ],
                   remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
@@ -178,9 +183,9 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 ].filter(Boolean),
                 rehypePlugins: [
                   rehypeMdxTitle,
-                  slug,
+                  rehypeSlug,
                   [
-                    autolink,
+                    rehypeAutolinkHeadings,
                     {
                       content: {
                         type: 'element',

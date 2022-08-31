@@ -4,8 +4,8 @@ import { inflateRaw } from 'zlib';
 import { readFixture } from '@appsemble/node-utils';
 import { SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
-import toXml from 'xast-util-to-xml';
-import h from 'xastscript';
+import { toXml } from 'xast-util-to-xml';
+import { x as h } from 'xastscript';
 
 import { App, AppSamlSecret, Organization, SamlLoginRequest, User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';

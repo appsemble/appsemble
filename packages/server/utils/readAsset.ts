@@ -2,11 +2,13 @@ import { readFile } from 'fs/promises';
 
 export const assetDir = new URL('../assets/', import.meta.url);
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Read a file from the server assets directory.
  *
  * @param filename The path to the file to read, relative to the assets directory.
- * @param encoding If specified, decode the file using this encoding.
+ *
+ * param encoding If specified, decode the file using this encoding.
  * @returns The content of the specified file.
  */
 export function readAsset(filename: string): Promise<Buffer>;
