@@ -91,5 +91,5 @@ export class AppOAuth2Secret extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 }

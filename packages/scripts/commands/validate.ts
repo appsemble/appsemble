@@ -1,9 +1,10 @@
+import { existsSync } from 'fs';
 import { basename, dirname, join, relative } from 'path';
 import { isDeepStrictEqual } from 'util';
 
 import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
-import { existsSync, readJson } from 'fs-extra';
+import fsExtra from 'fs-extra';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
 import { PackageJson } from 'type-fest';
@@ -151,6 +152,11 @@ async function validate(
     );
   }
   assert(
+    pkg.type === 'module' || pkg.type === 'commonjs',
+    'package.json',
+    'Type should be explicitly set to “commonjs” or “module”',
+  );
+  assert(
     pkg.version === latestVersion,
     'package.json',
     `Version should match latest version "${latestVersion}"`,
@@ -187,7 +193,11 @@ async function validate(
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
-  assert(pkg.scripts?.test === 'jest', 'package.json', 'Test script should be "jest"');
+  assert(
+    pkg.scripts?.test === 'NODE_OPTIONS=--experimental-vm-modules jest',
+    'package.json',
+    'Test script should be "NODE_OPTIONS=--experimental-vm-modules jest"',
+  );
   for (const version of Object.values({ ...pkg.dependencies, ...pkg.devDependencies })) {
     if (version.startsWith('@appsemnle/')) {
       assert(
@@ -201,7 +211,7 @@ async function validate(
   /**
    * Validate tsconfig.json
    */
-  const tsConfig = await readJson(join(dir, 'tsconfig.json')).catch(() => null);
+  const tsConfig = await fsExtra.readJson(join(dir, 'tsconfig.json')).catch(() => null);
   assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScript configuration');
   if (tsConfig) {
     assert(
@@ -232,7 +242,7 @@ export async function handler(): Promise<void> {
   const allWorkspaces: Workspace[] = await Promise.all(
     paths.map(async (dir) => ({
       dir,
-      pkg: await readJson(join(dir, 'package.json')),
+      pkg: await fsExtra.readJson(join(dir, 'package.json')),
     })),
   );
 

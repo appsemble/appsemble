@@ -47,7 +47,7 @@ beforeEach(async () => {
     id: 'appsemble',
     name: 'Appsemble',
   });
-  jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+  import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
 afterEach(() => {

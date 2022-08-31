@@ -1,5 +1,5 @@
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
-import { generateVAPIDKeys } from 'web-push';
+import webpush from 'web-push';
 
 export const key = '0.9.3';
 
@@ -47,7 +47,7 @@ export async function up(db: Sequelize): Promise<void> {
 
   await Promise.all(
     allApps.map(({ id }) => {
-      const keys = generateVAPIDKeys();
+      const keys = webpush.generateVAPIDKeys();
       return db.query('UPDATE "App" SET "vapidPublicKey" = ?, "vapidPrivateKey" = ? WHERE id = ?', {
         replacements: [keys.publicKey, keys.privateKey, id],
         type: QueryTypes.UPDATE,

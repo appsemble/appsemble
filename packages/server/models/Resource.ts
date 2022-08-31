@@ -66,21 +66,21 @@ export class Resource extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   AuthorId: string;
 
   @BelongsTo(() => User, 'AuthorId')
-  Author: User;
+  Author: Awaited<User>;
 
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   EditorId: string;
 
   @BelongsTo(() => User, 'EditorId')
-  Editor: User;
+  Editor: Awaited<User>;
 
   @HasMany(() => Asset)
   Assets: Asset[];

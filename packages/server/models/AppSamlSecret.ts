@@ -84,7 +84,7 @@ export class AppSamlSecret extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @CreatedAt
   created: Date;

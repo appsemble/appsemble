@@ -33,7 +33,7 @@ export class AppSnapshot extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   /**
    * XXX: Update this to not allow null after the migration has finished
@@ -44,5 +44,5 @@ export class AppSnapshot extends Model {
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 }

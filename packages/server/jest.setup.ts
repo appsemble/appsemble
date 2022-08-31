@@ -2,12 +2,12 @@ import { setFixtureBase, setLogLevel } from '@appsemble/node-utils';
 import { setResponseTransformer } from 'jest-axios-snapshot';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
-setFixtureBase(__dirname);
+setFixtureBase(import.meta);
 setLogLevel(0);
 
 expect.extend({ toMatchImageSnapshot });
 
-jest.setTimeout(10_000);
+import.meta.jest.setTimeout(10_000);
 
 setResponseTransformer(
   ({

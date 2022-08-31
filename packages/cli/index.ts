@@ -3,7 +3,7 @@ import process from 'process';
 
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
-import yargs from 'yargs';
+import yargs, { CommandModule } from 'yargs';
 
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';
@@ -24,53 +24,49 @@ import { initAxios } from './lib/initAxios.js';
 
 process.title = 'appsemble';
 
-async function main(argv: string[]): Promise<void> {
-  const explorer = cosmiconfig('appsembleServer');
-  const found = await explorer.search(process.cwd());
+const explorer = cosmiconfig('appsembleServer');
+const found = await explorer.search(process.cwd());
 
-  let parser = yargs
-    .option('verbose', {
-      alias: 'v',
-      describe: 'Increase verbosity',
-      type: 'count',
-    })
-    .option('quiet', {
-      alias: 'q',
-      describe: 'Decrease verbosity',
-      type: 'count',
-    })
-    .option('remote', {
-      description: 'The Appsemble host that should be used.',
-      default: 'https://appsemble.app',
-      coerce: coerceRemote,
-    })
-    .option('client-credentials', {
-      description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
-    })
-    .middleware([configureLogger, initAxios])
-    .command(app)
-    .command(asset)
-    .command(block)
-    .command(cleanupResources)
-    .command(config)
-    .command(login)
-    .command(logout)
-    .command(migrate)
-    .command(organization)
-    .command(resource)
-    .command(runCronJobs)
-    .command(start)
-    .command(team)
-    .demandCommand(1)
-    // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058
-    .strictCommands()
-    .fail(handleError)
-    .help()
-    .completion();
-  if (found) {
-    parser = parser.config(found.config);
-  }
-  parser.parse(argv);
+let parser = yargs(process.argv.slice(2))
+  .option('verbose', {
+    alias: 'v',
+    describe: 'Increase verbosity',
+    type: 'count',
+  })
+  .option('quiet', {
+    alias: 'q',
+    describe: 'Decrease verbosity',
+    type: 'count',
+  })
+  .option('remote', {
+    description: 'The Appsemble host that should be used.',
+    default: 'https://appsemble.app',
+    coerce: coerceRemote,
+  })
+  .option('client-credentials', {
+    description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
+  })
+  .middleware([configureLogger, initAxios])
+  .command(app)
+  .command(asset)
+  .command(block)
+  .command(cleanupResources as unknown as CommandModule)
+  .command(config)
+  .command(login as unknown as CommandModule)
+  .command(logout as unknown as CommandModule)
+  .command(migrate as unknown as CommandModule)
+  .command(organization)
+  .command(resource)
+  .command(runCronJobs as unknown as CommandModule)
+  .command(start as unknown as CommandModule)
+  .command(team)
+  .demandCommand(1)
+  // .strict() isn’t used because of https://github.com/yargs/yargs/issues/2058
+  .strictCommands()
+  .fail(handleError)
+  .help()
+  .completion();
+if (found) {
+  parser = parser.config(found.config);
 }
-
-main(process.argv.slice(2));
+parser.parse();

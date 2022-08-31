@@ -23,6 +23,7 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
+  "type": "module",
   "files": [
     "**/*.d.ts",
     "**/*.js",
@@ -30,7 +31,7 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/types": "0.20.13",

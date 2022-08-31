@@ -19,7 +19,7 @@ import { File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
-import { generateVAPIDKeys } from 'web-push';
+import webpush from 'web-push';
 import { parse } from 'yaml';
 
 import {
@@ -137,7 +137,7 @@ export async function createApp(ctx: Context): Promise<void> {
     );
 
     const path = normalize(definition.name);
-    const keys = generateVAPIDKeys();
+    const keys = webpush.generateVAPIDKeys();
 
     result = {
       definition,

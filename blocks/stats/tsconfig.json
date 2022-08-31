@@ -4,6 +4,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "mini-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["@appsemble/webpack-config/types", "node"]
+    "types": ["@appsemble/webpack-config/types", "jest", "node"]
   }
 }

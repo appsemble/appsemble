@@ -1,4 +1,5 @@
-import { Role, roles } from '@appsemble/utils';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type Role, roles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -37,8 +38,8 @@ export class Member extends Model {
   UserId: string;
 
   @BelongsTo(() => Organization)
-  Organization: Organization;
+  Organization: Awaited<Organization>;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 }

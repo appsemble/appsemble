@@ -20,8 +20,9 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.20.13",
@@ -30,6 +31,7 @@
     "@appsemble/webpack-core": "0.20.13",
     "@babel/core": "^7.0.0",
     "@types/fs-extra": "^9.0.0",
+    "@types/lodash-es": "^4.0.0",
     "@types/mdast": "^3.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/semver": "^7.0.0",
@@ -39,7 +41,7 @@
     "date-fns": "^2.0.0",
     "fs-extra": "^10.0.0",
     "globby": "^11.0.0",
-    "lodash": "^4.0.0",
+    "lodash-es": "^4.0.0",
     "mdast-util-from-markdown": "^0.8.0",
     "mdast-util-to-markdown": "^0.6.0",
     "mdast-util-to-string": "^2.0.0",

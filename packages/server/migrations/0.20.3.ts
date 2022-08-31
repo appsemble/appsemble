@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { AppDefinition, TeamsDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
 import { parseDocument } from 'yaml';
 
