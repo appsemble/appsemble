@@ -10,8 +10,8 @@ import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 import { Context } from 'koa';
 import forge from 'node-forge';
-import toXml from 'xast-util-to-xml';
-import h from 'xastscript';
+import { toXml } from 'xast-util-to-xml';
+import { x as h } from 'xastscript';
 import { SignedXml, xpath } from 'xml-crypto';
 
 import { AppSamlAuthorization } from '../models/AppSamlAuthorization.js';

@@ -6,7 +6,7 @@ import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
-import matcher from 'matcher';
+import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models/index.js';

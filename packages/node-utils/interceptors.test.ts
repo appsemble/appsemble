@@ -1,4 +1,3 @@
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
@@ -12,16 +11,11 @@ function h(content: string): string {
 
 let instance: AxiosInstance;
 let mock: MockAdapter;
-let clock: InstalledClock;
 
 import.meta.jest.mock('os');
 
 beforeEach(() => {
-  clock = install();
-});
-
-afterEach(() => {
-  clock.uninstall();
+  import.meta.jest.useFakeTimers({ now: 0 });
 });
 
 describe('formData', () => {

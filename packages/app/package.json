@@ -56,7 +56,7 @@
     "react-intl": "^6.0.0",
     "react-router-dom": "^5.0.0",
     "type-fest": "^2.0.0",
-    "xast-util-to-xml": "^2.0.0"
+    "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
     "fake-indexeddb": "^4.0.0"

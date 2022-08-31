@@ -1,5 +1,4 @@
 import { LoginCodeResponse, OAuth2ClientCredentials } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -18,7 +17,6 @@ import { authorizeStudio, createTestUser, getTestUser } from '../utils/test/auth
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
-let clock: InstalledClock;
 let mock: MockAdapter;
 let member: Member;
 
@@ -31,10 +29,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  clock = install();
-});
-
-beforeEach(() => {
+  import.meta.jest.useFakeTimers({ now: 0 });
   mock = new MockAdapter(axios);
 });
 
@@ -59,10 +54,6 @@ beforeEach(async () => {
     },
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('createAppOAuth2Secret', () => {

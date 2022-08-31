@@ -1,7 +1,6 @@
 import { createFormData } from '@appsemble/node-utils';
 import { Resource as ResourceType } from '@appsemble/types';
 import { TeamRole, uuid4Pattern } from '@appsemble/utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 import webpush from 'web-push';
@@ -30,7 +29,6 @@ import {
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let clock: InstalledClock;
 let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -270,6 +268,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  import.meta.jest.useFakeTimers({ now: 0 });
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -280,11 +279,6 @@ beforeEach(async () => {
     OrganizationId: organization.id,
     role: 'Maintainer',
   });
-  clock = install();
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 afterAll(() => {
@@ -637,7 +631,7 @@ describe('getResourceById', () => {
     );
 
     // The resource expires after 10 minutes.
-    clock.tick(601e3);
+    import.meta.jest.advanceTimersByTime(601e3);
 
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
@@ -1169,7 +1163,7 @@ describe('queryResources', () => {
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    clock.tick(20e3);
+    import.meta.jest.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1376,7 +1370,7 @@ describe('queryResources', () => {
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
-    clock.tick(20e3);
+    import.meta.jest.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1462,7 +1456,7 @@ describe('queryResources', () => {
     const responseA = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
     // The resource A expires after 5 minutes.
-    clock.tick(301e3);
+    import.meta.jest.advanceTimersByTime(301e3);
 
     const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
@@ -2664,7 +2658,7 @@ describe('createResource', () => {
 
   it('should not set resource expiration if given date has already passed', async () => {
     // 10 minutes
-    clock.tick(600e3);
+    import.meta.jest.advanceTimersByTime(600e3);
 
     const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -3104,7 +3098,7 @@ describe('updateResource', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    clock.tick(20e3);
+    import.meta.jest.advanceTimersByTime(20e3);
 
     authorizeStudio();
     const response = await request.put(
@@ -3498,7 +3492,7 @@ describe('updateResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
-    clock.tick(600e3);
+    import.meta.jest.advanceTimersByTime(600e3);
 
     const app = await exampleApp(organization.id);
     const {

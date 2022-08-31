@@ -1,6 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { App as AppType, Snapshot } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
@@ -26,7 +25,6 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization.js'
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let clock: InstalledClock;
 let user: User;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
@@ -40,7 +38,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
 
   user = await createTestUser();
   organization = await Organization.create({
@@ -64,10 +62,6 @@ beforeEach(async () => {
       },
     },
   });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('queryApps', () => {
@@ -467,7 +461,7 @@ describe('getAppById', () => {
       OrganizationId: organization.id,
     });
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
-    clock.tick(3600);
+    import.meta.jest.advanceTimersByTime(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
     const response = await request.get(`/api/apps/${app.id}`);
 
@@ -3833,7 +3827,7 @@ describe('getAppSnapshots', () => {
       UserId: user.id,
       yaml: "name: Test App\ndefaultPage: 'Test Page'",
     });
-    clock.tick(60_000);
+    import.meta.jest.advanceTimersByTime(60_000);
     await AppSnapshot.create({
       AppId: app.id,
       UserId: user.id,
