@@ -245,7 +245,7 @@ async function verifyPermission(
 export async function queryResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    queryParams: { $select, $top },
+    queryParams: { $select, $skip, $top },
     user,
   } = ctx;
 
@@ -275,6 +275,7 @@ export async function queryResources(ctx: Context): Promise<void> {
       { association: 'Editor', attributes: ['id', 'name'], required: false },
     ],
     limit: $top,
+    offset: $skip,
     order,
     where: {
       [Op.and]: [

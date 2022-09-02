@@ -64,12 +64,17 @@ export function IndexPage(): ReactElement {
   >(['id', 'DESC']);
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
-  const result = useData<Resource[]>(
-    `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
-  );
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(-1);
+  const [offset, setOffset] = useState(0);
+  const result = useData<Resource[]>(
+    `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}${
+      limit === -1 ? '' : `&$top=${limit}`
+    }&$skip=${offset}`,
+  );
   const setResources = result.setData;
+  const [count, setCount] = useState(result.data?.length ?? 0);
 
   const { schema } = app.definition.resources[resourceName];
   const keys = Object.keys(schema.properties);
@@ -97,6 +102,7 @@ export function IndexPage(): ReactElement {
   const onDeleteResource = useCallback(
     (resourceId: number) => {
       setResources((r) => r.filter((res) => res.id !== resourceId));
+      setCount((c) => c - 1);
     },
     [setResources],
   );
@@ -107,6 +113,7 @@ export function IndexPage(): ReactElement {
       setResources((resources) =>
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );
+      setCount((c) => c - selectedResources.length);
       setSelectedResources([]);
       push({
         body: formatMessage(messages.deleteSuccess),
@@ -145,19 +152,9 @@ export function IndexPage(): ReactElement {
 
   const onSelectAll = useCallback(() => {
     setSelectedResources((selected) =>
-      selected.length ===
-      (rowsPerPage === -1
-        ? result.data?.length
-        : result.data?.slice((page - 1) * rowsPerPage, page * rowsPerPage).length)
-        ? []
-        : result.data
-            .slice(
-              rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage,
-              rowsPerPage === -1 ? result.data.length : page * rowsPerPage,
-            )
-            .map((resource) => resource.id),
+      selected.length === result.data?.length ? [] : result.data?.map((r) => r.id),
     );
-  }, [result, rowsPerPage, page]);
+  }, [result]);
 
   const onSortProperty = useCallback(
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
@@ -192,6 +189,7 @@ export function IndexPage(): ReactElement {
       );
 
       setResources((resources) => [...resources, data]);
+      setCount((c) => c + 1);
 
       createModal.disable();
       push({
@@ -228,6 +226,7 @@ export function IndexPage(): ReactElement {
           ({ data }) => {
             const newResources = [].concat(data);
             setResources((oldResources) => [...newResources, ...oldResources]);
+            setCount((c) => c + newResources.length);
             push({
               body: formatMessage(messages.importSuccess, {
                 ids: newResources.map((r) => r.id).join(', '),
@@ -256,14 +255,24 @@ export function IndexPage(): ReactElement {
   }, []);
 
   useEffect(() => {
-    setPage(
+    const newPage =
       rowsPerPage === -1
         ? 1
-        : page >= Math.ceil(result.data?.length / rowsPerPage)
-        ? Math.ceil(result.data?.length / rowsPerPage)
-        : page,
-    );
-  }, [result, page, rowsPerPage]);
+        : page >= Math.ceil(count / rowsPerPage)
+        ? Math.ceil(count / rowsPerPage)
+        : page;
+    setPage(newPage <= 0 ? 1 : newPage);
+    setLimit(rowsPerPage === -1 ? -1 : rowsPerPage);
+    setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
+  }, [result, page, rowsPerPage, count, resourceURL]);
+
+  useEffect(() => {
+    const fetchRowAmount = async (): Promise<void> => {
+      const { data } = await axios.get(`${resourceURL}/$count`);
+      setCount(data);
+    };
+    fetchRowAmount().catch();
+  }, [resourceURL, rowsPerPage, count]);
 
   return (
     <>
@@ -395,28 +404,23 @@ export function IndexPage(): ReactElement {
                 </tr>
               </thead>
               <tbody>
-                {resources
-                  .slice(
-                    rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage,
-                    rowsPerPage === -1 ? resources.length : page * rowsPerPage,
-                  )
-                  .map((resource, index) => (
-                    <ResourceRow
-                      dropdownUp={resources.length > 2 && index >= resources.length - 2}
-                      filter={hiddenProperties}
-                      key={resource.id}
-                      onDelete={onDeleteResource}
-                      onEdit={onEditResource}
-                      onSelected={onCheckboxClick}
-                      resource={resource}
-                      schema={schema}
-                      selected={selectedResources.includes(resource.id)}
-                    />
-                  ))}
+                {resources.map((resource, index) => (
+                  <ResourceRow
+                    dropdownUp={resources.length > 2 && index >= resources.length - 2}
+                    filter={hiddenProperties}
+                    key={resource.id}
+                    onDelete={onDeleteResource}
+                    onEdit={onEditResource}
+                    onSelected={onCheckboxClick}
+                    resource={resource}
+                    schema={schema}
+                    selected={selectedResources.includes(resource.id)}
+                  />
+                ))}
               </tbody>
             </Table>
             <ResourcePagination
-              count={resources.length}
+              count={count}
               onPageChange={onPageChange}
               onRowsPerPageChange={onRowsPerPageChange}
               page={page}
