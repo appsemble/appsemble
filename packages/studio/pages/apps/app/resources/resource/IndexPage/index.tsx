@@ -35,6 +35,7 @@ import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/
 import { useApp } from '../../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { ResourcePagination } from './ResourcePagination/index.js';
 import { ResourceRow } from './ResourceRow/index.js';
 
 export interface RouteParams {
@@ -66,6 +67,8 @@ export function IndexPage(): ReactElement {
   const result = useData<Resource[]>(
     `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}`,
   );
+  const [rowsPerPage, setRowsPerPage] = useState(15);
+  const [page, setPage] = useState(1);
   const setResources = result.setData;
 
   const { schema } = app.definition.resources[resourceName];
@@ -142,9 +145,19 @@ export function IndexPage(): ReactElement {
 
   const onSelectAll = useCallback(() => {
     setSelectedResources((selected) =>
-      selected.length === result.data?.length ? [] : result.data.map((resource) => resource.id),
+      selected.length ===
+      (rowsPerPage === -1
+        ? result.data?.length
+        : result.data?.slice((page - 1) * rowsPerPage, page * rowsPerPage).length)
+        ? []
+        : result.data
+            .slice(
+              rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage,
+              rowsPerPage === -1 ? result.data.length : page * rowsPerPage,
+            )
+            .map((resource) => resource.id),
     );
-  }, [result]);
+  }, [result, rowsPerPage, page]);
 
   const onSortProperty = useCallback(
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
@@ -232,6 +245,26 @@ export function IndexPage(): ReactElement {
     });
   }, [formatMessage, push, resourceURL, setResources]);
 
+  const onPageChange = useCallback((updatedPage: number) => {
+    setSelectedResources([]);
+    setPage(updatedPage);
+  }, []);
+
+  const onRowsPerPageChange = useCallback((updatedRowsPerPage: number) => {
+    setSelectedResources([]);
+    setRowsPerPage(updatedRowsPerPage);
+  }, []);
+
+  useEffect(() => {
+    setPage(
+      rowsPerPage === -1
+        ? 1
+        : page >= Math.ceil(result.data?.length / rowsPerPage)
+        ? Math.ceil(result.data?.length / rowsPerPage)
+        : page,
+    );
+  }, [result, page, rowsPerPage]);
+
   return (
     <>
       <HeaderControl
@@ -280,99 +313,117 @@ export function IndexPage(): ReactElement {
         result={result}
       >
         {(resources) => (
-          <Table className="is-flex-grow-1 is-flex-shrink-1">
-            <thead>
-              <tr>
-                <th className={`pl-2 ${styles.noWrap}`}>
-                  <Checkbox
-                    className={`pr-2 is-inline-block ${styles.boolean} `}
-                    indeterminate={
-                      selectedResources.length
-                        ? selectedResources.length !== result.data?.length
-                        : null
-                    }
-                    name="select-all"
-                    onChange={onSelectAll}
-                    value={selectedResources.length === result.data?.length}
-                  />
-                  <span className="is-inline-block">
-                    <FormattedMessage {...messages.actions} />
-                  </span>
-                </th>
-                {!hiddenProperties.has('id') && (
-                  <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
-                    <span>
-                      <FormattedMessage {...messages.id} />
+          <>
+            <Table className="is-flex-grow-1 is-flex-shrink-1">
+              <thead>
+                <tr>
+                  <th className={`pl-2 ${styles.noWrap}`}>
+                    <Checkbox
+                      className={`pr-2 is-inline-block ${styles.boolean} `}
+                      indeterminate={
+                        selectedResources.length
+                          ? selectedResources.length !== result.data?.length
+                          : null
+                      }
+                      name="select-all"
+                      onChange={onSelectAll}
+                      value={selectedResources.length === result.data?.length}
+                    />
+                    <span className="is-inline-block">
+                      <FormattedMessage {...messages.actions} />
                     </span>
-                    {sortedProperty === 'id' && (
-                      <Icon icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
-                    )}
                   </th>
-                )}
-                {!hiddenProperties.has('$author') && (
-                  <th>
-                    <FormattedMessage {...messages.author} />
-                  </th>
-                )}
-                {!hiddenProperties.has('$editor') && (
-                  <th>
-                    <FormattedMessage {...messages.editor} />
-                  </th>
-                )}
-                {!hiddenProperties.has('$created') && (
-                  <th>
-                    <FormattedMessage {...messages.created} />
-                  </th>
-                )}
-                {!hiddenProperties.has('$updated') && (
-                  <th>
-                    <FormattedMessage {...messages.updated} />
-                  </th>
-                )}
-                {has(app, 'resources') && !hiddenProperties.has('$clonable') ? (
-                  <th>
-                    <FormattedMessage {...messages.clonable} />
-                  </th>
-                ) : null}
-                {keys
-                  .filter((key) => !hiddenProperties.has(key))
-                  .map((property) => {
-                    const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
-                    const sortable = propSchema?.type !== 'object' && propSchema?.type !== 'array';
-                    return (
-                      <th
-                        className={sortable ? styles.clickable : ''}
-                        data-property={property}
-                        key={property}
-                        onClick={sortable ? onSortProperty : null}
-                      >
-                        <span>{propSchema?.title || property}</span>
-                        {sortedProperty === property && (
-                          <Icon
-                            icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
-                          />
-                        )}
-                      </th>
-                    );
-                  })}
-              </tr>
-            </thead>
-            <tbody>
-              {resources.map((resource, index) => (
-                <ResourceRow
-                  dropdownUp={resources.length > 2 && index >= resources.length - 2}
-                  filter={hiddenProperties}
-                  key={resource.id}
-                  onDelete={onDeleteResource}
-                  onEdit={onEditResource}
-                  onSelected={onCheckboxClick}
-                  resource={resource}
-                  schema={schema}
-                  selected={selectedResources.includes(resource.id)}
-                />
-              ))}
-            </tbody>
-          </Table>
+                  {!hiddenProperties.has('id') && (
+                    <th className={styles.clickable} data-property="id" onClick={onSortProperty}>
+                      <span>
+                        <FormattedMessage {...messages.id} />
+                      </span>
+                      {sortedProperty === 'id' && (
+                        <Icon
+                          icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
+                        />
+                      )}
+                    </th>
+                  )}
+                  {!hiddenProperties.has('$author') && (
+                    <th>
+                      <FormattedMessage {...messages.author} />
+                    </th>
+                  )}
+                  {!hiddenProperties.has('$editor') && (
+                    <th>
+                      <FormattedMessage {...messages.editor} />
+                    </th>
+                  )}
+                  {!hiddenProperties.has('$created') && (
+                    <th>
+                      <FormattedMessage {...messages.created} />
+                    </th>
+                  )}
+                  {!hiddenProperties.has('$updated') && (
+                    <th>
+                      <FormattedMessage {...messages.updated} />
+                    </th>
+                  )}
+                  {has(app, 'resources') && !hiddenProperties.has('$clonable') ? (
+                    <th>
+                      <FormattedMessage {...messages.clonable} />
+                    </th>
+                  ) : null}
+                  {keys
+                    .filter((key) => !hiddenProperties.has(key))
+                    .map((property) => {
+                      const propSchema = schema?.properties[property] as OpenAPIV3.SchemaObject;
+                      const sortable =
+                        propSchema?.type !== 'object' && propSchema?.type !== 'array';
+                      return (
+                        <th
+                          className={sortable ? styles.clickable : ''}
+                          data-property={property}
+                          key={property}
+                          onClick={sortable ? onSortProperty : null}
+                        >
+                          <span>{propSchema?.title || property}</span>
+                          {sortedProperty === property && (
+                            <Icon
+                              icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
+                            />
+                          )}
+                        </th>
+                      );
+                    })}
+                </tr>
+              </thead>
+              <tbody>
+                {resources
+                  .slice(
+                    rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage,
+                    rowsPerPage === -1 ? resources.length : page * rowsPerPage,
+                  )
+                  .map((resource, index) => (
+                    <ResourceRow
+                      dropdownUp={resources.length > 2 && index >= resources.length - 2}
+                      filter={hiddenProperties}
+                      key={resource.id}
+                      onDelete={onDeleteResource}
+                      onEdit={onEditResource}
+                      onSelected={onCheckboxClick}
+                      resource={resource}
+                      schema={schema}
+                      selected={selectedResources.includes(resource.id)}
+                    />
+                  ))}
+              </tbody>
+            </Table>
+            <ResourcePagination
+              count={resources.length}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[15, 25, 100, 500, -1]}
+            />
+          </>
         )}
       </AsyncDataView>
       <ModalCard
