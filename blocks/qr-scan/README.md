@@ -4,8 +4,6 @@ an event.
 
 ### Images
 
-![qr-scan_res](https://github.com/Redhot-Development/appsemble/blob/RedHotDev/config/assets/qr-scan_res.jpg)
-
 ![QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.20.13/config/assets/qr-scan_res.jpg)
 
 ![Highlighted QR code of https://appsemble.app](https://gitlab.com/appsemble/appsemble/-/raw/0.20.13/config/assets/qr-scan_res2.jpg)
