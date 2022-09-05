@@ -3,7 +3,6 @@ export {};
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * Draws rectangle on the QR found.
      * If true, the block will draw a rectangle around the QR code when it’s found.
      *
      * @default false
@@ -11,12 +10,12 @@ declare module '@appsemble/sdk' {
     drawQr?: boolean;
 
     /**
-     * Video Element Height
+     * Video element height
      */
     height?: number;
 
     /**
-     * Video Element Width
+     * Video element width
      */
     width?: number;
   }
