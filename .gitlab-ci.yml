@@ -381,7 +381,7 @@ cleanup k8s jobs:
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
-    - kubectl delete job $(kubectl get job -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}')
+    - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
 # Deploy the Docker image for a branch to a review environment.
 review:
