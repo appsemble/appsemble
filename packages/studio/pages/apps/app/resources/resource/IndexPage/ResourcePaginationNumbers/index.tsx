@@ -7,6 +7,9 @@ interface ResourcePaginationNumbersProps {
   onPageChange: (page: number) => void;
 }
 
+const range = (start: number, stop: number): number[] =>
+  Array.from({ length: stop - start }, (v, i) => start + i).concat(stop);
+
 export function ResourcePaginationNumbers({
   maxPages,
   onPageChange,
@@ -22,7 +25,7 @@ export function ResourcePaginationNumbers({
           </Button>
         </li>
       ) : maxPages === 2 ? (
-        [1, 2].map((pageNo) => (
+        range(1, 2).map((pageNo) => (
           <li key={pageNo}>
             <Button
               className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
@@ -34,7 +37,7 @@ export function ResourcePaginationNumbers({
           </li>
         ))
       ) : maxPages === 3 ? (
-        [1, 2, 3].map((pageNo) => (
+        range(1, 3).map((pageNo) => (
           <li key={pageNo}>
             <Button
               className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
@@ -46,7 +49,7 @@ export function ResourcePaginationNumbers({
           </li>
         ))
       ) : maxPages === 4 ? (
-        [1, 2, 3, 4].map((pageNo) => (
+        range(1, 4).map((pageNo) => (
           <li key={pageNo}>
             <Button
               className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
@@ -58,7 +61,7 @@ export function ResourcePaginationNumbers({
           </li>
         ))
       ) : maxPages === 5 ? (
-        [1, 2, 3, 4, 5].map((pageNo) => (
+        range(1, 5).map((pageNo) => (
           <li key={pageNo}>
             <Button
               className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
@@ -72,7 +75,7 @@ export function ResourcePaginationNumbers({
       ) : (
         <>
           <li>
-            {[1, 2].includes(page) ? (
+            {range(1, 2).includes(page) ? (
               <span className="pagination-ellipsis" />
             ) : (
               <Button className="pagination-link" onClick={() => onPageChange(1)} type="button">
@@ -81,7 +84,7 @@ export function ResourcePaginationNumbers({
             )}
           </li>
           <li>
-            {[1, 2].includes(page) ? (
+            {range(1, 2).includes(page) ? (
               <span className="pagination-ellipsis" />
             ) : (
               <span className="pagination-ellipsis">&hellip;</span>
@@ -119,14 +122,14 @@ export function ResourcePaginationNumbers({
             )}
           </li>
           <li>
-            {[maxPages - 1, maxPages].includes(page) ? (
+            {range(maxPages - 1, maxPages).includes(page) ? (
               <span className="pagination-ellipsis" />
             ) : (
               <span className="pagination-ellipsis">&hellip;</span>
             )}
           </li>
           <li>
-            {[maxPages - 1, maxPages].includes(page) ? (
+            {range(maxPages - 1, maxPages).includes(page) ? (
               <span className="pagination-ellipsis" />
             ) : (
               <Button
