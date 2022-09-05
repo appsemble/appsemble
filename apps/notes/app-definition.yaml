@@ -98,7 +98,7 @@ pages:
                 parameters:
                   fields:
                     - label: { translate: confirmDelete }
-                      value: { prop: title}
+                      value: { prop: title }
               - type: button-list
                 version: 0.20.13
                 parameters:
