@@ -14,4 +14,4 @@ These pictures show the video stream. The text below is a text element that show
 ### Collaborators
 
 This block was created in collaboration with
-[Fontys ICT students](https://fontys.edu/Bachelors-masters/Bachelors/Information-Communication-Technology-Eindhoven.htm)
+[Fontys ICT students](https://fontys.edu/Bachelors-masters/Bachelors/Information-Communication-Technology-Eindhoven.htm).
