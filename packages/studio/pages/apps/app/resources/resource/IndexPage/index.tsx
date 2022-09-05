@@ -74,7 +74,7 @@ export function IndexPage(): ReactElement {
     }&$skip=${offset}`,
   );
   const setResources = result.setData;
-  const [count, setCount] = useState(result.data?.length ?? 0);
+  const [count, setCount] = useState(0);
 
   const { schema } = app.definition.resources[resourceName];
   const keys = Object.keys(schema.properties);
@@ -103,8 +103,9 @@ export function IndexPage(): ReactElement {
     (resourceId: number) => {
       setResources((r) => r.filter((res) => res.id !== resourceId));
       setCount((c) => c - 1);
+      result.refresh();
     },
-    [setResources],
+    [result, setResources],
   );
 
   const onConfirmDelete = useCallback(async () => {
@@ -114,6 +115,7 @@ export function IndexPage(): ReactElement {
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );
       setCount((c) => c - selectedResources.length);
+      result.refresh();
       setSelectedResources([]);
       push({
         body: formatMessage(messages.deleteSuccess),
@@ -122,7 +124,7 @@ export function IndexPage(): ReactElement {
     } catch {
       push(formatMessage(messages.deleteError));
     }
-  }, [formatMessage, push, resourceURL, selectedResources, setResources]);
+  }, [formatMessage, push, resourceURL, result, selectedResources, setResources]);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -190,6 +192,7 @@ export function IndexPage(): ReactElement {
 
       setResources((resources) => [...resources, data]);
       setCount((c) => c + 1);
+      result.refresh();
 
       createModal.disable();
       push({
@@ -197,7 +200,7 @@ export function IndexPage(): ReactElement {
         color: 'primary',
       });
     },
-    [createModal, formatMessage, push, resourceName, resourceURL, setResources],
+    [createModal, formatMessage, push, resourceName, resourceURL, result, setResources],
   );
 
   const downloadCsv = useCallback(async () => {
@@ -227,6 +230,7 @@ export function IndexPage(): ReactElement {
             const newResources = [].concat(data);
             setResources((oldResources) => [...newResources, ...oldResources]);
             setCount((c) => c + newResources.length);
+            result.refresh();
             push({
               body: formatMessage(messages.importSuccess, {
                 ids: newResources.map((r) => r.id).join(', '),
@@ -242,7 +246,7 @@ export function IndexPage(): ReactElement {
           },
         );
     });
-  }, [formatMessage, push, resourceURL, setResources]);
+  }, [formatMessage, push, resourceURL, result, setResources]);
 
   const onPageChange = useCallback((updatedPage: number) => {
     setSelectedResources([]);
