@@ -1,9 +1,7 @@
 import { Button } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import { ResourcePaginationNumbers } from '../ResourcePaginationNumbers/index.js';
-import { messages } from './messages.js';
 
 export interface ResourcePaginationProps {
   rowsPerPageOptions: number[];
@@ -50,7 +48,7 @@ export function ResourcePagination({
           <div className="field has-addons">
             <p className="control">
               <button className="button is-static" type="button">
-                <FormattedMessage {...messages.rowsPerPageLabel} />
+                Rows per page
               </button>
             </p>
             <p className="control">
@@ -58,7 +56,7 @@ export function ResourcePagination({
                 <select onChange={onDropdownChange} value={rowsPerPage}>
                   {rowsPerPageOptions.map((option) => (
                     <option key={option} value={option}>
-                      {option === -1 ? messages.allRowsLabel.defaultMessage : option}
+                      {option === -1 ? 'All' : option}
                     </option>
                   ))}
                 </select>
