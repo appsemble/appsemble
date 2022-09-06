@@ -21,6 +21,7 @@ import * as team from './commands/team/index.js';
 import { CREDENTIALS_ENV_VAR } from './lib/authentication.js';
 import { coerceRemote } from './lib/coercers.js';
 import { initAxios } from './lib/initAxios.js';
+import pkg from './package.json' assert { type: 'json' };
 
 process.title = 'appsemble';
 
@@ -28,6 +29,7 @@ const explorer = cosmiconfig('appsembleServer');
 const found = await explorer.search(process.cwd());
 
 let parser = yargs(process.argv.slice(2))
+  .version(pkg.version)
   .option('verbose', {
     alias: 'v',
     describe: 'Increase verbosity',
