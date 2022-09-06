@@ -8,6 +8,9 @@
   },
   "messageIds": {
     "body": "Body",
+    "cancel": "Cancel",
+    "configDelete": "Delete",
+    "confirmDelete": "Are you sure you want to delete the following note?",
     "title": "Title"
   }
 }

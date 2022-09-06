@@ -54,6 +54,11 @@ pages:
           fields:
             - value: { prop: title }
               label: { translate: title }
+            - button:
+                icon: trash
+                color: danger
+              alignment: right
+              onClick: onRemoveClick
         events:
           listen:
             data: notes
@@ -84,6 +89,37 @@ pages:
             onSuccess:
               type: event
               event: refreshNotes
+          onRemoveClick:
+            type: dialog
+            closable: true
+            blocks:
+              - type: detail-viewer
+                version: 0.20.13
+                parameters:
+                  fields:
+                    - label: { translate: confirmDelete }
+                      value: { prop: title }
+              - type: button-list
+                version: 0.20.13
+                parameters:
+                  buttons:
+                    - label: { translate: cancel }
+                      color: primary
+                      onClick: cancelDialog
+                    - label: { translate: configDelete }
+                      color: danger
+                      onClick: removeItem
+                actions:
+                  cancelDialog:
+                    type: dialog.ok
+                  removeItem:
+                    type: resource.delete
+                    resource: note
+                    onSuccess:
+                      type: event
+                      event: refreshNotes
+                      onSuccess:
+                        type: dialog.ok
       - type: action-button
         version: 0.20.13
         parameters:
