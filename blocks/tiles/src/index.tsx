@@ -53,13 +53,11 @@ bootstrap(
           const text = remap(parameters.text, result) as string;
           const icon = remap(parameters.icon, result) as IconName;
           const isUrl = isValidUrl(image);
-          const isHexColor = hexColor.test(color);
-          const isBulmaColor = !isHexColor && bulmaColors.has(color);
 
           const className = `${styles.tile} px-3 py-3 ${
-            isHexColor ? '' : `has-background-${isBulmaColor ? color : 'primary'}`
+            bulmaColors.has(color) ? `has-background-${color}` : ''
           }`;
-          const style = isHexColor ? { backgroundColor: color } : {};
+          const style = hexColor.test(color) ? { backgroundColor: color } : {};
           const children = [
             image ? (
               <img alt={text} src={isUrl ? image : asset(image)} />
