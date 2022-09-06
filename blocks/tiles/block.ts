@@ -40,8 +40,6 @@ declare module '@appsemble/sdk' {
      * This color is used to fill the background of the tile.
      *
      * Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpers/color-helpers)
-     *
-     * @default 'primary'
      */
     color?: Remapper;
   }
