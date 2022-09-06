@@ -3740,7 +3740,6 @@ exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
     "additionalProperties": false,
     "properties": {
       "color": {
-        "default": "primary",
         "description": "This color is used to fill the background of the tile.
 
 Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpers/color-helpers)",
