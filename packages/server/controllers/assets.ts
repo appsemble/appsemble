@@ -37,7 +37,9 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  ctx.body = app.Assets.slice($skip, $skip + $top).map((asset) => ({
+  const offset = Number($skip) || 0;
+  const limit = offset + (Number($top) || app.Assets.length);
+  ctx.body = app.Assets.slice(offset, limit).map((asset) => ({
     id: asset.id,
     resourceId: asset.ResourceId ?? undefined,
     resourceType: asset.Resource?.type,
