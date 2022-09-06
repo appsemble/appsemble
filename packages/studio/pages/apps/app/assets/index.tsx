@@ -19,11 +19,12 @@ import {
 import { Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
+import { AssetPagination } from './AssetPagination/index.js';
 import { AssetRow } from './AssetRow/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -45,7 +46,14 @@ export function AssetsPage(): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
 
-  const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(-1);
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
+  const assetsResult = useData<Asset[]>(
+    `/api/apps/${app.id}/assets?$skip=${offset}${limit === -1 ? '' : `&$top=${limit}`}`,
+  );
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
 
@@ -63,9 +71,11 @@ export function AssetsPage(): ReactElement {
       push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
       setData((assets) => [...assets, data]);
+      setCount((c) => c + 1);
+      assetsResult.refresh();
       dialog.disable();
     },
-    [app.id, dialog, formatMessage, push, setData],
+    [app.id, assetsResult, dialog, formatMessage, push, setData],
   );
 
   const onDelete = useConfirmation({
@@ -93,6 +103,8 @@ export function AssetsPage(): ReactElement {
       });
       setData((assets) => assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
+      setCount((c) => c - selectedAssets.length);
+      assetsResult.refresh();
     },
   });
 
@@ -112,6 +124,36 @@ export function AssetsPage(): ReactElement {
         : assetsResult.data.map((asset) => asset.id),
     );
   }, [assetsResult]);
+
+  const onPageChange = useCallback((updatedPage: number) => {
+    setSelectedAssets([]);
+    setPage(updatedPage);
+  }, []);
+
+  const onRowsPerPageChange = useCallback((updatedRowsPerPage: number) => {
+    setSelectedAssets([]);
+    setRowsPerPage(updatedRowsPerPage);
+  }, []);
+
+  useEffect(() => {
+    const newPage =
+      rowsPerPage === -1
+        ? 1
+        : page >= Math.ceil(count / rowsPerPage)
+        ? Math.ceil(count / rowsPerPage)
+        : page;
+    setPage(newPage <= 0 ? 1 : newPage);
+    setLimit(rowsPerPage === -1 ? -1 : rowsPerPage);
+    setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
+  }, [assetsResult, page, rowsPerPage, count]);
+
+  useEffect(() => {
+    const fetchRowAmount = async (): Promise<void> => {
+      const { data } = await axios.get(`/api/apps/${app.id}/assets/$count`);
+      setCount(data);
+    };
+    fetchRowAmount().catch();
+  }, [app.id, rowsPerPage, count]);
 
   return (
     <>
@@ -138,53 +180,63 @@ export function AssetsPage(): ReactElement {
         result={assetsResult}
       >
         {(assets) => (
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <Checkbox
-                    className={`pr-2 is-inline-block ${styles.boolean} `}
-                    indeterminate={
-                      selectedAssets.length
-                        ? selectedAssets.length !== assetsResult.data?.length
-                        : null
-                    }
-                    name="select-all"
-                    onChange={onSelectAll}
-                    value={selectedAssets.length === assetsResult.data?.length}
+          <>
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    <Checkbox
+                      className={`pr-2 is-inline-block ${styles.boolean} `}
+                      indeterminate={
+                        selectedAssets.length
+                          ? selectedAssets.length !== assetsResult.data?.length
+                          : null
+                      }
+                      name="select-all"
+                      onChange={onSelectAll}
+                      value={selectedAssets.length === assetsResult.data?.length}
+                    />
+                    <span className="is-inline-block">
+                      <FormattedMessage {...messages.actions} />
+                    </span>
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.id} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.resource} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.mime} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.filename} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.preview} />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {assets.map((asset) => (
+                  <AssetRow
+                    asset={asset}
+                    isSelected={selectedAssets.includes(asset.id)}
+                    key={asset.id}
+                    onSelect={onAssetCheckboxClick}
                   />
-                  <span className="is-inline-block">
-                    <FormattedMessage {...messages.actions} />
-                  </span>
-                </th>
-                <th>
-                  <FormattedMessage {...messages.id} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.resource} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.mime} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.filename} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.preview} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {assets.map((asset) => (
-                <AssetRow
-                  asset={asset}
-                  isSelected={selectedAssets.includes(asset.id)}
-                  key={asset.id}
-                  onSelect={onAssetCheckboxClick}
-                />
-              ))}
-            </tbody>
-          </Table>
+                ))}
+              </tbody>
+            </Table>
+            <AssetPagination
+              count={count}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[10, 25, 100, 500, -1]}
+            />
+          </>
         )}
       </AsyncDataView>
       <ModalCard

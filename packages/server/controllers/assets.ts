@@ -10,6 +10,7 @@ import { checkRole } from '../utils/checkRole.js';
 export async function getAssets(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
+    queryParams: { $skip, $top },
   } = ctx;
 
   const app = await App.findByPk(appId, {
@@ -36,7 +37,7 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  ctx.body = app.Assets.map((asset) => ({
+  ctx.body = app.Assets.slice($skip, $skip + $top).map((asset) => ({
     id: asset.id,
     resourceId: asset.ResourceId ?? undefined,
     resourceType: asset.Resource?.type,
@@ -44,6 +45,38 @@ export async function getAssets(ctx: Context): Promise<void> {
     filename: asset.filename,
     name: asset.name || undefined,
   }));
+}
+
+export async function countAssets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+    include: [
+      {
+        model: Asset,
+        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
+        required: false,
+        include: [
+          {
+            model: Resource,
+            attributes: ['type'],
+            required: false,
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+
+  ctx.body = app.Assets.length || 0;
 }
 
 export async function getAssetById(ctx: Context): Promise<void> {
