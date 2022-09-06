@@ -87,16 +87,19 @@ export async function writeData(
   const sorted = sort ? sortKeys(data, { deep: true, compare: compare || undefined }) : data;
   let buffer: string;
   try {
-    const { format, getFileInfo, resolveConfig } = await import('prettier');
-    const { inferredParser } = await getFileInfo(path, { resolveConfig: true });
-    const prettierOptions = await resolveConfig(path, { editorconfig: true });
+    const { default: prettier } = await import('prettier');
+    const { inferredParser } = await prettier.getFileInfo(path, { resolveConfig: true });
+    const prettierOptions = await prettier.resolveConfig(path, { editorconfig: true });
     prettierOptions.parser = inferredParser;
-    buffer = inferredParser === 'yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
-    buffer = format(buffer, prettierOptions);
+    buffer =
+      inferredParser === 'yaml' ? stringify(sorted) : `${JSON.stringify(sorted, undefined, 2)}\n`;
+    buffer = prettier.format(buffer, prettierOptions);
   } catch {
     const ext = extname(path);
     buffer =
-      ext === '.yml' || ext === '.yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
+      ext === '.yml' || ext === '.yaml'
+        ? stringify(sorted)
+        : `${JSON.stringify(sorted, undefined, 2)}\n`;
   }
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, buffer);
