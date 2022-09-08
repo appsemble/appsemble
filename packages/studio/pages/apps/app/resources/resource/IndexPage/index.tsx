@@ -74,9 +74,7 @@ export function IndexPage(): ReactElement {
     }&$skip=${offset}`,
   );
   const setResources = result.setData;
-  const { data: count, setData: setCount } = useData<number>(
-    `/api/apps/${app.id}/resources/$count`,
-  );
+  const { data: count, setData: setCount } = useData<number>(`${resourceURL}/$count`);
 
   const { schema } = app.definition.resources[resourceName];
   const keys = Object.keys(schema.properties);

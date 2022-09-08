@@ -47,16 +47,20 @@ export function AssetPagination({
     <div className="level">
       <div className="level-left">
         <div className="level-item">
-          <SelectField
-            addonLeft={<FormattedMessage {...messages.rowsPerPageLabel} />}
-            onChange={onDropdownChange}
-          >
-            {rowsPerPageOptions.map((option) => (
-              <option key={option} value={option}>
-                {option === -1 ? messages.allRowsLabel.defaultMessage : option}
-              </option>
-            ))}
-          </SelectField>
+          <div className="field has-addons">
+            <p className="control">
+              <button className="button is-static" type="button">
+                <FormattedMessage {...messages.rowsPerPageLabel} />
+              </button>
+            </p>
+            <SelectField onChange={onDropdownChange}>
+              {rowsPerPageOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option === -1 ? messages.allRowsLabel.defaultMessage : option}
+                </option>
+              ))}
+            </SelectField>
+          </div>
         </div>
       </div>
       <div className="level-right">
