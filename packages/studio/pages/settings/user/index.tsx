@@ -22,7 +22,7 @@ import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 import { ResendEmailButton } from '../../../components/ResendEmailButton/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
@@ -33,8 +33,12 @@ import { messages } from './messages.js';
 export function UserPage(): ReactElement {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
-  const history = useHistory();
-  const match = useRouteMatch<{ lang: string }>();
+  const navigate = useNavigate();
+  const {
+    params: { lang },
+    pathname,
+  } = useMatch(':lang/settings/user');
+
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
   const {
@@ -51,9 +55,9 @@ export function UserPage(): ReactElement {
       await axios.put('/api/user', values);
       refreshUserInfo();
       push({ body: formatMessage(messages.submitSuccess), color: 'success' });
-      history.replace(match.url.replace(match.params.lang, values.locale));
+      navigate(pathname.replace(lang, values.locale), { replace: true });
     },
-    [formatMessage, history, match, push, refreshUserInfo],
+    [formatMessage, navigate, push, refreshUserInfo, lang, pathname],
   );
 
   const onAddNewEmail = useCallback(

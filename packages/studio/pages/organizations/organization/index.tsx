@@ -8,7 +8,7 @@ import {
 import { normalize, normalized, Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
@@ -24,11 +24,10 @@ import { SettingsPage } from './SettingsPage/index.js';
  * Render routes related to apps.
  */
 export function OrganizationRoutes(): ReactElement {
-  const { path, url } = useRouteMatch();
   const { organizations } = useUser();
-  const {
-    params: { organizationId },
-  } = useRouteMatch<{ organizationId: string }>();
+  const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();
+  const url = `/${lang}/organizations/${organizationId}`;
+
   const result = useData<Organization>(`/api/organizations/${organizationId}`);
   const userOrganization = organizations?.find((org) => org.id === organizationId);
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditOrganization);
@@ -54,7 +53,7 @@ export function OrganizationRoutes(): ReactElement {
   );
 
   if (!normalized.test(organizationId)) {
-    return <Redirect to={String(url.replace(organizationId, normalize(organizationId)))} />;
+    return <Navigate to={String(url.replace(organizationId, normalize(organizationId)))} />;
   }
 
   return (
@@ -65,26 +64,34 @@ export function OrganizationRoutes(): ReactElement {
     >
       {(organization) => (
         <MetaSwitch title={organization.name || organizationId}>
-          <Route exact path={path}>
-            <IndexPage organization={userOrganization ?? organization} />
-          </Route>
-          <ProtectedRoute
-            exact
-            organization={userOrganization}
-            path={`${path}/settings`}
-            permission={Permission.EditOrganization}
+          <Route element={<IndexPage organization={userOrganization ?? organization} />} path="/" />
+
+          <Route
+            element={
+              <ProtectedRoute
+                organization={userOrganization}
+                permission={Permission.EditOrganization}
+              />
+            }
           >
-            <SettingsPage
-              onChangeOrganization={result.setData}
-              organization={userOrganization ?? organization}
+            <Route
+              element={
+                <SettingsPage
+                  onChangeOrganization={result.setData}
+                  organization={userOrganization ?? organization}
+                />
+              }
+              path="/settings"
             />
-          </ProtectedRoute>
+          </Route>
+
           {userOrganization ? (
-            <ProtectedRoute exact organization={userOrganization} path={`${path}/members`}>
-              <MembersPage />
-            </ProtectedRoute>
+            <Route element={<ProtectedRoute organization={userOrganization} />}>
+              <Route element={<MembersPage />} path="/members" />
+            </Route>
           ) : null}
-          <Redirect to={path} />
+
+          <Route element={<Navigate to={url} />} path="*" />
         </MetaSwitch>
       )}
     </AsyncDataView>

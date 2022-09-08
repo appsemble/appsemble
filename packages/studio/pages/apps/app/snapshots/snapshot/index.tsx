@@ -9,7 +9,7 @@ import { AppDefinition, Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import { lazy, ReactElement, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
@@ -27,9 +27,9 @@ const CodeDiffBlock = lazy(() =>
 export function SnapshotPage(): ReactElement {
   const { app, setApp } = useApp();
   const push = useMessages();
-  const {
-    params: { snapshotId },
-  } = useRouteMatch<{ snapshotId: string }>();
+
+  const { snapshotId } = useParams<{ snapshotId: string }>();
+
   const { formatDate, formatMessage } = useIntl();
   const result = useData<Snapshot>(`/api/apps/${app.id}/snapshots/${snapshotId}`);
   const title = result.loading

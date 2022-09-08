@@ -1,7 +1,7 @@
 import { MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 
 import Changelog from '../../../../CHANGELOG.md';
 import { Doc } from './Doc/index.js';
@@ -34,7 +34,8 @@ function getUrl(p: string, base: string): string {
  * Render the documentation in the root of the Apsemble repository.
  */
 export function DocsRoutes(): ReactElement {
-  const { path, url } = useRouteMatch();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}/docs`;
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
@@ -43,11 +44,11 @@ export function DocsRoutes(): ReactElement {
         .map(({ icon, p, title }) => {
           const subRoutes = docs.filter((subRoute) => subRoute.p !== p && subRoute.p.startsWith(p));
           return [
-            <MenuItem exact icon={icon} key={`${path}-title`} to={getUrl(p, url)}>
+            <MenuItem exact icon={icon} key="docs-title" to={getUrl(p, url)}>
               {title}
             </MenuItem>,
             subRoutes.length ? (
-              <MenuSection key={`${path}-section`}>
+              <MenuSection key="docs-section">
                 {subRoutes.map((subRoute) => (
                   <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
                     {subRoute.title}
@@ -79,21 +80,15 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
-      <Route path={`${path}/changelog`}>
-        <Changelog />
-      </Route>
-      <Route path={`${path}/reference`}>
-        <ReferenceRoutes />
-      </Route>
+      <Route element={<Changelog />} path="/changelog" />
+      <Route element={<ReferenceRoutes />} path="/reference/*" />
       {docs.map(({ Component, p, title }) => (
-        <Route exact key={p} path={getUrl(p, path)} strict>
-          <Doc component={Component} title={title} />
-        </Route>
+        <Route element={<Doc component={Component} title={title} />} key={p} path={getUrl(p, '')} />
       ))}
       {docs.map(({ p }) => (
-        <Redirect exact from={`${getUrl(p, path)}/`} key={p} to={getUrl(p, path)} />
+        <Route element={<Navigate to={getUrl(p, '')} />} key={p} path="*" />
       ))}
-      <Redirect to={url} />
+      <Route element={<Navigate to={url} />} path="*" />
     </MetaSwitch>
   );
 }

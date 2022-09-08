@@ -1,7 +1,7 @@
 import { Title, useMeta } from '@appsemble/react-components';
 import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { stringify } from 'yaml';
 
 import { CodeBlock } from '../../../../../../components/CodeBlock/index.js';
@@ -17,9 +17,7 @@ import { messages } from './messages.js';
  */
 export function ResourceDefinitionDetailsPage(): ReactElement {
   const { app } = useApp();
-  const {
-    params: { lang, resourceName },
-  } = useRouteMatch<{ lang: string; id: string; resourceName: string }>();
+  const { lang, resourceName } = useParams<{ lang: string; id: string; resourceName: string }>();
   const { formatMessage } = useIntl();
   useMeta(formatMessage(messages.pageTitle));
 

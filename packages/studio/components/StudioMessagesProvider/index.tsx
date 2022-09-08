@@ -3,7 +3,7 @@ import { defaultLocale, detectLocale, has } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
-import { Redirect, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { supportedLanguages } from '../../utils/constants.js';
 
@@ -53,5 +53,5 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
       ? preferredLanguage
       : detectLocale(Object.keys(supportedLanguages), navigator.languages)) || defaultLocale;
 
-  return <Redirect to={`/${detected}${redirect}`} />;
+  return <Navigate to={`/${detected}${redirect}`} />;
 }

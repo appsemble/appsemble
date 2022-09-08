@@ -27,7 +27,7 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
@@ -38,6 +38,7 @@ import { messages } from './messages.js';
 import { ResourceRow } from './ResourceRow/index.js';
 
 export interface RouteParams {
+  lang: string;
   id: string;
   resourceName: string;
 }
@@ -47,9 +48,9 @@ const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 export function IndexPage(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const { id: appId, resourceName } = useParams<RouteParams>();
+  const { id: appId, lang, resourceName } = useParams<RouteParams>();
+  const routeUrl = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const push = useMessages();
-  const { url: routeUrl } = useRouteMatch();
 
   const createModal = useToggle();
   const hideModal = useToggle();

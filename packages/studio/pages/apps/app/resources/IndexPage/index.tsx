@@ -1,14 +1,15 @@
 import { compareStrings } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useApp } from '../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
-  const { url } = useRouteMatch();
+  const { id, lang } = useParams<{ lang: string; id: string }>();
+  const url = `/${lang}/apps/${id}/resources`;
   const { app } = useApp();
 
   return app.definition.resources ? (

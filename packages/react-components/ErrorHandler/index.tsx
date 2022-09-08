@@ -1,8 +1,9 @@
 import { captureException } from '@sentry/browser';
-import { Component, ElementType, ErrorInfo, ReactNode } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { BrowserHistory, createBrowserHistory } from 'history';
+import { Component, ElementType, ErrorInfo, ReactElement, ReactNode } from 'react';
 
-interface ErrorHandlerProps extends RouteComponentProps<any> {
+interface ErrorHandlerProps {
+  history: BrowserHistory;
   /**
    * Children to render.
    */
@@ -39,7 +40,6 @@ class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
 
   componentDidMount(): void {
     const { history } = this.props;
-
     history.listen(() => {
       this.setState({ error: null, eventId: null });
     });
@@ -58,6 +58,16 @@ class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
 
     return error ? <Fallback error={error} eventId={eventId} /> : children;
   }
+}
+
+const history = createBrowserHistory({ window });
+
+function withRouter(Boundry: typeof ErrorBoundary): (props: ErrorHandlerProps) => ReactElement {
+  function ComponentWithRouterProp(props: ErrorHandlerProps): ReactElement {
+    return <Boundry {...props} history={history} />;
+  }
+
+  return ComponentWithRouterProp;
 }
 
 export const ErrorHandler = withRouter(ErrorBoundary);

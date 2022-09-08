@@ -18,7 +18,7 @@ import classNames from 'classnames';
 import { OpenAPIV3 } from 'openapi-types';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../../index.js';
@@ -84,10 +84,8 @@ export function ResourceRow({
   schema,
   selected,
 }: ResourceRowProps): ReactElement {
-  const {
-    params: { id: appId, resourceName },
-    url,
-  } = useRouteMatch<RouteParams>();
+  const { id: appId, lang, resourceName } = useParams<RouteParams>();
+  const url = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const modal = useToggle();

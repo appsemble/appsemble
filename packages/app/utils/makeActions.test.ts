@@ -13,7 +13,7 @@ describe('makeActions', () => {
       ee: null,
       extraCreators: null,
       flowActions: null,
-      history: null,
+      navigate: null,
       pageReady: new Promise((resolve) => {
         pageReady = resolve;
       }),

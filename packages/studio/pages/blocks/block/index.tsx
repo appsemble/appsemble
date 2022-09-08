@@ -13,7 +13,7 @@ import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
 
 import { CodeBlock } from '../../../components/CodeBlock/index.js';
@@ -52,11 +52,17 @@ interface BlockDetailsRoutesMatch {
  */
 export function BlockPage(): ReactElement {
   const { formatMessage } = useIntl();
+
   const {
-    params: { blockName, lang, organization, version: urlVersion },
-    url,
-  } = useRouteMatch<BlockDetailsRoutesMatch>();
-  const history = useHistory();
+    blockName,
+    lang,
+    organization,
+    version: urlVersion,
+  } = useParams<BlockDetailsRoutesMatch>();
+
+  const url = `${lang}/blocks/@${organization}/${blockName}`;
+
+  const navigate = useNavigate();
 
   const {
     data: blockVersions,
@@ -66,9 +72,9 @@ export function BlockPage(): ReactElement {
 
   const onSelectedVersionChange = useCallback(
     (event, value: string) => {
-      history.push(url.replace(urlVersion, value));
+      navigate(`/${url}/${urlVersion}`.replace(urlVersion, value));
     },
-    [history, url, urlVersion],
+    [navigate, url, urlVersion],
   );
 
   const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
@@ -104,7 +110,7 @@ export function BlockPage(): ReactElement {
   }
 
   if (!selectedBlockManifest) {
-    return <Redirect to={`${url}/${blockVersions[0].version}`} />;
+    return <Navigate to={`/${url}/${blockVersions[0].version}`} />;
   }
 
   return (

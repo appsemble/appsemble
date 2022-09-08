@@ -23,7 +23,7 @@ import {
   useState,
 } from 'react';
 import { IntlProvider } from 'react-intl';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -57,10 +57,10 @@ const formatters = {
 };
 
 export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
-  const { lang } = useParams<{ lang: string }>();
   const { definition } = useAppDefinition();
-  const history = useHistory();
+  const navigate = useNavigate();
   const redirect = useLocationString();
+  const { lang } = useParams<{ lang: string }>();
 
   const messageCache = useMemo(
     () => objectCache((message) => new IntlMessageFormat(message, lang, undefined, { formatters })),
@@ -83,11 +83,11 @@ export function AppMessagesProvider({ children }: IntlMessagesProviderProps): Re
     if (/^[A-Z]/.test(lang) || definition.pages.some((page) => lang === normalize(page.name))) {
       // Someone got linked to a page without a language tag. Redirect them to the same page, but
       // with language set. This is especially important for the OAuth2 callback URL.
-      history.replace(`/${detected}${redirect}`);
+      navigate(`/${detected}${redirect}`, { replace: true });
     } else {
-      history.replace(`/${detected}`);
+      navigate(`/${detected}`, { replace: true });
     }
-  }, [definition, history, lang, redirect]);
+  }, [definition, navigate, lang, redirect]);
 
   useEffect(() => {
     const defaultLanguage = definition.defaultLanguage || defaultLocale;

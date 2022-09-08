@@ -2,15 +2,15 @@ import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { languages } from '../../../utils/settings.js';
 import { messages } from './messages.js';
 
 export function LanguagePreference(): ReactElement {
-  const history = useHistory();
-  const { url } = useRouteMatch();
+  const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}/Settings`;
 
   const [preferredLanguage, setPreferredLanguage] = useState(
     localStorage.getItem('preferredLanguage') ?? lang,
@@ -18,11 +18,11 @@ export function LanguagePreference(): ReactElement {
 
   const onLanguageChange = useCallback(
     (event, language: string) => {
-      history.replace(url.replace(preferredLanguage, language));
+      navigate(url.replace(preferredLanguage, language), { replace: true });
       setPreferredLanguage(language);
       localStorage.setItem('preferredLanguage', language);
     },
-    [history, preferredLanguage, url],
+    [navigate, preferredLanguage, url],
   );
 
   return (

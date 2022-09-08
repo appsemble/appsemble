@@ -3,7 +3,7 @@ import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
 import { Fragment, ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -22,10 +22,9 @@ interface SideNavigationProps {
  * The app navigation that is displayed in the side menu.
  */
 export function SideNavigation({ blockMenus, pages }: SideNavigationProps): ReactElement {
-  const {
-    params: { lang },
-    url,
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}`;
+
   const { getAppMessage, getMessage } = useAppMessages();
   const {
     definition: { layout, security },

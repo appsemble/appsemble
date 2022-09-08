@@ -1,7 +1,7 @@
 import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn } from '../../utils/settings.js';
@@ -25,6 +25,7 @@ import { Verify } from '../Verify/index.js';
  * This maps the page to a route and displays a page depending on URL.
  */
 export function AppRoutes(): ReactElement {
+  const { lang } = useParams<{ lang: string }>();
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
@@ -37,53 +38,36 @@ export function AppRoutes(): ReactElement {
   const hasCustomLogin = definition.pages.some((page) => page.name === 'Login');
   const hasCustomRegister = definition.pages.some((page) => page.name === 'Register');
 
-  // The `lang` parameter for the parent route is optional. It should be required for subroutes to
-  // prevent an infinite routing loop.
   return (
     <MetaProvider
       description={getAppMessage({ id: 'description' }).format() as string}
       title={getAppMessage({ id: 'name' }).format() as string}
     >
-      <Switch>
-        <Route exact path="/:lang/Settings" sensitive>
-          <AppSettings />
-        </Route>
+      <Routes>
+        <Route caseSensitive element={<AppSettings />} path="/Settings" />
 
         {!isLoggedIn && !hasCustomLogin ? (
-          <Route exact path="/:lang/Login" sensitive>
-            <Login />
-          </Route>
+          <Route caseSensitive element={<Login />} path="/Login" />
         ) : null}
         {!isLoggedIn && !hasCustomRegister ? (
-          <Route exact path="/:lang/Register" sensitive>
-            {hasCustomRegister ? <Page /> : <Register />}
-          </Route>
+          <Route
+            caseSensitive
+            element={hasCustomRegister ? <Page /> : <Register />}
+            path="/Register"
+          />
         ) : null}
-        <Route exact path="/:lang/Team-Invite" sensitive>
-          <TeamInvite />
-        </Route>
-        <Route exact path="/:lang/Reset-Password" sensitive>
-          <ResetPassword />
-        </Route>
-        <Route exact path="/:lang/Edit-Password" sensitive>
-          <EditPassword />
-        </Route>
-        <Route exact path="/:lang/Verify" sensitive>
-          <Verify />
-        </Route>
-        <Route exact path="/:lang/Callback" sensitive>
-          <OpenIDCallback />
-        </Route>
-        {sentryDsn ? (
-          <Route exact path="/:lang/Feedback" sensitive>
-            <SentryFeedback />
-          </Route>
-        ) : null}
-        <Route path="/:lang/:pageId">
-          <Page />
-        </Route>
-        <Redirect to={`/:lang/${normalize(defaultPageName)}`} />
-      </Switch>
+
+        <Route caseSensitive element={<TeamInvite />} path="/Team-Invite" />
+        <Route caseSensitive element={<ResetPassword />} path="/Reset-Password" />
+        <Route caseSensitive element={<EditPassword />} path="/Edit-Password" />
+        <Route element={<Verify />} path="/Verify" />
+        <Route caseSensitive element={<OpenIDCallback />} path="/Callback" />
+
+        {sentryDsn ? <Route caseSensitive element={<SentryFeedback />} path="/Feedback" /> : null}
+
+        <Route caseSensitive element={<Page />} path="/:pageId/*" />
+        <Route element={<Navigate to={`/${lang}/${normalize(defaultPageName)}`} />} path="/*" />
+      </Routes>
     </MetaProvider>
   );
 }

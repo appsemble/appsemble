@@ -171,7 +171,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     ee: null,
     extraCreators: null,
     flowActions: null,
-    history: null,
+    navigate: null,
     pageReady: Promise.resolve(),
     prefix: null,
     prefixIndex: null,
