@@ -188,9 +188,9 @@ export function createTestAction<T extends ActionDefinition['type']>(
       }),
     route: {
       params: { lang: 'en' },
-      isExact: false,
-      path: '/example',
-      url: 'https://example.com/en/example',
+      pathname: '/en/example',
+      pathnameBase: '/en/example',
+      pattern: { path: ':lang/example' },
     },
     showDialog: null,
     showShareDialog: null,
