@@ -19,7 +19,7 @@ function AppContent(
     <AppDefinitionProvider>
       <AppMessagesProvider>
         <MessagesProvider>
-          <ErrorHandler fallback={ErrorFallback} history={undefined}>
+          <ErrorHandler fallback={ErrorFallback}>
             <ServiceWorkerRegistrationProvider
               serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
             >

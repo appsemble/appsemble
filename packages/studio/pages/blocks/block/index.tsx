@@ -25,28 +25,6 @@ import styles from './index.module.css';
 import { messages, untranslatedMessages } from './messages.js';
 import { RefLink } from './RefLink/index.js';
 
-interface BlockDetailsRoutesMatch {
-  /**
-   * The organization of the block.
-   */
-  organization: string;
-
-  /**
-   * The name of the block.
-   */
-  blockName: string;
-
-  /**
-   * The version of the block.
-   */
-  version: string;
-
-  /**
-   * The currently selected language.
-   */
-  lang: string;
-}
-
 /**
  * Render documentation for blocks.
  */
@@ -58,7 +36,12 @@ export function BlockPage(): ReactElement {
     lang,
     organization,
     version: urlVersion,
-  } = useParams<BlockDetailsRoutesMatch>();
+  } = useParams<{
+    organization: string;
+    blockName: string;
+    version: string;
+    lang: string;
+  }>();
 
   const url = `${lang}/blocks/@${organization}/${blockName}`;
 

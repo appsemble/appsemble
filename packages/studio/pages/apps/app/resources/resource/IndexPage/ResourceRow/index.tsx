@@ -22,7 +22,6 @@ import { Link, useParams } from 'react-router-dom';
 
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../../index.js';
-import { RouteParams } from '../index.js';
 import { ResourceCell } from '../ResourceCell/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -84,7 +83,15 @@ export function ResourceRow({
   schema,
   selected,
 }: ResourceRowProps): ReactElement {
-  const { id: appId, lang, resourceName } = useParams<RouteParams>();
+  const {
+    id: appId,
+    lang,
+    resourceName,
+  } = useParams<{
+    lang: string;
+    id: string;
+    resourceName: string;
+  }>();
   const url = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();

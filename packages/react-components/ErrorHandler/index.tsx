@@ -3,7 +3,7 @@ import { BrowserHistory, createBrowserHistory } from 'history';
 import { Component, ElementType, ErrorInfo, ReactElement, ReactNode } from 'react';
 
 interface ErrorHandlerProps {
-  history: BrowserHistory;
+  history?: BrowserHistory;
   /**
    * Children to render.
    */

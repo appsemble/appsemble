@@ -37,18 +37,20 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { ResourceRow } from './ResourceRow/index.js';
 
-export interface RouteParams {
-  lang: string;
-  id: string;
-  resourceName: string;
-}
-
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
 export function IndexPage(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const { id: appId, lang, resourceName } = useParams<RouteParams>();
+  const {
+    id: appId,
+    lang,
+    resourceName,
+  } = useParams<{
+    lang: string;
+    id: string;
+    resourceName: string;
+  }>();
   const routeUrl = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const push = useMessages();
 

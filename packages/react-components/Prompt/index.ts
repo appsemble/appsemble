@@ -1,5 +1,5 @@
 import { Blocker, Transition } from 'history';
-import { ContextType, useCallback, useContext, useEffect } from 'react';
+import { ContextType, ReactElement, useCallback, useContext, useEffect } from 'react';
 import {
   Navigator as BaseNavigator,
   UNSAFE_NavigationContext as NavigationContext,
@@ -64,6 +64,7 @@ interface PromptProps {
   when?: boolean;
 }
 
-export function Prompt({ message, when }: PromptProps): void {
+export function Prompt({ message, when }: PromptProps): ReactElement {
   usePrompt(message, when);
+  return null;
 }

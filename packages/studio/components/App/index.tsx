@@ -43,7 +43,7 @@ const studioContent = (
     >
       <UserProvider>
         <MetaProvider description={messages.description} title="Appsemble">
-          <ErrorHandler fallback={ErrorFallback} history={undefined}>
+          <ErrorHandler fallback={ErrorFallback}>
             <Confirmation>
               <MessagesProvider>
                 <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
