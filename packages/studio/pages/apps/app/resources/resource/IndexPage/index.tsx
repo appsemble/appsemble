@@ -74,7 +74,9 @@ export function IndexPage(): ReactElement {
     }&$skip=${offset}`,
   );
   const setResources = result.setData;
-  const [count, setCount] = useState(0);
+  const { data: count, setData: setCount } = useData<number>(
+    `/api/apps/${app.id}/resources/$count`,
+  );
 
   const { schema } = app.definition.resources[resourceName];
   const keys = Object.keys(schema.properties);
@@ -105,7 +107,7 @@ export function IndexPage(): ReactElement {
       setCount((c) => c - 1);
       result.refresh();
     },
-    [result, setResources],
+    [result, setCount, setResources],
   );
 
   const onConfirmDelete = useCallback(async () => {
@@ -124,7 +126,7 @@ export function IndexPage(): ReactElement {
     } catch {
       push(formatMessage(messages.deleteError));
     }
-  }, [formatMessage, push, resourceURL, result, selectedResources, setResources]);
+  }, [formatMessage, push, resourceURL, result, selectedResources, setCount, setResources]);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -200,7 +202,7 @@ export function IndexPage(): ReactElement {
         color: 'primary',
       });
     },
-    [createModal, formatMessage, push, resourceName, resourceURL, result, setResources],
+    [createModal, formatMessage, push, resourceName, resourceURL, result, setCount, setResources],
   );
 
   const downloadCsv = useCallback(async () => {
@@ -246,7 +248,7 @@ export function IndexPage(): ReactElement {
           },
         );
     });
-  }, [formatMessage, push, resourceURL, result, setResources]);
+  }, [formatMessage, push, resourceURL, result, setCount, setResources]);
 
   const onPageChange = useCallback((updatedPage: number) => {
     setSelectedResources([]);
@@ -269,14 +271,6 @@ export function IndexPage(): ReactElement {
     setLimit(rowsPerPage === -1 ? -1 : rowsPerPage);
     setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
   }, [result, page, rowsPerPage, count, resourceURL]);
-
-  useEffect(() => {
-    const fetchRowAmount = async (): Promise<void> => {
-      const { data } = await axios.get(`${resourceURL}/$count`);
-      setCount(data);
-    };
-    fetchRowAmount().catch();
-  }, [resourceURL, rowsPerPage, count]);
 
   return (
     <>

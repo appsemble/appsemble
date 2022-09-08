@@ -1,9 +1,11 @@
-import { Button } from '@appsemble/react-components';
+import { Button, SelectField } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { AssetPaginationNumbers } from '../AssetPaginationNumbers/index.js';
+import { messages } from './messages.js';
 
-export interface ResourcePaginationProps {
+export interface AssetPaginationProps {
   rowsPerPageOptions: number[];
   rowsPerPage: number;
   count: number;
@@ -19,7 +21,7 @@ export function AssetPagination({
   page,
   rowsPerPage,
   rowsPerPageOptions,
-}: ResourcePaginationProps): ReactElement {
+}: AssetPaginationProps): ReactElement {
   const onDropdownChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const newRowsPerPage = Number(event.target.value);
@@ -45,24 +47,16 @@ export function AssetPagination({
     <div className="level">
       <div className="level-left">
         <div className="level-item">
-          <div className="field has-addons">
-            <p className="control">
-              <button className="button is-static" type="button">
-                Rows per page
-              </button>
-            </p>
-            <p className="control">
-              <span className="select">
-                <select onChange={onDropdownChange} value={rowsPerPage}>
-                  {rowsPerPageOptions.map((option) => (
-                    <option key={option} value={option}>
-                      {option === -1 ? 'All' : option}
-                    </option>
-                  ))}
-                </select>
-              </span>
-            </p>
-          </div>
+          <SelectField
+            addonLeft={<FormattedMessage {...messages.rowsPerPageLabel} />}
+            onChange={onDropdownChange}
+          >
+            {rowsPerPageOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === -1 ? messages.allRowsLabel.defaultMessage : option}
+              </option>
+            ))}
+          </SelectField>
         </div>
       </div>
       <div className="level-right">
@@ -75,7 +69,7 @@ export function AssetPagination({
                   disabled={page <= 1}
                   onClick={() => onPageChange(page - 1)}
                 >
-                  Previous
+                  <FormattedMessage {...messages.previousPageLabel} />
                 </Button>
               </li>
               <AssetPaginationNumbers maxPages={maxPages} onPageChange={onPageChange} page={page} />
@@ -85,7 +79,7 @@ export function AssetPagination({
                   disabled={page + 1 > maxPages || rowsPerPage === -1}
                   onClick={() => onPageChange(page + 1)}
                 >
-                  Next
+                  <FormattedMessage {...messages.nextPageLabel} />
                 </Button>
               </li>
             </ul>

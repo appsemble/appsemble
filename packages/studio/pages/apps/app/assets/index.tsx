@@ -50,7 +50,7 @@ export function AssetsPage(): ReactElement {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(-1);
   const [offset, setOffset] = useState(0);
-  const [count, setCount] = useState(0);
+  const { data: count, setData: setCount } = useData<number>(`/api/apps/${app.id}/assets/$count`);
   const assetsResult = useData<Asset[]>(
     `/api/apps/${app.id}/assets?$skip=${offset}${limit === -1 ? '' : `&$top=${limit}`}`,
   );
@@ -75,7 +75,7 @@ export function AssetsPage(): ReactElement {
       assetsResult.refresh();
       dialog.disable();
     },
-    [app.id, assetsResult, dialog, formatMessage, push, setData],
+    [app.id, assetsResult, dialog, formatMessage, push, setCount, setData],
   );
 
   const onDelete = useConfirmation({
@@ -153,7 +153,7 @@ export function AssetsPage(): ReactElement {
       setCount(data);
     };
     fetchRowAmount().catch();
-  }, [app.id, rowsPerPage, count]);
+  }, [app.id, rowsPerPage, count, setCount]);
 
   return (
     <>
