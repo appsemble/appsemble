@@ -169,7 +169,8 @@ export function TeamPage(): ReactElement {
                     <th>
                       <FormattedMessage {...messages.name} />
                     </th>
-                    <th className="right">
+                    {/* eslint-disable-next-line react/no-unknown-property */}
+                    <th align="right">
                       <FormattedMessage {...messages.actions} />
                     </th>
                   </tr>

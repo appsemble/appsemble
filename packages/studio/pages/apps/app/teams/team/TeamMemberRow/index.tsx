@@ -34,6 +34,7 @@ export function TeamMemberRow({
   return (
     <tr key={member.id}>
       <td>{member.name || member.primaryEmail || member.id}</td>
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <td align="right">
         {mayInvite ? (
           <AsyncSelect name="role" onChange={editRole} value={member.role}>

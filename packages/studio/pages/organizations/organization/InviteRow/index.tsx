@@ -68,6 +68,7 @@ export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): Rea
   return (
     <tr>
       <td>{invite.email}</td>
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <td align="right">
         {mayInvite ? (
           <AsyncButton className="mr-2" disabled={resent} onClick={resendInvitation}>
