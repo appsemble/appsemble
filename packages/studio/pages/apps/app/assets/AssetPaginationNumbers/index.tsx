@@ -16,19 +16,18 @@ export function AssetPaginationNumbers({
   page,
 }: AssetPaginationNumbersProps): ReactElement {
   return [
-    maxPages < 6
-      ? (range(1, maxPages).map((pageNo) => (
-          <li key={pageNo}>
-            <Button
-              className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
-              onClick={() => onPageChange(pageNo)}
-            >
-              {pageNo}
-            </Button>
-          </li>
-        )) as ReactNode as ReactElement)
-      : null,
-    (
+    maxPages < 6 ? (
+      (range(1, maxPages).map((pageNo) => (
+        <li key={pageNo}>
+          <Button
+            className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
+            onClick={() => onPageChange(pageNo)}
+          >
+            {pageNo}
+          </Button>
+        </li>
+      )) as ReactNode as ReactElement)
+    ) : (
       <>
         <li>
           {page < 3 ? (
@@ -76,6 +75,6 @@ export function AssetPaginationNumbers({
           )}
         </li>
       </>
-    ) as ReactNode,
+    ),
   ] as ReactNode as ReactElement;
 }

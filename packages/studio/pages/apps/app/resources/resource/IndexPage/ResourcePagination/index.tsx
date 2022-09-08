@@ -53,7 +53,7 @@ export function ResourcePagination({
                 <FormattedMessage {...messages.rowsPerPageLabel} />
               </button>
             </p>
-            <SelectField onChange={onDropdownChange}>
+            <SelectField onChange={onDropdownChange} value={rowsPerPage}>
               {rowsPerPageOptions.map((option) => (
                 <option key={option} value={option}>
                   {option === -1 ? messages.allRowsLabel.defaultMessage : option}
