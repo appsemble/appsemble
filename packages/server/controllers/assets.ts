@@ -4,7 +4,7 @@ import { Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 
-import { App, Asset, Resource } from '../models/index.js';
+import { App, Asset, Organization, Resource } from '../models/index.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getAssets(ctx: Context): Promise<void> {
@@ -15,20 +15,7 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [
-      {
-        model: Asset,
-        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
-        required: false,
-        include: [
-          {
-            model: Resource,
-            attributes: ['type'],
-            required: false,
-          },
-        ],
-      },
-    ],
+    include: [{ model: Organization, attributes: ['id'] }],
   });
 
   if (!app) {
@@ -37,9 +24,21 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  const offset = Number($skip) || 0;
-  const limit = offset + (Number($top) || app.Assets.length);
-  ctx.body = app.Assets.slice(offset, limit).map((asset) => ({
+  const assets = await Asset.findAll({
+    attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
+    include: [
+      {
+        model: Resource,
+        attributes: ['type'],
+        required: false,
+      },
+    ],
+    where: { AppId: appId },
+    offset: $skip,
+    limit: $top,
+  });
+
+  ctx.body = assets.map((asset) => ({
     id: asset.id,
     resourceId: asset.ResourceId ?? undefined,
     resourceType: asset.Resource?.type,
@@ -56,20 +55,7 @@ export async function countAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [
-      {
-        model: Asset,
-        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
-        required: false,
-        include: [
-          {
-            model: Resource,
-            attributes: ['type'],
-            required: false,
-          },
-        ],
-      },
-    ],
+    include: [{ model: Organization, attributes: ['id'] }],
   });
 
   if (!app) {
@@ -78,7 +64,8 @@ export async function countAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  ctx.body = app.Assets.length || 0;
+  const count = await Asset.count({ where: { AppId: appId } });
+  ctx.body = count;
 }
 
 export async function getAssetById(ctx: Context): Promise<void> {

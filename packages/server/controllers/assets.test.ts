@@ -192,6 +192,149 @@ describe('getAssets', () => {
   });
 });
 
+describe('countAssets', () => {
+  it('should return 0 if no assets exist', async () => {
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/assets/count`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      0
+    `);
+  });
+
+  it('should return the number of assets', async () => {
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/assets/count`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
+  });
+
+  it('should not count another app’s assets', async () => {
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    const appB = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app-B',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+    await Asset.create({
+      AppId: appB.id,
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/assets/count`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
+  });
+
+  it('should not count another organization’s assets', async () => {
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    await Asset.create({
+      AppId: app.id,
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    const organizationB = await Organization.create({
+      name: 'Test Organization',
+    });
+    const appB = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app-B',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationB.id,
+    });
+    await Asset.create({
+      AppId: appB.id,
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/assets/count`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      2
+    `);
+  });
+});
+
 describe('getAssetById', () => {
   it('should be able to fetch an asset', async () => {
     const data = Buffer.from('buffer');
