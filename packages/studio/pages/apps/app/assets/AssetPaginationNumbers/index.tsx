@@ -46,11 +46,7 @@ export function AssetPaginationNumbers({
           {page === 1 ? (
             <span className="pagination-ellipsis" />
           ) : (
-            <Button
-              className="pagination-link"
-              onClick={() => onPageChange(page - 1)}
-              type="button"
-            >
+            <Button className="pagination-link" onClick={() => onPageChange(page - 1)}>
               {page - 1}
             </Button>
           )}
