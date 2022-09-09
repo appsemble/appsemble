@@ -147,14 +147,6 @@ export function AssetsPage(): ReactElement {
     setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
   }, [assetsResult, page, rowsPerPage, count]);
 
-  useEffect(() => {
-    const fetchRowAmount = async (): Promise<void> => {
-      const { data } = await axios.get(`/api/apps/${app.id}/assets/$count`);
-      setCount(data);
-    };
-    fetchRowAmount().catch();
-  }, [app.id, rowsPerPage, count, setCount]);
-
   return (
     <>
       <Title>
