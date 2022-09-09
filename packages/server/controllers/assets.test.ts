@@ -296,7 +296,8 @@ describe('countAssets', () => {
     });
 
     const organizationB = await Organization.create({
-      name: 'Test Organization',
+      id: 'testorganizationb',
+      name: 'Test Organizationb',
     });
     const appB = await App.create({
       definition: {
