@@ -2517,7 +2517,7 @@ describe('createResource', () => {
             {
               "argument": "foo",
               "instance": {},
-              "message": "requires property \\"foo\\"",
+              "message": "requires property "foo"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2566,7 +2566,7 @@ describe('createResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property \\"foo\\"",
+              "stack": "instance requires property "foo"",
             },
           ],
         },
@@ -2791,7 +2791,7 @@ describe('createResource', () => {
             {
               "argument": "binary",
               "instance": "0",
-              "message": "does not conform to the \\"binary\\" format",
+              "message": "does not conform to the "binary" format",
               "name": "format",
               "path": [
                 "file2",
@@ -2801,7 +2801,7 @@ describe('createResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file2 does not conform to the \\"binary\\" format",
+              "stack": "instance.file2 does not conform to the "binary" format",
             },
           ],
         },
@@ -2926,7 +2926,7 @@ describe('createResource', () => {
             {
               "argument": "binary",
               "instance": "1",
-              "message": "does not conform to the \\"binary\\" format",
+              "message": "does not conform to the "binary" format",
               "name": "format",
               "path": [
                 "file",
@@ -2936,7 +2936,7 @@ describe('createResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file does not conform to the \\"binary\\" format",
+              "stack": "instance.file does not conform to the "binary" format",
             },
           ],
         },
@@ -3330,7 +3330,7 @@ describe('updateResource', () => {
               "instance": {
                 "bar": 123,
               },
-              "message": "requires property \\"foo\\"",
+              "message": "requires property "foo"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3379,7 +3379,7 @@ describe('updateResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property \\"foo\\"",
+              "stack": "instance requires property "foo"",
             },
             {
               "argument": [
@@ -3635,7 +3635,7 @@ describe('updateResource', () => {
             {
               "argument": "binary",
               "instance": "1",
-              "message": "does not conform to the \\"binary\\" format",
+              "message": "does not conform to the "binary" format",
               "name": "format",
               "path": [
                 "file",
@@ -3645,7 +3645,7 @@ describe('updateResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file does not conform to the \\"binary\\" format",
+              "stack": "instance.file does not conform to the "binary" format",
             },
           ],
         },
