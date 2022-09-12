@@ -57,7 +57,7 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-intl": "^6.0.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.0.0",
     "rehype-react": "^7.0.0",
     "rehype-sanitize": "^5.0.0",
     "remark-gfm": "^3.0.0",
