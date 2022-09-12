@@ -1,6 +1,3 @@
-import { createJestConfig } from '../../config/jest/config';
+import { createJestConfig } from '../../config/jest/config.js';
 
-const config = {
-  verbose: true,
-};
-export default createJestConfig(config);
+export default createJestConfig(import.meta);
