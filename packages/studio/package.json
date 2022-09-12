@@ -20,8 +20,9 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/react-components": "0.20.13",
@@ -45,7 +46,7 @@
     "axios": "^0.27.0",
     "classnames": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
-    "indent-string": "^4.0.0",
+    "indent-string": "^5.0.0",
     "jsonschema": "^1.0.0",
     "jwt-decode": "^3.0.0",
     "monaco-editor": "^0.33.0",

@@ -1,5 +1,5 @@
-import { ShowDialogParams } from '../../types';
-import { createTestAction } from '../makeActions';
+import { ShowDialogParams } from '../../types.js';
+import { createTestAction } from '../makeActions.js';
 
 describe('dialog', () => {
   let close: jest.Mock<void, []>;
@@ -7,8 +7,8 @@ describe('dialog', () => {
   let showDialog: jest.Mock<() => void, [ShowDialogParams]>;
 
   beforeEach(() => {
-    close = jest.fn();
-    showDialog = jest.fn().mockImplementation((opts) => {
+    close = import.meta.jest.fn();
+    showDialog = import.meta.jest.fn().mockImplementation((opts) => {
       options = opts;
       return close;
     });

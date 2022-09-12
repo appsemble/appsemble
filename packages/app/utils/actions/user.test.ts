@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { createTestAction } from '../makeActions';
-import { apiUrl, appId } from '../settings';
+import { createTestAction } from '../makeActions.js';
+import { apiUrl, appId } from '../settings.js';
 
 describe('user.register', () => {
   let mock: MockAdapter;
@@ -10,7 +10,7 @@ describe('user.register', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    passwordLogin = jest.fn();
+    passwordLogin = import.meta.jest.fn();
   });
 
   it('should call the API to register a new user', async () => {
@@ -64,7 +64,7 @@ describe('user.login', () => {
   let passwordLogin: jest.Mock;
 
   beforeEach(() => {
-    passwordLogin = jest.fn();
+    passwordLogin = import.meta.jest.fn();
   });
 
   it('should log the user in', async () => {
@@ -112,7 +112,7 @@ describe('user.update', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setUserInfo = jest.fn();
+    setUserInfo = import.meta.jest.fn();
   });
 
   it('should call the API for updating the user', async () => {

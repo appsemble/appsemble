@@ -1,21 +1,21 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs from 'yargs';
+import yargs, { CommandModule } from 'yargs';
 
-import * as build from './commands/build';
-import * as cleanupEnvironments from './commands/cleanup-environments';
-import * as dockerMetadata from './commands/docker-metadata';
-import * as extractMessages from './commands/extract-messages';
-import * as getReleaseNotes from './commands/get-release-notes';
-import * as githubRelease from './commands/github-release';
-import * as gitlabRelease from './commands/gitlab-release';
-import * as release from './commands/release';
-import * as rewriteMessages from './commands/rewrite-messages';
-import * as twitter from './commands/twitter';
-import * as validate from './commands/validate';
-import * as waitForApi from './commands/wait-for-api';
-import * as waitForSsl from './commands/wait-for-ssl';
+import * as build from './commands/build.js';
+import * as cleanupEnvironments from './commands/cleanup-environments.js';
+import * as dockerMetadata from './commands/docker-metadata.js';
+import * as extractMessages from './commands/extract-messages.js';
+import * as getReleaseNotes from './commands/get-release-notes.js';
+import * as githubRelease from './commands/github-release.js';
+import * as gitlabRelease from './commands/gitlab-release.js';
+import * as release from './commands/release.js';
+import * as rewriteMessages from './commands/rewrite-messages.js';
+import * as twitter from './commands/twitter.js';
+import * as validate from './commands/validate.js';
+import * as waitForApi from './commands/wait-for-api.js';
+import * as waitForSsl from './commands/wait-for-ssl.js';
 
-yargs
+yargs()
   .option('verbose', {
     alias: 'v',
     describe: 'Increase verbosity',
@@ -27,14 +27,14 @@ yargs
     type: 'count',
   })
   .middleware([configureLogger])
-  .command(build)
+  .command(build as unknown as CommandModule)
   .command(cleanupEnvironments)
   .command(dockerMetadata)
   .command(extractMessages)
   .command(getReleaseNotes)
   .command(githubRelease)
   .command(gitlabRelease)
-  .command(release)
+  .command(release as unknown as CommandModule)
   .command(rewriteMessages)
   .command(twitter)
   .command(validate)

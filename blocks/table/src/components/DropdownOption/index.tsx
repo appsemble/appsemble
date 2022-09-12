@@ -3,7 +3,7 @@ import { Button } from '@appsemble/preact-components';
 import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { DropdownOption as DropdownOptionType } from '../../../block';
+import { DropdownOption as DropdownOptionType } from '../../../block.js';
 import styles from './index.module.css';
 
 interface DropdownItemProps extends ComponentProps<'td'> {

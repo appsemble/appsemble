@@ -4,7 +4,7 @@ import {
   parseBlockName,
   prefixBlockURL,
   stripBlockName,
-} from './blockUtils';
+} from './blockUtils.js';
 
 describe('normalizeBlockName', () => {
   it('should prepend @appsemble if no organization is prepended', () => {

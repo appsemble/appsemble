@@ -3,9 +3,9 @@ import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, InputProps } from '../../../block';
-import { getAccept } from '../../utils/requirements';
-import { resize } from '../../utils/resize';
+import { FileField, InputProps } from '../../../block.js';
+import { getAccept } from '../../utils/requirements.js';
+import { resize } from '../../utils/resize.js';
 import styles from './index.module.css';
 
 type FileEntryProps = InputProps<Blob | string, FileField>;

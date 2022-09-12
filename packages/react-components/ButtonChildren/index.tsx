@@ -2,7 +2,7 @@ import { BulmaSize } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ReactElement, ReactNode } from 'react';
 
-import { Icon } from '..';
+import { Icon } from '../index.js';
 
 interface ButtonChildrenProps {
   /**

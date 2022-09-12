@@ -1,15 +1,13 @@
 import { AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppSamlSecret, Member, Organization } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { App, AppSamlSecret, Member, Organization } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
-let clock: InstalledClock;
 let member: Member;
 let organization: Organization;
 
@@ -22,7 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
   const user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -35,10 +33,6 @@ beforeEach(async () => {
     definition: {},
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('createSamlSecret', () => {

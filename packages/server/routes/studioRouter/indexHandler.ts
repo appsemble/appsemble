@@ -1,11 +1,12 @@
-import { randomBytes } from 'crypto';
+// eslint-disable-next-line unicorn/import-style
+import crypto from 'crypto';
 
 import { Context } from 'koa';
 
-import { argv } from '../../utils/argv';
-import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
-import { createSettings, makeCSP, render } from '../../utils/render';
-import { getSentryClientSettings } from '../../utils/sentry';
+import { argv } from '../../utils/argv.js';
+import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets.js';
+import { createSettings, makeCSP, render } from '../../utils/render.js';
+import { getSentryClientSettings } from '../../utils/sentry.js';
 
 /**
  * Serve `index.html` for editor related routes.
@@ -44,7 +45,7 @@ export function indexHandler(ctx: Context): Promise<void> {
       scope: googlePreset.scope,
     });
   }
-  const nonce = randomBytes(16).toString('base64');
+  const nonce = crypto.randomBytes(16).toString('base64');
   const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } =
     getSentryClientSettings(hostname);
   const [settingsHash, settings] = createSettings({

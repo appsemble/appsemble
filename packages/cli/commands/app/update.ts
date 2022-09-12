@@ -6,10 +6,10 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { updateApp } from '../../lib/app';
-import { authenticate } from '../../lib/authentication';
-import { coerceFile } from '../../lib/coercers';
-import { BaseArguments } from '../../types';
+import { updateApp } from '../../lib/app.js';
+import { authenticate } from '../../lib/authentication.js';
+import { coerceFile } from '../../lib/coercers.js';
+import { BaseArguments } from '../../types.js';
 
 interface UpdateAppArguments extends BaseArguments {
   context: string;

@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 /**
  * Render breadcrumbs based on the `<MetaProvider />`.

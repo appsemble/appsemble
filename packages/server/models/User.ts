@@ -25,7 +25,7 @@ import {
   Organization,
   ResetPasswordToken,
   TeamMember,
-} from '.';
+} from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
 export class User extends Model {
@@ -85,9 +85,9 @@ export class User extends Model {
   @DeletedAt
   deleted: Date;
 
-  TeamMember: TeamMember;
+  TeamMember: Awaited<TeamMember>;
 
-  AppMember: AppMember;
+  AppMember: Awaited<AppMember>;
 
-  Member: Member;
+  Member: Awaited<Member>;
 }

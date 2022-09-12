@@ -2,10 +2,10 @@ import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
-import { EmailAuthorization, ResetPasswordToken, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase('auth');
 
@@ -98,7 +98,7 @@ describe('registerEmail', () => {
           {
             "argument": "email",
             "instance": "foo",
-            "message": "does not conform to the \\"email\\" format",
+            "message": "does not conform to the "email" format",
             "name": "format",
             "path": [
               "email",
@@ -108,7 +108,7 @@ describe('registerEmail', () => {
               "format": "email",
               "type": "string",
             },
-            "stack": "instance.email does not conform to the \\"email\\" format",
+            "stack": "instance.email does not conform to the "email" format",
           },
           {
             "argument": 8,

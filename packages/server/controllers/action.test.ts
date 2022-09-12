@@ -2,11 +2,11 @@ import { EmailActionDefinition } from '@appsemble/types';
 import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 
-import { App, Asset, Organization } from '../models';
-import pkg from '../package.json';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { App, Asset, Organization } from '../models/index.js';
+import pkg from '../package.json' assert { type: 'json' };
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 
@@ -332,7 +332,7 @@ describe('handleEmail', () => {
   });
 
   it('should send emails', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
 
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Body',
@@ -370,7 +370,7 @@ describe('handleEmail', () => {
   });
 
   it('should send mails using CC', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Test',
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
@@ -407,7 +407,7 @@ describe('handleEmail', () => {
   });
 
   it('should send mails using BCC', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Test',
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
@@ -470,7 +470,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach URLs', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
@@ -508,7 +508,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach using objects', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const buffer = Buffer.from(JSON.stringify({ test: 'test' }));
     const asset = await Asset.create({
       AppId: 1,
@@ -571,7 +571,7 @@ describe('handleEmail', () => {
   });
 
   it('should accept assets from content', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
@@ -608,7 +608,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach existing assets', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const buffer = Buffer.from('test');
     const asset = await Asset.create({
       AppId: 1,
@@ -653,7 +653,7 @@ describe('handleEmail', () => {
   });
 
   it('should not attach non-existant assets', async () => {
-    const spy = jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',

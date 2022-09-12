@@ -1,4 +1,4 @@
-import { mapValues } from './mapValues';
+import { mapValues } from './mapValues.js';
 
 describe('mapValues', () => {
   it('should call the iteratee over each own property', () => {

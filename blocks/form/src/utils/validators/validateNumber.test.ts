@@ -1,5 +1,5 @@
-import { NumberField } from '../../../block';
-import { validateNumber } from './validateNumber';
+import { NumberField } from '../../../block.js';
+import { validateNumber } from './validateNumber.js';
 
 describe('validateNumber', () => {
   it('should return the first requirement that does not validate', () => {

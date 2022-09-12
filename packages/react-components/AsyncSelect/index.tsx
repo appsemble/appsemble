@@ -1,6 +1,6 @@
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
 
-import { Select } from '../Select';
+import { Select } from '../Select/index.js';
 
 interface AsyncSelectProps extends ComponentPropsWithoutRef<typeof Select> {
   /**

@@ -1,9 +1,9 @@
 import { request, setTestApp } from 'axios-test-instance';
 
-import { getDB } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { getDB } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase('health');
 
@@ -28,7 +28,7 @@ describe('checkHealth', () => {
   });
 
   it('should fail if the database is disconnected', async () => {
-    jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
+    import.meta.jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
     const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`

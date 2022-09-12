@@ -1,4 +1,4 @@
-import { onFetch } from './onFetch';
+import { onFetch } from './onFetch.js';
 
 declare const self: ServiceWorkerGlobalScope;
 declare const appAssets: { url: string }[];

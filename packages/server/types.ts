@@ -1,5 +1,5 @@
-import { App, User } from './models';
-import { Mailer } from './utils/email/Mailer';
+import { App, User } from './models/index.js';
+import { Mailer } from './utils/email/Mailer.js';
 
 declare module 'koa' {
   interface Request {

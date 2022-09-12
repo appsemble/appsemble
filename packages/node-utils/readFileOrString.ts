@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 
-import { isErrno } from '.';
+import { isErrno } from './index.js';
 
 /**
  * If the string represents an existing path, read the file. Otherwise, return the string itself.

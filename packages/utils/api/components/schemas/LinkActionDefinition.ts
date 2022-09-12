@@ -1,5 +1,5 @@
-import { BaseActionDefinition } from './BaseActionDefinition';
-import { extendJSONSchema } from './utils';
+import { BaseActionDefinition } from './BaseActionDefinition.js';
+import { extendJSONSchema } from './utils.js';
 
 export const LinkActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',

@@ -1,8 +1,8 @@
 import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldErrorMap, InputProps, ObjectField, Values } from '../../../block';
-import { FieldGroup } from '../FieldGroup';
+import { FieldErrorMap, InputProps, ObjectField, Values } from '../../../block.js';
+import { FieldGroup } from '../FieldGroup/index.js';
 
 interface ObjectEntryProps extends InputProps<Values, ObjectField> {
   /**

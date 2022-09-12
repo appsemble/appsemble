@@ -11,7 +11,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { BlockVersion } from '.';
+import { BlockVersion } from './index.js';
 
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.
@@ -47,5 +47,5 @@ export class BlockAsset extends Model {
   created: Date;
 
   @BelongsTo(() => BlockVersion)
-  BlockVersion: BlockVersion;
+  BlockVersion: Awaited<BlockVersion>;
 }

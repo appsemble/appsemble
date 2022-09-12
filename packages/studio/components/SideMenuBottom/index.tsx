@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function SideMenuBottom(): ReactElement {
   const { lang } = useParams<{ lang: string }>();

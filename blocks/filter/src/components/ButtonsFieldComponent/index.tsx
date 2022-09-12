@@ -3,7 +3,7 @@ import { ButtonGroup, ButtonOption } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { ButtonsField, FieldComponentProps } from '../../../block';
+import { ButtonsField, FieldComponentProps } from '../../../block.js';
 import styles from './index.module.css';
 
 export function ButtonsFieldComponent({

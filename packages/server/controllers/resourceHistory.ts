@@ -1,8 +1,8 @@
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { App, Resource, ResourceVersion, User } from '../models';
-import { getResourceDefinition } from '../utils/resource';
+import { App, Resource, ResourceVersion, User } from '../models/index.js';
+import { getResourceDefinition } from '../utils/resource.js';
 
 export async function getResourceHistory(ctx: Context): Promise<void> {
   const {

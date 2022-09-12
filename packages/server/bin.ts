@@ -2,24 +2,25 @@
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
-import * as cleanup from './commands/cleanup';
-import * as cleanupResources from './commands/cleanupResources';
-import * as health from './commands/health';
-import * as migrate from './commands/migrate';
-import * as restore from './commands/restore';
-import * as runCronJobs from './commands/runCronJobs';
-import * as start from './commands/start';
-import pkg from './package.json';
-import './types';
-import { setArgv } from './utils/argv';
-import { configureSentry } from './utils/sentry';
+import * as cleanup from './commands/cleanup.js';
+import * as cleanupResources from './commands/cleanupResources.js';
+import * as health from './commands/health.js';
+import * as migrate from './commands/migrate.js';
+import * as restore from './commands/restore.js';
+import * as runCronJobs from './commands/runCronJobs.js';
+import * as start from './commands/start.js';
+import pkg from './package.json' assert { type: 'json' };
+import './types.js';
+import { setArgv } from './utils/argv.js';
+import { configureSentry } from './utils/sentry.js';
 
 process.title = 'appsemble';
 
 configureAxios('AppsembleServer', pkg.version);
 
-yargs
+const parser = yargs()
   .usage('Usage:\n  $0 [command]')
+  .version(pkg.version)
   .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
   .option('verbose', {
     alias: 'v',
@@ -48,6 +49,5 @@ yargs
   .fail(handleError)
   .help('help', 'Show this help message.')
   .alias('h', 'help')
-  .env()
-  .wrap(Math.min(180, yargs.terminalWidth()))
-  .parse(process.argv.slice(2));
+  .env();
+parser.wrap(Math.min(180, parser.terminalWidth())).parse(process.argv.slice(2));

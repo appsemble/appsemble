@@ -1,9 +1,9 @@
 import { createRef } from 'react';
 
-import { applyRefs } from './applyRefs';
+import { applyRefs } from './applyRefs.js';
 
 it('should apply function refs', () => {
-  const spy = jest.fn();
+  const spy = import.meta.jest.fn();
   applyRefs('callback value', (value) => spy(value));
   expect(spy).toHaveBeenCalledWith('callback value');
 });
@@ -19,7 +19,7 @@ it('should ignore null refs', () => {
 });
 
 it('should apply multiple refs', () => {
-  const spy = jest.fn();
+  const spy = import.meta.jest.fn();
   const ref = createRef();
   applyRefs('multi value', (value) => spy(value), ref);
   expect(spy).toHaveBeenCalledWith('multi value');

@@ -10,18 +10,18 @@ import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types';
-import { ActionCreators } from '../../utils/actions';
-import { callBootstrap } from '../../utils/bootstrapper';
-import { createEvents } from '../../utils/events';
-import { injectCSS } from '../../utils/injectCSS';
-import { makeActions } from '../../utils/makeActions';
-import { apiUrl, appId } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
-import { usePage } from '../MenuProvider';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
-import { useUser } from '../UserProvider';
+import { ShowDialogAction, ShowShareDialog } from '../../types.js';
+import { ActionCreators } from '../../utils/actions/index.js';
+import { callBootstrap } from '../../utils/bootstrapper.js';
+import { createEvents } from '../../utils/events.js';
+import { injectCSS } from '../../utils/injectCSS.js';
+import { makeActions } from '../../utils/makeActions.js';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { usePage } from '../MenuProvider/index.js';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 
 const FA_URL = [...document.styleSheets]

@@ -2,21 +2,26 @@ import { Agent } from 'https';
 
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { vol } from 'memfs';
+import { fs, vol } from 'memfs';
 
-import { App, Organization } from '../../models';
-import pkg from '../../package.json';
-import { setArgv } from '../argv';
-import { useTestDatabase } from '../test/testSchema';
-import { cleanupDNS, configureDNS, restoreDNS } from './kubernetes';
+import { App, Organization } from '../../models/index.js';
+import pkg from '../../package.json' assert { type: 'json' };
+import { setArgv } from '../argv.js';
+import { useTestDatabase } from '../test/testSchema.js';
 
+let kubernetes: typeof import('./kubernetes.js');
 const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
-jest.mock('fs/promises');
+// @ts-expect-error this is fine actually
+import.meta.jest.unstable_mockModule('fs/promises', () => fs.promises);
 
 useTestDatabase('kubernetes');
+
+beforeAll(async () => {
+  kubernetes = await import('./kubernetes.js');
+});
 
 beforeEach(() => {
   vol.fromJSON({
@@ -40,7 +45,7 @@ describe('configureDNS', () => {
     });
 
     setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
-    await configureDNS();
+    await kubernetes.configureDNS();
     await Organization.create({ id: 'testorg' });
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
@@ -96,7 +101,7 @@ describe('configureDNS', () => {
 
     setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
     await Organization.create({ id: 'org' });
-    await configureDNS();
+    await kubernetes.configureDNS();
     await App.create({
       domain: 'example.com',
       definition: '',
@@ -156,7 +161,7 @@ describe('configureDNS', () => {
 
     setArgv({ host: 'https://host.example', serviceName: 'review-service', servicePort: 'http' });
     await Organization.create({ id: 'org' });
-    await configureDNS();
+    await kubernetes.configureDNS();
     await App.create({
       definition: '',
       vapidPublicKey: '',
@@ -180,7 +185,7 @@ describe('configureDNS', () => {
       serviceName: 'review-service',
       servicePort: 'http',
     });
-    await configureDNS();
+    await kubernetes.configureDNS();
     await Organization.create({ id: 'foo' });
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
@@ -240,7 +245,7 @@ describe('cleanupDNS', () => {
       serviceName: 'review-service',
       servicePort: 'http',
     });
-    await cleanupDNS();
+    await kubernetes.cleanupDNS();
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
     expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
@@ -277,7 +282,7 @@ describe('restoreDNS', () => {
       serviceName: 'review-service',
       servicePort: 'http',
     });
-    await restoreDNS();
+    await kubernetes.restoreDNS();
 
     expect(ingresses).toStrictEqual([
       {

@@ -2,10 +2,10 @@ import { inspect } from 'util';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
-import readPkgUp from 'read-pkg-up';
+import { readPackageUp } from 'read-pkg-up';
 import { Argv } from 'yargs';
 
-import { BaseArguments, MonoRepoPackageJson } from '../../types';
+import { BaseArguments, MonoRepoPackageJson } from '../../types.js';
 
 interface ConfigSetArguments extends BaseArguments {
   key: string;
@@ -26,9 +26,10 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler({ key, value }: ConfigSetArguments): Promise<void> {
-  const { packageJson, path } = await readPkgUp({ normalize: false });
-  if (!has(packageJson, 'appsembleServer')) {
-    packageJson.appsembleServer = {};
+  const { packageJson, path } = await readPackageUp({ normalize: false });
+  const pkg = packageJson as MonoRepoPackageJson;
+  if (!has(pkg, 'appsembleServer')) {
+    pkg.appsembleServer = {};
   }
   let parsed;
   try {
@@ -36,7 +37,7 @@ export async function handler({ key, value }: ConfigSetArguments): Promise<void>
   } catch {
     parsed = value;
   }
-  (packageJson as MonoRepoPackageJson).appsembleServer[key] = parsed;
+  pkg.appsembleServer[key] = parsed;
   await writeData(path, packageJson);
   logger.info(
     `Set option appsembleServer.${key} to ${inspect(parsed, { colors: true })} in ${path}`,

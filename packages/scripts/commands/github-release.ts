@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
-import { getReleaseNotes } from '../lib/changelog';
+import { getReleaseNotes } from '../lib/changelog.js';
 
 export const command = 'github-release';
 export const description = 'Create a release on GitHub.';

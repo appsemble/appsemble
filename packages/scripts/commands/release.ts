@@ -4,13 +4,13 @@ import { basename, dirname, join, parse } from 'path';
 import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
-import { ensureFile } from 'fs-extra';
-import globby from 'globby';
-import { capitalize, mapValues } from 'lodash';
+import fsExtra from 'fs-extra';
+import { globby } from 'globby';
+import { capitalize, mapValues } from 'lodash-es';
 import { BlockContent, ListItem } from 'mdast';
-import fromMarkdown from 'mdast-util-from-markdown';
-import toString from 'mdast-util-to-string';
-import * as semver from 'semver';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { toString } from 'mdast-util-to-string';
+import semver from 'semver';
 import { PackageJson } from 'type-fest';
 import { stringify } from 'yaml';
 import { Argv } from 'yargs';
@@ -22,8 +22,8 @@ import {
   createListItem,
   createRoot,
   dumpMarkdown,
-} from '../lib/mdast';
-import pkg from '../package.json';
+} from '../lib/mdast.js';
+import pkg from '../package.json' assert { type: 'json' };
 
 export const command = 'release <increment>';
 export const description = 'Prepare files for a new release.';
@@ -125,7 +125,7 @@ async function replaceFile(
 }
 
 async function processChangesDir(dir: string, prefix: string): Promise<ListItem[]> {
-  await ensureFile(join(dir, '.gitkeep'));
+  await fsExtra.ensureFile(join(dir, '.gitkeep'));
 
   const filenames = await readdir(dir);
   const absoluteFiles = filenames.filter((f) => f !== '.gitkeep').map((f) => join(dir, f));

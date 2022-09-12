@@ -4,8 +4,8 @@ import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { AppIcon } from '../AppIcon';
-import { StarRating } from '../StarRating';
+import { AppIcon } from '../AppIcon/index.js';
+import { StarRating } from '../StarRating/index.js';
 import styles from './index.module.css';
 
 interface AppCardProps {

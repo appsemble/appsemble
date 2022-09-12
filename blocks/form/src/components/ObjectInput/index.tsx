@@ -3,10 +3,10 @@ import { Button, FormButtons } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldError, InputProps, ObjectField, Values } from '../../../block';
-import { generateDefaultValues } from '../../utils/generateDefaultValues';
-import { getMaxLength, getMinLength } from '../../utils/requirements';
-import { ObjectEntry } from '../ObjectEntry';
+import { FieldError, InputProps, ObjectField, Values } from '../../../block.js';
+import { generateDefaultValues } from '../../utils/generateDefaultValues.js';
+import { getMaxLength, getMinLength } from '../../utils/requirements.js';
+import { ObjectEntry } from '../ObjectEntry/index.js';
 
 type ObjectInputProps = InputProps<Values | Values[], ObjectField>;
 

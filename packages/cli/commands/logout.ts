@@ -1,4 +1,4 @@
-export { remove as handler } from '../lib/authentication';
+export { remove as handler } from '../lib/authentication.js';
 
 export const command = 'logout';
 export const description =

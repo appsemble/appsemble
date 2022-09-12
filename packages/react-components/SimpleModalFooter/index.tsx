@@ -1,7 +1,7 @@
 import { BulmaColor } from '@appsemble/types';
 import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
-import { CardFooterButton, useSimpleForm } from '..';
+import { CardFooterButton, useSimpleForm } from '../index.js';
 
 interface SimpleModalFooterProps {
   /**

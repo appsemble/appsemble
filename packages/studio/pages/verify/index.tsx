@@ -3,9 +3,9 @@ import axios from 'axios';
 import { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useUser } from '../../components/UserProvider';
+import { useUser } from '../../components/UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function VerifyPage(): ReactElement {
   const [submitting, setSubmitting] = useState(true);

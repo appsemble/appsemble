@@ -6,9 +6,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { createApp } from '../../lib/app';
-import { coerceFile } from '../../lib/coercers';
-import { BaseArguments } from '../../types';
+import { createApp } from '../../lib/app.js';
+import { coerceFile } from '../../lib/coercers.js';
+import { BaseArguments } from '../../types.js';
 
 interface CreateAppArguments extends BaseArguments {
   context: string;

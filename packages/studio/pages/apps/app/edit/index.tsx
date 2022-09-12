@@ -11,20 +11,20 @@ import { App, AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Prompt, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { parse } from 'yaml';
 
-import { useApp } from '..';
-import { AppPreview } from '../../../../components/AppPreview';
-import { MonacoEditor } from '../../../../components/MonacoEditor';
-import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation';
-import { getAppUrl } from '../../../../utils/getAppUrl';
-import { EditorTab } from './EditorTab';
+import { AppPreview } from '../../../../components/AppPreview/index.js';
+import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
+import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
+import { getAppUrl } from '../../../../utils/getAppUrl.js';
+import { useApp } from '../index.js';
+import { EditorTab } from './EditorTab/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);

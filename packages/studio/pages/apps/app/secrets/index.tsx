@@ -15,12 +15,12 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '..';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { Collapsible } from '../../../../components/Collapsible';
-import { messages } from './messages';
-import { OAuth2Secrets } from './OAuth2Secrets';
-import { SamlSecrets } from './SamlSecrets';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { Collapsible } from '../../../../components/Collapsible/index.js';
+import { useApp } from '../index.js';
+import { messages } from './messages.js';
+import { OAuth2Secrets } from './OAuth2Secrets/index.js';
+import { SamlSecrets } from './SamlSecrets/index.js';
 
 interface EmailFormParameters {
   emailName: string;

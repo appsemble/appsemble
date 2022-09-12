@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 import { Middleware } from 'koa';
 
-import { getApp } from '../../utils/app';
+import { getApp } from '../../utils/app.js';
 
 export function cssHandler(type: 'coreStyle' | 'sharedStyle'): Middleware {
   return async (ctx) => {

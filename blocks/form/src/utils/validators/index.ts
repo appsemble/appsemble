@@ -1,13 +1,13 @@
 import { Remapper, Utils } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
-import { BaseRequirement, Field } from '../../../block';
-import { isRequired } from '../requirements';
-import { validateDateTime } from './validateDateTime';
-import { validateEnum, validateRadio } from './validateEnum';
-import { validateFile } from './validateFile';
-import { validateNumber } from './validateNumber';
-import { validateString } from './validateString';
+import { BaseRequirement, Field } from '../../../block.js';
+import { isRequired } from '../requirements.js';
+import { validateDateTime } from './validateDateTime.js';
+import { validateEnum, validateRadio } from './validateEnum.js';
+import { validateFile } from './validateFile.js';
+import { validateNumber } from './validateNumber.js';
+import { validateString } from './validateString.js';
 
 export const validators: Record<string, Validator> = {
   date: validateDateTime,

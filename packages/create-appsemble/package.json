@@ -20,7 +20,8 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bin": "index.js",
+  "type": "module",
+  "bin": "./index.js",
   "files": [
     "**/*.d.ts",
     "**/*.js",
@@ -29,18 +30,16 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.20.13",
-    "fs-extra": "^10.0.0",
-    "inquirer": "^8.0.0",
+    "inquirer": "^9.0.0",
     "type-fest": "^2.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.0",
-    "@types/inquirer": "^8.0.0"
+    "@types/inquirer": "^9.0.0"
   },
   "engines": {
     "node": ">=18"

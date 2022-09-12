@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @Table({ tableName: 'AppBlockStyle' })
 export class AppBlockStyle extends Model {
@@ -36,7 +36,7 @@ export class AppBlockStyle extends Model {
   style: string;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @CreatedAt
   created: Date;

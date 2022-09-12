@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { googleAnalyticsIDPattern, normalized } from '../../../constants';
+import { googleAnalyticsIDPattern, normalized } from '../../../constants/index.js';
 
 export const App: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

@@ -8,7 +8,7 @@ import sortKeys from 'sort-keys';
 import { Promisable } from 'type-fest';
 import { parse, stringify } from 'yaml';
 
-import { AppsembleError } from '.';
+import { AppsembleError } from './index.js';
 
 /**
  * Test if the error is a NodeJS errno exception.
@@ -34,9 +34,9 @@ export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoExc
  * @param path The path to the file to read.
  * @returns A tuple of the parsed content and the content as a string.
  */
-export async function readData<R>(path: string): Promise<[R, string]> {
+export async function readData<R>(path: URL | string): Promise<[R, string]> {
   let content: string;
-  const ext = extname(path);
+  const ext = extname(String(path));
   try {
     content = await readFile(path, 'utf8');
   } catch {
@@ -87,16 +87,19 @@ export async function writeData(
   const sorted = sort ? sortKeys(data, { deep: true, compare: compare || undefined }) : data;
   let buffer: string;
   try {
-    const { format, getFileInfo, resolveConfig } = await import('prettier');
-    const { inferredParser } = await getFileInfo(path, { resolveConfig: true });
-    const prettierOptions = await resolveConfig(path, { editorconfig: true });
+    const { default: prettier } = await import('prettier');
+    const { inferredParser } = await prettier.getFileInfo(path, { resolveConfig: true });
+    const prettierOptions = await prettier.resolveConfig(path, { editorconfig: true });
     prettierOptions.parser = inferredParser;
-    buffer = inferredParser === 'yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
-    buffer = format(buffer, prettierOptions);
+    buffer =
+      inferredParser === 'yaml' ? stringify(sorted) : `${JSON.stringify(sorted, undefined, 2)}\n`;
+    buffer = prettier.format(buffer, prettierOptions);
   } catch {
     const ext = extname(path);
     buffer =
-      ext === '.yml' || ext === '.yaml' ? stringify(sorted) : JSON.stringify(sorted, undefined, 2);
+      ext === '.yml' || ext === '.yaml'
+        ? stringify(sorted)
+        : `${JSON.stringify(sorted, undefined, 2)}\n`;
   }
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, buffer);

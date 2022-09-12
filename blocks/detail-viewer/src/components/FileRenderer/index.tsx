@@ -3,8 +3,8 @@ import { isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { VNode } from 'preact';
 
-import { FileField, RendererProps } from '../../../block';
-import { ImageField } from '../ImageField';
+import { FileField, RendererProps } from '../../../block.js';
+import { ImageField } from '../ImageField/index.js';
 import styles from './index.module.css';
 
 /**

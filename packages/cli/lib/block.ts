@@ -18,11 +18,11 @@ import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import FormData from 'form-data';
 import { PackageJson } from 'type-fest';
-import { Stats, webpack } from 'webpack';
+import webpack, { Stats } from 'webpack';
 
-import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
-import { loadWebpackConfig } from './loadWebpackConfig';
-import { processCss } from './processCss';
+import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
+import { loadWebpackConfig } from './loadWebpackConfig.js';
+import { processCss } from './processCss.js';
 
 /**
  * Builds a block using Webpack.
@@ -64,7 +64,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
   const explorer = cosmiconfig('appsemble', { stopDir: dir });
   const found = await explorer.search(dir);
   if (!found) {
-    throw new AppsembleError('No Appsemble configuration file found.');
+    throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
   }
   const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);

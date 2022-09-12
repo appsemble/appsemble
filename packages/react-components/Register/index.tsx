@@ -9,9 +9,9 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
-} from '..';
-import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator';
-import { messages } from './messages';
+} from '../index.js';
+import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
+import { messages } from './messages.js';
 
 export interface RegistrationFormValues {
   email: string;

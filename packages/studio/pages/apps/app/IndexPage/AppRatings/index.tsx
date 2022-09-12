@@ -3,14 +3,14 @@ import { Rating } from '@appsemble/types';
 import { ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { RateApp } from '../../../../../components/RateApp';
-import { StarRating } from '../../../../../components/StarRating';
-import { useUser } from '../../../../../components/UserProvider';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { RateApp } from '../../../../../components/RateApp/index.js';
+import { StarRating } from '../../../../../components/StarRating/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { useApp } from '../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function AppRatings(): ReactElement {
   const { app, setApp } = useApp();

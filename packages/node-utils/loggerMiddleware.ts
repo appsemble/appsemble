@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { ParameterizedContext } from 'koa';
 import * as compose from 'koa-compose';
 
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 interface RangeMap<T> {
   [key: number]: T;

@@ -1,15 +1,14 @@
-const { readFileSync } = require('fs');
-const { join } = require('path');
+import { readFile } from 'fs/promises';
 
-const dictionary = require('dictionary-en');
-const retextEnglish = require('retext-english');
-const retextQuotes = require('retext-quotes');
-const retextRepeatedWords = require('retext-repeated-words');
-const retextSpell = require('retext-spell');
-const retextSyntaxURLs = require('retext-syntax-urls');
-const unified = require('unified');
+import dictionary from 'dictionary-en';
+import retextEnglish from 'retext-english';
+import retextQuotes from 'retext-quotes';
+import retextRepeatedWords from 'retext-repeated-words';
+import retextSpell from 'retext-spell';
+import retextSyntaxURLs from 'retext-syntax-urls';
+import { unified } from 'unified';
 
-module.exports = {
+export default {
   plugins: [
     'remark-frontmatter',
     'remark-gfm',
@@ -31,7 +30,7 @@ module.exports = {
         .use(retextSyntaxURLs)
         .use(retextSpell, {
           dictionary,
-          personal: readFileSync(join(__dirname, 'config/retext/personal.dic')),
+          personal: await readFile(new URL('config/retext/personal.dic', import.meta.url)),
         })
         .use(retextRepeatedWords)
         .use(retextQuotes),

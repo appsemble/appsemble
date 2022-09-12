@@ -12,7 +12,7 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, useParams } from 'react-router-dom';
 
-import { getDefaultPageName } from '../../utils/getDefaultPageName';
+import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import {
   apiUrl,
   appId,
@@ -20,14 +20,14 @@ import {
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
-} from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { Main } from '../Main';
-import { OpenIDLogin } from '../OpenIDLogin';
-import { TitleBar } from '../TitleBar';
-import { useUser } from '../UserProvider';
+} from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { Main } from '../Main/index.js';
+import { OpenIDLogin } from '../OpenIDLogin/index.js';
+import { TitleBar } from '../TitleBar/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function Login(): ReactElement {
   useMeta(messages.login);

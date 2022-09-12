@@ -1,5 +1,5 @@
-import { RequestActionDefinition } from './RequestActionDefinition';
-import { extendJSONSchema } from './utils';
+import { RequestActionDefinition } from './RequestActionDefinition.js';
+import { extendJSONSchema } from './utils.js';
 
 export const ResourceGetActionDefinition = extendJSONSchema(
   RequestActionDefinition,

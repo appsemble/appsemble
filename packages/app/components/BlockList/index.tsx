@@ -6,11 +6,11 @@ import { checkAppRole } from '@appsemble/utils';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types';
-import { ActionCreators } from '../../utils/actions';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { Block } from '../Block';
-import { useUser } from '../UserProvider';
+import { ShowDialogAction, ShowShareDialog } from '../../types.js';
+import { ActionCreators } from '../../utils/actions/index.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { Block } from '../Block/index.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface BlockListProps {
   blocks: BlockDefinition[];

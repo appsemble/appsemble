@@ -3,7 +3,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { MouseEventHandler, ReactElement, ReactNode } from 'react';
 
-import { Icon } from '..';
+import { Icon } from '../index.js';
 import styles from './index.module.css';
 
 interface MenuButtonItemProps {

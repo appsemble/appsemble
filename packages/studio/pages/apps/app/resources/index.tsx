@@ -2,9 +2,9 @@ import { MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
-import { ResourceRoutes } from './resource';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
+import { ResourceRoutes } from './resource/index.js';
 
 export function ResourcesRoutes(): ReactElement {
   const { path, url } = useRouteMatch();

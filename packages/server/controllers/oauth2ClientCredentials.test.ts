@@ -1,15 +1,13 @@
 import { OAuth2ClientCredentials as OAuth2ClientCredentialsType } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
-import { OAuth2ClientCredentials, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { OAuth2ClientCredentials, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
-let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('oauth2clientcredentials');
@@ -21,13 +19,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
-  clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+  import.meta.jest.useFakeTimers({ now: new Date('2000-01-01T00:00:00Z') });
   user = await createTestUser();
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('registerOAuth2ClientCredentials', () => {

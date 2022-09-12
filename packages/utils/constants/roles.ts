@@ -1,4 +1,4 @@
-import { Permission } from './Permission';
+import { Permission } from './Permission.js';
 
 const member = [Permission.ViewApps, Permission.ViewMembers];
 const Translator = [...member, Permission.EditAppMessages];

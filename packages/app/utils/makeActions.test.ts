@@ -1,6 +1,6 @@
 import { identity, remap } from '@appsemble/utils';
 
-import { makeActions, MakeActionsParams } from './makeActions';
+import { makeActions, MakeActionsParams } from './makeActions.js';
 
 describe('makeActions', () => {
   let testDefaults: Omit<MakeActionsParams, 'actions'>;
@@ -49,7 +49,7 @@ describe('makeActions', () => {
   });
 
   it('should set proper metadata on the created actions', () => {
-    const dialogOk = jest.fn().mockImplementation(identity);
+    const dialogOk = import.meta.jest.fn().mockImplementation(identity);
     const actions = makeActions({
       ...testDefaults,
       actions: { onClick: {} },
@@ -112,7 +112,7 @@ describe('makeActions', () => {
   });
 
   it('should wait until the page is ready before executing actions', async () => {
-    const dialogOk = jest.fn().mockReturnValue('dialog.ok return value');
+    const dialogOk = import.meta.jest.fn().mockReturnValue('dialog.ok return value');
     const actions = makeActions({
       ...testDefaults,
       actions: { onClick: {} },
@@ -139,8 +139,8 @@ describe('makeActions', () => {
 
   it('should call onSuccess on success if it’s defined', async () => {
     pageReady();
-    const dialogOk = jest.fn().mockReturnValue('dialog.ok return value');
-    const dialogError = jest.fn().mockReturnValue('dialog.error return value');
+    const dialogOk = import.meta.jest.fn().mockReturnValue('dialog.ok return value');
+    const dialogError = import.meta.jest.fn().mockReturnValue('dialog.error return value');
     const actions = makeActions({
       ...testDefaults,
       actions: { onClick: {} },
@@ -154,8 +154,8 @@ describe('makeActions', () => {
 
   it('should call onError on error if it’s defined', async () => {
     pageReady();
-    const dialogOk = jest.fn().mockRejectedValue('dialog.ok rejected value');
-    const dialogError = jest.fn().mockReturnValue('dialog.error return value');
+    const dialogOk = import.meta.jest.fn().mockRejectedValue('dialog.ok rejected value');
+    const dialogError = import.meta.jest.fn().mockReturnValue('dialog.error return value');
     const actions = makeActions({
       ...testDefaults,
       actions: { onClick: {} },

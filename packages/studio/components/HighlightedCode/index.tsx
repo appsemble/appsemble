@@ -38,7 +38,7 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
     const aliased = has(languageMap, language) ? languageMap[language] : language;
     if (aliased) {
       Promise.all([
-        import('monaco-editor/esm/vs/editor/editor.api'),
+        import('monaco-editor/esm/vs/editor/editor.api.js'),
         import(`monaco-editor/esm/vs/basic-languages/${aliased}/${aliased}.contribution`),
       ]).then(([{ editor }]) => {
         editor.colorizeElement(ref.current, { mimeType: aliased, theme: 'vs' });

@@ -1,4 +1,4 @@
-import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema';
+import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema.js';
 
 describe('generateDataFromSchema', () => {
   it('should not crash if no schema is defined', () => {
@@ -204,7 +204,7 @@ describe('combineSchemas', () => {
 
 describe('iterJSONSchema', () => {
   it('should handle properties', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'object',
       properties: {
@@ -220,7 +220,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle additionalProperties', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'object',
       additionalProperties: { description: 'foo' },
@@ -234,7 +234,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle an items object', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       items: { description: 'foo' },
@@ -248,7 +248,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle an items array', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       items: [{ description: 'foo' }, { description: 'bar' }],
@@ -263,7 +263,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle additionalItems', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       additionalItems: { description: 'foo' },
@@ -277,7 +277,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle anyOf', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       anyOf: [{ description: 'foo' }],
@@ -291,7 +291,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle oneOf', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       oneOf: [{ description: 'foo' }],
@@ -305,7 +305,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle allOf', () => {
-    const onSchema = jest.fn();
+    const onSchema = import.meta.jest.fn();
     const schema = {
       type: 'array',
       allOf: [{ description: 'foo' }],

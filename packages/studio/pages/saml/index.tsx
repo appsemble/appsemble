@@ -2,9 +2,9 @@ import { SAMLStatus } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { ConfigurationError } from './ConfigurationError';
-import { EmailConflict } from './EmailConflict';
-import { messages } from './messages';
+import { ConfigurationError } from './ConfigurationError/index.js';
+import { EmailConflict } from './EmailConflict/index.js';
+import { messages } from './messages.js';
 
 export function SAMLResponsePage(): ReactElement {
   const { code } = useParams<{ code: SAMLStatus }>();

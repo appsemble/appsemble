@@ -1,9 +1,9 @@
-import { BaseJSONSchema } from './BaseJSONSchema';
-import { JSONSchemaArray } from './JSONSchemaArray';
-import { JSONSchemaInteger } from './JSONSchemaInteger';
-import { JSONSchemaObject } from './JSONSchemaObject';
-import { JSONSchemaString } from './JSONSchemaString';
-import { extendJSONSchema } from './utils';
+import { BaseJSONSchema } from './BaseJSONSchema.js';
+import { JSONSchemaArray } from './JSONSchemaArray.js';
+import { JSONSchemaInteger } from './JSONSchemaInteger.js';
+import { JSONSchemaObject } from './JSONSchemaObject.js';
+import { JSONSchemaString } from './JSONSchemaString.js';
+import { extendJSONSchema } from './utils.js';
 
 export const JSONSchemaMultiType = extendJSONSchema(BaseJSONSchema, {
   type: 'object',

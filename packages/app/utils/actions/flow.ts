@@ -1,4 +1,4 @@
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 // See Page.jsx
 export const next: ActionCreator<'flow.next'> = ({ flowActions }) => [

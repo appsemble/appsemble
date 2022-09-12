@@ -2,8 +2,8 @@ import { BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
 import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
 
-import { useClickOutside, useToggle } from '..';
-import { useSideMenuState } from '../SideMenu';
+import { useClickOutside, useToggle } from '../index.js';
+import { useSideMenuState } from '../SideMenu/index.js';
 import styles from './index.module.css';
 
 interface NavbarDropdownProps {

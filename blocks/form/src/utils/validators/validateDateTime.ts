@@ -1,7 +1,7 @@
 import { Remapper } from '@appsemble/sdk';
 
-import { DateField, DateTimeField, DateTimeRequirement } from '../../../block';
-import { isValidDate } from '../requirements';
+import { DateField, DateTimeField, DateTimeRequirement } from '../../../block.js';
+import { isValidDate } from '../requirements.js';
 
 /**
  * Validates a date time based on a set of requirements.

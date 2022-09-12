@@ -10,16 +10,16 @@ import {
   Member,
   Organization,
   User,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { getAppsembleMessages } from '../utils/getAppsembleMessages';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { getAppsembleMessages } from '../utils/getAppsembleMessages.js';
 import {
   authorizeClientCredentials,
   authorizeStudio,
   createTestUser,
-} from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
 let user: User;

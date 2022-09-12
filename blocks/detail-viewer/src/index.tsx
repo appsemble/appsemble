@@ -2,8 +2,8 @@ import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Field } from './components/Field';
-import { FieldGroup } from './components/FieldGroup';
+import { Field } from './components/Field/index.js';
+import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
 
 bootstrap(({ data: blockData, events, parameters, ready }) => {
@@ -27,7 +27,7 @@ bootstrap(({ data: blockData, events, parameters, ready }) => {
     <div className={`${styles.root} px-2 py-2 is-flex`}>
       {parameters.fields.map((field, index) => {
         if ('fields' in field) {
-          return <FieldGroup data={data} field={field} />;
+          return <FieldGroup data={data} field={field} key={field.value || field.label || index} />;
         }
 
         return (

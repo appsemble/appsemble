@@ -1,4 +1,4 @@
-import { xmlToJson } from './xmlToJson';
+import { xmlToJson } from './xmlToJson.js';
 
 /*
  * All test cases are taken from the examples of https://swagger.io/specification/#xmlObject

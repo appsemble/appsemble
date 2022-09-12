@@ -1,5 +1,5 @@
 import { defaultLocale } from '@appsemble/utils';
-import { MDXProps } from 'mdx/types';
+import { MDXProps } from 'mdx/types.js';
 import { ReactElement } from 'react';
 
 import styles from './index.module.css';

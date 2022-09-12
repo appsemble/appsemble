@@ -1,15 +1,15 @@
 import { baseTheme } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import bulma from 'bulma/package.json';
+import bulma from 'bulma/package.json' assert { type: 'json' };
 import Koa from 'koa';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import sass from 'sass';
 
-import { appRouter } from '.';
-import { boomMiddleware } from '../../middleware/boom';
-import { Theme } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { boomMiddleware } from '../../middleware/boom.js';
+import { Theme } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 useTestDatabase('bulmahandler');
 
@@ -27,7 +27,7 @@ beforeAll(async () => {
 });
 
 it('should generate and save cache the Bulma styles', async () => {
-  const spy = jest.spyOn(sass, 'renderSync');
+  const spy = import.meta.jest.spyOn(sass, 'renderSync');
   const themeCreatedPromise = new Promise<void>((resolve) => {
     Theme.afterCreate('afterCreate', () => {
       Theme.removeHook('afterCreate', 'resolveThemeCreated');

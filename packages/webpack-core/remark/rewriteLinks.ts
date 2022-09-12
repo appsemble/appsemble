@@ -1,11 +1,11 @@
 import { relative, resolve } from 'path';
 
-import { Link } from 'mdast';
+import { Link, Root } from 'mdast';
 import { Plugin, Transformer } from 'unified';
-import visit from 'unist-util-visit';
+import { visit } from 'unist-util-visit';
 
-const transformer: Transformer = (ast, vfile) => {
-  visit<Link>(ast, { type: 'link' }, (node) => {
+const transformer: Transformer<Root> = (ast, vfile) => {
+  visit(ast, 'link', (node: Link) => {
     if (/^(https?:\/)?\//.test(node.url)) {
       // External URLs or absolute URLs to Appsemble Studio
       return;
@@ -35,4 +35,4 @@ const transformer: Transformer = (ast, vfile) => {
 /**
  * This remark plugin rewrites links to they can be resolved at runtime by Appsemble Studio.
  */
-export const remarkRewriteLinks: Plugin = () => transformer;
+export const remarkRewriteLinks: Plugin<[], Root> = () => transformer;

@@ -1,4 +1,5 @@
-import { Role, roles } from '@appsemble/utils';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type Role, roles } from '@appsemble/utils';
 import {
   AllowNull,
   BelongsTo,
@@ -14,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Organization, User } from '.';
+import { Organization, User } from './index.js';
 
 @Table({ tableName: 'OrganizationInvite' })
 export class OrganizationInvite extends Model {
@@ -38,7 +39,7 @@ export class OrganizationInvite extends Model {
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @PrimaryKey
   @ForeignKey(() => Organization)
@@ -47,7 +48,7 @@ export class OrganizationInvite extends Model {
   OrganizationId: string;
 
   @BelongsTo(() => Organization)
-  organization: Organization;
+  organization: Awaited<Organization>;
 
   @CreatedAt
   created: Date;

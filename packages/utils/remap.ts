@@ -1,14 +1,14 @@
 import { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import { createEvent, EventAttributes } from 'ics';
+import ics, { EventAttributes } from 'ics';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
-import { has } from './has';
-import { getDuration, processLocation } from './ics';
-import { mapValues } from './mapValues';
-import { stripNullValues } from './miscellaneous';
+import { has } from './has.js';
+import { getDuration, processLocation } from './ics.js';
+import { mapValues } from './mapValues.js';
+import { stripNullValues } from './miscellaneous.js';
 
 /**
  * Stub the console types, since we don’t want to use dom or node types here.
@@ -235,7 +235,7 @@ const mapperImplementations: MapperImplementations = {
       };
     }
 
-    const { error, value } = createEvent(event as EventAttributes);
+    const { error, value } = ics.createEvent(event as EventAttributes);
     if (error) {
       throw error;
     }

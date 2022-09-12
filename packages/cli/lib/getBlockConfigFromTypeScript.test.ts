@@ -1,13 +1,14 @@
 import { readdirSync } from 'fs';
-import { join, resolve } from 'path';
+import process from 'process';
+import { fileURLToPath } from 'url';
 
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import ts from 'typescript';
 
-import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript';
+import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 
 beforeEach(() => {
-  jest.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
+  import.meta.jest.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
 });
 
 describe('getBlockConfigFromTypeScript', () => {
@@ -54,7 +55,7 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   it('should not use TypeScript if all metadata is present in the original config', () => {
-    jest.spyOn(ts, 'createProgram');
+    import.meta.jest.spyOn(ts, 'createProgram');
     const input = {
       actions: {},
       events: { emit: { foo: {} }, listen: { bar: {} } },
@@ -262,10 +263,10 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   describe('official blocks', () => {
-    const blocksDir = resolve(__dirname, '..', '..', '..', 'blocks');
+    const blocksDir = new URL('../../../blocks/', import.meta.url);
 
     it.each(readdirSync(blocksDir))('%s', (name) => {
-      const dir = join(blocksDir, name);
+      const dir = fileURLToPath(new URL(name, blocksDir));
 
       const result = getBlockConfigFromTypeScript({
         name,

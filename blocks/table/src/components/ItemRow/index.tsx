@@ -1,8 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import { VNode } from 'preact';
 
-import { RepeatedField } from '../../../block';
-import { ItemCell } from '../ItemCell';
+import { RepeatedField } from '../../../block.js';
+import { ItemCell } from '../ItemCell/index.js';
 
 interface ItemRowProps {
   /**

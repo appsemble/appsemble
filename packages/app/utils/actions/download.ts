@@ -1,6 +1,6 @@
 import { downloadBlob } from '@appsemble/web-utils';
 
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const download: ActionCreator<'download'> = ({ definition: { filename } }) => [
   (data) => {

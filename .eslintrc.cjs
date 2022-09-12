@@ -4,16 +4,9 @@ module.exports = {
   root: true,
   extends: ['remcohaszing', 'remcohaszing/jest'],
   settings: {
-    'import/resolver': {
-      typescript: {
-        alwaysTryTypes: true,
-        project: ['./tsconfig.json'],
-      },
-    },
     node: {
       convertPath: {
         '**/*.ts': ['(.+)\\.ts$', '$1.js'],
-        '**/*.tsx': ['(.+)\\.tsx$', '$1.js'],
       },
     },
   },
@@ -23,6 +16,8 @@ module.exports = {
       'error',
       { definedTags: [...BasicAnnotationsReader.textTags, ...BasicAnnotationsReader.jsonTags] },
     ],
+
+    'n/prefer-global/process': 'off',
 
     'unicorn/consistent-destructuring': 'off',
     'unicorn/no-unsafe-regex': 'off',
@@ -62,7 +57,7 @@ module.exports = {
       rules: {
         'import/no-extraneous-dependencies': 'off',
 
-        'node/no-extraneous-import': 'off',
+        'n/no-extraneous-import': 'off',
       },
     },
     {
@@ -72,7 +67,7 @@ module.exports = {
 
         'import/no-extraneous-dependencies': 'off',
 
-        'node/no-extraneous-import': 'off',
+        'n/no-extraneous-import': 'off',
       },
     },
   ],

@@ -1,7 +1,7 @@
 import { AppDefinition, AppsembleMessages, BlockDefinition } from '@appsemble/types';
 
-import { iterApp, Prefix } from '.';
-import { normalize } from './normalize';
+import { iterApp, Prefix } from './index.js';
+import { normalize } from './normalize.js';
 
 /**
  * Recursively find `string.format` remapper message IDs.

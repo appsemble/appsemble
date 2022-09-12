@@ -1,4 +1,4 @@
-import { getDefaultPageName } from './getDefaultPageName';
+import { getDefaultPageName } from './getDefaultPageName.js';
 
 describe('getDefaultPageName', () => {
   it('should return the default page if not logged in', () => {

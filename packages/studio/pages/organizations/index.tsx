@@ -2,9 +2,9 @@ import { MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
-import { OrganizationRoutes } from './organization';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
+import { OrganizationRoutes } from './organization/index.js';
 
 /**
  * Render routes related to apps.

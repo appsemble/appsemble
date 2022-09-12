@@ -24,11 +24,11 @@ import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
-import { ResendEmailButton } from '../../../components/ResendEmailButton';
-import { useUser } from '../../../components/UserProvider';
-import { supportedLanguages } from '../../../utils/constants';
+import { ResendEmailButton } from '../../../components/ResendEmailButton/index.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { supportedLanguages } from '../../../utils/constants.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function UserPage(): ReactElement {
   useMeta(messages.title);

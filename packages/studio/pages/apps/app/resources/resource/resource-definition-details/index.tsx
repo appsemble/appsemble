@@ -4,13 +4,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { stringify } from 'yaml';
 
-import { useApp } from '../../..';
-import { CodeBlock } from '../../../../../../components/CodeBlock';
-import { Collapsible } from '../../../../../../components/Collapsible';
-import { MarkdownContent } from '../../../../../../components/MarkdownContent';
-import { Schema } from '../../../../../../components/Schema';
-import { Endpoint } from './Endpoint';
-import { messages } from './messages';
+import { CodeBlock } from '../../../../../../components/CodeBlock/index.js';
+import { Collapsible } from '../../../../../../components/Collapsible/index.js';
+import { MarkdownContent } from '../../../../../../components/MarkdownContent/index.js';
+import { Schema } from '../../../../../../components/Schema/index.js';
+import { useApp } from '../../../index.js';
+import { Endpoint } from './Endpoint/index.js';
+import { messages } from './messages.js';
 
 /**
  * Render the page for resource definition details.

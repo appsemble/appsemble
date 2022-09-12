@@ -5,7 +5,7 @@ import type {
   App as AppType,
   AppVisibility,
 } from '@appsemble/types';
-import { omit } from 'lodash';
+import { omit } from 'lodash-es';
 import {
   AllowNull,
   AutoIncrement,
@@ -25,6 +25,7 @@ import {
 } from 'sequelize-typescript';
 import { stringify } from 'yaml';
 
+import { resolveIconUrl } from '../utils/model.js';
 import {
   AppBlockStyle,
   AppMember,
@@ -39,8 +40,7 @@ import {
   Organization,
   Resource,
   Team,
-} from '.';
-import { resolveIconUrl } from '../utils/model';
+} from './index.js';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {
@@ -172,7 +172,7 @@ export class App extends Model {
   AppSamlSecrets: AppSamlSecret[];
 
   @BelongsTo(() => Organization)
-  Organization: Organization;
+  Organization: Awaited<Organization>;
 
   @HasMany(() => AppSubscription)
   AppSubscriptions: AppSubscription[];
@@ -218,8 +218,8 @@ export class App extends Model {
 
     const result: AppType = {
       id: this.id,
-      $created: this.created.toISOString(),
-      $updated: this.updated.toISOString(),
+      $created: this.created?.toISOString(),
+      $updated: this.updated?.toISOString(),
       emailName: this.emailName,
       domain: this.domain || null,
       googleAnalyticsID: this.googleAnalyticsID,

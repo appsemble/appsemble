@@ -13,12 +13,12 @@ import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Member } from '..';
-import { useApp } from '../..';
-import { useUser } from '../../../../../components/UserProvider';
-import { AnnotationsTable } from '../../teams/team/AnnotationsTable';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { useApp } from '../../index.js';
+import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
+import { Member } from '../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface MemberRowProperties {
   member: Member;

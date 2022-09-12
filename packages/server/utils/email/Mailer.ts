@@ -1,18 +1,18 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, has } from '@appsemble/utils';
-import { ParsedMailbox, parseOneAddress } from 'email-addresses';
-import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
+import { defaultLocale, has, IntlMessageFormat } from '@appsemble/utils';
+import addrs, { ParsedMailbox } from 'email-addresses';
+import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
 import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
 import { Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
-import { App, AppMessages } from '../../models';
-import { argv } from '../argv';
-import { decrypt } from '../crypto';
-import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages';
-import { readAsset } from '../readAsset';
-import { renderEmail } from './renderEmail';
+import { App, AppMessages } from '../../models/index.js';
+import { argv } from '../argv.js';
+import { decrypt } from '../crypto.js';
+import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages.js';
+import { readAsset } from '../readAsset.js';
+import { renderEmail } from './renderEmail.js';
 
 const supportedLanguages = getSupportedLanguages();
 export interface Recipient {
@@ -290,7 +290,7 @@ export class Mailer {
     if (!transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
-    const parsed = parseOneAddress(argv.smtpFrom) as ParsedMailbox;
+    const parsed = addrs.parseOneAddress(argv.smtpFrom) as ParsedMailbox;
     const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
 
     const loggingMessage = ['Sending email:', `To: ${to}`];

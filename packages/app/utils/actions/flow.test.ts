@@ -1,15 +1,15 @@
-import { FlowActions } from '../../types';
-import { createTestAction } from '../makeActions';
+import { FlowActions } from '../../types.js';
+import { createTestAction } from '../makeActions.js';
 
 let flowActions: FlowActions;
 
 beforeEach(() => {
   flowActions = {
-    back: jest.fn().mockReturnValue({ value: 'back value' }),
-    cancel: jest.fn().mockReturnValue({ value: 'cancel value' }),
-    finish: jest.fn().mockReturnValue({ value: 'finish value' }),
-    next: jest.fn().mockReturnValue({ value: 'next value' }),
-    to: jest.fn().mockReturnValue({ value: 'to value' }),
+    back: import.meta.jest.fn().mockReturnValue({ value: 'back value' }),
+    cancel: import.meta.jest.fn().mockReturnValue({ value: 'cancel value' }),
+    finish: import.meta.jest.fn().mockReturnValue({ value: 'finish value' }),
+    next: import.meta.jest.fn().mockReturnValue({ value: 'next value' }),
+    to: import.meta.jest.fn().mockReturnValue({ value: 'to value' }),
   };
 });
 

@@ -1,4 +1,4 @@
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const event: ActionCreator<'event'> = ({
   definition: { event: eventName, waitFor },

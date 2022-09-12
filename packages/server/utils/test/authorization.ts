@@ -6,8 +6,8 @@ import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models';
-import { createJWTResponse } from '../createJWTResponse';
+import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
+import { createJWTResponse } from '../createJWTResponse.js';
 
 let testUser: User;
 

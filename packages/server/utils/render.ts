@@ -1,10 +1,9 @@
 import { createHash } from 'crypto';
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
 
 import { compareStrings } from '@appsemble/utils';
 import { Context } from 'koa';
-import { render as renderTemplate } from 'mustache';
+import mustache from 'mustache';
 
 /**
  * Render settings as an HTML script tag.
@@ -47,10 +46,14 @@ export async function render(
   filename: string,
   data: Record<string, unknown>,
 ): Promise<void> {
-  const template = await (process.env.NODE_ENV === 'production'
-    ? readFile(resolve(__dirname, '..', '..', '..', 'dist', filename), 'utf8')
-    : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
-  ctx.body = renderTemplate(template, data);
+  if (process.env.NODE_ENV === 'test') {
+    ctx.body = JSON.stringify({ filename, data });
+  } else {
+    const template = await (process.env.NODE_ENV === 'production'
+      ? readFile(new URL(`../../../dist/${filename}`, import.meta.url), 'utf8')
+      : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
+    ctx.body = mustache.render(template, data);
+  }
   ctx.type = 'html';
 }
 

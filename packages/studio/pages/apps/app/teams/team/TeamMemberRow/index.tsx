@@ -3,8 +3,8 @@ import { TeamRole } from '@appsemble/utils';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { TeamMember } from '../../../../../../types';
-import { messages } from './messages';
+import { TeamMember } from '../../../../../../types.js';
+import { messages } from './messages.js';
 
 interface TeamMemberRowProps {
   member: TeamMember;

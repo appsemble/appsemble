@@ -11,9 +11,9 @@ import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { apiUrl, appId } from '../../../utils/settings';
-import { useUser } from '../../UserProvider';
-import { messages } from './messages';
+import { apiUrl, appId } from '../../../utils/settings.js';
+import { useUser } from '../../UserProvider/index.js';
+import { messages } from './messages.js';
 
 export function TeamInvitePrompt(): ReactElement {
   const query = useQuery();

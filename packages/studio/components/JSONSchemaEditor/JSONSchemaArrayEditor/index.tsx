@@ -5,12 +5,12 @@ import { OpenAPIV3 } from 'openapi-types';
 import { MouseEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Collapsible } from '../../Collapsible';
-import { JSONSchemaLabel } from '../JSONSchemaLabel';
-import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor';
-import { CommonJSONSchemaEditorProps } from '../types';
+import { Collapsible } from '../../Collapsible/index.js';
+import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
+import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
+import { CommonJSONSchemaEditorProps } from '../types.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function JSONSchemaArrayEditor({
   disabled,

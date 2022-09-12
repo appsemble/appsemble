@@ -1,4 +1,5 @@
-import { randomBytes } from 'crypto';
+// eslint-disable-next-line unicorn/import-style
+import crypto from 'crypto';
 
 import {
   createThemeURL,
@@ -16,13 +17,13 @@ import {
   AppSamlSecret,
   BlockAsset,
   BlockVersion,
-} from '../../models';
-import { getApp, getAppUrl } from '../../utils/app';
-import { argv } from '../../utils/argv';
-import { organizationBlocklist } from '../../utils/organizationBlocklist';
-import { createGtagCode, createSettings, makeCSP, render } from '../../utils/render';
-import { getSentryClientSettings } from '../../utils/sentry';
-import { bulmaURL, faURL } from '../../utils/styleURL';
+} from '../../models/index.js';
+import { getApp, getAppUrl } from '../../utils/app.js';
+import { argv } from '../../utils/argv.js';
+import { organizationBlocklist } from '../../utils/organizationBlocklist.js';
+import { createGtagCode, createSettings, makeCSP, render } from '../../utils/render.js';
+import { getSentryClientSettings } from '../../utils/sentry.js';
+import { bulmaURL, faURL } from '../../utils/styleURL.js';
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
@@ -110,7 +111,7 @@ export async function indexHandler(ctx: Context): Promise<void> {
       }),
     },
   });
-  const nonce = randomBytes(16).toString('base64');
+  const nonce = crypto.randomBytes(16).toString('base64');
   const { reportUri, sentryDsn, sentryEnvironment, sentryOrigin } = getSentryClientSettings(
     hostname,
     app.sentryDsn,

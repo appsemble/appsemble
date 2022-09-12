@@ -1,5 +1,5 @@
 import { rethrow } from '@appsemble/utils';
 
-import { ActionCreator } from '.';
+import { ActionCreator } from './index.js';
 
 export const throwAction: ActionCreator<'throw'> = () => [rethrow];

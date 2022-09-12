@@ -1,8 +1,8 @@
 import { AppsembleError } from '@appsemble/node-utils';
 
-import { getDB, Meta } from '../models';
-import { migrate, Migration } from './migrate';
-import { useTestDatabase } from './test/testSchema';
+import { getDB, Meta } from '../models/index.js';
+import { migrate, Migration } from './migrate.js';
+import { useTestDatabase } from './test/testSchema.js';
 
 let m000: Migration;
 let m001: Migration;
@@ -15,12 +15,12 @@ let migrations: Migration[];
 useTestDatabase('migrate');
 
 beforeEach(() => {
-  m000 = { key: '0.0.0', up: jest.fn(), down: jest.fn() };
-  m001 = { key: '0.0.1', up: jest.fn(), down: jest.fn() };
-  m002 = { key: '0.0.2', up: jest.fn(), down: jest.fn() };
-  m003 = { key: '0.0.3', up: jest.fn(), down: jest.fn() };
-  m010 = { key: '0.1.0', up: jest.fn(), down: jest.fn() };
-  m100 = { key: '1.0.0', up: jest.fn(), down: jest.fn() };
+  m000 = { key: '0.0.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m001 = { key: '0.0.1', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m002 = { key: '0.0.2', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m003 = { key: '0.0.3', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m010 = { key: '0.1.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m100 = { key: '1.0.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
   migrations = [m000, m001, m002, m003, m010, m100];
 });
 
@@ -34,7 +34,7 @@ it('should fail if multiple meta entries are found', async () => {
 });
 
 it('should sync the database if no meta version is present', async () => {
-  jest.spyOn(getDB(), 'sync');
+  import.meta.jest.spyOn(getDB(), 'sync');
   await migrate('1.0.0', migrations);
   expect(getDB().sync).toHaveBeenCalledWith();
   const meta = await Meta.findAll({ raw: true });

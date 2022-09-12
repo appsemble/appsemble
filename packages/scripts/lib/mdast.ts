@@ -9,7 +9,7 @@ import {
   StaticPhrasingContent,
   Text,
 } from 'mdast';
-import toMarkdown from 'mdast-util-to-markdown';
+import { toMarkdown } from 'mdast-util-to-markdown';
 import prettier from 'prettier';
 
 /**

@@ -2,11 +2,11 @@ import { MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 
-import { ActionPage } from './action';
-import { AppPage } from './app';
-import { IndexPage } from './IndexPage';
-import { messages } from './messages';
-import { RemapperPage } from './remapper';
+import { ActionPage } from './action/index.js';
+import { AppPage } from './app/index.js';
+import { IndexPage } from './IndexPage/index.js';
+import { messages } from './messages.js';
+import { RemapperPage } from './remapper/index.js';
 
 export function ReferenceRoutes(): ReactElement {
   const { path, url } = useRouteMatch();

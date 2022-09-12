@@ -1,4 +1,4 @@
-import { extractAppMessages, findMessageIds } from './appMessages';
+import { extractAppMessages, findMessageIds } from './appMessages.js';
 
 describe('findMessageIds', () => {
   it('should ignore null', () => {
@@ -418,7 +418,7 @@ describe('extractAppMessages', () => {
   });
 
   it('should append any messages returned by onBlock', () => {
-    const onBlock = jest.fn().mockReturnValue({ foo: 'bar' });
+    const onBlock = import.meta.jest.fn().mockReturnValue({ foo: 'bar' });
     const result = extractAppMessages(
       {
         defaultPage: '',

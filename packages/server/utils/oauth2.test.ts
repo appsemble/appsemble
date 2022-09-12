@@ -1,9 +1,9 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-import { getAccessToken, getUserInfo, hasScope } from './oauth2';
+import { getAccessToken, getUserInfo, hasScope } from './oauth2.js';
 
 const mock = new MockAdapter(axios);
 
@@ -58,7 +58,7 @@ describe('getUserInfo', () => {
   it('should read information from the id token', async () => {
     const userInfo = await getUserInfo(
       '',
-      sign(
+      jwt.sign(
         {
           email: 'me@example.com',
           email_verified: true,
@@ -85,8 +85,8 @@ describe('getUserInfo', () => {
 
   it('should fall back to the access token', async () => {
     const userInfo = await getUserInfo(
-      sign({ sub: '1337' }, 'secret'),
-      sign(
+      jwt.sign({ sub: '1337' }, 'secret'),
+      jwt.sign(
         {
           email: 'user@example.com',
           name: 'User',
@@ -123,7 +123,7 @@ describe('getUserInfo', () => {
         zoneinfo: undefined,
       },
     ]);
-    const userInfo = await getUserInfo('', sign({ sub: '1337' }, 'secret'), '/userinfo');
+    const userInfo = await getUserInfo('', jwt.sign({ sub: '1337' }, 'secret'), '/userinfo');
     expect(userInfo).toStrictEqual({
       email: 'user@example.com',
       email_verified: false,

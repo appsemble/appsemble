@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, TeamMember, User } from '.';
+import { App, TeamMember, User } from './index.js';
 
 @Table({ tableName: 'Team' })
 export class Team extends Model {
@@ -35,7 +35,7 @@ export class Team extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @BelongsToMany(() => User, () => TeamMember)
   Users: User[];

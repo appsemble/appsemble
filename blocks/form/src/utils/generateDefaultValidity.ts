@@ -1,8 +1,8 @@
 import { Remapper, Utils } from '@appsemble/sdk';
 
-import { Field, FieldErrorMap, Values } from '../../block';
-import { isRequired } from './requirements';
-import { validate } from './validators';
+import { Field, FieldErrorMap, Values } from '../../block.js';
+import { isRequired } from './requirements.js';
+import { validate } from './validators/index.js';
 
 export function generateDefaultValidity(
   fields: Field[],

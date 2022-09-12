@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react';
 
-import { InputField, useSimpleForm } from '..';
+import { InputField, useSimpleForm } from '../index.js';
 
 type ValidityMessages = {
   [key in keyof Omit<ValidityState, 'valid'>]?: ReactNode;

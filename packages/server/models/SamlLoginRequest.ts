@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSamlSecret, User } from '.';
+import { AppSamlSecret, User } from './index.js';
 
 @Table({ tableName: 'SamlLoginRequest', paranoid: false })
 export class SamlLoginRequest extends Model {
@@ -74,7 +74,7 @@ export class SamlLoginRequest extends Model {
    * The app’s SAML secret.
    */
   @BelongsTo(() => AppSamlSecret)
-  AppSamlSecret: AppSamlSecret;
+  AppSamlSecret: Awaited<AppSamlSecret>;
 
   /**
    * An optional ID of the user who’s logged in to Appsemble Studio at the time of the request.
@@ -87,7 +87,7 @@ export class SamlLoginRequest extends Model {
    * An optional user who’s logged in to Appsemble Studio at the time of the request.
    */
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @CreatedAt
   created: Date;

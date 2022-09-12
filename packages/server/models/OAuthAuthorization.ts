@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { User } from '.';
+import { User } from './index.js';
 
 @Table({ tableName: 'OAuthAuthorization' })
 export class OAuthAuthorization extends Model {
@@ -71,5 +71,5 @@ export class OAuthAuthorization extends Model {
    * The Appsemble user.
    */
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 }

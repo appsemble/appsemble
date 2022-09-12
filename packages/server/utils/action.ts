@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import { defaultLocale, remap, RemapperContext } from '@appsemble/utils';
 
-import { actions, ServerActionParameters } from './actions';
-import { argv } from './argv';
+import { actions, ServerActionParameters } from './actions/index.js';
+import { argv } from './argv.js';
 
 export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,

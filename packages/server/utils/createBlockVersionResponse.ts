@@ -1,7 +1,7 @@
 import { BlockManifest } from '@appsemble/types';
 import { Context } from 'koa';
 
-import { BlockVersion, Organization } from '../models';
+import { BlockVersion, Organization } from '../models/index.js';
 
 interface ExtendedBlockVersion extends BlockVersion {
   hasIcon?: boolean;

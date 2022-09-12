@@ -4,11 +4,11 @@ import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
-import { generateVAPIDKeys } from 'web-push';
+import webpush from 'web-push';
 import { parseDocument } from 'yaml';
 
-import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models';
-import { checkRole } from '../utils/checkRole';
+import { App, AppBlockStyle, AppMessages, AppSnapshot, Resource } from '../models/index.js';
+import { checkRole } from '../utils/checkRole.js';
 
 export async function getAppTemplates(ctx: Context): Promise<void> {
   const templates = await App.findAll({
@@ -72,7 +72,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
 
   const path = name ? normalize(name) : normalize(template.definition.name);
   try {
-    const keys = generateVAPIDKeys();
+    const keys = webpush.generateVAPIDKeys();
     const result: Partial<App> = {
       definition: {
         ...template.definition,

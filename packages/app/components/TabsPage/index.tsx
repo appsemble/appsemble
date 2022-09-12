@@ -4,9 +4,9 @@ import { normalize } from '@appsemble/utils';
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
 import { Redirect, Route, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { useAppMessages } from '../AppMessagesProvider';
-import { BlockList } from '../BlockList';
-import { TabContent } from './TabContent';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { BlockList } from '../BlockList/index.js';
+import { TabContent } from './TabContent/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   page: TabsPageDefinition;

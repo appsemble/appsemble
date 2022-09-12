@@ -1,5 +1,4 @@
 import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { parse } from 'yaml';
 
@@ -11,14 +10,13 @@ import {
   Member,
   Organization,
   Resource,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let templates: App[];
-let clock: InstalledClock;
 
 useTestDatabase('templates');
 
@@ -39,7 +37,7 @@ beforeEach(async () => {
     name: 'Test Organization 2',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
@@ -101,7 +99,7 @@ beforeEach(async () => {
     UserId: user.id,
     yaml: '',
   });
-  clock.tick(1000);
+  import.meta.jest.advanceTimersByTime(1000);
   t1.AppSnapshots = [
     snapshot1,
     await AppSnapshot.create({
@@ -127,10 +125,6 @@ beforeEach(async () => {
   ];
 
   templates = [t1, t2, t3];
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('getAppTemplates', () => {

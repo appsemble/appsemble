@@ -17,7 +17,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @DefaultScope(() => ({
   attributes: [
@@ -91,5 +91,5 @@ export class AppOAuth2Secret extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 }

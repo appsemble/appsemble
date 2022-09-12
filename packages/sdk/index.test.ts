@@ -1,4 +1,4 @@
-import { bootstrap } from '.';
+import { bootstrap } from './index.js';
 
 let event: CustomEvent;
 let originalCurrentScript: HTMLOrSVGScriptElement;
@@ -7,7 +7,7 @@ beforeEach(() => {
   originalCurrentScript = document.currentScript;
   Object.defineProperty(document, 'currentScript', {
     value: {
-      dispatchEvent: jest.fn((e) => {
+      dispatchEvent: import.meta.jest.fn((e) => {
         event = e;
       }),
     },
@@ -25,7 +25,7 @@ afterEach(() => {
 
 describe('bootstrap', () => {
   it('should dispatch the AppsembleBoostrap event', () => {
-    const fn = jest.fn();
+    const fn = import.meta.jest.fn();
     bootstrap(fn);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');

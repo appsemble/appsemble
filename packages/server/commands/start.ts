@@ -7,15 +7,15 @@ import { captureException } from '@sentry/node';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
-import { migrations } from '../migrations';
-import { initDB } from '../models';
-import pkg from '../package.json';
-import { argv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { configureDNS } from '../utils/dns';
-import { migrate } from '../utils/migrate';
-import { handleDBError } from '../utils/sqlUtils';
-import { databaseBuilder } from './builder/database';
+import { migrations } from '../migrations/index.js';
+import { initDB } from '../models/index.js';
+import pkg from '../package.json' assert { type: 'json' };
+import { argv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { configureDNS } from '../utils/dns/index.js';
+import { migrate } from '../utils/migrate.js';
+import { handleDBError } from '../utils/sqlUtils.js';
+import { databaseBuilder } from './builder/database.js';
 
 interface AdditionalArguments {
   webpackConfigs?: Configuration[];

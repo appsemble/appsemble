@@ -1,6 +1,6 @@
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
 
-import { Checkbox } from '..';
+import { Checkbox } from '../index.js';
 
 interface AsyncCheckboxProps extends ComponentPropsWithoutRef<typeof Checkbox> {
   /**

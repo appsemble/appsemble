@@ -4,8 +4,8 @@ import { AppsembleError } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
-import { argv } from '../argv';
-import * as kubernetes from './kubernetes';
+import { argv } from '../argv.js';
+import * as kubernetes from './kubernetes.js';
 
 /**
  * Get the DNS implementation for the specified app domain strategy.

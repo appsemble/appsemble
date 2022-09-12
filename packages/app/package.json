@@ -20,8 +20,9 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "scripts": {
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/react-components": "0.20.13",
@@ -38,7 +39,7 @@
     "@sentry/browser": "^7.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/events": "^3.0.0",
-    "@types/gtag.js": "^0.0.10",
+    "@types/gtag.js": "^0.0.11",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.0.0",
@@ -48,7 +49,6 @@
     "classnames": "^2.0.0",
     "events": "^3.0.0",
     "idb": "^7.0.0",
-    "intl-messageformat": "^10.0.0",
     "jwt-decode": "^3.0.0",
     "openapi-types": "^12.0.0",
     "react": "^17.0.0",
@@ -56,7 +56,7 @@
     "react-intl": "^6.0.0",
     "react-router-dom": "^5.0.0",
     "type-fest": "^2.0.0",
-    "xast-util-to-xml": "^2.0.0"
+    "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
     "fake-indexeddb": "^4.0.0"

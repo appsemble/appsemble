@@ -10,7 +10,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { User } from '.';
+import { User } from './index.js';
 
 @Table({ tableName: 'OAuth2ClientCredentials', updatedAt: false })
 export class OAuth2ClientCredentials extends Model {
@@ -42,5 +42,5 @@ export class OAuth2ClientCredentials extends Model {
   UserId: string;
 
   @BelongsTo(() => User, { onDelete: 'CASCADE' })
-  User: User;
+  User: Awaited<User>;
 }

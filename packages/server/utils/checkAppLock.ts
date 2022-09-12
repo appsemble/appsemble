@@ -1,7 +1,7 @@
 import { forbidden } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { App } from '../models';
+import { App } from '../models/index.js';
 
 /**
  * Check if the app is currently locked.

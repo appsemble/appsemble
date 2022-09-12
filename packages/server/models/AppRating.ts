@@ -12,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, User } from '.';
+import { App, User } from './index.js';
 
 @Table({ tableName: 'AppRating' })
 export class AppRating extends Model {
@@ -31,7 +31,7 @@ export class AppRating extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @PrimaryKey
   @AllowNull(false)
@@ -41,7 +41,7 @@ export class AppRating extends Model {
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @CreatedAt
   created: Date;

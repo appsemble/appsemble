@@ -5,13 +5,13 @@ import { Fragment, ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { appId, sentryDsn } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useAppMessages } from '../AppMessagesProvider';
-import { BlockMenuItem } from '../MenuProvider';
-import { useUser } from '../UserProvider';
+import { appId, sentryDsn } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { BlockMenuItem } from '../MenuProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface SideNavigationProps {
   pages: PageDefinition[];

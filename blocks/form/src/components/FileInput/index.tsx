@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, InputProps } from '../../../block';
-import { isRequired } from '../../utils/requirements';
-import { FileEntry } from '../FileEntry';
+import { FileField, InputProps } from '../../../block.js';
+import { isRequired } from '../../utils/requirements.js';
+import { FileEntry } from '../FileEntry/index.js';
 import styles from './index.module.css';
 
 type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;

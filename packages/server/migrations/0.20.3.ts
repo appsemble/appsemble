@@ -1,7 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { AppDefinition, TeamsDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
-import { cloneDeep } from 'lodash';
 import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
 import { parseDocument } from 'yaml';
 
@@ -32,8 +31,8 @@ function processAppsAndMessages(
   messagesInput: MessagesQuery[],
   downMigration?: boolean,
 ): { apps: AppQuery[]; messages: MessagesQuery[] } {
-  const apps = cloneDeep(appsInput);
-  const messages = cloneDeep(messagesInput);
+  const apps = structuredClone(appsInput);
+  const messages = structuredClone(messagesInput);
 
   for (const app of apps) {
     const appMessages = messages.filter((m) => m.AppId === app.id);

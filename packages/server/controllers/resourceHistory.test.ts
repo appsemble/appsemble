@@ -1,11 +1,11 @@
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, Organization, Resource, ResourceVersion, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { App, Member, Organization, Resource, ResourceVersion, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let user: User;
 
@@ -47,7 +47,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  jest.useRealTimers();
+  import.meta.jest.useRealTimers();
 });
 
 describe('getResourceHistory', () => {
@@ -112,22 +112,22 @@ describe('getResourceHistory', () => {
   });
 
   it('should return the resource history if history is set to true', async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+    import.meta.jest.useFakeTimers();
+    import.meta.jest.setSystemTime(new Date('2000-01-01T00:00:00Z'));
     const resource = await Resource.create({
       AppId: 1,
       type: 'yesHistory',
       data: { version: 'old' },
     });
-    jest.advanceTimersByTime(1000);
+    import.meta.jest.advanceTimersByTime(1000);
     await ResourceVersion.create({
       UserId: user.id,
       ResourceId: resource.id,
       data: { version: 'new' },
     });
-    jest.advanceTimersByTime(1000);
+    import.meta.jest.advanceTimersByTime(1000);
     await ResourceVersion.create({ ResourceId: resource.id, data: { version: 'newer' } });
-    jest.advanceTimersByTime(1000);
+    import.meta.jest.advanceTimersByTime(1000);
     await resource.update({ EditorId: user.id, data: { version: 'newest' } });
 
     const response = await request.get(`/api/apps/1/resources/yesHistory/${resource.id}/history`);

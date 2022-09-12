@@ -8,7 +8,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { AppSubscription, Resource } from '.';
+import { AppSubscription, Resource } from './index.js';
 
 @Table({ tableName: 'ResourceSubscription' })
 export class ResourceSubscription extends Model {
@@ -27,10 +27,10 @@ export class ResourceSubscription extends Model {
   AppSubscriptionId: number;
 
   @BelongsTo(() => AppSubscription)
-  AppSubscription: AppSubscription;
+  AppSubscription: Awaited<AppSubscription>;
 
   @BelongsTo(() => Resource)
-  Resource: Resource;
+  Resource: Awaited<Resource>;
 
   @CreatedAt
   created: Date;

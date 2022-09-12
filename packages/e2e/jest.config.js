@@ -1,1 +1,4 @@
-module.exports = require('../../config/jest/config')(__dirname);
+/** @type {import('jest').Config} */
+module.exports = {
+  passWithNoTests: true,
+};

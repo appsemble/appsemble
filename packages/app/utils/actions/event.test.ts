@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 describe('event', () => {
   let ee: EventEmitter;
@@ -8,7 +8,7 @@ describe('event', () => {
   beforeEach(() => {
     // eslint-disable-next-line unicorn/prefer-event-target
     ee = new EventEmitter();
-    jest.spyOn(ee, 'once');
+    import.meta.jest.spyOn(ee, 'once');
   });
 
   afterEach(() => {

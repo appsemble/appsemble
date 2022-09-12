@@ -1,4 +1,4 @@
-import { oauth2Redirect, verifyOAuth2LoginRequest } from './oauth2Utils';
+import { oauth2Redirect, verifyOAuth2LoginRequest } from './oauth2Utils.js';
 
 let originalLocation: Location;
 
@@ -7,7 +7,7 @@ beforeEach(() => {
   Object.defineProperty(window, 'location', {
     configurable: true,
     writable: true,
-    value: { assign: jest.fn() },
+    value: { assign: import.meta.jest.fn() },
   });
 });
 

@@ -1,8 +1,8 @@
 import { has } from '@appsemble/utils';
-import readPkgUp from 'read-pkg-up';
+import { readPackageUp } from 'read-pkg-up';
 import { Argv } from 'yargs';
 
-import { BaseArguments, MonoRepoPackageJson } from '../../types';
+import { BaseArguments, MonoRepoPackageJson } from '../../types.js';
 
 interface ConfigGetArguments extends BaseArguments {
   key: string;
@@ -18,9 +18,10 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler({ key }: ConfigGetArguments): Promise<void> {
-  const { packageJson } = await readPkgUp({ normalize: false });
-  if (has(packageJson, 'appsembleServer')) {
+  const { packageJson } = await readPackageUp({ normalize: false });
+  const pkg = packageJson as MonoRepoPackageJson;
+  if (has(pkg, 'appsembleServer')) {
     // eslint-disable-next-line no-console
-    console.log((packageJson as MonoRepoPackageJson).appsembleServer[key]);
+    console.log(pkg.appsembleServer[key]);
   }
 }

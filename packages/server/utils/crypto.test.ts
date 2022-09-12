@@ -1,4 +1,4 @@
-import { decrypt, encrypt } from './crypto';
+import { decrypt, encrypt } from './crypto.js';
 
 describe('crypto', () => {
   it('should be able to encrypt and decrypt a string and return the same result', () => {

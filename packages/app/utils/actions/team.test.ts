@@ -1,8 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { createTestAction } from '../makeActions';
-import { apiUrl } from '../settings';
+import { createTestAction } from '../makeActions.js';
+import { apiUrl } from '../settings.js';
 
 describe('team.join', () => {
   let mock: MockAdapter;
@@ -10,7 +10,7 @@ describe('team.join', () => {
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    updateTeam = jest.fn();
+    updateTeam = import.meta.jest.fn();
   });
 
   it('should join a team and update the state', async () => {

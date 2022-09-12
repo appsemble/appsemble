@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
 
-import { ValuePickerProvider } from '..';
+import { ValuePickerProvider } from '../index.js';
 
 interface ButtonGroupProps extends ComponentProps<typeof ValuePickerProvider> {
   className?: string;

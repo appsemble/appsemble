@@ -20,6 +20,7 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
+  "type": "module",
   "files": [
     "**/*.d.ts",
     "**/*.js",
@@ -27,7 +28,7 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@appsemble/utils": "0.20.13",
@@ -40,9 +41,8 @@
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
     "logform": "^2.0.0",
-    "normalize-path": "^3.0.0",
-    "parse-json": "^5.0.0",
-    "sort-keys": "^4.0.0",
+    "parse-json": "^6.0.0",
+    "sort-keys": "^5.0.0",
     "type-fest": "^2.0.0",
     "winston": "^3.0.0",
     "yaml": "^2.0.0",
@@ -50,11 +50,10 @@
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^9.0.0",
-    "@types/normalize-path": "^3.0.0",
     "@types/parse-json": "^4.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
     "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^5.0.0"
+    "axios-test-instance": "^6.0.0"
   },
   "peerDependencies": {
     "prettier": "^2"

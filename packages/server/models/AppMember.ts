@@ -16,7 +16,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from '.';
+import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from './index.js';
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {
@@ -75,7 +75,7 @@ export class AppMember extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @ForeignKey(() => User)
   @Unique('UniqueAppMemberIndex')
@@ -83,7 +83,7 @@ export class AppMember extends Model {
   UserId: string;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @HasMany(() => AppOAuth2Authorization)
   AppOAuth2Authorizations: AppOAuth2Authorization[];

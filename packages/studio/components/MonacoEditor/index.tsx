@@ -7,11 +7,11 @@ import {
   KeyMod,
   MarkerSeverity,
   Uri,
-} from 'monaco-editor/esm/vs/editor/editor.api';
+} from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 
-import './custom';
-import { Diagnostic } from './Diagnostic';
+import './custom.js';
+import { Diagnostic } from './Diagnostic/index.js';
 import styles from './index.module.css';
 
 editor.setTheme('vs');

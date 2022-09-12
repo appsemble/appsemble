@@ -1,9 +1,8 @@
 import { readdir, readFile } from 'fs/promises';
-import { join, resolve } from 'path';
 
 import { defaultLocale } from '@appsemble/utils';
 
-const translationsDir = resolve(__dirname, '..', '..', '..', 'i18n');
+const translationsDir = new URL('../../../i18n/', import.meta.url);
 
 export async function getSupportedLanguages(): Promise<Set<string>> {
   const files = await readdir(translationsDir);
@@ -30,7 +29,7 @@ export async function getAppsembleMessages(
   if (baseLang && languages.has(baseLanguage)) {
     Object.assign(
       messages,
-      JSON.parse(await readFile(join(translationsDir, `${baseLang}.json`), 'utf8')),
+      JSON.parse(await readFile(new URL(`${baseLang}.json`, translationsDir), 'utf8')),
     );
   }
 
@@ -39,7 +38,7 @@ export async function getAppsembleMessages(
       messages,
       Object.fromEntries(
         Object.entries(
-          JSON.parse(await readFile(join(translationsDir, `${lang}.json`), 'utf8')),
+          JSON.parse(await readFile(new URL(`${lang}.json`, translationsDir), 'utf8')),
         ).filter(([, value]) => Boolean(value)),
       ),
     );
@@ -49,7 +48,7 @@ export async function getAppsembleMessages(
   if (!languages.has(lang) && (!baseLang || !languages.has(baseLang))) {
     Object.assign(
       messages,
-      JSON.parse(await readFile(join(translationsDir, `${defaultLocale}.json`), 'utf8')),
+      JSON.parse(await readFile(new URL(`${defaultLocale}.json`, translationsDir), 'utf8')),
     );
   }
 

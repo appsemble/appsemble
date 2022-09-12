@@ -5,11 +5,11 @@ import { Fragment, ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { stringify } from 'yaml';
 
-import { CodeBlock } from '../../../../components/CodeBlock';
-import { HeaderControl } from '../../../../components/HeaderControl';
-import { Schema } from '../../../../components/Schema';
-import { messages } from './messages';
-import { Ref } from './Ref';
+import { CodeBlock } from '../../../../components/CodeBlock/index.js';
+import { HeaderControl } from '../../../../components/HeaderControl/index.js';
+import { Schema } from '../../../../components/Schema/index.js';
+import { messages } from './messages.js';
+import { Ref } from './Ref/index.js';
 
 const allSchemas = new Map<string, JSONSchema>();
 

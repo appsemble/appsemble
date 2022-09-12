@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { partialNormalized, semver } from '../../../constants';
+import { partialNormalized, semver } from '../../../constants/index.js';
 
 export const AppsembleMessages: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',

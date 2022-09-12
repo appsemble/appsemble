@@ -1,11 +1,10 @@
 import { readdirSync } from 'fs';
 import { readFile } from 'fs/promises';
-import { join } from 'path';
 
-import { createValidator } from 'koas-core/lib/validation';
+import { createValidator } from 'koas-core/lib/validation.js';
 import { parse } from 'yaml';
 
-import { api, schemas } from '.';
+import { api, schemas } from './index.js';
 
 describe('schemas', () => {
   const document = api('');
@@ -157,7 +156,7 @@ describe('schemas', () => {
   });
 
   describe('validation', () => {
-    const testsDir = join(__dirname, 'schema-tests');
+    const testsDir = new URL('schema-tests/', import.meta.url);
 
     describe.each(readdirSync(testsDir))('%s', (name) => {
       const schema = schemas[name as keyof typeof schemas];
@@ -167,10 +166,10 @@ describe('schemas', () => {
       });
 
       describe('valid', () => {
-        const valid = join(testsDir, name, 'valid');
+        const valid = new URL(`${name}/valid/`, testsDir);
 
         it.each(readdirSync(valid))('%s', async (filename) => {
-          const buffer = await readFile(join(valid, filename), 'utf8');
+          const buffer = await readFile(new URL(filename, valid), 'utf8');
           expect(buffer).toMatch(
             new RegExp(
               `^# yaml-language-server: \\$schema=https://appsemble.app/api.json#/components/schemas/${name}\n`,
@@ -183,10 +182,10 @@ describe('schemas', () => {
       });
 
       describe('invalid', () => {
-        const invalid = join(testsDir, name, 'invalid');
+        const invalid = new URL(`${name}/invalid/`, testsDir);
 
         it.each(readdirSync(invalid))('%s', async (filename) => {
-          const buffer = await readFile(join(invalid, filename), 'utf8');
+          const buffer = await readFile(new URL(filename, invalid), 'utf8');
           const instance = parse(buffer);
           const result = validator.validate(instance, schema, { base: '#', nestedErrors: true });
           expect(result.valid).toBe(false);

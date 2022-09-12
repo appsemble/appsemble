@@ -1,25 +1,38 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { appRouter } from '.';
-import { App } from '../../models';
-import * as appUtils from '../../utils/app';
+import { App, AppScreenshot, Organization } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
+
+useTestDatabase('manifesthandler');
 
 beforeAll(async () => {
-  await setTestApp(new Koa().use(appRouter));
+  const app = new Koa();
+  app.use((ctx, next) => {
+    Object.defineProperty(ctx, 'origin', { value: 'http://test-app.manitest.localhost:9999' });
+    return next();
+  });
+  app.use(appRouter);
+  await setTestApp(app);
+  setArgv({
+    host: 'http://localhost:9999',
+  });
 });
 
 it('should serve a PWA manifest', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue({
-    app: {
-      path: 'test-app',
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
-      },
-      OrganizationId: 'manitest',
-    } as Partial<App> as App,
+  await Organization.create({ id: 'manitest' });
+  await App.create({
+    path: 'test-app',
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
+    },
+    OrganizationId: 'manitest',
+    vapidPrivateKey: '',
+    vapidPublicKey: '',
   });
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
@@ -91,15 +104,16 @@ it('should serve a PWA manifest', async () => {
 });
 
 it('should fallback to sane defaults', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue({
-    app: {
-      path: 'test-app',
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-      },
-      OrganizationId: 'manitest',
-    } as Partial<App> as App,
+  await Organization.create({ id: 'manitest' });
+  await App.create({
+    path: 'test-app',
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+    },
+    OrganizationId: 'manitest',
+    vapidPrivateKey: '',
+    vapidPublicKey: '',
   });
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
@@ -171,23 +185,24 @@ it('should fallback to sane defaults', async () => {
 });
 
 it('should support screenshots', async () => {
-  jest.spyOn(appUtils, 'getApp').mockResolvedValue({
-    app: {
-      path: 'test-app',
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-      },
-      OrganizationId: 'manitest',
-      AppScreenshots: [
-        {
-          id: 42,
-          width: 1080,
-          height: 1920,
-          mime: 'image/png',
-        },
-      ],
-    } as Partial<App> as App,
+  await Organization.create({ id: 'manitest' });
+  const app = await App.create({
+    path: 'test-app',
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+    },
+    OrganizationId: 'manitest',
+    vapidPrivateKey: '',
+    vapidPublicKey: '',
+  });
+  await AppScreenshot.create({
+    id: 42,
+    width: 1080,
+    height: 1920,
+    mime: 'image/png',
+    screenshot: Buffer.alloc(0),
+    AppId: app.id,
   });
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({

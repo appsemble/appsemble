@@ -3,11 +3,11 @@ import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { sentryDsn } from '../../utils/settings';
-import { useAppDefinition } from '../AppDefinitionProvider';
-import { useUser } from '../UserProvider';
+import { sentryDsn } from '../../utils/settings.js';
+import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();

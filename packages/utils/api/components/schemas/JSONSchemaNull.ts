@@ -1,5 +1,5 @@
-import { BaseJSONSchema } from './BaseJSONSchema';
-import { extendJSONSchema } from './utils';
+import { BaseJSONSchema } from './BaseJSONSchema.js';
+import { extendJSONSchema } from './utils.js';
 
 // Although OpenAPI doesn’t support `null` as a value, JSON schema does.
 export const JSONSchemaNull = extendJSONSchema(BaseJSONSchema, {

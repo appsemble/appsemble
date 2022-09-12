@@ -1,10 +1,9 @@
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import chalk from 'chalk';
 import Koa from 'koa';
 
-import { logger } from './logger';
-import { loggerMiddleware } from './loggerMiddleware';
+import { logger } from './logger.js';
+import { loggerMiddleware } from './loggerMiddleware.js';
 
 class TestError extends Error {
   constructor(message?: string) {
@@ -14,12 +13,11 @@ class TestError extends Error {
 }
 
 let app: Koa;
-let clock: InstalledClock;
 
 beforeEach(async () => {
-  jest.spyOn(logger, 'info').mockImplementation(() => logger);
-  jest.spyOn(logger, 'log').mockImplementation(() => logger);
-  clock = install();
+  import.meta.jest.spyOn(logger, 'info').mockImplementation(() => logger);
+  import.meta.jest.spyOn(logger, 'log').mockImplementation(() => logger);
+  import.meta.jest.useFakeTimers({ now: 0 });
   app = new Koa();
   app.use(async (ctx, next) => {
     Object.defineProperty(ctx.request, 'origin', {
@@ -40,10 +38,6 @@ beforeEach(async () => {
   await setTestApp(app);
 });
 
-afterEach(() => {
-  clock.uninstall();
-});
-
 it('should log requests', async () => {
   await request.get('/pizza');
   expect(logger.info).toHaveBeenCalledWith(
@@ -53,7 +47,7 @@ it('should log requests', async () => {
 
 it('should log success responses as info', async () => {
   app.use((ctx) => {
-    clock.tick(1);
+    import.meta.jest.advanceTimersByTime(1);
     ctx.status = 200;
   });
   await request.get('/fries');
@@ -67,7 +61,7 @@ it('should log success responses as info', async () => {
 
 it('should log redirect responses as info', async () => {
   app.use((ctx) => {
-    clock.tick(33);
+    import.meta.jest.advanceTimersByTime(33);
     ctx.redirect('/');
   });
   await request.get('/fries');
@@ -81,7 +75,7 @@ it('should log redirect responses as info', async () => {
 
 it('should log bad responses as warn', async () => {
   app.use((ctx) => {
-    clock.tick(3);
+    import.meta.jest.advanceTimersByTime(3);
     ctx.status = 400;
   });
   await request.get('/burrito');
@@ -95,7 +89,7 @@ it('should log bad responses as warn', async () => {
 
 it('should log error responses as error', async () => {
   app.use((ctx) => {
-    clock.tick(53);
+    import.meta.jest.advanceTimersByTime(53);
     ctx.status = 503;
   });
   await request.get('/wrap');
@@ -109,7 +103,7 @@ it('should log error responses as error', async () => {
 
 it('should log long request lengths yellow', async () => {
   app.use((ctx) => {
-    clock.tick(400);
+    import.meta.jest.advanceTimersByTime(400);
     ctx.status = 200;
   });
   await request.get('/banana');
@@ -123,7 +117,7 @@ it('should log long request lengths yellow', async () => {
 
 it('should log extremely long request lengths red', async () => {
   app.use((ctx) => {
-    clock.tick(1337);
+    import.meta.jest.advanceTimersByTime(1337);
     ctx.status = 200;
   });
   await request.get('/pepperoni');
@@ -136,12 +130,12 @@ it('should log extremely long request lengths red', async () => {
 });
 
 it('should log errors as internal server errors and rethrow', async () => {
-  const spy = jest.fn();
+  const spy = import.meta.jest.fn();
   const error = new Error('fail');
   let context;
   app.on('error', spy);
   app.use((ctx) => {
-    clock.tick(86);
+    import.meta.jest.advanceTimersByTime(86);
     context = ctx;
     throw error;
   });
@@ -157,7 +151,7 @@ it('should log errors as internal server errors and rethrow', async () => {
 
 it('should append the response length if it is defined', async () => {
   app.use((ctx) => {
-    clock.tick(1);
+    import.meta.jest.advanceTimersByTime(1);
     ctx.status = 200;
     ctx.body = '{}';
   });
@@ -172,7 +166,7 @@ it('should append the response length if it is defined', async () => {
 
 it('should log handled errors correctly', async () => {
   app.use(() => {
-    clock.tick(15);
+    import.meta.jest.advanceTimersByTime(15);
     throw new TestError();
   });
   await request.get('potatoes');

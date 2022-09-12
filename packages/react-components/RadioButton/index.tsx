@@ -1,6 +1,6 @@
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, ReactNode, useCallback } from 'react';
 
-import { useValuePicker } from '..';
+import { useValuePicker } from '../index.js';
 
 interface RadioButtonProps<T>
   extends Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'onChange' | 'value'> {

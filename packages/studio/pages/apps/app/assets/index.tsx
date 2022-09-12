@@ -22,11 +22,11 @@ import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '..';
-import { AsyncDataView } from '../../../../components/AsyncDataView';
-import { AssetRow } from './AssetRow';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useApp } from '../index.js';
+import { AssetRow } from './AssetRow/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface FormValues {
   file: File;

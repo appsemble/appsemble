@@ -3,7 +3,7 @@ import { Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa, { Context } from 'koa';
 
-import { tinyRouter } from './tinyRouter';
+import { tinyRouter } from './tinyRouter.js';
 
 let app: Koa;
 let context: Context;
@@ -50,7 +50,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
 });
 
 it('should fall back to the any handler if it exists', async () => {
-  const any = jest.fn();
+  const any = import.meta.jest.fn();
   app.use(
     tinyRouter([
       {
@@ -64,8 +64,8 @@ it('should fall back to the any handler if it exists', async () => {
 });
 
 it('should pick method specific middleware over any', async () => {
-  const any = jest.fn();
-  const get = jest.fn();
+  const any = import.meta.jest.fn();
+  const get = import.meta.jest.fn();
   app.use(
     tinyRouter([
       {
@@ -81,7 +81,7 @@ it('should pick method specific middleware over any', async () => {
 });
 
 it('should not call next if there are matching routes', async () => {
-  const middleware = jest.fn();
+  const middleware = import.meta.jest.fn();
   app.use(
     tinyRouter([
       {
@@ -96,7 +96,7 @@ it('should not call next if there are matching routes', async () => {
 });
 
 it('should call next if there are no matching routes', async () => {
-  const middleware = jest.fn();
+  const middleware = import.meta.jest.fn();
   app.use(tinyRouter([]));
   app.use(middleware);
   await request.get('/');

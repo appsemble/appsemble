@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Team } from '.';
+import { Team } from './index.js';
 
 @Table({ tableName: 'TeamInvite' })
 export class TeamInvite extends Model {
@@ -38,7 +38,7 @@ export class TeamInvite extends Model {
   key: string;
 
   @BelongsTo(() => Team)
-  Team: Team;
+  Team: Awaited<Team>;
 
   @CreatedAt
   created: Date;

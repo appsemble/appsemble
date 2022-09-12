@@ -1,3 +1,6 @@
+import { stat } from 'fs/promises';
+import { join } from 'path';
+
 import { logger } from '@appsemble/node-utils';
 import { BlockConfig } from '@appsemble/types';
 import { Configuration } from 'webpack';
@@ -20,29 +23,19 @@ export async function loadWebpackConfig(
   outputPath?: string,
 ): Promise<Configuration> {
   let configPath: string;
-  const requireOptions = { paths: [block.dir] };
-  if (typeof block.webpack === 'string') {
-    configPath = require.resolve(block.webpack, requireOptions);
+  if (block.webpack) {
+    configPath = join(block.dir, block.webpack);
   } else {
+    configPath = join(block.dir, 'webpack.config.js');
     try {
-      // This is resolved relative to the block root, not to this file.
-      // eslint-disable-next-line node/no-unpublished-require
-      configPath = require.resolve('./webpack.config', requireOptions);
-    } catch (error: unknown) {
-      if (
-        !(
-          (error as any).code === 'MODULE_NOT_FOUND' &&
-          (error as any).requireStack[0] === __filename
-        )
-      ) {
-        throw error;
-      }
-      configPath = require.resolve('@appsemble/webpack-config', requireOptions);
+      await stat(configPath);
+    } catch {
+      configPath = '@appsemble/webpack-config';
     }
   }
   logger.info(`Using webpack config from ${configPath}`);
   const publicPath = `/api/blocks/${block.name}/versions/${block.version}/`;
-  let config = await import(configPath);
+  let config = await import(String(configPath));
   config = await (config.default || config);
   config = config instanceof Function ? await config(block, { mode, publicPath }) : config;
 

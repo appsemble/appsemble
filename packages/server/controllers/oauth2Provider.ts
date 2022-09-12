@@ -2,10 +2,10 @@ import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { literal, Op } from 'sequelize';
 
-import { App, AppMember, EmailAuthorization, Member, User } from '../models';
-import { argv } from '../utils/argv';
-import { getGravatarUrl } from '../utils/gravatar';
-import { createOAuth2AuthorizationCode } from '../utils/model';
+import { App, AppMember, EmailAuthorization, Member, User } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { getGravatarUrl } from '../utils/gravatar.js';
+import { createOAuth2AuthorizationCode } from '../utils/model.js';
 
 async function checkIsAllowed(app: App, user: User): Promise<boolean> {
   const policy = app.definition?.security?.default?.policy ?? 'everyone';

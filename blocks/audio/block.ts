@@ -24,5 +24,3 @@ declare module '@appsemble/sdk' {
     src?: Remapper;
   }
 }
-
-export {};

@@ -1,15 +1,13 @@
 import { uuid4Pattern } from '@appsemble/utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, AppRating, Member, Organization, User } from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+import { App, AppRating, Member, Organization, User } from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
-let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('appratings');
@@ -21,7 +19,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -42,10 +40,6 @@ beforeEach(async () => {
     },
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('submitAppRating', () => {
@@ -83,7 +77,7 @@ describe('submitAppRating', () => {
       rating: 5,
     });
 
-    clock.tick(20e3);
+    import.meta.jest.advanceTimersByTime(20e3);
 
     const response = await request.post(`/api/apps/${app.id}/ratings`, {
       description: 'Updated description',

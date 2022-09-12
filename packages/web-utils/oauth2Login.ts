@@ -1,6 +1,6 @@
 import { OAuth2Provider } from '@appsemble/types';
 
-import { randomString } from './randomString';
+import { randomString } from './randomString.js';
 
 /**
  * The key in `sessionStorage` where the current state is stored.

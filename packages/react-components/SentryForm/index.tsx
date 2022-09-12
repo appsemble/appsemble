@@ -11,8 +11,8 @@ import {
   SimpleFormField,
   SimpleSubmit,
   TextAreaField,
-} from '..';
-import { messages } from './messages';
+} from '../index.js';
+import { messages } from './messages.js';
 
 interface SentryFormProps {
   /**

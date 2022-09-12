@@ -2,8 +2,8 @@ import { logger } from '@appsemble/node-utils';
 import { serverUnavailable } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { getDB } from '../models';
-import { getSSLStatus as getSSLStatusImplementation } from '../utils/dns';
+import { getDB } from '../models/index.js';
+import { getSSLStatus as getSSLStatusImplementation } from '../utils/dns/index.js';
 
 export async function checkHealth(ctx: Context): Promise<void> {
   const status = {

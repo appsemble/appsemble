@@ -3,8 +3,8 @@ import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 import { extension } from 'mime-types';
 
-import { AppScreenshot } from '../../models';
-import { getApp } from '../../utils/app';
+import { AppScreenshot } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
 
 const iconSizes = [48, 144, 192, 512];
 

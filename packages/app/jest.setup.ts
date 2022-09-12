@@ -1,5 +1,8 @@
-// eslint-disable-next-line node/no-unpublished-import
+import { noop } from '@appsemble/utils';
 import 'fake-indexeddb/auto';
+
+URL.createObjectURL = () => '';
+URL.revokeObjectURL = noop;
 
 window.settings = {
   apiUrl: 'https://appsemble.dev',

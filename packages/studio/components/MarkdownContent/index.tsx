@@ -7,7 +7,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 
-import { CodeBlock } from '../CodeBlock';
+import { CodeBlock } from '../CodeBlock/index.js';
 
 interface MarkdownContentProps {
   /**

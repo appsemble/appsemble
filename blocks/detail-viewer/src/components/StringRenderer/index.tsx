@@ -2,7 +2,7 @@ import { useBlock } from '@appsemble/preact';
 import { isPreactChild } from '@appsemble/preact-components';
 import { VNode } from 'preact';
 
-import { RendererProps, StringField } from '../../../block';
+import { RendererProps, StringField } from '../../../block.js';
 
 /**
  * An element for a text type schema.

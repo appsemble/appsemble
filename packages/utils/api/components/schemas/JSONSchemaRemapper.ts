@@ -1,5 +1,5 @@
-import { BaseJSONSchema } from './BaseJSONSchema';
-import { extendJSONSchema } from './utils';
+import { BaseJSONSchema } from './BaseJSONSchema.js';
+import { extendJSONSchema } from './utils.js';
 
 // Allow remappers without specifying a type.
 export const JSONSchemaRemapper = extendJSONSchema(BaseJSONSchema, {

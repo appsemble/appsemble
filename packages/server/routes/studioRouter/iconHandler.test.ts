@@ -1,7 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { studioRouter } from '.';
+import { studioRouter } from './index.js';
 
 beforeEach(async () => {
   request.defaults.responseType = 'arraybuffer';

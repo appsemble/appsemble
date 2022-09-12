@@ -4,12 +4,12 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { HeaderControl } from '../../../../../components/HeaderControl';
-import { messages } from './messages';
-import { SamlModal } from './SamlModal';
-import { SamlSecretItem } from './SamlSecretItem';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useApp } from '../../index.js';
+import { messages } from './messages.js';
+import { SamlModal } from './SamlModal/index.js';
+import { SamlSecretItem } from './SamlSecretItem/index.js';
 
 const initialSecret: AppSamlSecret = {
   name: '',

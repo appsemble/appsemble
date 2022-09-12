@@ -16,14 +16,14 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
 
-import { CodeBlock } from '../../../components/CodeBlock';
-import { MarkdownContent } from '../../../components/MarkdownContent';
-import { Schema } from '../../../components/Schema';
-import { ActionTable } from './ActionTable';
-import { EventTable } from './EventTable';
+import { CodeBlock } from '../../../components/CodeBlock/index.js';
+import { MarkdownContent } from '../../../components/MarkdownContent/index.js';
+import { Schema } from '../../../components/Schema/index.js';
+import { ActionTable } from './ActionTable/index.js';
+import { EventTable } from './EventTable/index.js';
 import styles from './index.module.css';
-import { messages, untranslatedMessages } from './messages';
-import { RefLink } from './RefLink';
+import { messages, untranslatedMessages } from './messages.js';
+import { RefLink } from './RefLink/index.js';
 
 interface BlockDetailsRoutesMatch {
   /**

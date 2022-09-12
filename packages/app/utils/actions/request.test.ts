@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { createTestAction } from '../makeActions';
-import { apiUrl } from '../settings';
+import { createTestAction } from '../makeActions.js';
+import { apiUrl } from '../settings.js';
 
 let mock: MockAdapter;
 let request: AxiosRequestConfig;

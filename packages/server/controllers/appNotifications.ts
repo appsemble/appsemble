@@ -4,9 +4,9 @@ import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
-import { App, AppSubscription, ResourceSubscription } from '../models';
-import { checkRole } from '../utils/checkRole';
-import { sendNotification } from '../utils/sendNotification';
+import { App, AppSubscription, ResourceSubscription } from '../models/index.js';
+import { checkRole } from '../utils/checkRole.js';
+import { sendNotification } from '../utils/sendNotification.js';
 
 export async function getSubscription(ctx: Context): Promise<void> {
   const {

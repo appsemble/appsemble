@@ -3,7 +3,7 @@ import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { Option, OptionProps } from '../Option';
+import { Option, OptionProps } from '../Option/index.js';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {

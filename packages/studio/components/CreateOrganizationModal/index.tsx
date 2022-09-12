@@ -14,9 +14,9 @@ import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { IconPreview } from '../IconPreview';
-import { useUser } from '../UserProvider';
-import { messages } from './messages';
+import { IconPreview } from '../IconPreview/index.js';
+import { useUser } from '../UserProvider/index.js';
+import { messages } from './messages.js';
 
 /**
  * Calculate an organization id based on a given organization name.

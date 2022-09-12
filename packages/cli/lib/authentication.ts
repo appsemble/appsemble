@@ -9,7 +9,7 @@ import Koa, { Context } from 'koa';
 import open from 'open';
 import raw from 'raw-body';
 
-import { BaseArguments } from '../types';
+import { BaseArguments } from '../types.js';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
@@ -66,7 +66,8 @@ function waitForCredentials(url: URL): Promise<string> {
 
 async function getKeytar(): Promise<typeof import('keytar')> {
   try {
-    return await import('keytar');
+    const { default: keytar } = await import('keytar');
+    return keytar;
   } catch {
     throw new AppsembleError(
       'Couldn’t find module keytar. Either install libsecret and reinstall @appsemble/cli, or pass --client-credentials on the command line.',

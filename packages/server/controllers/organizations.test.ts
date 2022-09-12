@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -14,17 +13,16 @@ import {
   Organization,
   OrganizationInvite,
   User,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { organizationBlocklist } from '../utils/organizationBlocklist';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { organizationBlocklist } from '../utils/organizationBlocklist.js';
+import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
 let server: Koa;
 let user: User;
-let clock: InstalledClock;
 
 useTestDatabase('organizations');
 
@@ -35,7 +33,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -47,11 +45,7 @@ beforeEach(async () => {
     id: 'appsemble',
     name: 'Appsemble',
   });
-  jest.spyOn(server.context.mailer, 'sendTemplateEmail');
-});
-
-afterEach(() => {
-  clock.uninstall();
+  import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
 });
 
 describe('getOrganizations', () => {
@@ -630,7 +624,7 @@ describe('createOrganization', () => {
 
   it('should not create an organization with the same identifier', async () => {
     // This prevents the test from hanging and timing out
-    clock.uninstall();
+    import.meta.jest.useRealTimers();
 
     authorizeStudio();
     await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));

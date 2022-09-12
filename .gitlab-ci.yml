@@ -14,6 +14,8 @@ variables:
   JEST_JUNIT_CLASSNAME: '{classname}'
   JEST_JUNIT_SUITE_NAME: '{filepath}'
   JEST_JUNIT_TITLE: '{title}'
+  # Suppress Node.js warnings caused by jest using experimental APIs
+  NODE_NO_WARNINGS: 1
 
 workflow:
   rules:
@@ -44,8 +46,15 @@ workflow:
 .yarn:
   interruptible: true
   dependencies: []
+  cache:
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules
+      - '**/node_modules'
   before_script:
-    - yarn --frozen-lockfile --ignore-scripts
+    - yarn --frozen-lockfile
 
 # A template for creating a minor or patch release
 .release:
@@ -138,7 +147,8 @@ test node 18:
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn --frozen-lockfile
-    - yarn jest --coverage
+    - yarn test --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
+  parallel: 5
   artifacts:
     paths:
       - coverage
@@ -371,7 +381,7 @@ cleanup k8s jobs:
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
-    - kubectl delete job $(kubectl get job -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}')
+    - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
 # Deploy the Docker image for a branch to a review environment.
 review:
@@ -611,6 +621,7 @@ provision production:
 lighthouse:
   interruptible: true
   stage: end 2 end
+  extends: .yarn
   image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
@@ -624,7 +635,6 @@ lighthouse:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
     - if: $CI_COMMIT_TAG
   script:
-    - yarn --frozen-lockfile
     - yarn scripts wait-for-ssl
     - yarn lhci collect
     - yarn lhci assert
@@ -636,6 +646,7 @@ lighthouse:
 
 cypress:
   stage: end 2 end
+  extends: .yarn
   image: $CI_REGISTRY/appsemble/docker-node-chrome
   needs:
     - job: provision review
@@ -646,7 +657,7 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    - yarn --frozen-lockfile
+    - yarn cypress install
     - yarn scripts wait-for-ssl
     - yarn workspace @appsemble/e2e run e2e
   artifacts:

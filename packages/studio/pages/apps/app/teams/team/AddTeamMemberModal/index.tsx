@@ -10,10 +10,10 @@ import {
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../../..';
-import { AsyncDataView } from '../../../../../../components/AsyncDataView';
-import { Member, TeamMember } from '../../../../../../types';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
+import { Member, TeamMember } from '../../../../../../types.js';
+import { useApp } from '../../../index.js';
+import { messages } from './messages.js';
 
 interface AddTeamMemberModalProps {
   teamMembers: TeamMember[];

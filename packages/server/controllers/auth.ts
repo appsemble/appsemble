@@ -6,9 +6,9 @@ import { hash } from 'bcrypt';
 import { Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
-import { argv } from '../utils/argv';
-import { createJWTResponse } from '../utils/createJWTResponse';
+import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models/index.js';
+import { argv } from '../utils/argv.js';
+import { createJWTResponse } from '../utils/createJWTResponse.js';
 
 function mayRegister(): void {
   if (argv.disableRegistration) {

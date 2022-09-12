@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @Table({ tableName: 'AppScreenshot' })
 export class AppScreenshot extends Model {
@@ -48,5 +48,5 @@ export class AppScreenshot extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 }

@@ -2,13 +2,13 @@ import { AppsembleError } from '@appsemble/node-utils';
 import semver from 'semver';
 import { Argv } from 'yargs';
 
-import { migrations } from '../migrations';
-import { initDB } from '../models';
-import pkg from '../package.json';
-import { argv } from '../utils/argv';
-import { migrate } from '../utils/migrate';
-import { handleDBError } from '../utils/sqlUtils';
-import { databaseBuilder } from './builder/database';
+import { migrations } from '../migrations/index.js';
+import { initDB } from '../models/index.js';
+import pkg from '../package.json' assert { type: 'json' };
+import { argv } from '../utils/argv.js';
+import { migrate } from '../utils/migrate.js';
+import { handleDBError } from '../utils/sqlUtils.js';
+import { databaseBuilder } from './builder/database.js';
 
 export const command = 'migrate [migrate-to]';
 export const description = 'Migrate the Appsemble database.';

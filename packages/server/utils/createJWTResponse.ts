@@ -1,7 +1,7 @@
 import { TokenResponse } from '@appsemble/types';
-import { sign } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-import { argv } from './argv';
+import { argv } from './argv.js';
 
 interface Options {
   /**
@@ -52,13 +52,13 @@ export function createJWTResponse(
   };
   const response: TokenResponse = {
     // The access token token expires in an hour.
-    access_token: sign({ ...payload, exp: iat + expires }, argv.secret),
+    access_token: jwt.sign({ ...payload, exp: iat + expires }, argv.secret),
     expires_in: expires,
     token_type: 'bearer',
   };
   if (refreshToken) {
     // The refresh token token expires in a month.
-    response.refresh_token = sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, argv.secret);
+    response.refresh_token = jwt.sign({ ...payload, exp: iat + 60 * 60 * 24 * 30 }, argv.secret);
   }
   return response;
 }

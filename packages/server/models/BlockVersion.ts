@@ -1,5 +1,6 @@
 import { ActionType, EventType } from '@appsemble/types';
-import { Schema } from 'jsonschema';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type Schema } from 'jsonschema';
 import {
   AllowNull,
   BelongsTo,
@@ -15,7 +16,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
-import { BlockAsset, BlockMessages, Organization } from '.';
+import { BlockAsset, BlockMessages, Organization } from './index.js';
 
 @Table({ tableName: 'BlockVersion', updatedAt: false })
 export class BlockVersion extends Model {
@@ -78,7 +79,7 @@ export class BlockVersion extends Model {
   examples: string[];
 
   @BelongsTo(() => Organization)
-  Organization: Organization;
+  Organization: Awaited<Organization>;
 
   @HasMany(() => BlockAsset)
   BlockAssets?: BlockAsset[];

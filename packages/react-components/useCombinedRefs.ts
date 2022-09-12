@@ -1,6 +1,6 @@
 import { MutableRefObject, RefCallback, useCallback } from 'react';
 
-import { applyRefs } from '.';
+import { applyRefs } from './index.js';
 
 type MutableRef<T> = MutableRefObject<T> | RefCallback<T>;
 

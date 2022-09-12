@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { cloneElement, ComponentChild, isValidElement, VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { Icon } from '..';
+import { Icon } from '../index.js';
 import styles from './index.module.css';
 
 /**

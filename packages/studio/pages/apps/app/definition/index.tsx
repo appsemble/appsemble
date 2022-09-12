@@ -3,13 +3,13 @@ import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useApp } from '..';
-import { AppIcon } from '../../../../components/AppIcon';
-import { CardHeaderControl } from '../../../../components/CardHeaderControl';
-import { CloneButton } from '../../../../components/CloneButton';
-import { CodeBlock } from '../../../../components/CodeBlock';
-import { getAppUrl } from '../../../../utils/getAppUrl';
-import { messages } from './messages';
+import { AppIcon } from '../../../../components/AppIcon/index.js';
+import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
+import { CloneButton } from '../../../../components/CloneButton/index.js';
+import { CodeBlock } from '../../../../components/CodeBlock/index.js';
+import { getAppUrl } from '../../../../utils/getAppUrl.js';
+import { useApp } from '../index.js';
+import { messages } from './messages.js';
 
 /**
  * A page for viewing the source code of an app definition.

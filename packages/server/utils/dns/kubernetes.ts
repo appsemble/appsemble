@@ -6,13 +6,13 @@ import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
-import matcher from 'matcher';
+import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
-import { App, Organization } from '../../models';
-import pkg from '../../package.json';
-import { argv } from '../argv';
-import { iterTable } from '../database';
+import { App, Organization } from '../../models/index.js';
+import pkg from '../../package.json' assert { type: 'json' };
+import { argv } from '../argv.js';
+import { iterTable } from '../database.js';
 
 interface KubernetesMetadata {
   /**

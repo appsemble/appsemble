@@ -4,10 +4,10 @@ import { ReactElement } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../..';
-import { AsyncDataView } from '../../../../../components/AsyncDataView';
-import { ListButton } from '../../../../../components/ListButton';
-import { messages } from './messages';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { ListButton } from '../../../../../components/ListButton/index.js';
+import { useApp } from '../../index.js';
+import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const { app } = useApp();

@@ -15,13 +15,13 @@ import {
   Organization,
   OrganizationInvite,
   User,
-} from '../models';
-import { applyAppMessages, compareApps, parseLanguage } from '../utils/app';
-import { argv } from '../utils/argv';
-import { checkRole } from '../utils/checkRole';
-import { createBlockVersionResponse } from '../utils/createBlockVersionResponse';
-import { serveIcon } from '../utils/icon';
-import { organizationBlocklist } from '../utils/organizationBlocklist';
+} from '../models/index.js';
+import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
+import { argv } from '../utils/argv.js';
+import { checkRole } from '../utils/checkRole.js';
+import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
+import { serveIcon } from '../utils/icon.js';
+import { organizationBlocklist } from '../utils/organizationBlocklist.js';
 
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({

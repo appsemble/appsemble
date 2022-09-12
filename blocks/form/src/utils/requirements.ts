@@ -2,7 +2,7 @@ import { Utils } from '@appsemble/sdk';
 import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
-import { Field } from '../../block';
+import { Field } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 

@@ -11,11 +11,11 @@ import {
   TeamInvite,
   TeamMember,
   User,
-} from '../models';
-import { setArgv } from '../utils/argv';
-import { createServer } from '../utils/createServer';
-import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization';
-import { useTestDatabase } from '../utils/test/testSchema';
+} from '../models/index.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
+import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
 let app: App;
@@ -667,7 +667,7 @@ describe('inviteTeamMember', () => {
       },
     });
 
-    jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+    import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {

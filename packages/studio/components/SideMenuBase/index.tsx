@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 /**
  * The side menu section that’s rendered in Appsemble Studio by default.

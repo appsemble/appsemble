@@ -2,12 +2,11 @@ import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { Transporter } from 'nodemailer';
 
-import { App, AppMessages, Organization } from '../../models';
-import { argv, setArgv } from '../argv';
-import { createServer } from '../createServer';
-import { useTestDatabase } from '../test/testSchema';
-import { Mailer } from './Mailer';
-import * as RenderEmail from './renderEmail';
+import { App, AppMessages, Organization } from '../../models/index.js';
+import { argv, setArgv } from '../argv.js';
+import { createServer } from '../createServer.js';
+import { useTestDatabase } from '../test/testSchema.js';
+import { Mailer } from './Mailer.js';
 
 let mailer: Mailer;
 
@@ -41,7 +40,7 @@ describe('verify', () => {
 describe('sendEmail', () => {
   it('should send emails with a name', async () => {
     mailer.transport = {
-      sendMail: jest.fn().mockResolvedValue(null),
+      sendMail: import.meta.jest.fn(() => null),
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
@@ -59,7 +58,7 @@ describe('sendEmail', () => {
 
   it('should send emails without a name', async () => {
     mailer.transport = {
-      sendMail: jest.fn().mockResolvedValue(null),
+      sendMail: import.meta.jest.fn(() => null),
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
@@ -88,14 +87,6 @@ describe('sendEmail', () => {
 describe('sendTranslatedEmail', () => {
   let app: App;
   const supportedLocales = [defaultLocale, 'nl'];
-  let spy: jest.SpyInstance<
-    Promise<{
-      html: string;
-      subject: string;
-      text: string;
-    }>,
-    [template: string, values: Record<string, string>, sub?: string]
-  >;
 
   const tests = {
     resend: [
@@ -148,10 +139,15 @@ describe('sendTranslatedEmail', () => {
     ],
   };
 
+  beforeEach(() => {
+    mailer.transport = {
+      sendMail: import.meta.jest.fn(),
+    } as Partial<Transporter> as Transporter;
+  });
+
   beforeEach(async () => {
     const server = await createServer();
     await setTestApp(server);
-    spy = jest.spyOn(RenderEmail, 'renderEmail');
     const organization = await Organization.create({
       id: 'testorganization',
       name: 'Test Organization',
@@ -191,8 +187,26 @@ describe('sendTranslatedEmail', () => {
       },
     });
 
-    expect(spy).toHaveBeenCalledWith(
-      `Hello John Doe,
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>Thank you for registering your account. Before you can use your account, we need to verify your email address.</p>
+<p>Please click <a href="http://example.com/token=abcdefg">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+`,
+      subject: 'Welcome to Test App',
+      text: `Hello John Doe,
 
 Thank you for registering your account. Before you can use your account, we need to verify your email address.
 
@@ -200,10 +214,10 @@ Please click [here](http://example.com/token=abcdefg) to verify your email addre
 
 Kind regards,
 
-_Test App_`,
-      {},
-      'Welcome to Test App',
-    );
+_Test App_
+`,
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   it('should send emails in another default supported language', async () => {
@@ -219,8 +233,26 @@ _Test App_`,
       },
     });
 
-    expect(spy).toHaveBeenCalledWith(
-      `Beste John Doe,
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Beste John Doe,</p>
+<p>Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
+<p>Klik <a href="http://example.com/token=abcdefg">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Met vriendelijke groet,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+`,
+      subject: 'Welkom bij Test App',
+      text: `Beste John Doe,
 
 Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.
 
@@ -228,10 +260,10 @@ Klik [hier](http://example.com/token=abcdefg) om jouw e-mailadres te verifiëren
 
 Met vriendelijke groet,
 
-_Test App_`,
-      {},
-      'Welkom bij Test App',
-    );
+_Test App_
+`,
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   it('should use fall back to the english translations if an app’s email translations don’t exist', async () => {
@@ -247,7 +279,37 @@ _Test App_`,
       },
     });
 
-    expect(spy).toHaveBeenCalledWith(expect.any(String), {}, 'Welcome to Test App');
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Hello John Doe,</p>
+<p>Thank you for registering your account. Before you can use your account, we need to verify your email address.</p>
+<p>Please click <a href="http://example.com/token=abcdefg">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>Test App</em></p>
+</body>
+</html>
+`,
+      subject: 'Welcome to Test App',
+      text: `Hello John Doe,
+
+Thank you for registering your account. Before you can use your account, we need to verify your email address.
+
+Please click [here](http://example.com/token=abcdefg) to verify your email address.
+
+Kind regards,
+
+_Test App_
+`,
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   it('should use an app’s email translations', async () => {
@@ -273,7 +335,24 @@ _Test App_`,
       },
     });
 
-    expect(spy).toHaveBeenCalledWith('Hoi John Doe!', {}, 'Aangenaam!');
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Hoi John Doe!</p>
+</body>
+</html>
+`,
+      subject: 'Aangenaam!',
+      text: 'Hoi John Doe!\n',
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   it('should use an app’s email translations for the base language if the selected locale isn’t directly translated', async () => {
@@ -299,7 +378,24 @@ _Test App_`,
       },
     });
 
-    expect(spy).toHaveBeenCalledWith('Hoi John Doe!', {}, 'Aangenaam!');
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>Hoi John Doe!</p>
+</body>
+</html>
+`,
+      subject: 'Aangenaam!',
+      text: 'Hoi John Doe!\n',
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   it('should use an app’s english email translation overrides if the base language if the selected locale isn’t translated', async () => {
@@ -325,7 +421,24 @@ _Test App_`,
       },
     });
 
-    expect(spy).toHaveBeenCalledWith('How do you do, John Doe?', {}, 'Hello!');
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      attachments: [],
+      from: 'Appsemble <test@example.com>',
+      html: `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<p>How do you do, John Doe?</p>
+</body>
+</html>
+`,
+      subject: 'Hello!',
+      text: 'How do you do, John Doe?\n',
+      to: 'John Doe <test@example.com>',
+    });
   });
 
   describe.each(supportedLocales)('%s', (locale) => {
@@ -345,11 +458,11 @@ _Test App_`,
           locale,
         });
 
-        expect(spy).toHaveBeenCalledTimes(1);
+        expect(mailer.transport.sendMail).toHaveBeenCalledTimes(1);
         // The subject
-        expect(spy.mock.calls[0][2]).toMatchSnapshot();
+        expect((mailer.transport.sendMail as jest.Mock).mock.calls[0][2]).toMatchSnapshot();
         // The body
-        expect(spy.mock.calls[0][0]).toMatchSnapshot();
+        expect((mailer.transport.sendMail as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
       });
     });
   });

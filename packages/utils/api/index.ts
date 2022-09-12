@@ -1,10 +1,10 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-import { components } from './components';
-import { paths } from './paths';
-import { tags } from './tags';
+import { components } from './components/index.js';
+import { paths } from './paths/index.js';
+import { tags } from './tags/index.js';
 
-export * as schemas from './components/schemas';
+export * as schemas from './components/schemas/index.js';
 
 interface APIParams {
   port?: number;

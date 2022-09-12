@@ -1,12 +1,11 @@
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
 
 import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../../models';
-import { getApp } from '../../utils/app';
+import { BlockAsset, BlockVersion } from '../../models/index.js';
+import { getApp } from '../../utils/app.js';
 
 /**
  * A handler used to serve the service worker output from Webpack from the client root.
@@ -17,10 +16,7 @@ export async function serviceWorkerHandler(ctx: Context): Promise<void> {
   const production = process.env.NODE_ENV === 'production';
   const filename = production ? '/service-worker.js' : '/app/service-worker.js';
   const serviceWorker = await (production
-    ? readFile(
-        resolve(__dirname, '..', '..', '..', '..', 'dist', 'app', 'service-worker.js'),
-        'utf8',
-      )
+    ? readFile(new URL('../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
     : ctx.fs.promises.readFile(filename, 'utf8'));
   const { app } = await getApp(ctx, {
     attributes: ['definition'],

@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App } from '.';
+import { App } from './index.js';
 
 @DefaultScope(() => ({
   attributes: [
@@ -84,7 +84,7 @@ export class AppSamlSecret extends Model {
   AppId: number;
 
   @BelongsTo(() => App)
-  App: App;
+  App: Awaited<App>;
 
   @CreatedAt
   created: Date;

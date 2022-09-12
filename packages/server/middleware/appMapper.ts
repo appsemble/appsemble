@@ -2,7 +2,7 @@ import { isIP } from 'net';
 
 import { Middleware } from 'koa';
 
-import { argv } from '../utils/argv';
+import { argv } from '../utils/argv.js';
 
 export function appMapper(platformMiddleware: Middleware, appMiddleware: Middleware): Middleware {
   return (ctx, next) => {

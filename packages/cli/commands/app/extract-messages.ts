@@ -3,8 +3,8 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { Argv } from 'yargs';
 
-import { writeAppMessages } from '../../lib/app';
-import { BaseArguments } from '../../types';
+import { writeAppMessages } from '../../lib/app.js';
+import { BaseArguments } from '../../types.js';
 
 interface BuildBlockArguments extends BaseArguments {
   paths: string[];

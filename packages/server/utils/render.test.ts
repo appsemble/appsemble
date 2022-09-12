@@ -1,4 +1,4 @@
-import { ContentSecurityPolicy, makeCSP } from './render';
+import { ContentSecurityPolicy, makeCSP } from './render.js';
 
 describe('makeCSP', () => {
   const fixtures: Record<string, ContentSecurityPolicy> = {

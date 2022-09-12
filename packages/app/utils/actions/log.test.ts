@@ -1,10 +1,10 @@
-import { createTestAction } from '../makeActions';
+import { createTestAction } from '../makeActions.js';
 
 describe('log', () => {
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation();
-    jest.spyOn(console, 'info').mockImplementation();
-    jest.spyOn(console, 'warn').mockImplementation();
+    import.meta.jest.spyOn(console, 'error').mockImplementation();
+    import.meta.jest.spyOn(console, 'info').mockImplementation();
+    import.meta.jest.spyOn(console, 'warn').mockImplementation();
   });
 
   it('should support the info logging level', async () => {

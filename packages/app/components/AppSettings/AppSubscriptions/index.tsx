@@ -5,11 +5,11 @@ import axios from 'axios';
 import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { apiUrl, appId } from '../../../utils/settings';
-import { useAppDefinition } from '../../AppDefinitionProvider';
-import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider';
+import { apiUrl, appId } from '../../../utils/settings.js';
+import { useAppDefinition } from '../../AppDefinitionProvider/index.js';
+import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider/index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 type ResourceState = Record<string, SubscriptionState>;
 

@@ -12,11 +12,11 @@ import { Context } from 'koa';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
-import { App, AppMessages, BlockMessages, BlockVersion } from '../models';
-import { checkAppLock } from '../utils/checkAppLock';
-import { checkRole } from '../utils/checkRole';
-import { getAppsembleMessages } from '../utils/getAppsembleMessages';
-import { mergeMessages } from '../utils/mergeMessages';
+import { App, AppMessages, BlockMessages, BlockVersion } from '../models/index.js';
+import { checkAppLock } from '../utils/checkAppLock.js';
+import { checkRole } from '../utils/checkRole.js';
+import { getAppsembleMessages } from '../utils/getAppsembleMessages.js';
+import { mergeMessages } from '../utils/mergeMessages.js';
 
 export async function getMessages(ctx: Context): Promise<void> {
   const {

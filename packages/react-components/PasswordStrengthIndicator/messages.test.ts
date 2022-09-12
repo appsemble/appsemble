@@ -1,6 +1,6 @@
 import { zxcvbnOptions } from '@zxcvbn-ts/core';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 describe('messages', () => {
   it('should match core messages', () => {

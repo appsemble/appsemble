@@ -5,7 +5,7 @@ import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 interface InviteRowProps {
   /**
@@ -50,8 +50,8 @@ export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): Rea
   const deleteInvite = useConfirmation({
     title: <FormattedMessage {...messages.deleteInvite} />,
     body: <FormattedMessage {...messages.deleteConfirmationBody} />,
-    cancelLabel: <FormattedMessage {...messages.deleteInvite} />,
-    confirmLabel: <FormattedMessage {...messages.cancelLabel} />,
+    cancelLabel: <FormattedMessage {...messages.cancelLabel} />,
+    confirmLabel: <FormattedMessage {...messages.deleteInvite} />,
     async action() {
       await axios.delete(`/api/organizations/${organizationId}/invites`, {
         data: invite,

@@ -1,28 +1,28 @@
-import { dirname, join, resolve } from 'path';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 import { logger } from '@appsemble/node-utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json';
-import bulmaPkg from 'bulma/package.json';
+import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
+import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import autolink from 'rehype-autolink-headings';
-import { rehypeMdxTitle } from 'rehype-mdx-title';
-import slug from 'rehype-slug';
-import frontmatter from 'remark-frontmatter';
-import gfm from 'remark-gfm';
-import { remarkMdxCodeMeta } from 'remark-mdx-code-meta';
-import { remarkMdxFrontmatter } from 'remark-mdx-frontmatter';
-import { remarkMdxImages } from 'remark-mdx-images';
-import { remarkMermaid } from 'remark-mermaidjs';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeMdxTitle from 'rehype-mdx-title';
+import rehypeSlug from 'rehype-slug';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import remarkMdxCodeMeta from 'remark-mdx-code-meta';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import remarkMdxImages from 'remark-mdx-images';
+import remarkMermaid from 'remark-mermaidjs';
 import { Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
-import { remarkRewriteLinks } from './remark/rewriteLinks';
-import './types';
+import { remarkRewriteLinks } from './remark/rewriteLinks.js';
 
 interface CliConfigOptions {
   mode: 'development' | 'production';
@@ -43,8 +43,8 @@ const minify: MinifyOptions = {
   useShortDoctype: true,
 };
 
-const packagesDir = dirname(__dirname);
-const rootDir = dirname(packagesDir);
+const packagesDir = new URL('../', import.meta.url);
+const rootDir = new URL('../', packagesDir);
 
 /**
  * This webpack configuration is used by the Appsemble core parts.
@@ -55,30 +55,36 @@ const rootDir = dirname(packagesDir);
  */
 function shared(env: string, { mode }: CliConfigOptions): Configuration {
   const production = mode === 'production';
-  const projectDir = join(packagesDir, env);
-  const configFile = join(projectDir, 'tsconfig.json');
+  const projectURL = new URL(`${env}/`, packagesDir);
+  const projectDir = fileURLToPath(new URL(env, packagesDir));
+  const configFile = fileURLToPath(new URL('tsconfig.json', projectURL));
   const publicPath = production ? '/' : `/${env}/`;
 
   return {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: { [env]: [projectDir] },
+    entry: { [env]: [join(projectDir, 'index.tsx')] },
     output: {
       filename: production ? '[contenthash].js' : `${env}-[name].js`,
       publicPath,
-      path: production ? join(rootDir, 'dist', env) : `/${env}/`,
+      path: production ? fileURLToPath(new URL(`dist/${env}`, rootDir)) : `/${env}/`,
       chunkFilename: production ? '[contenthash].js' : '[id].js',
     },
     resolve: {
       extensions: ['.js', '.ts', '.tsx', '.json'],
+      extensionAlias: {
+        '.js': ['.js', '.ts', '.tsx'],
+        '.cjs': ['.cjs', '.cts'],
+        '.mjs': ['.mjs', '.mts'],
+      },
       fallback: {
         path: false,
       },
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: join(projectDir, 'index.html'),
+        template: fileURLToPath(new URL('index.html', projectURL)),
         templateParameters: {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,
@@ -162,9 +168,14 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
               options: {
                 providerImportSource: '@mdx-js/react',
                 remarkPlugins: [
-                  frontmatter,
-                  gfm,
-                  production && remarkMermaid,
+                  remarkFrontmatter,
+                  remarkGfm,
+                  production && [
+                    remarkMermaid,
+                    {
+                      launchOptions: { executablePath: process.env.CHROME_BIN || 'google-chrome' },
+                    },
+                  ],
                   remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
@@ -172,9 +183,9 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 ].filter(Boolean),
                 rehypePlugins: [
                   rehypeMdxTitle,
-                  slug,
+                  rehypeSlug,
                   [
-                    autolink,
+                    rehypeAutolinkHeadings,
                     {
                       content: {
                         type: 'element',
@@ -235,13 +246,13 @@ export function createAppConfig(argv: CliConfigOptions): Configuration {
   const config = shared('app', argv);
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: join(packagesDir, 'app', 'error.html'),
+      template: fileURLToPath(new URL('app/error.html', packagesDir)),
       filename: 'error.html',
       minify,
       chunks: [],
     }),
     new InjectManifest({
-      swSrc: resolve(__dirname, '..', 'service-worker', 'index.ts'),
+      swSrc: fileURLToPath(new URL('../service-worker/index.ts', import.meta.url)),
       swDest: 'service-worker.js',
       injectionPoint: 'appAssets',
       manifestTransforms: [

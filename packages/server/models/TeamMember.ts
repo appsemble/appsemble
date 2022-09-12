@@ -13,7 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Team, User } from '.';
+import { Team, User } from './index.js';
 
 @Table({ tableName: 'TeamMember' })
 export class TeamMember extends Model {
@@ -33,10 +33,10 @@ export class TeamMember extends Model {
   role: TeamRole;
 
   @BelongsTo(() => User)
-  User: User;
+  User: Awaited<User>;
 
   @BelongsTo(() => Team)
-  Team: Team;
+  Team: Awaited<Team>;
 
   @CreatedAt
   created: Date;

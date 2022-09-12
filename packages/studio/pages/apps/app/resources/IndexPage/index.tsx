@@ -3,9 +3,9 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { useApp } from '../..';
+import { useApp } from '../../index.js';
 import styles from './index.module.css';
-import { messages } from './messages';
+import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const { url } = useRouteMatch();

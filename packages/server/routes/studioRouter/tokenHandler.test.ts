@@ -1,18 +1,16 @@
 import { basicAuth } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
-import { decode } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
-import { setArgv } from '../../utils/argv';
-import { createJWTResponse } from '../../utils/createJWTResponse';
-import { createServer } from '../../utils/createServer';
-import { createTestUser } from '../../utils/test/authorization';
-import { useTestDatabase } from '../../utils/test/testSchema';
+import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models/index.js';
+import { setArgv } from '../../utils/argv.js';
+import { createJWTResponse } from '../../utils/createJWTResponse.js';
+import { createServer } from '../../utils/createServer.js';
+import { createTestUser } from '../../utils/test/authorization.js';
+import { useTestDatabase } from '../../utils/test/testSchema.js';
 
-let clock: InstalledClock;
 let user: User;
 
 useTestDatabase('tokenhandler');
@@ -24,13 +22,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
-  clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+  import.meta.jest.useFakeTimers({ now: new Date('2000-01-01T00:00:00Z') });
   user = await createTestUser();
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 it('should not accept invalid content types', async () => {
@@ -257,7 +250,7 @@ describe('authorization_code', () => {
     await expect(authCode.reload()).rejects.toThrow(
       'Instance could not be reloaded because it does not exist anymore (find call returned null)',
     );
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'app:1',
       exp: 946_688_400,
@@ -332,7 +325,7 @@ describe('client_credentials', () => {
   });
 
   it('should handle expired clients', async () => {
-    clock.setSystemTime(new Date('2000-03-01T00:00:00Z'));
+    import.meta.jest.setSystemTime(new Date('2000-03-01T00:00:00Z'));
     const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
       headers: { authorization: basicAuth('testClientId', 'testClientSecret') },
     });
@@ -372,7 +365,7 @@ describe('client_credentials', () => {
         token_type: 'bearer',
       },
     });
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'testClientId',
       exp: 946_688_400,
@@ -420,7 +413,7 @@ describe('refresh_token', () => {
         token_type: 'bearer',
       },
     });
-    const payload = decode(response.data.access_token);
+    const payload = jwt.decode(response.data.access_token);
     expect(payload).toStrictEqual({
       aud: 'http://localhost',
       exp: 946_688_400,
