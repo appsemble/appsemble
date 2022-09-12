@@ -12,6 +12,7 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
