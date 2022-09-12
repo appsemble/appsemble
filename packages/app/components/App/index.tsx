@@ -12,10 +12,17 @@ import { PermissionRequest } from '../PermissionRequest/index.js';
 import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationProvider/index.js';
 import { UserProvider } from '../UserProvider/index.js';
 
-function AppContent(
-  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>,
-): ReactElement {
-  return (
+interface AppProps {
+  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+}
+
+/**
+ * The main entry point of the React app.
+ *
+ * This configures all providers and sets up the global app structure.
+ */
+export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
+  const appContent = (
     <AppDefinitionProvider>
       <AppMessagesProvider>
         <MessagesProvider>
@@ -35,19 +42,7 @@ function AppContent(
       </AppMessagesProvider>
     </AppDefinitionProvider>
   );
-}
 
-interface AppProps {
-  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
-}
-
-/**
- * The main entry point of the React app.
- *
- * This configures all providers and sets up the global app structure.
- */
-export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
-  const appContent = AppContent(serviceWorkerRegistrationPromise);
   return (
     <BrowserRouter>
       <PageTracker />
