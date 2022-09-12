@@ -17,7 +17,9 @@ export function createJestConfig({ url }) {
   const setupFilesAfterEnv = [];
   const snapshotSerializers = [];
   const moduleNameMapper = { [/(.+)\.js$/.source]: ['$1.js', '$1.ts', '$1.tsx'] };
-  const transform = {};
+  const transform = {
+    '^.+.tsx?$': ['ts-jest', { isolatedModules: true, useESM: true }],
+  };
 
   // Mock CSS modules if they are enabled in the project types.
   if (types.includes('css-modules') || types.includes('@appsemble/webpack-config/types')) {
@@ -49,15 +51,9 @@ export function createJestConfig({ url }) {
     clearMocks: true,
     displayName: pkg.name,
     extensionsToTreatAsEsm: ['.ts', '.tsx'],
-    globals: {
-      'ts-jest': {
-        isolatedModules: true,
-        useESM: true,
-      },
-    },
     moduleNameMapper,
     passWithNoTests: true,
-    preset: 'ts-jest',
+    preset: 'ts-jest/presets/default-esm-legacy',
     resetMocks: true,
     restoreMocks: true,
     setupFilesAfterEnv,
