@@ -103,7 +103,7 @@
     "semver": "^7.0.0",
     "sequelize": "^6.0.0",
     "sequelize-typescript": "^2.0.0",
-    "sharp": "^0.30.0",
+    "sharp": "^0.31.0",
     "strip-bom": "^5.0.0",
     "type-fest": "^2.0.0",
     "unified": "^10.0.0",
