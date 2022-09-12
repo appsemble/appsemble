@@ -1,1 +1,0 @@
-Unset default tile color.
