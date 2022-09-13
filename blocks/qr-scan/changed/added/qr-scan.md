@@ -1,1 +1,1 @@
-`Qr-scan` block.
+Add the `qr-scan` block.
