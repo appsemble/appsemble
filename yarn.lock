@@ -24,25 +24,6 @@
     jsonpointer "^5.0.0"
     leven "^3.1.0"
 
-"@appsemble/sdk@0.20.13":
-  version "0.20.13"
-  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.20.13.tgz#f834d52251ab07e21db57f2ff1804b975bedac6c"
-  integrity sha512-3z5cmofNiQUc+iVFof6BTLCDT4f0FkJUXiJDXcVeHKDA7AlMsPVwbJYC4KEkL0rRcBtUw4Bi5YQI0rd3VGKiLA==
-  dependencies:
-    "@appsemble/types" "0.20.13"
-    "@fortawesome/fontawesome-common-types" "^6.0.0"
-    type-fest "^2.0.0"
-
-"@appsemble/types@0.20.13":
-  version "0.20.13"
-  resolved "https://registry.yarnpkg.com/@appsemble/types/-/types-0.20.13.tgz#269e370c3968d4014b6bcb0436db2549cdc8b347"
-  integrity sha512-Rv+Y6ajfP7OiteS3Eo485/HtROg5gpkHYbOq3Jx408dMF8xuyqgp1kKA0jWxOVTF+GYnVNPHr31/At0fvQmgwg==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "^6.0.0"
-    jsonschema "^1.0.0"
-    openapi-types "^12.0.0"
-    type-fest "^2.0.0"
-
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.0", "@babel/code-frame@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.18.6.tgz#3b25d38c89600baa2dcc219edfa88a74eb2c427a"
