@@ -1,0 +1,23 @@
+{
+  "name": "@appsemble/qr-scan",
+  "version": "0.20.14",
+  "private": true,
+  "description": "A block that creates a video from the camera and scans for QR codes.",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/qr-scan"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "0.20.14",
+    "jsqr": "^1.0.0"
+  }
+}
