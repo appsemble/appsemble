@@ -3330,6 +3330,43 @@ If defined, a loader will be shown until this event is triggered.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks qr-scan 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": {
+      "foundQr": {
+        "description": "Event that gets emitted once the qr scanner has identified and resolved a QR code.
+
+foundQr event only holds the string of the QR.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "drawQr": {
+        "default": false,
+        "description": "If true, the block will draw a rectangle around the QR code when it’s found.",
+        "type": "boolean",
+      },
+      "height": {
+        "description": "Video element height",
+        "type": "number",
+      },
+      "width": {
+        "description": "Video element width",
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
 {
   "actions": undefined,
