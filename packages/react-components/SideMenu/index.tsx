@@ -9,7 +9,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
@@ -60,7 +59,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
   const [menu, setMenu] = useState<ReactElement>(null);
 
   const location = useLocation();
-  useLayoutEffect(() => {
+  useEffect(() => {
     disable();
   }, [disable, location]);
 
