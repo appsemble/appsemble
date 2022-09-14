@@ -1,7 +1,7 @@
 import { Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import ics, { EventAttributes } from 'ics';
+import { createEvent, EventAttributes } from 'ics';
 import { IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
@@ -235,7 +235,7 @@ const mapperImplementations: MapperImplementations = {
       };
     }
 
-    const { error, value } = ics.createEvent(event as EventAttributes);
+    const { error, value } = createEvent(event as EventAttributes);
     if (error) {
       throw error;
     }
