@@ -93,7 +93,7 @@ export function BlockPage(): ReactElement {
   }
 
   if (!selectedBlockManifest) {
-    return <Navigate to={`/${url}/${blockVersions[0].version}`} />;
+    return <Navigate to={blockVersions[0].version} />;
   }
 
   return (

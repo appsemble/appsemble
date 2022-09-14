@@ -1,7 +1,7 @@
 import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { sentryDsn } from '../../utils/settings.js';
@@ -25,7 +25,6 @@ import { Verify } from '../Verify/index.js';
  * This maps the page to a route and displays a page depending on URL.
  */
 export function AppRoutes(): ReactElement {
-  const { lang } = useParams<{ lang: string }>();
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
@@ -66,7 +65,7 @@ export function AppRoutes(): ReactElement {
         {sentryDsn ? <Route caseSensitive element={<SentryFeedback />} path="/Feedback" /> : null}
 
         <Route caseSensitive element={<Page />} path="/:pageId/*" />
-        <Route element={<Navigate to={`/${lang}/${normalize(defaultPageName)}`} />} path="/*" />
+        <Route element={<Navigate to={normalize(defaultPageName)} />} path="*" />
       </Routes>
     </MetaProvider>
   );
