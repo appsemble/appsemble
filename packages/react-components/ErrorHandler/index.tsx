@@ -1,9 +1,7 @@
 import { captureException } from '@sentry/browser';
-import { BrowserHistory, createBrowserHistory } from 'history';
-import { Component, ElementType, ErrorInfo, ReactElement, ReactNode } from 'react';
+import { Component, ElementType, ErrorInfo, ReactNode } from 'react';
 
 interface ErrorHandlerProps {
-  history?: BrowserHistory;
   /**
    * Children to render.
    */
@@ -12,7 +10,7 @@ interface ErrorHandlerProps {
   /**
    * The fallback to render in case an error occurs rendering children.
    */
-  fallback: ElementType<ErrorHandlerState>;
+  fallback: ElementType<ErrorHandlerState | { resetErrorBoundary: () => void }>;
 }
 
 interface ErrorHandlerState {
@@ -38,13 +36,6 @@ class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
     eventId: null,
   };
 
-  componentDidMount(): void {
-    const { history } = this.props;
-    history.listen(() => {
-      this.setState({ error: null, eventId: null });
-    });
-  }
-
   componentDidCatch(error: Error, { componentStack }: ErrorInfo): void {
     this.setState({
       error,
@@ -52,22 +43,20 @@ class ErrorBoundary extends Component<ErrorHandlerProps, ErrorHandlerState> {
     });
   }
 
+  resetErrorBoundary = (): void => {
+    this.setState({ error: null, eventId: null });
+  };
+
   render(): ReactNode {
     const { children, fallback: Fallback } = this.props;
     const { error, eventId } = this.state;
 
-    return error ? <Fallback error={error} eventId={eventId} /> : children;
+    return error ? (
+      <Fallback error={error} eventId={eventId} resetErrorBoundary={this.resetErrorBoundary} />
+    ) : (
+      children
+    );
   }
 }
 
-const history = createBrowserHistory({ window });
-
-function withRouter(Boundry: typeof ErrorBoundary): (props: ErrorHandlerProps) => ReactElement {
-  function ComponentWithRouterProp(props: ErrorHandlerProps): ReactElement {
-    return <Boundry {...props} history={history} />;
-  }
-
-  return ComponentWithRouterProp;
-}
-
-export const ErrorHandler = withRouter(ErrorBoundary);
+export const ErrorHandler = ErrorBoundary;
