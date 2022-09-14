@@ -169,7 +169,7 @@ export function TeamPage(): ReactElement {
                     <th>
                       <FormattedMessage {...messages.name} />
                     </th>
-                    <th className="right">
+                    <th align="right">
                       <FormattedMessage {...messages.actions} />
                     </th>
                   </tr>
