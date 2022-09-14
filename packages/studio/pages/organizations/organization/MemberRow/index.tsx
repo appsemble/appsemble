@@ -118,7 +118,6 @@ export function MemberRow({
           </span>
         )}
       </td>
-      {/* eslint-disable-next-line react/no-unknown-property */}
       <td align="right">
         <AsyncSelect
           className="mr-2"

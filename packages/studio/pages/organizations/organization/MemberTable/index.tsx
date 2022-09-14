@@ -88,7 +88,6 @@ export function MemberTable(): ReactElement {
               <th>
                 <FormattedMessage {...messages.name} />
               </th>
-              {/* eslint-disable-next-line react/no-unknown-property */}
               <th align="right">
                 <FormattedMessage {...messages.actions} />
               </th>
