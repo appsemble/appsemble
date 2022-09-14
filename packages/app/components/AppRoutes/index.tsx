@@ -60,7 +60,7 @@ export function AppRoutes(): ReactElement {
         <Route caseSensitive element={<TeamInvite />} path="/Team-Invite" />
         <Route caseSensitive element={<ResetPassword />} path="/Reset-Password" />
         <Route caseSensitive element={<EditPassword />} path="/Edit-Password" />
-        <Route element={<Verify />} path="/Verify" />
+        <Route caseSensitive element={<Verify />} path="/Verify" />
         <Route caseSensitive element={<OpenIDCallback />} path="/Callback" />
 
         {sentryDsn ? <Route caseSensitive element={<SentryFeedback />} path="/Feedback" /> : null}
