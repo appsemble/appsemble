@@ -8,4 +8,4 @@ default.
 
 ### Images
 
-![Map screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.20.14/config/assets/map.png)
+![Map screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.20.15/config/assets/map.png)
