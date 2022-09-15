@@ -5,6 +5,10 @@ import {
   UNSAFE_NavigationContext as NavigationContext,
 } from 'react-router-dom';
 
+/**
+ * Source: https://github.com/remix-run/react-router/commit/256cad70d3fd4500b1abcfea66f3ee622fb90874
+ */
+
 interface Navigator extends BaseNavigator {
   block: History['block'];
 }
