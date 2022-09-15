@@ -1,4 +1,4 @@
-import { Blocker, Transition } from 'history';
+import { Blocker, History, Transition } from 'history';
 import { ContextType, ReactElement, useCallback, useContext, useEffect } from 'react';
 import {
   Navigator as BaseNavigator,
@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 
 interface Navigator extends BaseNavigator {
-  // @ts-expect-error: seems to work fine
   block: History['block'];
 }
 
@@ -19,7 +18,7 @@ function useBlocker(blocker: Blocker, when = true): void {
       return;
     }
 
-    const unblock = navigator.block((tx: Transition) => {
+    const unblock = navigator.block((tx) => {
       const autoUnblockingTx = {
         ...tx,
         retry() {
