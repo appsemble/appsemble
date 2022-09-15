@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@appsemble/preact": "0.20.15",
+    "@appsemble/sdk": "0.20.15",
+    "preact": "^10.0.0",
+    "react-wordcloud": "^1.2.7"
+  },
+  "name": "@appsemble/wordcloud",
+  "private": true,
+  "type": "module",
+  "version": "0.20.15"
+}
