@@ -131,3 +131,9 @@ it('should fall back to the mobile-alt FontAwesome icon if no app or organizatio
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
+
+it('should fall back to the mobile-alt FontAwesome icon if no is found', async () => {
+  const response = await request.get('/icon-42.png');
+  expect(response.headers['content-type']).toBe('image/png');
+  expect(response.data).toMatchImageSnapshot();
+});
