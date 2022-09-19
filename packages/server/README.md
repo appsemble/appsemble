@@ -92,13 +92,13 @@ Check the `read_user` scope, and click _Save application_.
 
 Go to the
 [Google Cloud console OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
-Add the scopes `email` and `profile`. Under _**Authorized domains**_, add the `HOST` variable. Fill
+Add the scopes `email` and `profile`. Under **_Authorized domains_**, add the `HOST` variable. Fill
 in any missing information and click _Save_.
 
 Now go to the
 [Google Cloud console credentials page](https://console.cloud.google.com/apis/credentials). Click
 _Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST` variable under
-_**Authorized JavaScript origins**_. Under _**Authorized redirect URIs**_, add the following URI.
+**_Authorized JavaScript origins_**. Under **_Authorized redirect URIs_**, add the following URI.
 
 ```
 {HOST}/callback

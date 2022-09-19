@@ -44,7 +44,7 @@ The following values depend on the OAuth2 provider that is being configured.
 
 When registering Appsemble as a client, make sure to set the redirect URI (often called callback
 URL) to `/callback` on in Appsemble Studio. For example if Appsemble Studio is running on
-https://appsemble.app, the redirect URI should be set to https://appsemble.app/callback.
+<https://appsemble.app>, the redirect URI should be set to <https://appsemble.app/callback>.
 
 If this has been configured, the login button for your app will show a new login button for this
 provider.
