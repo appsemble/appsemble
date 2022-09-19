@@ -8,8 +8,6 @@ export function PageTracker(): null {
     if (typeof gtag !== 'undefined') {
       setTimeout(() => {
         gtag('set', 'page', pathname);
-        // @ts-expect-error XXX Investigate if this is necessary.
-        gtag('send', 'pageview');
       }, 300);
     }
   }, [pathname]);
