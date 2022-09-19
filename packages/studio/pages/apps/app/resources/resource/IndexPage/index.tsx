@@ -66,11 +66,11 @@ export function IndexPage(): ReactElement {
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(-1);
+  const [limit, setLimit] = useState(Number.POSITIVE_INFINITY);
   const [offset, setOffset] = useState(0);
   const result = useData<Resource[]>(
     `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}${
-      limit === -1 ? '' : `&$top=${limit}`
+      limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
     }&$skip=${offset}`,
   );
   const setResources = result.setData;
@@ -260,14 +260,14 @@ export function IndexPage(): ReactElement {
 
   useEffect(() => {
     const newPage =
-      rowsPerPage === -1
+      rowsPerPage === Number.POSITIVE_INFINITY
         ? 1
         : page >= Math.ceil(count / rowsPerPage)
         ? Math.ceil(count / rowsPerPage)
         : page;
     setPage(newPage <= 0 ? 1 : newPage);
-    setLimit(rowsPerPage === -1 ? -1 : rowsPerPage);
-    setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
+    setLimit(rowsPerPage === Number.POSITIVE_INFINITY ? Number.POSITIVE_INFINITY : rowsPerPage);
+    setOffset(rowsPerPage === Number.POSITIVE_INFINITY ? 0 : (page - 1) * rowsPerPage);
   }, [result, page, rowsPerPage, count, resourceURL]);
 
   return (
@@ -421,7 +421,7 @@ export function IndexPage(): ReactElement {
               onRowsPerPageChange={onRowsPerPageChange}
               page={page}
               rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[15, 25, 100, 500, -1]}
+              rowsPerPageOptions={[15, 25, 100, 500, Number.POSITIVE_INFINITY]}
             />
           </>
         )}

@@ -26,7 +26,7 @@ export function PaginationNavigator({
     (event: ChangeEvent<HTMLSelectElement>) => {
       const newRowsPerPage = Number(event.target.value);
       onRowsPerPageChange(newRowsPerPage);
-      if (newRowsPerPage === -1) {
+      if (newRowsPerPage === Number.POSITIVE_INFINITY) {
         return;
       }
       const pages = Math.ceil(count / newRowsPerPage);
@@ -41,7 +41,8 @@ export function PaginationNavigator({
     [onRowsPerPageChange, count, page, rowsPerPage, onPageChange],
   );
 
-  const maxPages = rowsPerPage === -1 || page < 1 ? 1 : Math.ceil(count / rowsPerPage);
+  const maxPages =
+    rowsPerPage === Number.POSITIVE_INFINITY || page < 1 ? 1 : Math.ceil(count / rowsPerPage);
 
   return (
     <div className="level">
@@ -56,7 +57,9 @@ export function PaginationNavigator({
             <SelectField onChange={onDropdownChange} value={rowsPerPage}>
               {rowsPerPageOptions.map((option) => (
                 <option key={option} value={option}>
-                  {option === -1 ? messages.allRowsLabel.defaultMessage : option}
+                  {option === Number.POSITIVE_INFINITY
+                    ? messages.allRowsLabel.defaultMessage
+                    : option}
                 </option>
               ))}
             </SelectField>
@@ -80,7 +83,7 @@ export function PaginationNavigator({
               <li>
                 <Button
                   className="mx-1"
-                  disabled={page + 1 > maxPages || rowsPerPage === -1}
+                  disabled={page + 1 > maxPages || rowsPerPage === Number.POSITIVE_INFINITY}
                   onClick={() => onPageChange(page + 1)}
                 >
                   <FormattedMessage {...messages.nextPageLabel} />

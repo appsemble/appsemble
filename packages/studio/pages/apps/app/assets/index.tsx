@@ -48,11 +48,13 @@ export function AssetsPage(): ReactElement {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(-1);
+  const [limit, setLimit] = useState(Number.POSITIVE_INFINITY);
   const [offset, setOffset] = useState(0);
   const { data: count, setData: setCount } = useData<number>(`/api/apps/${app.id}/assets/$count`);
   const assetsResult = useData<Asset[]>(
-    `/api/apps/${app.id}/assets?$skip=${offset}${limit === -1 ? '' : `&$top=${limit}`}`,
+    `/api/apps/${app.id}/assets?$skip=${offset}${
+      limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
+    }`,
   );
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
@@ -137,14 +139,14 @@ export function AssetsPage(): ReactElement {
 
   useEffect(() => {
     const newPage =
-      rowsPerPage === -1
+      rowsPerPage === Number.POSITIVE_INFINITY
         ? 1
         : page >= Math.ceil(count / rowsPerPage)
         ? Math.ceil(count / rowsPerPage)
         : page;
     setPage(newPage <= 0 ? 1 : newPage);
-    setLimit(rowsPerPage === -1 ? -1 : rowsPerPage);
-    setOffset(rowsPerPage === -1 ? 0 : (page - 1) * rowsPerPage);
+    setLimit(rowsPerPage === Number.POSITIVE_INFINITY ? Number.POSITIVE_INFINITY : rowsPerPage);
+    setOffset(rowsPerPage === Number.POSITIVE_INFINITY ? 0 : (page - 1) * rowsPerPage);
   }, [assetsResult, page, rowsPerPage, count]);
 
   return (
@@ -226,7 +228,7 @@ export function AssetsPage(): ReactElement {
               onRowsPerPageChange={onRowsPerPageChange}
               page={page}
               rowsPerPage={rowsPerPage}
-              rowsPerPageOptions={[10, 25, 100, 500, -1]}
+              rowsPerPageOptions={[10, 25, 100, 500, Number.POSITIVE_INFINITY]}
             />
           </>
         )}
