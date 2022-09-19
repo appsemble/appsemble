@@ -48,11 +48,12 @@ export function PaginationNavigator({
       <div className="level-left">
         <div className="level-item">
           <div className="field has-addons">
-            <SelectField
-              addonLeft={<FormattedMessage {...messages.rowsPerPageLabel} />}
-              onChange={onDropdownChange}
-              value={rowsPerPage}
-            >
+            <p className="control">
+              <button className="button is-static" type="button">
+                <FormattedMessage {...messages.rowsPerPageLabel} />
+              </button>
+            </p>
+            <SelectField onChange={onDropdownChange} value={rowsPerPage}>
               {rowsPerPageOptions.map((option) => (
                 <option key={option} value={option}>
                   {option === -1 ? messages.allRowsLabel.defaultMessage : option}

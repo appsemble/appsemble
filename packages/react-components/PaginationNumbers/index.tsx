@@ -35,18 +35,20 @@ export function PaginationNumbers({
 }: PaginationNumbersProps): ReactElement {
   if (maxPages < 6) {
     return (
-      <ul className="pagination-list">
-        {range(1, maxPages).map((pageNo) => (
-          <li key={pageNo}>
-            <Button
-              className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
-              onClick={() => onPageChange(pageNo)}
-            >
-              {pageNo}
-            </Button>
-          </li>
-        ))}
-      </ul>
+      <li>
+        <ul className="pagination-list">
+          {range(1, maxPages).map((pageNo) => (
+            <li key={pageNo}>
+              <Button
+                className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
+                onClick={() => onPageChange(pageNo)}
+              >
+                {pageNo}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </li>
     );
   }
 
