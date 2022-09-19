@@ -12,6 +12,7 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
+import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
 import { Resource } from '@appsemble/types';
 import { generateDataFromSchema, has } from '@appsemble/utils';
 import { download, serializeResource } from '@appsemble/web-utils';
@@ -35,7 +36,6 @@ import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/
 import { useApp } from '../../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { ResourcePagination } from './ResourcePagination/index.js';
 import { ResourceRow } from './ResourceRow/index.js';
 
 export interface RouteParams {
@@ -415,7 +415,7 @@ export function IndexPage(): ReactElement {
                 ))}
               </tbody>
             </Table>
-            <ResourcePagination
+            <PaginationNavigator
               count={count}
               onPageChange={onPageChange}
               onRowsPerPageChange={onRowsPerPageChange}

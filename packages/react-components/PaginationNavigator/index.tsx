@@ -2,10 +2,10 @@ import { Button, SelectField } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { ResourcePaginationNumbers } from '../ResourcePaginationNumbers/index.js';
+import { PaginationNumbers } from '../PaginationNumbers/index.js';
 import { messages } from './messages.js';
 
-export interface ResourcePaginationProps {
+export interface PaginationNavigatorProps {
   rowsPerPageOptions: number[];
   rowsPerPage: number;
   count: number;
@@ -14,14 +14,14 @@ export interface ResourcePaginationProps {
   onRowsPerPageChange: (rowsPerPage: number) => void;
 }
 
-export function ResourcePagination({
+export function PaginationNavigator({
   count,
   onPageChange,
   onRowsPerPageChange,
   page,
   rowsPerPage,
   rowsPerPageOptions,
-}: ResourcePaginationProps): ReactElement {
+}: PaginationNavigatorProps): ReactElement {
   const onDropdownChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const newRowsPerPage = Number(event.target.value);
@@ -48,12 +48,11 @@ export function ResourcePagination({
       <div className="level-left">
         <div className="level-item">
           <div className="field has-addons">
-            <p className="control">
-              <button className="button is-static" type="button">
-                <FormattedMessage {...messages.rowsPerPageLabel} />
-              </button>
-            </p>
-            <SelectField onChange={onDropdownChange} value={rowsPerPage}>
+            <SelectField
+              addonLeft={<FormattedMessage {...messages.rowsPerPageLabel} />}
+              onChange={onDropdownChange}
+              value={rowsPerPage}
+            >
               {rowsPerPageOptions.map((option) => (
                 <option key={option} value={option}>
                   {option === -1 ? messages.allRowsLabel.defaultMessage : option}
@@ -76,11 +75,7 @@ export function ResourcePagination({
                   <FormattedMessage {...messages.previousPageLabel} />
                 </Button>
               </li>
-              <ResourcePaginationNumbers
-                maxPages={maxPages}
-                onPageChange={onPageChange}
-                page={page}
-              />
+              <PaginationNumbers maxPages={maxPages} onPageChange={onPageChange} page={page} />
               <li>
                 <Button
                   className="mx-1"

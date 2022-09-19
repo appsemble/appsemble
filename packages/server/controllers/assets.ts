@@ -4,7 +4,7 @@ import { Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 
-import { App, Asset, Organization, Resource } from '../models/index.js';
+import { App, Asset, Resource } from '../models/index.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getAssets(ctx: Context): Promise<void> {
@@ -15,7 +15,6 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: Organization, attributes: ['id'] }],
   });
 
   if (!app) {
@@ -55,7 +54,6 @@ export async function countAssets(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [{ model: Organization, attributes: ['id'] }],
   });
 
   if (!app) {

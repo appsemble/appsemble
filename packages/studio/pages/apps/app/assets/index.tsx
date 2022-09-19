@@ -16,6 +16,7 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
 import { Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
@@ -24,7 +25,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
-import { AssetPagination } from './AssetPagination/index.js';
 import { AssetRow } from './AssetRow/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -220,7 +220,7 @@ export function AssetsPage(): ReactElement {
                 ))}
               </tbody>
             </Table>
-            <AssetPagination
+            <PaginationNavigator
               count={count}
               onPageChange={onPageChange}
               onRowsPerPageChange={onRowsPerPageChange}
