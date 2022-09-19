@@ -470,7 +470,7 @@ review:
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
-      --set "sentry.environment=$CI_ENVIRONMENT_NAME"
+      --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
 
 # Stop a review environment.
