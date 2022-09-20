@@ -23,10 +23,10 @@ describe('/organizations', () => {
     cy.contains('Organization Members').should('exist');
     cy.get('button[class="button"]').should('exist').click();
     cy.contains('Add new members').should('exist');
-    cy.get('input[name="email"]').should('exist').type('foo@bar.com');
+    cy.get('input[name="email"]').should('exist').type('e2e@appsemble.com');
     cy.get('button[type="submit"]').should('contain.text', 'Add members').click();
     cy.get('table')
-      .contains('foo@bar.com')
+      .contains('e2e@appsemble.com')
       .should('exist')
       .parent('tr')
       .within(() => {
@@ -45,7 +45,7 @@ describe('/organizations', () => {
     cy.login('/en/organizations/appsemble/members');
     cy.contains('Organization Members').should('exist');
     cy.get('table')
-      .contains('foo@bar.com')
+      .contains('e2e@appsemble.com')
       .should('exist')
       .parent('tr')
       .within(() => {
@@ -53,6 +53,6 @@ describe('/organizations', () => {
       });
     cy.contains('Delete invite').should('exist');
     cy.get('button[type="button"]').contains('Delete invite').should('exist').click();
-    cy.get('table').contains('foo@bar.com').should('not.exist');
+    cy.get('table').contains('e2e@appsemble.com').should('not.exist');
   });
 });
