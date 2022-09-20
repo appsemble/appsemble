@@ -345,7 +345,7 @@ publish npm:
 sentry release:
   needs: []
   image:
-    name: getsentry/sentry-cli:1
+    name: getsentry/sentry-cli:2
     entrypoint: [/bin/sh, -c]
   stage: publish
   rules:
