@@ -7,7 +7,7 @@ import { transformFileAsync } from '@babel/core';
 import FormatJsPlugin from 'babel-plugin-formatjs';
 import { Options as FormatJsPluginOptions } from 'babel-plugin-formatjs/types';
 import ReactIntlAutoPlugin from 'babel-plugin-react-intl-auto';
-import globby from 'globby';
+import { globby } from 'globby';
 
 type Translations = Record<string, Record<string, string>>;
 

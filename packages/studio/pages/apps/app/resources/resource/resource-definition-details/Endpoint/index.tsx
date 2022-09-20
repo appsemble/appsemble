@@ -2,7 +2,7 @@ import { Title } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { useApp } from '../../../../index.js';
 import { messages } from './messages.js';
@@ -23,9 +23,7 @@ const methods = {
 
 export function Endpoint({ hasBody, type }: EndpointProps): ReactElement {
   const { app } = useApp();
-  const {
-    params: { id, resourceName },
-  } = useRouteMatch<{ id: string; resourceName: string }>();
+  const { id, resourceName } = useParams<{ id: string; resourceName: string }>();
   const resource = app.definition.resources[resourceName];
   const roles = (resource[type === '$count' ? 'count' : type]?.roles ?? resource.roles ?? []).map(
     (role) => app.messages?.app[`app.roles.${role}`] || role,

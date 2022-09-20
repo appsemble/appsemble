@@ -1,13 +1,13 @@
 import { has } from '@appsemble/utils';
-import { InlineCode, Link, Parent } from 'mdast';
+import { InlineCode, Link, Parent, YAML } from 'mdast';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';
-import frontmatter, { YamlNode } from 'remark-frontmatter';
+import frontmatter from 'remark-frontmatter';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import remarkStringify from 'remark-stringify';
-import unified from 'unified';
-import visit from 'unist-util-visit';
+import { unified } from 'unified';
+import { visit } from 'unist-util-visit';
 import { parse } from 'yaml';
 
 const remark = unified()
@@ -48,11 +48,11 @@ export async function renderEmail(
     throw new Error(`Unknown template value: ${key}`);
   }
 
-  visit<Link>(mdast, 'link', (node) => {
+  visit(mdast, 'link', (node: Link) => {
     // eslint-disable-next-line no-param-reassign
     node.url = node.url.replace(/\/{{(\w+)}}/, replace);
   });
-  visit<InlineCode>(mdast, 'inlineCode', (node, index, parent: Parent) => {
+  visit(mdast, 'inlineCode', (node: InlineCode, index, parent: Parent) => {
     parent.children.splice(index, 1, {
       type: 'text',
       value: node.value.replace(/{{(\w+)}}/, replace),
@@ -60,7 +60,7 @@ export async function renderEmail(
   });
 
   if (!sub) {
-    visit<YamlNode>(mdast, 'yaml', (node, index, parent: Parent) => {
+    visit(mdast, 'yaml', (node: YAML, index, parent: Parent) => {
       ({ subject } = parse(node.value) as Email);
       parent.children.splice(index, 1);
     });

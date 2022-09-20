@@ -3,7 +3,7 @@ import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
 import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 
 import { shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
@@ -22,10 +22,8 @@ interface BottomNavigationProps {
  * The app navigation that is displayed at the bottom of the app.
  */
 export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
-  const {
-    params: { lang },
-    url,
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}`;
   const { isLoggedIn, teams } = useUser();
   const { getAppMessage, getMessage } = useAppMessages();
   const { definition } = useAppDefinition();
@@ -61,8 +59,11 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
             return (
               <li className="bottom-nav-item" key={page.name}>
                 <NavLink
-                  activeClassName="is-active"
-                  className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                  className={({ isActive }) =>
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                      isActive && 'is-active'
+                    }`
+                  }
                   title={navName as string}
                   to={`${url}/${normalize(name)}`}
                 >
@@ -78,8 +79,11 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
           {definition.layout?.settings === 'navigation' && (
             <li className="bottom-nav-item">
               <NavLink
-                activeClassName="is-active"
-                className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                className={({ isActive }) =>
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                    isActive && 'is-active'
+                  }`
+                }
                 title={formatMessage(messages.settings)}
                 to={`${url}/Settings`}
               >
@@ -93,8 +97,11 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
           {definition.layout?.feedback === 'navigation' && sentryDsn ? (
             <li className="bottom-nav-item">
               <NavLink
-                activeClassName="is-active"
-                className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                className={({ isActive }) =>
+                  `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                    isActive && 'is-active'
+                  }`
+                }
                 title={formatMessage(messages.feedback)}
                 to={`${url}/Feedback`}
               >
@@ -122,8 +129,11 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
             ) : (
               <li className="bottom-nav-item">
                 <NavLink
-                  activeClassName="is-active"
-                  className="bottom-nav-item-link is-flex px-4 py-4 has-text-centered"
+                  className={({ isActive }) =>
+                    `bottom-nav-item-link is-flex px-4 py-4 has-text-centered ${
+                      isActive && 'is-active'
+                    }`
+                  }
                   title={formatMessage(messages.login)}
                   to={`${url}/Login`}
                 >

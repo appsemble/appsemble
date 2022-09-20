@@ -7,7 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { sentryDsn } from '../../utils/settings.js';
 import { useUser } from '../UserProvider/index.js';
@@ -26,7 +26,6 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
   const { logout, userInfo } = useUser();
   const location = useLocation();
   const redirect = useLocationString();
-  const { url } = useRouteMatch();
   const qs = useQuery();
   let search: URLSearchParams;
 
@@ -67,12 +66,12 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
       }
     >
       {userInfo ? (
-        <NavbarItem icon="wrench" to={`${url}/settings`}>
+        <NavbarItem icon="wrench" to="/settings">
           <FormattedMessage {...messages.settings} />
         </NavbarItem>
       ) : null}
       {sentryDsn ? (
-        <NavbarItem icon="comment" to={`${url}/feedback`}>
+        <NavbarItem icon="comment" to="/feedback">
           <FormattedMessage {...messages.feedback} />
         </NavbarItem>
       ) : null}
@@ -82,7 +81,7 @@ export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElem
           <FormattedMessage {...messages.logoutButton} />
         </NavbarItem>
       ) : (
-        <NavbarItem icon="sign-in-alt" to={{ pathname: `${url}/login`, search: `?${search}` }}>
+        <NavbarItem icon="sign-in-alt" to={{ pathname: '/login', search: `?${search}` }}>
           <FormattedMessage {...messages.login} />
         </NavbarItem>
       )}

@@ -7,15 +7,15 @@ exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmai
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>You have changed your email address for Test App. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards</p>
 <p>, <em>Test App</em></p>
 </body>
@@ -43,15 +43,15 @@ exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmai
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello John Doe,</p>
 <p>You have changed your email address for Test App. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards</p>
 <p>, <em>Test App</em></p>
 </body>
@@ -79,15 +79,15 @@ exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmai
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hallo,</p>
 <p>Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>
@@ -115,15 +115,15 @@ exports[`sendTranslatedEmail appMemberEmailChange nl should render appMemberEmai
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Beste John Doe,</p>
 <p>Je hebt je e-mailadres voor Test App gewijzigd. Voordat je jouw account kunt gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>
@@ -151,15 +151,15 @@ exports[`sendTranslatedEmail resend en should render resend 0 for locale en 2`] 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> to vervify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to vervify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.</p>
 <p>Kind regards,</p>
@@ -193,15 +193,15 @@ exports[`sendTranslatedEmail resend en should render resend 1 for locale en 2`] 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello John Doe,</p>
 <p>Someone has requested to resend the verification key for your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">this link</a> to vervify your email address.</p>
+<p>Please click <a href="https://example.com">this link</a> to vervify your email address.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>No worries! Your address may have been entered by mistake. If you ignore or delete this email, nothing will happen to your account.</p>
 <p>Kind regards,</p>
@@ -235,15 +235,15 @@ exports[`sendTranslatedEmail resend nl should render resend 0 for locale nl 2`] 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hallo,</p>
 <p>Iemand heeft gevraagd om de verificatiesleutel voor jouw account opnieuw te verzenden. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong></p>
 <p>Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je deze e-mail negeert of verwijdert, gebeurt er niets met jouw account.</p>
 <p>Met vriendelijke groet,</p>
@@ -277,15 +277,15 @@ exports[`sendTranslatedEmail resend nl should render resend 1 for locale nl 2`] 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Beste John Doe,</p>
 <p>Iemand heeft gevraagd om de verificatiesleutel voor jouw account opnieuw te verzenden. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong></p>
 <p>Geen zorgen! Het kan zijn dat jouw e-mailadres per ongeluk is ingevoerd. Als je deze e-mail negeert of verwijdert, gebeurt er niets met jouw account.</p>
 <p>Met vriendelijke groet,</p>
@@ -319,14 +319,14 @@ exports[`sendTranslatedEmail reset en should render reset 0 for locale en 2`] = 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
-<p>A password reset has been requested for your account. Please click <a href=\\"https://example.com\\">here</a> to reset your password.</p>
+<p>A password reset has been requested for your account. Please click <a href="https://example.com">here</a> to reset your password.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
 <p>Kind regards,</p>
@@ -358,14 +358,14 @@ exports[`sendTranslatedEmail reset en should render reset 1 for locale en 2`] = 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello John Doe,</p>
-<p>A password reset has been requested for your account. Please click <a href=\\"https://example.com\\">here</a> to reset your password.</p>
+<p>A password reset has been requested for your account. Please click <a href="https://example.com">here</a> to reset your password.</p>
 <p><strong>Didn’t request this email?</strong></p>
 <p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
 <p>Kind regards,</p>
@@ -397,14 +397,14 @@ exports[`sendTranslatedEmail reset nl should render reset 0 for locale nl 2`] = 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hallo,</p>
-<p>Er is een wachtwoordherstel aangevraagd voor jouw account. Klik <a href=\\"https://example.com\\">hier</a> om jouw wachtwoord opnieuw in te stellen.</p>
+<p>Er is een wachtwoordherstel aangevraagd voor jouw account. Klik <a href="https://example.com">hier</a> om jouw wachtwoord opnieuw in te stellen.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong></p>
 <p>Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worden genegeerd.</p>
 <p>Met vriendelijke groet,</p>
@@ -436,14 +436,14 @@ exports[`sendTranslatedEmail reset nl should render reset 1 for locale nl 2`] = 
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Beste John Doe,</p>
-<p>Er is een wachtwoordherstel aangevraagd voor jouw account. Klik <a href=\\"https://example.com\\">hier</a> om jouw wachtwoord opnieuw in te stellen.</p>
+<p>Er is een wachtwoordherstel aangevraagd voor jouw account. Klik <a href="https://example.com">hier</a> om jouw wachtwoord opnieuw in te stellen.</p>
 <p><strong>Heb je deze e-mail niet aangevraagd?</strong></p>
 <p>Jouw e-mailadres is mogelijk per ongeluk ingevoerd. Deze e-mail kan veilig worden genegeerd.</p>
 <p>Met vriendelijke groet,</p>
@@ -475,15 +475,15 @@ exports[`sendTranslatedEmail welcome en should render welcome 0 for locale en 2`
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello,</p>
 <p>Thank you for registering your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Test App</em></p>
 </body>
@@ -511,15 +511,15 @@ exports[`sendTranslatedEmail welcome en should render welcome 1 for locale en 2`
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hello John Doe,</p>
 <p>Thank you for registering your account. Before you can use your account, we need to verify your email address.</p>
-<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Please click <a href="https://example.com">here</a> to verify your email address.</p>
 <p>Kind regards,</p>
 <p><em>Test App</em></p>
 </body>
@@ -547,15 +547,15 @@ exports[`sendTranslatedEmail welcome nl should render welcome 0 for locale nl 2`
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Hallo,</p>
 <p>Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>
@@ -583,15 +583,15 @@ exports[`sendTranslatedEmail welcome nl should render welcome 1 for locale nl 2`
   "attachments": [],
   "from": "Appsemble <test@example.com>",
   "html": "<!doctype html>
-<html lang=\\"en\\">
+<html lang="en">
 <head>
-<meta charset=\\"utf-8\\">
-<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <p>Beste John Doe,</p>
 <p>Bedankt voor het registeren van jouw account. Voordat je jouw account kan gebruiken, moeten we jouw e-mailadres verifiëren.</p>
-<p>Klik <a href=\\"https://example.com\\">hier</a> om jouw e-mailadres te verifiëren.</p>
+<p>Klik <a href="https://example.com">hier</a> om jouw e-mailadres te verifiëren.</p>
 <p>Met vriendelijke groet,</p>
 <p><em>Test App</em></p>
 </body>

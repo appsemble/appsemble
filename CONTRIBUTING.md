@@ -88,7 +88,7 @@ address=/.localhost/127.0.0.1
 ```
 
 After saving the file, this should go in effect immediately. Try running Appsemble and navigating to
-http://foo.bar.localhost:9999. If this serves something, it works.
+<http://foo.bar.localhost:9999>. If this serves something, it works.
 
 #### MacOS
 

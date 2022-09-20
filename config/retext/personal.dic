@@ -9,6 +9,8 @@ cryptographical/potential
 decrypt/encrypt
 dialog/kitten
 enum/kitten
+Fontys
+ICT
 Manny
 maskable/editable
 middleware/mare
@@ -82,6 +84,7 @@ PWA
 remapper/mapper
 Redux
 SAML
+SAML2.0
 SDK
 SMTP
 SSL

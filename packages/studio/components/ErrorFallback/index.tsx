@@ -13,12 +13,17 @@ interface ErrorFallbackProps {
    * The Sentry event ID that was generated.
    */
   eventId: string;
+
+  /**
+   * Resets ErrorBoundary state to be able to navigate back.
+   */
+  resetErrorBoundary: () => void;
 }
 
 /**
  * Capture renderer errors using Sentry.
  */
-export function ErrorFallback({ eventId }: ErrorFallbackProps): ReactElement {
+export function ErrorFallback({ eventId, resetErrorBoundary }: ErrorFallbackProps): ReactElement {
   useMeta(messages.title);
   const user = useUser();
 
@@ -41,14 +46,14 @@ export function ErrorFallback({ eventId }: ErrorFallbackProps): ReactElement {
               eventId={eventId}
               name={user?.userInfo?.name}
               recovery={
-                <Button className="mb-3" component={Link} to="/apps">
+                <Button className="mb-3" component={Link} onClick={resetErrorBoundary} to="/apps">
                   <FormattedMessage {...messages.toApps} />
                 </Button>
               }
             />
           </>
         ) : (
-          <Button component={Link} to="/apps">
+          <Button component={Link} onClick={resetErrorBoundary} to="/apps">
             <FormattedMessage {...messages.toApps} />
           </Button>
         )}

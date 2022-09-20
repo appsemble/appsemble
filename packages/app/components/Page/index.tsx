@@ -12,7 +12,7 @@ import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@ap
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, useLocation, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
 import { ShowDialogParams, ShowShareDialog } from '../../types.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
@@ -34,11 +34,8 @@ export function Page(): ReactElement {
   const { definition } = useAppDefinition();
   const redirect = useLocationString();
   const { isLoggedIn, role, teams, userInfo } = useUser();
-  const {
-    params: { lang, pageId },
-    path,
-    url,
-  } = useRouteMatch<{ lang: string; pageId: string }>();
+  const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
+
   const { pathname } = useLocation();
   const { appMessageIds, getAppMessage, getMessage } = useAppMessages();
   const { page: navPage, setPage } = usePage();
@@ -155,7 +152,7 @@ export function Page(): ReactElement {
 
     if (pageId !== normalize(normalizedPageName)) {
       // Redirect to page with untranslated page name
-      return <Redirect to={pathname.replace(pageId, normalizedPageName)} />;
+      return <Navigate to={pathname.replace(pageId, normalizedPageName)} />;
     }
 
     return (
@@ -182,38 +179,41 @@ export function Page(): ReactElement {
         ) : (
           // The switch is used to enforce an exact path.
           <MetaSwitch title={pageName}>
-            <Route exact path={`${path}${(page.parameters || []).map((param) => `/:${param}`)}`}>
-              {page.type === 'flow' ? (
-                <FlowPage
-                  data={data}
-                  definition={definition}
-                  ee={ee.current}
-                  key={prefix}
-                  page={page}
-                  prefix={prefix}
-                  prefixIndex={prefixIndex}
-                  remap={remapWithContext}
-                  setData={setData}
-                  showDialog={showDialog}
-                  showShareDialog={showShareDialog}
-                />
-              ) : (
-                <BlockList
-                  blocks={page.blocks}
-                  data={data}
-                  ee={ee.current}
-                  key={prefix}
-                  page={page}
-                  prefix={`${prefix}.blocks`}
-                  prefixIndex={`${prefixIndex}.blocks`}
-                  remap={remapWithContext}
-                  showDialog={showDialog}
-                  showShareDialog={showShareDialog}
-                />
-              )}
-            </Route>
+            <Route
+              element={
+                page.type === 'flow' ? (
+                  <FlowPage
+                    data={data}
+                    definition={definition}
+                    ee={ee.current}
+                    key={prefix}
+                    page={page}
+                    prefix={prefix}
+                    prefixIndex={prefixIndex}
+                    remap={remapWithContext}
+                    setData={setData}
+                    showDialog={showDialog}
+                    showShareDialog={showShareDialog}
+                  />
+                ) : (
+                  <BlockList
+                    blocks={page.blocks}
+                    data={data}
+                    ee={ee.current}
+                    key={prefix}
+                    page={page}
+                    prefix={`${prefix}.blocks`}
+                    prefixIndex={`${prefixIndex}.blocks`}
+                    remap={remapWithContext}
+                    showDialog={showDialog}
+                    showShareDialog={showShareDialog}
+                  />
+                )
+              }
+              path={String((page.parameters || []).map((param) => `/:${param}`))}
+            />
             {/* Redirect from a matching sub URL to the actual URL */}
-            {!page.parameters && <Redirect to={url} />}
+            {!page.parameters && <Route element={<Navigate to="url" />} path="*" />}
           </MetaSwitch>
         )}
         <PageDialog
@@ -235,7 +235,7 @@ export function Page(): ReactElement {
   // If the user isn’t allowed to view the page, because they aren’t logged in, redirect to the
   // login page.
   if (page && !isLoggedIn) {
-    return <Redirect to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
+    return <Navigate to={`/${lang}/Login?${new URLSearchParams({ redirect })}`} />;
   }
 
   // If the user is logged in, but isn’t allowed to view the current page, redirect to the default
@@ -250,7 +250,7 @@ export function Page(): ReactElement {
       pageName = getAppMessage({ id: defaultPagePrefix }).format() as string;
     }
 
-    return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view the default page either, find a page to redirect the user to.
@@ -263,7 +263,7 @@ export function Page(): ReactElement {
       pageName = getAppMessage({ id: normalizedRedirectPageName }).format() as string;
     }
 
-    return <Redirect to={`/${lang}/${normalize(pageName)}`} />;
+    return <Navigate to={`/${lang}/${normalize(pageName)}`} />;
   }
 
   // If the user isn’t allowed to view any pages, show an error message.

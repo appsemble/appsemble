@@ -6,9 +6,13 @@ import retextQuotes from 'retext-quotes';
 import retextRepeatedWords from 'retext-repeated-words';
 import retextSpell from 'retext-spell';
 import retextSyntaxURLs from 'retext-syntax-urls';
-import unified from 'unified';
+import { unified } from 'unified';
 
 export default {
+  settings: {
+    fences: true,
+    listItemIndent: 'one',
+  },
   plugins: [
     'remark-frontmatter',
     'remark-gfm',

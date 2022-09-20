@@ -15,7 +15,7 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../../../../components/ResendEmailButton/index.js';
@@ -34,10 +34,9 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { hash } = useLocation();
   const { formatMessage } = useIntl();
-  const { url } = useRouteMatch();
   const { organizations, userInfo } = useUser();
 
   const onCreate = useCallback(
@@ -52,18 +51,18 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
         resources: resources && includeResources,
         visibility,
       });
-      history.push(`${url}/${data.id}/edit`);
+      navigate(`${data.id}/edit`);
     },
-    [history, url, organizations, selectedTemplate, templates],
+    [navigate, organizations, selectedTemplate, templates],
   );
 
   const openCreateDialog = useCallback(() => {
-    history.replace({ hash: 'create' });
-  }, [history]);
+    navigate({ hash: 'create' }, { replace: true });
+  }, [navigate]);
 
   const closeCreateDialog = useCallback(() => {
-    history.replace({ hash: null });
-  }, [history]);
+    navigate({ hash: null }, { replace: true });
+  }, [navigate]);
 
   const active = hash === '#create';
 

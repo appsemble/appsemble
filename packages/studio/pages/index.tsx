@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
 import { ProtectedRoute } from '../components/ProtectedRoute/index.js';
@@ -24,62 +24,31 @@ import { VerifyPage } from './verify/index.js';
 /**
  * Render all top level routes.
  */
-export function Routes(): ReactElement {
-  const { path } = useRouteMatch();
-
+export function TopLevelRoutes(): ReactElement {
   return (
-    <Switch>
-      <Route path={`${path}/apps`}>
-        <AppsRoutes />
+    <Routes>
+      <Route element={<AppsRoutes />} path="/apps/*" />
+      <Route element={<BlockRoutes />} path="/blocks/*" />
+      <Route element={<OrganizationsRoutes />} path="/organizations/*" />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<SettingsRoutes />} path="/settings/*" />
+        <Route element={<FeedbackPage />} path="/feedback" />
       </Route>
-      <Route path={`${path}/blocks`}>
-        <BlockRoutes />
+      <Route element={<ConnectRoutes />} path="/connect/authorize/*" />
+      <Route element={<OrganizationInvitePage />} path="/organization-invite" />
+      <Route element={<VerifyPage />} path="/verify" />
+      <Route element={<CallbackPage />} path="/callback" />
+      <Route element={<AnonymousRoute />}>
+        {enableRegistration ? <Route element={<RegisterPage />} path="/register" /> : null}
+        <Route element={<LoginPage />} path="/login" />
+        <Route element={<EditPasswordPage />} path="/edit-password" />
       </Route>
-      <Route path={`${path}/organizations`}>
-        <OrganizationsRoutes />
-      </Route>
-      <ProtectedRoute path={`${path}/settings`}>
-        <SettingsRoutes />
-      </ProtectedRoute>
-      <ProtectedRoute path={`${path}/feedback`}>
-        <FeedbackPage />
-      </ProtectedRoute>
-      <Route path={`${path}/connect/authorize`}>
-        <ConnectRoutes />
-      </Route>
-      <AnonymousRoute exact path={`${path}/edit-password`}>
-        <EditPasswordPage />
-      </AnonymousRoute>
-      <Route exact path={`${path}/organization-invite`}>
-        <OrganizationInvitePage />
-      </Route>
-      <Route exact path={`${path}/verify`}>
-        <VerifyPage />
-      </Route>
-      <Route exact path={`${path}/callback`}>
-        <CallbackPage />
-      </Route>
-      <AnonymousRoute exact path={`${path}/login`}>
-        <LoginPage />
-      </AnonymousRoute>
-      {enableRegistration ? (
-        <AnonymousRoute exact path={`${path}/register`}>
-          <RegisterPage />
-        </AnonymousRoute>
-      ) : null}
-      <Route exact path={`${path}/reset-password`}>
-        <ResetPasswordPage />
-      </Route>
-      <Route exact path={`${path}/saml/response/:code?`}>
-        <SAMLResponsePage />
-      </Route>
-      <Route path={`${path}/docs`}>
-        <DocsRoutes />
-      </Route>
-      <Route exact path={`${path}/privacy`}>
-        <PrivacyPolicyPage />
-      </Route>
-      <Redirect to={`${path}/apps`} />
-    </Switch>
+      <Route element={<ResetPasswordPage />} path="/reset-password" />
+      <Route element={<SAMLResponsePage />} path="/saml/response/:code" />
+      <Route element={<SAMLResponsePage />} path="/saml/response/*" />
+      <Route element={<DocsRoutes />} path="/docs/*" />
+      <Route element={<PrivacyPolicyPage />} path="/privacy" />
+      <Route element={<Navigate to="/apps" />} path="*" />
+    </Routes>
   );
 }

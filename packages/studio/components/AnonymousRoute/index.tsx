@@ -1,6 +1,6 @@
 import { useQuery } from '@appsemble/react-components';
 import { ReactElement } from 'react';
-import { Redirect, Route, RouteProps, useParams } from 'react-router-dom';
+import { Navigate, Outlet, useParams } from 'react-router-dom';
 
 import { useUser } from '../UserProvider/index.js';
 
@@ -10,10 +10,10 @@ import { useUser } from '../UserProvider/index.js';
  * If the user is logged in, the user is redirected to the URL specified in the `redirect` search
  * parameter, which defaults to `/apps`.
  */
-export function AnonymousRoute(props: RouteProps): ReactElement {
+export function AnonymousRoute(): ReactElement {
   const { userInfo } = useUser();
   const qs = useQuery();
   const { lang } = useParams<{ lang: string }>();
 
-  return userInfo ? <Redirect to={qs.get('redirect') || `/${lang}/apps`} /> : <Route {...props} />;
+  return userInfo ? <Navigate to={qs.get('redirect') || `/${lang}/apps`} /> : <Outlet />;
 }

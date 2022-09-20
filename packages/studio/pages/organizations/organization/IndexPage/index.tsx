@@ -3,7 +3,7 @@ import { App, BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useParams, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
@@ -21,10 +21,10 @@ interface IndexPageProps {
 }
 
 export function IndexPage({ organization }: IndexPageProps): ReactElement {
-  const { url } = useRouteMatch();
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
-  const { lang } = useParams<{ lang: string }>();
+  const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();
+  const url = `/${lang}/organizations/${organizationId}`;
 
   const appsResult = useData<App[]>(`/api/organizations/${organization.id}/apps?language=${lang}`);
   const blocksResult = useData<BlockManifest[]>(`/api/organizations/${organization.id}/blocks`);

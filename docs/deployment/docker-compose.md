@@ -1,7 +1,8 @@
 # Docker Compose
 
-Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy
-the following contents in a file named _.docker-compose.yaml_.
+Appsemble is published as a Docker image. This makes it easy to deploy using
+[Docker Compose](https://docs.docker.com/compose). Copy the following contents in a file named
+_.docker-compose.yaml_.
 
 ```yaml copy filename="docker-compose.yml"
 version: '3.5'
@@ -58,7 +59,7 @@ It is also recommended to modify the database name, user, and password, and the 
 To start the service, run the following command.
 
 ```
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 The Appsemble studio should now be available on [localhost:8000](http://localhost:8000). The
@@ -78,7 +79,7 @@ $ docker run --network=appsemble \
 To stop the service, run the following command.
 
 ```
-$ docker-compose down
+$ docker compose down
 ```
 
 Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git

@@ -1,25 +1,18 @@
 import { ReactElement } from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { ProtectedRoute } from '../../components/ProtectedRoute/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { TypePage } from './type/index.js';
 
 export function ConnectRoutes(): ReactElement {
-  const {
-    params: { lang },
-    path,
-  } = useRouteMatch<{ lang: string }>();
-
   return (
-    <Switch>
-      <ProtectedRoute exact path={path}>
-        <IndexPage />
-      </ProtectedRoute>
-      <Route exact path={`${path}/:type/:id`}>
-        <TypePage />
+    <Routes>
+      <Route element={<ProtectedRoute />}>
+        <Route element={<IndexPage />} path="/" />
       </Route>
-      <Redirect to={`/${lang}/apps`} />
-    </Switch>
+      <Route element={<TypePage />} path="/:type/:id" />
+      <Route element={<Navigate to="/apps" />} path="*" />
+    </Routes>
   );
 }

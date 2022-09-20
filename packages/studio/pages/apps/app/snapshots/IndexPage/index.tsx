@@ -2,7 +2,7 @@ import { Title, useData } from '@appsemble/react-components';
 import { Snapshot } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { ListButton } from '../../../../../components/ListButton/index.js';
@@ -12,7 +12,8 @@ import { messages } from './messages.js';
 export function IndexPage(): ReactElement {
   const { app } = useApp();
   const result = useData<Snapshot[]>(`/api/apps/${app.id}/snapshots`);
-  const { url } = useRouteMatch();
+  const { id, lang } = useParams<{ lang: string; id: string }>();
+  const url = `/${lang}/apps/${id}/snapshots`;
 
   return (
     <>

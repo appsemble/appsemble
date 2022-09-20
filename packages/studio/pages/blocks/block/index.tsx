@@ -13,7 +13,7 @@ import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
 
 import { CodeBlock } from '../../../components/CodeBlock/index.js';
@@ -25,38 +25,27 @@ import styles from './index.module.css';
 import { messages, untranslatedMessages } from './messages.js';
 import { RefLink } from './RefLink/index.js';
 
-interface BlockDetailsRoutesMatch {
-  /**
-   * The organization of the block.
-   */
-  organization: string;
-
-  /**
-   * The name of the block.
-   */
-  blockName: string;
-
-  /**
-   * The version of the block.
-   */
-  version: string;
-
-  /**
-   * The currently selected language.
-   */
-  lang: string;
-}
-
 /**
  * Render documentation for blocks.
  */
 export function BlockPage(): ReactElement {
   const { formatMessage } = useIntl();
+
   const {
-    params: { blockName, lang, organization, version: urlVersion },
-    url,
-  } = useRouteMatch<BlockDetailsRoutesMatch>();
-  const history = useHistory();
+    blockName,
+    lang,
+    organization,
+    version: urlVersion,
+  } = useParams<{
+    organization: string;
+    blockName: string;
+    version: string;
+    lang: string;
+  }>();
+
+  const url = `${lang}/blocks/@${organization}/${blockName}`;
+
+  const navigate = useNavigate();
 
   const {
     data: blockVersions,
@@ -66,9 +55,9 @@ export function BlockPage(): ReactElement {
 
   const onSelectedVersionChange = useCallback(
     (event, value: string) => {
-      history.push(url.replace(urlVersion, value));
+      navigate(`/${url}/${urlVersion}`.replace(urlVersion, value));
     },
-    [history, url, urlVersion],
+    [navigate, url, urlVersion],
   );
 
   const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
@@ -104,7 +93,7 @@ export function BlockPage(): ReactElement {
   }
 
   if (!selectedBlockManifest) {
-    return <Redirect to={`${url}/${blockVersions[0].version}`} />;
+    return <Navigate to={blockVersions[0].version} />;
   }
 
   return (

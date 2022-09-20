@@ -13,7 +13,7 @@ import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
@@ -44,7 +44,9 @@ const newTeam = {
  */
 export function IndexPage(): ReactElement {
   const { organizations } = useUser();
-  const { url } = useRouteMatch();
+  const { id, lang } = useParams<{ lang: string; id: string }>();
+  const url = `/${lang}/apps/${id}/teams`;
+
   const { app } = useApp();
   const modal = useToggle();
   const { formatMessage } = useIntl();

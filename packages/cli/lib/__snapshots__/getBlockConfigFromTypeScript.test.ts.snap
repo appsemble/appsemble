@@ -217,7 +217,7 @@ Refer to the block description for more information on the supported data format
     "definitions": {
       "Color": {
         "description": "A hexadecimal color.",
-        "pattern": "^#[a-fA-F\\\\d]{6}$",
+        "pattern": "^#[a-fA-F\\d]{6}$",
         "type": "string",
       },
       "YAxis": {
@@ -1054,7 +1054,7 @@ exports[`getBlockConfigFromTypeScript official blocks filter 1`] = `
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
-      "AbstractField<\\"date\\",string>": {
+      "AbstractField<"date",string>": {
         "additionalProperties": false,
         "properties": {
           "defaultValue": {
@@ -2667,7 +2667,7 @@ Note that for \`integer\` type fields are rounded _down_.",
 
 For example, the [\`regex\`](#RegexRequirement) requirement type allows you to validate a field using [Regular Expressions](https://learnxinyminutes.com/docs/pcre/). So for example if you want a string field that requires a field to be an email address that ends with “@appsemble.com”, you could enforce this like so:
 
-\`\`\`yaml type: string requirements:   - regex: \\\\w+@appsemble\\\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
+\`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
           "defaultValue": {
             "description": "The default value of the field.",
@@ -2824,13 +2824,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "maxTime": {
             "default": "23:59",
             "description": "The maximum time that can be selected.",
-            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
             "type": "string",
           },
           "minTime": {
             "default": "00:00",
             "description": "The minimum time that can be selected.",
-            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
             "type": "string",
           },
         },
@@ -3330,6 +3330,43 @@ If defined, a loader will be shown until this event is triggered.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks qr-scan 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": {
+      "foundQr": {
+        "description": "Event that gets emitted once the qr scanner has identified and resolved a QR code.
+
+foundQr event only holds the string of the QR.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": undefined,
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "drawQr": {
+        "default": false,
+        "description": "If true, the block will draw a rectangle around the QR code when it’s found.",
+        "type": "boolean",
+      },
+      "height": {
+        "description": "Video element height",
+        "type": "number",
+      },
+      "width": {
+        "description": "Video element width",
+        "type": "number",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
 {
   "actions": undefined,
@@ -3740,7 +3777,6 @@ exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
     "additionalProperties": false,
     "properties": {
       "color": {
-        "default": "primary",
         "description": "This color is used to fill the background of the tile.
 
 Takes either a hex color or a [Bulma color](https://bulma.io/documentation/helpers/color-helpers)",

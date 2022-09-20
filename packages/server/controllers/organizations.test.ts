@@ -1,7 +1,6 @@
 import { randomBytes } from 'crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -24,7 +23,6 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 let organization: Organization;
 let server: Koa;
 let user: User;
-let clock: InstalledClock;
 
 useTestDatabase('organizations');
 
@@ -35,7 +33,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -48,10 +46,6 @@ beforeEach(async () => {
     name: 'Appsemble',
   });
   import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('getOrganizations', () => {
@@ -630,7 +624,7 @@ describe('createOrganization', () => {
 
   it('should not create an organization with the same identifier', async () => {
     // This prevents the test from hanging and timing out
-    clock.uninstall();
+    import.meta.jest.useRealTimers();
 
     authorizeStudio();
     await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));

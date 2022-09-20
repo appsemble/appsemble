@@ -2,7 +2,7 @@ import { Title, useData } from '@appsemble/react-components';
 import { AppAccount } from '@appsemble/types';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
@@ -11,7 +11,8 @@ import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const result = useData<AppAccount[]>('/api/user/apps/accounts');
-  const { url } = useRouteMatch();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}/settings/apps`;
 
   return (
     <main>

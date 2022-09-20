@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.20.13",
+  "version": "0.20.15",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -31,7 +31,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.13",
+    "@appsemble/types": "0.20.15",
     "axios": "^0.27.0",
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
@@ -48,11 +48,9 @@
     "type-fest": "^2.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^9.0.0",
     "@types/langmap": "^0.0.1",
     "@types/language-tags": "^1.0.0",
     "@types/lcm": "^0.0.0",
-    "@types/sinonjs__fake-timers": "^8.0.0",
     "bulma": "0.9.3",
     "koas-core": "^0.7.0",
     "yaml": "^2.0.0"

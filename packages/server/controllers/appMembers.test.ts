@@ -1,7 +1,6 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { AppAccount, AppMember as AppMemberType } from '@appsemble/types';
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
-import { install, InstalledClock } from '@sinonjs/fake-timers';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
@@ -23,7 +22,6 @@ import { authorizeStudio, createTestUser } from '../utils/test/authorization.js'
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let clock: InstalledClock;
 let member: Member;
 let user: User;
 
@@ -59,7 +57,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  clock = install();
+  import.meta.jest.useFakeTimers({ now: 0 });
 
   user = await createTestUser();
   organization = await Organization.create({
@@ -82,10 +80,6 @@ beforeEach(async () => {
       },
     },
   });
-});
-
-afterEach(() => {
-  clock.uninstall();
 });
 
 describe('getAppMembers', () => {
@@ -1169,7 +1163,7 @@ describe('registerMemberEmail', () => {
           {
             "argument": "email",
             "instance": "foo",
-            "message": "does not conform to the \\"email\\" format",
+            "message": "does not conform to the "email" format",
             "name": "format",
             "path": [
               "email",
@@ -1179,7 +1173,7 @@ describe('registerMemberEmail', () => {
               "format": "email",
               "type": "string",
             },
-            "stack": "instance.email does not conform to the \\"email\\" format",
+            "stack": "instance.email does not conform to the "email" format",
           },
           {
             "argument": 8,

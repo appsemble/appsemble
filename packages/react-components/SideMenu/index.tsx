@@ -13,7 +13,7 @@ import {
   useState,
 } from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { useToggle } from '../index.js';
 import { useEventListener } from '../useEventListener.js';
@@ -57,9 +57,11 @@ interface SideMenuProviderProps {
 export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactElement {
   const { disable, enabled, toggle } = useToggle();
   const [menu, setMenu] = useState<ReactElement>(null);
-  const history = useHistory();
 
-  useEffect(() => history.listen(disable), [disable, history]);
+  const location = useLocation();
+  useEffect(() => {
+    disable();
+  }, [disable, location]);
 
   useEventListener(
     globalThis,

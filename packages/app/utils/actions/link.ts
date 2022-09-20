@@ -8,7 +8,7 @@ const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 export const link: ActionCreator<'link'> = ({
   app: { pages },
   definition: { to },
-  history,
+  navigate,
   route,
 }) => {
   let href: (data: any) => string;
@@ -53,23 +53,23 @@ export const link: ActionCreator<'link'> = ({
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
       } else {
-        history.push(target, data);
+        navigate(target, data);
       }
     },
     { href },
   ];
 };
 
-export const back: ActionCreator<'link.back'> = ({ history }) => [
+export const back: ActionCreator<'link.back'> = ({ navigate }) => [
   (data) => {
-    history.goBack();
+    navigate(-1);
     return data;
   },
 ];
 
-export const next: ActionCreator<'link.next'> = ({ history }) => [
+export const next: ActionCreator<'link.next'> = ({ navigate }) => [
   (data) => {
-    history.goForward();
+    navigate(+1);
     return data;
   },
 ];

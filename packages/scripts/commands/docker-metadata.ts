@@ -14,7 +14,7 @@ const { DOCKER_HUB_PASSWORD, DOCKER_HUB_USERNAME } = process.env;
  * Update the release on Docker Hub.
  */
 export async function handler(): Promise<void> {
-  const readme = await readFile(require.resolve('@appsemble/server/README.md'), 'utf8');
+  const readme = await readFile(new URL('../../server/README.md', import.meta.url), 'utf8');
   const docker = axios.create({ baseURL: String(new URL('/v2', DOCKER_HUB_URL)) });
 
   logger.info(`Logging in to ${DOCKER_HUB_URL}`);

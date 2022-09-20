@@ -1,6 +1,6 @@
 import { useLocationString } from '@appsemble/react-components';
 import { ReactElement } from 'react';
-import { Redirect, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { useUser } from '../UserProvider/index.js';
 import { TeamInvitePrompt } from './TeamInvitePrompt/index.js';
@@ -12,7 +12,7 @@ export function TeamInvite(): ReactElement {
 
   if (!isLoggedIn) {
     return (
-      <Redirect
+      <Navigate
         to={{ pathname: `/${lang}/Login`, search: String(new URLSearchParams({ redirect })) }}
       />
     );

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.15](https://gitlab.com/appsemble/appsemble/-/releases/0.20.15)] - 2022-09-14
+
+### Added
+
+- Block(`qr-scan`): Add the `qr-scan` block.
+
+## \[[0.20.14](https://gitlab.com/appsemble/appsemble/-/releases/0.20.14)] - 2022-09-12
+
+### Changed
+
+- Block(`tiles`): Unset default tile color.
+
 ## \[[0.20.13](https://gitlab.com/appsemble/appsemble/-/releases/0.20.13)] - 2022-08-09
 
 ### Fixed

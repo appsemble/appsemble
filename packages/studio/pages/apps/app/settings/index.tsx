@@ -19,7 +19,7 @@ import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from 
 import axios from 'axios';
 import { ReactElement, useMemo } from 'react';
 import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { useSSLStatus } from '../../../../components/useSSLStatus.js';
 import { useApp } from '../index.js';
@@ -62,7 +62,7 @@ export function SettingsPage(): ReactElement {
   const { formatMessage } = useIntl();
 
   const push = useMessages();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { lang } = useParams<{ lang: string }>();
 
   const pathDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
@@ -133,7 +133,7 @@ export function SettingsPage(): ReactElement {
           }),
           color: 'info',
         });
-        history.push('/apps');
+        navigate('/apps');
       } catch {
         push(formatMessage(messages.errorDelete));
       }

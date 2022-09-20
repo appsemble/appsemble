@@ -12,7 +12,7 @@ Content-Type: application/json; charset=utf-8
         "instance": {
           "type": "testblock",
         },
-        "message": "requires property \\"version\\"",
+        "message": "requires property "version"",
         "name": "required",
         "path": [
           "pages",
@@ -93,7 +93,7 @@ Some examples:
 - \`form\`
 - \`@amsterdam/splash\`
 ",
-              "pattern": "^(@([\\\\da-z](?:(?!.*--)[\\\\da-z-]*[\\\\da-z])?)/)?([\\\\da-z](?:(?!.*--)[\\\\da-z-]*[\\\\da-z])?)$",
+              "pattern": "^(@([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)/)?([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$",
               "type": "string",
             },
             "version": {
@@ -102,7 +102,7 @@ Some examples:
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-              "pattern": "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
               "type": "string",
             },
           },
@@ -112,7 +112,7 @@ will remain the same until it is manually updated.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0].blocks[0] requires property \\"version\\"",
+        "stack": "instance.pages[0].blocks[0] requires property "version"",
       },
       {
         "argument": "type",
@@ -124,7 +124,7 @@ will remain the same until it is manually updated.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -233,7 +233,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "tabs",
@@ -245,7 +245,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"tabs\\"",
+        "message": "requires property "tabs"",
         "name": "required",
         "path": [
           "pages",
@@ -354,7 +354,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"tabs\\"",
+        "stack": "instance.pages[0] requires property "tabs"",
       },
       {
         "argument": "type",
@@ -366,7 +366,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -485,7 +485,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "steps",
@@ -497,7 +497,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"steps\\"",
+        "message": "requires property "steps"",
         "name": "required",
         "path": [
           "pages",
@@ -616,7 +616,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"steps\\"",
+        "stack": "instance.pages[0] requires property "steps"",
       },
       {
         "argument": "blocks",
@@ -628,7 +628,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "is not allowed to have the additional property \\"blocks\\"",
+        "message": "is not allowed to have the additional property "blocks"",
         "name": "additionalProperties",
         "path": [
           "pages",
@@ -747,7 +747,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] is not allowed to have the additional property \\"blocks\\"",
+        "stack": "instance.pages[0] is not allowed to have the additional property "blocks"",
       },
       {
         "argument": [
@@ -805,7 +805,7 @@ Content-Type: application/json; charset=utf-8
         "instance": {
           "type": "testblock",
         },
-        "message": "requires property \\"version\\"",
+        "message": "requires property "version"",
         "name": "required",
         "path": [
           "pages",
@@ -886,7 +886,7 @@ Some examples:
 - \`form\`
 - \`@amsterdam/splash\`
 ",
-              "pattern": "^(@([\\\\da-z](?:(?!.*--)[\\\\da-z-]*[\\\\da-z])?)/)?([\\\\da-z](?:(?!.*--)[\\\\da-z-]*[\\\\da-z])?)$",
+              "pattern": "^(@([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)/)?([\\da-z](?:(?!.*--)[\\da-z-]*[\\da-z])?)$",
               "type": "string",
             },
             "version": {
@@ -895,7 +895,7 @@ Some examples:
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-              "pattern": "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$",
               "type": "string",
             },
           },
@@ -905,7 +905,7 @@ will remain the same until it is manually updated.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0].blocks[0] requires property \\"version\\"",
+        "stack": "instance.pages[0].blocks[0] requires property "version"",
       },
       {
         "argument": "type",
@@ -917,7 +917,7 @@ will remain the same until it is manually updated.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -1026,7 +1026,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "tabs",
@@ -1038,7 +1038,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"tabs\\"",
+        "message": "requires property "tabs"",
         "name": "required",
         "path": [
           "pages",
@@ -1147,7 +1147,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"tabs\\"",
+        "stack": "instance.pages[0] requires property "tabs"",
       },
       {
         "argument": "type",
@@ -1159,7 +1159,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -1278,7 +1278,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "steps",
@@ -1290,7 +1290,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"steps\\"",
+        "message": "requires property "steps"",
         "name": "required",
         "path": [
           "pages",
@@ -1409,7 +1409,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"steps\\"",
+        "stack": "instance.pages[0] requires property "steps"",
       },
       {
         "argument": "blocks",
@@ -1421,7 +1421,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "is not allowed to have the additional property \\"blocks\\"",
+        "message": "is not allowed to have the additional property "blocks"",
         "name": "additionalProperties",
         "path": [
           "pages",
@@ -1540,7 +1540,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] is not allowed to have the additional property \\"blocks\\"",
+        "stack": "instance.pages[0] is not allowed to have the additional property "blocks"",
       },
       {
         "argument": [
@@ -1594,9 +1594,9 @@ Content-Type: application/json; charset=utf-8
   "data": {
     "errors": [
       {
-        "argument": "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$",
+        "argument": "^\\d+\\.\\d+\\.\\d+$",
         "instance": "0.0.0'",
-        "message": "does not match pattern \\"^\\\\\\\\d+\\\\\\\\.\\\\\\\\d+\\\\\\\\.\\\\\\\\d+$\\"",
+        "message": "does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"",
         "name": "pattern",
         "path": [
           "pages",
@@ -1612,10 +1612,10 @@ Content-Type: application/json; charset=utf-8
 Since blocks may change over time, a version must be specified in order to ensure that the block
 will remain the same until it is manually updated.
 ",
-          "pattern": "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
           "type": "string",
         },
-        "stack": "instance.pages[0].blocks[0].version does not match pattern \\"^\\\\\\\\d+\\\\\\\\.\\\\\\\\d+\\\\\\\\.\\\\\\\\d+$\\"",
+        "stack": "instance.pages[0].blocks[0].version does not match pattern "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"",
       },
       {
         "argument": "type",
@@ -1628,7 +1628,7 @@ will remain the same until it is manually updated.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -1737,7 +1737,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "tabs",
@@ -1750,7 +1750,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"tabs\\"",
+        "message": "requires property "tabs"",
         "name": "required",
         "path": [
           "pages",
@@ -1859,7 +1859,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"tabs\\"",
+        "stack": "instance.pages[0] requires property "tabs"",
       },
       {
         "argument": "type",
@@ -1872,7 +1872,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"type\\"",
+        "message": "requires property "type"",
         "name": "required",
         "path": [
           "pages",
@@ -1991,7 +1991,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"type\\"",
+        "stack": "instance.pages[0] requires property "type"",
       },
       {
         "argument": "steps",
@@ -2004,7 +2004,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "requires property \\"steps\\"",
+        "message": "requires property "steps"",
         "name": "required",
         "path": [
           "pages",
@@ -2123,7 +2123,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] requires property \\"steps\\"",
+        "stack": "instance.pages[0] requires property "steps"",
       },
       {
         "argument": "blocks",
@@ -2136,7 +2136,7 @@ instructed to contact the app owner to get permissions.
           ],
           "name": "Test Page",
         },
-        "message": "is not allowed to have the additional property \\"blocks\\"",
+        "message": "is not allowed to have the additional property "blocks"",
         "name": "additionalProperties",
         "path": [
           "pages",
@@ -2255,7 +2255,7 @@ instructed to contact the app owner to get permissions.
           ],
           "type": "object",
         },
-        "stack": "instance.pages[0] is not allowed to have the additional property \\"blocks\\"",
+        "stack": "instance.pages[0] is not allowed to have the additional property "blocks"",
       },
       {
         "argument": [

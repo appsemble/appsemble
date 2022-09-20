@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.13/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.15/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.13/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.13)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.13/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.15/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.15)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.15/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 The Appsemble server is distributed as a Docker image.
@@ -92,13 +92,13 @@ Check the `read_user` scope, and click _Save application_.
 
 Go to the
 [Google Cloud console OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
-Add the scopes `email` and `profile`. Under _**Authorized domains**_, add the `HOST` variable. Fill
+Add the scopes `email` and `profile`. Under **_Authorized domains_**, add the `HOST` variable. Fill
 in any missing information and click _Save_.
 
 Now go to the
 [Google Cloud console credentials page](https://console.cloud.google.com/apis/credentials). Click
 _Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST` variable under
-_**Authorized JavaScript origins**_. Under _**Authorized redirect URIs**_, add the following URI.
+**_Authorized JavaScript origins_**. Under **_Authorized redirect URIs_**, add the following URI.
 
 ```
 {HOST}/callback
@@ -110,5 +110,5 @@ Check the `read_user` scope, and click _Save application_.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.13/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.15/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

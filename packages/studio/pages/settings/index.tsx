@@ -7,7 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 
 import { AppsRoutes } from './apps/index.js';
 import { ClientCredentialsPage } from './client-credentials/index.js';
@@ -16,7 +16,8 @@ import { SocialPage } from './social/index.js';
 import { UserPage } from './user/index.js';
 
 export function SettingsRoutes(): ReactElement {
-  const { path, url } = useRouteMatch();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}/settings`;
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
@@ -40,19 +41,11 @@ export function SettingsRoutes(): ReactElement {
   return (
     <Content fullwidth>
       <MetaSwitch title={messages.title}>
-        <Route exact path={`${path}/user`}>
-          <UserPage />
-        </Route>
-        <Route exact path={`${path}/social`}>
-          <SocialPage />
-        </Route>
-        <Route exact path={`${path}/client-credentials`}>
-          <ClientCredentialsPage />
-        </Route>
-        <Route path={`${path}/apps`}>
-          <AppsRoutes />
-        </Route>
-        <Redirect to={`${url}/user`} />
+        <Route element={<UserPage />} path="/user" />
+        <Route element={<SocialPage />} path="/social" />
+        <Route element={<ClientCredentialsPage />} path="/client-credentials" />
+        <Route element={<AppsRoutes />} path="/apps/*" />
+        <Route element={<Navigate to={`${url}/user`} />} path="*" />
       </MetaSwitch>
     </Content>
   );

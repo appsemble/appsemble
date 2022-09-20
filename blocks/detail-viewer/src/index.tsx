@@ -27,7 +27,7 @@ bootstrap(({ data: blockData, events, parameters, ready }) => {
     <div className={`${styles.root} px-2 py-2 is-flex`}>
       {parameters.fields.map((field, index) => {
         if ('fields' in field) {
-          return <FieldGroup data={data} field={field} />;
+          return <FieldGroup data={data} field={field} key={field.value || field.label || index} />;
         }
 
         return (

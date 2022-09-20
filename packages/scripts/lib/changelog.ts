@@ -1,9 +1,9 @@
 import { readFile } from 'fs/promises';
 
 import { Text } from 'mdast';
-import fromMarkdown from 'mdast-util-from-markdown';
-import toMarkdown from 'mdast-util-to-markdown';
-import visit from 'unist-util-visit';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { toMarkdown } from 'mdast-util-to-markdown';
+import { visit } from 'unist-util-visit';
 
 /**
  * Get the release notes for the latest release.
@@ -28,7 +28,7 @@ export async function getReleaseNotes(): Promise<string> {
   }
   ast.children.splice(sectionEnd);
   ast.children.splice(0, sectionStart + 1);
-  visit<Text>(ast, 'text', (node) => {
+  visit(ast, 'text', (node: Text) => {
     // eslint-disable-next-line no-param-reassign
     node.value = node.value.replace(/\n+/g, (match) => (match.length === 1 ? ' ' : '\n\n'));
   });

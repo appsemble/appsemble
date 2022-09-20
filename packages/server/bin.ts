@@ -20,6 +20,7 @@ configureAxios('AppsembleServer', pkg.version);
 
 const parser = yargs()
   .usage('Usage:\n  $0 [command]')
+  .version(pkg.version)
   .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
   .option('verbose', {
     alias: 'v',

@@ -8,6 +8,9 @@
   },
   "messageIds": {
     "body": "Sadržaj",
+    "cancel": "Odustani",
+    "configDelete": "Izbriši",
+    "confirmDelete": "Stvarno želiš izbrisati sljedeću bilješku?",
     "title": "Naslov"
   }
 }
