@@ -147,7 +147,7 @@ export function AssetsPage(): ReactElement {
     setPage(newPage <= 0 ? 1 : newPage);
     setLimit(rowsPerPage === Number.POSITIVE_INFINITY ? Number.POSITIVE_INFINITY : rowsPerPage);
     setOffset(rowsPerPage === Number.POSITIVE_INFINITY ? 0 : (page - 1) * rowsPerPage);
-  }, [assetsResult, page, rowsPerPage, count]);
+  }, [page, rowsPerPage, count]);
 
   return (
     <>
