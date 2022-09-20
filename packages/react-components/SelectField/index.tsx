@@ -13,10 +13,24 @@ type SelectFieldProps = Omit<
  */
 export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
   (
-    { fullWidth = true, className, help, label, name, required, icon, id = name, ...props },
+    {
+      addonLeft,
+      addonRight,
+      fullWidth = true,
+      className,
+      help,
+      label,
+      name,
+      required,
+      icon,
+      id = name,
+      ...props
+    },
     ref,
   ) => (
     <FormComponent
+      addonLeft={addonLeft}
+      addonRight={addonRight}
       className={className}
       help={help}
       icon={icon}

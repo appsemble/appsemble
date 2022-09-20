@@ -76,22 +76,23 @@ export function PaginationNavigator({
     <div className="level">
       <div className="level-left">
         <div className="level-item">
-          <div className="field has-addons">
-            <p className="control">
-              <button className="button is-static" type="button">
+          <SelectField
+            addonLeft={
+              <span className="button is-static">
                 <FormattedMessage {...messages.rowsPerPageLabel} />
-              </button>
-            </p>
-            <SelectField onChange={onDropdownChange} value={rowsPerPage}>
-              {rowsPerPageOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option === Number.POSITIVE_INFINITY
-                    ? messages.allRowsLabel.defaultMessage
-                    : option}
-                </option>
-              ))}
-            </SelectField>
-          </div>
+              </span>
+            }
+            onChange={onDropdownChange}
+            value={rowsPerPage}
+          >
+            {rowsPerPageOptions.map((option) => (
+              <option key={option} value={option}>
+                {option === Number.POSITIVE_INFINITY
+                  ? messages.allRowsLabel.defaultMessage
+                  : option}
+              </option>
+            ))}
+          </SelectField>
         </div>
       </div>
       <div className="level-right">
