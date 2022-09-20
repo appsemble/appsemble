@@ -2,7 +2,7 @@ import { Button, useData, useToggle } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { Collapsible } from '../../../components/Collapsible/index.js';
@@ -15,16 +15,18 @@ import { messages } from './messages.js';
 export function IndexPage(): ReactElement {
   const result = useData<Organization[]>('/api/organizations');
   const { organizations, userInfo } = useUser();
-  const { url } = useRouteMatch();
-  const history = useHistory();
+  const { lang } = useParams<{ lang: string }>();
+  const url = `/${lang}/organizations`;
+
+  const navigate = useNavigate();
   const modal = useToggle();
   const { formatMessage } = useIntl();
 
   const onSubmitOrganization = useCallback(
     ({ id }: Organization) => {
-      history.push(`${url}/${id}`);
+      navigate(`${url}/${id}`);
     },
-    [history, url],
+    [navigate, url],
   );
 
   return (

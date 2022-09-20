@@ -10,7 +10,7 @@ import {
 import { normalize } from '@appsemble/utils';
 import { ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import {
@@ -55,7 +55,7 @@ export function Login(): ReactElement {
 
   if (isLoggedIn || !definition.security) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-    return <Redirect to={redirect || normalize(defaultPageName)} />;
+    return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
 
   if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin) {

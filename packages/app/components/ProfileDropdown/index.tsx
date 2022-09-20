@@ -1,7 +1,7 @@
 import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 
 import { sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -13,17 +13,15 @@ export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
-  const {
-    params: { lang },
-    path,
-  } = useRouteMatch<{ lang: string }>();
+  const { lang } = useParams<{ lang: string }>();
+  const { pathname } = useLocation();
 
   const showLogin = definition.security;
   const { layout } = definition;
 
   if (
     !showLogin ||
-    path.includes(':lang/Login') ||
+    pathname.includes(`${lang}/Login`) ||
     (layout?.login != null && layout?.login !== 'navbar')
   ) {
     return null;

@@ -3,7 +3,7 @@ import { normalize } from '@appsemble/utils';
 import { clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -53,7 +53,7 @@ export function OpenIDCallback(): ReactElement {
 
   if (isLoggedIn) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
-    return <Redirect to={redirect || normalize(defaultPageName)} />;
+    return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
 
   if (!isOk) {

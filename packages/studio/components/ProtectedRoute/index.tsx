@@ -1,39 +1,31 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Redirect, Route, RouteProps, useRouteMatch } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 import { Organization } from '../../types.js';
 import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
-interface ProtectedRouteProps extends RouteProps {
+interface ProtectedRouteProps {
   permission?: Permission;
   organization?: Organization;
 }
 
-export function ProtectedRoute({
-  organization,
-  permission,
-  ...props
-}: ProtectedRouteProps): ReactElement {
+export function ProtectedRoute({ organization, permission }: ProtectedRouteProps): ReactElement {
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();
-  const {
-    params: { lang },
-    url,
-  } = useRouteMatch<{ lang: string }>();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', redirect);
-    return <Redirect to={{ pathname: `/${lang}/login`, search: `?${search}` }} />;
+    return <Navigate to={{ pathname: '/login', search: `?${search}` }} />;
   }
 
   if (permission && (!organization || !checkRole(organization.role, permission))) {
-    return <Redirect to={url} />;
+    return <Navigate to="/" />;
   }
 
-  return <Route {...props} />;
+  return <Outlet />;
 }

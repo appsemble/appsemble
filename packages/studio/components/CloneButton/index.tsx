@@ -16,7 +16,7 @@ import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { checkRole } from '../../utils/checkRole.js';
 import { CreateOrganizationModal } from '../CreateOrganizationModal/index.js';
@@ -35,7 +35,7 @@ interface CloneButtonProps {
  * Display a more detailed overview of an individual app.
  */
 export function CloneButton({ app }: CloneButtonProps): ReactElement {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
@@ -62,18 +62,18 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
     async (values: Template) => {
       const { data } = await axios.post<App>('/api/templates', values);
 
-      history.push(`/apps/${data.id}/edit`);
+      navigate(`/apps/${data.id}/edit`);
     },
-    [history],
+    [navigate],
   );
 
   const openCloneDialog = useCallback(() => {
-    history.replace({ hash: 'clone' });
-  }, [history]);
+    navigate({ hash: 'clone' }, { replace: true });
+  }, [navigate]);
 
   const closeCloneDialog = useCallback(() => {
-    history.replace({ hash: null });
-  }, [history]);
+    navigate({ hash: null }, { replace: true });
+  }, [navigate]);
 
   // YAML is not included if app.showAppDefinition is true and the user doesn’t have permissions.
   if (!app.yaml) {

@@ -1,7 +1,7 @@
 import { Message, MetaSwitch } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 
 import { useApp } from '../../index.js';
 import { IndexPage } from './IndexPage/index.js';
@@ -11,11 +11,7 @@ import { ResourceDetailsPage } from './resource-details/index.js';
 
 export function ResourceRoutes(): ReactElement {
   const { app } = useApp();
-  const {
-    params: { resourceName },
-    path,
-    url,
-  } = useRouteMatch<{ resourceName: string }>();
+  const { resourceName } = useParams<{ resourceName: string }>();
 
   const definition = app?.definition?.resources?.[resourceName];
 
@@ -46,16 +42,10 @@ export function ResourceRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={resourceName}>
-      <Route exact path={path}>
-        <IndexPage />
-      </Route>
-      <Route path={`${path}/details`}>
-        <ResourceDefinitionDetailsPage />
-      </Route>
-      <Route path={`${path}/:resourceId(\\d+)`}>
-        <ResourceDetailsPage />
-      </Route>
-      <Redirect to={url} />
+      <Route element={<IndexPage />} path="/" />
+      <Route element={<ResourceDefinitionDetailsPage />} path="/details" />
+      <Route element={<ResourceDetailsPage />} path="/:resourceId" />
+      <Route element={<Navigate to="/" />} path="*" />
     </MetaSwitch>
   );
 }

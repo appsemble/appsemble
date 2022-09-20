@@ -4,7 +4,7 @@ import { download, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
@@ -23,15 +23,18 @@ const MonacoEditor = lazy(() =>
 );
 
 export function ResourceDetailsPage(): ReactElement {
-  const {
-    params: { id, resourceId, resourceName },
-    url,
-  } = useRouteMatch<{ id: string; resourceName: string; resourceId: string }>();
+  const { id, lang, resourceId, resourceName } = useParams<{
+    lang: string;
+    id: string;
+    resourceName: string;
+    resourceId: string;
+  }>();
+  const url = `/${lang}/apps/${id}/resources/${resourceName}/${resourceId}`;
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
   const { hash } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const resourceDefinition = app.definition.resources[resourceName];
   const resourceUrl = `/api/apps/${id}/resources/${resourceName}/${resourceId}`;
   const result = useData<Resource>(resourceUrl);
@@ -55,7 +58,7 @@ export function ResourceDetailsPage(): ReactElement {
     }
   }, [editingResource, result, setResource]);
 
-  const onClickTab = useCallback((unused, tab: string) => history.push({ hash: tab }), [history]);
+  const onClickTab = useCallback((unused, tab: string) => navigate({ hash: tab }), [navigate]);
   const onCopyResource = useCallback(() => {
     try {
       navigator.clipboard.writeText(JSON.stringify(result.data, null, 2));
@@ -106,7 +109,7 @@ export function ResourceDetailsPage(): ReactElement {
   ]);
 
   if (!tabOptions.has(hash)) {
-    return <Redirect to={`${url}#properties`} />;
+    return <Navigate to={`${url}#properties`} />;
   }
 
   return (

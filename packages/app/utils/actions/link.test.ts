@@ -1,24 +1,13 @@
-import { RouteComponentProps } from 'react-router-dom';
-
 import { createTestAction } from '../makeActions.js';
 
-let history: RouteComponentProps['history'];
+const navigate = import.meta.jest.fn();
+import.meta.jest.mock('react-router-dom', () => ({
+  ...(import.meta.jest.requireActual('react-router-dom') as any),
+  useNavigate: () => navigate,
+}));
 
 beforeEach(() => {
   import.meta.jest.spyOn(window, 'open').mockImplementation();
-  history = {
-    action: null,
-    block: null,
-    createHref: import.meta.jest.fn(),
-    go: import.meta.jest.fn(),
-    goBack: import.meta.jest.fn(),
-    goForward: import.meta.jest.fn(),
-    length: 0,
-    listen: import.meta.jest.fn(),
-    location: null,
-    push: import.meta.jest.fn(),
-    replace: import.meta.jest.fn(),
-  };
 });
 
 describe('link', () => {
@@ -58,28 +47,28 @@ describe('link', () => {
     const action = createTestAction({
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: '/Login' },
-      route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },
-      history,
+      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      navigate,
     });
     const link = action.href();
     expect(link).toBe('/da/Login');
     const result = await action();
     expect(result).toBeUndefined();
-    expect(history.push).toHaveBeenCalledWith('/da/Login', {});
+    expect(navigate).toHaveBeenCalledWith('/da/Login', {});
   });
 
   it('should support links to pages', async () => {
     const action = createTestAction({
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
-      route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },
-      history,
+      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      navigate,
     });
     const link = action.href();
     expect(link).toBe('/da/page-a');
     const result = await action();
     expect(result).toBeUndefined();
-    expect(history.push).toHaveBeenCalledWith('/da/page-a', {});
+    expect(navigate).toHaveBeenCalledWith('/da/page-a', {});
   });
 
   it('should support links to sub-pages', async () => {
@@ -89,14 +78,14 @@ describe('link', () => {
         pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },
       definition: { type: 'link', to: ['Page A', 'Subpage B'] },
-      route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },
-      history,
+      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      navigate,
     });
     const link = action.href();
     expect(link).toBe('/da/page-a/subpage-b');
     const result = await action();
     expect(result).toBeUndefined();
-    expect(history.push).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
   });
 
   it('should support page parameters', async () => {
@@ -106,14 +95,14 @@ describe('link', () => {
         pages: [{ name: 'Page A', blocks: [], parameters: ['id'] }],
       },
       definition: { type: 'link', to: 'Page A' },
-      route: { isExact: false, params: { lang: 'da' }, path: '', url: '' },
-      history,
+      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      navigate,
     });
     const link = action.href({ id: 3 });
     expect(link).toBe('/da/page-a/3');
     const result = await action({ id: 3 });
     expect(result).toBeUndefined();
-    expect(history.push).toHaveBeenCalledWith('/da/page-a/3', { id: 3 });
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/3', { id: 3 });
   });
 });
 
@@ -121,10 +110,10 @@ describe('link.back', () => {
   it('should go back in history', async () => {
     const action = createTestAction({
       definition: { type: 'link.back' },
-      history,
+      navigate,
     });
     const result = await action({ input: 'data' });
-    expect(history.goBack).toHaveBeenCalledWith();
+    expect(navigate).toHaveBeenCalledWith(-1);
     expect(result).toStrictEqual({ input: 'data' });
   });
 });
@@ -133,10 +122,10 @@ describe('link.next', () => {
   it('should go forward in history', async () => {
     const action = createTestAction({
       definition: { type: 'link.next' },
-      history,
+      navigate,
     });
     const result = await action({ input: 'data' });
-    expect(history.goForward).toHaveBeenCalledWith();
+    expect(navigate).toHaveBeenCalledWith(1);
     expect(result).toStrictEqual({ input: 'data' });
   });
 });

@@ -8,7 +8,7 @@ import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom';
+import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
 import { ActionCreators } from '../../utils/actions/index.js';
@@ -77,10 +77,10 @@ export function Block({
   showDialog,
   showShareDialog,
 }: BlockProps): ReactElement {
-  const history = useHistory();
+  const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  const route = useRouteMatch<{ lang: string }>();
+  const route = useMatch(':lang/:pageId');
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
@@ -119,7 +119,7 @@ export function Block({
       actions: manifest.actions,
       app: definition,
       context: block,
-      history,
+      navigate,
       showDialog,
       showShareDialog,
       extraCreators,
@@ -201,7 +201,7 @@ export function Block({
     extraCreators,
     flowActions,
     getBlockMessage,
-    history,
+    navigate,
     initialized,
     location,
     manifest,

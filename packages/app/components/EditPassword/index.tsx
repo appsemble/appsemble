@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 
 import { apiUrl, appId } from '../../utils/settings.js';
 import { messages } from './messages.js';
@@ -29,7 +29,7 @@ export function EditPassword(): ReactElement {
   );
 
   if (!token) {
-    return <Redirect to={`/${lang}`} />;
+    return <Navigate to={`/${lang}`} />;
   }
 
   return (

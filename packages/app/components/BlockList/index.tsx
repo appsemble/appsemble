@@ -4,7 +4,7 @@ import { Loader, useLocationString } from '@appsemble/react-components';
 import { BlockDefinition, PageDefinition, Remapper, Security, TeamMember } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
 import { ActionCreators } from '../../utils/actions/index.js';
@@ -91,10 +91,10 @@ export function BlockList({
 
   if (!blockList.length) {
     if (!isLoggedIn) {
-      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
+      return <Navigate to={`/Login?${new URLSearchParams({ redirect })}`} />;
     }
 
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
 
   return (

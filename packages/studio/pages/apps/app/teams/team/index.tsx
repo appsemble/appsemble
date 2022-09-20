@@ -16,7 +16,7 @@ import { Permission, TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useHistory, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
@@ -33,7 +33,8 @@ export function TeamPage(): ReactElement {
   const { teamId } = useParams<{ teamId: string }>();
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { formatMessage } = useIntl();
 
   const teamResult = useData<Team>(`/api/apps/${app.id}/teams/${teamId}`);
@@ -81,8 +82,8 @@ export function TeamPage(): ReactElement {
 
   const onDelete = useCallback(async () => {
     await axios.delete(`/api/apps/${app.id}/teams/${teamId}`);
-    history.replace(history.location.pathname.replace(`/teams/${teamId}`, '/teams'));
-  }, [history, app, teamId]);
+    navigate(pathname.replace(`/teams/${teamId}`, '/teams'), { replace: true });
+  }, [navigate, app, teamId, pathname]);
 
   const onDeleteClick = useConfirmation({
     title: <FormattedMessage {...messages.deletingTeam} />,

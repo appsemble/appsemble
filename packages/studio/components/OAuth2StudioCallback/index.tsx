@@ -12,7 +12,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { ExtendedOAuth2State } from '../../types.js';
 import { logins } from '../../utils/settings.js';
@@ -34,7 +34,7 @@ interface OAuth2StudioCallbackProps {
  * OAuth2 account to a new or an existing Appsemble account.
  */
 export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
-  const history = useHistory();
+  const navigate = useNavigate();
   const redirect = useLocationString();
   const qs = useQuery();
   const { lang } = useParams<{ lang: string }>();
@@ -54,9 +54,9 @@ export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): Re
     (response: TokenResponse) => {
       login(response);
       clearOAuth2State();
-      history.replace(session.redirect || '/');
+      navigate(session.redirect || '/', { replace: true });
     },
-    [history, login, session],
+    [navigate, login, session],
   );
 
   useEffect(() => {

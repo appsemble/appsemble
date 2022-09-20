@@ -22,7 +22,7 @@ import {
   useMemo,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Redirect, Route, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useParams } from 'react-router-dom';
 
 import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
@@ -60,11 +60,9 @@ const Context = createContext<AppValueContext>(null);
 const EditPage = lazy(() => import('./edit/index.js'));
 
 export function AppRoutes(): ReactElement {
-  const {
-    params: { id, lang },
-    path,
-    url,
-  } = useRouteMatch<{ id: string; lang: string }>();
+  const { id, lang } = useParams<{ id: string; lang: string }>();
+  const url = `/${lang}/apps/${id}`;
+
   const { organizations } = useUser();
   const {
     data: app,
@@ -192,97 +190,85 @@ export function AppRoutes(): ReactElement {
         description={app.messages?.app?.description || app.definition.description}
         title={app.messages?.app?.name || app.definition.name}
       >
-        <Route exact path={path}>
-          <IndexPage />
-        </Route>
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/edit`}
-          permission={Permission.EditApps}
+        <Route element={<IndexPage />} path="/" />
+
+        <Route
+          element={<ProtectedRoute organization={organization} permission={Permission.EditApps} />}
         >
-          <Suspense fallback={<Loader />}>
-            <EditPage />
-          </Suspense>
-        </ProtectedRoute>
-        {app.yaml ? (
-          <Route path={`${path}/definition`}>
-            <DefinitionPage />
+          <Route
+            element={
+              <Suspense fallback={<Loader />}>
+                <EditPage />
+              </Suspense>
+            }
+            path="/edit"
+          />
+          <Route element={<SecretsPage />} path="/secrets" />
+          <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute organization={organization} permission={Permission.ReadAssets} />
+          }
+        >
+          <Route element={<AssetsPage />} path="/assets" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute organization={organization} permission={Permission.ReadResources} />
+          }
+        >
+          <Route element={<ResourcesRoutes />} path="/resources/*" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute organization={organization} permission={Permission.EditAppMessages} />
+          }
+        >
+          <Route element={<TranslationsPage />} path="/translations" />
+        </Route>
+        {app.yaml ? <Route element={<DefinitionPage />} path="/definition" /> : null}
+
+        {app.definition.security ? (
+          <Route
+            element={
+              <ProtectedRoute organization={organization} permission={Permission.ManageRoles} />
+            }
+          >
+            <Route element={<UsersPage />} path="/users" />
           </Route>
         ) : null}
-        <ProtectedRoute
-          organization={organization}
-          path={`${path}/assets`}
-          permission={Permission.ReadAssets}
-        >
-          <AssetsPage />
-        </ProtectedRoute>
-        <ProtectedRoute
-          organization={organization}
-          path={`${path}/resources`}
-          permission={Permission.ReadResources}
-        >
-          <ResourcesRoutes />
-        </ProtectedRoute>
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/translations`}
-          permission={Permission.EditAppMessages}
-        >
-          <TranslationsPage />
-        </ProtectedRoute>
-        {app.definition.security ? (
-          <ProtectedRoute
-            exact
-            organization={organization}
-            path={`${path}/users`}
-            permission={Permission.ManageRoles}
-          >
-            <UsersPage />
-          </ProtectedRoute>
-        ) : null}
+
         {app.definition.security?.teams ? (
-          <ProtectedRoute
-            organization={organization}
-            path={`${path}/teams`}
-            permission={Permission.InviteMember}
+          <Route
+            element={
+              <ProtectedRoute organization={organization} permission={Permission.InviteMember} />
+            }
           >
-            <TeamsRoutes />
-          </ProtectedRoute>
+            <Route element={<TeamsRoutes />} path="/teams/*" />
+          </Route>
         ) : null}
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/settings`}
-          permission={Permission.EditAppSettings}
+
+        <Route
+          element={
+            <ProtectedRoute organization={organization} permission={Permission.EditAppSettings} />
+          }
         >
-          <SettingsPage />
-        </ProtectedRoute>
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/notifications`}
-          permission={Permission.PushNotifications}
+          <Route element={<SettingsPage />} path="/settings" />
+        </Route>
+
+        <Route
+          element={
+            <ProtectedRoute organization={organization} permission={Permission.PushNotifications} />
+          }
         >
-          <NotificationsPage />
-        </ProtectedRoute>
-        <ProtectedRoute
-          exact
-          organization={organization}
-          path={`${path}/secrets`}
-          permission={Permission.EditApps}
-        >
-          <SecretsPage />
-        </ProtectedRoute>
-        <ProtectedRoute
-          organization={organization}
-          path={`${path}/snapshots`}
-          permission={Permission.EditApps}
-        >
-          <SnapshotsRoutes />
-        </ProtectedRoute>
-        <Redirect to={url} />
+          <Route element={<NotificationsPage />} path="/notifications" />
+        </Route>
+
+        <Route element={<Navigate to={url} />} path="*" />
       </MetaSwitch>
     </Context.Provider>
   );

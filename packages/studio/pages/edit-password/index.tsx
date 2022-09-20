@@ -1,7 +1,7 @@
 import { Content, EditPassword, useMeta, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
-import { Redirect, useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 
@@ -19,7 +19,7 @@ export function EditPasswordPage(): ReactElement {
   );
 
   if (!token) {
-    return <Redirect to={`/${lang}/apps`} />;
+    return <Navigate to={`/${lang}/apps`} />;
   }
 
   return (

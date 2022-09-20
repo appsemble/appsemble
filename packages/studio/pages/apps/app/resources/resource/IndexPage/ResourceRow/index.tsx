@@ -18,11 +18,10 @@ import classNames from 'classnames';
 import { OpenAPIV3 } from 'openapi-types';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../../index.js';
-import { RouteParams } from '../index.js';
 import { ResourceCell } from '../ResourceCell/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -85,9 +84,15 @@ export function ResourceRow({
   selected,
 }: ResourceRowProps): ReactElement {
   const {
-    params: { id: appId, resourceName },
-    url,
-  } = useRouteMatch<RouteParams>();
+    id: appId,
+    lang,
+    resourceName,
+  } = useParams<{
+    lang: string;
+    id: string;
+    resourceName: string;
+  }>();
+  const url = `/${lang}/apps/${appId}/resources/${resourceName}`;
   const { app } = useApp();
   const [editingResource, setEditingResource] = useState<Record<string, unknown>>();
   const modal = useToggle();

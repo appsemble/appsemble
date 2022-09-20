@@ -2,7 +2,7 @@ import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
 import { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
-import { Redirect, Route, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
@@ -18,15 +18,12 @@ export function TabsPage({
   prefixIndex,
   ...blockListProps
 }: TabsPageProps): ReactElement {
-  const { path, url } = useRouteMatch();
+  const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
-  const onChange = useCallback(
-    (event: ChangeEvent, value: string) => history.push(value),
-    [history],
-  );
+  const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
   const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
 
@@ -38,7 +35,7 @@ export function TabsPage({
             id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
           }).format() as string;
-          const value = `${url}/${normalize(translatedName)}`;
+          const value = `/${lang}/${pageId}/${normalize(translatedName)}`;
 
           return (
             <Tab href={value} key={name} value={value}>
@@ -55,17 +52,21 @@ export function TabsPage({
           }).format() as string;
 
           return (
-            <Route exact key={name} path={`${path}/${normalize(translatedName)}`}>
-              <TabContent
-                key={prefix}
-                {...blockListProps}
-                blocks={blocks}
-                name={translatedName}
-                page={page}
-                prefix={`${prefix}.tabs.${index}.blocks`}
-                prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
-              />
-            </Route>
+            <Route
+              element={
+                <TabContent
+                  key={prefix}
+                  {...blockListProps}
+                  blocks={blocks}
+                  name={translatedName}
+                  page={page}
+                  prefix={`${prefix}.tabs.${index}.blocks`}
+                  prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                />
+              }
+              key={name}
+              path={`/${normalize(translatedName)}`}
+            />
           );
         })}
         {/* Redirect from a matching sub URL to the actual URL */}
@@ -75,18 +76,22 @@ export function TabsPage({
             defaultMessage: name,
           }).format() as string;
 
-          const exactPath = `${path}/${normalize(translatedName)}`;
-          const fromPath = `${path}/${normalize(name)}`;
-          return <Redirect from={fromPath} key={exactPath} to={exactPath} />;
+          const exactPath = `/${lang}/${pageId}/${normalize(translatedName)}`;
+          return <Route element={<Navigate to={exactPath} />} key={exactPath} path="/*" />;
         })}
 
-        <Redirect
-          to={`${url}/${normalize(
-            getAppMessage({
-              id: `${prefix}.tabs.0`,
-              defaultMessage: page.tabs[0].name,
-            }).format() as string,
-          )}`}
+        <Route
+          element={
+            <Navigate
+              to={`/${lang}/${pageId}/${normalize(
+                getAppMessage({
+                  id: `${prefix}.tabs.0`,
+                  defaultMessage: page.tabs[0].name,
+                }).format() as string,
+              )}`}
+            />
+          }
+          path="/*"
         />
       </MetaSwitch>
     </>

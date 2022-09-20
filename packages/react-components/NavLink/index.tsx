@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ComponentPropsWithoutRef, ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-interface NavLinkProps extends ComponentPropsWithoutRef<Link> {
+interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
   /**
    * If specified, the link is only considered active if it’s an exact match.
    */

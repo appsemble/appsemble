@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react';
 import { MessageDescriptor, useIntl } from 'react-intl';
-import { Switch, useRouteMatch } from 'react-router-dom';
+import { Routes, useLocation } from 'react-router-dom';
 
 type Text = MessageDescriptor | string;
 
@@ -123,7 +123,11 @@ export function useBreadcrumbs(): Breadcrumb[] {
 export function useMeta(title: Text, description?: Text): void {
   const [depth, setMeta] = useContext(MetaContext);
   const { formatMessage } = useIntl();
-  const { url } = useRouteMatch();
+
+  const { pathname } = useLocation();
+  // Don't count empty string and language segments
+  const segmentCount = pathname.split('/').length - 2;
+  const url = pathname + '/..'.repeat(segmentCount > 1 ? segmentCount - depth - 1 : 0);
 
   useEffect(() => {
     const formatMaybe = (string: Text): string =>
@@ -165,7 +169,7 @@ export function MetaSwitch({ children, description, title }: MetaSwitchProps): R
 
   return (
     <MetaContext.Provider value={useMemo(() => [depth + 1, setMeta], [depth, setMeta])}>
-      <Switch>{children}</Switch>
+      <Routes>{children}</Routes>
     </MetaContext.Provider>
   );
 }
