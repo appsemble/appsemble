@@ -3,7 +3,7 @@
     "@appsemble/preact": "0.20.15",
     "@appsemble/sdk": "0.20.15",
     "preact": "^10.0.0",
-    "react-wordcloud": "^1.2.7"
+    "wordcloud": "^1.2.2"
   },
   "name": "@appsemble/wordcloud",
   "private": true,
