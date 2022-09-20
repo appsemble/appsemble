@@ -57,7 +57,6 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
         title={<FormattedMessage {...messages.rateApp} />}
       >
         <SimpleFormField
-          // @ts-expect-error XXX This shouldn’t be needed.
           component={RatingField}
           label={<FormattedMessage {...messages.rating} />}
           name="rating"

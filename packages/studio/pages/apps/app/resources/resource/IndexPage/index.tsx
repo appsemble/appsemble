@@ -511,12 +511,7 @@ export function IndexPage(): ReactElement {
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
-        <SimpleFormField
-          // @ts-expect-error This is working as expected.
-          component={JSONSchemaEditor}
-          name={resourceName}
-          schema={schema}
-        />
+        <SimpleFormField component={JSONSchemaEditor} name={resourceName} schema={schema} />
       </ModalCard>
       <ModalCard
         component={SimpleForm}
