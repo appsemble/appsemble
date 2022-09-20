@@ -309,7 +309,7 @@ publish helm:
     - apk add git gnupg
     - gpg --import "$GPG_PRIVATE_KEY"
     - git init
-    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/charts"
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/charts.git"
     - git fetch --depth 1
     - git checkout --track origin/main
     - git config commit.gpgSign true
@@ -383,6 +383,46 @@ cleanup k8s jobs:
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
+# Delete all succesful jobs for review environments nightly
+update dependencies:
+  extends: .yarn
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  cache:
+    policy: push
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - node_modules
+      - '**/node_modules'
+  script:
+    - apt update
+    - apt install --yes git gnupg
+    - gpg --import "$GPG_PRIVATE_KEY"
+    - git init
+    - git remote add origin "https://appsemble-bot:$GITLAB_ACCESS_TOKEN@gitlab.com/appsemble/appsemble.git"
+    - git fetch --depth 1
+    - git checkout -B update-lockfile origin/main
+    - git config commit.gpgSign true
+    - git config user.email bot@appsemble.com
+    - git config user.name Appsemble
+    - rm yarn.lock
+    - yarn --ignore-scripts
+    - yarn eslint --fix . || true
+    - yarn remark . -o || true
+    - yarn stylelint --fix . || true
+    - yarn prettier --write . || true
+    - git commit --all --message 'Update yarn.lock'
+    - git push --force origin update-lockfile
+      -o merge_request.create
+      -o merge_request.label=chore
+      -o merge_request.merge_when_pipeline_succeeds
+      -o merge_request.remove_source_branch
+
 # Deploy the Docker image for a branch to a review environment.
 review:
   image: dtzar/helm-kubectl:3
@@ -430,7 +470,7 @@ review:
       --set "proxy=true"
       --set "remote=https://appsemble.app"
       --set "sentry.allowedDomains={*.appsemble.review}"
-      --set "sentry.environment=$CI_ENVIRONMENT_NAME"
+      --set "sentry.environment=review-$CI_MERGE_REQUEST_IID"
       --set "sentry.secret=sentry"
 
 # Stop a review environment.

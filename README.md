@@ -43,7 +43,7 @@ The project requires a PostgreSQL database. This project contains a Docker Compo
 spin up a preconfigured database with ease.
 
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
 
 The project can be served using the following command.

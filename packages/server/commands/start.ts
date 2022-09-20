@@ -4,6 +4,7 @@ import https from 'https';
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
+import { Context } from 'koa';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
@@ -144,7 +145,7 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   const app = await createServer({ webpackConfigs });
 
-  app.on('error', (err, ctx) => {
+  app.on('error', (err, ctx: Context) => {
     if (err.expose) {
       // It is thrown by `ctx.throw()` or `ctx.assert()`.
       return;
@@ -154,7 +155,7 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
       tags: {
         ip: ctx.ip,
         method: ctx.method,
-        url: String(ctx.URL),
+        url: ctx.href,
         'User-Agent': ctx.headers['user-agent'],
       },
     });
