@@ -18,9 +18,6 @@ interface PaginationNumbersProps {
   onPageChange: (page: number) => void;
 }
 
-const range = (start: number, stop: number): number[] =>
-  Array.from({ length: stop - start }, (v, i) => start + i).concat(stop);
-
 /**
  * A component to render a pagination control using numbers.
  * This component is used inside the `PaginationNavigator` component.
@@ -37,13 +34,13 @@ export function PaginationNumbers({
     return (
       <li>
         <ul className="pagination-list">
-          {range(1, maxPages).map((pageNo) => (
-            <li key={pageNo}>
+          {Array.from({ length: maxPages }, (unused, index) => (
+            <li key={index}>
               <Button
-                className={`pagination-link ${page === pageNo ? 'is-current' : ''}`}
-                onClick={() => onPageChange(pageNo)}
+                className={`pagination-link ${page === index + 1 ? 'is-current' : ''}`}
+                onClick={() => onPageChange(index + 1)}
               >
-                {pageNo}
+                {index + 1}
               </Button>
             </li>
           ))}
