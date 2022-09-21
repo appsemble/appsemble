@@ -8,7 +8,7 @@ import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
 import { ActionCreators } from '../../utils/actions/index.js';
@@ -80,7 +80,6 @@ export function Block({
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
-  const route = useMatch(':lang/:pageId');
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
   const { getBlockMessage } = useAppMessages();
@@ -126,7 +125,7 @@ export function Block({
       flowActions,
       pushNotifications,
       pageReady,
-      route,
+      params,
       prefix,
       prefixIndex,
       ee,
@@ -215,7 +214,6 @@ export function Block({
     pushNotifications,
     ready,
     remap,
-    route,
     setBlockMenu,
     setUserInfo,
     showDialog,

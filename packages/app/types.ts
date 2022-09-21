@@ -12,7 +12,7 @@ import {
 } from '@appsemble/types';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Dispatch } from 'react';
-import { NavigateFunction, PathMatch } from 'react-router-dom';
+import { NavigateFunction, Params } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
 
 import { ActionCreators } from './utils/actions/index.js';
@@ -117,7 +117,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   flowActions: FlowActions;
   navigate: NavigateFunction;
   pageReady: Promise<void>;
-  route: PathMatch<'lang' | 'pageId'> | PathMatch<'lang'>;
+  params: Readonly<Params<string>>;
   showShareDialog: ShowShareDialog;
   showDialog: ShowDialogAction;
   prefix: string;

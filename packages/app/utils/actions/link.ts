@@ -9,14 +9,14 @@ export const link: ActionCreator<'link'> = ({
   app: { pages },
   definition: { to },
   navigate,
-  route,
+  params,
 }) => {
   let href: (data: any) => string;
 
   if (typeof to === 'string' && urlRegex.test(to)) {
     href = () => to;
   } else if (isAppLink(to)) {
-    href = () => `/${route.params.lang}${to}`;
+    href = () => `/${params.lang}${to}`;
   } else {
     const [toBase, toSub] = [].concat(to);
 
@@ -38,7 +38,7 @@ export const link: ActionCreator<'link'> = ({
 
       return [
         '',
-        route.params.lang,
+        params.lang,
         normalize(toPage.name),
         ...(toPage.parameters || []).map((name) => data[name] ?? ''),
         ...(subPage ? [normalize(subPage.name)] : []),
