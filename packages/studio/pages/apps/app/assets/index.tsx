@@ -20,8 +20,9 @@ import { PaginationNavigator } from '@appsemble/react-components/PaginationNavig
 import { Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -44,13 +45,21 @@ export function AssetsPage(): ReactElement {
 
   const { app } = useApp();
   const { formatMessage } = useIntl();
+  const { pathname: routeUrl } = useLocation();
   const push = useMessages();
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(Number.POSITIVE_INFINITY);
-  const [offset, setOffset] = useState(0);
-  const { data: count, setData: setCount } = useData<number>(`/api/apps/${app.id}/assets/$count`);
+  const { searchParams } = new URL(window.location.href);
+  const offset = searchParams.get('offset') == null ? 0 : Number(searchParams.get('offset'));
+  const limit =
+    searchParams.get('limit') === 'none'
+      ? Number.POSITIVE_INFINITY
+      : searchParams.get('limit') == null
+      ? 10
+      : Number(searchParams.get('limit'));
+  const rowsPerPage = limit;
+  const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
+
+  const resultCount = useData<number>(`/api/apps/${app.id}/assets/$count`);
   const assetsResult = useData<Asset[]>(
     `/api/apps/${app.id}/assets?$skip=${offset}${
       limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
@@ -60,6 +69,29 @@ export function AssetsPage(): ReactElement {
   const dialog = useToggle();
 
   const { setData } = assetsResult;
+  const count = resultCount.data;
+
+  const updatePagination = useCallback(
+    (newCount: number) => {
+      const newPage =
+        rowsPerPage === Number.POSITIVE_INFINITY
+          ? 1
+          : page >= Math.ceil(newCount / rowsPerPage)
+          ? Math.ceil(newCount / rowsPerPage)
+          : page;
+      if (rowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(rowsPerPage));
+        searchParams.set('offset', String((newPage - 1) * rowsPerPage));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      resultCount.refresh();
+      assetsResult.refresh();
+    },
+    [assetsResult, page, resultCount, routeUrl, rowsPerPage, searchParams],
+  );
 
   const submitAsset = useCallback(
     async ({ file, name }: FormValues) => {
@@ -73,11 +105,10 @@ export function AssetsPage(): ReactElement {
       push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
       setData((assets) => [...assets, data]);
-      setCount((c) => c + 1);
-      assetsResult.refresh();
+      updatePagination(count + 1);
       dialog.disable();
     },
-    [app.id, assetsResult, dialog, formatMessage, push, setCount, setData],
+    [app.id, count, dialog, formatMessage, push, setData, updatePagination],
   );
 
   const onDelete = useConfirmation({
@@ -105,8 +136,7 @@ export function AssetsPage(): ReactElement {
       });
       setData((assets) => assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
-      setCount((c) => c - selectedAssets.length);
-      assetsResult.refresh();
+      updatePagination(count - selectedAssets.length);
     },
   });
 
@@ -127,27 +157,36 @@ export function AssetsPage(): ReactElement {
     );
   }, [assetsResult]);
 
-  const onPageChange = useCallback((updatedPage: number) => {
-    setSelectedAssets([]);
-    setPage(updatedPage);
-  }, []);
+  const onPageChange = useCallback(
+    (updatedPage: number) => {
+      setSelectedAssets([]);
+      if (rowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(rowsPerPage));
+        searchParams.set('offset', String((updatedPage - 1) * rowsPerPage));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+    },
+    [routeUrl, rowsPerPage, searchParams],
+  );
 
-  const onRowsPerPageChange = useCallback((updatedRowsPerPage: number) => {
-    setSelectedAssets([]);
-    setRowsPerPage(updatedRowsPerPage);
-  }, []);
-
-  useEffect(() => {
-    const newPage =
-      rowsPerPage === Number.POSITIVE_INFINITY
-        ? 1
-        : page >= Math.ceil(count / rowsPerPage)
-        ? Math.ceil(count / rowsPerPage)
-        : page;
-    setPage(newPage <= 0 ? 1 : newPage);
-    setLimit(rowsPerPage === Number.POSITIVE_INFINITY ? Number.POSITIVE_INFINITY : rowsPerPage);
-    setOffset(rowsPerPage === Number.POSITIVE_INFINITY ? 0 : (page - 1) * rowsPerPage);
-  }, [page, rowsPerPage, count]);
+  const onRowsPerPageChange = useCallback(
+    (updatedRowsPerPage: number) => {
+      setSelectedAssets([]);
+      if (updatedRowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(updatedRowsPerPage));
+        const newOffset = offset - (offset % updatedRowsPerPage);
+        searchParams.set('offset', String(newOffset));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+    },
+    [offset, routeUrl, searchParams],
+  );
 
   return (
     <>

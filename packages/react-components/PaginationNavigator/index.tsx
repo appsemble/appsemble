@@ -54,19 +54,8 @@ export function PaginationNavigator({
     (event: ChangeEvent<HTMLSelectElement>) => {
       const newRowsPerPage = Number(event.target.value);
       onRowsPerPageChange(newRowsPerPage);
-      if (newRowsPerPage === Number.POSITIVE_INFINITY) {
-        return;
-      }
-      const pages = Math.ceil(count / newRowsPerPage);
-      const currentIndex = (page - 1) * rowsPerPage;
-      if (page >= pages) {
-        onPageChange(pages - 1);
-      } else {
-        const newPage = Math.floor(currentIndex / newRowsPerPage) + 1;
-        onPageChange(newPage > 1 ? newPage : 1);
-      }
     },
-    [onRowsPerPageChange, count, page, rowsPerPage, onPageChange],
+    [onRowsPerPageChange],
   );
 
   const maxPages =

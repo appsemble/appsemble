@@ -56,23 +56,33 @@ export function IndexPage(): ReactElement {
   const resourceURL = `/api/apps/${appId}/resources/${resourceName}`;
   const hiddenPropertiesKey = `${appId}.${resourceName}.hiddenProperties`;
 
-  // eslint-disable-next-line react/hook-use-state
-  const [[sortedProperty, sortedPropertyDirection], setSortedProperty] = useState<
-    [string, 'ASC' | 'DESC']
-  >(['id', 'DESC']);
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
-  const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(Number.POSITIVE_INFINITY);
-  const [offset, setOffset] = useState(0);
+
+  const { searchParams } = new URL(window.location.href);
+  const orderBy = searchParams.get('order') == null ? 'id' : searchParams.get('order');
+  const orderDirection: 'ASC' | 'DESC' =
+    searchParams.get('direction') == null
+      ? 'DESC'
+      : (searchParams.get('direction') as 'ASC' | 'DESC');
+  const offset = searchParams.get('offset') == null ? 0 : Number(searchParams.get('offset'));
+  const limit =
+    searchParams.get('limit') === 'none'
+      ? Number.POSITIVE_INFINITY
+      : searchParams.get('limit') == null
+      ? 15
+      : Number(searchParams.get('limit'));
+  const rowsPerPage = limit;
+  const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
+
+  const resultCount = useData<number>(`${resourceURL}/$count`);
   const result = useData<Resource[]>(
-    `${resourceURL}?$orderby=${sortedProperty} ${sortedPropertyDirection}${
+    `${resourceURL}?$orderby=${orderBy} ${orderDirection}${
       limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
     }&$skip=${offset}`,
   );
+  const count = resultCount.data;
   const setResources = result.setData;
-  const { data: count, setData: setCount } = useData<number>(`${resourceURL}/$count`);
 
   const { schema } = app.definition.resources[resourceName];
   const keys = Object.keys(schema.properties);
@@ -88,6 +98,28 @@ export function IndexPage(): ReactElement {
     }
   }, [hiddenPropertiesKey]);
 
+  const updatePagination = useCallback(
+    (newCount: number) => {
+      const newPage =
+        rowsPerPage === Number.POSITIVE_INFINITY
+          ? 1
+          : page >= Math.ceil(newCount / rowsPerPage)
+          ? Math.ceil(newCount / rowsPerPage)
+          : page;
+      if (rowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(rowsPerPage));
+        searchParams.set('offset', String((newPage - 1) * rowsPerPage));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      resultCount.refresh();
+      result.refresh();
+    },
+    [page, result, resultCount, routeUrl, rowsPerPage, searchParams],
+  );
+
   const defaultResourceValues = useMemo(() => generateDataFromSchema(schema) as Resource, [schema]);
 
   const onEditResource = useCallback(
@@ -100,10 +132,9 @@ export function IndexPage(): ReactElement {
   const onDeleteResource = useCallback(
     (resourceId: number) => {
       setResources((r) => r.filter((res) => res.id !== resourceId));
-      setCount((c) => c - 1);
-      result.refresh();
+      updatePagination(count - 1);
     },
-    [result, setCount, setResources],
+    [count, setResources, updatePagination],
   );
 
   const onConfirmDelete = useCallback(async () => {
@@ -112,8 +143,7 @@ export function IndexPage(): ReactElement {
       setResources((resources) =>
         resources.filter((resource) => !selectedResources.includes(Number(resource.id))),
       );
-      setCount((c) => c - selectedResources.length);
-      result.refresh();
+      updatePagination(count - selectedResources.length);
       setSelectedResources([]);
       push({
         body: formatMessage(messages.deleteSuccess),
@@ -122,7 +152,7 @@ export function IndexPage(): ReactElement {
     } catch {
       push(formatMessage(messages.deleteError));
     }
-  }, [formatMessage, push, resourceURL, result, selectedResources, setCount, setResources]);
+  }, [count, formatMessage, push, resourceURL, selectedResources, setResources, updatePagination]);
 
   const onDelete = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -160,13 +190,17 @@ export function IndexPage(): ReactElement {
     (event: SyntheticEvent<HTMLTableHeaderCellElement>) => {
       const { property } = event.currentTarget.dataset;
 
-      if (property === sortedProperty) {
-        setSortedProperty([property, sortedPropertyDirection === 'ASC' ? 'DESC' : 'ASC']);
+      if (property === orderBy) {
+        searchParams.set('direction', orderDirection === 'ASC' ? 'DESC' : 'ASC');
+        searchParams.set('order', property);
       } else {
-        setSortedProperty([property, 'ASC']);
+        searchParams.set('direction', 'ASC');
+        searchParams.set('order', property);
       }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      result.refresh();
     },
-    [sortedProperty, sortedPropertyDirection],
+    [orderBy, orderDirection, result, routeUrl, searchParams],
   );
 
   const onHideProperties = useCallback(
@@ -189,8 +223,7 @@ export function IndexPage(): ReactElement {
       );
 
       setResources((resources) => [...resources, data]);
-      setCount((c) => c + 1);
-      result.refresh();
+      updatePagination(count + 1);
 
       createModal.disable();
       push({
@@ -198,7 +231,16 @@ export function IndexPage(): ReactElement {
         color: 'primary',
       });
     },
-    [createModal, formatMessage, push, resourceName, resourceURL, result, setCount, setResources],
+    [
+      count,
+      createModal,
+      formatMessage,
+      push,
+      resourceName,
+      resourceURL,
+      setResources,
+      updatePagination,
+    ],
   );
 
   const downloadCsv = useCallback(async () => {
@@ -227,8 +269,7 @@ export function IndexPage(): ReactElement {
           ({ data }) => {
             const newResources = [].concat(data);
             setResources((oldResources) => [...newResources, ...oldResources]);
-            setCount((c) => c + newResources.length);
-            result.refresh();
+            updatePagination(count + newResources.length);
             push({
               body: formatMessage(messages.importSuccess, {
                 ids: newResources.map((r) => r.id).join(', '),
@@ -244,29 +285,38 @@ export function IndexPage(): ReactElement {
           },
         );
     });
-  }, [formatMessage, push, resourceURL, result, setCount, setResources]);
+  }, [count, formatMessage, push, resourceURL, setResources, updatePagination]);
 
-  const onPageChange = useCallback((updatedPage: number) => {
-    setSelectedResources([]);
-    setPage(updatedPage);
-  }, []);
+  const onPageChange = useCallback(
+    (updatedPage: number) => {
+      setSelectedResources([]);
+      if (rowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(rowsPerPage));
+        searchParams.set('offset', String((updatedPage - 1) * rowsPerPage));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+    },
+    [routeUrl, rowsPerPage, searchParams],
+  );
 
-  const onRowsPerPageChange = useCallback((updatedRowsPerPage: number) => {
-    setSelectedResources([]);
-    setRowsPerPage(updatedRowsPerPage);
-  }, []);
-
-  useEffect(() => {
-    const newPage =
-      rowsPerPage === Number.POSITIVE_INFINITY
-        ? 1
-        : page >= Math.ceil(count / rowsPerPage)
-        ? Math.ceil(count / rowsPerPage)
-        : page;
-    setPage(newPage <= 0 ? 1 : newPage);
-    setLimit(rowsPerPage === Number.POSITIVE_INFINITY ? Number.POSITIVE_INFINITY : rowsPerPage);
-    setOffset(rowsPerPage === Number.POSITIVE_INFINITY ? 0 : (page - 1) * rowsPerPage);
-  }, [page, rowsPerPage, count]);
+  const onRowsPerPageChange = useCallback(
+    (updatedRowsPerPage: number) => {
+      setSelectedResources([]);
+      if (updatedRowsPerPage === Number.POSITIVE_INFINITY) {
+        searchParams.set('limit', 'none');
+        searchParams.set('offset', '0');
+      } else {
+        searchParams.set('limit', String(updatedRowsPerPage));
+        const newOffset = offset - (offset % updatedRowsPerPage);
+        searchParams.set('offset', String(newOffset));
+      }
+      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+    },
+    [offset, routeUrl, searchParams],
+  );
 
   return (
     <>
@@ -341,10 +391,8 @@ export function IndexPage(): ReactElement {
                       <span>
                         <FormattedMessage {...messages.id} />
                       </span>
-                      {sortedProperty === 'id' && (
-                        <Icon
-                          icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
-                        />
+                      {orderBy === 'id' && (
+                        <Icon icon={orderDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
                       )}
                     </th>
                   )}
@@ -387,10 +435,8 @@ export function IndexPage(): ReactElement {
                           onClick={sortable ? onSortProperty : null}
                         >
                           <span>{propSchema?.title || property}</span>
-                          {sortedProperty === property && (
-                            <Icon
-                              icon={sortedPropertyDirection === 'ASC' ? 'caret-up' : 'caret-down'}
-                            />
+                          {orderBy === property && (
+                            <Icon icon={orderDirection === 'ASC' ? 'caret-up' : 'caret-down'} />
                           )}
                         </th>
                       );
