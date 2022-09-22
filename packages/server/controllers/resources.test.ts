@@ -4069,7 +4069,14 @@ describe('deleteResources', () => {
     const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
       data: resources.map((r) => r.id),
     });
+    const responseGetEmpty = await request.get(`/api/apps/${app.id}/resources/testResource`);
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseGetEmpty).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      []
+    `);
   });
 
   it('should ignore non-existent resources.', async () => {
