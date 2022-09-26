@@ -1,5 +1,3 @@
-export {};
-
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**

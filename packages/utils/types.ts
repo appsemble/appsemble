@@ -4,5 +4,3 @@ declare global {
     function supportedValuesOf(value: string): string[];
   }
 }
-
-export {};

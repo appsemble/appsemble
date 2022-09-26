@@ -6,5 +6,3 @@ declare module '@appsemble/sdk' {
     onClick: never;
   }
 }
-
-export {};
