@@ -1747,17 +1747,14 @@
     "@newdash/newdash" "^5.21.2"
     "@odata/metadata" "^0.2.8"
 
-<<<<<<< HEAD
 "@remix-run/router@1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.0.1.tgz#88d7ac31811ab0cef14aaaeae2a0474923b278bc"
   integrity sha512-eBV5rvW4dRFOU1eajN7FmYxjAIVz/mRHgUE9En9mBn6m3mulK3WTR5C3iQhL9MZ14rWAq+xOlEaCkDiW0/heOg==
-=======
 "@popperjs/core@^2.9.0":
   version "2.11.6"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
->>>>>>> 6a12b6fd4 (Adding wordcloud block with logic)
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
@@ -14428,8 +14425,6 @@ timed-out@4.0.1:
   resolved "https://registry.yarnpkg.com/timed-out/-/timed-out-4.0.1.tgz#f32eacac5a175bea25d7fab565ab3ed8741ef56f"
   integrity sha512-G7r3AhovYtr5YKOWQkta8RKAPb+J9IsO4uVmzjl8AZwfhs8UcUwTiD6gcJYSgOtzyjvQKrKYn41syHbUWMkafA==
 
-<<<<<<< HEAD
-=======
 tiny-invariant@^1.0.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.2.0.tgz#a1141f86b672a9148c72e978a19a73b9b94a15a9"
@@ -14447,7 +14442,6 @@ tippy.js@^6.2.6:
   dependencies:
     "@popperjs/core" "^2.9.0"
 
->>>>>>> 6a12b6fd4 (Adding wordcloud block with logic)
 tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
@@ -14616,6 +14610,7 @@ ts-json-schema-generator@^1.0.0:
     typescript "~4.8.3"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ts-loader@^9.0.0:
   version "9.4.1"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-9.4.1.tgz#b6f3d82db0eac5a8295994f8cb5e4940ff6b1060"
@@ -14632,6 +14627,9 @@ ts-node@^10.0.0:
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
 =======
 "ts-node@^10.9.1", "ts-node@>=9.0.0":
+=======
+"ts-node@^10.0.0", "ts-node@>=9.0.0":
+>>>>>>> fab36a87f (Extended input fields for wordcloud)
   "integrity" "sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw=="
   "resolved" "https://registry.npmjs.org/ts-node/-/ts-node-10.9.1.tgz"
   "version" "10.9.1"
@@ -14661,10 +14659,26 @@ tsconfig-paths@^3.14.1:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
+<<<<<<< HEAD
 tslib@2.4.0, tslib@^2.0.3, tslib@^2.1.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
+=======
+"tsconfig-paths@^4.1.0":
+  "integrity" "sha512-AHx4Euop/dXFC+Vx589alFba8QItjF+8hf8LtmuiCwHyI4rHXQtOOENaM8kvYf5fR0dRChy3wzWIZ9WbB7FWow=="
+  "resolved" "https://registry.npmjs.org/tsconfig-paths/-/tsconfig-paths-4.1.0.tgz"
+  "version" "4.1.0"
+  dependencies:
+    "json5" "^2.2.1"
+    "minimist" "^1.2.6"
+    "strip-bom" "^3.0.0"
+
+"tslib@^1.8.1":
+  "integrity" "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+  "resolved" "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
+  "version" "1.14.1"
+>>>>>>> fab36a87f (Extended input fields for wordcloud)
 
 tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
