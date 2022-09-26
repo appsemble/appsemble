@@ -20,8 +20,8 @@ const WordcloudLogic = (props: any) => {
   useEffect(() => {
     if (canvasRef.current != null) {
       WordCloud(canvasRef.current, {
-        ...optionsList, 
-        ...{ list: wordList }
+        ...optionsList,
+        ...{ list: wordList },
       });
     }
   }, [wordList]);
