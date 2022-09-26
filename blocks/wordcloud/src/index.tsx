@@ -9,26 +9,26 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
   useEffect(() => {
     const values: any[] = [];
     const hasListener = events.on.data((newData: []) => {
-      fields.forEach(field => {
-        if(typeof field === 'object') {
+      fields.forEach((field) => {
+        if (typeof field === 'object') {
           newData.map((element: object) => {
-            values.push(utils.remap(field, element))
-          })
+            values.push(utils.remap(field, element));
+          });
         } else {
-          values.push(field)
+          values.push(field);
         }
-      })
-      setData(sortData(values))
+      });
+      setData(sortData(values));
       setError(false);
-    })
-    setError(hasListener)
-    ready()
-  }, [events, ready])
+    });
+    setError(hasListener);
+    ready();
+  }, [events, ready]);
 
   //Sorts the data to be an array of strings to feed to the wordcloud logic layer
   const sortData = (givenWordsList: any) => {
     let filteredList: string[] = [];
-    getDataType(givenWordsList)
+    getDataType(givenWordsList);
 
     function getDataType(data: any) {
       if (Array.isArray(data)) {
@@ -37,14 +37,14 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
         });
       } else if (typeof data === 'object') {
         Object.values(data as object).forEach((item) => {
-          getDataType(item)
+          getDataType(item);
         });
       } else if (typeof data === 'string') {
         filteredList.push(data);
-      } else if (typeof data === 'undefined' || data === null ) {
+      } else if (typeof data === 'undefined' || data === null) {
         return;
       } else {
-        filteredList.push(data.toString())
+        filteredList.push(data.toString());
       }
     }
     return filteredList;
