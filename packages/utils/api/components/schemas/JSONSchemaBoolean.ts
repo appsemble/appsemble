@@ -11,9 +11,12 @@ export const JSONSchemaBoolean = extendJSONSchema(BaseJSONSchema, {
       enum: ['boolean'],
       description: 'The type of the JSON schema. A boolean means either true or false.',
     },
-    example: {
-      type: 'boolean',
-      description: 'An example boolean which is valid according to this schema.',
+    examples: {
+      type: 'array',
+      items: {
+        type: 'boolean',
+        description: 'An example boolean which is valid according to this schema.',
+      },
     },
     default: {
       type: 'boolean',

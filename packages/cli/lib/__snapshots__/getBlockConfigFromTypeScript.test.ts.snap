@@ -2824,12 +2824,18 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "maxTime": {
             "default": "23:59",
             "description": "The maximum time that can be selected.",
+            "examples": [
+              "15:20",
+            ],
             "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
             "type": "string",
           },
           "minTime": {
             "default": "00:00",
             "description": "The minimum time that can be selected.",
+            "examples": [
+              "15:20",
+            ],
             "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
             "type": "string",
           },

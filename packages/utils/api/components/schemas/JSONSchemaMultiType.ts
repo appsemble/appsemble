@@ -20,8 +20,10 @@ export const JSONSchemaMultiType = extendJSONSchema(BaseJSONSchema, {
         enum: ['array', 'boolean', 'integer', 'null', 'number', 'string'],
       },
     },
-    example: {
+    examples: {
+      type: 'array',
       description: 'An example which is valid according to this schema.',
+      items: {},
     },
     default: {
       description: 'The default value which is used if no value is supplied.',

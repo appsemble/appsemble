@@ -11,8 +11,10 @@ export const JSONSchemaNot = extendJSONSchema(BaseJSONSchema, {
       $ref: '#/components/schemas/JSONSchema',
       description: 'The JSON schema which the value may not match.',
     },
-    example: {
+    examples: {
+      type: 'array',
       description: 'An example value which is valid according to this schema.',
+      items: {},
     },
     default: {
       description: 'The default value which is used if no value is supplied.',

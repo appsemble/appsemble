@@ -15,8 +15,10 @@ export const JSONSchemaAnyOf = extendJSONSchema(BaseJSONSchema, {
         $ref: '#/components/schemas/JSONSchema',
       },
     },
-    example: {
+    examples: {
+      type: 'array',
       description: 'An example value which is valid according to this schema.',
+      items: {},
     },
     default: {
       description: 'The default value which is used if no value is supplied.',

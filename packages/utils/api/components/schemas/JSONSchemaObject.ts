@@ -11,10 +11,13 @@ export const JSONSchemaObject = extendJSONSchema(BaseJSONSchema, {
       enum: ['object'],
       description: 'The type of the JSON schema.',
     },
-    example: {
-      type: 'object',
-      description: 'An example object which is valid according to this schema.',
-      additionalProperties: true,
+    examples: {
+      type: 'array',
+      items: {
+        type: 'object',
+        description: 'An example object which is valid according to this schema.',
+        additionalProperties: true,
+      },
     },
     default: {
       type: 'object',

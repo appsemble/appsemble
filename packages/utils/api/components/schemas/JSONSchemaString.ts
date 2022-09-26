@@ -12,9 +12,12 @@ export const JSONSchemaString = extendJSONSchema(BaseJSONSchema, {
       description:
         'The type of the JSON schema. A string is the technical term for a piece of text.',
     },
-    example: {
-      type: 'string',
-      description: 'An example string which is valid according to this schema.',
+    examples: {
+      type: 'array',
+      items: {
+        type: 'string',
+        description: 'An example string which is valid according to this schema.',
+      },
     },
     default: {
       type: 'string',
