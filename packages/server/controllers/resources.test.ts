@@ -4055,6 +4055,30 @@ describe('deleteResources', () => {
     `);
   });
 
+  it('should delete large number of resources', async () => {
+    const app = await exampleApp(organization.id);
+    const resources = await Resource.bulkCreate(
+      Array.from({ length: 1000 }, (unused, i) => ({
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: `I am Foo ${i}.` },
+      })),
+    );
+    expect(resources).toHaveLength(1000);
+    authorizeStudio();
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource`, {
+      data: resources.map((r) => r.id),
+    });
+    const responseGetEmpty = await request.get(`/api/apps/${app.id}/resources/testResource`);
+    expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(responseGetEmpty).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      []
+    `);
+  });
+
   it('should ignore non-existent resources.', async () => {
     const app = await exampleApp(organization.id);
     const resourceA = await Resource.create({

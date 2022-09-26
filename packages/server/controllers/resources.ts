@@ -21,7 +21,6 @@ import {
 } from '../models/index.js';
 import { getRemapperContext } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
-import { iterTable } from '../utils/database.js';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata.js';
 import {
   extractResourceBody,
@@ -892,12 +891,22 @@ export async function deleteResources(ctx: Context): Promise<void> {
   getResourceDefinition(app, resourceType);
   const userQuery = await verifyPermission(ctx, app, resourceType, action);
 
-  for await (const resource of iterTable(Resource, {
-    where: { id: body, type: resourceType, AppId: appId, ...userQuery },
-  })) {
-    await resource.destroy();
-    processReferenceHooks(user, app, resource, action);
-    processHooks(user, app, resource, action);
+  let deletedAmount = 0;
+  while (deletedAmount < body.length) {
+    for (const resource of await Resource.findAll({
+      where: {
+        id: body.slice(deletedAmount, deletedAmount + 100),
+        type: resourceType,
+        AppId: appId,
+        ...userQuery,
+      },
+      limit: 100,
+    })) {
+      await resource.destroy();
+      processReferenceHooks(user, app, resource, action);
+      processHooks(user, app, resource, action);
+    }
+    deletedAmount += 100;
   }
 
   ctx.status = 204;
