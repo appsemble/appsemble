@@ -13,5 +13,3 @@ declare module '@appsemble/sdk' {
     fields: string[];
   }
 }
-
-export {};

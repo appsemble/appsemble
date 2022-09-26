@@ -29,5 +29,3 @@ declare module '@appsemble/sdk' {
     alignment?: 'center' | 'left' | 'right';
   }
 }
-
-export {};
