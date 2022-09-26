@@ -22,7 +22,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to render out in a table.
      */
-    fields: string[];  
+    fields: Remapper | string[];  
 
     /**
      *  List of options for rendering the wordcloud.

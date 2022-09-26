@@ -19,6 +19,7 @@ const WordcloudLogic = (props: any) => {
 
   useEffect(() => {
     if (canvasRef.current != null) {
+      console.log(wordList)
       WordCloud(canvasRef.current, {
         ...optionsList, 
         ...{ list: wordList }
@@ -56,6 +57,7 @@ const WordcloudLogic = (props: any) => {
           margin: 'auto',
           padding: 0,
           display: 'flex',
+          borderRadius: 10,
         }}
       />
     </div>
