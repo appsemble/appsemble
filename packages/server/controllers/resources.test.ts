@@ -4058,7 +4058,7 @@ describe('deleteResources', () => {
   it('should delete large number of resources', async () => {
     const app = await exampleApp(organization.id);
     const resources = await Resource.bulkCreate(
-      Array.from({ length: 1000 }).map((unused, i) => ({
+      Array.from({ length: 1000 }, (unused, i) => ({
         type: 'testResource',
         AppId: app.id,
         data: { foo: `I am Foo ${i}.` },
