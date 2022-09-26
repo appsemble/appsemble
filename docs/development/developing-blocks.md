@@ -263,7 +263,7 @@ To get a better idea of how blocks work, or for inspiration of what blocks can b
 have a look at the
 [officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.15/blocks).
 
-Need help developing a blocK? Feel free to join our [Discord server](https://discord.gg/q5aZAyq5kZ).
+Need help developing a block? Feel free to join our [Discord server](https://discord.gg/q5aZAyq5kZ).
 
 [bulma]: https://bulma.io
 [font awesome]: https://fontawesome.com
