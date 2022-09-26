@@ -15522,7 +15522,7 @@
     "micromatch" "^4.0.0"
     "semver" "^7.3.4"
 
-"ts-node@^10.0.0", "ts-node@>=9.0.0":
+"ts-node@^10.9.1", "ts-node@>=9.0.0":
   "integrity" "sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw=="
   "resolved" "https://registry.npmjs.org/ts-node/-/ts-node-10.9.1.tgz"
   "version" "10.9.1"
