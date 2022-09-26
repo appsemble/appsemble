@@ -188,14 +188,14 @@ export function IndexPage(): ReactElement {
   );
 
   const downloadCsv = useCallback(async () => {
-    const url = new URL(resourceURL, window.location.origin);
-    url.searchParams.set(
+    const searchParams = new URLSearchParams();
+    searchParams.set(
       '$select',
       ['id', '$created', '$updated', '$author', ...keys]
         .filter((key) => !hiddenProperties.has(key))
         .join(','),
     );
-    await download(String(url), `${resourceName}.csv`, 'text/csv');
+    await download(`${resourceURL}?${searchParams}`, `${resourceName}.csv`, 'text/csv');
   }, [hiddenProperties, keys, resourceName, resourceURL]);
 
   const uploadCsv = useCallback(() => {
