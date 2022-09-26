@@ -19,7 +19,7 @@ export type Remapper = object[] | boolean | number | object | string;
  * of the events the block supports.
  *
  * @example
- * declare module '<at>appsemble/sdk' {
+ * declare module '@appsemble/sdk' {
  *   interface Actions {
  *     onClick: {}
  *   }
@@ -37,7 +37,7 @@ export interface Actions {}
  * or an object containing the keys of values and the type of the value.
  *
  * @example
- * declare module '<at>appsemble/sdk' {
+ * declare module '@appsemble/sdk' {
  *   interface Messages {
  *     exampleMessage: never;
  *     hello: { person: string };
@@ -54,7 +54,7 @@ export interface Messages {}
  * of the events the block can emit.
  *
  * @example
- * declare module '<at>appsemble/sdk' {
+ * declare module '@appsemble/sdk' {
  *   interface EventEmitters {
  *     data: {}
  *   }
@@ -70,7 +70,7 @@ export interface EventEmitters {}
  * names of the events the block can emit.
  *
  * @example
- * declare module '<at>appsemble/sdk' {
+ * declare module '@appsemble/sdk' {
  *   interface EventListeners {
  *     data: {}
  *   }
@@ -86,7 +86,7 @@ export interface EventListeners {}
  * names of the events the block can emit.
  *
  * @example
- * declare module '<at>appsemble/sdk' {
+ * declare module '@appsemble/sdk' {
  *   interface Parameters {
  *     param1: string;
  *     param2: number;
