@@ -12,14 +12,17 @@ export const JSONSchemaArray = extendJSONSchema(BaseJSONSchema, {
       description: 'The type of the JSON schema. An array means a list of data.',
     },
     example: {
-      // @ts-expect-error This is valid despite the type error.
       type: 'array',
       description: 'An example array which is valid according to this schema.',
+      items: {
+        type: 'array',
+        items: {},
+      },
     },
     default: {
-      // @ts-expect-error This is valid despite the type error.
       type: 'array',
       description: 'The default value which is used if no value is supplied.',
+      items: {},
     },
     maxItems: {
       type: 'integer',

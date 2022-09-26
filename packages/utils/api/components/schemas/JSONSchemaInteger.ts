@@ -11,9 +11,12 @@ export const JSONSchemaInteger = extendJSONSchema(BaseJSONSchema, {
       enum: ['integer'],
       description: 'The type of the JSON schema. An integer means a fractionless number.',
     },
-    example: {
-      type: 'integer',
-      description: 'An example integer which is valid according to this schema.',
+    examples: {
+      type: 'array',
+      items: {
+        type: 'integer',
+        description: 'An example integer which is valid according to this schema.',
+      },
     },
     default: {
       type: 'integer',

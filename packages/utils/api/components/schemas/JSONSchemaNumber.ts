@@ -23,9 +23,12 @@ export const JSONSchemaNumber = extendJSONSchema(BaseJSONSchema, {
       type: 'number',
       description: 'If const is specified, the type can be safely removed.',
     },
-    example: {
-      type: 'number',
-      description: 'An example number which is valid according to this schema.',
+    examples: {
+      type: 'array',
+      items: {
+        type: 'number',
+        description: 'An example number which is valid according to this schema.',
+      },
     },
     default: {
       type: 'number',
