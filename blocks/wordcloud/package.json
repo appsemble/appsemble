@@ -8,5 +8,5 @@
   "name": "@appsemble/wordcloud",
   "private": true,
   "type": "module",
-  "version": "0.21.38"
+  "version": "0.20.15"
 }

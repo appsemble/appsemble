@@ -5,13 +5,19 @@ import WordcloudLogic from './WordcloudLogic';
 bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => {
   const [data, setData] = useState<any>(fields);
   const [error, setError] = useState(false);
-  console.log('Begin of block')
 
   useEffect(() => {
+    const values: any[] = [];
     const hasListener = events.on.data((newData: []) => {
-      const values = newData.map((element: object)  => 
-        utils.remap(fields, element)
-      );
+      fields.forEach(field => {
+        if(typeof field === 'object') {
+          newData.map((element: object) => {
+            values.push(utils.remap(field, element))
+          })
+        } else {
+          values.push(field)
+        }
+      })
       setData(sortData(values))
       setError(false);
     })
@@ -31,14 +37,15 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
         });
       } else if (typeof data === 'object') {
         Object.values(data as object).forEach((item) => {
-          console.log('Item ', item)
           getDataType(item)
         });
       } else if (typeof data === 'string') {
         filteredList.push(data);
-      } else {
+      } else if (typeof data === 'undefined' || data === null ) {
         return;
-      } 
+      } else {
+        filteredList.push(data.toString())
+      }
     }
     return filteredList;
   };
