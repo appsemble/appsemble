@@ -3,7 +3,7 @@ import process from 'process';
 import { fileURLToPath } from 'url';
 
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
-import ts from 'typescript';
+import { ts } from 'ts-json-schema-generator';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 

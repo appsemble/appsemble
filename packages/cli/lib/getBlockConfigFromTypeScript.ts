@@ -5,8 +5,7 @@ import { BlockConfig, BlockManifest } from '@appsemble/types';
 import { parse } from 'comment-parser';
 import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
-import { createFormatter, createParser, SchemaGenerator } from 'ts-json-schema-generator';
-import ts from 'typescript';
+import { createFormatter, createParser, SchemaGenerator, ts } from 'ts-json-schema-generator';
 
 /**
  * Get the tsdoc comment for a TypeScript node.
