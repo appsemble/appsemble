@@ -47,7 +47,7 @@ describe('link', () => {
     const action = createTestAction({
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: '/Login' },
-      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      params: { lang: 'da' },
       navigate,
     });
     const link = action.href();
@@ -61,7 +61,7 @@ describe('link', () => {
     const action = createTestAction({
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
-      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      params: { lang: 'da' },
       navigate,
     });
     const link = action.href();
@@ -78,7 +78,7 @@ describe('link', () => {
         pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
       },
       definition: { type: 'link', to: ['Page A', 'Subpage B'] },
-      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      params: { lang: 'da' },
       navigate,
     });
     const link = action.href();
@@ -95,7 +95,7 @@ describe('link', () => {
         pages: [{ name: 'Page A', blocks: [], parameters: ['id'] }],
       },
       definition: { type: 'link', to: 'Page A' },
-      route: { params: { lang: 'da' }, pathname: '', pathnameBase: '', pattern: { path: '' } },
+      params: { lang: 'da' },
       navigate,
     });
     const link = action.href({ id: 3 });

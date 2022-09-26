@@ -186,11 +186,8 @@ export function createTestAction<T extends ActionDefinition['type']>(
         context,
         locale: defaultLocale,
       }),
-    route: {
-      params: { lang: 'en' },
-      pathname: '/en/example',
-      pathnameBase: '/en/example',
-      pattern: { path: ':lang/example' },
+    params: {
+      lang: 'en',
     },
     showDialog: null,
     showShareDialog: null,

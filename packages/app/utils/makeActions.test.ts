@@ -21,7 +21,7 @@ describe('makeActions', () => {
       prefixIndex: 'pages.0.blocks.0',
       pushNotifications: null,
       remap,
-      route: null,
+      params: null,
       showDialog: null,
       showShareDialog: null,
       showMessage: null,

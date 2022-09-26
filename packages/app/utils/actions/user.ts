@@ -7,9 +7,9 @@ import { ActionCreator } from './index.js';
 export const register: ActionCreator<'user.register'> = ({
   definition,
   getUserInfo,
+  params,
   passwordLogin,
   remap,
-  route,
 }) => [
   async (data) => {
     const userInfo = getUserInfo();
@@ -27,7 +27,7 @@ export const register: ActionCreator<'user.register'> = ({
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
-    formData.append('locale', route.params.lang);
+    formData.append('locale', params.lang);
 
     if (name) {
       formData.append('name', name);
@@ -78,8 +78,8 @@ export const login: ActionCreator<'user.login'> = ({
 export const update: ActionCreator<'user.update'> = ({
   definition,
   getUserInfo,
+  params,
   remap,
-  route,
   setUserInfo,
 }) => [
   async (data) => {
@@ -115,7 +115,7 @@ export const update: ActionCreator<'user.update'> = ({
       );
     }
 
-    formData.append('locale', route.params.lang);
+    formData.append('locale', params.lang);
 
     const { data: response } = await axios.patch<AppAccount>(
       `${apiUrl}/api/user/apps/${appId}/account`,
