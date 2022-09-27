@@ -13,8 +13,8 @@ const WordcloudLogic = (props: any) => {
     mapArrayToWordcloudObject(props.words);
     setOptions({
       ...props.options,
-      ...props.options.color = props.options.color || '#000000',
-      ...props.options.rotateRatio = props.options.rotateRatio || 0,
+      ...(props.options.color = props.options.color || '#000000'),
+      ...(props.options.rotateRatio = props.options.rotateRatio || 0),
       ...{ shape: props.shape },
     });
   }, []);
