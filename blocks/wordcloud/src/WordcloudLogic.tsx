@@ -46,7 +46,7 @@ const WordcloudLogic = (props: any) => {
     setWordList(tempWordlist);
   };
 
-  if (!WordCloud.isSupported) return <p>Your browser does not support the Wordcloud block!</p>;
+  if (!WordCloud.isSupported) return <p id="unsupported" />;
 
   return (
     <div className="canvasContainer">
