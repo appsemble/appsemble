@@ -47,8 +47,6 @@ module.exports = {
     {
       files: ['packages/create-appsemble/templates/**'],
       rules: {
-        '@typescript-eslint/no-unused-vars': 'off',
-
         'import/no-extraneous-dependencies': 'off',
       },
     },

@@ -1,5 +1,7 @@
 # Developing Blocks
 
+This document will guide you through the creation of your first block.
+
 ## Initialize the Project
 
 To start developing blocks, first the Appsemble repository needs to be cloned and installed as
@@ -25,9 +27,9 @@ The following templates are available by default:
 
 - **Preact**: A simple Preact set-up that contains a component that can load data and display it in
   a table.
-- **Mini JSX**: A basic set-up using [Mini-JSX](https://www.npmjs.com/package/mini-jsx), this can be
-  used for blocks with simple logic while still leveraging the JSX syntax you might be used to from
-  Preact or React.
+- **Mini JSX**: A basic set-up using [`mini-jsx`](https://www.npmjs.com/package/mini-jsx), this can
+  be used for blocks with simple logic while still leveraging the JSX syntax you might be used to
+  from Preact or React.
 - **Vanilla**: The most basic template available, using pure HTML and JavaScript to bootstrap the
   block. This template can also be used as a starting point for use with other third party libraries
   or frameworks.
@@ -255,20 +257,17 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 The event will be emitted to all blocks on the page. Go on and add a second `@org/test` block the
 page to see the event is received by both blocks.
 
-## Unused Variables
+## Further Reading
 
-The attach function in the example block still has 2 unused variables.
+To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
+have a look at the
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.15/blocks).
+For example, if you want to create a block to display a set of dynamically loaded data, have a look
+at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
+the `detail-viewer` or `stats` block. If would like to create a block to process data based on
+events, have a look at the `data-loader` or `data-notifier` block.
 
-`shadowRoot` is the HTML shadow root on which the block is rendered. The returned value will be
-attached to the shadow root automatically, but it may be necessary to append child elements to the
-shadow root manually for more advanced use cases. Some use cases are when code needs to be run after
-the node has been attached, or when multiple nodes are appended.
-
-`pageParameters` is passed in if the block is rendered on a page that has the `parameters` property
-specified. Typically, this is used if a block needs to display data for a single resource, such as a
-detail view or an update form.
-
-For more details on what a block can do, see the technical documentation of the SDK.
+Need help developing a block? Feel free to join our [Discord server](https://discord.gg/q5aZAyq5kZ).
 
 [bulma]: https://bulma.io
 [font awesome]: https://fontawesome.com
