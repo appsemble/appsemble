@@ -495,6 +495,7 @@ export interface SubscriptionResponseResource {
   subscriptions?: Record<
     string,
     {
+      create?: boolean;
       update: boolean;
       delete: boolean;
     }

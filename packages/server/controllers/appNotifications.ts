@@ -44,31 +44,26 @@ export async function getSubscription(ctx: Context): Promise<void> {
     }
   }
 
-  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { ResourceId, action, type }) => {
-    if (!acc[type]) {
-      return acc;
+  for (const { ResourceId, action, type } of appSubscription.ResourceSubscriptions) {
+    if (!resources[type]) {
+      continue;
     }
 
     if (ResourceId) {
-      if (!acc[type].subscriptions) {
-        acc[type].subscriptions = {};
+      if (!resources[type].subscriptions) {
+        resources[type].subscriptions = {};
       }
 
-      if (!acc[type].subscriptions[ResourceId]) {
-        acc[type].subscriptions[ResourceId] = { update: false, delete: false };
+      if (!resources[type].subscriptions[ResourceId]) {
+        resources[type].subscriptions[ResourceId] = { update: false, delete: false };
       }
 
-      acc[type].subscriptions[ResourceId] = {
-        ...acc[type].subscriptions[ResourceId],
-        [action]: true,
-      };
-
-      return acc;
+      resources[type].subscriptions[ResourceId][action] = true;
+    } else {
+      resources[type][action] = true;
     }
-
-    acc[type][action] = true;
-    return acc;
-  }, resources);
+  }
+  ctx.body = resources;
 }
 
 export async function addSubscription(ctx: Context): Promise<void> {

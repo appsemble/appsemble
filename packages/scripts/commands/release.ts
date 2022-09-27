@@ -158,18 +158,23 @@ async function processDirectoryChanges(dir: string): Promise<Changes> {
 
 async function getAllChanges(directories: string[]): Promise<Changes> {
   const changesByPackage = await Promise.all(directories.map(processDirectoryChanges));
-  return changesByPackage.reduce(
-    (acc, change) => {
-      acc.added.push(...change.added);
-      acc.changed.push(...change.changed);
-      acc.deprecated.push(...change.deprecated);
-      acc.removed.push(...change.removed);
-      acc.fixed.push(...change.fixed);
-      acc.security.push(...change.security);
-      return acc;
-    },
-    { added: [], changed: [], deprecated: [], removed: [], fixed: [], security: [] },
-  );
+  const result: Changes = {
+    added: [],
+    changed: [],
+    deprecated: [],
+    removed: [],
+    fixed: [],
+    security: [],
+  };
+  for (const change of changesByPackage) {
+    result.added.push(...change.added);
+    result.changed.push(...change.changed);
+    result.removed.push(...change.removed);
+    result.fixed.push(...change.fixed);
+    result.security.push(...change.security);
+  }
+
+  return result;
 }
 
 async function updateChangelog(changesByCategory: Changes, version: string): Promise<void> {
