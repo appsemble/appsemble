@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/preact';
+import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { useEffect, useState } from 'preact/hooks';
 import WordcloudLogic from './WordcloudLogic';
 
@@ -51,15 +51,15 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
   };
 
   if (error) {
-    return <p>Error loading data.</p>;
+    return <FormattedMessage id="error" />;
   }
 
   if (!data) {
-    return <p>No data</p>;
+    return <FormattedMessage id="loading" />;
   }
 
   if (!data.length) {
-    return <p>Data is empty</p>;
+    return <FormattedMessage id="empty" />;
   }
 
   return (

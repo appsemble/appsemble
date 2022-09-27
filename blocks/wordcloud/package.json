@@ -2,7 +2,7 @@
   "name": "@appsemble/wordcloud",
   "version": "0.20.15",
   "private": true,
-  "description": "Block for displaying data in a wordcloud",
+  "description": "A block that displays data in a wordcloud",
   "type": "module",
   "dependencies": {
     "@appsemble/preact": "0.20.15",
