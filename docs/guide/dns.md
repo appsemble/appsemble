@@ -14,18 +14,18 @@ Create a CNAME record that links `@` to the Appsemble URL.
 For example, to link your top level domain name to your app on _appsemble.app_, add the following
 DNS record. The exact settings screen may vary per registrar.
 
-| Type  | Name | Target        | TTL  |
-| ----- | ---- | ------------- | ---- |
-| CNAME | @    | appsemble.app | Auto |
+| Type  | Name | Target           | TTL  |
+| ----- | ---- | ---------------- | ---- |
+| CNAME | @    | `appsemble.app.` | Auto |
 
 > **Note**: Not all registrars can handle top level domain name CNAME records. For these domain
 > names, we suggest using [Cloudflare]. No worries, registration is free.
 
 To link a subdomain, for example `my-app`, to an app, add the following configuration.
 
-| Type  | Name   | Target        | TTL  |
-| ----- | ------ | ------------- | ---- |
-| CNAME | my-app | appsemble.app | Auto |
+| Type  | Name   | Target           | TTL  |
+| ----- | ------ | ---------------- | ---- |
+| CNAME | my-app | `appsemble.app.` | Auto |
 
 ## Configure app
 
