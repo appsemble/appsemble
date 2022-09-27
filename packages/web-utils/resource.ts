@@ -1,5 +1,5 @@
 import { mapValues } from '@appsemble/utils';
-import { JsonValue } from 'type-fest';
+import { JsonObject, JsonValue } from 'type-fest';
 
 export function serializeResource(data: any): FormData | JsonValue {
   const assets: Blob[] = [];
@@ -14,7 +14,7 @@ export function serializeResource(data: any): FormData | JsonValue {
       return value.toJSON();
     }
     if (value instanceof Object) {
-      return mapValues(value, extractAssets);
+      return mapValues(value as JsonObject, extractAssets);
     }
     return value;
   };

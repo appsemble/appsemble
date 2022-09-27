@@ -36,6 +36,6 @@
   "dependencies": {
     "@appsemble/types": "0.20.31",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "type-fest": "^2.0.0"
+    "type-fest": "^3.0.0"
   }
 }

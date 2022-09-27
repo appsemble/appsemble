@@ -1,5 +1,6 @@
 import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
-import { JsonValue } from 'type-fest';
+
+type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
 /**
  * Properties that are shared between all requirements.

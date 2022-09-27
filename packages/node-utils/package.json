@@ -43,7 +43,7 @@
     "logform": "^2.0.0",
     "parse-json": "^6.0.0",
     "sort-keys": "^5.0.0",
-    "type-fest": "^2.0.0",
+    "type-fest": "^3.0.0",
     "winston": "^3.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"

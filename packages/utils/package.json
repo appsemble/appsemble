@@ -45,7 +45,7 @@
     "openapi-types": "^12.0.0",
     "parse-duration": "^1.0.0",
     "postcss": "^8.0.0",
-    "type-fest": "^2.0.0"
+    "type-fest": "^3.0.0"
   },
   "devDependencies": {
     "@types/langmap": "^0.0.1",
