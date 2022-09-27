@@ -464,30 +464,24 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
     throw notFound('Subscription not found');
   }
 
-  ctx.body = appSubscription.ResourceSubscriptions.reduce(
-    (acc, { ResourceId, action }) => {
-      if (ResourceId) {
-        if (!acc.subscriptions) {
-          acc.subscriptions = {};
-        }
-
-        if (!acc.subscriptions[ResourceId]) {
-          acc.subscriptions[ResourceId] = { update: false, delete: false };
-        }
-
-        acc.subscriptions[ResourceId] = {
-          ...acc.subscriptions[ResourceId],
-          [action]: true,
-        };
-
-        return acc;
+  const result: any = { create: false, update: false, delete: false };
+  for (const { ResourceId, action } of appSubscription.ResourceSubscriptions) {
+    if (ResourceId) {
+      if (!result.subscriptions) {
+        result.subscriptions = {};
       }
 
-      acc[action] = true;
-      return acc;
-    },
-    { create: false, update: false, delete: false } as any,
-  );
+      if (!result.subscriptions[ResourceId]) {
+        result.subscriptions[ResourceId] = { update: false, delete: false };
+      }
+
+      result.subscriptions[ResourceId][action] = true;
+    } else {
+      result[action] = true;
+    }
+  }
+
+  ctx.body = result;
 }
 
 export async function getResourceSubscription(ctx: Context): Promise<void> {

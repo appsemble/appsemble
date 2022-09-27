@@ -76,10 +76,13 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
   }, []);
 
   useEffect(() => {
-    document.title = breadcrumbs.reduce(
-      (acc, breadcrumb) => (breadcrumb?.title ? `${breadcrumb.title} · ${acc}` : acc),
-      title,
-    );
+    let result = title;
+    for (const breadcrumb of breadcrumbs) {
+      if (breadcrumb?.title) {
+        result = `${breadcrumb.title} · ${title}`;
+      }
+    }
+    document.title = result;
   }, [breadcrumbs, title]);
 
   useEffect(() => {

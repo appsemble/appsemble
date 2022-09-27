@@ -12,20 +12,19 @@ import { toOData } from './utils/toOData.js';
 bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils }) => {
   const modal = useToggle();
   const [loading, setLoading] = useState(false);
-  const defaultValues = useMemo(
-    () =>
-      fields.reduce((acc, { defaultValue, name, type }) => {
-        if (defaultValue != null) {
-          acc[name] = defaultValue;
-        } else if (type === 'buttons' || type === 'date-range') {
-          acc[name] = [];
-        } else {
-          acc[name] = null;
-        }
-        return acc;
-      }, {} as FilterValues),
-    [fields],
-  );
+  const defaultValues = useMemo(() => {
+    const result: FilterValues = {};
+    for (const { defaultValue, name, type } of fields) {
+      if (defaultValue != null) {
+        result[name] = defaultValue;
+      } else if (type === 'buttons' || type === 'date-range') {
+        result[name] = [];
+      } else {
+        result[name] = null;
+      }
+    }
+    return result;
+  }, [fields]);
   const [values, setValues] = useState(defaultValues);
 
   const highlightedField = fields.find((field) => field.name === highlight);
