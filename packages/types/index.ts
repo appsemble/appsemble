@@ -777,6 +777,17 @@ export interface DownloadActionDefinition extends BaseActionDefinition<'download
   filename: string;
 }
 
+export interface EachActionDefinition extends BaseActionDefinition<'each'> {
+  /**
+   * Run an action for each entry in an array.
+   *
+   * The actions are run in parallel.
+   *
+   * If the input is not an array, the action will be applied to the input instead.
+   */
+  do: ActionDefinition;
+}
+
 export interface EmailActionDefinition extends BaseActionDefinition<'email'> {
   /**
    * The recipient of the email.
@@ -1149,6 +1160,7 @@ export type ActionDefinition =
   | ConditionActionDefinition
   | DialogActionDefinition
   | DownloadActionDefinition
+  | EachActionDefinition
   | EmailActionDefinition
   | EventActionDefinition
   | FlowToActionDefinition

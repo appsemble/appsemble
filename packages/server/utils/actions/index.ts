@@ -3,6 +3,7 @@ import { ActionDefinition } from '@appsemble/types';
 import { App, User } from '../../models/index.js';
 import { Mailer } from '../email/Mailer.js';
 import { condition } from './condition.js';
+import { each } from './each.js';
 import { email } from './email.js';
 import { noop } from './noop.js';
 import { request } from './request.js';
@@ -24,6 +25,7 @@ export const actions = {
   'dialog.error': noop,
   'dialog.ok': noop,
   download: noop,
+  each,
   email,
   event: noop,
   'flow.back': noop,
