@@ -6,7 +6,8 @@
     "wordcloud": "^1.2.2"
   },
   "name": "@appsemble/wordcloud",
+  "description": "Block for displaying data in a wordcloud",
   "private": true,
   "type": "module",
-  "version": "0.20.15"
+  "version": "0.24.5"
 }

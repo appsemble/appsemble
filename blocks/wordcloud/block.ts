@@ -43,21 +43,11 @@ declare module '@appsemble/sdk' {
     fontWeight?: string | number | undefined;
 
     /**
-     * color of the text, can be any CSS color, or a callback(word, weight, fontSize, distance, theta)
-     * specifies  different color for each item in the list. You may also specify colors with built-in
-     * keywords: random-dark and random-light.
+     * color of the text, can be any CSS color
+     * You may also specify colors with built-in * keywords: random-dark and random-light.
      * @default #000000
      */
-    color?:
-      | string
-      | ((
-          word: string,
-          weight: string | number,
-          fontSize: number,
-          distance: number,
-          theta: number,
-        ) => string)
-      | undefined;
+    color?: string | undefined;
 
     /**
      * Number to multiply the word size by.
