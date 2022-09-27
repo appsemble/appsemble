@@ -27,9 +27,9 @@ The following templates are available by default:
 
 - **Preact**: A simple Preact set-up that contains a component that can load data and display it in
   a table.
-- **Mini JSX**: A basic set-up using [Mini-JSX](https://www.npmjs.com/package/mini-jsx), this can be
-  used for blocks with simple logic while still leveraging the JSX syntax you might be used to from
-  Preact or React.
+- **Mini JSX**: A basic set-up using [`mini-jsx`](https://www.npmjs.com/package/mini-jsx), this can
+  be used for blocks with simple logic while still leveraging the JSX syntax you might be used to
+  from Preact or React.
 - **Vanilla**: The most basic template available, using pure HTML and JavaScript to bootstrap the
   block. This template can also be used as a starting point for use with other third party libraries
   or frameworks.
@@ -262,6 +262,10 @@ page to see the event is received by both blocks.
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
 [officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.15/blocks).
+For example, if you want to create a block to display a set of dynamically loaded data, have a look
+at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
+the `detail-viewer` or `stats` block. If would like to create a block to process data based on
+events, have a look at the `data-loader` or `data-notifier` block.
 
 Need help developing a block? Feel free to join our [Discord server](https://discord.gg/q5aZAyq5kZ).
 
