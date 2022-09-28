@@ -3,7 +3,19 @@
   "version": "0.20.15",
   "private": true,
   "description": "A block that displays data in a wordcloud",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/wordcloud"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
   "dependencies": {
     "@appsemble/preact": "0.20.15",
     "@appsemble/sdk": "0.20.15",

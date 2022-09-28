@@ -1,0 +1,6 @@
+.centerCloud {
+  margin: auto;
+  padding: 0;
+  display: flex;
+  border-radius: 10;
+}

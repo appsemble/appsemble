@@ -1,15 +1,42 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { useEffect, useState } from 'preact/hooks';
-import WordcloudLogic from './WordcloudLogic';
 
-bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => {
+import WordcloudLogic from './WordcloudLogic/WordcloudLogic.js';
+
+// Sorts the data to be an array of strings to feed to the wordcloud logic layer
+const sortData = (givenWordsList: any): string[] => {
+  const filteredList: string[] = [];
+
+  function getDataType(unknownData: any): void {
+    if (Array.isArray(unknownData)) {
+      for (const element of unknownData) {
+        getDataType(element);
+      }
+    } else if (typeof unknownData === 'object') {
+      for (const item of Object.values(unknownData as object)) {
+        getDataType(item);
+      }
+    } else if (typeof unknownData === 'string') {
+      filteredList.push(unknownData);
+    } else if (typeof unknownData === 'undefined' || unknownData == null) {
+      return null;
+    } else {
+      filteredList.push(unknownData.String());
+    }
+  }
+  getDataType(givenWordsList);
+
+  return filteredList;
+};
+
+bootstrap(({ events, parameters: { fields, options, shape }, ready, utils }) => {
   const [data, setData] = useState<any>(fields);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const values: any[] = [];
     const hasListener = events.on.data((newData: []) => {
-      fields.forEach((field) => {
+      for (const field of fields) {
         if (typeof field === 'object') {
           newData.map((element: object) => {
             values.push(utils.remap(field, element));
@@ -17,38 +44,13 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
         } else {
           values.push(field);
         }
-      });
+      }
       setData(sortData(values));
       setError(false);
     });
     setError(hasListener);
     ready();
   }, [events, ready]);
-
-  //Sorts the data to be an array of strings to feed to the wordcloud logic layer
-  const sortData = (givenWordsList: any) => {
-    let filteredList: string[] = [];
-    getDataType(givenWordsList);
-
-    function getDataType(data: any) {
-      if (Array.isArray(data)) {
-        data.forEach((element) => {
-          getDataType(element);
-        });
-      } else if (typeof data === 'object') {
-        Object.values(data as object).forEach((item) => {
-          getDataType(item);
-        });
-      } else if (typeof data === 'string') {
-        filteredList.push(data);
-      } else if (typeof data === 'undefined' || data === null) {
-        return;
-      } else {
-        filteredList.push(data.toString());
-      }
-    }
-    return filteredList;
-  };
 
   if (error) {
     return <FormattedMessage id="error" />;
@@ -64,7 +66,7 @@ bootstrap(({ events, parameters: { shape, fields, options }, ready, utils }) => 
 
   return (
     <div>
-      <WordcloudLogic shape={shape} words={data} options={options} fields={fields} />
+      <WordcloudLogic fields={fields} options={options} shape={shape} words={data} />
     </div>
   );
 });
