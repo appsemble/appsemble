@@ -27,6 +27,30 @@ To link a subdomain, for example `my-app`, to an app, add the following configur
 | ----- | ------ | ---------------- | ---- |
 | CNAME | my-app | `appsemble.app.` | Auto |
 
+## Configure CAA
+
+If your root domain has no CAA record defined, you can skip this segment. If you’re unsure whether
+you have a CAA record, find out using [CAA Lookup].
+
+A CAA record defines what Certificate Authority (CA) is allowed to hand out SSL certificates for
+your (sub)domain.
+
+If you host your app on _appsemble.app_, we need you to support SSL certificates handed out by
+[Let’s Encrypt]. To allow this for your (sub)domain, you add an extra CAA record like this:
+
+| Type | Name | Target                      |
+| ---- | ---- | --------------------------- |
+| CAA  | @    | `0 issue "letsencrypt.org"` |
+
+Alternatively, you also permit the _letsencrypt.org_ CA for one subdomain, for example
+`app.your.domain`:
+
+To link a subdomain, for example `my-app`, to an app, add the following configuration.
+
+| Type | Name | Target                      |
+| ---- | ---- | --------------------------- |
+| CAA  | app  | `0 issue "letsencrypt.org"` |
+
 ## Configure app
 
 For Appsemble to know which app should be served on the given domain name, it should know which app
@@ -39,3 +63,5 @@ will only take minutes.
 
 [appsemble.app]: https://appsemble.app
 [cloudflare]: https://www.cloudflare.com
+[caa lookup]: https://www.nslookup.io/caa-lookup
+[let’s encrypt]: https://letsencrypt.org
