@@ -28,7 +28,7 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
@@ -47,6 +47,7 @@ export function IndexPage(): ReactElement {
     id: string;
     resourceName: string;
   }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { pathname: routeUrl } = useLocation();
   const push = useMessages();
 
@@ -59,27 +60,26 @@ export function IndexPage(): ReactElement {
   const [hiddenProperties, setHiddenProperties] = useState(defaultHiddenProperties);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
 
-  const { searchParams } = new URL(window.location.href);
-  const orderBy = searchParams.get('order') == null ? 'id' : searchParams.get('order');
+  const orderBy = searchParams.get('order') || 'id';
   const orderDirection: 'ASC' | 'DESC' =
     searchParams.get('direction') == null
       ? 'DESC'
       : (searchParams.get('direction') as 'ASC' | 'DESC');
-  const offset = searchParams.get('offset') == null ? 0 : Number(searchParams.get('offset'));
+  const offset = Number(searchParams.get('offset'));
   const limit =
     searchParams.get('limit') === 'none'
       ? Number.POSITIVE_INFINITY
-      : searchParams.get('limit') == null
-      ? 15
-      : Number(searchParams.get('limit'));
+      : Number(searchParams.get('limit')) || 15;
   const rowsPerPage = limit;
   const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
 
   const resultCount = useData<number>(`${resourceURL}/$count`);
   const result = useData<Resource[]>(
-    `${resourceURL}?$orderby=${orderBy} ${orderDirection}${
-      limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
-    }&$skip=${offset}`,
+    `${resourceURL}?${new URLSearchParams({
+      $orderby: `${orderBy} ${orderDirection}`,
+      $skip: String(offset),
+      ...(Number.isFinite(limit) && { $top: String(limit) }),
+    })}`,
   );
   const count = resultCount.data;
   const setResources = result.setData;
@@ -106,18 +106,24 @@ export function IndexPage(): ReactElement {
           : page >= Math.ceil(newCount / rowsPerPage)
           ? Math.ceil(newCount / rowsPerPage)
           : page;
-      if (rowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(rowsPerPage));
-        searchParams.set('offset', String((newPage - 1) * rowsPerPage));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
-      resultCount.refresh();
-      result.refresh();
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? {
+              limit: String(rowsPerPage),
+              offset: String((newPage - 1) * rowsPerPage),
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            }
+          : {
+              limit: 'none',
+              offset: '0',
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            },
+      );
+      resultCount.setData(newCount);
     },
-    [page, result, resultCount, routeUrl, rowsPerPage, searchParams],
+    [page, resultCount, rowsPerPage, searchParams, setSearchParams],
   );
 
   const defaultResourceValues = useMemo(() => generateDataFromSchema(schema) as Resource, [schema]);
@@ -191,16 +197,22 @@ export function IndexPage(): ReactElement {
       const { property } = event.currentTarget.dataset;
 
       if (property === orderBy) {
-        searchParams.set('direction', orderDirection === 'ASC' ? 'DESC' : 'ASC');
-        searchParams.set('order', property);
+        setSearchParams({
+          ...(searchParams.get('limit') && { limit: searchParams.get('limit') }),
+          ...(searchParams.get('offset') && { offset: searchParams.get('offset') }),
+          direction: orderDirection === 'ASC' ? 'DESC' : 'ASC',
+          order: orderBy,
+        });
       } else {
-        searchParams.set('direction', 'ASC');
-        searchParams.set('order', property);
+        setSearchParams({
+          ...(searchParams.get('limit') && { limit: searchParams.get('limit') }),
+          ...(searchParams.get('offset') && { offset: searchParams.get('offset') }),
+          order: property,
+          direction: 'ASC',
+        });
       }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
-      result.refresh();
     },
-    [orderBy, orderDirection, result, routeUrl, searchParams],
+    [orderBy, orderDirection, searchParams, setSearchParams],
   );
 
   const onHideProperties = useCallback(
@@ -290,32 +302,45 @@ export function IndexPage(): ReactElement {
   const onPageChange = useCallback(
     (updatedPage: number) => {
       setSelectedResources([]);
-      if (rowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(rowsPerPage));
-        searchParams.set('offset', String((updatedPage - 1) * rowsPerPage));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? {
+              limit: String(rowsPerPage),
+              offset: String((updatedPage - 1) * rowsPerPage),
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            }
+          : {
+              limit: 'none',
+              offset: '0',
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            },
+      );
     },
-    [routeUrl, rowsPerPage, searchParams],
+    [rowsPerPage, searchParams, setSearchParams],
   );
 
   const onRowsPerPageChange = useCallback(
     (updatedRowsPerPage: number) => {
       setSelectedResources([]);
-      if (updatedRowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(updatedRowsPerPage));
-        const newOffset = offset - (offset % updatedRowsPerPage);
-        searchParams.set('offset', String(newOffset));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      setSearchParams(
+        Number.isFinite(updatedRowsPerPage)
+          ? {
+              limit: String(updatedRowsPerPage),
+              offset: String(offset - (offset % updatedRowsPerPage)),
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            }
+          : {
+              limit: 'none',
+              offset: '0',
+              ...(searchParams.get('order') && { order: searchParams.get('order') }),
+              ...(searchParams.get('direction') && { direction: searchParams.get('direction') }),
+            },
+      );
     },
-    [offset, routeUrl, searchParams],
+    [offset, searchParams, setSearchParams],
   );
 
   return (

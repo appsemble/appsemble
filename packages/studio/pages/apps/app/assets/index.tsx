@@ -22,7 +22,7 @@ import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -45,26 +45,25 @@ export function AssetsPage(): ReactElement {
 
   const { app } = useApp();
   const { formatMessage } = useIntl();
-  const { pathname: routeUrl } = useLocation();
   const push = useMessages();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { searchParams } = new URL(window.location.href);
-  const offset = searchParams.get('offset') == null ? 0 : Number(searchParams.get('offset'));
+  const offset = Number(searchParams.get('offset'));
   const limit =
     searchParams.get('limit') === 'none'
       ? Number.POSITIVE_INFINITY
-      : searchParams.get('limit') == null
-      ? 10
-      : Number(searchParams.get('limit'));
+      : Number(searchParams.get('limit')) || 10;
   const rowsPerPage = limit;
   const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
 
   const resultCount = useData<number>(`/api/apps/${app.id}/assets/$count`);
   const assetsResult = useData<Asset[]>(
-    `/api/apps/${app.id}/assets?$skip=${offset}${
-      limit === Number.POSITIVE_INFINITY ? '' : `&$top=${limit}`
-    }`,
+    `/api/apps/${app.id}/assets?${new URLSearchParams({
+      $skip: String(offset),
+      ...(Number.isFinite(limit) && { $top: String(limit) }),
+    })}`,
   );
+
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
 
@@ -79,18 +78,14 @@ export function AssetsPage(): ReactElement {
           : page >= Math.ceil(newCount / rowsPerPage)
           ? Math.ceil(newCount / rowsPerPage)
           : page;
-      if (rowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(rowsPerPage));
-        searchParams.set('offset', String((newPage - 1) * rowsPerPage));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
-      resultCount.refresh();
-      assetsResult.refresh();
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? { offset: String((newPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          : { offset: '0', limit: 'none' },
+      );
+      resultCount.setData(newCount);
     },
-    [assetsResult, page, resultCount, routeUrl, rowsPerPage, searchParams],
+    [page, resultCount, rowsPerPage, setSearchParams],
   );
 
   const submitAsset = useCallback(
@@ -160,32 +155,28 @@ export function AssetsPage(): ReactElement {
   const onPageChange = useCallback(
     (updatedPage: number) => {
       setSelectedAssets([]);
-      if (rowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(rowsPerPage));
-        searchParams.set('offset', String((updatedPage - 1) * rowsPerPage));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? { offset: String((updatedPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          : { offset: '0', limit: 'none' },
+      );
     },
-    [routeUrl, rowsPerPage, searchParams],
+    [rowsPerPage, setSearchParams],
   );
 
   const onRowsPerPageChange = useCallback(
     (updatedRowsPerPage: number) => {
       setSelectedAssets([]);
-      if (updatedRowsPerPage === Number.POSITIVE_INFINITY) {
-        searchParams.set('limit', 'none');
-        searchParams.set('offset', '0');
-      } else {
-        searchParams.set('limit', String(updatedRowsPerPage));
-        const newOffset = offset - (offset % updatedRowsPerPage);
-        searchParams.set('offset', String(newOffset));
-      }
-      window.history.replaceState({}, '', `${routeUrl}?${searchParams}`);
+      setSearchParams(
+        Number.isFinite(updatedRowsPerPage)
+          ? {
+              offset: String(offset - (offset % updatedRowsPerPage)),
+              limit: String(updatedRowsPerPage),
+            }
+          : { offset: '0', limit: 'none' },
+      );
     },
-    [offset, routeUrl, searchParams],
+    [offset, setSearchParams],
   );
 
   return (
