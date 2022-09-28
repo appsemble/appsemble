@@ -10,8 +10,7 @@ const WordcloudLogic = (props: any): VNode => {
   const canvasRef: any = useRef(null);
   const [wordList, setWordList] = useState([]);
   const [optionsList, setOptions] = useState({});
-  // eslint-disable-next-line no-console
-  console.log(styles);
+
   // This turns the given string of words into an array of arrays in the format of [word, size]
   const mapArrayToWordcloudObject = (obj: string[]): void => {
     const kvPair: any = {};
