@@ -129,9 +129,7 @@ declare module '@appsemble/sdk' {
      * This message doesn’t support variables
      */
     bye: never;
-  }
 
-  interface Messages {
     /**
      * This message accepts a variable named `name`.
      */
