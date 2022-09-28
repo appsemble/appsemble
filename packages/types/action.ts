@@ -56,6 +56,7 @@ export type Action =
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>
   | BaseAction<'download'>
+  | BaseAction<'each'>
   | BaseAction<'email'>
   | BaseAction<'event'>
   | BaseAction<'flow.back'>

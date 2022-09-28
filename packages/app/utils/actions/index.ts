@@ -5,6 +5,7 @@ import { analytics } from './analytics.js';
 import { condition } from './condition.js';
 import { dialog } from './dialog.js';
 import { download } from './download.js';
+import { each } from './each.js';
 import { email } from './email.js';
 import { event } from './event.js';
 import * as flow from './flow.js';
@@ -59,6 +60,7 @@ export const actionCreators: ActionCreators = {
   throw: throwAction,
   request,
   dialog,
+  each,
   event,
   email,
   'flow.next': flow.next,

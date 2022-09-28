@@ -17,6 +17,7 @@ export * from './DialogActionDefinition.js';
 export * from './DialogErrorActionDefinition.js';
 export * from './DialogOkActionDefinition.js';
 export * from './DownloadActionDefinition.js';
+export * from './EachActionDefinition.js';
 export * from './EmailActionDefinition.js';
 export * from './Error.js';
 export * from './EventActionDefinition.js';
