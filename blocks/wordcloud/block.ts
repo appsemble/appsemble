@@ -117,4 +117,3 @@ declare module '@appsemble/sdk' {
     unsupported: never;
   }
 }
-export {};
