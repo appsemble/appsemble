@@ -1,60 +1,54 @@
+import { FormattedMessage } from '@appsemble/preact';
 import { VNode } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import WordCloud from 'wordcloud';
 
 import styles from './wordcloud.module.css';
 
-const WordcloudLogic = (props: any): VNode => {
+function mapArrayToWordcloudObject(obj: string[]): object[] {
+  const kvPair: any = {};
+  const tempWordlist = [];
+
+  for (const word of obj) {
+    kvPair[word] = (kvPair[word] || 0) + 1;
+  }
+
+  const keys = Object.keys(kvPair);
+
+  for (const key of keys) {
+    tempWordlist.push([key, kvPair[key]]);
+  }
+  return tempWordlist;
+}
+
+interface WordcloudProps {
+  readonly shape: string;
+  readonly options: object;
+  readonly words: string[];
+}
+
+export function WordcloudLogic(props: WordcloudProps): VNode {
   const [canvasWidth] = useState(1170);
   const [canvasHeight] = useState(760);
-  const canvasRef: any = useRef(null);
-  const [wordList, setWordList] = useState([]);
-  const [optionsList, setOptions] = useState({});
+  const canvasRef = useRef<HTMLCanvasElement>();
 
-  // This turns the given string of words into an array of arrays in the format of [word, size]
-  const mapArrayToWordcloudObject = (obj: string[]): void => {
-    const kvPair: any = {};
-    const tempWordlist = [];
-    if (wordList.length > 0) {
+  useEffect(() => {
+    if (!canvasRef.current) {
       return;
     }
 
-    for (const word of obj) {
-      kvPair[word] = (kvPair[word] || 0) + 1;
-    }
+    const list = mapArrayToWordcloudObject(props.words);
 
-    const keys = Object.keys(kvPair);
-
-    for (const key of keys) {
-      tempWordlist.push([key, kvPair[key]]);
-    }
-    setWordList(tempWordlist);
-    return null;
-  };
-
-  useEffect(() => {
-    const propOptions = props.options;
-    canvasRef.current.focus();
-    mapArrayToWordcloudObject(props.words);
-    setOptions({
-      ...propOptions,
-      ...(propOptions.color = propOptions.color || '#000000'),
-      ...(propOptions.rotateRatio = propOptions.rotateRatio || 0),
-      shape: props.shape,
+    WordCloud(canvasRef.current, {
+      color: '#000000',
+      rotateRatio: 0,
+      ...props.options,
+      list,
     });
-  }, []);
-
-  useEffect(() => {
-    if (canvasRef.current != null) {
-      WordCloud(canvasRef.current, {
-        ...optionsList,
-        list: wordList,
-      });
-    }
-  }, [wordList]);
+  }, [props.options, props.words]);
 
   if (!WordCloud.isSupported) {
-    return <p id="unsupported" />;
+    return <FormattedMessage id="unsupported" />;
   }
 
   return (
@@ -67,5 +61,4 @@ const WordcloudLogic = (props: any): VNode => {
       />
     </div>
   );
-};
-export default WordcloudLogic;
+}
