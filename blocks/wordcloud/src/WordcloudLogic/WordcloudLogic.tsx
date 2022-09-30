@@ -1,6 +1,6 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { VNode } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef } from 'preact/hooks';
 import WordCloud from 'wordcloud';
 
 import styles from './wordcloud.module.css';
@@ -28,9 +28,9 @@ interface WordcloudProps {
 }
 
 export function WordcloudLogic(props: WordcloudProps): VNode {
-  const [canvasWidth] = useState(1170);
-  const [canvasHeight] = useState(760);
   const canvasRef = useRef<HTMLCanvasElement>();
+  const canvasWidth = 1170;
+  const canvasHeight = 760;
 
   useEffect(() => {
     if (!canvasRef.current) {

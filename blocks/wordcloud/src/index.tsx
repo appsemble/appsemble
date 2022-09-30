@@ -1,10 +1,10 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import WordcloudLogic from './WordcloudLogic/WordcloudLogic.js';
+import { WordcloudLogic } from './WordcloudLogic/WordcloudLogic.js';
 
 // Sorts the data to be an array of strings to feed to the wordcloud logic layer
-const sortData = (givenWordsList: any): string[] => {
+function sortData(givenWordsList: any): string[] {
   const filteredList: string[] = [];
 
   function getDataType(unknownData: any): void {
@@ -27,7 +27,7 @@ const sortData = (givenWordsList: any): string[] => {
   getDataType(givenWordsList);
 
   return filteredList;
-};
+}
 
 bootstrap(({ events, parameters: { fields, options, shape }, ready, utils }) => {
   const [data, setData] = useState<any>(fields);
@@ -66,7 +66,7 @@ bootstrap(({ events, parameters: { fields, options, shape }, ready, utils }) => 
 
   return (
     <div>
-      <WordcloudLogic fields={fields} options={options} shape={shape} words={data} />
+      <WordcloudLogic options={options} shape={shape} words={data} />
     </div>
   );
 });
