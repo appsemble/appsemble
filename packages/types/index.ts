@@ -1037,6 +1037,13 @@ export interface RequestLikeActionDefinition<T extends Action['type'] = Action['
    * If this isn’t specified, the raw input data is used.
    */
   body?: Remapper;
+
+  /**
+   * A remapper to remap data from before the request onto the response body.
+   *
+   * If not specified, the previous properties get replaced by the reponse body.
+   */
+  prior?: Remapper;
 }
 
 interface ResourceActionDefinition<T extends Action['type']>

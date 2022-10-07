@@ -1,5 +1,5 @@
 import { HTTPMethods } from '@appsemble/types';
-import { formatRequestAction } from '@appsemble/utils';
+import { formatRequestAction, has } from '@appsemble/utils';
 import { serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 
@@ -33,6 +33,15 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         /^(application|text)\/(.+\+)?xml/.test(response.headers['content-type'])
       ) {
         responseBody = xmlToJson(responseBody, schema);
+      }
+
+      if (has(definition, 'prior')) {
+        if (!Array.isArray(responseBody)) {
+          return { ...responseBody, ...remap(definition.prior, data, context) };
+        }
+        if (responseBody.length <= 1) {
+          return { ...responseBody[0], ...remap(definition.prior, data, context) };
+        }
       }
 
       return responseBody;
