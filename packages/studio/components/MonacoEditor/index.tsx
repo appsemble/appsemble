@@ -190,11 +190,26 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
         const modelUri = String(ed.getModel().uri);
         for (const resource of resources) {
           if (String(resource) === modelUri) {
-            setMarkers(
-              editor
-                .getModelMarkers({ resource })
-                .filter((marker) => marker.severity !== MarkerSeverity.Hint),
-            );
+            const allMarkers = editor
+              .getModelMarkers({ resource })
+              .filter((marker) => marker.severity !== MarkerSeverity.Hint);
+            const newMarkers: editor.IMarker[] = [];
+            for (const marker of allMarkers) {
+              if (
+                !newMarkers.some(
+                  (m) =>
+                    m.startLineNumber === marker.startLineNumber &&
+                    m.startColumn === marker.startColumn &&
+                    m.endLineNumber === marker.endLineNumber &&
+                    m.endColumn === marker.endColumn &&
+                    m.message === marker.message &&
+                    m.code === marker.code,
+                )
+              ) {
+                newMarkers.push(marker);
+              }
+            }
+            setMarkers(newMarkers);
             break;
           }
         }
@@ -227,7 +242,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
           <div className={`is-flex-grow-1 is-flex-shrink-1 ${styles.diagnostics}`}>
             {markers.map((marker) => (
               <Diagnostic
-                key={`${marker.code}-${marker.startLineNumber}-${marker.startColumn}-${marker.endLineNumber}-${marker.endColumn}`}
+                key={`${marker.code}-${marker.startLineNumber}-${marker.startColumn}-${marker.endLineNumber}-${marker.endColumn}-${marker.message}`}
                 marker={marker}
                 monaco={editorRef.current}
               />
