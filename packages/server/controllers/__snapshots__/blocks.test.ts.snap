@@ -1075,6 +1075,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1189,6 +1196,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1284,6 +1298,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1379,6 +1400,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1474,6 +1502,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1573,6 +1608,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -1940,6 +1982,13 @@ If not specified, the raw input data is used.
                     },
                     "onError": {},
                     "onSuccess": {},
+                    "prior": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+                    },
                     "proxy": {
                       "default": "false",
                       "description": "By default requests will be proxied through the Appsemble API.
@@ -4344,6 +4393,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -4458,6 +4514,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -4553,6 +4616,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -4648,6 +4718,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -4743,6 +4820,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -4842,6 +4926,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
@@ -5209,6 +5300,13 @@ If not specified, the raw input data is used.
             },
             "onError": {},
             "onSuccess": {},
+            "prior": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that remaps data from before the request onto the response body.
+
+If not specified, the previous properties get replaced by the reponse body.
+",
+            },
             "proxy": {
               "default": "false",
               "description": "By default requests will be proxied through the Appsemble API.
