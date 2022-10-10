@@ -251,6 +251,13 @@ export interface Choice {
 
 interface AbstractField {
   /**
+   * Displays field only if condition is true.
+   *
+   * If not specified, the field will display.
+   */
+  showIf?: Remapper;
+
+  /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
    */
