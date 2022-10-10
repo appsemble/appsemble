@@ -230,20 +230,18 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        {fields
-          ?.filter((f) => f.showIf === undefined || utils.remap(f.showIf, values))
-          .map((f) => (
-            <FormInput
-              className={classNames({ [styles.dense]: dense })}
-              disabled={dataLoading || submitting}
-              error={errors[f.name]}
-              field={f}
-              key={f.name}
-              name={f.name}
-              onChange={onChange}
-              value={values[f.name]}
-            />
-          ))}
+        {fields?.map((f) => (
+          <FormInput
+            className={classNames({ [styles.dense]: dense })}
+            disabled={dataLoading || submitting}
+            error={errors[f.name]}
+            field={f}
+            key={f.name}
+            name={f.name}
+            onChange={onChange}
+            value={values[f.name]}
+          />
+        ))}
         <FormButtons className="mt-4">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
