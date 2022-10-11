@@ -8,13 +8,13 @@ parameters:
       type: date
       requirements:
         - required: true
-    - species:
-      type: enum
+    - type: enum
+      name: species
       enum:
-        - Cat
-        - Dog
-        - Rabbit
-        - Unicorn
+        - value: Cat
+        - value: Dog
+        - value: Rabbit
+        - value: Unicorn
       requirements:
         - required: true
     - name: photo
