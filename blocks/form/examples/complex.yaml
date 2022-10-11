@@ -19,6 +19,10 @@ parameters:
         - required: true
     - name: photo
       type: file
+    - name: special
+      type: static
+      content: You picked a special species
+      showIf: { equals: [{ prop: species }, 'Unicorn'] }
 actions:
   onSubmit:
     type: resource.create
