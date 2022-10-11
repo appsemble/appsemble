@@ -6,9 +6,35 @@ export default function EditPage(): ReactElement {
   useMeta('GUI Editor');
   const location = useLocation();
 
-  const tabs = ['#general', '#resources', '#pages', '#theme', '#security'];
+  const tabs = [
+    {
+      title: 'General',
+      hash: '#general',
+      name: 'general',
+    },
+    {
+      title: 'Resources',
+      hash: '#resources',
+      name: 'resources',
+    },
+    {
+      title: 'Pages',
+      hash: '#pages',
+      name: 'pages',
+    },
+    {
+      title: 'Theme',
+      hash: '#theme',
+      name: 'theme',
+    },
+    {
+      title: 'Security',
+      hash: '#security',
+      name: 'security',
+    },
+  ];
 
-  if (!location.hash || !tabs.includes(location.hash)) {
+  if (!location.hash || !tabs.some((tab) => tab.hash === location.hash)) {
     return <Navigate to={{ ...location, hash: '#pages' }} />;
   }
 
@@ -16,21 +42,11 @@ export default function EditPage(): ReactElement {
     <div className="container">
       <div className="tabs is-boxed is-fullwidth">
         <ul>
-          <li className={location.hash === '#general' ? 'is-active' : undefined}>
-            <a href="#general">General</a>
-          </li>
-          <li className={location.hash === '#resources' ? 'is-active' : undefined}>
-            <a href="#resources">Resources</a>
-          </li>
-          <li className={location.hash === '#pages' ? 'is-active' : undefined}>
-            <a href="#pages">Pages</a>
-          </li>
-          <li className={location.hash === '#theme' ? 'is-active' : undefined}>
-            <a href="#theme">Theme</a>
-          </li>
-          <li className={location.hash === '#security' ? 'is-active' : undefined}>
-            <a href="#security">Security</a>
-          </li>
+          {tabs.map((tab) => (
+            <li className={tab.hash === location.hash ? 'is-active' : ''} key={tab.name}>
+              <a href={tab.hash}>{tab.title}</a>
+            </li>
+          ))}
         </ul>
       </div>
       <div className="box">{location.hash}</div>
