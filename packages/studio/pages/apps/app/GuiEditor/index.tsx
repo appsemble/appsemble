@@ -57,14 +57,11 @@ const tabs: GuiEditorTabs[] = [
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
-<<<<<<< HEAD
   const { formatMessage } = useIntl();
   const { app, setApp } = useApp();
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
-=======
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);

@@ -7,9 +7,6 @@ export const messages = defineMessages({
   pagesTab: 'Pages',
   themeTab: 'Theme',
   securityTab: 'Security',
-<<<<<<< HEAD
   saved: 'Saved app.',
   failed: 'Failed to save.',
-=======
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
 });
