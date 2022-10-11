@@ -58,7 +58,11 @@ interface AppValueContext {
 const Context = createContext<AppValueContext>(null);
 
 const EditPage = lazy(() => import('./edit/index.js'));
+<<<<<<< HEAD
 const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
+=======
+const GuiEditorPage = lazy(() => import('./guieditor/index.js'));
+>>>>>>> 8523f6de1 (Added breadcrumbs to reach GUI Editor & GUI Editor tab)
 
 export function AppRoutes(): ReactElement {
   const { id, lang } = useParams<{ id: string; lang: string }>();
