@@ -1478,6 +1478,12 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -1544,6 +1550,12 @@ This typically means that the checkbox *must* be checked.",
               "$ref": "#/definitions/RequiredRequirement",
             },
             "type": "array",
+          },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
           },
           "size": {
             "$ref": "#/definitions/BulmaSize",
@@ -1671,6 +1683,12 @@ The date value can be accessed using the \`root\` remapper.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "startOfWeek": {
             "default": 1,
             "description": "The day to display as the first day of the week.
@@ -1753,6 +1771,12 @@ The date value can be accessed using the \`root\` remapper.",
               "$ref": "#/definitions/DateTimeRequirement",
             },
             "type": "array",
+          },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
           },
           "startOfWeek": {
             "default": 1,
@@ -1914,6 +1938,12 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2033,6 +2063,12 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2144,6 +2180,12 @@ This can be used to set the location to something that is more relevant to the u
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2190,6 +2232,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "readOnly": {
             "description": "Whether the field should be read-only.",
             "type": "boolean",
+          },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2341,6 +2389,12 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2437,6 +2491,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2504,6 +2564,12 @@ These are evaluated in the order they are defined in.",
               "$ref": "#/definitions/RequiredRequirement",
             },
             "type": "array",
+          },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2622,6 +2688,12 @@ This field does not contain a name or a value.",
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2717,6 +2789,12 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2793,6 +2871,12 @@ These are evaluated in the order they are defined in.",
               "$ref": "#/definitions/RequiredRequirement",
             },
             "type": "array",
+          },
+          "showIf": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
