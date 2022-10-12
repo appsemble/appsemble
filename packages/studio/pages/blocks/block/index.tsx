@@ -71,7 +71,7 @@ export function BlockPage(): ReactElement {
         const { contents } = doc;
         if (isMap(contents)) {
           contents.items.unshift(
-            doc.createPair('name', stripBlockName(selectedBlockManifest.name)),
+            doc.createPair('type', stripBlockName(selectedBlockManifest.name)),
             doc.createPair('version', selectedBlockManifest.version),
           );
         }
