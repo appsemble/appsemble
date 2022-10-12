@@ -35,16 +35,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         responseBody = xmlToJson(responseBody, schema);
       }
 
-      if (has(definition, 'prior')) {
-        if (!Array.isArray(responseBody)) {
-          return { ...responseBody, ...remap(definition.prior, data, context) };
-        }
-        if (responseBody.length <= 1) {
-          return { ...responseBody[0], ...remap(definition.prior, data, context) };
-        }
-      }
-
-      return responseBody;
+      return has(definition, 'prior') ? remap(definition.prior, responseBody, data) : responseBody;
     },
     {
       method,

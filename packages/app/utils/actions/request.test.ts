@@ -174,50 +174,6 @@ describe('request', () => {
     expect(result).toStrictEqual({ response: 'data', prior: 'data' });
   });
 
-  it('should combine prior with single response object', async () => {
-    mock.onAny(/.*/).reply((req) => {
-      request = req;
-      return [200, [{ response: 'data' }], {}];
-    });
-    const action = createTestAction({
-      definition: {
-        type: 'request',
-        method: 'get',
-        prior: { static: { prior: 'data' } },
-      },
-      prefix: 'pages.0.blocks.0.actions.onClick',
-      prefixIndex: 'pages.0.blocks.0.actions.onClick',
-    });
-    const result = await action({ request: 'get' });
-    expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
-    expect(request.params).toStrictEqual({ data: '{"request":"get"}' });
-    expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual({ response: 'data', prior: 'data' });
-  });
-
-  it('should not combine prior with multiple response objects', async () => {
-    mock.onAny(/.*/).reply((req) => {
-      request = req;
-      return [200, [{ response: 'data' }, { response1: 'data' }], {}];
-    });
-    const action = createTestAction({
-      definition: {
-        type: 'request',
-        method: 'get',
-        prior: { static: { prior: 'data' } },
-      },
-      prefix: 'pages.0.blocks.0.actions.onClick',
-      prefixIndex: 'pages.0.blocks.0.actions.onClick',
-    });
-    const result = await action({ request: 'get' });
-    expect(request.method).toBe('get');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
-    expect(request.params).toStrictEqual({ data: '{"request":"get"}' });
-    expect(request.data).toBeUndefined();
-    expect(result).toStrictEqual([{ response: 'data' }, { response1: 'data' }]);
-  });
-
   it('should support disabling the proxy', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
