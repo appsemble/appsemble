@@ -161,7 +161,7 @@ describe('request', () => {
       definition: {
         type: 'request',
         method: 'post',
-        prior: { static: { prior: 'data' } },
+        prior: { 'object.assign': { prior: 'data' } },
       },
       prefix: 'pages.test.blocks.0.actions.onClick',
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
