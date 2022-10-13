@@ -3,3 +3,5 @@ parameters:
 events:
   emit:
     interval: refresh
+
+# To better see how to use this block, look at the default 'Soundboard' app.

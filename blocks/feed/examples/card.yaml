@@ -29,3 +29,5 @@ actions:
   onSubmitReply:
     type: resource.create
     resource: resourceName
+
+# To better see how to use this block, look at the default 'Unlittered' app.
