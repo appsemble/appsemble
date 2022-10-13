@@ -169,8 +169,6 @@
   "studio.components.AppPreview.iframeTitle": "Aperçu de l’appli",
   "studio.components.AppPreview.sslGenerating": "Un certificat SSL est en cours de génération pour sécuriser vos utilisateurs.",
   "studio.components.AppPreview.sslInfo": "Cela peut prendre jusqu'à 24 heures, mais c'est généralement plus rapide. Si cela prend plus de temps, veuillez contacter le support.",
-<<<<<<< HEAD
-  "studio.pages.apps.app.GuiEditor.SecurityTab.defaultTab": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.teamsTab": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.rolesTab": "",
   "studio.pages.apps.app.GuiEditor.Components.OptionalList.addNewItem": "",
