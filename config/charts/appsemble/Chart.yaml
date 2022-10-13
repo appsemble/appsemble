@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.15
-appVersion: 0.20.15
+version: 0.20.16
+appVersion: 0.20.16
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,9 +23,30 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
+  artifacthub.io/changes: >
     - kind: added
-      description: "Block(qr-scan): Add the qr-scan block."
+      description: "Block(form): Block(form): Add conditional field rendering."
+    - kind: added
+      description: "App: Add the each action."
+    - kind: added
+      description: "Server: Add the each action."
+    - kind: changed
+      description: "App: Upgrade from “react-router-dom” 5.0.0 to 6.0.0."
+    - kind: changed
+      description: "React-components: Upgrade from “react-router-dom” 5.0.0 to 6.0.0."
+    - kind: changed
+      description: "Server: Accepts the examples property for JSON schemata instead of example."
+    - kind: changed
+      description: "Studio: Upgrade from “react-router-dom” 5.0.0 to 6.0.0."
+    - kind: fixed
+      description: "App: Fix user.register action."
+    - kind: fixed
+      description: "Server: Fix content security policy for OAuth2 client credentials
+        login process."
+    - kind: fixed
+      description: "Studio: Fixed editor console errors persisting after fixing the error."
+    - kind: fixed
+      description: "Studio: Studio(blocks): Change name in block examples to type."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
