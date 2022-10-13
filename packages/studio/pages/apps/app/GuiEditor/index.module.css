@@ -1,0 +1,53 @@
+.editorNavBar {
+  align-items: center;
+  background-color: hsl(0deg 0% 96%);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+
+.panelTopLeft {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-width: 22%;
+  width: 22%;
+}
+
+.panelTopRight {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  max-width: 25%;
+  width: 25%;
+}
+
+.panelSliderLeft {
+  background-color: hsl(0deg 0% 100%);
+  border: hsl(0deg 0% 83%) 1px solid;
+  border-bottom: none;
+  border-radius: 4px 0 0;
+  display: block;
+}
+
+.panelSliderRight {
+  background-color: hsl(0deg 0% 100%);
+  border: hsl(0deg 0% 83%) 1px solid;
+  border-radius: 0 4px 0 0;
+  display: block;
+}
+
+.isClosed {
+  border-width: 0;
+  transition: width 0.35s ease-in-out, border-width 0.35s ease-in-out;
+  width: 0;
+}
+
+.isOpen {
+  border: hsl(0deg 0% 83%) 1px solid;
+  transition: width 0.35s ease-in-out;
+  width: 100%;
+}
