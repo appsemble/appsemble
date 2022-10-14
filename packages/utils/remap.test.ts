@@ -10,12 +10,13 @@ interface TestCase {
   messages?: AppMessages['messages'];
   userInfo?: UserInfo;
   context?: Record<string, any>;
+  history?: unknown[];
 }
 
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (name, { context, expected, input, mappers, messages, userInfo }) => {
+    (name, { context, expected, history, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
@@ -23,6 +24,7 @@ function runTests(tests: Record<string, TestCase>): void {
         appUrl: 'https://example.com',
         userInfo,
         context,
+        history,
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },

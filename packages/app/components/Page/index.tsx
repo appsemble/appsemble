@@ -92,6 +92,7 @@ export function Page(): ReactElement {
         pageData: data,
         userInfo,
         context,
+        history: context?.history,
         root: input,
         locale: lang,
       }),

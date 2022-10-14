@@ -17,8 +17,8 @@ describe('each', () => {
       remap,
     });
     const result = await action([1, 2], { context: null });
-    expect(ok).toHaveBeenCalledWith(1, { context: null });
-    expect(ok).toHaveBeenCalledWith(2, { context: null });
+    expect(ok).toHaveBeenCalledWith(1, { context: null, history: [[1, 2], 1] });
+    expect(ok).toHaveBeenCalledWith(2, { context: null, history: [[1, 2], 2] });
     expect(ok).toHaveBeenCalledTimes(2);
     expect(result).toStrictEqual(['ok', 'ok']);
   });
@@ -37,7 +37,7 @@ describe('each', () => {
       remap,
     });
     const result = await action(1, { context: null });
-    expect(ok).toHaveBeenCalledWith(1, { context: null });
+    expect(ok).toHaveBeenCalledWith(1, { context: null, history: [1, 1] });
     expect(ok).toHaveBeenCalledTimes(1);
     expect(result).toStrictEqual(['ok']);
   });

@@ -79,6 +79,7 @@ export interface RemapperContext {
 
 interface InternalContext extends RemapperContext {
   root?: unknown;
+  history?: unknown[];
 
   array?: {
     index: number;
