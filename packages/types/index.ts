@@ -449,6 +449,23 @@ export interface Remappers {
   prior: number;
 
   /**
+   * Assign properties from the history at a certain index to an existing object.
+   */
+  'assign.prior': {
+    /**
+     * The index of the history item to assign.
+     *
+     * 0 is the index of the first item in the history.
+     */
+    index: number;
+
+    /**
+     * Predefined mapper keys to choose what properties to assign.
+     */
+    props: Record<string, Remapper>;
+  };
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';

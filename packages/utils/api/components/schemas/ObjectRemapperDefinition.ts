@@ -285,6 +285,27 @@ Supported properties:
       
 0 is the index of the first item in the history.`,
     },
+    'assign.prior': {
+      type: 'object',
+      required: ['index', 'props'],
+      description: 'Assign properties from the history at a certain index to an existing object.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history item to assign.
+          
+0 is the index of the first item in the history.
+`,
+        },
+        props: {
+          description: 'Predefined mapper keys to choose what properties to assign.',
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
+        },
+      },
+    },
     static: {
       description: 'Use a static value.',
     },

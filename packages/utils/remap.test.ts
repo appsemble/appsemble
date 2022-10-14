@@ -789,6 +789,17 @@ describe('prior', () => {
   });
 });
 
+describe('assign.prior', () => {
+  runTests({
+    'assign the second history item props defined in prop remappers to the output': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'assign.prior': { index: 1, props: { happy: { prop: 'rescue' } } } }],
+      expected: { input: 'data', happy: 'monke' },
+    },
+  });
+});
+
 describe('string.case', () => {
   runTests({
     'convert a string to upper case': {
