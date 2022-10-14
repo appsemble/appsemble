@@ -279,13 +279,13 @@ Supported properties:
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
     },
-    prior: {
+    history: {
       type: 'integer',
       description: `Get the data at a certain index from the history stack prior to an action.
       
 0 is the index of the first item in the history stack.`,
     },
-    'assign.prior': {
+    'assign.history': {
       type: 'object',
       required: ['index', 'props'],
       description:
@@ -307,7 +307,7 @@ Supported properties:
         },
       },
     },
-    'omit.prior': {
+    'omit.history': {
       type: 'object',
       required: ['index', 'keys'],
       description:
@@ -328,7 +328,7 @@ Nested properties can be excluded using arrays of keys.
 
 For example:
 \`\`\`yaml
-omit.prior:
+omit.history:
   index: 0
   keys:
     - foo   # Removes the property foo

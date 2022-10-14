@@ -446,12 +446,12 @@ export interface Remappers {
    *
    * 0 is the index of the first item in the history stack.
    */
-  prior: number;
+  history: number;
 
   /**
    * Assign properties from the history stack at a certain index to an existing object.
    */
-  'assign.prior': {
+  'assign.history': {
     /**
      * The index of the history stack item to assign.
      *
@@ -468,7 +468,7 @@ export interface Remappers {
   /**
    * Assign properties from the history stack at a certain index and exclude the unwanted.
    */
-  'omit.prior': {
+  'omit.history': {
     /**
      * The index of the history stack item to assign.
      *
@@ -483,7 +483,7 @@ export interface Remappers {
      *
      * @example
      * ```yaml
-     * omit.prior:
+     * omit.history:
      *   index: 0
      *   keys:
      *     - foo   # Removes the property foo

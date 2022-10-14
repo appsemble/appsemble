@@ -14,8 +14,8 @@ can be useful for triggering multiple actions in a row, such as calling the `log
 proceeding with a `link` action.
 
 Actions will copy their data before being executed onto the `context.history` stack. This allows you
-to retrieve this data in a later action by for example using `remapAfter` with the `prior`,
-`assign.prior` or `omit.prior` remappers. This is especially useful when you need to do multiple
+to retrieve this data in a later action by for example using `remapAfter` with the `history`,
+`assign.history` or `omit.history` remappers. This is especially useful when you need to do multiple
 `request` actions after another.
 
 Below is an overview of each action that Appsemble supports. Depending on the type of action,

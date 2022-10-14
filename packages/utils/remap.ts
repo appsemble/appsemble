@@ -353,14 +353,14 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
-  prior: (index, input, context) => context.history?.[index],
+  history: (index, input, context) => context.history?.[index],
 
-  'assign.prior': ({ index, props }, input: any, context) => ({
+  'assign.history': ({ index, props }, input: any, context) => ({
     ...input,
     ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
   }),
 
-  'omit.prior'({ index, keys }, input: Record<string, any>, context) {
+  'omit.history'({ index, keys }, input: Record<string, any>, context) {
     const result = { ...(context.history[index] as Record<string, any>) };
     for (const key of keys) {
       if (Array.isArray(key)) {

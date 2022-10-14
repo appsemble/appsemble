@@ -778,46 +778,46 @@ describe('root', () => {
   });
 });
 
-describe('prior', () => {
+describe('history', () => {
   runTests({
     'return the first history item': {
       input: { input: 'data' },
       history: [{ old: 'monke' }, { latest: 'monke' }],
-      mappers: [{ prop: 'input' }, { prior: 0 }],
+      mappers: [{ prop: 'input' }, { history: 0 }],
       expected: { old: 'monke' },
     },
   });
 });
 
-describe('assign.prior', () => {
+describe('assign.history', () => {
   runTests({
     'assign the second history item props defined in prop remappers to the output': {
       input: { input: 'data' },
       history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
-      mappers: [{ 'assign.prior': { index: 1, props: { happy: { prop: 'rescue' } } } }],
+      mappers: [{ 'assign.history': { index: 1, props: { happy: { prop: 'rescue' } } } }],
       expected: { input: 'data', happy: 'monke' },
     },
   });
 });
 
-describe('omit.prior', () => {
+describe('omit.history', () => {
   runTests({
     'assign the second history item props to the output except omitted props': {
       input: { input: 'data' },
       history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
-      mappers: [{ 'omit.prior': { index: 1, keys: ['sadge'] } }],
+      mappers: [{ 'omit.history': { index: 1, keys: ['sadge'] } }],
       expected: { input: 'data', rescue: 'monke' },
     },
     'not assign nested omitted props': {
       input: { input: 'data' },
       history: [{ rescue: 'monke', nested: { sadge: 'monke', safe: 'monke' } }],
-      mappers: [{ 'omit.prior': { index: 0, keys: [['nested', 'sadge']] } }],
+      mappers: [{ 'omit.history': { index: 0, keys: [['nested', 'sadge']] } }],
       expected: { input: 'data', rescue: 'monke', nested: { safe: 'monke' } },
     },
     'handle non existing properties': {
       input: { input: 'data' },
       history: [{ rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } }],
-      mappers: [{ 'omit.prior': { index: 0, keys: [['nested', 'nonexistent']] } }],
+      mappers: [{ 'omit.history': { index: 0, keys: [['nested', 'nonexistent']] } }],
       expected: { input: 'data', rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } },
     },
   });
