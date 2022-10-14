@@ -13,6 +13,11 @@ called depending on whether the action that was initially dispatched ran success
 can be useful for triggering multiple actions in a row, such as calling the `log` action before
 proceeding with a `link` action.
 
+Actions will copy their data before being executed onto the `context.history` stack. This allows you
+to retrieve this data in a later action by for example using `remapAfter` with the `prior`,
+`assign.prior` or `omit.prior` remappers. This is especially useful when you need to do multiple
+`request` actions after another.
+
 Below is an overview of each action that Appsemble supports. Depending on the type of action,
 additional parameters can be defined to alter its behavior. The name of the action is what should be
 used as the `type`.
