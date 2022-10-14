@@ -331,8 +331,8 @@ For example:
 omit.history:
   index: 0
   keys:
-    - foo   # Removes the property foo
-    - - bar # Removes the property baz inside of bar
+    - foo   # Excludes the property foo
+    - - bar # Excludes the property baz inside of bar
       - baz
 \`\`\`
 `,
