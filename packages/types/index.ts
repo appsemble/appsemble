@@ -442,6 +442,13 @@ export interface Remappers {
   root: null;
 
   /**
+   * Get the data at a certain index from the history prior to an action.
+   *
+   * 0 is the index of the first item in the history.
+   */
+  prior: number;
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';

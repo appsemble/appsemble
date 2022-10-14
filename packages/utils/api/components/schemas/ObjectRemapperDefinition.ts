@@ -279,6 +279,12 @@ Supported properties:
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
     },
+    prior: {
+      type: 'integer',
+      description: `Get the data at a certain index from the history prior to an action.
+      
+0 is the index of the first item in the history.`,
+    },
     static: {
       description: 'Use a static value.',
     },

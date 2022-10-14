@@ -778,6 +778,17 @@ describe('root', () => {
   });
 });
 
+describe('prior', () => {
+  runTests({
+    'return the first history item': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { latest: 'monke' }],
+      mappers: [{ prop: 'input' }, { prior: 0 }],
+      expected: { old: 'monke' },
+    },
+  });
+});
+
 describe('string.case', () => {
   runTests({
     'convert a string to upper case': {

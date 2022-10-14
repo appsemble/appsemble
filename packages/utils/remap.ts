@@ -353,6 +353,8 @@ const mapperImplementations: MapperImplementations = {
 
   root: (args, input, context) => context.root,
 
+  prior: (index, input, context) => context.history?.[index],
+
   'string.case'(stringCase, input) {
     if (stringCase === 'lower') {
       return String(input).toLowerCase();
