@@ -42,13 +42,6 @@ Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, o
 If not specified, the raw input data is used.
 `,
     },
-    prior: {
-      $ref: '#/components/schemas/RemapperDefinition',
-      description: `A remapper that remaps data from before the request onto the response body.
-
-If not specified, the previous properties get replaced by the reponse body.
-`,
-    },
     proxy: {
       type: 'boolean',
       default: 'false',

@@ -152,28 +152,6 @@ describe('request', () => {
     expect(request.data).toBe('{"remapped":"data"}');
   });
 
-  it('should support a prior remapper', async () => {
-    mock.onAny(/.*/).reply((req) => {
-      request = req;
-      return [200, { response: 'data' }, {}];
-    });
-    const action = createTestAction({
-      definition: {
-        type: 'request',
-        method: 'post',
-        prior: { 'object.assign': { prior: 'data' } },
-      },
-      prefix: 'pages.test.blocks.0.actions.onClick',
-      prefixIndex: 'pages.0.blocks.0.actions.onClick',
-    });
-    const result = await action({ request: 'data' });
-    expect(request.method).toBe('post');
-    expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
-    expect(request.params).toBeUndefined();
-    expect(request.data).toBe('{"request":"data"}');
-    expect(result).toStrictEqual({ response: 'data', prior: 'data' });
-  });
-
   it('should support disabling the proxy', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;

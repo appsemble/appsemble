@@ -1,5 +1,5 @@
 import { HTTPMethods } from '@appsemble/types';
-import { formatRequestAction, has } from '@appsemble/utils';
+import { formatRequestAction } from '@appsemble/utils';
 import { serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 
@@ -35,7 +35,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         responseBody = xmlToJson(responseBody, schema);
       }
 
-      return has(definition, 'prior') ? remap(definition.prior, responseBody, data) : responseBody;
+      return responseBody;
     },
     {
       method,
