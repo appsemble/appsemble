@@ -466,6 +466,35 @@ export interface Remappers {
   };
 
   /**
+   * Assign properties from the history at a certain index and exclude the unwanted properties.
+   */
+  'omit.prior': {
+    /**
+     * The index of the history item to assign.
+     *
+     * 0 is the index of the first item in the history.
+     */
+    index: number;
+
+    /**
+     * Exclude properties from the history item based on the given object keys.
+     *
+     * Nested properties can be excluded using arrays of keys.
+     *
+     * @example
+     * ```yaml
+     * omit.prior:
+     *   index: 0
+     *   keys:
+     *     - foo   # Removes the property foo
+     *     - - bar # Removes the property baz inside of bar
+     *       - baz
+     * ```
+     */
+    keys: (string[] | string)[];
+  };
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';

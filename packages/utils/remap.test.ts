@@ -800,6 +800,29 @@ describe('assign.prior', () => {
   });
 });
 
+describe('omit.prior', () => {
+  runTests({
+    'assign the second history item props to the output except omitted props': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'omit.prior': { index: 1, keys: ['sadge'] } }],
+      expected: { input: 'data', rescue: 'monke' },
+    },
+    'not assign nested omitted props': {
+      input: { input: 'data' },
+      history: [{ rescue: 'monke', nested: { sadge: 'monke', safe: 'monke' } }],
+      mappers: [{ 'omit.prior': { index: 0, keys: [['nested', 'sadge']] } }],
+      expected: { input: 'data', rescue: 'monke', nested: { safe: 'monke' } },
+    },
+    'handle non existing properties': {
+      input: { input: 'data' },
+      history: [{ rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } }],
+      mappers: [{ 'omit.prior': { index: 0, keys: [['nested', 'nonexistent']] } }],
+      expected: { input: 'data', rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } },
+    },
+  });
+});
+
 describe('string.case', () => {
   runTests({
     'convert a string to upper case': {

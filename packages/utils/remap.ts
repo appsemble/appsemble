@@ -360,6 +360,25 @@ const mapperImplementations: MapperImplementations = {
     ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
   }),
 
+  'omit.prior'({ index, keys }, input: Record<string, any>, context) {
+    const result = { ...(context.history[index] as Record<string, any>) };
+    for (const key of keys) {
+      if (Array.isArray(key)) {
+        key.reduce((acc, k, i) => {
+          if (i === key.length - 1) {
+            delete acc[k];
+          } else {
+            return acc?.[k];
+          }
+          return acc;
+        }, result);
+      } else {
+        delete result[key];
+      }
+    }
+    return { ...input, ...result };
+  },
+
   'string.case'(stringCase, input) {
     if (stringCase === 'lower') {
       return String(input).toLowerCase();
