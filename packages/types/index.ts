@@ -442,20 +442,20 @@ export interface Remappers {
   root: null;
 
   /**
-   * Get the data at a certain index from the history prior to an action.
+   * Get the data at a certain index from the history stack prior to an action.
    *
-   * 0 is the index of the first item in the history.
+   * 0 is the index of the first item in the history stack.
    */
   prior: number;
 
   /**
-   * Assign properties from the history at a certain index to an existing object.
+   * Assign properties from the history stack at a certain index to an existing object.
    */
   'assign.prior': {
     /**
-     * The index of the history item to assign.
+     * The index of the history stack item to assign.
      *
-     * 0 is the index of the first item in the history.
+     * 0 is the index of the first item in the history stack.
      */
     index: number;
 
@@ -466,18 +466,18 @@ export interface Remappers {
   };
 
   /**
-   * Assign properties from the history at a certain index and exclude the unwanted properties.
+   * Assign properties from the history stack at a certain index and exclude the unwanted.
    */
   'omit.prior': {
     /**
-     * The index of the history item to assign.
+     * The index of the history stack item to assign.
      *
-     * 0 is the index of the first item in the history.
+     * 0 is the index of the first item in the history stack.
      */
     index: number;
 
     /**
-     * Exclude properties from the history item based on the given object keys.
+     * Exclude properties from the history stack item, based on the given object keys.
      *
      * Nested properties can be excluded using arrays of keys.
      *

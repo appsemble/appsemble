@@ -281,21 +281,22 @@ Supported properties:
     },
     prior: {
       type: 'integer',
-      description: `Get the data at a certain index from the history prior to an action.
+      description: `Get the data at a certain index from the history stack prior to an action.
       
-0 is the index of the first item in the history.`,
+0 is the index of the first item in the history stack.`,
     },
     'assign.prior': {
       type: 'object',
       required: ['index', 'props'],
-      description: 'Assign properties from the history at a certain index to an existing object.',
+      description:
+        'Assign properties from the history stack at a certain index to an existing object.',
       additionalProperties: false,
       properties: {
         index: {
           type: 'integer',
-          description: `The index of the history item to assign.
+          description: `The index of the history stack item to assign.
           
-0 is the index of the first item in the history.
+0 is the index of the first item in the history stack.
 `,
         },
         props: {
@@ -310,18 +311,18 @@ Supported properties:
       type: 'object',
       required: ['index', 'keys'],
       description:
-        'Assign properties from the history at a certain index to an existing object and exclude the unwanted properties.',
+        'Assign properties from the history stack at a certain index and exclude the unwanted properties.',
       additionalProperties: false,
       properties: {
         index: {
           type: 'integer',
-          description: `The index of the history item to assign.
+          description: `The index of the history stack item to assign.
 
-0 is the index of the first item in the history.
+0 is the index of the first item in the history stack.
 `,
         },
         keys: {
-          description: `Exclude properties from the history item based on the given object keys.
+          description: `Exclude properties from the history stack item, based on the given object keys.
           
 Nested properties can be excluded using arrays of keys.
 
