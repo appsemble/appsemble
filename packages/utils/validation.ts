@@ -644,9 +644,9 @@ function validateEvents(definition: AppDefinition, report: Report): void {
               'block of type: "'.concat(block.type).concat('" is not allowed in a dialog action'),
               [...path, 'type'],
             );
-            return;
           }
         }
+        return;
       }
       if (action.type !== 'event') {
         return;
