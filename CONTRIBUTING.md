@@ -113,6 +113,14 @@ The hosts file can be found in the following location:
 
 ## Releasing
 
+Before releasing, manually inspect the changelog to be published (quoting from the `.release` job):
+
+```sh
+# Make sure you're on master, clean working tree.
+yarn scripts release minor
+yarn --silent scripts get-release-notes
+```
+
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in
 the pipeline for the `main` branch.
 
