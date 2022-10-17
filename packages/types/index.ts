@@ -442,6 +442,59 @@ export interface Remappers {
   root: null;
 
   /**
+   * Get the data at a certain index from the history stack prior to an action.
+   *
+   * 0 is the index of the first item in the history stack.
+   */
+  history: number;
+
+  /**
+   * Assign properties from the history stack at a certain index to an existing object.
+   */
+  'assign.history': {
+    /**
+     * The index of the history stack item to assign.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Predefined mapper keys to choose what properties to assign.
+     */
+    props: Record<string, Remapper>;
+  };
+
+  /**
+   * Assign properties from the history stack at a certain index and exclude the unwanted.
+   */
+  'omit.history': {
+    /**
+     * The index of the history stack item to assign.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Exclude properties from the history stack item, based on the given object keys.
+     *
+     * Nested properties can be excluded using arrays of keys.
+     *
+     * @example
+     * ```yaml
+     * omit.history:
+     *   index: 0
+     *   keys:
+     *     - foo   # Excludes the property foo
+     *     - - bar # Excludes the property baz inside of bar
+     *       - baz
+     * ```
+     */
+    keys: (string[] | string)[];
+  };
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';
