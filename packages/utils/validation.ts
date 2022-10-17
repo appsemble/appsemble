@@ -636,6 +636,18 @@ function validateEvents(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (action.type === 'dialog') {
+        for (const block of action.blocks) {
+          if (block.type === 'action-button') {
+            report(
+              block.version,
+              'block of type: "'.concat(block.type).concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+            return;
+          }
+        }
+      }
       if (action.type !== 'event') {
         return;
       }
