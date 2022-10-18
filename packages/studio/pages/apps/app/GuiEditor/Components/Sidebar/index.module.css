@@ -1,12 +1,5 @@
 .root {
   margin: 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 4b5cf9581 (Refactor security tab)
-=======
->>>>>>> 16fc07f16 (Refactor security tab)
   overflow: scroll;
   -ms-overflow-style: none;
   overflow-x: hidden;
@@ -16,15 +9,7 @@
 
 .root::-webkit-scrollbar {
   display: none;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   padding: 0;
->>>>>>> 53a9745b2 (Add tabs and live preview)
-=======
->>>>>>> 4b5cf9581 (Refactor security tab)
-=======
->>>>>>> 16fc07f16 (Refactor security tab)
 }
 
 .leftBar {
@@ -67,16 +52,7 @@
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 0 4px 0 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   overflow: hidden;
->>>>>>> 53a9745b2 (Add tabs and live preview)
-=======
->>>>>>> 4b5cf9581 (Refactor security tab)
-=======
->>>>>>> 16fc07f16 (Refactor security tab)
   width: 100%;
 }
 
@@ -84,15 +60,6 @@
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 4px 0 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   overflow: hidden;
->>>>>>> 53a9745b2 (Add tabs and live preview)
-=======
->>>>>>> 4b5cf9581 (Refactor security tab)
-=======
->>>>>>> 16fc07f16 (Refactor security tab)
   width: 100%;
 }
