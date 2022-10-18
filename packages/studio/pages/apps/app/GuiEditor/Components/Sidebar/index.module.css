@@ -1,0 +1,56 @@
+.root {
+  margin: 0;
+  padding: 0;
+}
+
+.leftBar {
+  border: hsl(0deg 0% 83%) 1px solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-width: 16%;
+  width: 16%;
+}
+
+.rightBar {
+  border: hsl(0deg 0% 83%) 1px solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  max-width: 19%;
+  width: 19%;
+}
+
+.isClosed {
+  border-width: 0;
+  transition: width 0.35s ease-in-out, border-width 0.35s ease-in-out;
+  width: 0;
+}
+
+.isOpen.leftBar {
+  border: hsl(0deg 0% 83%) 1px solid;
+  transition: width 0.35s ease-in-out;
+  width: 16%;
+}
+
+.isOpen.rightBar {
+  border: hsl(0deg 0% 83%) 1px solid;
+  transition: width 0.35s ease-in-out;
+  width: 19%;
+}
+
+.rightBarSlider {
+  background-color: hsl(0deg 0% 100%);
+  border-bottom: none;
+  border-radius: 0 4px 0 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.leftBarSlider {
+  background-color: hsl(0deg 0% 100%);
+  border-bottom: none;
+  border-radius: 4px 0 0;
+  overflow: hidden;
+  width: 100%;
+}
