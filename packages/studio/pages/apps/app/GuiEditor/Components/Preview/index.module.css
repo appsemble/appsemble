@@ -1,0 +1,10 @@
+.root {
+  height: 100%;
+}
+
+.appFrame {
+  background-color: hsl(0deg 0% 100%);
+  border: none;
+  flex: 1;
+  width: 100%;
+}

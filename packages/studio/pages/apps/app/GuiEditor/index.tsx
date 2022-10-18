@@ -113,11 +113,23 @@ export default function EditPage(): ReactElement {
           />
         </div>
       </div>
-      {currentTab.tabName === 'general' && <GeneralTab tab={currentTab} />}
-      {currentTab.tabName === 'resources' && <ResourcesTab tab={currentTab} />}
-      {currentTab.tabName === 'pages' && <PagesTab tab={currentTab} />}
-      {currentTab.tabName === 'theme' && <ThemeTab tab={currentTab} />}
-      {currentTab.tabName === 'security' && <SecurityTab tab={currentTab} />}
+      <div className={`${styles.guiEditorContainer} m-0 p-0`}>
+        {currentTab.tabName === 'general' && (
+          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+        )}
+        {currentTab.tabName === 'resources' && (
+          <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+        )}
+        {currentTab.tabName === 'pages' && (
+          <PagesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+        )}
+        {currentTab.tabName === 'theme' && (
+          <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+        )}
+        {currentTab.tabName === 'security' && (
+          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+        )}
+      </div>
     </div>
   );
 }
