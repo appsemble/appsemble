@@ -1,0 +1,8 @@
+parameters:
+  src: demo-sound
+events:
+  listen:
+    onAudio: onPlayAudio
+
+# This example is missing critical setup steps.
+# To better see how to use this example, look at the default 'Soundboard' app.

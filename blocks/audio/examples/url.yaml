@@ -1,0 +1,5 @@
+parameters:
+  src: https://www.computerhope.com/jargon/m/example.mp3
+events:
+  listen:
+    onAudio: onPlayAudio
