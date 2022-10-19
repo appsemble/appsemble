@@ -19,6 +19,8 @@ declare module '@appsemble/sdk' {
   interface Parameters {
     /**
      * The source of the player.
+     * This can either be a URL pointing to a website, or it can point to an asset.
+     * The asset can either be the object, or the ID of the asset
      *
      */
     src?: Remapper;
