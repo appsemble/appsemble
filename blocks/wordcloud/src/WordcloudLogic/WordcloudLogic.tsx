@@ -6,7 +6,7 @@ import WordCloud from 'wordcloud';
 import styles from './wordcloud.module.css';
 
 function mapArrayToWordcloudObject(obj: string[]): object[] {
-  const kvPair: any = {};
+  const kvPair: Record<string, number> = {};
   const tempWordlist = [];
 
   for (const word of obj) {
