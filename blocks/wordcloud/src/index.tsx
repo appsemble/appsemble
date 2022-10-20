@@ -29,7 +29,7 @@ function sortData(givenWordsList: any): string[] {
   return filteredList;
 }
 
-bootstrap(({ events, parameters: { fields, options, shape }, ready, utils }) => {
+bootstrap(({ events, parameters: { fields, options, shape = 'circle' }, ready, utils }) => {
   const [data, setData] = useState<any>(fields);
   const [error, setError] = useState(false);
 

@@ -12,7 +12,7 @@ declare module '@appsemble/sdk' {
      *
      * @default 'circle'
      */
-    shape:
+    shape?:
       | 'cardioid'
       | 'circle'
       | 'diamond'
@@ -36,12 +36,12 @@ declare module '@appsemble/sdk' {
     /**
      * The font the wordcloud words use.
      */
-    fontFamily?: string | undefined;
+    fontFamily?: string;
 
     /**
      * Font weight to use, e.g. normal, bold or 600
      */
-    fontWeight?: number | string | undefined;
+    fontWeight?: number | string;
 
     /**
      * Color of the text, can be any CSS color
@@ -49,51 +49,51 @@ declare module '@appsemble/sdk' {
      *
      * @default #000000
      */
-    color?: string | undefined;
+    color?: string;
 
     /**
      * Number to multiply the word size by.
      */
-    weightFactor?: number | undefined;
+    weightFactor?: number;
 
     /**
      * The background color for the wordcloud.
      */
-    backgroundColor?: string | undefined;
+    backgroundColor?: string;
 
     /**
      * Minimum font size to draw on the canvas.
      */
-    minSize?: number | undefined;
+    minSize?: number;
 
     /**
      * Paint the entire canvas with background color and consider it empty before start.
      */
-    clearCanvas?: boolean | undefined;
+    clearCanvas?: boolean;
 
     /**
      * If the word should rotate, the minimum rotation (in rad) the text should rotate.
      */
-    minRotation?: number | undefined;
+    minRotation?: number;
 
     /**
      * If the word should rotate, the maximum rotation (in rad) the text should rotate.
      * Set the two value equal to  keep all text in one angle.
      */
-    maxRotation?: number | undefined;
+    maxRotation?: number;
 
     /**
      * Probability for the word to rotate. Set the number to 1 to always rotate.
      *
      * @default 0
      */
-    rotateRatio?: number | undefined;
+    rotateRatio?: number;
 
     /**
      * Shuffle the points to draw so the result will be different each time
      * for the same list and settings.
      */
-    shuffle?: boolean | undefined;
+    shuffle?: boolean;
   }
 
   interface Messages {
