@@ -4037,7 +4037,6 @@ exports[`getBlockConfigFromTypeScript official blocks wordcloud 1`] = `
       },
     },
     "required": [
-      "shape",
       "fields",
       "options",
     ],
