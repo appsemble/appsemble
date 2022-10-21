@@ -9,8 +9,8 @@ existing systems, or create your own, there is some setup to do.
 environment on your local machine.
 
 1. Import any data you want to put into the environment either by cloning the repository or manually
-   importing the different files/directories. For the rest of this guide it is assumed that you
-   clone your repository in the same directory as you have your Appsemble repository.
+   importing the different files/directories. For the rest of this guide, it is assumed that you
+   clone your repository beside the Appsemble directory.
 
    Below is roughly the expected file structure.
 
@@ -52,9 +52,11 @@ environment on your local machine.
        └── ..
    ```
 
-3. The block(s) you imported reference a tsconfig.json file from the other repository. To use this
+3. The block(s) you imported reference a `tsconfig.json` file from the other repository. To use this
    file in your blocks you need to make sure each block’s TypeScript configuration references this
-   tsconfig.json file.
+   `tsconfig.json` file.
+
+   **Note:** The same goes for packages.
 
    In `appsemble/blocks/Block for application/tsconfig.json`
 
@@ -69,8 +71,8 @@ environment on your local machine.
 
 4. Open your favorite terminal in the Appsemble main directory, and run the `yarn` command.
 
-5. Create an organization with the name specified in the `.appsembler.yaml` file of the app you want
-   to develop on. You can either do this in the studio or in the CLI with
+5. Create an organization with the name specified in the `.appsemblerc.yaml` file of the app you
+   want to develop on. You can either do this in the studio or in the CLI with
    `yarn appsemble organization create --name {name} {id}`
 
 6. Publish the new blocks to your local environment with
