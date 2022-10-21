@@ -2,7 +2,7 @@ parameters:
   autofill:
     route: https://api.pro6pp.nl/v2/autocomplete/nl
     params:
-      authToken: exampleToken # You need your own token here
+      authToken: exampleToken # You need your own API token here.
       postalCode: { prop: postalCode }
       streetNumberAndPremise: { prop: houseNumber }
     response:
