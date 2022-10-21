@@ -1,0 +1,26 @@
+parameters:
+  autofill:
+    route: https://api.pro6pp.nl/v2/autocomplete/nl
+    params:
+      authToken: exampleToken # You need your own token here
+      postalCode: { prop: postalCode }
+      streetNumberAndPremise: { prop: houseNumber }
+    response:
+      streetname:
+        - prop: street
+        - string.case: upper
+      residenceArea: { prop: settlement }
+      neighbourhood: { prop: neighbourhood }
+  fields:
+    - name: postalCode
+      type: string
+    - name: houseNumber
+      type: string
+    # The following fields will autofill
+    # if the above fields are filled correctly
+    - name: streetname
+      type: string
+    - name: residenceArea
+      type: string
+    - name: neighbourhood
+      type: string
