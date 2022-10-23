@@ -8,6 +8,9 @@
   },
   "messageIds": {
     "body": "Badan",
+    "cancel": "Batal",
+    "configDelete": "Hapus",
+    "confirmDelete": "Anda yakin ingin menghapus catatan berikut?",
     "title": "Judul"
   }
 }
