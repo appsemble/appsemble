@@ -2607,6 +2607,12 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "Record<string,Remapper>": {
+        "additionalProperties": {
+          "format": "remapper",
+        },
+        "type": "object",
+      },
       "Record<string,number>": {
         "additionalProperties": {
           "type": "number",
@@ -2932,6 +2938,34 @@ Replaces the optional label if the field is optional. Won’t display if the fie
       },
     },
     "properties": {
+      "autofill": {
+        "additionalProperties": false,
+        "description": "This allows you to add automatic form completion through external API's.",
+        "properties": {
+          "delay": {
+            "default": 1000,
+            "description": "Set how many \`milliseconds\` it must take between keystrokes to be able to send a request.",
+            "type": "number",
+          },
+          "params": {
+            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
+            "description": "Set the search parameters given some predefined mapper keys.",
+          },
+          "response": {
+            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
+            "description": "Set the field values given some predefined mapper keys.",
+          },
+          "route": {
+            "description": "The api route (url) to request data from.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "route",
+          "response",
+        ],
+        "type": "object",
+      },
       "dense": {
         "default": false,
         "description": "Whether or not space should be reserved for the help text.

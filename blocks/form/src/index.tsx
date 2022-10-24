@@ -1,5 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import { mapValues } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -7,8 +8,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { FieldEventParameters, Values } from '../block.js';
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
+import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
+import { getNestedByKey } from './utils/getNested.js';
 import { isFormValid } from './utils/validity.js';
 
 bootstrap(
@@ -16,7 +19,7 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { dense, fields: initialFields, previous, requirements },
+    parameters: { autofill, dense, fields: initialFields, previous, requirements },
     path,
     ready,
     utils,
@@ -204,6 +207,37 @@ bootstrap(
     useEffect(() => {
       events.emit.change(values);
     }, [events, values]);
+
+    const debouncedRequest = useMemo(
+      () =>
+        debounce(async (params) => {
+          const response = await fetch(`${autofill.route}?${params}`);
+          if (response.ok) {
+            const body = await response.json();
+            const remappedValues = mapValues(autofill.response, (mapper) =>
+              utils.remap(mapper, body),
+            ) as Record<string, string>;
+            setValues((prev) => ({ ...prev, ...remappedValues }));
+            setLastChanged(null);
+          }
+        }, autofill.delay),
+      [autofill.response, autofill.route, autofill.delay, utils],
+    );
+
+    useEffect(() => {
+      if (!autofill || !getNestedByKey(autofill.params, 'prop').includes(lastChanged)) {
+        return;
+      }
+
+      const params = new URLSearchParams(
+        mapValues(autofill.params, (mapper) => utils.remap(mapper, values)) as Record<
+          string,
+          string
+        >,
+      );
+
+      debouncedRequest(params);
+    }, [values, autofill, lastChanged, utils, debouncedRequest]);
 
     useEffect(() => {
       // If a listener is present, wait until data has been received

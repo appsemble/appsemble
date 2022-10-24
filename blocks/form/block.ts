@@ -935,6 +935,30 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * This allows you to add automatic form completion through external API's.
+     */
+    autofill?: {
+      /**
+       * The api route (url) to request data from.
+       */
+      route: string;
+      /**
+       * Set the search parameters given some predefined mapper keys.
+       */
+      params?: Record<string, Remapper>;
+      /**
+       * Set the field values given some predefined mapper keys.
+       */
+      response: Record<string, Remapper>;
+      /**
+       * Set how many `milliseconds` it must take between keystrokes to be able to send a request.
+       *
+       * @default 1000
+       */
+      delay?: number;
+    };
+
+    /**
      * A list of objects describing each field that can be entered in the form.
      *
      * @minItems 1
