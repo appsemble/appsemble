@@ -6,6 +6,11 @@ import { Checkbox, FormComponent, SharedFormComponentProps } from '../index.js';
 type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, 'error'> &
   SharedFormComponentProps & {
     /**
+     * The name HTML element.
+     */
+    name?: string;
+
+    /**
      * The title to display right of the checkbox.
      */
     title?: ComponentChild;

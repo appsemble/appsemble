@@ -41,7 +41,7 @@
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@hapi/boom": "^10.0.0",
-    "@koa/cors": "^3.0.0",
+    "@koa/cors": "^4.0.0",
     "@odata/parser": "^0.2.0",
     "@sentry/node": "^7.0.0",
     "@types/mdast": "^3.0.0",
@@ -112,7 +112,7 @@
     "webpack-dev-middleware": "^5.0.0",
     "xast-util-to-xml": "^3.0.0",
     "xastscript": "^3.0.0",
-    "xml-crypto": "^2.0.0",
+    "xml-crypto": "^3.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },

@@ -13,6 +13,7 @@ setResponseTransformer(
   ({
     headers: {
       'accept-ranges': acceptRanges,
+      'access-control-allow-origin': accessControlAllowOrigin,
       connection,
       'content-length': contentLength,
       date,

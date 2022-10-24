@@ -11,6 +11,11 @@ import styles from './index.module.css';
  */
 export interface SharedFormComponentProps {
   /**
+   * An optional class name.
+   */
+  className?: string;
+
+  /**
    * A Bulma addon to display.
    */
   addon?: ComponentChild;
@@ -36,6 +41,11 @@ export interface SharedFormComponentProps {
   icon?: IconName;
 
   /**
+   * An optional id for the HTML element. If not set, this will fall back to `name`.
+   */
+  id?: string;
+
+  /**
    * The label element to render.
    */
   label?: ComponentChild;
@@ -48,6 +58,16 @@ export interface SharedFormComponentProps {
   optionalLabel?: ComponentChild;
 
   /**
+   * The name for the HTML element.
+   */
+  name?: string;
+
+  /**
+   * Whether or not the field is required
+   */
+  required?: boolean;
+
+  /**
    * The tag to display next to the label.
    */
   tag?: ComponentChild;
@@ -55,16 +75,6 @@ export interface SharedFormComponentProps {
 
 export interface FormComponentProps extends SharedFormComponentProps {
   children: ComponentChild;
-
-  /**
-   * A class name to pass to the field element.
-   */
-  className?: string;
-
-  /**
-   * An optional id for the HTML element. If not set, this will fall back to `name`.
-   */
-  id?: string;
 
   /**
    * An extra message to display right of the help text.

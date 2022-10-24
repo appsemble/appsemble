@@ -30,7 +30,6 @@ export function resolveFixture(path: string): string {
   return fileURLToPath(new URL(`__fixtures__/${path}`, baseDir));
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Read a test fixture.
  *
