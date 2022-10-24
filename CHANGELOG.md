@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.17](https://gitlab.com/appsemble/appsemble/-/releases/0.20.17)] - 2022-10-24
+
+### Added
+
+- Block(`action-button`): Add the icon for the action button block.
+- Block(`audio`): Add the icon for the audio block.
+- Block(`chart`): Add the icon for the chart block.
+- Block(`control-buttons`): Add the icon for the control buttons block.
+- Block(`feed`): Add the icon for the feed block.
+- Block(`filter`): Add the icon for the filter block.
+- Block(`form`): Add form auto-fill.
+- Block(`form`): Add the icon for the form block.
+- Block(`html`): Add the icon for the HTML block.
+- Block(`image`): Add the icon for the image block.
+- Block(`list`): Add the icon for the list block.
+- Block(`map`): Add the icon for the map block.
+- Block(`markdown`): Add the icon for the markdown block.
+- Block(`qr-scan`): Add the icon for the qr-scan block.
+- Block(`table`): Add the icon for the table block.
+- Block(`tiles`): Add the icon for the tiles block.
+- Block(`timer`): Add the icon for the timer block.
+- Block(`video`): Add the icon for the video block.
+- Utils: Add assign.history remapper.
+- Utils: Add history remapper.
+- Utils: Add omit.history remapper.
+
+### Fixed
+
+- Studio: Resolved not being able to create apps in an organization with sufficient permissions when
+  your first organization gave you insufficient permission to create apps.
+
 ## \[[0.20.16](https://gitlab.com/appsemble/appsemble/-/releases/0.20.16)] - 2022-10-13
 
 ### Added

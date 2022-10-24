@@ -1,1 +1,0 @@
-Add omit.history remapper.

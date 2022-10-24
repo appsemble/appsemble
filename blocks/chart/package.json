@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/chart",
-  "version": "0.20.16",
+  "version": "0.20.17",
   "private": true,
   "description": "Render a chart",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.16",
+    "@appsemble/sdk": "0.20.17",
     "chart.js": "^3.0.0"
   }
 }

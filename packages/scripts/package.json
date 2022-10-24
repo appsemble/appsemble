@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.20.16",
+  "version": "0.20.17",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -25,10 +25,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.16",
-    "@appsemble/types": "0.20.16",
-    "@appsemble/utils": "0.20.16",
-    "@appsemble/webpack-core": "0.20.16",
+    "@appsemble/node-utils": "0.20.17",
+    "@appsemble/types": "0.20.17",
+    "@appsemble/utils": "0.20.17",
+    "@appsemble/webpack-core": "0.20.17",
     "@babel/core": "^7.0.0",
     "@types/fs-extra": "^9.0.0",
     "@types/lodash-es": "^4.0.0",
