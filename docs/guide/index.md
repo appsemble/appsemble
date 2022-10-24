@@ -16,4 +16,4 @@ continue on this basic app to add more advanced features.
 6. [Custom domain name](dns.md)
 7. [Teams](teams.md)
 8. [Analytics](analytics.md)
-9. [Develop on existing structure](develop-on-existing-structure.md)
+9. [Custom dependencies](custom-dependencies.md)
