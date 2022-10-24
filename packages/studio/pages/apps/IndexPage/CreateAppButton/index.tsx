@@ -70,6 +70,10 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
     checkRole(org.role, Permission.CreateApps),
   );
 
+  const selectedOrganization = organizations?.findIndex((org) =>
+    checkRole(org.role, Permission.CreateApps),
+  );
+
   if (!templates?.length) {
     return null;
   }
@@ -88,7 +92,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
             resources: false,
             visibility: 'unlisted',
             includeResources: templates[selectedTemplate].resources,
-            selectedOrganization: 0,
+            selectedOrganization,
           }}
           footer={
             <SimpleModalFooter
