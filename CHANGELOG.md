@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.16](https://gitlab.com/appsemble/appsemble/-/releases/0.20.16)] - 2022-10-13
+
+### Added
+
+- Block(`form`): Block(form): Add conditional field rendering.
+- App: Add the `each` action.
+- Server: Add the `each` action.
+
+### Changed
+
+- App: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+- React-components: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+- Server: Accepts the `examples` property for JSON schemata instead of `example`.
+- Studio: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+
+### Fixed
+
+- App: Fix user.register action.
+- Server: Fix content security policy for OAuth2 client credentials login process.
+- Studio: Fixed editor console errors persisting after fixing the error.
+- Studio: Studio(blocks): Change name in block examples to type.
+
 ## \[[0.20.15](https://gitlab.com/appsemble/appsemble/-/releases/0.20.15)] - 2022-09-14
 
 ### Added

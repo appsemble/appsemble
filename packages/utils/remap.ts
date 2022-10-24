@@ -79,6 +79,7 @@ export interface RemapperContext {
 
 interface InternalContext extends RemapperContext {
   root?: unknown;
+  history?: unknown[];
 
   array?: {
     index: number;
@@ -351,6 +352,32 @@ const mapperImplementations: MapperImplementations = {
   },
 
   root: (args, input, context) => context.root,
+
+  history: (index, input, context) => context.history?.[index],
+
+  'assign.history': ({ index, props }, input: any, context) => ({
+    ...input,
+    ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+  }),
+
+  'omit.history'({ index, keys }, input: Record<string, any>, context) {
+    const result = { ...(context.history[index] as Record<string, any>) };
+    for (const key of keys) {
+      if (Array.isArray(key)) {
+        key.reduce((acc, k, i) => {
+          if (i === key.length - 1) {
+            delete acc[k];
+          } else {
+            return acc?.[k];
+          }
+          return acc;
+        }, result);
+      } else {
+        delete result[key];
+      }
+    }
+    return { ...input, ...result };
+  },
 
   'string.case'(stringCase, input) {
     if (stringCase === 'lower') {

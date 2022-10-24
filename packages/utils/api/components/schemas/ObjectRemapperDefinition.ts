@@ -279,6 +279,80 @@ Supported properties:
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
     },
+    history: {
+      type: 'integer',
+      description: `Get the data at a certain index from the history stack prior to an action.
+      
+0 is the index of the first item in the history stack.`,
+    },
+    'assign.history': {
+      type: 'object',
+      required: ['index', 'props'],
+      description:
+        'Assign properties from the history stack at a certain index to an existing object.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+          
+0 is the index of the first item in the history stack.
+`,
+        },
+        props: {
+          description: 'Predefined mapper keys to choose what properties to assign.',
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
+        },
+      },
+    },
+    'omit.history': {
+      type: 'object',
+      required: ['index', 'keys'],
+      description:
+        'Assign properties from the history stack at a certain index and exclude the unwanted properties.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+
+0 is the index of the first item in the history stack.
+`,
+        },
+        keys: {
+          description: `Exclude properties from the history stack item, based on the given object keys.
+          
+Nested properties can be excluded using arrays of keys.
+
+For example:
+\`\`\`yaml
+omit.history:
+  index: 0
+  keys:
+    - foo   # Excludes the property foo
+    - - bar # Excludes the property baz inside of bar
+      - baz
+\`\`\`
+`,
+          type: 'array',
+          items: {
+            minItems: 1,
+            anyOf: [
+              { type: 'string' },
+              {
+                type: 'array',
+                minItems: 2,
+                items: {
+                  type: 'string',
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
     static: {
       description: 'Use a static value.',
     },

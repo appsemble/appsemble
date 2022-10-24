@@ -21,7 +21,10 @@ describe('condition', () => {
       remap,
     });
     const result = await action({ input: true }, { context: null });
-    expect(ok).toHaveBeenCalledWith({ input: true }, { context: null });
+    expect(ok).toHaveBeenCalledWith(
+      { input: true },
+      { context: null, history: [{ input: true }, { input: true }] },
+    );
     expect(error).not.toHaveBeenCalled();
     expect(result).toBe('ok');
   });
@@ -45,7 +48,10 @@ describe('condition', () => {
     });
     const result = await action({ input: false }, { context: null });
     expect(ok).not.toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith({ input: false }, { context: null });
+    expect(error).toHaveBeenCalledWith(
+      { input: false },
+      { context: null, history: [{ input: false }, { input: false }] },
+    );
     expect(result).toBe('error');
   });
 });
