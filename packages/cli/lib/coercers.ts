@@ -32,6 +32,7 @@ export function coerceRemote(value: string): string {
   return String(remote);
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get a stream based on the filepath.
  *

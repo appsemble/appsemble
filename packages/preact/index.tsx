@@ -22,7 +22,6 @@ export function mount(
 ): (params: BootstrapParams) => Promise<void> {
   return (params) =>
     new Promise((ready) => {
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
       const props = {
         ...params,
         ready,

@@ -7,6 +7,7 @@ import { Promisable } from 'type-fest';
 import { argv } from '../argv.js';
 import * as kubernetes from './kubernetes.js';
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the DNS implementation for the specified app domain strategy.
  *

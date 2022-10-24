@@ -8,6 +8,11 @@ import { Option, OptionProps } from '../Option/index.js';
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {
   /**
+   * A custom class name to add to the select box.
+   */
+  className?: string;
+
+  /**
    * Whether or not the element should take as much space as it can.
    */
   fullWidth?: boolean;
