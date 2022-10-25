@@ -29,8 +29,8 @@ interface WordcloudProps {
 
 export function WordcloudLogic(props: WordcloudProps): VNode {
   const canvasRef = useRef<HTMLCanvasElement>();
-  const canvasWidth = 1170;
-  const canvasHeight = 760;
+  const canvasWidth = Math.floor(window.innerWidth * 0.61);
+  const canvasHeight = Math.floor(window.innerHeight * 0.82);
 
   useEffect(() => {
     if (!canvasRef.current) {
