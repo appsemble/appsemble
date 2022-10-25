@@ -595,7 +595,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
   });
 }
 
-function validateEvents(definition: AppDefinition, report: Report): void {
+function validateEvents(
+  definition: AppDefinition,
+  blockVersions: Map<string, Map<string, BlockManifest>>,
+  report: Report,
+): void {
   const indexMap = new Map<
     number,
     {
@@ -631,10 +635,14 @@ function validateEvents(definition: AppDefinition, report: Report): void {
     onAction(action, path) {
       if (action.type === 'dialog') {
         for (const block of action.blocks) {
-          if (block.type === 'action-button') {
+          const versions = blockVersions.get(normalizeBlockName(block.type));
+          const version = versions.get(block.version);
+          if (version.layout === 'float') {
             report(
               block.version,
-              'block of type: "'.concat(block.type).concat('" is not allowed in a dialog action'),
+              'block with layout type: "'
+                .concat(version.layout)
+                .concat('" is not allowed in a dialog action'),
               [...path, 'type'],
             );
           }
@@ -740,7 +748,7 @@ export async function validateAppDefinition(
     validateSecurity(definition, report);
     validateBlocks(definition, blockVersionMap, report);
     validateActions(definition, report);
-    validateEvents(definition, report);
+    validateEvents(definition, blockVersionMap, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }
