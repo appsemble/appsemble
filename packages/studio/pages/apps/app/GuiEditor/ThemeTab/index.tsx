@@ -3,7 +3,10 @@ import { useIntl } from 'react-intl';
 
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { GuiEditorTabs } from '../index.js';
+<<<<<<< HEAD
 import styles from './index.module.css';
+=======
+>>>>>>> 58d2017e1 (Remove unused files)
 
 interface ThemeTabProps {
   tab: GuiEditorTabs;
@@ -17,7 +20,11 @@ export function ThemeTab({ isOpenLeft, isOpenRight, tab }: ThemeTabProps): React
       <Sidebar isOpen={isOpenLeft} type="left">
         <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
+<<<<<<< HEAD
       <div className={styles.root}>{formatMessage(tab.title)}</div>
+=======
+      <div>{tab.title}</div>
+>>>>>>> 58d2017e1 (Remove unused files)
       <Sidebar isOpen={isOpenRight} type="right">
         <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
