@@ -211,8 +211,8 @@ bootstrap(
     const debouncedRequest = useMemo(
       () =>
         debounce(async (params) => {
-          const response = await fetch(`${autofill.route}?${params}`);
-          if (response.ok) {
+          const response = await fetch(`${autofill?.route}?${params}`);
+          if (response.ok && autofill) {
             const body = await response.json();
             const remappedValues = mapValues(autofill.response, (mapper) =>
               utils.remap(mapper, body),
@@ -220,23 +220,21 @@ bootstrap(
             setValues((prev) => ({ ...prev, ...remappedValues }));
             setLastChanged(null);
           }
-        }, autofill.delay),
-      [autofill.response, autofill.route, autofill.delay, utils],
+        }, autofill?.delay),
+      [autofill, utils],
     );
 
     useEffect(() => {
-      if (!autofill || !getNestedByKey(autofill.params, 'prop').includes(lastChanged)) {
-        return;
+      if (autofill?.params && getNestedByKey(autofill.params, 'prop').includes(lastChanged)) {
+        const params = new URLSearchParams(
+          mapValues(autofill.params, (mapper) => utils.remap(mapper, values)) as Record<
+            string,
+            string
+          >,
+        );
+
+        debouncedRequest(params);
       }
-
-      const params = new URLSearchParams(
-        mapValues(autofill.params, (mapper) => utils.remap(mapper, values)) as Record<
-          string,
-          string
-        >,
-      );
-
-      debouncedRequest(params);
     }, [values, autofill, lastChanged, utils, debouncedRequest]);
 
     useEffect(() => {
