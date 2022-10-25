@@ -351,7 +351,9 @@ By default a cared pointing left or right respectively will be rendered.",
             "type": "boolean",
           },
         ],
-        "description": "The configuration for the back button.",
+        "description": "The configuration for the back button.
+
+Set to \`false\` to hide back button.",
       },
       "forward": {
         "anyOf": [
@@ -363,7 +365,9 @@ By default a cared pointing left or right respectively will be rendered.",
             "type": "boolean",
           },
         ],
-        "description": "The configuration for the forward button.",
+        "description": "The configuration for the forward button.
+
+Set to \`false\` to hide forward button.",
       },
     },
     "type": "object",
