@@ -10,7 +10,7 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 76,
+          "length": 70,
           "valid": {
             "disableFormat": false,
             "errors": [
@@ -2026,31 +2026,6 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
                 "stack": "instance.actions.onSubmit.type is not one of enum values: share",
               },
               {
-                "argument": [
-                  "share",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: share",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
-
-Depending on whether the user’s browser supports a native share function it will either display a
-native dialog for sharing links, or display a more limited fallback in a dialog.
-",
-                  "enum": [
-                    "share",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: share",
-              },
-              {
                 "argument": "value",
                 "instance": {
                   "type": "invalid",
@@ -2181,199 +2156,6 @@ This is useful for example for stubbing data.
                   ],
                 },
                 "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
-              },
-              {
-                "argument": "key",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "key"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "key": {
-                      "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The key of the storage entry.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "storage": {
-                      "default": "indexedDB",
-                      "description": "The mechanism used to read the data from.",
-                      "enum": [
-                        "indexedDB",
-                        "localStorage",
-                        "sessionStorage",
-                      ],
-                    },
-                    "type": {
-                      "description": "Read data from the app’s local storage.",
-                      "enum": [
-                        "storage.read",
-                      ],
-                    },
-                  },
-                  "required": [
-                    "type",
-                    "key",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "key"",
-              },
-              {
-                "argument": [
-                  "storage.read",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: storage.read",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Read data from the app’s local storage.",
-                  "enum": [
-                    "storage.read",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
-              },
-              {
-                "argument": "key",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "key"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "key": {
-                      "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The key of the storage entry.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "storage": {
-                      "default": "indexedDB",
-                      "description": "The mechanism used to store the data.",
-                      "enum": [
-                        "indexedDB",
-                        "localStorage",
-                        "sessionStorage",
-                      ],
-                    },
-                    "type": {
-                      "description": "Write data to the app’s local storage.",
-                      "enum": [
-                        "storage.write",
-                      ],
-                    },
-                    "value": {
-                      "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
-                    },
-                  },
-                  "required": [
-                    "type",
-                    "key",
-                    "value",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "key"",
-              },
-              {
-                "argument": "value",
-                "instance": {
-                  "type": "invalid",
-                },
-                "message": "requires property "value"",
-                "name": "required",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                ],
-                "property": "instance.actions.onSubmit",
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "key": {
-                      "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The key of the storage entry.",
-                    },
-                    "onError": {},
-                    "onSuccess": {},
-                    "remapAfter": {},
-                    "remapBefore": {},
-                    "storage": {
-                      "default": "indexedDB",
-                      "description": "The mechanism used to store the data.",
-                      "enum": [
-                        "indexedDB",
-                        "localStorage",
-                        "sessionStorage",
-                      ],
-                    },
-                    "type": {
-                      "description": "Write data to the app’s local storage.",
-                      "enum": [
-                        "storage.write",
-                      ],
-                    },
-                    "value": {
-                      "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
-                    },
-                  },
-                  "required": [
-                    "type",
-                    "key",
-                    "value",
-                  ],
-                  "type": "object",
-                },
-                "stack": "instance.actions.onSubmit requires property "value"",
-              },
-              {
-                "argument": [
-                  "storage.write",
-                ],
-                "instance": "invalid",
-                "message": "is not one of enum values: storage.write",
-                "name": "enum",
-                "path": [
-                  "actions",
-                  "onSubmit",
-                  "type",
-                ],
-                "property": "instance.actions.onSubmit.type",
-                "schema": {
-                  "description": "Write data to the app’s local storage.",
-                  "enum": [
-                    "storage.write",
-                  ],
-                },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
               },
               {
                 "argument": "key",
@@ -2795,11 +2577,8 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
                   "<#/components/schemas/ResourceUpdateActionDefinition>",
                   "<#/components/schemas/ShareActionDefinition>",
-                  "<#/components/schemas/ShareActionDefinition>",
                   "<#/components/schemas/StaticActionDefinition>",
                   "<#/components/schemas/StorageReadActionDefinition>",
-                  "<#/components/schemas/StorageReadActionDefinition>",
-                  "<#/components/schemas/StorageWriteActionDefinition>",
                   "<#/components/schemas/StorageWriteActionDefinition>",
                   "<#/components/schemas/TeamInviteActionDefinition>",
                   "<#/components/schemas/TeamJoinActionDefinition>",
@@ -2812,7 +2591,7 @@ Does nothing if the user isn’t logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -2915,19 +2694,10 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/ShareActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/ShareActionDefinition",
-                    },
-                    {
                       "$ref": "#/components/schemas/StaticActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/StorageReadActionDefinition",
-                    },
-                    {
-                      "$ref": "#/components/schemas/StorageReadActionDefinition",
-                    },
-                    {
-                      "$ref": "#/components/schemas/StorageWriteActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/StorageWriteActionDefinition",
@@ -2955,7 +2725,7 @@ Does nothing if the user isn’t logged in.",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
               },
             ],
             "instance": {
@@ -3066,19 +2836,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ShareActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/ShareActionDefinition",
-                },
-                {
                   "$ref": "#/components/schemas/StaticActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageReadActionDefinition",
-                },
-                {
-                  "$ref": "#/components/schemas/StorageReadActionDefinition",
-                },
-                {
-                  "$ref": "#/components/schemas/StorageWriteActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageWriteActionDefinition",
@@ -3111,7 +2872,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 76 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 70 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -3239,19 +3000,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ShareActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/ShareActionDefinition",
-                },
-                {
                   "$ref": "#/components/schemas/StaticActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageReadActionDefinition",
-                },
-                {
-                  "$ref": "#/components/schemas/StorageReadActionDefinition",
-                },
-                {
-                  "$ref": "#/components/schemas/StorageWriteActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageWriteActionDefinition",
@@ -3281,7 +3033,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 76 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 70 error[s]:",
       },
       {
         "argument": "target",
@@ -5295,31 +5047,6 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
         "stack": "instance.actions.onSubmit.type is not one of enum values: share",
       },
       {
-        "argument": [
-          "share",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: share",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
-
-Depending on whether the user’s browser supports a native share function it will either display a
-native dialog for sharing links, or display a more limited fallback in a dialog.
-",
-          "enum": [
-            "share",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: share",
-      },
-      {
         "argument": "value",
         "instance": {
           "type": "invalid",
@@ -5450,199 +5177,6 @@ This is useful for example for stubbing data.
           ],
         },
         "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
-      },
-      {
-        "argument": "key",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "key"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "key": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The key of the storage entry.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "remapAfter": {},
-            "remapBefore": {},
-            "storage": {
-              "default": "indexedDB",
-              "description": "The mechanism used to read the data from.",
-              "enum": [
-                "indexedDB",
-                "localStorage",
-                "sessionStorage",
-              ],
-            },
-            "type": {
-              "description": "Read data from the app’s local storage.",
-              "enum": [
-                "storage.read",
-              ],
-            },
-          },
-          "required": [
-            "type",
-            "key",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "key"",
-      },
-      {
-        "argument": [
-          "storage.read",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: storage.read",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Read data from the app’s local storage.",
-          "enum": [
-            "storage.read",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
-      },
-      {
-        "argument": "key",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "key"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "key": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The key of the storage entry.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "remapAfter": {},
-            "remapBefore": {},
-            "storage": {
-              "default": "indexedDB",
-              "description": "The mechanism used to store the data.",
-              "enum": [
-                "indexedDB",
-                "localStorage",
-                "sessionStorage",
-              ],
-            },
-            "type": {
-              "description": "Write data to the app’s local storage.",
-              "enum": [
-                "storage.write",
-              ],
-            },
-            "value": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
-            },
-          },
-          "required": [
-            "type",
-            "key",
-            "value",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "key"",
-      },
-      {
-        "argument": "value",
-        "instance": {
-          "type": "invalid",
-        },
-        "message": "requires property "value"",
-        "name": "required",
-        "path": [
-          "actions",
-          "onSubmit",
-        ],
-        "property": "instance.actions.onSubmit",
-        "schema": {
-          "additionalProperties": false,
-          "properties": {
-            "key": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The key of the storage entry.",
-            },
-            "onError": {},
-            "onSuccess": {},
-            "remapAfter": {},
-            "remapBefore": {},
-            "storage": {
-              "default": "indexedDB",
-              "description": "The mechanism used to store the data.",
-              "enum": [
-                "indexedDB",
-                "localStorage",
-                "sessionStorage",
-              ],
-            },
-            "type": {
-              "description": "Write data to the app’s local storage.",
-              "enum": [
-                "storage.write",
-              ],
-            },
-            "value": {
-              "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
-            },
-          },
-          "required": [
-            "type",
-            "key",
-            "value",
-          ],
-          "type": "object",
-        },
-        "stack": "instance.actions.onSubmit requires property "value"",
-      },
-      {
-        "argument": [
-          "storage.write",
-        ],
-        "instance": "invalid",
-        "message": "is not one of enum values: storage.write",
-        "name": "enum",
-        "path": [
-          "actions",
-          "onSubmit",
-          "type",
-        ],
-        "property": "instance.actions.onSubmit.type",
-        "schema": {
-          "description": "Write data to the app’s local storage.",
-          "enum": [
-            "storage.write",
-          ],
-        },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
       },
       {
         "argument": "key",
@@ -6064,11 +5598,8 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
           "<#/components/schemas/ResourceUpdateActionDefinition>",
           "<#/components/schemas/ShareActionDefinition>",
-          "<#/components/schemas/ShareActionDefinition>",
           "<#/components/schemas/StaticActionDefinition>",
           "<#/components/schemas/StorageReadActionDefinition>",
-          "<#/components/schemas/StorageReadActionDefinition>",
-          "<#/components/schemas/StorageWriteActionDefinition>",
           "<#/components/schemas/StorageWriteActionDefinition>",
           "<#/components/schemas/TeamInviteActionDefinition>",
           "<#/components/schemas/TeamJoinActionDefinition>",
@@ -6081,7 +5612,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -6184,19 +5715,10 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/ShareActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/ShareActionDefinition",
-            },
-            {
               "$ref": "#/components/schemas/StaticActionDefinition",
             },
             {
               "$ref": "#/components/schemas/StorageReadActionDefinition",
-            },
-            {
-              "$ref": "#/components/schemas/StorageReadActionDefinition",
-            },
-            {
-              "$ref": "#/components/schemas/StorageWriteActionDefinition",
             },
             {
               "$ref": "#/components/schemas/StorageWriteActionDefinition",
@@ -6224,7 +5746,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
       },
     ],
   },
