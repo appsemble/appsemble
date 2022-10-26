@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.17
-appVersion: 0.20.17
+version: 0.20.18
+appVersion: 0.20.18
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,52 +24,9 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(action-button): Add the icon for the action button block."
-    - kind: added
-      description: "Block(audio): Add the icon for the audio block."
-    - kind: added
-      description: "Block(chart): Add the icon for the chart block."
-    - kind: added
-      description: "Block(control-buttons): Add the icon for the control buttons block."
-    - kind: added
-      description: "Block(feed): Add the icon for the feed block."
-    - kind: added
-      description: "Block(filter): Add the icon for the filter block."
-    - kind: added
-      description: "Block(form): Add form auto-fill."
-    - kind: added
-      description: "Block(form): Add the icon for the form block."
-    - kind: added
-      description: "Block(html): Add the icon for the HTML block."
-    - kind: added
-      description: "Block(image): Add the icon for the image block."
-    - kind: added
-      description: "Block(list): Add the icon for the list block."
-    - kind: added
-      description: "Block(map): Add the icon for the map block."
-    - kind: added
-      description: "Block(markdown): Add the icon for the markdown block."
-    - kind: added
-      description: "Block(qr-scan): Add the icon for the qr-scan block."
-    - kind: added
-      description: "Block(table): Add the icon for the table block."
-    - kind: added
-      description: "Block(tiles): Add the icon for the tiles block."
-    - kind: added
-      description: "Block(timer): Add the icon for the timer block."
-    - kind: added
-      description: "Block(video): Add the icon for the video block."
-    - kind: added
-      description: "Utils: Add assign.history remapper."
-    - kind: added
-      description: "Utils: Add history remapper."
-    - kind: added
-      description: "Utils: Add omit.history remapper."
     - kind: fixed
-      description: "Studio: Resolved not being able to create apps in an organization
-        with sufficient permissions when your first organization gave you
-        insufficient permission to create apps."
+      description: "Block(form): Fix bug where forms would not load without defining
+        the auto-fill parameter."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

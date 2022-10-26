@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.18](https://gitlab.com/appsemble/appsemble/-/releases/0.20.18)] - 2022-10-26
+
+### Fixed
+
+- Block(`form`): Fix bug where forms would not load without defining the auto-fill parameter.
+
 ## \[[0.20.17](https://gitlab.com/appsemble/appsemble/-/releases/0.20.17)] - 2022-10-24
 
 ### Added
