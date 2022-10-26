@@ -4034,3 +4034,135 @@ Note that this is ignored if the onVideo event listener is set.",
   },
 }
 `;
+
+exports[`getBlockConfigFromTypeScript official blocks wordcloud 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "data": {
+        "description": "This event can be used to receive incoming data to display.",
+      },
+    },
+  },
+  "messages": {
+    "empty": {
+      "description": "This message is displayed if the data is empty.",
+    },
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+    "loading": {
+      "description": "This message is displayed if no data has been loaded yet.",
+    },
+    "unsupported": {
+      "description": "This message is displayed if the browser does not support the block",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "Options": {
+        "additionalProperties": false,
+        "properties": {
+          "backgroundColor": {
+            "description": "The background color for the wordcloud.",
+            "type": "string",
+          },
+          "clearCanvas": {
+            "description": "Paint the entire canvas with background color and consider it empty before start.",
+            "type": "boolean",
+          },
+          "color": {
+            "default": "#000000",
+            "description": "Color of the text, can be any CSS color You may also specify colors with built-in * keywords: random-dark and random-light.",
+            "type": "string",
+          },
+          "fontFamily": {
+            "description": "The font the wordcloud words use.",
+            "type": "string",
+          },
+          "fontWeight": {
+            "description": "Font weight to use, e.g. normal, bold or 600",
+            "type": [
+              "number",
+              "string",
+            ],
+          },
+          "maxRotation": {
+            "description": "If the word should rotate, the maximum rotation (in rad) the text should rotate. Set the two value equal to  keep all text in one angle.",
+            "type": "number",
+          },
+          "minRotation": {
+            "description": "If the word should rotate, the minimum rotation (in rad) the text should rotate.",
+            "type": "number",
+          },
+          "minSize": {
+            "description": "Minimum font size to draw on the canvas.",
+            "type": "number",
+          },
+          "rotateRatio": {
+            "default": 0,
+            "description": "Probability for the word to rotate. Set the number to 1 to always rotate.",
+            "type": "number",
+          },
+          "shuffle": {
+            "description": "Shuffle the points to draw so the result will be different each time for the same list and settings.",
+            "type": "boolean",
+          },
+          "weightFactor": {
+            "description": "Number to multiply the word size by.",
+            "type": "number",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "properties": {
+      "fields": {
+        "anyOf": [
+          {
+            "items": {
+              "format": "remapper",
+            },
+            "type": "array",
+          },
+          {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+        ],
+        "description": "A list of fields to render out in a table.",
+      },
+      "options": {
+        "$ref": "#/definitions/Options",
+        "description": "List of options for rendering the wordcloud.",
+      },
+      "shape": {
+        "default": "circle",
+        "description": "Shape of the wordcloud.",
+        "enum": [
+          "cardioid",
+          "circle",
+          "diamond",
+          "pentagon",
+          "square",
+          "star",
+          "triangle-forward",
+          "triangle",
+        ],
+        "type": "string",
+      },
+    },
+    "required": [
+      "fields",
+      "options",
+    ],
+    "type": "object",
+  },
+}
+`;

@@ -2753,6 +2753,11 @@
     anymatch "^3.0.0"
     source-map "^0.6.0"
 
+"@types/wordcloud@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@types/wordcloud/-/wordcloud-1.1.3.tgz#1db038c528dfc9ea1432c8dab8e374579dbe474c"
+  integrity sha512-FOBBpBJ9n9YMCwjayWIaSBju+qSBkenuJM1i98VTBJm6FsOBGAcu3zq/JfU2erDB0/7Mzog6cRoFNTa4TgcxOQ==
+
 "@types/workbox-webpack-plugin@^5.0.0":
   version "5.1.8"
   resolved "https://registry.yarnpkg.com/@types/workbox-webpack-plugin/-/workbox-webpack-plugin-5.1.8.tgz#8c014df34877b6fab0c7d4aa85698445e1e0f64b"
@@ -15547,6 +15552,11 @@ word-wrap@^1.2.3, word-wrap@~1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
   integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
+
+wordcloud@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/wordcloud/-/wordcloud-1.2.2.tgz#2d32a99d8ac6a54d8b56915be1d41928f205854d"
+  integrity sha512-fUnDsGrHXou+49j1OeKaC7nOeZPx+sWjIet0L/j6eAcm0nXy+a+AuUs/iDAX4PLBg1Zc6wgXWXhoXdQsXRWAEw==
 
 workbox-background-sync@6.5.4:
   version "6.5.4"
