@@ -57,6 +57,15 @@ If the input is not an array, the input is returned without any modifications.`,
 
 Passing an empty array returns an empty array.`,
     },
+    'array.append': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: `Append new values to the end of an array.
+
+Passing an empty array returns an empty array.`,
+    },
     context: {
       type: 'string',
       description: 'Get a property from the context.',

@@ -646,6 +646,21 @@ describe('array.from', () => {
   });
 });
 
+describe('array.append', () => {
+  runTests({
+    'append remapped value to array': {
+      input: ['baz'],
+      mappers: [{ 'array.append': [{ 'object.from': { foo: 'bar' } }] }],
+      expected: ['baz', { foo: 'bar' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.append': [] }],
+      expected: [],
+    },
+  });
+});
+
 describe('null.strip', () => {
   runTests({
     'strip null values': {

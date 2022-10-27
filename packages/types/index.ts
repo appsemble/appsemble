@@ -373,6 +373,13 @@ export interface Remappers {
   'array.from': Remapper[];
 
   /**
+   * Append new values to the end of an array.
+   *
+   * Passing an empty array returns an empty array.
+   */
+  'array.append': Remapper[];
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': Record<string, Remapper>;

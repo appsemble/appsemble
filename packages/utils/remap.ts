@@ -308,6 +308,11 @@ const mapperImplementations: MapperImplementations = {
 
   'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
 
+  'array.append': (mappers, input, context) =>
+    Array.isArray(input)
+      ? input.concat(mappers.map((mapper) => remap(mapper, input, context)))
+      : [],
+
   static: (input) => input,
 
   prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),
