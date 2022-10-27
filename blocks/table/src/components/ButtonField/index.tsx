@@ -80,17 +80,7 @@ export function ButtonField({
     action(item);
   }, [action, disabled, item]);
 
-  return action?.type === 'link' ? (
-    <a
-      className={className}
-      disabled={disabled}
-      href={action.href()}
-      onClick={onClick}
-      title={remappedTitle}
-    >
-      {content}
-    </a>
-  ) : (
+  return (
     <button
       className={className}
       disabled={disabled}
