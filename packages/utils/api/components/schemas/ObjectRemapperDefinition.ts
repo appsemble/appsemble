@@ -66,6 +66,15 @@ Passing an empty array returns an empty array.`,
 
 Passing an empty array returns an empty array.`,
     },
+    'array.omit': {
+      type: 'array',
+      items: {
+        type: 'number',
+      },
+      description: `Remove item(s) from an array given a predefined array of indices.
+
+Passing an empty array returns an empty array.`,
+    },
     context: {
       type: 'string',
       description: 'Get a property from the context.',

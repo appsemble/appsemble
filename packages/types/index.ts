@@ -380,6 +380,13 @@ export interface Remappers {
   'array.append': Remapper[];
 
   /**
+   * Remove item(s) from an array given a predefined array of indices.
+   *
+   * Passing an empty array returns an empty array.
+   */
+  'array.omit': number[];
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': Record<string, Remapper>;

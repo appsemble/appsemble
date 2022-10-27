@@ -661,6 +661,21 @@ describe('array.append', () => {
   });
 });
 
+describe('array.omit', () => {
+  runTests({
+    'omit objects at given indices': {
+      input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+      mappers: [{ 'array.omit': [0, 2] }],
+      expected: [{ bar: '...' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.omit': [] }],
+      expected: [],
+    },
+  });
+});
+
 describe('null.strip', () => {
   runTests({
     'strip null values': {
