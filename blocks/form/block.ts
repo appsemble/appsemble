@@ -255,7 +255,7 @@ interface AbstractField {
    *
    * If not specified, the field will display.
    */
-  showIf?: Remapper;
+  show?: Remapper;
 
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to

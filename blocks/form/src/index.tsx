@@ -263,7 +263,7 @@ bootstrap(
           <span>{submitErrorResult}</span>
         </Message>
         {fields
-          ?.filter((f) => f.showIf === undefined || utils.remap(f.showIf, values))
+          ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
           .map((f) => (
             <FormInput
               className={classNames({ [styles.dense]: dense })}
