@@ -366,6 +366,13 @@ export interface Remappers {
   array: 'index' | 'length';
 
   /**
+   * Create a new array with an array of predefined remappers.
+   *
+   * Passing an empty array returns an empty array.
+   */
+  'array.from': Remapper[];
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': Record<string, Remapper>;

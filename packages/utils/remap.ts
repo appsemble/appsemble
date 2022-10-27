@@ -306,6 +306,8 @@ const mapperImplementations: MapperImplementations = {
 
   array: (prop, input, context) => context.array?.[prop],
 
+  'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
+
   static: (input) => input,
 
   prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),

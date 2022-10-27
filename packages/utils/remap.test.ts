@@ -631,6 +631,21 @@ describe('array', () => {
   });
 });
 
+describe('array.from', () => {
+  runTests({
+    'create new array with remapped values': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [{ 'object.from': { foo: { prop: 'foo' } } }, 'baz'] }],
+      expected: [{ foo: 'bar' }, 'baz'],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [] }],
+      expected: [],
+    },
+  });
+});
+
 describe('null.strip', () => {
   runTests({
     'strip null values': {
