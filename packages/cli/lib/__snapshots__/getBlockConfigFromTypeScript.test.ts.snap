@@ -1482,7 +1482,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -1555,7 +1555,7 @@ This typically means that the checkbox *must* be checked.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -1687,7 +1687,7 @@ The date value can be accessed using the \`root\` remapper.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -1776,7 +1776,7 @@ The date value can be accessed using the \`root\` remapper.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -1942,7 +1942,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2067,7 +2067,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2184,7 +2184,7 @@ This can be used to set the location to something that is more relevant to the u
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2237,7 +2237,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2393,7 +2393,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2495,7 +2495,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2569,7 +2569,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2698,7 +2698,7 @@ This field does not contain a name or a value.",
             "description": "Whether the field should be read-only.",
             "type": "boolean",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2799,7 +2799,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",
@@ -2882,7 +2882,7 @@ These are evaluated in the order they are defined in.",
             },
             "type": "array",
           },
-          "showIf": {
+          "show": {
             "description": "Displays field only if condition is true.
 
 If not specified, the field will display.",

@@ -22,7 +22,7 @@ parameters:
     - name: special
       type: static
       content: You picked a special species
-      showIf: { equals: [{ prop: species }, 'Unicorn'] }
+      show: { equals: [{ prop: species }, 'Unicorn'] }
 actions:
   onSubmit:
     type: resource.create
