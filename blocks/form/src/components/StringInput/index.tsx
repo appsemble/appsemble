@@ -29,7 +29,7 @@ export function StringInput({
     className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
-    iconLeft: icon,
+    icon,
     label: remappedLabel as string,
     maxLength: getMaxLength(field),
     minLength: getMinLength(field),
