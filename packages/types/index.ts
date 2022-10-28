@@ -367,22 +367,20 @@ export interface Remappers {
 
   /**
    * Create a new array with an array of predefined remappers.
-   *
-   * Passing an empty array returns an empty array.
    */
   'array.from': Remapper[];
 
   /**
    * Append new values to the end of an array.
    *
-   * Passing an empty array returns an empty array.
+   * If the input is not an array an empty array is returned.
    */
   'array.append': Remapper[];
 
   /**
    * Remove item(s) from an array given a predefined array of indices.
    *
-   * Passing an empty array returns an empty array.
+   * If the input is not an array an empty array is returned.
    */
   'array.omit': number[];
 

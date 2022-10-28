@@ -53,9 +53,7 @@ If the input is not an array, the input is returned without any modifications.`,
       items: {
         $ref: '#/components/schemas/RemapperDefinition',
       },
-      description: `Create a new array with an array of predefined remappers.
-
-Passing an empty array returns an empty array.`,
+      description: 'Create a new array with an array of predefined remappers.',
     },
     'array.append': {
       type: 'array',
@@ -64,7 +62,7 @@ Passing an empty array returns an empty array.`,
       },
       description: `Append new values to the end of an array.
 
-Passing an empty array returns an empty array.`,
+If the input is not an array an empty array is returned.`,
     },
     'array.omit': {
       type: 'array',
@@ -73,7 +71,7 @@ Passing an empty array returns an empty array.`,
       },
       description: `Remove item(s) from an array given a predefined array of indices.
 
-Passing an empty array returns an empty array.`,
+If the input is not an array an empty array is returned.`,
     },
     context: {
       type: 'string',
