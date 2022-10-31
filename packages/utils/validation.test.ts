@@ -1827,4 +1827,44 @@ describe('validateAppDefinition', () => {
       new ValidationError('Unexpected error: Boom!', null, undefined, []),
     ]);
   });
+
+  it('should prevent block with layout float to be used in a dialog action', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onClick: {
+          type: 'dialog',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              layout: 'float',
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        actions: {
+          onClick: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'block with layout type: "float" is not allowed in a dialog action',
+        {},
+        undefined,
+        ['pages', 0, 'blocks', 0, 'type'],
+      ),
+    ]);
+  });
 });
