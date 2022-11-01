@@ -17,6 +17,7 @@ import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/util
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -29,18 +30,29 @@ import { MessagesLoader } from './MessagesLoader/index.js';
 export function TranslationsPage(): ReactElement {
   useMeta(messages.title);
 
+  const { pathname } = useLocation();
+  const pathnameArray = pathname.split('/');
+  let [, pageLanguage] = pathnameArray;
+
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
 
   const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
-
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const modal = useToggle();
 
+  if (!languageIds?.data?.includes(pageLanguage)) {
+    pageLanguage = 'en';
+  }
+
   const languageId =
-    selectedLanguage || languageIds.data?.[0] || app.definition.defaultLanguage || 'en';
+    selectedLanguage ||
+    pageLanguage ||
+    app.definition.defaultLanguage ||
+    languageIds.data?.[0] ||
+    'en';
 
   const onSelectedLanguageChange = useCallback((event, lang: string) => {
     setSelectedLanguage(lang);
