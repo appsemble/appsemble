@@ -14,5 +14,4 @@ parameters:
 events:
   listen:
     data: person
-
 # To better see how to use this block, look at the default 'Person' app.
