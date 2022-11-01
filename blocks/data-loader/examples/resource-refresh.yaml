@@ -7,5 +7,4 @@ events:
     data: reports
   listen:
     refresh: refresh
-
 # To better see how to use this block, look at the default 'Notes' app.
