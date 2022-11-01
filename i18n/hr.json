@@ -744,7 +744,7 @@
   "studio.pages.apps.app.translations.title": "Prijevodi",
   "studio.pages.apps.app.translations.uploadError": "Dogodila se greška tijekom pokušaja prenošenja poruka za ovaj jezik.",
   "studio.pages.apps.app.uncaughtError": "Dogodila se greška tijekom učitavanja programa. Pokušaj ponovo.",
-  "studio.pages.apps.app.users": "Korisnici",
+  "studio.pages.apps.app.users": "",
   "studio.pages.apps.app.users.MemberRow.cancelLabel": "Odustani",
   "studio.pages.apps.app.users.MemberRow.changeRoleError": "Dogodila se greška tijekom mijenjanja uloge člana.",
   "studio.pages.apps.app.users.MemberRow.changeRoleSuccess": "Uloga od {name} uspješno je promijenjena u {role}.",
