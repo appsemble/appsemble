@@ -3,8 +3,9 @@ parameter. You can add event data objects, a list of strings, or both!
 
 ### Images
 
-![Wordcloud screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.20.18/config/assets/wordcloud.png)
+![Word cloud screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.20.18/config/assets/wordcloud.png)
 
 ### Notes
 
-> The block tries to filter out all individual values from the data that is passed. If you give a column of data through props for example, it should take every value from that column.
+> The block tries to filter out all individual values from the data that is passed. If you give a
+> column of data through props for example, it should take every value from that column.

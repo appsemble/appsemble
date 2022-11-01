@@ -32,5 +32,4 @@ actions:
   onSubmit:
     type: resource.create
     resource: pet
-
 # To better see how to use this block, look at the default 'Unlittered' app.
