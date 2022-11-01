@@ -1,0 +1,9 @@
+parameters:
+  fields:
+    - { prop: title }
+    - { prop: body }
+  options:
+    weightFactor: 3
+events:
+  listen:
+    data: notes
