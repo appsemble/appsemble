@@ -744,7 +744,7 @@
   "studio.pages.apps.app.translations.title": "Vertalingen",
   "studio.pages.apps.app.translations.uploadError": "Er is iets misgegaan bij het uploaden van berichten voor deze taal.",
   "studio.pages.apps.app.uncaughtError": "Er is een onbekende fout opgetreden tijdens het laden van de app. Probeer het later nog eens.",
-  "studio.pages.apps.app.users": "Gebruikers",
+  "studio.pages.apps.app.users": "App gebruikers",
   "studio.pages.apps.app.users.MemberRow.cancelLabel": "Annuleren",
   "studio.pages.apps.app.users.MemberRow.changeRoleError": "Er is iets misgegaan bij het wijzigen van de rol van deze gebruiker.",
   "studio.pages.apps.app.users.MemberRow.changeRoleSuccess": "Succesvol de role van {name} veranderd naar {role}",
