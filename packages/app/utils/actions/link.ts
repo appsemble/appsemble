@@ -23,8 +23,8 @@ export const link: ActionCreator<'link'> = ({
     const toPage = pages.find(({ name }) => name === toBase);
     let subPage: SubPage;
 
-    if (toPage.type === 'tabs') {
-      subPage = toPage.tabs.find(({ name }) => name === toSub);
+    if (toPage?.type === 'tabs') {
+      subPage = toPage.tabs.find(({ name }) => name === toSub) ?? toPage.tabs[0];
     }
 
     if (toPage == null || (toSub && subPage == null)) {
@@ -40,8 +40,8 @@ export const link: ActionCreator<'link'> = ({
         '',
         params.lang,
         normalize(toPage.name),
-        ...(toPage.parameters || []).map((name) => data[name] ?? ''),
         ...(subPage ? [normalize(subPage.name)] : []),
+        ...(toPage.parameters || []).map((name) => data[name] ?? ''),
       ].join('/');
     };
   }

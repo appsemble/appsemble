@@ -65,7 +65,7 @@ export function TabsPage({
                 />
               }
               key={name}
-              path={`/${normalize(translatedName)}`}
+              path="/:subPage/*"
             />
           );
         })}
