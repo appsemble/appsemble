@@ -2,6 +2,7 @@ events:
   listen:
     replace: growth
 parameters:
+  type: line
   yAxis:
     colors:
       - '#ff00ff'
