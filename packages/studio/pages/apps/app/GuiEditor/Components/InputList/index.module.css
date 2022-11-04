@@ -32,7 +32,10 @@
 }
 
 .dropDown {
+<<<<<<< HEAD
   display: flex;
   justify-content: stretch;
+=======
+>>>>>>> 84b170508 (Add general tab)
   width: 100%;
 }
