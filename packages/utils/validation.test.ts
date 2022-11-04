@@ -1840,7 +1840,6 @@ describe('validateAppDefinition', () => {
             {
               type: 'test',
               version: '1.2.3',
-              layout: 'float',
             },
           ],
         },
@@ -1852,6 +1851,7 @@ describe('validateAppDefinition', () => {
         version: '1.2.3',
         files: [],
         languages: [],
+        layout: 'float',
         actions: {
           onClick: {},
         },
@@ -1861,9 +1861,9 @@ describe('validateAppDefinition', () => {
     expect(result.errors).toStrictEqual([
       new ValidationError(
         'block with layout type: "float" is not allowed in a dialog action',
-        {},
+        '1.2.3',
         undefined,
-        ['pages', 0, 'blocks', 0, 'type'],
+        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'type'],
       ),
     ]);
   });
