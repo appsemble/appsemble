@@ -17,8 +17,13 @@ export interface GeneralTabProps {
 }
 
 const languages = [
+<<<<<<< HEAD
   { value: 'en', label: messages.english },
   { value: 'nl', label: messages.dutch },
+=======
+  { value: 'en', label: 'English' },
+  { value: 'nl', label: 'Dutch' },
+>>>>>>> 84b170508 (Add general tab)
 ];
 
 const notificationOptions = ['none', 'opt-in', 'startup'];
@@ -28,6 +33,7 @@ const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
 const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
 const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
 
+<<<<<<< HEAD
 const Tabs = [
   {
     tab: 'general',
@@ -43,41 +49,71 @@ const Tabs = [
   },
 ] as const;
 type LeftSidebar = (typeof Tabs)[number];
+=======
+const Tabs = ['General', 'Layout', 'Schedule'] as const;
+type LeftSidebar = typeof Tabs[number];
+>>>>>>> 84b170508 (Add general tab)
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
+<<<<<<< HEAD
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
+=======
+  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>('General');
+>>>>>>> 84b170508 (Add general tab)
   const { formatMessage } = useIntl();
 
   const onNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
+<<<<<<< HEAD
       app.definition.name = value;
       setApp({ ...app });
+=======
+      setApp({ ...app, definition: { ...app.definition, name: value } });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
 
   const onDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>, value: string) => {
+<<<<<<< HEAD
       app.definition.description = value;
       setApp({ ...app });
+=======
+      setApp({ ...app, definition: { ...app.definition, description: value } });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
 
   const onDefaultPageChange = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       app.definition.defaultPage = app.definition.pages[index].name;
       setApp({ ...app });
+=======
+      setApp({
+        ...app,
+        definition: { ...app.definition, defaultPage: app.definition.pages[index].name },
+      });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
 
   const onChangeDefaultLanguage = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       app.definition.defaultLanguage = languages[index].value;
       setApp({ ...app });
+=======
+      setApp({
+        ...app,
+        definition: { ...app.definition, defaultLanguage: languages[index].value },
+      });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
@@ -90,6 +126,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
         return;
       }
       if (notificationOptions[index] === 'opt-in') {
+<<<<<<< HEAD
         app.definition.notifications = 'opt-in';
         setApp({ ...app });
         return;
@@ -97,6 +134,19 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
       if (notificationOptions[index] === 'startup') {
         app.definition.notifications = 'startup';
         setApp({ ...app });
+=======
+        setApp({
+          ...app,
+          definition: { ...app.definition, notifications: 'opt-in' },
+        });
+        return;
+      }
+      if (notificationOptions[index] === 'startup') {
+        setApp({
+          ...app,
+          definition: { ...app.definition, notifications: 'startup' },
+        });
+>>>>>>> 84b170508 (Add general tab)
       }
     },
     [app, setApp],
@@ -104,33 +154,63 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeLoginOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
       app.definition.layout.login = loginOptions[index];
       setApp({ ...app });
+=======
+      setApp({
+        ...app,
+        definition: {
+          ...app.definition,
+          layout: { ...app.definition.layout, login: loginOptions[index] },
+        },
+      });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
 
   const onChangeSettingsOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
       app.definition.layout.settings = settingsOptions[index];
       setApp({ ...app });
+=======
+      setApp({
+        ...app,
+        definition: {
+          ...app.definition,
+          layout: { ...app.definition.layout, settings: settingsOptions[index] },
+        },
+      });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
 
   const onChangeFeedbackOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
       app.definition.layout.feedback = feedBackOptions[index];
       setApp({ ...app });
+=======
+      setApp({
+        ...app,
+        definition: {
+          ...app.definition,
+          layout: { ...app.definition.layout, feedback: feedBackOptions[index] },
+        },
+      });
+>>>>>>> 84b170508 (Add general tab)
     },
     [app, setApp],
   );
