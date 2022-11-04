@@ -8,12 +8,8 @@ import { InputString } from '../Components/InputString/index.js';
 import { InputTextArea } from '../Components/InputTextArea/index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
-<<<<<<< HEAD
 import styles from './index.module.css';
 import { messages } from './messages.js';
-=======
-import { GuiEditorTabs } from '../index.js';
->>>>>>> 58d2017e1 (Remove unused files)
 
 export interface GeneralTabProps {
   isOpenLeft: boolean;
@@ -166,13 +162,9 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
           ))}
         </>
       </Sidebar>
-<<<<<<< HEAD
       <div className={styles.root}>
         <Preview app={app} iframeRef={frame} />
       </div>
-=======
-      <div>{tab.title}</div>
->>>>>>> 58d2017e1 (Remove unused files)
       <Sidebar isOpen={isOpenRight} type="right">
         <>
           {currentSideBar.tab === 'general' && (

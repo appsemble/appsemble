@@ -5,7 +5,6 @@ import { useIntl } from 'react-intl';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
-<<<<<<< HEAD
 import { TreeList } from '../Components/TreeList/index.js';
 import { CreateRolePage } from './CreateRolePage/index.js';
 import { DefaultPage } from './DefaultPage/index.js';
@@ -13,9 +12,6 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
 import { TeamsPage } from './TeamsPage/index.js';
-=======
-import { GuiEditorTabs } from '../index.js';
->>>>>>> 58d2017e1 (Remove unused files)
 
 interface SecurityTabProps {
   isOpenLeft: boolean;
