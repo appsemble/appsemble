@@ -744,7 +744,7 @@
   "studio.pages.apps.app.translations.title": "Translations",
   "studio.pages.apps.app.translations.uploadError": "Something went wrong when trying to upload messages for this language.",
   "studio.pages.apps.app.uncaughtError": "There was a problem loading the app. Please try again.",
-  "studio.pages.apps.app.users": "Users",
+  "studio.pages.apps.app.users": "App members",
   "studio.pages.apps.app.users.MemberRow.cancelLabel": "Cancel",
   "studio.pages.apps.app.users.MemberRow.changeRoleError": "Something went wrong when trying to change this user’s role.",
   "studio.pages.apps.app.users.MemberRow.changeRoleSuccess": "Successfully changed role of {name} to {role}.",

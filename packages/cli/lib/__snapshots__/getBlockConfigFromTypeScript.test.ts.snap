@@ -55,7 +55,7 @@ The result must be either a audio URL or an object containing a property \`url\`
     "additionalProperties": false,
     "properties": {
       "src": {
-        "description": "The source of the player.",
+        "description": "The source of the player. This can either be a URL pointing to a website, or it can point to an asset. The asset can either be the object, or the ID of the asset",
         "format": "remapper",
       },
     },

@@ -744,7 +744,7 @@
   "studio.pages.apps.app.translations.title": "Traductions",
   "studio.pages.apps.app.translations.uploadError": "Quelque chose s’est mal passé en essayant de télécharger des messages dans cette langue.",
   "studio.pages.apps.app.uncaughtError": "Un problème est survenu lors du chargement de l’application. Veuillez réessayer.",
-  "studio.pages.apps.app.users": "Utilisateurs",
+  "studio.pages.apps.app.users": "",
   "studio.pages.apps.app.users.MemberRow.cancelLabel": "Annuler",
   "studio.pages.apps.app.users.MemberRow.changeRoleError": "Quelque chose a mal tourné lorsqu’on a essayé de changer le rôle de ce membre.",
   "studio.pages.apps.app.users.MemberRow.changeRoleSuccess": "Le rôle de {name} a été remplacé avec succès par celui de {rôle}.",
