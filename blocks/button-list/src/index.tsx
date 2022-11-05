@@ -61,7 +61,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         });
 
         node.addEventListener('click', (event) => {
-          // Delegate anchor behaviour to the link action.
+          // Delegate anchor behavior to the link action.
           event.preventDefault();
           action(currentData);
         });

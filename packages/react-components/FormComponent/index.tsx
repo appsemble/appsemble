@@ -37,7 +37,7 @@ export interface SharedFormComponentProps {
   help?: ReactNode;
 
   /**
-   * A fontaweome icon to render on the left side of the input.
+   * A fontawesome icon to render on the left side of the input.
    */
   icon?: IconName;
 

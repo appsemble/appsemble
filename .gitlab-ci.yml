@@ -123,6 +123,12 @@ prettier:
   script:
     - yarn prettier .
 
+# Spellings Check using cspell
+cspell:
+  script:
+    - npx cspell */*/*/**.tsx
+    - npx cspell docs/*/**.md
+
 # Lint Markdown using remark.
 remark lint:
   extends: .yarn
