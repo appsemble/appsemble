@@ -646,6 +646,16 @@ function validateEvents(
               [...path, 'type'],
             );
           }
+
+          if (block.layout === 'float') {
+            report(
+              block,
+              'block with layout type: "'
+                .concat(block.layout)
+                .concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+          }
         }
         return;
       }
