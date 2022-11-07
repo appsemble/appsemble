@@ -170,6 +170,8 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
   "studio.components.AsyncDataView.retry": "Coba lagi",
   "studio.components.Breadcrumbs.breadcrumbs": "",
+  "studio.components.Breadcrumbs.switchToGuiEditor": "",
+  "studio.components.Breadcrumbs.switchToCodeEditor": "",
   "studio.components.CloneButton.cancel": "Batal",
   "studio.components.CloneButton.clone": "",
   "studio.components.CloneButton.cloneLoginMessage": "",

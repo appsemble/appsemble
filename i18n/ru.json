@@ -170,6 +170,8 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
   "studio.components.AsyncDataView.retry": "Повторить",
   "studio.components.Breadcrumbs.breadcrumbs": "Навигационная цепочка",
+  "studio.components.Breadcrumbs.switchToGuiEditor": "",
+  "studio.components.Breadcrumbs.switchToCodeEditor": "",
   "studio.components.CloneButton.cancel": "Отмена",
   "studio.components.CloneButton.clone": "Клонировать приложение",
   "studio.components.CloneButton.cloneLoginMessage": "Чтобы клонировать приложения, вы должны войти в систему. Нажмите <loginLink> здесь </loginLink>, чтобы войти в систему с использованием существующей учётной записи, или <registerLink> здесь </registerLink>, чтобы зарегистрировать новую учётную запись.",

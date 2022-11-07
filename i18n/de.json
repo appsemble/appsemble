@@ -170,6 +170,8 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
   "studio.components.AsyncDataView.retry": "Wiederholen",
   "studio.components.Breadcrumbs.breadcrumbs": "Semmelbrösel",
+  "studio.components.Breadcrumbs.switchToGuiEditor": "",
+  "studio.components.Breadcrumbs.switchToCodeEditor": "",
   "studio.components.CloneButton.cancel": "Abrechen",
   "studio.components.CloneButton.clone": "App klonen",
   "studio.components.CloneButton.cloneLoginMessage": "",

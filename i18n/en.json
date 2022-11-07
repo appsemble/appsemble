@@ -170,6 +170,8 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "This can take up to 24 hours, but it’s usually faster. If it takes longer, please contact support.",
   "studio.components.AsyncDataView.retry": "Retry",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
+  "studio.components.Breadcrumbs.switchToGuiEditor": "Switch to GUI Editor",
+  "studio.components.Breadcrumbs.switchToCodeEditor": "Switch to Code Editor",
   "studio.components.CloneButton.cancel": "Cancel",
   "studio.components.CloneButton.clone": "Clone App",
   "studio.components.CloneButton.cloneLoginMessage": "In order to clone apps you must be logged in. Click <loginLink>here</loginLink> to log in using an existing account or <registerLink>here</registerLink> to register a new account.",

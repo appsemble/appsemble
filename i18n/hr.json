@@ -170,6 +170,8 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "To može potrajati do 24 sata, ali obično je brže. Ako potraje duže, obrati se podršci.",
   "studio.components.AsyncDataView.retry": "Pokušaj ponovo",
   "studio.components.Breadcrumbs.breadcrumbs": "Navigacijski lanac",
+  "studio.components.Breadcrumbs.switchToGuiEditor": "",
+  "studio.components.Breadcrumbs.switchToCodeEditor": "",
   "studio.components.CloneButton.cancel": "Odustani",
   "studio.components.CloneButton.clone": "Dupliciraj program",
   "studio.components.CloneButton.cloneLoginMessage": "Za dupliciranje programa moraš se prijaviti. Pritisni <loginLink>ovdje</loginLink> za prijavljivanje pomoću postojećeg računa ili <registerLink>ovdje</registerLink> za registriranje novog računa.",
