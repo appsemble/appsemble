@@ -45,7 +45,6 @@
     "date-fns": "^2.0.0",
     "fast-deep-equal": "^3.0.0",
     "flatpickr": "^4.0.0",
-    "history": "^5.0.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-intl": "^6.0.0",

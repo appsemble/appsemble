@@ -53,7 +53,6 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
       sso.push({
         type: 'oauth2',
         icon: secret.icon,
-        // @ts-expect-error Workaround for https://github.com/sequelize/sequelize/issues/4158
         url: secret.dataValues.authorizatio,
         name: secret.name,
       });
