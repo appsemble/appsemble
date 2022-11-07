@@ -33,7 +33,7 @@ export function Breadcrumbs(): ReactElement {
             className="button is-rounded is-transparent is-bordered is-small"
             href={breadcrumbs[2].url}
           >
-            Switch to code editor
+            {formatMessage(messages.switchToCodeEditor)}
           </a>
         )}
         {breadcrumbs.length === 3 &&
@@ -43,7 +43,7 @@ export function Breadcrumbs(): ReactElement {
               className="button is-rounded is-transparent is-bordered is-small"
               href={`${breadcrumbs[2].url}/gui`}
             >
-              Switch to GUI editor
+              {formatMessage(messages.switchToGuiEditor)}
             </a>
           )}
       </ul>

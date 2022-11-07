@@ -1,4 +1,5 @@
 import { ReactElement, useRef } from 'react';
+import { useIntl } from 'react-intl';
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -15,17 +16,18 @@ interface PagesTabProps {
 export function PagesTab({ isOpenLeft, isOpenRight, tab }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
+  const { formatMessage } = useIntl();
 
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <span className="text-2xl font-bold">{tab.title}</span>
+        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
       <div className={styles.root}>
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
-        <span className="text-2xl font-bold">{tab.title}</span>
+        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
     </>
   );

@@ -1,9 +1,11 @@
 import { Button, useMeta } from '@appsemble/react-components';
 import { ReactElement, useCallback, useState } from 'react';
+import { MessageDescriptor, useIntl } from 'react-intl';
 import { Navigate, useLocation } from 'react-router-dom';
 
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
+import { messages } from './messages.js';
 import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
@@ -12,37 +14,37 @@ import { ThemeTab } from './ThemeTab/index.js';
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'theme';
 export interface GuiEditorTabs {
   tabName: TabTypes;
-  title: string;
+  title: MessageDescriptor;
   icon: string;
   hash: string;
 }
 const tabs: GuiEditorTabs[] = [
   {
-    title: 'General',
+    title: messages.generalTab,
     hash: '#general',
     tabName: 'general',
     icon: 'fas fa-cog',
   },
   {
-    title: 'Resources',
+    title: messages.resourcesTab,
     hash: '#resources',
     tabName: 'resources',
     icon: 'fas fa-database',
   },
   {
-    title: 'Pages',
+    title: messages.pagesTab,
     hash: '#pages',
     tabName: 'pages',
     icon: 'fa-regular fa-file',
   },
   {
-    title: 'Theme',
+    title: messages.themeTab,
     hash: '#theme',
     tabName: 'theme',
     icon: 'fas fa-palette',
   },
   {
-    title: 'Security',
+    title: messages.securityTab,
     hash: '#security',
     tabName: 'security',
     icon: 'fas fa-lock',
@@ -50,11 +52,12 @@ const tabs: GuiEditorTabs[] = [
 ];
 
 export default function EditPage(): ReactElement {
-  useMeta('GUI Editor');
+  useMeta(messages.title);
   const location = useLocation();
   const currentTab = tabs.find((tab) => tab.hash === location.hash) || tabs[2];
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const { formatMessage } = useIntl();
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);
@@ -94,7 +97,7 @@ export default function EditPage(): ReactElement {
                 <span className="icon">
                   <i aria-hidden="true" className={tab.icon} />
                 </span>
-                <span>{tab.title}</span>
+                <span>{formatMessage(tab.title)}</span>
               </a>
             </li>
           ))}

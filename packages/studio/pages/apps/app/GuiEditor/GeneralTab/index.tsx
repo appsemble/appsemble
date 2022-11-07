@@ -1,7 +1,9 @@
 import { ReactElement } from 'react';
+import { useIntl } from 'react-intl';
 
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { GuiEditorTabs } from '../index.js';
+import styles from './index.module.css';
 
 export interface GeneralTabProps {
   tab: GuiEditorTabs;
@@ -9,14 +11,15 @@ export interface GeneralTabProps {
   isOpenRight: boolean;
 }
 export function GeneralTab({ isOpenLeft, isOpenRight, tab }: GeneralTabProps): ReactElement {
+  const { formatMessage } = useIntl();
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <span className="text-2xl font-bold">{tab.title}</span>
+        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
-      <div>{tab.title}</div>
+      <div className={styles.root}>{formatMessage(tab.title)}</div>
       <Sidebar isOpen={isOpenRight} type="right">
-        <span className="text-2xl font-bold">{tab.title}</span>
+        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
       </Sidebar>
     </>
   );
