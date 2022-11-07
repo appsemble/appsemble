@@ -178,6 +178,7 @@
   "studio.pages.apps.app.GuiEditor.pagesTab": "",
   "studio.pages.apps.app.GuiEditor.themeTab": "",
   "studio.pages.apps.app.GuiEditor.securityTab": "",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.saved": "",
   "studio.pages.apps.app.GuiEditor.failed": "",
   "studio.pages.apps.app.GuiEditor.GeneralTab.nameLabel": "",
@@ -194,6 +195,8 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "",
+=======
+>>>>>>> 7adc93347 (Added missing translation keys for Tab names)
   "studio.components.AsyncDataView.retry": "Pokušaj ponovo",
   "studio.components.Breadcrumbs.breadcrumbs": "Navigacijski lanac",
   "studio.components.Breadcrumbs.switchToGuiEditor": "",
