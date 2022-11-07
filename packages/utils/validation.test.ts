@@ -1867,4 +1867,49 @@ describe('validateAppDefinition', () => {
       ),
     ]);
   });
+
+  it('should check app definition for blocks that have their layout manually set to float', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onClick: {
+          type: 'dialog',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              layout: 'float',
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        layout: 'hidden',
+        actions: {
+          onClick: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'block with layout type: "float" is not allowed in a dialog action',
+        {
+          layout: 'float',
+          type: 'test',
+          version: '1.2.3',
+        },
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'type'],
+      ),
+    ]);
+  });
 });
