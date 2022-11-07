@@ -65,6 +65,7 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const { formatMessage } = useIntl();
 
   const match = useMatch('/:lang/apps/:id/edit/gui/*');
   const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
