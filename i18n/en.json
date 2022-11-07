@@ -172,12 +172,17 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "App preview",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "An SSL certificate is being generated to secure your users.",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "This can take up to 24 hours, but it’s usually faster. If it takes longer, please contact support.",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.title": "GUI Editor",
+=======
+  "studio.pages.apps.app.GuiEditor.title": "GUI editor",
+>>>>>>> 7adc93347 (Added missing translation keys for Tab names)
   "studio.pages.apps.app.GuiEditor.generalTab": "General",
   "studio.pages.apps.app.GuiEditor.resourcesTab": "Resources",
   "studio.pages.apps.app.GuiEditor.pagesTab": "Pages",
   "studio.pages.apps.app.GuiEditor.themeTab": "Theme",
   "studio.pages.apps.app.GuiEditor.securityTab": "Security",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.saved": "Saved app.",
   "studio.pages.apps.app.GuiEditor.failed": "Failed to save.",
   "studio.pages.apps.app.GuiEditor.GeneralTab.nameLabel": "Name",
@@ -194,6 +199,8 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "English",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "Dutch",
+=======
+>>>>>>> 7adc93347 (Added missing translation keys for Tab names)
   "studio.components.AsyncDataView.retry": "Retry",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.components.Breadcrumbs.switchToGuiEditor": "Switch to GUI Editor",
