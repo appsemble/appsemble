@@ -306,6 +306,16 @@ const mapperImplementations: MapperImplementations = {
 
   array: (prop, input, context) => context.array?.[prop],
 
+  'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
+
+  'array.append': (mappers, input, context) =>
+    Array.isArray(input)
+      ? input.concat(mappers.map((mapper) => remap(mapper, input, context)))
+      : [],
+
+  'array.omit': (indecies, input) =>
+    Array.isArray(input) ? input.filter((value, i) => !indecies.includes(i)) : [],
+
   static: (input) => input,
 
   prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),

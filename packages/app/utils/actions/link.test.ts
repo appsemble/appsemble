@@ -104,6 +104,54 @@ describe('link', () => {
     expect(result).toBeUndefined();
     expect(navigate).toHaveBeenCalledWith('/da/page-a/3', { id: 3 });
   });
+
+  it('should support links to tabs page with page parameters', async () => {
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [
+          {
+            name: 'Page A',
+            type: 'tabs',
+            tabs: [{ name: 'Subpage B', blocks: [] }],
+            parameters: ['id'],
+          },
+        ],
+      },
+      definition: { type: 'link', to: 'Page A' },
+      params: { lang: 'da' },
+      navigate,
+    });
+    const link = action.href({ id: 3 });
+    expect(link).toBe('/da/page-a/subpage-b/3');
+    const result = await action({ id: 3 });
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b/3', { id: 3 });
+  });
+
+  it('should support links to sub-pages with parent tabs page parameters', async () => {
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [
+          {
+            name: 'Page A',
+            type: 'tabs',
+            tabs: [{ name: 'Subpage B', blocks: [] }],
+            parameters: ['id'],
+          },
+        ],
+      },
+      definition: { type: 'link', to: ['Page A', 'Subpage B'] },
+      params: { lang: 'da' },
+      navigate,
+    });
+    const link = action.href({ id: 3 });
+    expect(link).toBe('/da/page-a/subpage-b/3');
+    const result = await action({ id: 3 });
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b/3', { id: 3 });
+  });
 });
 
 describe('link.back', () => {

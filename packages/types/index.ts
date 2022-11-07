@@ -366,6 +366,25 @@ export interface Remappers {
   array: 'index' | 'length';
 
   /**
+   * Create a new array with an array of predefined remappers.
+   */
+  'array.from': Remapper[];
+
+  /**
+   * Append new values to the end of an array.
+   *
+   * If the input is not an array an empty array is returned.
+   */
+  'array.append': Remapper[];
+
+  /**
+   * Remove item(s) from an array given a predefined array of indices.
+   *
+   * If the input is not an array an empty array is returned.
+   */
+  'array.omit': number[];
+
+  /**
    * Create a new object given some predefined mapper keys.
    */
   'object.from': Record<string, Remapper>;

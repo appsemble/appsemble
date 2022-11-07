@@ -631,6 +631,51 @@ describe('array', () => {
   });
 });
 
+describe('array.from', () => {
+  runTests({
+    'create new array with remapped values': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [{ 'object.from': { foo: { prop: 'foo' } } }, 'baz'] }],
+      expected: [{ foo: 'bar' }, 'baz'],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [] }],
+      expected: [],
+    },
+  });
+});
+
+describe('array.append', () => {
+  runTests({
+    'append remapped value to array': {
+      input: ['baz'],
+      mappers: [{ 'array.append': [{ 'object.from': { foo: 'bar' } }] }],
+      expected: ['baz', { foo: 'bar' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.append': [] }],
+      expected: [],
+    },
+  });
+});
+
+describe('array.omit', () => {
+  runTests({
+    'omit objects at given indices': {
+      input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+      mappers: [{ 'array.omit': [0, 2] }],
+      expected: [{ bar: '...' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.omit': [] }],
+      expected: [],
+    },
+  });
+});
+
 describe('null.strip', () => {
   runTests({
     'strip null values': {

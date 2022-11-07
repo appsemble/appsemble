@@ -166,17 +166,37 @@ export function Page(): ReactElement {
       >
         <TitleBar>{pageName}</TitleBar>
         {page.type === 'tabs' ? (
-          <TabsPage
-            data={data}
-            ee={ee.current}
-            key={prefix}
-            page={page}
-            prefix={prefix}
-            prefixIndex={prefixIndex}
-            remap={remapWithContext}
-            showDialog={showDialog}
-            showShareDialog={showShareDialog}
-          />
+          <MetaSwitch title={pageName}>
+            <Route
+              element={
+                <TabsPage
+                  data={data}
+                  ee={ee.current}
+                  key={prefix}
+                  page={page}
+                  prefix={prefix}
+                  prefixIndex={prefixIndex}
+                  remap={remapWithContext}
+                  showDialog={showDialog}
+                  showShareDialog={showShareDialog}
+                />
+              }
+              path="/:subPage/*"
+            />
+            <Route
+              element={
+                <Navigate
+                  to={`/${lang}/${pageId}/${normalize(
+                    getAppMessage({
+                      id: `${prefix}.tabs.0`,
+                      defaultMessage: page.tabs[0].name,
+                    }).format() as string,
+                  )}`}
+                />
+              }
+              path="/*"
+            />
+          </MetaSwitch>
         ) : (
           // The switch is used to enforce an exact path.
           <MetaSwitch title={pageName}>

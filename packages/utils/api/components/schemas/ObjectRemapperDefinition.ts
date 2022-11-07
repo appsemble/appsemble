@@ -48,6 +48,31 @@ If the value Remapper result in \`undefined\` or \`null\`, the entire entry is u
 
 If the input is not an array, the input is returned without any modifications.`,
     },
+    'array.from': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: 'Create a new array with an array of predefined remappers.',
+    },
+    'array.append': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: `Append new values to the end of an array.
+
+If the input is not an array an empty array is returned.`,
+    },
+    'array.omit': {
+      type: 'array',
+      items: {
+        type: 'number',
+      },
+      description: `Remove item(s) from an array given a predefined array of indices.
+
+If the input is not an array an empty array is returned.`,
+    },
     context: {
       type: 'string',
       description: 'Get a property from the context.',
@@ -282,7 +307,7 @@ Supported properties:
     history: {
       type: 'integer',
       description: `Get the data at a certain index from the history stack prior to an action.
-      
+
 0 is the index of the first item in the history stack.`,
     },
     'assign.history': {
@@ -295,7 +320,7 @@ Supported properties:
         index: {
           type: 'integer',
           description: `The index of the history stack item to assign.
-          
+
 0 is the index of the first item in the history stack.
 `,
         },
@@ -323,7 +348,7 @@ Supported properties:
         },
         keys: {
           description: `Exclude properties from the history stack item, based on the given object keys.
-          
+
 Nested properties can be excluded using arrays of keys.
 
 For example:
