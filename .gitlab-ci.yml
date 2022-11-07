@@ -126,7 +126,7 @@ prettier:
 # Spellings Check using cspell
 cspell:
   script:
-    - npx cspell */*/*/**.tsx
+    - npx cspell **/*.tsx
     - npx cspell docs/*/**.md
 
 # Lint Markdown using remark.
