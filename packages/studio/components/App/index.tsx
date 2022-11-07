@@ -69,7 +69,7 @@ export function App(): ReactElement {
     /* By using unstable_HistoryRouter the block function on navigator in the Prompt component works again. This should be considered a temporary solution, see: https://github.com/remix-run/react-router/issues/8139#issuecomment-1247080906 */
     <HistoryRouter history={createBrowserHistory({ window })}>
       <Routes>
-        {/* Simple way to get optional paramaters back */}
+        {/* Simple way to get optional parameters back */}
         <Route element={studioContent} path="/:lang/*" />
         <Route element={studioContent} path="/*" />
       </Routes>

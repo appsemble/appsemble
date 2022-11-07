@@ -25,6 +25,6 @@ export function SAMLResponsePage(): ReactElement {
     case 'emailconflict':
       return <EmailConflict />;
     default:
-      return <div>Oh noez</div>;
+      return <div>Oh no</div>;
   }
 }

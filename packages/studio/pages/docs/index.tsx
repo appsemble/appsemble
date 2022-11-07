@@ -31,7 +31,7 @@ function getUrl(p: string, base: string): string {
 }
 
 /**
- * Render the documentation in the root of the Apsemble repository.
+ * Render the documentation in the root of the Appsemble repository.
  */
 export function DocsRoutes(): ReactElement {
   const { lang } = useParams<{ lang: string }>();

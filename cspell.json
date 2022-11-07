@@ -1,5 +1,5 @@
 {
-  "dictionaries": ["custom-words"],
+  "dictionaries": ["custom-words", "typescript", "node", "css", "html"],
 
   "dictionaryDefinitions": [
     {
