@@ -191,6 +191,7 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.SecurityTab.defaultTab": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.teamsTab": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.rolesTab": "",
@@ -247,6 +248,8 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "",
+=======
+>>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
   "studio.components.AsyncDataView.retry": "Coba lagi",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.components.Breadcrumbs.switchToGuiEditor": "",
