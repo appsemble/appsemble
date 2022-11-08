@@ -77,6 +77,16 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [app],
   );
 
+  const onRoleSelect = useCallback(
+    (index: number) => {
+      setSelectedRole(
+        Object.entries(app.definition.security?.roles || []).map(([key]) => key)[index],
+      );
+      setCurrentSideBar(Tabs[2]);
+    },
+    [app],
+  );
+
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
