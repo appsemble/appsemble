@@ -5,33 +5,20 @@ import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
 
 interface InputStringProps {
-<<<<<<< HEAD
   label?: string;
-=======
-  label: string;
->>>>>>> 84b170508 (Add general tab)
   labelPosition?: 'left' | 'top';
   onChange: (index: number) => void;
   value: string;
   options: readonly string[];
-<<<<<<< HEAD
   size?: 'large' | 'medium' | 'normal' | 'small';
-=======
->>>>>>> 84b170508 (Add general tab)
 }
 
 export function InputList({
   label,
-<<<<<<< HEAD
   labelPosition = 'top',
   onChange,
   options,
   size = 'normal',
-=======
-  labelPosition = 'left',
-  onChange,
-  options,
->>>>>>> 84b170508 (Add general tab)
   value,
 }: InputStringProps): ReactElement {
   const onDropdownChange = useCallback(
