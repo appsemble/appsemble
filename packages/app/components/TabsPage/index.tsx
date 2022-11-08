@@ -1,8 +1,8 @@
-import { Tab, Tabs } from '@appsemble/react-components';
+import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
 import { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
-import { Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
@@ -19,26 +19,18 @@ export function TabsPage({
   ...blockListProps
 }: TabsPageProps): ReactElement {
   const {
-    '*': pageParams,
+    '*': wildcard,
     lang,
     pageId,
-    subPage,
-  } = useParams<{ lang: string; pageId: string; subPage: string; '*': string }>();
+  } = useParams<{ lang: string; pageId: string; '*': string }>();
+
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const onChange = useCallback((event: ChangeEvent, value: string) => navigate(value), [navigate]);
 
-  const normalizedSubPage = normalize(subPage);
-  const tabIndex = page.tabs.findIndex((p) => normalize(p.name) === normalizedSubPage);
-
-  const tab = tabIndex === -1 ? null : page.tabs[tabIndex];
-
-  const translatedSubPageName = getAppMessage({
-    id: `${prefix}.tabs.${tabIndex}`,
-    defaultMessage: subPage,
-  }).format() as string;
+  const pageName = getAppMessage({ id: prefix, defaultMessage: page.name }).format() as string;
 
   return (
     <>
@@ -49,7 +41,9 @@ export function TabsPage({
             defaultMessage: name,
           }).format() as string;
 
-          const value = ['', lang, pageId, normalize(translatedName), pageParams].join('/');
+          const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
+            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+          }`;
 
           return (
             <Tab href={value} key={name} value={value}>
@@ -58,22 +52,61 @@ export function TabsPage({
           );
         })}
       </Tabs>
-      <Routes>
+      <MetaSwitch title={pageName}>
+        {page.tabs.map(({ blocks, name }, index) => {
+          const translatedName = getAppMessage({
+            id: `${prefix}.tabs.${index}`,
+            defaultMessage: name,
+          }).format() as string;
+
+          return (
+            <Route
+              element={
+                <TabContent
+                  key={prefix}
+                  {...blockListProps}
+                  blocks={blocks}
+                  name={translatedName}
+                  page={page}
+                  prefix={`${prefix}.tabs.${index}.blocks`}
+                  prefixIndex={`${prefixIndex}.tabs.${index}.blocks`}
+                />
+              }
+              key={name}
+              path={`/${normalize(translatedName)}${String(
+                (page.parameters || []).map((param) => `/:${param}`),
+              )}`}
+            />
+          );
+        })}
+        {/* Redirect from a matching sub URL to the actual URL */}
+        {page.tabs.map(({ name }, index) => {
+          const translatedName = getAppMessage({
+            id: `${prefix}.tabs.${index}`,
+            defaultMessage: name,
+          }).format() as string;
+
+          const exactPath = `/${lang}/${pageId}/${normalize(translatedName)}${
+            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+          }`;
+
+          return <Route element={<Navigate to={exactPath} />} key={exactPath} path="/*" />;
+        })}
+
         <Route
           element={
-            <TabContent
-              key={prefix}
-              {...blockListProps}
-              blocks={tab.blocks}
-              name={translatedSubPageName}
-              page={page}
-              prefix={`${prefix}.tabs.${tabIndex}.blocks`}
-              prefixIndex={`${prefixIndex}.tabs.${tabIndex}.blocks`}
+            <Navigate
+              to={`/${lang}/${pageId}/${normalize(
+                getAppMessage({
+                  id: `${prefix}.tabs.0`,
+                  defaultMessage: page.tabs[0].name,
+                }).format() as string,
+              )}`}
             />
           }
-          path={String((page.parameters || []).map((param) => `/:${param}`))}
+          path="/*"
         />
-      </Routes>
+      </MetaSwitch>
     </>
   );
 }
