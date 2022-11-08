@@ -28,7 +28,6 @@ const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
 const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
 const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
 
-<<<<<<< HEAD
 const Tabs = [
   {
     tab: 'general',
@@ -43,32 +42,13 @@ const Tabs = [
     title: messages.schedule,
   },
 ] as const;
+
 type LeftSidebar = (typeof Tabs)[number];
-=======
-const generalTab = {
-  tab: 'general',
-  title: messages.general,
-};
-const layoutTab = {
-  tab: 'layout',
-  title: messages.layout,
-};
-const scheduleTab = {
-  tab: 'schedule',
-  title: messages.schedule,
-};
-const Tabs = [generalTab, layoutTab, scheduleTab] as const;
-type LeftSidebar = typeof Tabs[number];
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
-<<<<<<< HEAD
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
-=======
-  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(generalTab);
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
   const { formatMessage } = useIntl();
 
   const onNameChange = useCallback(
@@ -187,11 +167,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <>
-<<<<<<< HEAD
           {currentSideBar.tab === 'general' && (
-=======
-          {currentSideBar.tab === generalTab.tab && (
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
             <div className={styles.rightBar}>
               <InputString
                 label={formatMessage(messages.nameLabel)}
@@ -231,11 +207,8 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-<<<<<<< HEAD
+
           {currentSideBar.tab === 'layout' && (
-=======
-          {currentSideBar.tab === layoutTab.tab && (
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
             <div className={styles.rightBar}>
               <InputList
                 label={formatMessage(messages.loginLabel)}
@@ -267,11 +240,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-<<<<<<< HEAD
           {currentSideBar.tab === 'schedule' && <div className={styles.rightBar} />}
-=======
-          {currentSideBar.tab === scheduleTab.tab && <div className={styles.rightBar} />}
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
         </>
       </Sidebar>
     </>
