@@ -28,57 +28,56 @@ const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
 const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
 const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
 
-const generalTab = {
-  tab: 'general',
-  title: messages.general,
-};
-const layoutTab = {
-  tab: 'layout',
-  title: messages.layout,
-};
-const scheduleTab = {
-  tab: 'schedule',
-  title: messages.schedule,
-};
-const Tabs = [generalTab, layoutTab, scheduleTab] as const;
+const Tabs = [
+  {
+    tab: 'general',
+    title: messages.general,
+  },
+  {
+    tab: 'layout',
+    title: messages.layout,
+  },
+  {
+    tab: 'schedule',
+    title: messages.schedule,
+  },
+] as const;
 type LeftSidebar = typeof Tabs[number];
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
-  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(generalTab);
+  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();
 
   const onNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
-      setApp({ ...app, definition: { ...app.definition, name: value } });
+      app.definition.name = value;
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>, value: string) => {
-      setApp({ ...app, definition: { ...app.definition, description: value } });
+      app.definition.description = value;
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onDefaultPageChange = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: { ...app.definition, defaultPage: app.definition.pages[index].name },
-      });
+      app.definition.defaultPage = app.definition.pages[index].name;
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onChangeDefaultLanguage = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: { ...app.definition, defaultLanguage: languages[index].value },
-      });
+      app.definition.defaultLanguage = languages[index].value;
+      setApp({ ...app });
     },
     [app, setApp],
   );
@@ -91,17 +90,13 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
         return;
       }
       if (notificationOptions[index] === 'opt-in') {
-        setApp({
-          ...app,
-          definition: { ...app.definition, notifications: 'opt-in' },
-        });
+        app.definition.notifications = 'opt-in';
+        setApp({ ...app });
         return;
       }
       if (notificationOptions[index] === 'startup') {
-        setApp({
-          ...app,
-          definition: { ...app.definition, notifications: 'startup' },
-        });
+        app.definition.notifications = 'startup';
+        setApp({ ...app });
       }
     },
     [app, setApp],
@@ -109,52 +104,32 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeLoginOption = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: {
-          ...app.definition,
-          layout: { ...app.definition.layout, login: loginOptions[index] },
-        },
-      });
+      app.definition.layout.login = loginOptions[index];
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onChangeSettingsOption = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: {
-          ...app.definition,
-          layout: { ...app.definition.layout, settings: settingsOptions[index] },
-        },
-      });
+      app.definition.layout.settings = settingsOptions[index];
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onChangeFeedbackOption = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: {
-          ...app.definition,
-          layout: { ...app.definition.layout, feedback: feedBackOptions[index] },
-        },
-      });
+      app.definition.layout.feedback = feedBackOptions[index];
+      setApp({ ...app });
     },
     [app, setApp],
   );
 
   const onChangeNavigationOption = useCallback(
     (index: number) => {
-      setApp({
-        ...app,
-        definition: {
-          ...app.definition,
-          layout: { ...app.definition.layout, navigation: navigationOptions[index] },
-        },
-      });
+      app.definition.layout.navigation = navigationOptions[index];
+      setApp({ ...app });
     },
     [app, setApp],
   );
@@ -179,7 +154,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <>
-          {currentSideBar.tab === generalTab.tab && (
+          {currentSideBar.tab === 'general' && (
             <div className={styles.rightBar}>
               <InputString
                 label={formatMessage(messages.nameLabel)}
@@ -219,7 +194,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-          {currentSideBar.tab === layoutTab.tab && (
+          {currentSideBar.tab === 'layout' && (
             <div className={styles.rightBar}>
               <InputList
                 label={formatMessage(messages.loginLabel)}
@@ -251,7 +226,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-          {currentSideBar.tab === scheduleTab.tab && <div className={styles.rightBar} />}
+          {currentSideBar.tab === 'schedule' && <div className={styles.rightBar} />}
         </>
       </Sidebar>
     </>
