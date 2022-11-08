@@ -146,14 +146,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                 );
               }
             }
-            if (['create', 'delete', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.hooks?.notification?.to?.includes(oldRole)) {
-                (app.definition.resources[key][queryKey] as ResourceCall).hooks.notification.to =
-                  query.hooks.notification.to.map((role) => (role === oldRole ? newRole : role));
-              }
-            }
           }
         }
         // Rename role in pages

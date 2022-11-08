@@ -12,7 +12,6 @@ interface ResourcesTabProps {
 }
 export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps): ReactElement {
   const { formatMessage } = useIntl();
-
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
