@@ -1,11 +1,5 @@
-import { Button, useMessages, useToggle } from '@appsemble/react-components';
-import {
-  BasicPageDefinition,
-  ResourceCall,
-  ResourceDefinition,
-  RoleDefinition,
-} from '@appsemble/types';
-import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import { Button } from '@appsemble/react-components';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { useApp } from '../../index.js';
@@ -46,12 +40,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
-  const [editRoleName, setEditRoleName] = useState<string>(null);
-  const [newRoleName, setNewRoleName] = useState<string>(null);
-  const [createRoleName, setCreateRoleName] = useState<string>(null);
-  const [createRoleDefinition, setCreateRoleDefinition] = useState<RoleDefinition>(null);
-  const modalRoleName = useToggle();
-  const push = useMessages();
 
   const onChangeTab = useCallback(
     (tab: (typeof tabChangeOptions)[number]) => {
@@ -63,26 +51,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
       }
     },
     [setCurrentSideBar, setSelectedRole],
-  );
-
-  const onRoleSelect = useCallback(
-    (index: number) => {
-      setSelectedRole(
-        Object.entries(app.definition.security?.roles || []).map(([key]) => key)[index],
-      );
-      setCurrentSideBar(Tabs[2]);
-    },
-    [app],
-  );
-
-  const onChangeTeamsJoin = useCallback(
-    (index: number) => {
-      if (app.definition.security.teams) {
-        app.definition.security.teams.join = teamsJoinOptions[index];
-        setApp({ ...app });
-      }
-    },
-    [app, setApp],
   );
 
   const onRoleSelect = useCallback(
