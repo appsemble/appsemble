@@ -1,0 +1,19 @@
+.treeListTop {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.treeListItem {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  height: 20px;
+  margin: 0;
+  padding-left: 2rem;
+  width: 100%;
+}
