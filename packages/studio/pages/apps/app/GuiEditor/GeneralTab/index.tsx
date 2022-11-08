@@ -17,8 +17,8 @@ export interface GeneralTabProps {
 }
 
 const languages = [
-  { value: 'en', label: 'English' },
-  { value: 'nl', label: 'Dutch' },
+  { value: 'en', label: messages.english },
+  { value: 'nl', label: messages.dutch },
 ];
 
 const notificationOptions = ['none', 'opt-in', 'startup'];
@@ -28,13 +28,25 @@ const settingsOptions = ['navbar', 'navigation', 'hidden'] as const;
 const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
 const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
 
-const Tabs = ['General', 'Layout', 'Schedule'] as const;
+const generalTab = {
+  tab: 'general',
+  title: messages.general,
+};
+const layoutTab = {
+  tab: 'layout',
+  title: messages.layout,
+};
+const scheduleTab = {
+  tab: 'schedule',
+  title: messages.schedule,
+};
+const Tabs = [generalTab, layoutTab, scheduleTab] as const;
 type LeftSidebar = typeof Tabs[number];
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
-  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>('General');
+  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(generalTab);
   const { formatMessage } = useIntl();
 
   const onNameChange = useCallback(
@@ -154,10 +166,10 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
           {Tabs.map((sidebar) => (
             <Button
               className={`${styles.leftBarButton} ${currentSideBar === sidebar ? 'is-link' : ''}`}
-              key={sidebar}
+              key={sidebar.tab}
               onClick={() => setCurrentSideBar(sidebar)}
             >
-              {sidebar}
+              {formatMessage(sidebar.title)}
             </Button>
           ))}
         </>
@@ -167,7 +179,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <>
-          {currentSideBar === 'General' && (
+          {currentSideBar.tab === generalTab.tab && (
             <div className={styles.rightBar}>
               <InputString
                 label={formatMessage(messages.nameLabel)}
@@ -195,7 +207,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
                 label={formatMessage(messages.defaultLanguageLabel)}
                 labelPosition="top"
                 onChange={onChangeDefaultLanguage}
-                options={languages.map((option) => option.label)}
+                options={languages.map((option) => formatMessage(option.label))}
                 value={app.definition.defaultLanguage || languages[0].value}
               />
               <InputList
@@ -207,7 +219,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-          {currentSideBar === 'Layout' && (
+          {currentSideBar.tab === layoutTab.tab && (
             <div className={styles.rightBar}>
               <InputList
                 label={formatMessage(messages.loginLabel)}
@@ -239,7 +251,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-          {currentSideBar === 'Schedule' && <div className={styles.rightBar} />}
+          {currentSideBar.tab === scheduleTab.tab && <div className={styles.rightBar} />}
         </>
       </Sidebar>
     </>

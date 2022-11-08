@@ -10,4 +10,9 @@ export const messages = defineMessages({
   settingsLabel: 'Settings',
   feedbackLabel: 'Feedback',
   navigationLabel: 'Navigation',
+  general: 'General',
+  layout: 'Layout',
+  schedule: 'Schedule',
+  english: 'English',
+  dutch: 'Dutch',
 });
