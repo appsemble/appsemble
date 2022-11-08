@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Button, useMessages, useToggle } from '@appsemble/react-components';
 import {
   BasicPageDefinition,
@@ -7,9 +6,6 @@ import {
   RoleDefinition,
 } from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
-=======
-import { ReactElement } from 'react';
->>>>>>> 84b170508 (Add general tab)
 import { useIntl } from 'react-intl';
 
 import { useApp } from '../../index.js';
