@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.18
-appVersion: 0.20.18
+version: 0.20.19
+appVersion: 0.20.19
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,9 +24,22 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "Utils: Add array.append remapper."
+    - kind: added
+      description: "Utils: Add array.from remapper."
+    - kind: added
+      description: "Utils: Add array.omit remapper."
+    - kind: changed
+      description: "Block(form): Rename showIf property to show."
     - kind: fixed
-      description: "Block(form): Fix bug where forms would not load without defining
-        the auto-fill parameter."
+      description: "Block(form): Resolved an issue where the string field would not
+        display icons."
+    - kind: fixed
+      description: "Block(table): Resolve an issue where buttons would not add the id
+        to the resource route when using the link action in the table block."
+    - kind: fixed
+      description: "App: Resolve page parameters on tabs pages not working."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

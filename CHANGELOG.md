@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.19](https://gitlab.com/appsemble/appsemble/-/releases/0.20.19)] - 2022-11-08
+
+### Added
+
+- Utils: Add `array.append` remapper.
+- Utils: Add `array.from` remapper.
+- Utils: Add `array.omit` remapper.
+
+### Changed
+
+- Block(`form`): Rename `showIf` property to `show`.
+
+### Fixed
+
+- Block(`form`): Resolved an issue where the string field would not display icons.
+- Block(`table`): Resolve an issue where buttons would not add the id to the resource route when
+  using the link action in the table block.
+- App: Resolve page parameters on tabs pages not working.
+
 ## \[[0.20.18](https://gitlab.com/appsemble/appsemble/-/releases/0.20.18)] - 2022-10-26
 
 ### Fixed

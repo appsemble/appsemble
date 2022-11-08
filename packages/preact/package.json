@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.20.18",
+  "version": "0.20.19",
   "description": "Build your own blocks using Preact",
   "keywords": [
     "app",
@@ -35,7 +35,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.20.18",
+    "@appsemble/sdk": "0.20.19",
     "preact": "^10"
   }
 }
