@@ -176,6 +176,7 @@
 <<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.title": "GUI Editor",
   "studio.pages.apps.app.GuiEditor.generalTab": "Algemeen",
+<<<<<<< HEAD
 =======
   "studio.pages.apps.app.GuiEditor.title": "GUI editor",
 =======
@@ -183,6 +184,8 @@
 >>>>>>> 1282db3ec (Fix translation key typo)
   "studio.pages.apps.app.GuiEditor.generalTab": "General",
 >>>>>>> 7adc93347 (Added missing translation keys for Tab names)
+=======
+>>>>>>> 64add0913 (Apply 1 suggestion(s) to 1 file(s))
   "studio.pages.apps.app.GuiEditor.resourcesTab": "Resources",
   "studio.pages.apps.app.GuiEditor.pagesTab": "Pages",
   "studio.pages.apps.app.GuiEditor.themeTab": "Theme",
