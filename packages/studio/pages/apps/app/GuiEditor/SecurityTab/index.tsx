@@ -6,6 +6,7 @@ import { useApp } from '../../index.js';
 import { InputList } from '../Components/InputList/index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
+import { TreeList } from '../Components/TreeList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
@@ -13,19 +14,21 @@ interface SecurityTabProps {
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
-const defaultTab = {
-  tab: 'default',
-  title: messages.defaultTab,
-};
-const teamsTab = {
-  tab: 'teams',
-  title: messages.teamsTab,
-};
-const rolesTab = {
-  tab: 'roles',
-  title: messages.rolesTab,
-};
-const Tabs = [defaultTab, teamsTab, rolesTab] as const;
+
+const Tabs = [
+  {
+    tab: 'default',
+    title: messages.defaultTab,
+  },
+  {
+    tab: 'teams',
+    title: messages.teamsTab,
+  },
+  {
+    tab: 'roles',
+    title: messages.rolesTab,
+  },
+] as const;
 type LeftSidebar = typeof Tabs[number];
 
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
@@ -34,21 +37,14 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const { formatMessage } = useIntl();
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
-  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(defaultTab);
+  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
+  const [selectedRole, setSelectedRole] = useState<string>(null);
 
   const onChangeDefaultPolicy = useCallback(
     (index: number) => {
-      if (!app.definition.security) {
-        setApp({
-          ...app,
-          definition: {
-            ...app.definition,
-            security: {
-              ...app.definition.security,
-              default: { ...app.definition.security.default, policy: policyOptions[index] },
-            },
-          },
-        });
+      if (app.definition.security) {
+        app.definition.security.default.policy = policyOptions[index];
+        setApp({ ...app });
       }
     },
     [app, setApp],
@@ -56,40 +52,54 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
 
   const onChangeDefaultRole = useCallback(
     (index: number) => {
-      if (!app.definition.security) {
-        setApp({
-          ...app,
-          definition: {
-            ...app.definition,
-            security: {
-              ...app.definition.security,
-              default: {
-                ...app.definition.security.default,
-                role: Object.entries(app.definition.security?.roles || []).map(([key]) => key)[
-                  index
-                ],
-              },
-            },
-          },
-        });
+      if (app.definition.security) {
+        app.definition.security.default.role = Object.entries(
+          app.definition.security?.roles || [],
+        ).map(([key]) => key)[index];
+        setApp({ ...app });
       }
     },
     [app, setApp],
+  );
+
+  const onRoleSelect = useCallback(
+    (index: number) => {
+      setSelectedRole(
+        Object.entries(app.definition.security?.roles || []).map(([key]) => key)[index],
+      );
+      setCurrentSideBar(Tabs[2]);
+    },
+    [app],
   );
 
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
         <>
-          {Tabs.map((sidebar) => (
-            <Button
-              className={`${styles.leftBarButton} ${currentSideBar === sidebar ? 'is-link' : ''}`}
-              key={sidebar.tab}
-              onClick={() => setCurrentSideBar(sidebar)}
-            >
-              {formatMessage(sidebar.title)}
-            </Button>
-          ))}
+          {Tabs.map((sidebar) => {
+            if (sidebar.tab === 'roles') {
+              return (
+                <TreeList
+                  isSelected={currentSideBar.tab === 'roles'}
+                  key={sidebar.tab}
+                  label={formatMessage(sidebar.title)}
+                  onChange={onRoleSelect}
+                  onClick={() => setCurrentSideBar(sidebar)}
+                  options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
+                  value={selectedRole}
+                />
+              );
+            }
+            return (
+              <Button
+                className={`${styles.leftBarButton} ${currentSideBar === sidebar ? 'is-link' : ''}`}
+                key={sidebar.tab}
+                onClick={() => setCurrentSideBar(sidebar)}
+              >
+                {formatMessage(sidebar.title)}
+              </Button>
+            );
+          })}
         </>
       </Sidebar>
       <div className={styles.root}>
@@ -119,7 +129,7 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                   <Button
                     className="is-primary"
                     icon="add"
-                    onClick={() => setCurrentSideBar(rolesTab)}
+                    onClick={() => setCurrentSideBar(Tabs[2])}
                   >
                     {formatMessage(messages.defaultCreateNewRole)}
                   </Button>
