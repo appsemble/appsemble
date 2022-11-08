@@ -95,7 +95,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [app],
   );
 
-<<<<<<< HEAD
   const onRoleNameChange = useCallback(
     (oldRole: string, newRole: string) => {
       setSelectedRole(newRole);
@@ -289,9 +288,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [createRoleDefinition, setCreateRoleDefinition],
   );
 
->>>>>>> 37fc634f3 (Add create roll and inheritance cycle)
-=======
->>>>>>> 29683df2a (Refactor security tab)
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
