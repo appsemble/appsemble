@@ -68,7 +68,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
         <>
-<<<<<<< HEAD
           {Tabs.map((sidebar) => {
             if (sidebar.tab === 'roles') {
               return (
@@ -96,24 +95,12 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
               </Button>
             );
           })}
-=======
-          {Tabs.map((sidebar) => (
-            <Button
-              className={`${styles.leftBarButton} ${currentSideBar === sidebar ? 'is-link' : ''}`}
-              key={sidebar.tab}
-              onClick={() => setCurrentSideBar(sidebar)}
-            >
-              {formatMessage(sidebar.title)}
-            </Button>
-          ))}
->>>>>>> c3596f4b7 (Add security sidebar)
         </>
       </Sidebar>
       <div className={styles.root}>
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
-<<<<<<< HEAD
         <div className={styles.rightBar}>
           {currentSideBar.tab === 'default' && <DefaultPage onChangeTab={onChangeTab} />}
           {currentSideBar.tab === 'teams' && <TeamsPage onChangeTab={onChangeTab} />}
@@ -122,42 +109,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
           ) : null}
           {currentSideBar.tab === 'roles' && !selectedRole ? <CreateRolePage /> : null}
         </div>
-=======
-        <>
-          {currentSideBar.tab === 'default' && (
-            <div className={styles.rightBar}>
-              <InputList
-                label={formatMessage(messages.defaultRoleLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultRole}
-                options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
-                value={app.definition.security?.default.role || ''}
-              />
-              <InputList
-                label={formatMessage(messages.defaultPolicyLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultPolicy}
-                options={policyOptions}
-                value={app.definition.security?.default.policy || ''}
-              />
-              {!app.definition.security?.roles && (
-                <>
-                  <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-                  <Button
-                    className="is-primary"
-                    icon="add"
-                    onClick={() => setCurrentSideBar(rolesTab)}
-                  >
-                    {formatMessage(messages.defaultCreateNewRole)}
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
-          {currentSideBar.tab === 'teams' && <div />}
-          {currentSideBar.tab === 'roles' && <div />}
-        </>
->>>>>>> c3596f4b7 (Add security sidebar)
       </Sidebar>
     </>
   );
