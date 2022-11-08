@@ -29,6 +29,9 @@ const feedBackOptions = ['navigation', 'navbar', 'hidden'] as const;
 const navigationOptions = ['left-menu', 'bottom', 'hidden'] as const;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
 const Tabs = [
   {
     tab: 'general',
@@ -43,6 +46,7 @@ const Tabs = [
     title: messages.schedule,
   },
 ] as const;
+<<<<<<< HEAD
 
 type LeftSidebar = (typeof Tabs)[number];
 =======
@@ -59,6 +63,8 @@ const scheduleTab = {
   title: messages.schedule,
 };
 const Tabs = [generalTab, layoutTab, scheduleTab] as const;
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
 type LeftSidebar = typeof Tabs[number];
 >>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
 
@@ -66,10 +72,14 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
 <<<<<<< HEAD
+<<<<<<< HEAD
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
 =======
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(generalTab);
 >>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
+=======
+  const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
   const { formatMessage } = useIntl();
 
   const onNameChange = useCallback(
@@ -126,9 +136,12 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeLoginOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
       app.definition.layout.login = loginOptions[index];
       setApp({ ...app });
     },
@@ -137,9 +150,12 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeSettingsOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
       app.definition.layout.settings = settingsOptions[index];
       setApp({ ...app });
     },
@@ -148,9 +164,12 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeFeedbackOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
       app.definition.layout.feedback = feedBackOptions[index];
       setApp({ ...app });
     },
@@ -159,9 +178,12 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeNavigationOption = useCallback(
     (index: number) => {
+<<<<<<< HEAD
       if (!app.definition.layout) {
         app.definition.layout = {};
       }
+=======
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
       app.definition.layout.navigation = navigationOptions[index];
       setApp({ ...app });
     },
@@ -189,10 +211,14 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
       <Sidebar isOpen={isOpenRight} type="right">
         <>
 <<<<<<< HEAD
+<<<<<<< HEAD
           {currentSideBar.tab === 'general' && (
 =======
           {currentSideBar.tab === generalTab.tab && (
 >>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
+=======
+          {currentSideBar.tab === 'general' && (
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
             <div className={styles.rightBar}>
               <InputString
                 label={formatMessage(messages.nameLabel)}
@@ -233,11 +259,15 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
             </div>
           )}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
           {currentSideBar.tab === 'layout' && (
 =======
           {currentSideBar.tab === layoutTab.tab && (
 >>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
+=======
+          {currentSideBar.tab === 'layout' && (
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
             <div className={styles.rightBar}>
               <InputList
                 label={formatMessage(messages.loginLabel)}
@@ -270,10 +300,14 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
             </div>
           )}
 <<<<<<< HEAD
+<<<<<<< HEAD
           {currentSideBar.tab === 'schedule' && <div className={styles.rightBar} />}
 =======
           {currentSideBar.tab === scheduleTab.tab && <div className={styles.rightBar} />}
 >>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
+=======
+          {currentSideBar.tab === 'schedule' && <div className={styles.rightBar} />}
+>>>>>>> 435d7a918 (Remove pointless spread operators and variables)
         </>
       </Sidebar>
     </>
