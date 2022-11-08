@@ -138,7 +138,7 @@ export default function EditPage(): ReactElement {
       </div>
       <div className={`${styles.guiEditorContainer} m-0 p-0`}>
         {currentTab.tabName === 'general' && (
-          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
         {currentTab.tabName === 'resources' && (
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
