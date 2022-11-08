@@ -2,3 +2,21 @@
   flex: 1;
   height: 80vh;
 }
+
+.leftBarButton {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.rightBar {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  row-gap: 0.8rem;
+  width: 100%;
+}
