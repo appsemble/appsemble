@@ -32,7 +32,7 @@ const Tabs = [
     title: messages.rolesTab,
   },
 ] as const;
-type LeftSidebar = typeof Tabs[number];
+type LeftSidebar = (typeof Tabs)[number];
 
 export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
   const { formatMessage } = useIntl();
