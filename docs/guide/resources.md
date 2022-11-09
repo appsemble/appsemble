@@ -48,6 +48,19 @@ delete) actions.
 > Note: By default all resource actions are private. In order to access these, refer to
 > [Securing resources](#securing-resources).
 
+## type
+
+The following types can be used to define the properties
+
+| Type name         |  Description                            |
+| ------------------| --------------------------------------- |
+| array             | An array is a series of values          |
+| boolean           | A Boolean is a variable that can have one of two possible values, true or false              |
+| integer           | An integer is a number which is not a fraction; a whole number (..., -2, -1, 0, 1, 2, 3, ...)             |
+| null              | Null represents a variable with no value                  |
+| number            | Number can contain a fractional part (2.56, 1.24, 7E-10) and also integers               |
+| string            | A string is any sequence of characters (letters, numerals, symbols, punctuation marks, etc.)              |
+
 ## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
