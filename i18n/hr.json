@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Uspješno pretplaćen/a!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Pretplaćen/a",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Pretplate",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Pretplate na program omogućuju stvarateljima programa da se povežu sa svojim korisnicima automatskim slanjem obavijesti.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Pretplate na program omogućuju stvarateljima programa da se povežu sa svojim korisnicima automatskim slanjem obavijesti.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Odjavi pretplatu",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Uspješna odjava od obavještavanja.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Dobij obavijest kad se „{resource}” aktualizira",

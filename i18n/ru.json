@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Подписка успешно оформлена!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Подписка оформлена",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Подписки",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Подписка на приложение позволяет создателям приложения связываться со своими пользователями, отправляя push-уведомления.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Подписка на приложение позволяет создателям приложения связываться со своими пользователями, отправляя push-уведомления.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Отписаться",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Подписка на уведомления успешно отменена.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Получать уведомления, когда «{resource}» обновляется",

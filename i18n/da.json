@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Abonnement aktiveret!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Abonneret",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Abonnementer",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Hvis man abonnerer på en app kan app udvikleren sende notikikationer til deres brugere.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Hvis man abonnerer på en app kan app udvikleren sende notikikationer til deres brugere.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Afmeld",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Afmeldt notifikationer.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Modtag notifikation når “{resource}” bliver opdateret",

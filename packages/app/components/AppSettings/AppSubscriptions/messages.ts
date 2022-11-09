@@ -4,7 +4,7 @@ export const messages = defineMessages({
   blocked:
     'Notifications have been blocked. Please update your notification permissions and try again.',
   subscribe: 'Subscribe',
-  suscribeDescription:
+  subscribeDescription:
     'Subscribing to an app allows for the app creators to connect with their users by sending push notifications.',
   notifications: 'Notifications',
   subscribed: 'Subscribed',
