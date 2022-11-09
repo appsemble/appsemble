@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.20](https://gitlab.com/appsemble/appsemble/-/releases/0.20.20)] - 2022-11-09
+
+### Fixed
+
+- App: Resolve sub-page URLs on tabs pages not being translated.
+
 ## \[[0.20.19](https://gitlab.com/appsemble/appsemble/-/releases/0.20.19)] - 2022-11-08
 
 ### Added
