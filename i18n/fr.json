@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Abonnement réussi !",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Abonné",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Abonnements",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "L’abonnement à une application permet aux créateurs d’applications de se connecter avec leurs utilisateurs en envoyant des notifications push.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "L’abonnement à une application permet aux créateurs d’applications de se connecter avec leurs utilisateurs en envoyant des notifications push.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Se désabonner",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Désabonnement des notifications réussi.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Recevoir une notification quand « {resource} » est mis à jour",

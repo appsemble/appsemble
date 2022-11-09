@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Berhasil berlangganan!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Disubscribe",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Langganan",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Berlangganan aplikasi memungkinkan pembuat aplikasi untuk terhubung dengan pengguna mereka dengan mengirimkan pemberitahuan push.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Berlangganan aplikasi memungkinkan pembuat aplikasi untuk terhubung dengan pengguna mereka dengan mengirimkan pemberitahuan push.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Batal Subscribe",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Berhasil berhenti berlangganan pemberitahuan.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Dapatkan pemberitahuan ketika \"{resource}\" diperbarui",

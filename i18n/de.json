@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Erfolgreich abonniert!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Abonniert",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Abonnements",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Durch das Abonnieren einer Anwendung können die Anwendung-Ersteller durch Senden von Push-Benachrichtigungen eine Verbindung zu ihren Benutzern herstellen.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Durch das Abonnieren einer Anwendung können die Anwendung-Ersteller durch Senden von Push-Benachrichtigungen eine Verbindung zu ihren Benutzern herstellen.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Deabonnieren",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Erfolgreiche Abmeldung von Benachrichtigungen.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Benachrichtigt werden, wenn „{resource}“ aktualisiert wird",

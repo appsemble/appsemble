@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Succesvol ingeschreven!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Geabonneerd",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Abonnementen",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Door jezelf te abonneren op de app, kunnen de appmakers notificaties opsturen naar gebruikers via pushnotificaties.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Door jezelf te abonneren op de app, kunnen de appmakers notificaties opsturen naar gebruikers via pushnotificaties.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Afmelden",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Succesvol afgemeld voor notificaties.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Ontvang notificaties wanneer een “{resource}” wordt bijgewerkt",

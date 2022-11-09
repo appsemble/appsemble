@@ -150,7 +150,7 @@ export function AppSubscriptions(): ReactElement {
       <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
         <div className={`${styles.setting} is-flex`}>
           <p className={styles.settingDescription}>
-            <FormattedMessage {...messages.suscribeDescription} />
+            <FormattedMessage {...messages.subscribeDescription} />
           </p>
           <CheckboxField
             className={styles.checkbox}

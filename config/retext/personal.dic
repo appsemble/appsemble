@@ -111,7 +111,7 @@ appsemblerc
 letsencrypt
 Remappers
 remapper
-divby 
+divby
 hassubset
 hassubsequence
 tolower
@@ -169,7 +169,6 @@ classname
 rehype
 nogrow
 bootstrapper
-suscribe
 formatjs
 Wordlist
 crosshairs

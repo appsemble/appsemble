@@ -11,7 +11,7 @@
   "app.components.AppSettings.AppSubscriptions.subscribeSuccessful": "Subscribed successfully!",
   "app.components.AppSettings.AppSubscriptions.subscribed": "Subscribed",
   "app.components.AppSettings.AppSubscriptions.subscriptions": "Subscriptions",
-  "app.components.AppSettings.AppSubscriptions.suscribeDescription": "Subscribing to an app allows for the app creators to connect with their users by sending push notifications.",
+  "app.components.AppSettings.AppSubscriptions.subscribeDescription": "Subscribing to an app allows for the app creators to connect with their users by sending push notifications.",
   "app.components.AppSettings.AppSubscriptions.unsubscribe": "Unsubscribe",
   "app.components.AppSettings.AppSubscriptions.unsubscribeSuccess": "Successfully unsubscribed from notifications.",
   "app.components.AppSettings.AppSubscriptions.updateSubscriptionLabel": "Get notified when “{resource}” is updated",
