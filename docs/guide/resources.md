@@ -16,26 +16,28 @@ possible for submitted data to be validated on types and required properties aut
 An example of a resource definition:
 
 ```yaml copy
-person:
-  roles: [$public] # This makes all person resource actions public by default.
-  schema:
-    type: object
-    required:
-      - firstName
-      - lastName
-      - email
-    properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-        format: email
-      age:
-        type: integer
-      description:
-        type: string
+resources:
+  person:
+    roles: [$public] # This makes all person resource actions public by default.
+    schema:
+      type: object
+      additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+        description:
+          type: string
 ```
 
 The above resource will be recognized as an object which can be referred to from blocks using
