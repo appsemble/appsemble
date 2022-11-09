@@ -8,7 +8,7 @@ import styles from './index.module.css';
 
 interface DropdownItemProps extends ComponentProps<'td'> {
   /**
-   * The item to dislay.
+   * The item to display.
    */
   item: unknown;
 
@@ -28,7 +28,7 @@ interface DropdownItemProps extends ComponentProps<'td'> {
   index: number;
 
   /**
-   * The index of the subrow that was clicked.
+   * The index of the sub row that was clicked.
    */
   repeatedIndex: number;
 }

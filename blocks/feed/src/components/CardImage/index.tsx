@@ -10,7 +10,7 @@ interface CardImageProps {
   alt: string;
 
   /**
-   * The classname that is applied to the figure.
+   * The class name that is applied to the figure.
    */
   className?: string;
 

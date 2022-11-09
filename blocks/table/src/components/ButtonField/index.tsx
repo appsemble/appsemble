@@ -19,7 +19,7 @@ interface ButtonFieldProps {
   index: number;
 
   /**
-   * The index of the subrow that was clicked.
+   * The index of the sub row that was clicked.
    */
   repeatedIndex: number;
 }

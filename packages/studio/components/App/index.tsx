@@ -66,7 +66,7 @@ const studioContent = (
 export function App(): ReactElement {
   return (
     <Routes>
-      {/* Simple way to get optional paramaters back */}
+      {/* Simple way to get optional parameters back */}
       <Route element={studioContent} path="/:lang/*" />
       <Route element={studioContent} path="/*" />
     </Routes>

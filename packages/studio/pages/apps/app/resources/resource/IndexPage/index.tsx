@@ -256,14 +256,15 @@ export function IndexPage(): ReactElement {
   );
 
   const downloadCsv = useCallback(async () => {
-    searchParams.set(
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set(
       '$select',
       ['id', '$created', '$updated', '$author', ...keys]
         .filter((key) => !hiddenProperties.has(key))
         .join(','),
     );
-    await download(`${resourceURL}?${searchParams}`, `${resourceName}.csv`, 'text/csv');
-  }, [hiddenProperties, keys, resourceName, resourceURL, searchParams]);
+    await download(`${resourceURL}?${newSearchParams}`, `${resourceName}.csv`, 'text/csv');
+  }, [hiddenProperties, keys, resourceName, resourceURL]);
 
   const uploadCsv = useCallback(() => {
     const input = document.createElement('input');

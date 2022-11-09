@@ -2,7 +2,7 @@ import { VNode } from 'preact';
 
 export interface OptionProps {
   /**
-   * A user facing label that representes the option.
+   * A user facing label that represents the option.
    */
   children?: string;
 

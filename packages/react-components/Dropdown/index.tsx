@@ -8,7 +8,7 @@ interface DropdownProps {
   /**
    * The children to render as menu items.
    *
-   * Typically these are nodes that have the `dropdown-item` or `dropdown-divicer` class.
+   * Typically these are nodes that have the `dropdown-item` or `dropdown-divider` class.
    */
   children: ReactNode;
 

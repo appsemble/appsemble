@@ -1,4 +1,4 @@
-// `src/index.tsx` is the initial entry poinf of the block source code run. For small blocks this
+// `src/index.tsx` is the initial entry point of the block source code run. For small blocks this
 // often contains the entire logic of the block. Bigger blocks are often split into smaller modules.
 import { bootstrap } from '@appsemble/sdk';
 
@@ -8,7 +8,7 @@ import styles from './index.module.css';
 // editor’s autocomplete to see which variables are available.
 bootstrap(({ events, parameters: { fields }, utils: { fa, formatMessage, remap } }) => {
   /**
-   * The wrapper element is used to assign data to when it has loaded asyncronously.
+   * The wrapper element is used to assign data to when it has loaded asynchronously.
    */
   const wrapper = (
     // In this template the JSX is handled by mini-jsx (https://gitlab.com/appsemble/mini-jsx).

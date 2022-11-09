@@ -1,0 +1,11 @@
+{
+  "dictionaries": ["custom-words", "typescript", "node", "css", "html"],
+
+  "dictionaryDefinitions": [
+    {
+      "name": "custom-words",
+      "path": "./config/retext/personal.dic",
+      "addWords": true
+    }
+  ]
+}

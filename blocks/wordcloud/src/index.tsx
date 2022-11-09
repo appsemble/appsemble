@@ -3,7 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 
 import { WordcloudLogic } from './WordcloudLogic/WordcloudLogic.js';
 
-// Sorts the data to be an array of strings to feed to the wordcloud logic layer
+// Sorts the data to be an array of strings to feed to the Wordcloud logic layer
 function sortData(givenWordsList: any): string[] {
   const filteredList: string[] = [];
 

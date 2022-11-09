@@ -24,7 +24,7 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
 }
 
 /**
- * Render an button which looks like an icon, but with button behaviour.
+ * Render an button which looks like an icon, but with button Behavior.
  *
  * The button type is set to `button` by default.
  */

@@ -11,7 +11,7 @@ interface FieldGroupProps {
   disabled?: boolean;
 
   /**
-   * The erors that apply to the input values.
+   * The errors that apply to the input values.
    */
   errors: FieldErrorMap;
 

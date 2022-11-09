@@ -34,7 +34,7 @@ export interface SchemaProps {
   schema: SchemaType;
 
   /**
-   * The name of the propery to render for nested a nested schema.
+   * The name of the property to render for nested a nested schema.
    */
   name?: string;
 
