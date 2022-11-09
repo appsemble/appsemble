@@ -134,20 +134,13 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
 
 function validateBlocks(
   definition: AppDefinition,
-  blockVersions: BlockManifest[],
+  blockVersions: Map<string, Map<string, BlockManifest>>,
   report: Report,
 ): void {
-  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
-  for (const version of blockVersions) {
-    if (!blockVersionMap.has(version.name)) {
-      blockVersionMap.set(version.name, new Map());
-    }
-    blockVersionMap.get(version.name).set(version.version, version);
-  }
   iterApp(definition, {
     onBlock(block, path) {
       const type = normalizeBlockName(block.type);
-      const versions = blockVersionMap.get(type);
+      const versions = blockVersions.get(type);
       if (!versions) {
         report(block.type, 'is not a known block type', [...path, 'type']);
         return;
@@ -602,7 +595,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
   });
 }
 
-function validateEvents(definition: AppDefinition, report: Report): void {
+function validateEvents(
+  definition: AppDefinition,
+  blockVersions: Map<string, Map<string, BlockManifest>>,
+  report: Report,
+): void {
   const indexMap = new Map<
     number,
     {
@@ -636,6 +633,32 @@ function validateEvents(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (action.type === 'dialog') {
+        for (const block of action.blocks) {
+          const versions = blockVersions.get(normalizeBlockName(block.type));
+          const version = versions.get(block.version);
+          if (version.layout === 'float') {
+            report(
+              block.version,
+              'block with layout type: "'
+                .concat(version.layout)
+                .concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+          }
+
+          if (block.layout === 'float') {
+            report(
+              block,
+              'block with layout type: "'
+                .concat(block.layout)
+                .concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+          }
+        }
+        return;
+      }
       if (action.type !== 'event') {
         return;
       }
@@ -710,9 +733,17 @@ export async function validateAppDefinition(
   if (!definition) {
     return result;
   }
-
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
+
+  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
+  for (const version of blockVersions) {
+    if (!blockVersionMap.has(version.name)) {
+      blockVersionMap.set(version.name, new Map());
+    }
+    blockVersionMap.get(version.name).set(version.version, version);
+  }
+
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
@@ -725,9 +756,9 @@ export async function validateAppDefinition(
     validateResourceReferences(definition, report);
     validateResourceSchemas(definition, report);
     validateSecurity(definition, report);
-    validateBlocks(definition, blockVersions, report);
+    validateBlocks(definition, blockVersionMap, report);
     validateActions(definition, report);
-    validateEvents(definition, report);
+    validateEvents(definition, blockVersionMap, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }

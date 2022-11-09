@@ -200,6 +200,8 @@ called.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
                       "enum": [
                         "dialog",
@@ -233,6 +235,8 @@ should be supported by the app.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
                   "enum": [
                     "dialog",
@@ -3221,6 +3225,8 @@ called.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
               "enum": [
                 "dialog",
@@ -3254,6 +3260,8 @@ should be supported by the app.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
           "enum": [
             "dialog",
