@@ -310,6 +310,27 @@ Supported properties:
 
 0 is the index of the first item in the history stack.`,
     },
+    'from.history': {
+      type: 'object',
+      required: ['index', 'props'],
+      description: 'Create a new object with properties from the history stack at a certain index.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+
+0 is the index of the first item in the history stack.
+`,
+        },
+        props: {
+          description: 'Predefined mapper keys to choose what properties to apply.',
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
+        },
+      },
+    },
     'assign.history': {
       type: 'object',
       required: ['index', 'props'],

@@ -468,6 +468,23 @@ export interface Remappers {
   history: number;
 
   /**
+   * Create a new object with properties from the history stack at a certain index.
+   */
+  'from.history': {
+    /**
+     * The index of the history stack item to apply.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Predefined mapper keys to choose what properties to apply.
+     */
+    props: Record<string, Remapper>;
+  };
+
+  /**
    * Assign properties from the history stack at a certain index to an existing object.
    */
   'assign.history': {

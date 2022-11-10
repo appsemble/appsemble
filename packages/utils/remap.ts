@@ -365,6 +365,9 @@ const mapperImplementations: MapperImplementations = {
 
   history: (index, input, context) => context.history?.[index],
 
+  'from.history': ({ index, props }, input, context) =>
+    mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+
   'assign.history': ({ index, props }, input: any, context) => ({
     ...input,
     ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
