@@ -44,6 +44,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       label={label}
       optionalLabel={optionalLabel}
       required={required}
+      small={small}
       tag={tag}
     >
       <TextArea
