@@ -22,6 +22,7 @@ export function StaticField({ className, field, value }: StaticFieldProps): VNod
       disableHelp
       label={utils.remap(label, value) as string}
       required
+      small={field.small}
       tag={utils.remap(tag, value) as string}
     >
       <div>{content}</div>

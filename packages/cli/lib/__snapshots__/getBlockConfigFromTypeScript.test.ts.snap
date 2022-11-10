@@ -1488,6 +1488,13 @@ These are evaluated in the order they are defined in.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -1565,6 +1572,13 @@ If not specified, the field will display.",
             "$ref": "#/definitions/BulmaSize",
             "default": "normal",
             "description": "The size of the checkbox.",
+          },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "switch": {
             "additionalProperties": false,
@@ -1693,6 +1707,13 @@ The date value can be accessed using the \`root\` remapper.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "startOfWeek": {
             "default": 1,
             "description": "The day to display as the first day of the week.
@@ -1781,6 +1802,13 @@ The date value can be accessed using the \`root\` remapper.",
 
 If not specified, the field will display.",
             "format": "remapper",
+          },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "startOfWeek": {
             "default": 1,
@@ -1948,6 +1976,13 @@ These are evaluated in the order they are defined in.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2072,6 +2107,13 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
+          },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2399,6 +2441,13 @@ These are evaluated in the order they are defined in.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2704,6 +2753,13 @@ This field does not contain a name or a value.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2805,6 +2861,13 @@ These are evaluated in the order they are defined in.",
 If not specified, the field will display.",
             "format": "remapper",
           },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -2887,6 +2950,13 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
+          },
+          "small": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.

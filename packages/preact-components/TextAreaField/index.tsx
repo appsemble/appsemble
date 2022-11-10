@@ -27,6 +27,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       id = name,
       tag,
       optionalLabel,
+      small,
       ...props
     },
     ref,

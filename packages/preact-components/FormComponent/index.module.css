@@ -14,3 +14,7 @@
 .counter {
   flex: 0 0 auto;
 }
+
+.small {
+  flex: 1 0 0 !important;
+}

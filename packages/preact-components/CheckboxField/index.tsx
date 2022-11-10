@@ -36,6 +36,7 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       title,
       tag,
       optionalLabel,
+      small,
       ...props
     },
     ref,
@@ -47,6 +48,7 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       label={label}
       optionalLabel={optionalLabel}
       required
+      small={small}
       tag={tag}
     >
       <Checkbox {...props} error={Boolean(error)} id={id} label={title} name={name} ref={ref} />

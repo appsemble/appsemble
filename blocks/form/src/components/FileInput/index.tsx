@@ -22,7 +22,7 @@ export function FileInput({
   value,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
-  const { icon, label, repeated, tag } = field;
+  const { icon, label, repeated, small, tag } = field;
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value);
 
@@ -47,6 +47,7 @@ export function FileInput({
       label={remappedLabel as string}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
+      small={repeated ? undefined : small}
       tag={utils.remap(tag, {}) as string}
     >
       {repeated ? (

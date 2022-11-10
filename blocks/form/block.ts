@@ -292,10 +292,19 @@ interface AbstractField {
   tag?: Remapper;
 }
 
+interface SmallField {
+  /**
+   * Combines fields on the same row.
+   *
+   * Fields are combined in order if set to true.
+   */
+  small?: true;
+}
+
 /**
  * A date/time picker that results in an exact date and time.
  */
-export interface DateTimeField extends AbstractField {
+export interface DateTimeField extends AbstractField, SmallField {
   /**
    * Whether the confirm button should be shown
    *
@@ -341,7 +350,7 @@ export interface DateTimeField extends AbstractField {
 /**
  * A date/time picker that results in an exact date and time.
  */
-export interface DateField extends AbstractField {
+export interface DateField extends AbstractField, SmallField {
   /**
    * Whether the confirm button should be shown
    *
@@ -379,7 +388,7 @@ export interface DateField extends AbstractField {
 /**
  * A checkbox that returns `true` when checked and `false` when not.
  */
-export interface BooleanField extends AbstractField {
+export interface BooleanField extends AbstractField, SmallField {
   /**
    * The default value of the field.
    */
@@ -463,7 +472,7 @@ export interface RadioField extends AbstractField {
   requirements?: RequiredRequirement[];
 }
 
-interface AbstractEnumField extends AbstractField {
+interface AbstractEnumField extends AbstractField, SmallField {
   /**
    * The type of the field.
    */
@@ -539,7 +548,7 @@ export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 /**
  * An input field used to upload files.
  */
-export interface FileField extends AbstractField {
+export interface FileField extends AbstractField, SmallField {
   /**
    * The default value for the field.
    */
@@ -636,7 +645,7 @@ export interface HiddenField extends AbstractField {
 /**
  * A number entry field.
  */
-export interface NumberField extends AbstractField {
+export interface NumberField extends AbstractField, SmallField {
   /**
    * The default value of the field.
    */
@@ -681,7 +690,7 @@ export interface NumberField extends AbstractField {
  *
  * This field does not contain a name or a value.
  */
-export interface StaticField extends AbstractField {
+export interface StaticField extends AbstractField, SmallField {
   /**
    * The type of the field.
    */
@@ -710,7 +719,7 @@ export interface StaticField extends AbstractField {
  *     errorMessage: Value does not end with “@appsemble.com”
  * ```
  */
-export interface StringField extends AbstractField {
+export interface StringField extends AbstractField, SmallField {
   /**
    * The default value of the field.
    */
