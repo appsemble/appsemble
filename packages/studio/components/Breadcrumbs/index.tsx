@@ -28,6 +28,24 @@ export function Breadcrumbs(): ReactElement {
             </li>
           );
         })}
+        {breadcrumbs.length === 3 && breadcrumbs[2].url.includes('/edit/gui') && (
+          <a
+            className="button is-rounded is-transparent is-bordered is-small"
+            href={breadcrumbs[2].url}
+          >
+            {formatMessage(messages.switchToCodeEditor)}
+          </a>
+        )}
+        {breadcrumbs.length === 3 &&
+          breadcrumbs[2].url.includes('/edit') &&
+          !breadcrumbs[2].url.includes('/edit/gui') && (
+            <a
+              className="button is-rounded is-transparent is-bordered is-small"
+              href={`${breadcrumbs[2].url}/gui`}
+            >
+              {formatMessage(messages.switchToGuiEditor)}
+            </a>
+          )}
       </ul>
     </nav>
   );
