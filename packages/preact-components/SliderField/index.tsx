@@ -37,6 +37,7 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
       tag,
       topLabels,
       optionalLabel,
+      small,
       ...props
     },
     ref,
@@ -53,6 +54,7 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
       label={label}
       optionalLabel={optionalLabel}
       required
+      small={small}
       tag={tag}
     >
       {topLabels?.length ? (
