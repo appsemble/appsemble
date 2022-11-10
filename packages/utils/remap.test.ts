@@ -834,6 +834,17 @@ describe('history', () => {
   });
 });
 
+describe('from.history', () => {
+  runTests({
+    'create new object with props from the second history item': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'from.history': { index: 1, props: { happy: { prop: 'rescue' } } } }],
+      expected: { happy: 'monke' },
+    },
+  });
+});
+
 describe('assign.history', () => {
   runTests({
     'assign the second history item props defined in prop remappers to the output': {
