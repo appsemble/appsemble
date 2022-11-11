@@ -1,3 +1,4 @@
+import { IntlMessageFormat } from '../../../utils/intl-messageformat.js';
 import { createTestAction } from '../makeActions.js';
 
 const navigate = import.meta.jest.fn();
@@ -71,6 +72,26 @@ describe('link', () => {
     expect(navigate).toHaveBeenCalledWith('/da/page-a', {});
   });
 
+  it('should support links to translatable pages', async () => {
+    const appMessages: Record<string, string> = {
+      'pages.page-a': 'Side A',
+    };
+
+    const action = createTestAction({
+      app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
+      definition: { type: 'link', to: 'Page A' },
+      params: { lang: 'da' },
+      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id], 'da'),
+      navigate,
+    });
+
+    const link = action.href();
+    expect(link).toBe('/da/side-a');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/side-a', {});
+  });
+
   it('should support links to sub-pages', async () => {
     const action = createTestAction({
       app: {
@@ -86,6 +107,28 @@ describe('link', () => {
     const result = await action();
     expect(result).toBeUndefined();
     expect(navigate).toHaveBeenCalledWith('/da/page-a/subpage-b', {});
+  });
+
+  it('should support links to translatable sub-pages', async () => {
+    const appMessages: Record<string, string> = {
+      'pages.page-a.tabs.0': 'Underside B',
+    };
+
+    const action = createTestAction({
+      app: {
+        defaultPage: '',
+        pages: [{ name: 'Page A', type: 'tabs', tabs: [{ name: 'Subpage B', blocks: [] }] }],
+      },
+      definition: { type: 'link', to: ['Page A', 'Subpage B'] },
+      params: { lang: 'da' },
+      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id], 'da'),
+      navigate,
+    });
+    const link = action.href();
+    expect(link).toBe('/da/page-a/underside-b');
+    const result = await action();
+    expect(result).toBeUndefined();
+    expect(navigate).toHaveBeenCalledWith('/da/page-a/underside-b', {});
   });
 
   it('should support page parameters', async () => {
