@@ -81,7 +81,7 @@ describe('link', () => {
       app: { defaultPage: '', pages: [{ name: 'Page A', blocks: [] }] },
       definition: { type: 'link', to: 'Page A' },
       params: { lang: 'da' },
-      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id], 'da'),
+      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id]),
       navigate,
     });
 
@@ -121,7 +121,8 @@ describe('link', () => {
       },
       definition: { type: 'link', to: ['Page A', 'Subpage B'] },
       params: { lang: 'da' },
-      getAppMessage: ({ id }) => new IntlMessageFormat(appMessages[id], 'da'),
+      getAppMessage: ({ defaultMessage, id }) =>
+        new IntlMessageFormat(appMessages[id] ?? defaultMessage),
       navigate,
     });
     const link = action.href();
