@@ -74,7 +74,9 @@ export type Action =
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'share'>
   | BaseAction<'static'>
+  | BaseAction<'storage.append'>
   | BaseAction<'storage.read'>
+  | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
   | BaseAction<'team.invite'>
   | BaseAction<'team.join'>

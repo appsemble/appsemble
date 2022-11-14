@@ -54,6 +54,7 @@ export const actions = {
   static: staticAction,
   'storage.read': noop,
   'storage.write': noop,
+  'storage.append': noop,
   'team.invite': noop,
   'team.join': noop,
   'team.list': noop,

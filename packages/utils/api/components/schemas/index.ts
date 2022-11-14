@@ -88,6 +88,7 @@ export * from './SSOConfiguration.js';
 export * from './StaticActionDefinition.js';
 export * from './StorageReadActionDefinition.js';
 export * from './StorageWriteActionDefinition.js';
+export * from './StorageAppendActionDefinition.js';
 export * from './SubPage.js';
 export * from './TabsPageDefinition.js';
 export * from './TeamInviteActionDefinition.js';

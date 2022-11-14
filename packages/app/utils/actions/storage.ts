@@ -69,3 +69,56 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
     return data;
   },
 ];
+
+export const append: ActionCreator<'storage.append'> = ({ definition, remap }) => [
+  async (data) => {
+    let storageData: Object | Object[];
+    const key = remap(definition.key, data);
+    if (!key) {
+      return data;
+    }
+
+    const { storage } = definition;
+
+    switch (true) {
+      case storage !== 'indexedDB': {
+        const store = storage === 'localStorage' ? localStorage : sessionStorage;
+        const value = store.getItem(`appsemble-${appId}-${key}`);
+        storageData = JSON.parse(value);
+        break;
+      }
+      default: {
+        const db = await getDB();
+        storageData = db.get('storage', key);
+      }
+    }
+
+    if (storageData == null) {
+      throw new Error('Could not find any data to append onto!');
+    }
+
+    const value = remap(definition.value, data);
+
+    if (Array.isArray(storageData)) {
+      storageData.push(value);
+    } else {
+      const storageArray: Object[] = [];
+      storageArray.push(storageData, value);
+      storageData = storageArray;
+    }
+
+    switch (storage) {
+      case 'localStorage':
+        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
+        break;
+      case 'sessionStorage':
+        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
+        break;
+      default: {
+        const db = await getDB();
+        await db.put('storage', remap(JSON.stringify(storageData), data), key);
+      }
+    }
+    return data;
+  },
+];

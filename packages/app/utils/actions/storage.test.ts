@@ -120,3 +120,55 @@ describe('storage.write', () => {
     });
   });
 });
+
+describe('storage.append', () => {
+  it('should add a new item to an existing dataset using localStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.append',
+        key: { prop: 'key' },
+        value: { prop: 'data' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    const result = await action({
+      key: 'key',
+      data,
+    });
+
+    const newStorage = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({ key: 'key', data });
+    expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
+  });
+
+  it('should add a new item to an existing dataset using sessionStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.append',
+        key: { prop: 'key' },
+        value: { prop: 'data' },
+        storage: 'sessionStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    const result = await action({
+      key: 'key',
+      data,
+    });
+
+    const newStorage = JSON.parse(sessionStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({ key: 'key', data });
+    expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
+  });
+});
