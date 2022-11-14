@@ -173,6 +173,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     ee: null,
     extraCreators: null,
     flowActions: null,
+    getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
     navigate: null,
     pageReady: Promise.resolve(),
     prefix: null,
