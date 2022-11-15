@@ -1014,10 +1014,10 @@ export interface StorageUpdateActionDefinition extends BaseActionDefinition<'sto
   /**
    * The key of the item to update.
    */
-  item: number;
+  item: Remapper;
 
   /**
-   * The data to write to the app’s storage.
+   * The data to update the specified item with.
    */
   value: Remapper;
 

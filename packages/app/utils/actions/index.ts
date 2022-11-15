@@ -84,7 +84,7 @@ export const actionCreators: ActionCreators = {
   'storage.write': storage.write,
   'storage.append': storage.append,
   'storage.subtract': storage.subtract,
-  // 'storage.update': storage.update,
+  'storage.update': storage.update,
   'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,

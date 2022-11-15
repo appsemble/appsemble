@@ -245,3 +245,103 @@ describe('storage.subtract', () => {
     expect(result).toStrictEqual(data);
   });
 });
+
+describe('storage.update', () => {
+  it('should update the specified item in the dataset using localStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.update',
+        key: { prop: 'key' },
+        item: { prop: 'item' },
+        value: { prop: 'value' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    localStorage.setItem('appsemble-42-key', JSON.stringify([data, data]));
+
+    await action({
+      key: 'key',
+      item: 1,
+      value: {
+        key: 'key',
+        data: { text: 'test works' },
+      },
+    });
+
+    const result = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result[1]).toStrictEqual({
+      key: 'key',
+      data: { text: 'test works' },
+    });
+  });
+
+  it('should update the specified item in the dataset using sessionStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.update',
+        key: { prop: 'key' },
+        item: { prop: 'item' },
+        value: { prop: 'value' },
+        storage: 'sessionStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    sessionStorage.setItem('appsemble-42-key', JSON.stringify([data, data]));
+
+    await action({
+      key: 'key',
+      item: 1,
+      value: {
+        key: 'key',
+        data: { text: 'test works' },
+      },
+    });
+
+    const result = JSON.parse(sessionStorage.getItem('appsemble-42-key'));
+
+    expect(result[1]).toStrictEqual({
+      key: 'key',
+      data: { text: 'test works' },
+    });
+  });
+
+  it('should update the only item in storage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.update',
+        key: { prop: 'key' },
+        item: { prop: 'item' },
+        value: { prop: 'value' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    localStorage.setItem('appsemble-42-key', JSON.stringify(data));
+
+    await action({
+      key: 'key',
+      value: {
+        key: 'key',
+        data: { text: 'test works' },
+      },
+    });
+
+    const result = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({
+      key: 'key',
+      data: { text: 'test works' },
+    });
+  });
+});

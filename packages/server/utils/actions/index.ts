@@ -56,6 +56,7 @@ export const actions = {
   'storage.write': noop,
   'storage.append': noop,
   'storage.subtract': noop,
+  'storage.update': noop,
   'team.invite': noop,
   'team.join': noop,
   'team.list': noop,

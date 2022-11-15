@@ -1,13 +1,13 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const StorageUpdateActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type', 'key', 'value'],
   properties: {
     type: {
-      enum: ['storage.updateStorage'],
+      enum: ['storage.update'],
       description: 'Update data from an existing dataset in storage',
     },
     key: {
@@ -15,12 +15,12 @@ export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefiniti
       description: 'The key of the storage entry.',
     },
     item: {
-      type: 'number',
+      $ref: '#/components/schemas/RemapperDefinition',
       description: 'The key of the item to update.',
     },
     value: {
       $ref: '#/components/schemas/RemapperDefinition',
-      description: 'The data to write to the storage entry.',
+      description: 'The data to update the specified item with.',
     },
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],
