@@ -991,6 +991,20 @@ export interface StorageAppendActionDefinition extends BaseActionDefinition<'sto
   storage?: StorageType;
 }
 
+export interface StorageSubtractActionDefinition extends BaseActionDefinition<'storage.subtract'> {
+  /**
+   * The key of the entry to subtract the last entry from
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
 export interface StorageUpdateActionDefinition extends BaseActionDefinition<'storage.update'> {
   /**
    * The key of the entry to write to the app’s storage.
@@ -1314,6 +1328,7 @@ export type ActionDefinition =
   | StaticActionDefinition
   | StorageAppendActionDefinition
   | StorageReadActionDefinition
+  | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition

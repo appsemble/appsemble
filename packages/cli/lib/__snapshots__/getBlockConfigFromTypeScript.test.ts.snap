@@ -3002,6 +3002,38 @@ If this is set to \`true\`, any help text appearing will cause the form input to
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks framework-selection 1`] = `
+{
+  "actions": {
+    "onFetchFrameworks": {
+      "description": "This action is called to fetch all the available frameworks.",
+    },
+  },
+  "events": {
+    "emit": {
+      "branches": {
+        "description": "The list of branches to select from.",
+      },
+      "frameworks": {
+        "description": "The list of frameworks based on the selected branch.",
+      },
+    },
+    "listen": {
+      "selectedBranch": {
+        "description": "The event used to receive the selected branch.",
+      },
+    },
+  },
+  "messages": {
+    "frameworkError": {
+      "description": "This error message is displayed when something goes wrong
+when fetching the frameworks.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks html 1`] = `
 {
   "actions": {
@@ -3877,6 +3909,90 @@ Should be an array of data.",
     ],
     "type": "object",
   },
+}
+`;
+
+exports[`getBlockConfigFromTypeScript official blocks test-results 1`] = `
+{
+  "actions": {
+    "onFetchFramework": {
+      "description": "This action is called to fetch the framework that the test result belongs to.",
+    },
+    "onFetchQuestions": {
+      "description": "This action is called to fetch all the questions a test framework may use.",
+    },
+    "onFetchTestResult": {
+      "description": "This action is called to fetch the current test’s test result.",
+    },
+  },
+  "events": {
+    "emit": {
+      "areaScores": {
+        "description": "The are scores to render in a chart.",
+      },
+      "groupScores": {
+        "description": "The group scores to render in a chart.",
+      },
+      "topicScores": {
+        "description": "The topic scores to render in a chart.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": {
+    "loadError": {
+      "description": "This message is displayed if an error occurs while loading the test results.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
+exports[`getBlockConfigFromTypeScript official blocks tests 1`] = `
+{
+  "actions": {
+    "onFetchFramework": {
+      "description": "This action is called to fetch the associated test based on the received test result.",
+    },
+    "onFetchQuestions": {
+      "description": "This action is called to fetch all the questions a test framework may use.",
+    },
+    "onFetchTestResult": {
+      "description": "This action is called to fetch the current test’s test result.",
+    },
+    "onFinishTest": {
+      "description": "This action is called when every question has been answered and is submitted as finalized.",
+    },
+    "onUpdateTestResult": {
+      "description": "This action is called to update the current test result.",
+    },
+  },
+  "events": {
+    "emit": {
+      "fields": {
+        "description": "The new fields list to",
+      },
+    },
+    "listen": {
+      "submit": {
+        "description": "The event used to receive submitted answers for the currently selected question.",
+      },
+      "testResult": {
+        "description": "The current in-progress test result to use.",
+      },
+    },
+  },
+  "messages": {
+    "submitError": {
+      "description": "This error message is displayed when something goes wrong
+when processing submitting a new question.",
+    },
+    "testError": {
+      "description": "This error message is displayed when something goes wrong
+when fetching the framework or test results.",
+    },
+  },
+  "parameters": undefined,
 }
 `;
 

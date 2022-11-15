@@ -172,3 +172,76 @@ describe('storage.append', () => {
     expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
   });
 });
+
+describe('storage.subtract', () => {
+  it('should remove the last item from an existing dataset using localStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.subtract',
+        key: { prop: 'key' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    localStorage.setItem('appsemble-42-key', JSON.stringify([data, data, data]));
+
+    const result = await action({
+      key: 'key',
+    });
+
+    const newStorage = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({ key: 'key' });
+    expect(newStorage).toHaveLength(2);
+  });
+
+  it('should remove the last item from an existing dataset using sessionStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.subtract',
+        key: { prop: 'key' },
+        storage: 'sessionStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    sessionStorage.setItem('appsemble-42-key', JSON.stringify([data, data, data]));
+
+    const result = await action({
+      key: 'key',
+    });
+
+    const newStorage = JSON.parse(sessionStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({ key: 'key' });
+    expect(newStorage).toHaveLength(2);
+  });
+
+  it('should convert array to single object when there is only one entry left', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.subtract',
+        key: { prop: 'key' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    localStorage.setItem('appsemble-42-key', JSON.stringify([data, data]));
+
+    await action({
+      key: 'key',
+    });
+
+    const result = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual(data);
+  });
+});

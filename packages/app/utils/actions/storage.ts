@@ -122,3 +122,66 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
     return data;
   },
 ];
+
+export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap }) => [
+  async (data) => {
+    let storageData: Object | Object[];
+    const key = remap(definition.key, data);
+    if (!key) {
+      return data;
+    }
+
+    const { storage } = definition;
+
+    switch (true) {
+      case storage !== 'indexedDB': {
+        const store = storage === 'localStorage' ? localStorage : sessionStorage;
+        const value = store.getItem(`appsemble-${appId}-${key}`);
+        storageData = JSON.parse(value);
+        break;
+      }
+      default: {
+        const db = await getDB();
+        storageData = db.get('storage', key);
+      }
+    }
+
+    if (storageData == null) {
+      throw new Error('Could not find any data to subtract from!');
+    }
+
+    if (Array.isArray(storageData)) {
+      storageData.pop();
+      if (storageData.length <= 1) {
+        const [storageObject] = storageData;
+        storageData = storageObject;
+      }
+    } else {
+      storageData = null;
+    }
+
+    switch (storage) {
+      case 'localStorage':
+        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
+        if (storageData == null) {
+          localStorage.removeItem(`appsemble-${appId}-${key}`);
+        }
+        break;
+      case 'sessionStorage':
+        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
+        if (storageData == null) {
+          sessionStorage.removeItem(`appsemble-${appId}-${key}`);
+        }
+        break;
+      default: {
+        const db = await getDB();
+        await db.put('storage', remap(JSON.stringify(storageData), data), key);
+        if (storageData == null) {
+          db.delete('storage', key);
+        }
+      }
+    }
+
+    return data;
+  },
+];
