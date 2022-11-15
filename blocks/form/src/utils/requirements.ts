@@ -123,6 +123,10 @@ const weekdays = [
 ] as const;
 
 export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
+  if (!field.requirements) {
+    return [];
+  }
+
   const disabled = new Set<number>();
   for (const current of field.requirements) {
     for (const [index, name] of weekdays.entries()) {
