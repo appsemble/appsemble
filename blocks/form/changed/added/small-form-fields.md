@@ -1,1 +1,1 @@
-Add `small` property to form fields.
+Add `inline` property to form fields.
