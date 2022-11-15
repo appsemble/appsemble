@@ -22,7 +22,7 @@ export function BooleanInput({
   value,
 }: BooleanInputProps): VNode {
   const { utils } = useBlock();
-  const { color, label, labelText, readOnly, size, small, switch: switchType, tag } = field;
+  const { color, inline, label, labelText, readOnly, size, switch: switchType, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
   const required = isRequired(field);
@@ -33,6 +33,7 @@ export function BooleanInput({
       color={color}
       disabled={disabled}
       error={dirty ? error : null}
+      inline={inline}
       label={checkboxLabel as string}
       name={name}
       onChange={onChange}
@@ -40,7 +41,6 @@ export function BooleanInput({
       readOnly={readOnly}
       required={required}
       size={size}
-      small={small}
       switch={Boolean(switchType)}
       switchOptions={switchType}
       tag={utils.remap(tag, value) as string}

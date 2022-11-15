@@ -22,7 +22,7 @@ export function FileInput({
   value,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
-  const { icon, label, repeated, small, tag } = field;
+  const { icon, inline, label, repeated, tag } = field;
   const required = isRequired(field);
   const remappedLabel = utils.remap(label, value);
 
@@ -44,10 +44,10 @@ export function FileInput({
     <FormComponent
       className={classNames('appsemble-file', className)}
       icon={icon}
+      inline={repeated ? undefined : inline}
       label={remappedLabel as string}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}
-      small={repeated ? undefined : small}
       tag={utils.remap(tag, {}) as string}
     >
       {repeated ? (

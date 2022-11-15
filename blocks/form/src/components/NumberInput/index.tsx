@@ -22,7 +22,7 @@ export function NumberInput({
   value,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
-  const { bottomLabels, display, icon, label, placeholder, readOnly, small, tag, topLabels } =
+  const { bottomLabels, display, icon, inline, label, placeholder, readOnly, tag, topLabels } =
     field;
 
   const commonProps = {
@@ -41,7 +41,7 @@ export function NumberInput({
     step: getStep(field),
     tag: utils.remap(tag, value) as string,
     value,
-    small,
+    inline,
   };
 
   if (display === 'slider') {

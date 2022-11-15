@@ -1452,6 +1452,13 @@ The action should return an array of objects that contain the \`label\` and \`va
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -1488,13 +1495,6 @@ These are evaluated in the order they are defined in.",
 If not specified, the field will display.",
             "format": "remapper",
           },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
-          },
           "tag": {
             "description": "The label that is shown to the right of the label.
 
@@ -1530,6 +1530,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -1572,13 +1579,6 @@ If not specified, the field will display.",
             "$ref": "#/definitions/BulmaSize",
             "default": "normal",
             "description": "The size of the checkbox.",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "switch": {
             "additionalProperties": false,
@@ -1678,6 +1678,13 @@ The date value can be accessed using the \`root\` remapper.",
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -1706,13 +1713,6 @@ The date value can be accessed using the \`root\` remapper.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "startOfWeek": {
             "default": 1,
@@ -1802,13 +1802,6 @@ The date value can be accessed using the \`root\` remapper.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "startOfWeek": {
             "default": 1,
@@ -1940,6 +1933,13 @@ The event should return an array of objects that contain the \`label\` and \`val
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -1975,13 +1975,6 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2060,6 +2053,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2107,13 +2107,6 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2410,6 +2403,13 @@ By default a \`number\` input field is displayed.",
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2440,13 +2440,6 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2731,6 +2724,13 @@ This field does not contain a name or a value.",
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2752,13 +2752,6 @@ This field does not contain a name or a value.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2825,6 +2818,13 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2860,13 +2860,6 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.
@@ -2920,6 +2913,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2950,13 +2950,6 @@ These are evaluated in the order they are defined in.",
 
 If not specified, the field will display.",
             "format": "remapper",
-          },
-          "small": {
-            "const": true,
-            "description": "Combines fields on the same row.
-
-Fields are combined in order if set to true.",
-            "type": "boolean",
           },
           "tag": {
             "description": "The label that is shown to the right of the label.

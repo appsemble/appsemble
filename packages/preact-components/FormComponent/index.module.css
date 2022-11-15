@@ -15,6 +15,6 @@
   flex: 0 0 auto;
 }
 
-.small {
+.inline {
   flex: 1 0 0 !important;
 }

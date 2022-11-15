@@ -77,7 +77,7 @@ export interface SharedFormComponentProps {
    *
    * Fields are combined in order if set to true.
    */
-  small?: true;
+  inline?: true;
 }
 
 export interface FormComponentProps extends SharedFormComponentProps {
@@ -115,10 +115,10 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       helpExtra,
       icon,
       id,
+      inline,
       label,
       optionalLabel = '(Optional)',
       required,
-      small,
       tag,
     },
     ref,
@@ -145,7 +145,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     );
 
     return (
-      <div className={classNames('field', className, { [styles.small]: small })} ref={ref}>
+      <div className={classNames('field', className, { [styles.inline]: inline })} ref={ref}>
         {label ? (
           <label className="label" htmlFor={id}>
             {label}

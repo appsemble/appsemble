@@ -27,7 +27,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       id = name,
       tag,
       optionalLabel,
-      small,
+      inline,
       ...props
     },
     ref,
@@ -41,10 +41,10 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>
       helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
       icon={icon}
       id={id}
+      inline={inline}
       label={label}
       optionalLabel={optionalLabel}
       required={required}
-      small={small}
       tag={tag}
     >
       <TextArea

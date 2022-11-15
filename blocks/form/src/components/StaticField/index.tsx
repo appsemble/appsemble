@@ -20,9 +20,9 @@ export function StaticField({ className, field, value }: StaticFieldProps): VNod
     <FormComponent
       className={classNames('appsemble-static', className)}
       disableHelp
+      inline={field.inline}
       label={utils.remap(label, value) as string}
       required
-      small={field.small}
       tag={utils.remap(tag, value) as string}
     >
       <div>{content}</div>

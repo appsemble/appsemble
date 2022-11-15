@@ -24,7 +24,7 @@ export function DateInput({
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { label, name, placeholder, readOnly, small, tag } = field;
+  const { inline, label, name, placeholder, readOnly, tag } = field;
 
   const dateLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
@@ -56,6 +56,7 @@ export function DateInput({
       error={dirty ? error : null}
       icon={field.icon}
       id={name}
+      inline={inline}
       label={dateLabel}
       locale={locale}
       maxDate={maxDate}
@@ -66,7 +67,6 @@ export function DateInput({
       placeholder={(utils.remap(placeholder, value) as string) || dateLabel || name}
       readOnly={readOnly}
       required={required}
-      small={small}
       tag={utils.remap(tag, value) as string}
       value={value}
     />

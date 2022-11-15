@@ -26,7 +26,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       id = name,
       tag,
       optionalLabel,
-      small,
+      inline,
       ...props
     },
     ref,
@@ -40,10 +40,10 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
       icon={icon}
       id={id}
+      inline={inline}
       label={label}
       optionalLabel={optionalLabel}
       required={required}
-      small={small}
       tag={tag}
     >
       <Input

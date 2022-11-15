@@ -26,7 +26,7 @@ export function EnumInput({
   const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
-  const { icon, label, placeholder, small, tag } = field;
+  const { icon, inline, label, placeholder, tag } = field;
   const required = isRequired(field);
 
   useEffect(() => {
@@ -74,6 +74,7 @@ export function EnumInput({
       disabled={disabled || loading || options.length === 0}
       error={dirty ? error : null}
       icon={icon}
+      inline={inline}
       label={utils.remap(label, value) as string}
       loading={loading}
       name={name}
@@ -81,7 +82,6 @@ export function EnumInput({
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, {}) as string}
       required={required}
-      small={small}
       tag={utils.remap(tag, value) as string}
       value={value}
     >

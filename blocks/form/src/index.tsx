@@ -262,7 +262,7 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.small) })}>
+        <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
           {fields
             ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
             .map((f) => (
