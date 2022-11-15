@@ -304,7 +304,7 @@ interface SmallField {
 /**
  * A date/time picker that results in an exact date and time.
  */
-export interface DateTimeField extends AbstractField, SmallField {
+export interface DateTimeField extends AbstractField {
   /**
    * Whether the confirm button should be shown
    *
