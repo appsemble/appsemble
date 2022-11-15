@@ -33,7 +33,7 @@ type Validator = (
  * Validate a field based on its set of requirements.
  *
  * @param field The field to validate.
- * @param value The value of the field.
+ * @param values The values of all form fields.
  * @param utils Utility functions used in the validation process.
  * @param defaultError The default error message if a specific one
  * isn’t defined for a specific requirement.
@@ -43,16 +43,18 @@ type Validator = (
  */
 export function validate(
   field: Field,
-  value: any,
+  values: any,
   utils: Utils,
   defaultError: Remapper,
   defaultValue: any,
 ): boolean | string {
+  const value = values[field.name];
+
   if (!has(validators, field.type)) {
     return;
   }
 
-  if (!isRequired(field) && value === defaultValue) {
+  if (!isRequired(field, utils, values) && value === defaultValue) {
     // Consider empty/unchanged fields that aren’t required as valid.
     return;
   }

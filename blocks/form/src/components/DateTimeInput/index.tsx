@@ -13,7 +13,6 @@ import {
   getMaxTime,
   getMinDate,
   getMinTime,
-  isRequired,
 } from '../../utils/requirements.js';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
@@ -28,6 +27,7 @@ export function DateTimeInput({
   error,
   field,
   onChange,
+  required,
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
@@ -35,8 +35,6 @@ export function DateTimeInput({
 
   const dateTimeLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
-
-  const required = isRequired(field);
 
   const handleOnChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement, Event>, v: string): void => onChange(event, v),

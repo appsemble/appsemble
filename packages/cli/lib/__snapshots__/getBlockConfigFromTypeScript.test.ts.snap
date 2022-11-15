@@ -2659,7 +2659,7 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
           },
           "required": {
             "description": "Whether the field is required.",
-            "type": "boolean",
+            "format": "remapper",
           },
         },
         "required": [
