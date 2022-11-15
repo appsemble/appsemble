@@ -1,13 +1,5 @@
 parameters:
   fields:
-    - name: name
-      type: string
-      requirements:
-        - required: true
-    - name: birthdate
-      type: date
-      requirements:
-        - required: true
     - label: species
       type: enum
       name: type
@@ -24,6 +16,8 @@ parameters:
         - required: true
     - name: photo
       type: file
+      requirements:
+        - required: { equals: [{ prop: species }, 'Unicorn'] }
     - name: special
       type: static
       content: You picked a special species

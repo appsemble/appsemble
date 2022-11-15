@@ -44,6 +44,11 @@ interface StepRequirement extends BaseRequirement {
 export interface RequiredRequirement extends BaseRequirement {
   /**
    * Whether the field is required.
+   *
+   * We recommend passing a boolean value e.g. `true`.
+   *
+   * Another option is to pass a remapper returning a boolean value.
+   * This way you can conditionally control if the field is required.
    */
   required: Remapper;
 }
