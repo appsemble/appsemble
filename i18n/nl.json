@@ -172,25 +172,12 @@
   "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "Appvoorbeeld",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "Er wordt een SSL certificaat gegenereerd voor je gebruikers.",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "Dit kan tot 24 uur duren, maar is meestal sneller. Als het langer duurt, neem dan contact op met support.",
-<<<<<<< HEAD
-<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.title": "GUI Editor",
   "studio.pages.apps.app.GuiEditor.generalTab": "Algemeen",
-<<<<<<< HEAD
-=======
-  "studio.pages.apps.app.GuiEditor.title": "GUI editor",
-=======
-  "studio.pages.apps.app.GuiEditor.title": "GUI Editor",
->>>>>>> 1282db3ec (Fix translation key typo)
-  "studio.pages.apps.app.GuiEditor.generalTab": "General",
->>>>>>> 7adc93347 (Added missing translation keys for Tab names)
-=======
->>>>>>> 64add0913 (Apply 1 suggestion(s) to 1 file(s))
   "studio.pages.apps.app.GuiEditor.resourcesTab": "Resources",
   "studio.pages.apps.app.GuiEditor.pagesTab": "Pages",
   "studio.pages.apps.app.GuiEditor.themeTab": "Theme",
   "studio.pages.apps.app.GuiEditor.securityTab": "Security",
-<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.saved": "App opgeslagen.",
   "studio.pages.apps.app.GuiEditor.failed": "Kon app niet opslaan.",
   "studio.pages.apps.app.GuiEditor.GeneralTab.nameLabel": "Naam",
@@ -207,8 +194,6 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "Engels",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "Nederlands",
-=======
->>>>>>> 7adc93347 (Added missing translation keys for Tab names)
   "studio.components.AsyncDataView.retry": "Opnieuw proberen",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.components.Breadcrumbs.switchToGuiEditor": "Switch to GUI Editor",

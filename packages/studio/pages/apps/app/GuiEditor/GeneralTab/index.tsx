@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 import { Button } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
-=======
-import { ReactElement } from 'react';
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
 import { useIntl } from 'react-intl';
 
 import { useApp } from '../../index.js';
@@ -12,19 +8,13 @@ import { InputString } from '../Components/InputString/index.js';
 import { InputTextArea } from '../Components/InputTextArea/index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
-<<<<<<< HEAD
 import styles from './index.module.css';
 import { messages } from './messages.js';
-=======
-import { GuiEditorTabs } from '../index.js';
-import styles from './index.module.css';
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
 
 export interface GeneralTabProps {
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
-<<<<<<< HEAD
 
 const languages = [
   { value: 'en', label: messages.english },
@@ -52,7 +42,7 @@ const Tabs = [
     title: messages.schedule,
   },
 ] as const;
-type LeftSidebar = typeof Tabs[number];
+type LeftSidebar = (typeof Tabs)[number];
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
@@ -250,18 +240,6 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
           )}
           {currentSideBar.tab === 'schedule' && <div className={styles.rightBar} />}
         </>
-=======
-export function GeneralTab({ isOpenLeft, isOpenRight, tab }: GeneralTabProps): ReactElement {
-  const { formatMessage } = useIntl();
-  return (
-    <>
-      <Sidebar isOpen={isOpenLeft} type="left">
-        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
-      </Sidebar>
-      <div className={styles.root}>{formatMessage(tab.title)}</div>
-      <Sidebar isOpen={isOpenRight} type="right">
-        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
       </Sidebar>
     </>
   );
