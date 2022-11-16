@@ -191,6 +191,7 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "Engels",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "Nederlands",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.SecurityTab.defaultTab": "Standaard",
   "studio.pages.apps.app.GuiEditor.SecurityTab.teamsTab": "Teams",
   "studio.pages.apps.app.GuiEditor.SecurityTab.rolesTab": "Rollen",
@@ -247,6 +248,8 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "Maak een nieuwe rol aan",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "Nieuwe rol toevoegen",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "Geen rollen meer beschikbaar",
+=======
+>>>>>>> 1f4ac03c6 (Add renaming roles changing all references)
   "studio.components.AsyncDataView.retry": "Opnieuw proberen",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.components.Breadcrumbs.switchToGuiEditor": "Switch to GUI Editor",
