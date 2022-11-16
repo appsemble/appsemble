@@ -17,43 +17,25 @@ export function getDB(): Promise<IDBPDatabase> {
   return dbPromise;
 }
 
-export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
-    if (!key) {
-      return;
-    }
-
-    const storage = definition.storage || 'indexedDB';
-    if (storage !== 'indexedDB') {
-      const store = storage === 'localStorage' ? localStorage : sessionStorage;
-      const value = store.getItem(`appsemble-${appId}-${key}`);
-      if (!value) {
-        return;
-      }
-      try {
+function readStorage(storage: string, key: string): Object {
+  return async () => {
+    switch (true) {
+      case storage !== 'indexedDB': {
+        const store = storage === 'localStorage' ? localStorage : sessionStorage;
+        const value = store.getItem(`appsemble-${appId}-${key}`);
         return JSON.parse(value);
-      } catch {
-        // Invalid data may be stored due to various reasons. In that case pretend there is no data.
-        return;
+      }
+      default: {
+        const db = await getDB();
+        return db.get('storage', key);
       }
     }
+  };
+}
 
-    const db = await getDB();
-    return db.get('storage', key);
-  },
-];
-
-export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
-    if (!key) {
-      return data;
-    }
-
-    const value = remap(definition.value, data);
-
-    switch (definition.storage) {
+function writeStorage(storage: string, key: string, value: any): object {
+  return async () => {
+    switch (storage) {
       case 'localStorage':
         localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
         break;
@@ -62,17 +44,38 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
         break;
       default: {
         const db = await getDB();
-        await db.put('storage', remap(definition.value, data), key);
+        await db.put('storage', value, key);
       }
     }
+  };
+}
 
-    return data;
+export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
+  (data) => {
+    const key = remap(definition.key, data);
+    if (!key) {
+      return;
+    }
+
+    return readStorage(definition.storage, key);
+  },
+];
+
+export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => [
+  (data) => {
+    const key = remap(definition.key, data);
+    if (!key) {
+      return data;
+    }
+
+    const value = remap(definition.value, data);
+
+    return writeStorage(definition.storage, key, value);
   },
 ];
 
 export const append: ActionCreator<'storage.append'> = ({ definition, remap }) => [
-  async (data) => {
-    let storageData: Object | Object[];
+  (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return data;
@@ -80,18 +83,7 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 
     const { storage } = definition;
 
-    switch (true) {
-      case storage !== 'indexedDB': {
-        const store = storage === 'localStorage' ? localStorage : sessionStorage;
-        const value = store.getItem(`appsemble-${appId}-${key}`);
-        storageData = JSON.parse(value);
-        break;
-      }
-      default: {
-        const db = await getDB();
-        storageData = db.get('storage', key);
-      }
-    }
+    let storageData: Object | Object[] = readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to append onto!');
@@ -107,25 +99,13 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
       storageData = storageArray;
     }
 
-    switch (storage) {
-      case 'localStorage':
-        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        break;
-      case 'sessionStorage':
-        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        break;
-      default: {
-        const db = await getDB();
-        await db.put('storage', remap(JSON.stringify(storageData), data), key);
-      }
-    }
+    writeStorage(storage, key, storageData);
     return data;
   },
 ];
 
 export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap }) => [
-  async (data) => {
-    let storageData: Object | Object[];
+  (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return data;
@@ -133,18 +113,7 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
 
     const { storage } = definition;
 
-    switch (true) {
-      case storage !== 'indexedDB': {
-        const store = storage === 'localStorage' ? localStorage : sessionStorage;
-        const value = store.getItem(`appsemble-${appId}-${key}`);
-        storageData = JSON.parse(value);
-        break;
-      }
-      default: {
-        const db = await getDB();
-        storageData = db.get('storage', key);
-      }
-    }
+    let storageData: Object | Object[] = readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to subtract from!');
@@ -160,35 +129,13 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
       storageData = null;
     }
 
-    switch (storage) {
-      case 'localStorage':
-        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        if (storageData == null) {
-          localStorage.removeItem(`appsemble-${appId}-${key}`);
-        }
-        break;
-      case 'sessionStorage':
-        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        if (storageData == null) {
-          sessionStorage.removeItem(`appsemble-${appId}-${key}`);
-        }
-        break;
-      default: {
-        const db = await getDB();
-        await db.put('storage', remap(JSON.stringify(storageData), data), key);
-        if (storageData == null) {
-          db.delete('storage', key);
-        }
-      }
-    }
-
+    writeStorage(storage, key, storageData);
     return data;
   },
 ];
 
 export const update: ActionCreator<'storage.update'> = ({ definition, remap }) => [
-  async (data) => {
-    let storageData: Object | Object[];
+  (data) => {
     const key = remap(definition.key, data);
     const item = remap(definition.item, data);
     const value = remap(definition.value, data);
@@ -198,18 +145,7 @@ export const update: ActionCreator<'storage.update'> = ({ definition, remap }) =
 
     const { storage } = definition;
 
-    switch (true) {
-      case storage !== 'indexedDB': {
-        const store = storage === 'localStorage' ? localStorage : sessionStorage;
-        const storageValue = store.getItem(`appsemble-${appId}-${key}`);
-        storageData = JSON.parse(storageValue);
-        break;
-      }
-      default: {
-        const db = await getDB();
-        storageData = db.get('storage', key);
-      }
-    }
+    let storageData: Object | Object[] = readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to update!');
@@ -221,19 +157,7 @@ export const update: ActionCreator<'storage.update'> = ({ definition, remap }) =
       storageData = value;
     }
 
-    switch (storage) {
-      case 'localStorage':
-        localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        break;
-      case 'sessionStorage':
-        sessionStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(storageData));
-        break;
-      default: {
-        const db = await getDB();
-        await db.put('storage', remap(JSON.stringify(storageData), data), key);
-      }
-    }
-
+    writeStorage(storage, key, storageData);
     return data;
   },
 ];

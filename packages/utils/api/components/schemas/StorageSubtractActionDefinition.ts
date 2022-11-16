@@ -8,7 +8,8 @@ export const StorageSubtractActionDefinition = extendJSONSchema(BaseActionDefini
   properties: {
     type: {
       enum: ['storage.subtract'],
-      description: 'Subtract last item from a storage entry',
+      description:
+        'Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.',
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',

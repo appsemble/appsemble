@@ -8,7 +8,8 @@ export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefiniti
   properties: {
     type: {
       enum: ['storage.append'],
-      description: 'Append data to an existing dataset in storage',
+      description:
+        'Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.',
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',
