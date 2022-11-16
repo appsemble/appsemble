@@ -26,7 +26,7 @@ export function EnumInput({
   const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
-  const { icon, label, placeholder, tag } = field;
+  const { icon, inline, label, placeholder, tag } = field;
 
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
@@ -73,6 +73,7 @@ export function EnumInput({
       disabled={disabled || loading || options.length === 0}
       error={dirty ? error : null}
       icon={icon}
+      inline={inline}
       label={utils.remap(label, value) as string}
       loading={loading}
       name={name}

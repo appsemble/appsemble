@@ -71,6 +71,13 @@ export interface SharedFormComponentProps {
    * The tag to display next to the label.
    */
   tag?: ComponentChild;
+
+  /**
+   * Combines fields on the same row.
+   *
+   * Fields are combined in order if set to true.
+   */
+  inline?: true;
 }
 
 export interface FormComponentProps extends SharedFormComponentProps {
@@ -108,6 +115,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       helpExtra,
       icon,
       id,
+      inline,
       label,
       optionalLabel = '(Optional)',
       required,
@@ -137,7 +145,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     );
 
     return (
-      <div className={classNames('field', className)} ref={ref}>
+      <div className={classNames('field', className, { [styles.inline]: inline })} ref={ref}>
         {label ? (
           <label className="label" htmlFor={id}>
             {label}
