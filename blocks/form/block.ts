@@ -44,8 +44,13 @@ interface StepRequirement extends BaseRequirement {
 export interface RequiredRequirement extends BaseRequirement {
   /**
    * Whether the field is required.
+   *
+   * We recommend passing a boolean value e.g. `true`.
+   *
+   * Another option is to pass a remapper returning a boolean value.
+   * This way you can conditionally control if the field is required.
    */
-  required: boolean;
+  required: Remapper;
 }
 
 interface FormRequirement extends BaseRequirement {
@@ -843,9 +848,14 @@ export interface InputProps<T, F extends Field> {
   onChange: (name: Event | string, value?: T) => void;
 
   /**
-   * Whether ot not the input has been modified by the user.
+   * Whether or not the input has been modified by the user.
    */
   dirty?: boolean;
+
+  /**
+   * Whether or not the input is required.
+   */
+  required?: boolean;
 
   /**
    * The current value.

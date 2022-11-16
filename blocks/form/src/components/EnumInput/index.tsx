@@ -5,7 +5,6 @@ import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { Choice, EnumField, InputProps } from '../../../block.js';
-import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
 
@@ -19,6 +18,7 @@ export function EnumInput({
   field,
   name,
   onChange,
+  required,
   value,
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
@@ -27,7 +27,6 @@ export function EnumInput({
   const [error, setError] = useState<string>(null);
 
   const { icon, inline, label, placeholder, tag } = field;
-  const required = isRequired(field);
 
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {

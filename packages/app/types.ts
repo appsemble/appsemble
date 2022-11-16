@@ -10,6 +10,7 @@ import {
   TeamMember,
   UserInfo,
 } from '@appsemble/types';
+import { MessageGetter } from '@appsemble/utils';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { Dispatch } from 'react';
 import { NavigateFunction, Params } from 'react-router-dom';
@@ -112,6 +113,7 @@ export type UpdateTeam = (team: TeamMember) => void;
 
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
+  getAppMessage: MessageGetter;
   definition: D;
   extraCreators: ActionCreators;
   flowActions: FlowActions;

@@ -82,7 +82,8 @@ export function Block({
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
-  const { getBlockMessage } = useAppMessages();
+  const { getAppMessage, getBlockMessage } = useAppMessages();
+
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
   const { setBlockMenu } = usePage();
 
@@ -115,6 +116,7 @@ export function Block({
     const events = createEvents(ee, pageReady, manifest.events, block.events);
 
     const actions = makeActions({
+      getAppMessage,
       actions: manifest.actions,
       app: definition,
       context: block,
@@ -222,6 +224,7 @@ export function Block({
     updateTeam,
     userInfo,
     userInfoRef,
+    getAppMessage,
   ]);
 
   const { layout = manifest.layout } = block;
