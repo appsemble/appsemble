@@ -53,17 +53,15 @@ export function InputTextArea({
   );
 
   return (
-    <div className={`${styles.root} ${styles.topLabel}`}>
+    <div className={`${styles.root} field ${styles.topLabel}`}>
       <label className={styles.label}>{label}</label>
-      <div className="field">
-        <TextArea
-          className={styles.input}
-          maxLength={maxLength}
-          minLength={minLength}
-          onChange={onInputChange}
-          value={value}
-        />
-      </div>
+      <TextArea
+        className={styles.input}
+        maxLength={maxLength}
+        minLength={minLength}
+        onChange={onInputChange}
+        value={value}
+      />
     </div>
   );
 }
