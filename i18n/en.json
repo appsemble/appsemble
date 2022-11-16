@@ -191,7 +191,6 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.english": "English",
   "studio.pages.apps.app.GuiEditor.GeneralTab.dutch": "Dutch",
-<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.SecurityTab.defaultTab": "Default",
   "studio.pages.apps.app.GuiEditor.SecurityTab.teamsTab": "Teams",
   "studio.pages.apps.app.GuiEditor.SecurityTab.rolesTab": "Roles",
@@ -248,8 +247,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "Add role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "Add new role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "No more roles available",
-=======
->>>>>>> f1f5261de (Added translations to sidebar and languages dropdown)
   "studio.components.AsyncDataView.retry": "Retry",
   "studio.components.Breadcrumbs.breadcrumbs": "Breadcrumbs",
   "studio.components.Breadcrumbs.switchToGuiEditor": "Switch to GUI Editor",
