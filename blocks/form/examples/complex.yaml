@@ -17,7 +17,7 @@ parameters:
     - name: photo
       type: file
       requirements:
-        - required: { equals: [{ prop: species }, 'Unicorn'] }
+        - required: { equals: [{ prop: species }, 'unicorn'] }
     - name: special
       type: static
       content: You picked a special species
