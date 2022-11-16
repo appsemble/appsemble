@@ -147,6 +147,19 @@ describe('storage.remove', () => {
     const result = sessionStorage.getItem('appsemble-42-data');
     expect(result).toBeNull();
   });
+
+  it('should remove an existing item entirely using indexedDB', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.remove',
+        key: { prop: 'key' },
+        storage: 'indexedDB',
+      },
+    });
+    await action({ key: 'data' });
+    const result = await db.get('storage', 'data');
+    expect(result).toBeUndefined();
+  });
 });
 
 describe('storage.append', () => {
@@ -199,6 +212,31 @@ describe('storage.append', () => {
     expect(result).toStrictEqual({ key: 'key', data });
     expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
   });
+
+  it('should add a new item to an existing dataset using indexedDB', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.append',
+        key: { prop: 'key' },
+        value: { prop: 'data' },
+        storage: 'indexedDB',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    const result = await action({
+      key: 'data',
+      data,
+    });
+
+    const newStorage = await db.get('storage', 'data');
+
+    expect(result).toStrictEqual({ key: 'data', data });
+    expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
+  });
 });
 
 describe('storage.subtract', () => {
@@ -247,6 +285,30 @@ describe('storage.subtract', () => {
     const newStorage = JSON.parse(sessionStorage.getItem('appsemble-42-key'));
 
     expect(result).toStrictEqual({ key: 'key' });
+    expect(newStorage).toHaveLength(2);
+  });
+
+  it('should remove the last item from an existing dataset using indexedDB', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.subtract',
+        key: { prop: 'key' },
+        storage: 'indexedDB',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    await db.put('storage', [data, data, data], 'data');
+
+    const result = await action({
+      key: 'data',
+    });
+
+    const newStorage = await db.get('storage', 'data');
+
+    expect(result).toStrictEqual({ key: 'data' });
     expect(newStorage).toHaveLength(2);
   });
 
@@ -334,6 +396,40 @@ describe('storage.update', () => {
     });
 
     const result = JSON.parse(sessionStorage.getItem('appsemble-42-key'));
+
+    expect(result[1]).toStrictEqual({
+      key: 'key',
+      data: { text: 'test works' },
+    });
+  });
+
+  it('should update the specified item in the dataset using indexedDB', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.update',
+        key: { prop: 'key' },
+        item: { prop: 'item' },
+        value: { prop: 'value' },
+        storage: 'indexedDB',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    await db.put('storage', [data, data], 'data');
+
+    await action({
+      key: 'data',
+      item: 1,
+      value: {
+        key: 'key',
+        data: { text: 'test works' },
+      },
+    });
+
+    const result = await db.get('storage', 'data');
 
     expect(result[1]).toStrictEqual({
       key: 'key',
