@@ -28,6 +28,7 @@ export function InputList({
     [onChange],
   );
 
+<<<<<<< HEAD
   let valueString;
   switch (size) {
     case 'large':
@@ -56,6 +57,8 @@ export function InputList({
     );
   }
 
+=======
+>>>>>>> 5771289d4 (Add renaming roles changing all references)
   return (
     <div
       className={`${styles.root} field ${
@@ -63,7 +66,11 @@ export function InputList({
       }`}
     >
       <label className={styles.label}>{label}</label>
+<<<<<<< HEAD
       <Dropdown className={styles.dropDown} label={<span className="px-1">{valueString}</span>}>
+=======
+      <Dropdown className={styles.dropDown} label={<span className="px-1">{value}</span>}>
+>>>>>>> 5771289d4 (Add renaming roles changing all references)
         {options.map((option, index) => (
           <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
         ))}
