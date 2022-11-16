@@ -1,6 +1,8 @@
 import { Input } from '@appsemble/react-components';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 
+import getAllowedChars from '../../Utils/getAllowedChars.js';
+import getCheckedString from '../../Utils/getCheckedString.js';
 import styles from './index.module.css';
 
 interface InputStringProps {
@@ -17,11 +19,6 @@ interface InputStringProps {
   value: string;
 }
 
-const defaultChars = 'abcdefghijklmnopqrstuvwxyz';
-const upperChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const symbols = '!@#$%^&*()_+-=[]{};:,./<>?';
-const numbers = '0123456789';
-
 export function InputString({
   allowNumbers = true,
   allowSpaces = true,
@@ -35,12 +32,7 @@ export function InputString({
   pattern,
   value,
 }: InputStringProps): ReactElement {
-  const chars =
-    defaultChars +
-    (allowUpperChars ? upperChars : '') +
-    (allowNumbers ? numbers : '') +
-    (allowSpaces ? ' ' : '') +
-    (allowSymbols ? symbols : '');
+  const chars = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
 
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,13 +41,7 @@ export function InputString({
         onChange(event, input);
         return;
       }
-      let finalValue = '';
-      for (const char of input) {
-        if (!chars.includes(char)) {
-          continue;
-        }
-        finalValue += char;
-      }
+      const finalValue = getCheckedString(chars, input);
       onChange(event, finalValue);
     },
     [chars, onChange, pattern],
