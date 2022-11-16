@@ -1,4 +1,5 @@
 import { AppAccount } from '@appsemble/types';
+import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 
 import { apiUrl, appId } from '../settings.js';
@@ -28,6 +29,7 @@ export const register: ActionCreator<'user.register'> = ({
     formData.append('email', email);
     formData.append('password', password);
     formData.append('locale', params.lang);
+    formData.append('timezone', timezone);
 
     if (name) {
       formData.append('name', name);
