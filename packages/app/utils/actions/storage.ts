@@ -17,24 +17,23 @@ export function getDB(): Promise<IDBPDatabase> {
   return dbPromise;
 }
 
-function readStorage(storage: string, key: string): Object {
-  return async () => {
-    switch (true) {
-      case storage !== 'indexedDB': {
-        const store = storage === 'localStorage' ? localStorage : sessionStorage;
-        const value = store.getItem(`appsemble-${appId}-${key}`);
-        return JSON.parse(value);
-      }
-      default: {
-        const db = await getDB();
-        return db.get('storage', key);
-      }
+export async function readStorage(storageType: string, key: string): Promise<Object> {
+  const storage = storageType || 'indexedDB';
+  switch (true) {
+    case storage !== 'indexedDB': {
+      const store = storage === 'localStorage' ? localStorage : sessionStorage;
+      const value = store.getItem(`appsemble-${appId}-${key}`);
+      return JSON.parse(value);
     }
-  };
+    default: {
+      const db = await getDB();
+      return db.get('storage', key);
+    }
+  }
 }
 
-function writeStorage(storage: string, key: string, value: any): object {
-  return async () => {
+export function writeStorage(storage: string, key: string, value: any): object {
+  async function write(): Promise<void> {
     switch (storage) {
       case 'localStorage':
         localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
@@ -47,17 +46,19 @@ function writeStorage(storage: string, key: string, value: any): object {
         await db.put('storage', value, key);
       }
     }
-  };
+  }
+  return write();
 }
 
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
-  (data) => {
+  async (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return;
     }
 
-    return readStorage(definition.storage, key);
+    const result = await readStorage(definition.storage, key);
+    return result;
   },
 ];
 
@@ -70,12 +71,13 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
 
     const value = remap(definition.value, data);
 
-    return writeStorage(definition.storage, key, value);
+    writeStorage(definition.storage, key, value);
+    return data;
   },
 ];
 
 export const append: ActionCreator<'storage.append'> = ({ definition, remap }) => [
-  (data) => {
+  async (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return data;
@@ -83,7 +85,7 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = readStorage(storage, key);
+    let storageData: Object | Object[] = await readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to append onto!');
@@ -105,7 +107,7 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 ];
 
 export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap }) => [
-  (data) => {
+  async (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return data;
@@ -113,7 +115,7 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = readStorage(storage, key);
+    let storageData: Object | Object[] = await readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to subtract from!');
@@ -135,7 +137,7 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
 ];
 
 export const update: ActionCreator<'storage.update'> = ({ definition, remap }) => [
-  (data) => {
+  async (data) => {
     const key = remap(definition.key, data);
     const item = remap(definition.item, data);
     const value = remap(definition.value, data);
@@ -145,7 +147,7 @@ export const update: ActionCreator<'storage.update'> = ({ definition, remap }) =
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = readStorage(storage, key);
+    let storageData: Object | Object[] = await readStorage(storage, key);
 
     if (storageData == null) {
       throw new Error('Could not find any data to update!');
