@@ -32,7 +32,7 @@ export async function readStorage(storageType: string, key: string): Promise<Obj
   }
 }
 
-export function writeStorage(storage: string, key: string, value: any): object {
+export function writeStorage(storage: string, key: string, value: any): void {
   async function write(): Promise<void> {
     switch (storage) {
       case 'localStorage':
@@ -47,7 +47,25 @@ export function writeStorage(storage: string, key: string, value: any): object {
       }
     }
   }
-  return write();
+  write();
+}
+
+export function removeStorage(storage: string, key: string): void {
+  async function remove(): Promise<void> {
+    switch (storage) {
+      case 'localStorage':
+        localStorage.removeItem(`appsemble-${appId}-${key}`);
+        break;
+      case 'sessionStorage':
+        sessionStorage.removeItem(`appsemble-${appId}-${key}`);
+        break;
+      default: {
+        const db = await getDB();
+        await db.delete('storage', key);
+      }
+    }
+  }
+  remove();
 }
 
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
@@ -73,6 +91,18 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
 
     writeStorage(definition.storage, key, value);
     return data;
+  },
+];
+
+export const remove: ActionCreator<'storage.remove'> = ({ definition, remap }) => [
+  (data) => {
+    const key = remap(definition.key, data);
+    if (!key) {
+      return data;
+    }
+
+    removeStorage(definition.storage, key);
+    return true;
   },
 ];
 
@@ -131,7 +161,12 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
       storageData = null;
     }
 
-    writeStorage(storage, key, storageData);
+    if (storageData == null) {
+      removeStorage(storage, key);
+    } else {
+      writeStorage(storage, key, storageData);
+    }
+
     return data;
   },
 ];

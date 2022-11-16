@@ -121,6 +121,34 @@ describe('storage.write', () => {
   });
 });
 
+describe('storage.remove', () => {
+  it('should remove an existing item entirely using localStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.remove',
+        key: { prop: 'key' },
+        storage: 'localStorage',
+      },
+    });
+    await action({ key: 'data' });
+    const result = localStorage.getItem('appsemble-42-data');
+    expect(result).toBeNull();
+  });
+
+  it('should remove an existing item entirely using sessionStorage', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.remove',
+        key: { prop: 'key' },
+        storage: 'sessionStorage',
+      },
+    });
+    await action({ key: 'data' });
+    const result = sessionStorage.getItem('appsemble-42-data');
+    expect(result).toBeNull();
+  });
+});
+
 describe('storage.append', () => {
   it('should add a new item to an existing dataset using localStorage', async () => {
     const action = createTestAction({

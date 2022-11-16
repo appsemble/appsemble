@@ -991,6 +991,20 @@ export interface StorageAppendActionDefinition extends BaseActionDefinition<'sto
   storage?: StorageType;
 }
 
+export interface StorageRemoveActionDefinition extends BaseActionDefinition<'storage.remove'> {
+  /**
+   * The key of the entry to delete from the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to delete the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
 export interface StorageSubtractActionDefinition extends BaseActionDefinition<'storage.subtract'> {
   /**
    * The key of the entry to subtract the last entry from
@@ -1328,6 +1342,7 @@ export type ActionDefinition =
   | StaticActionDefinition
   | StorageAppendActionDefinition
   | StorageReadActionDefinition
+  | StorageRemoveActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
   | StorageWriteActionDefinition

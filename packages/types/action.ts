@@ -76,6 +76,7 @@ export type Action =
   | BaseAction<'static'>
   | BaseAction<'storage.append'>
   | BaseAction<'storage.read'>
+  | BaseAction<'storage.remove'>
   | BaseAction<'storage.subtract'>
   | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
