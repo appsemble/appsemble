@@ -14,7 +14,11 @@ interface InputStringProps {
   allowSymbols?: boolean;
   allowNumbers?: boolean;
   allowSpaces?: boolean;
+<<<<<<< HEAD
   pattern?: RegExp;
+=======
+  pattern?: RegExp | string;
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
   onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   value: string;
   readonly?: boolean;
