@@ -14,7 +14,11 @@ interface InputStringProps {
   allowSymbols?: boolean;
   allowNumbers?: boolean;
   allowSpaces?: boolean;
+<<<<<<< HEAD
   pattern?: RegExp;
+=======
+  pattern?: RegExp | string;
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
   onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   value: string;
   readonly?: boolean;
@@ -54,9 +58,13 @@ export function InputString({
   );
 
   const onClickInput = useCallback(() => {
+<<<<<<< HEAD
     if (onClick) {
       onClick(value);
     }
+=======
+    onClick(value);
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
   }, [onClick, value]);
 
   if (!label) {
@@ -67,6 +75,10 @@ export function InputString({
         minLength={minLength}
         onChange={onInputChange}
         onClick={onClickInput}
+<<<<<<< HEAD
+=======
+        pattern={pattern}
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
         readOnly={readonly}
         value={value}
       />
@@ -86,6 +98,10 @@ export function InputString({
         minLength={minLength}
         onChange={onInputChange}
         onClick={onClickInput}
+<<<<<<< HEAD
+=======
+        pattern={pattern}
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
         readOnly={readonly}
         value={value}
       />
