@@ -6,7 +6,7 @@ import getCheckedString from '../../Utils/getCheckedString.js';
 import styles from './index.module.css';
 
 interface InputStringProps {
-  label: string;
+  label?: string;
   labelPosition?: 'left' | 'top';
   minLength?: number;
   maxLength?: number;
@@ -15,8 +15,10 @@ interface InputStringProps {
   allowNumbers?: boolean;
   allowSpaces?: boolean;
   pattern?: RegExp | string;
-  onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
+  onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   value: string;
+  readonly?: boolean;
+  onClick?: (value: string) => void;
 }
 
 export function InputString({
@@ -29,7 +31,9 @@ export function InputString({
   maxLength = 32,
   minLength = 1,
   onChange,
+  onClick,
   pattern,
+  readonly = false,
   value,
 }: InputStringProps): ReactElement {
   const charsRegex = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
@@ -47,21 +51,42 @@ export function InputString({
     [charsRegex, onChange, pattern],
   );
 
+  const onClickInput = useCallback(() => {
+    onClick(value);
+  }, [onClick, value]);
+
+  if (!label) {
+    return (
+      <Input
+        className={styles.input}
+        maxLength={maxLength}
+        minLength={minLength}
+        onChange={onInputChange}
+        onClick={onClickInput}
+        pattern={pattern}
+        readOnly={readonly}
+        value={value}
+      />
+    );
+  }
+
   return (
     <div
-      className={`${styles.root} ${labelPosition === 'left' ? styles.leftLabel : styles.topLabel}`}
+      className={`${styles.root} field ${
+        labelPosition === 'left' ? styles.leftLabel : styles.topLabel
+      }`}
     >
       <label className={styles.label}>{label}</label>
-      <div className="field">
-        <Input
-          className={styles.input}
-          maxLength={maxLength}
-          minLength={minLength}
-          onChange={onInputChange}
-          pattern={pattern}
-          value={value}
-        />
-      </div>
+      <Input
+        className={styles.input}
+        maxLength={maxLength}
+        minLength={minLength}
+        onChange={onInputChange}
+        onClick={onClickInput}
+        pattern={pattern}
+        readOnly={readonly}
+        value={value}
+      />
     </div>
   );
 }

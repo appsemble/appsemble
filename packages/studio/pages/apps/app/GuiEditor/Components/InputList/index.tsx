@@ -14,7 +14,7 @@ interface InputStringProps {
 
 export function InputList({
   label,
-  labelPosition = 'left',
+  labelPosition = 'top',
   onChange,
   options,
   value,
@@ -28,16 +28,16 @@ export function InputList({
 
   return (
     <div
-      className={`${styles.root} ${labelPosition === 'left' ? styles.leftLabel : styles.topLabel}`}
+      className={`${styles.root} field ${
+        labelPosition === 'left' ? styles.leftLabel : styles.topLabel
+      }`}
     >
       <label className={styles.label}>{label}</label>
-      <div className="field">
-        <Dropdown className={styles.dropDown} label={<span className="px-1">{value}</span>}>
-          {options.map((option, index) => (
-            <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
-          ))}
-        </Dropdown>
-      </div>
+      <Dropdown className={styles.dropDown} label={<span className="px-1">{value}</span>}>
+        {options.map((option, index) => (
+          <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
+        ))}
+      </Dropdown>
     </div>
   );
 }
