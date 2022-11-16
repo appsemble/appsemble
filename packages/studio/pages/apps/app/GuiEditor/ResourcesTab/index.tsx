@@ -12,10 +12,6 @@ interface ResourcesTabProps {
 }
 export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps): ReactElement {
   const { formatMessage } = useIntl();
-<<<<<<< HEAD
-
-=======
->>>>>>> f5da7b0da (Add translation in messages and applied suggestions)
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
