@@ -313,8 +313,17 @@ const mapperImplementations: MapperImplementations = {
       ? input.concat(mappers.map((mapper) => remap(mapper, input, context)))
       : [],
 
-  'array.omit': (indecies, input) =>
-    Array.isArray(input) ? input.filter((value, i) => !indecies.includes(i)) : [],
+  'array.omit'(mappers, input, context) {
+    const indices = new Set(
+      mappers.map((mapper) => {
+        const remapped = remap(mapper, input, context);
+        if (typeof remapped === 'number') {
+          return remapped;
+        }
+      }),
+    );
+    return Array.isArray(input) ? input.filter((value, i) => !indices.has(i)) : [];
+  },
 
   static: (input) => input,
 

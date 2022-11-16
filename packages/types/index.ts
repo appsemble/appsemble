@@ -378,11 +378,13 @@ export interface Remappers {
   'array.append': Remapper[];
 
   /**
-   * Remove item(s) from an array given a predefined array of indices.
+   * Remove item(s) from an array given a predefined array of remappable indices.
+   *
+   * Only the remapped values that are turned into numbers are applied.
    *
    * If the input is not an array an empty array is returned.
    */
-  'array.omit': number[];
+  'array.omit': Remapper[];
 
   /**
    * Create a new object given some predefined mapper keys.
