@@ -2,7 +2,7 @@ import { Utils } from '@appsemble/sdk';
 import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
-import { Field } from '../../block.js';
+import { Field, Values } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 
@@ -10,10 +10,14 @@ type FieldWithRequirements = Field & { requirements?: any[] };
  * Check if a field is required.
  *
  * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
  * @returns Whether or not the field is required.
  */
-export function isRequired(field: FieldWithRequirements): boolean {
-  return Boolean(field.requirements?.some(({ required }) => required));
+export function isRequired(field: FieldWithRequirements, utils?: Utils, values?: Values): boolean {
+  return Boolean(
+    field.requirements?.some(({ required }) => utils?.remap(required, values) ?? required),
+  );
 }
 
 /**

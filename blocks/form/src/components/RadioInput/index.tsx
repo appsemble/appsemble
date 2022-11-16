@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, RadioField } from '../../../block.js';
-import { isRequired } from '../../utils/requirements.js';
 import styles from './index.module.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
@@ -20,11 +19,11 @@ export function RadioInput({
   field,
   name,
   onChange,
+  required,
   value,
 }: RadioInputProps): VNode {
   const { utils } = useBlock();
   const { label, options, tag } = field;
-  const required = isRequired(field);
 
   return (
     <RadioGroup

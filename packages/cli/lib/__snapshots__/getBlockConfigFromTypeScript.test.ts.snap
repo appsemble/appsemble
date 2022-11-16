@@ -2658,8 +2658,12 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
             "format": "remapper",
           },
           "required": {
-            "description": "Whether the field is required.",
-            "type": "boolean",
+            "description": "Whether the field is required.
+
+We recommend passing a boolean value e.g. \`true\`.
+
+Another option is to pass a remapper returning a boolean value. This way you can conditionally control if the field is required.",
+            "format": "remapper",
           },
         },
         "required": [

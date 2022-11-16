@@ -12,6 +12,7 @@ import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { getNestedByKey } from './utils/getNested.js';
+import { isRequired } from './utils/requirements.js';
 import { isFormValid } from './utils/validity.js';
 
 bootstrap(
@@ -273,6 +274,7 @@ bootstrap(
               key={f.name}
               name={f.name}
               onChange={onChange}
+              required={isRequired(f, utils, values)}
               value={values[f.name]}
             />
           ))}

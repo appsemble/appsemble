@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, StringField } from '../../../block.js';
-import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
+import { getMaxLength, getMinLength } from '../../utils/requirements.js';
 
 type StringInputProps = InputProps<string, StringField>;
 
@@ -19,6 +19,7 @@ export function StringInput({
   field,
   name,
   onChange,
+  required,
   value,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
@@ -38,7 +39,7 @@ export function StringInput({
     optionalLabel: utils.formatMessage('optionalLabel'),
     placeholder: (utils.remap(placeholder, value) ?? remappedLabel) as string,
     readOnly,
-    required: isRequired(field),
+    required,
     tag: utils.remap(tag, value) as string,
     value,
   };

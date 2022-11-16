@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, NumberField } from '../../../block.js';
-import { getMax, getMin, getStep, isRequired } from '../../utils/requirements.js';
+import { getMax, getMin, getStep } from '../../utils/requirements.js';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
@@ -19,6 +19,7 @@ export function NumberInput({
   field,
   name,
   onChange,
+  required,
   value,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
@@ -36,7 +37,7 @@ export function NumberInput({
     onChange,
     optionalLabel: <FormattedMessage id="optionalLabel" />,
     readOnly,
-    required: isRequired(field),
+    required,
     step: getStep(field),
     tag: utils.remap(tag, value) as string,
     value,
