@@ -18,13 +18,19 @@
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
 .modal {
   max-width: 100vw;
   width: 480px;
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> c3596f4b7 (Add security sidebar)
+=======
+>>>>>>> 9aa72fe2a (Add renaming roles changing all references)
 .rightBar {
   display: flex;
   flex-direction: column;
