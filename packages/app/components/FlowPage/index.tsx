@@ -139,6 +139,7 @@ export function FlowPage({
   actions = useMemo(
     () =>
       makeActions({
+        getAppMessage,
         actions: { onFlowFinish: {}, onFlowCancel: {} },
         app: definition,
         context: page,
@@ -180,6 +181,7 @@ export function FlowPage({
       passwordLogin,
       setUserInfo,
       userInfoRef,
+      getAppMessage,
     ],
   );
 

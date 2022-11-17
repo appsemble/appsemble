@@ -231,7 +231,7 @@ export async function processReferenceHooks(
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
       async ([propertyName, reference]) => {
-        if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
+        if (!reference[action]?.trigger?.length) {
           // Do nothing
           return;
         }

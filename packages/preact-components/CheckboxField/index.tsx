@@ -36,6 +36,7 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       title,
       tag,
       optionalLabel,
+      inline,
       ...props
     },
     ref,
@@ -44,6 +45,7 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       className={wrapperClassName}
       help={help}
       id={id}
+      inline={inline}
       label={label}
       optionalLabel={optionalLabel}
       required

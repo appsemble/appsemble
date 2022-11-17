@@ -5,7 +5,6 @@ import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { FileField, InputProps } from '../../../block.js';
-import { isRequired } from '../../utils/requirements.js';
 import { FileEntry } from '../FileEntry/index.js';
 import styles from './index.module.css';
 
@@ -19,11 +18,11 @@ export function FileInput({
   field,
   name,
   onChange,
+  required,
   value,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
-  const { icon, label, repeated, tag } = field;
-  const required = isRequired(field);
+  const { icon, inline, label, repeated, tag } = field;
   const remappedLabel = utils.remap(label, value);
 
   const handleInput = useCallback(
@@ -44,6 +43,7 @@ export function FileInput({
     <FormComponent
       className={classNames('appsemble-file', className)}
       icon={icon}
+      inline={repeated ? undefined : inline}
       label={remappedLabel as string}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       required={required}

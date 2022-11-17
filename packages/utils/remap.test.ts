@@ -663,10 +663,16 @@ describe('array.append', () => {
 
 describe('array.omit', () => {
   runTests({
-    'omit objects at given indices': {
+    'omit objects at given remapped indices': {
       input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
-      mappers: [{ 'array.omit': [0, 2] }],
+      mappers: [{ 'array.omit': [0, { context: 'index' }] }],
       expected: [{ bar: '...' }],
+      context: { index: 2 },
+    },
+    'omit nothing': {
+      input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+      mappers: [{ 'array.omit': [{ static: 'index' }] }],
+      expected: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
     },
     'create empty array': {
       input: { foo: 'bar' },

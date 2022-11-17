@@ -77,8 +77,8 @@ export function ButtonField({
       return;
     }
 
-    action(item);
-  }, [action, disabled, item]);
+    action(item, { index, repeatedIndex });
+  }, [action, disabled, item, index, repeatedIndex]);
 
   return (
     <button

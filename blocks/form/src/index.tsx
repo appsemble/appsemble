@@ -12,6 +12,7 @@ import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { getNestedByKey } from './utils/getNested.js';
+import { isRequired } from './utils/requirements.js';
 import { isFormValid } from './utils/validity.js';
 
 bootstrap(
@@ -262,20 +263,23 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        {fields
-          ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
-          .map((f) => (
-            <FormInput
-              className={classNames({ [styles.dense]: dense })}
-              disabled={dataLoading || submitting}
-              error={errors[f.name]}
-              field={f}
-              key={f.name}
-              name={f.name}
-              onChange={onChange}
-              value={values[f.name]}
-            />
-          ))}
+        <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
+          {fields
+            ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
+            .map((f) => (
+              <FormInput
+                className={classNames({ [styles.dense]: dense })}
+                disabled={dataLoading || submitting}
+                error={errors[f.name]}
+                field={f}
+                key={f.name}
+                name={f.name}
+                onChange={onChange}
+                required={isRequired(f, utils, values)}
+                value={values[f.name]}
+              />
+            ))}
+        </div>
         <FormButtons className="mt-4">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>

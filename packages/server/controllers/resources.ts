@@ -121,7 +121,7 @@ async function verifyPermission(
       ? resourceDefinition.views[view].roles
       : resourceDefinition[action]?.roles ?? resourceDefinition.roles) || [];
 
-  if ((!roles || !roles.length) && app.definition.roles?.length) {
+  if (!roles?.length && app.definition.roles?.length) {
     roles.push(...app.definition.roles);
   }
 
