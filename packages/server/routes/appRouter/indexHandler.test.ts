@@ -282,7 +282,7 @@ it('should render the index page', async () => {
         "appUpdated": "1970-01-01T00:00:00.000Z",
         "appUrl": "http://app.test.host.example/",
         "bulmaURL": "/bulma/0.9.3/bulma.min.css?dangerColor=%23ff2800&fontFamily=Open+Sans&fontSource=google&infoColor=%23a7d0ff&linkColor=%230440ad&primaryColor=%235393ff&splashColor=%23ffffff&successColor=%231fd25b&themeColor=%23ffffff&tileLayer=https%3A%2F%2F%7Bs%7D.tile.openstreetmap.org%2F%7Bz%7D%2F%7Bx%7D%2F%7By%7D.png&warningColor=%23fed719",
-        "faURL": "/fa/6.2.0/css/all.min.css",
+        "faURL": "/fa/6.2.1/css/all.min.css",
         "host": "http://host.example",
         "locale": "en",
         "locales": [],
@@ -304,7 +304,7 @@ it('should render a 404 page if no app is found', async () => {
     {
       "data": {
         "bulmaURL": "/bulma/0.9.3/bulma.min.css",
-        "faURL": "/fa/6.2.0/css/all.min.css",
+        "faURL": "/fa/6.2.1/css/all.min.css",
         "message": "The app you are looking for could not be found.",
       },
       "filename": "app/error.html",
