@@ -8,8 +8,22 @@ export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefiniti
   properties: {
     type: {
       enum: ['storage.append'],
-      description:
-        'Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.',
+      description: `Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+`,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',
@@ -17,7 +31,7 @@ export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefiniti
     },
     value: {
       $ref: '#/components/schemas/RemapperDefinition',
-      description: 'The data to write to the storage entry.',
+      description: 'The data to write ontop of the storage entry.',
     },
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],

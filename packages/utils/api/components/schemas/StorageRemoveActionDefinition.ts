@@ -8,7 +8,15 @@ export const StorageRemoveActionDefinition = extendJSONSchema(BaseActionDefiniti
   properties: {
     type: {
       enum: ['storage.remove'],
-      description: 'Remove the dataset that is stored at the specified key.',
+      description: `Remove the dataset that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+      `,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',

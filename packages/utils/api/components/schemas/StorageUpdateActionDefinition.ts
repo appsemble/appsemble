@@ -8,7 +8,22 @@ export const StorageUpdateActionDefinition = extendJSONSchema(BaseActionDefiniti
   properties: {
     type: {
       enum: ['storage.update'],
-      description: 'Update data from an existing dataset in storage',
+      description: `Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      `,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',

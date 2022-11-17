@@ -8,7 +8,22 @@ export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinitio
   properties: {
     type: {
       enum: ['storage.write'],
-      description: 'Write data to the app’s local storage.',
+      description: `Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      `,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',
