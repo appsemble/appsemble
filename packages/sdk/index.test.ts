@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 describe('bootstrap', () => {
-  it('should dispatch the AppsembleBoostrap event', () => {
+  it('should dispatch the AppsembleBootstrap event', () => {
     const fn = import.meta.jest.fn();
     bootstrap(fn);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));

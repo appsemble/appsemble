@@ -1,4 +1,4 @@
-// `src/index.ts` is the initial entry poinf of the block source code run. For small blocks this
+// `src/index.ts` is the initial entry point of the block source code run. For small blocks this
 // often contains the entire logic of the block. Bigger blocks are often split into smaller modules.
 import { bootstrap } from '@appsemble/sdk';
 

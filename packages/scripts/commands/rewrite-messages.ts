@@ -11,7 +11,7 @@ import { compareStrings } from '@appsemble/utils';
  * Running this script requires these replacements to have been implemented.
  *
  * The following example shows how to fix up messages if a messages file is renamed from
- * `packages/studio/src/compponents/AppContext/messages.ts` to
+ * `packages/studio/src/components/AppContext/messages.ts` to
  * `packages/studio/src/pages/apps/app/messages.ts`.
  *
  * @example

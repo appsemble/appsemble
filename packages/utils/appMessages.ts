@@ -33,7 +33,7 @@ export function findMessageIds(obj: unknown): Record<string, string> {
 /**
  * Extract translatable message IDs from an app definition.
  *
- * @param app The app definition to extract nessage IDs from
+ * @param app The app definition to extract message IDs from
  * @param onBlock A function to extract block messages. This is needed, because block messages may
  * be extracted based on different contexts.
  * @returns A list of message IDs

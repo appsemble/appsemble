@@ -2,7 +2,7 @@
 Object.defineProperty(globalThis, 'crypto', {
   value: {
     /**
-     * A predictable polyfill for `crypto.getRandomVlaues()`.
+     * A predictable polyfill for `crypto.getRandomValues()`.
      *
      * The generated values are incremental with a modulus of 2⁸. This value fits within realistic
      * values of Uint8Array.

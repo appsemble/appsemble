@@ -304,7 +304,7 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
 }
 
 /**
- * Register a boostrap function.
+ * Register a bootstrap function.
  *
  * @param fn The bootstrap function to register
  *

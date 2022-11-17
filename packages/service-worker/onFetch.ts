@@ -3,7 +3,7 @@ import { partialNormalized } from '@appsemble/utils';
 import { cacheFirst, requestFirst } from './utils.js';
 
 /**
- * Map all requests to a caching behaviour based on the HTTP method and URL.
+ * Map all requests to a caching behavior based on the HTTP method and URL.
  *
  * @param event The request map.
  */

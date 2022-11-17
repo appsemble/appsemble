@@ -24,7 +24,7 @@ export interface Theme {
   linkColor: string;
 
   /**
-   * The color used to feature succesful or positive actions.
+   * The color used to feature successful or positive actions.
    */
   successColor: string;
 

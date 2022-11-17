@@ -8,7 +8,7 @@ export const analytics: ActionCreator<'analytics'> = ({
     try {
       gtag('event', target, remap(config, data));
     } catch {
-      // Exlicitly ignore any errors that occur when doing analytics.
+      // Explicitly ignore any errors that occur when doing analytics.
     }
     return data;
   },
