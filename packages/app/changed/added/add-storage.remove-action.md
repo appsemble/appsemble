@@ -1,0 +1,1 @@
+Add storage.remove action
