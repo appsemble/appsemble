@@ -2126,14 +2126,29 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
                       "enum": [
                         "storage.append",
                       ],
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
+                      "description": "The data to write ontop of the storage entry.",
                     },
                   },
                   "required": [
@@ -2178,14 +2193,29 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
                       "enum": [
                         "storage.append",
                       ],
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
+                      "description": "The data to write ontop of the storage entry.",
                     },
                   },
                   "required": [
@@ -2211,7 +2241,22 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+                  "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
                   "enum": [
                     "storage.append",
                   ],
@@ -2251,7 +2296,15 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.",
+                      "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
                       "enum": [
                         "storage.subtract",
                       ],
@@ -2279,7 +2332,15 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.",
+                  "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
                   "enum": [
                     "storage.subtract",
                   ],
@@ -2319,7 +2380,16 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Read data from the app’s local storage.",
+                      "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
                       "enum": [
                         "storage.read",
                       ],
@@ -2347,7 +2417,16 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Read data from the app’s local storage.",
+                  "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
                   "enum": [
                     "storage.read",
                   ],
@@ -2387,7 +2466,22 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                       "enum": [
                         "storage.write",
                       ],
@@ -2439,7 +2533,22 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                       "enum": [
                         "storage.write",
                       ],
@@ -2472,7 +2581,22 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Write data to the app’s local storage.",
+                  "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                   "enum": [
                     "storage.write",
                   ],
@@ -2516,7 +2640,22 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Update data from an existing dataset in storage",
+                      "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                       "enum": [
                         "storage.update",
                       ],
@@ -2572,7 +2711,22 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Update data from an existing dataset in storage",
+                      "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                       "enum": [
                         "storage.update",
                       ],
@@ -2605,7 +2759,22 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Update data from an existing dataset in storage",
+                  "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                   "enum": [
                     "storage.update",
                   ],
@@ -2645,7 +2814,15 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Remove the dataset that is stored at the specified key.",
+                      "description": "Remove the dataset that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+      ",
                       "enum": [
                         "storage.remove",
                       ],
@@ -2673,7 +2850,15 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Remove the dataset that is stored at the specified key.",
+                  "description": "Remove the dataset that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+      ",
                   "enum": [
                     "storage.remove",
                   ],
@@ -5585,14 +5770,29 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
               "enum": [
                 "storage.append",
               ],
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
+              "description": "The data to write ontop of the storage entry.",
             },
           },
           "required": [
@@ -5637,14 +5837,29 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
               "enum": [
                 "storage.append",
               ],
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
+              "description": "The data to write ontop of the storage entry.",
             },
           },
           "required": [
@@ -5670,7 +5885,22 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data onto.",
+          "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
           "enum": [
             "storage.append",
           ],
@@ -5710,7 +5940,15 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.",
+              "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
               "enum": [
                 "storage.subtract",
               ],
@@ -5738,7 +5976,15 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.",
+          "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
           "enum": [
             "storage.subtract",
           ],
@@ -5778,7 +6024,16 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Read data from the app’s local storage.",
+              "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
               "enum": [
                 "storage.read",
               ],
@@ -5806,7 +6061,16 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Read data from the app’s local storage.",
+          "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
           "enum": [
             "storage.read",
           ],
@@ -5846,7 +6110,22 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
               "enum": [
                 "storage.write",
               ],
@@ -5898,7 +6177,22 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
               "enum": [
                 "storage.write",
               ],
@@ -5931,7 +6225,22 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Write data to the app’s local storage.",
+          "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
           "enum": [
             "storage.write",
           ],
@@ -5975,7 +6284,22 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Update data from an existing dataset in storage",
+              "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
               "enum": [
                 "storage.update",
               ],
@@ -6031,7 +6355,22 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Update data from an existing dataset in storage",
+              "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
               "enum": [
                 "storage.update",
               ],
@@ -6064,7 +6403,22 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Update data from an existing dataset in storage",
+          "description": "Update data from an existing dataset in storage
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
           "enum": [
             "storage.update",
           ],
@@ -6104,7 +6458,15 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Remove the dataset that is stored at the specified key.",
+              "description": "Remove the dataset that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+      ",
               "enum": [
                 "storage.remove",
               ],
@@ -6132,7 +6494,15 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Remove the dataset that is stored at the specified key.",
+          "description": "Remove the dataset that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+      ",
           "enum": [
             "storage.remove",
           ],

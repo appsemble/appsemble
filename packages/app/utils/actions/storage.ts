@@ -19,15 +19,23 @@ export function getDB(): Promise<IDBPDatabase> {
 
 export async function readStorage(storageType: string, key: string): Promise<Object> {
   const storage = storageType || 'indexedDB';
+
   switch (true) {
     case storage !== 'indexedDB': {
       const store = storage === 'localStorage' ? localStorage : sessionStorage;
       const value = store.getItem(`appsemble-${appId}-${key}`);
+      if (!value) {
+        throw new Error('Could not find data at this key.');
+      }
       return JSON.parse(value);
     }
     default: {
       const db = await getDB();
-      return db.get('storage', key);
+      const value = db.get('storage', key);
+      if (!value) {
+        throw new Error('Could not find data at this key.');
+      }
+      return value;
     }
   }
 }
@@ -117,10 +125,6 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 
     let storageData: Object | Object[] = await readStorage(storage, key);
 
-    if (storageData == null) {
-      throw new Error('Could not find any data to append onto!');
-    }
-
     const value = remap(definition.value, data);
 
     if (Array.isArray(storageData)) {
@@ -146,10 +150,6 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
     const { storage } = definition;
 
     let storageData: Object | Object[] = await readStorage(storage, key);
-
-    if (storageData == null) {
-      throw new Error('Could not find any data to subtract from!');
-    }
 
     if (Array.isArray(storageData)) {
       storageData.pop();
@@ -183,10 +183,6 @@ export const update: ActionCreator<'storage.update'> = ({ definition, remap }) =
     const { storage } = definition;
 
     let storageData: Object | Object[] = await readStorage(storage, key);
-
-    if (storageData == null) {
-      throw new Error('Could not find any data to update!');
-    }
 
     if (Array.isArray(storageData)) {
       storageData[item as number] = value;

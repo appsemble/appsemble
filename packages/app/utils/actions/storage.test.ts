@@ -50,6 +50,21 @@ describe('storage.read', () => {
     const result = await action({ test: 'data' });
     expect(result).toBe('This is default test data from sessionStorage!');
   });
+
+  it('should throw error when key is not valid', async () => {
+    const action = createTestAction({
+      definition: { type: 'storage.read', key: { prop: 'key' }, storage: 'localStorage' },
+    });
+    let result;
+
+    try {
+      result = await action({ key: 'invalid key' });
+    } catch (error) {
+      result = (error as Error).message;
+    }
+
+    expect(result).toBe('Could not find data at this key.');
+  });
 });
 
 describe('storage.write', () => {
@@ -176,6 +191,7 @@ describe('storage.append', () => {
       key: 'key',
       data: { text: 'test' },
     };
+    localStorage.setItem('appsemble-42-key', JSON.stringify([data, data]));
 
     const result = await action({
       key: 'key',
@@ -236,6 +252,31 @@ describe('storage.append', () => {
 
     expect(result).toStrictEqual({ key: 'data', data });
     expect(newStorage[1]).toStrictEqual({ key: 'key', data: data.data });
+  });
+
+  it('should turn existing dataset with a single object into an array with new value', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.append',
+        key: { prop: 'key' },
+        value: { prop: 'data' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    const result = await action({
+      key: 'key',
+      data,
+    });
+
+    const newStorage = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toStrictEqual({ key: 'key', data });
+    expect(Array.isArray(newStorage)).toBe(true);
   });
 });
 
@@ -333,6 +374,29 @@ describe('storage.subtract', () => {
     const result = JSON.parse(localStorage.getItem('appsemble-42-key'));
 
     expect(result).toStrictEqual(data);
+  });
+
+  it('should remove storage entry when it subtracts the last entry', async () => {
+    const action = createTestAction({
+      definition: {
+        type: 'storage.subtract',
+        key: { prop: 'key' },
+        storage: 'localStorage',
+      },
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+    localStorage.setItem('appsemble-42-key', JSON.stringify(data));
+
+    await action({
+      key: 'key',
+    });
+
+    const result = JSON.parse(localStorage.getItem('appsemble-42-key'));
+
+    expect(result).toBeNull();
   });
 });
 
