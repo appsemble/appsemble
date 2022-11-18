@@ -17,4 +17,7 @@ export const messages = defineMessages({
   editNameRoleTitle: 'Edit role name:',
   editRoleNameDescription: 'Changing a role name will change all of its references in the app.',
   roleAlreadyExists: 'Role already exists',
+  roleInheritedLabel: 'Inherits from',
+  addNewRoleLabel: 'Add new role',
+  noRoleOptions: 'No more roles available',
 });
