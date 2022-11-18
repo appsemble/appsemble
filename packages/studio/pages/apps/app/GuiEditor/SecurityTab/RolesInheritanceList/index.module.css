@@ -1,0 +1,48 @@
+.root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.leftLabel {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.leftLabel > * {
+  margin-right: 0.5rem;
+}
+
+.topLabel {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.input {
+  height: 2rem;
+}
+
+.addNewItem {
+  color: hsl(0deg 0% 50%);
+}
+
+.option {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  width: 100%;
+}
