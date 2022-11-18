@@ -19,6 +19,7 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { TreeList } from '../Components/TreeList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { RolesInheritanceList } from './RolesInheritanceList/index.js';
 
 interface SecurityTabProps {
   isOpenLeft: boolean;
@@ -321,7 +322,39 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
               )}
             </div>
           )}
-          {currentSideBar.tab === 'teams' && <div />}
+          {currentSideBar.tab === 'teams' && (
+            <div className={styles.rightBar}>
+              <InputList
+                label={formatMessage(messages.defaultRoleLabel)}
+                labelPosition="top"
+                onChange={onChangeDefaultRole}
+                options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
+                value={app.definition.security?.default.role || ''}
+              />
+              <InputList
+                label={formatMessage(messages.defaultPolicyLabel)}
+                labelPosition="top"
+                onChange={onChangeDefaultPolicy}
+                options={policyOptions}
+                value={app.definition.security?.default.policy || ''}
+              />
+              {!app.definition.security?.roles && (
+                <>
+                  <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
+                  <Button
+                    className="is-primary"
+                    icon="add"
+                    onClick={() => {
+                      setCurrentSideBar(Tabs[2]);
+                      setSelectedRole(null);
+                    }}
+                  >
+                    {formatMessage(messages.defaultCreateNewRole)}
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
           {currentSideBar.tab === 'roles' && (
             <>
               {Object.entries(app.definition.security?.roles || []).map(([key, roleDefinition]) => {
@@ -357,8 +390,9 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                           <p>{formatMessage(messages.editRoleNameDescription)}</p>
                           <br />
                           <InputString
-                            allowNumbers={false}
+                            allowNumbers
                             allowSpaces={false}
+                            allowSymbols
                             label={formatMessage(messages.roleNameLabel)}
                             labelPosition="top"
                             maxLength={40}
@@ -385,6 +419,11 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                         minLength={0}
                         onChange={(event, value) => onRoleDescriptionChange(key, value)}
                         value={app.definition.security?.roles[key].description || ''}
+                      />
+                      <RolesInheritanceList
+                        label={formatMessage(messages.roleInheritedLabel)}
+                        labelPosition="top"
+                        roleKey={key}
                       />
                     </div>
                   );
