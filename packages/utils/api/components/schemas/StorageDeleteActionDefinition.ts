@@ -1,18 +1,18 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const StorageRemoveActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const StorageDeleteActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type', 'key'],
   properties: {
     type: {
-      enum: ['storage.remove'],
-      description: `Remove the dataset that is stored at the specified key.
+      enum: ['storage.delete'],
+      description: `Delete the dataset that is stored at the specified key.
 
 For example:
 \`\`\`yaml
-type: storage.read
+type: storage.delete
 key: temp
 storage: localStorage
 \`\`\`

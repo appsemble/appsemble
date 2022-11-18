@@ -991,7 +991,7 @@ export interface StorageAppendActionDefinition extends BaseActionDefinition<'sto
   storage?: StorageType;
 }
 
-export interface StorageRemoveActionDefinition extends BaseActionDefinition<'storage.remove'> {
+export interface StorageDeleteActionDefinition extends BaseActionDefinition<'storage.delete'> {
   /**
    * The key of the entry to delete from the app’s storage.
    */
@@ -1341,8 +1341,8 @@ export type ActionDefinition =
   | ShareActionDefinition
   | StaticActionDefinition
   | StorageAppendActionDefinition
+  | StorageDeleteActionDefinition
   | StorageReadActionDefinition
-  | StorageRemoveActionDefinition
   | StorageSubtractActionDefinition
   | StorageUpdateActionDefinition
   | StorageWriteActionDefinition

@@ -58,7 +58,7 @@ export function writeStorage(storage: string, key: string, value: any): void {
   write();
 }
 
-export function removeStorage(storage: string, key: string): void {
+export function deleteStorage(storage: string, key: string): void {
   async function remove(): Promise<void> {
     switch (storage) {
       case 'localStorage':
@@ -102,14 +102,14 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
   },
 ];
 
-export const remove: ActionCreator<'storage.remove'> = ({ definition, remap }) => [
+export const remove: ActionCreator<'storage.delete'> = ({ definition, remap }) => [
   (data) => {
     const key = remap(definition.key, data);
     if (!key) {
       return data;
     }
 
-    removeStorage(definition.storage, key);
+    deleteStorage(definition.storage, key);
     return true;
   },
 ];
@@ -162,7 +162,7 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
     }
 
     if (storageData == null) {
-      removeStorage(storage, key);
+      deleteStorage(storage, key);
     } else {
       writeStorage(storage, key, storageData);
     }

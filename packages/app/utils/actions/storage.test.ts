@@ -136,11 +136,11 @@ describe('storage.write', () => {
   });
 });
 
-describe('storage.remove', () => {
-  it('should remove an existing item entirely using localStorage', async () => {
+describe('storage.delete', () => {
+  it('should delete an existing item entirely using localStorage', async () => {
     const action = createTestAction({
       definition: {
-        type: 'storage.remove',
+        type: 'storage.delete',
         key: { prop: 'key' },
         storage: 'localStorage',
       },
@@ -150,10 +150,10 @@ describe('storage.remove', () => {
     expect(result).toBeNull();
   });
 
-  it('should remove an existing item entirely using sessionStorage', async () => {
+  it('should delete an existing item entirely using sessionStorage', async () => {
     const action = createTestAction({
       definition: {
-        type: 'storage.remove',
+        type: 'storage.delete',
         key: { prop: 'key' },
         storage: 'sessionStorage',
       },
@@ -163,10 +163,10 @@ describe('storage.remove', () => {
     expect(result).toBeNull();
   });
 
-  it('should remove an existing item entirely using indexedDB', async () => {
+  it('should delete an existing item entirely using indexedDB', async () => {
     const action = createTestAction({
       definition: {
-        type: 'storage.remove',
+        type: 'storage.delete',
         key: { prop: 'key' },
         storage: 'indexedDB',
       },

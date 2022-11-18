@@ -68,7 +68,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/StorageReadActionDefinition' },
         { $ref: '#/components/schemas/StorageWriteActionDefinition' },
         { $ref: '#/components/schemas/StorageUpdateActionDefinition' },
-        { $ref: '#/components/schemas/StorageRemoveActionDefinition' },
+        { $ref: '#/components/schemas/StorageDeleteActionDefinition' },
         { $ref: '#/components/schemas/TeamInviteActionDefinition' },
         { $ref: '#/components/schemas/TeamJoinActionDefinition' },
         { $ref: '#/components/schemas/TeamListActionDefinition' },
