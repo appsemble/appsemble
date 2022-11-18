@@ -202,11 +202,7 @@ export function AppRoutes(): ReactElement {
                 <GuiEditorPage />
               </Suspense>
             }
-<<<<<<< HEAD
             path="/edit/gui/*"
-=======
-            path="/edit/gui"
->>>>>>> b322375ed (Added breadcrumbs to reach GUI Editor & GUI Editor tab)
           />
           <Route
             element={
