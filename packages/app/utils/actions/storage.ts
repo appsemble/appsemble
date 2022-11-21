@@ -77,8 +77,8 @@ export function deleteStorage(storage: string, key: string): void {
 }
 
 export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
     if (!key) {
       return;
     }
@@ -89,13 +89,13 @@ export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
 ];
 
 export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => [
-  (data) => {
-    const key = remap(definition.key, data);
+  (data, context) => {
+    const key = remap(definition.key, data, context);
     if (!key) {
       return data;
     }
 
-    const value = remap(definition.value, data);
+    const value = remap(definition.value, data, context);
 
     writeStorage(definition.storage, key, value);
     return data;
@@ -103,8 +103,8 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
 ];
 
 export const remove: ActionCreator<'storage.delete'> = ({ definition, remap }) => [
-  (data) => {
-    const key = remap(definition.key, data);
+  (data, context) => {
+    const key = remap(definition.key, data, context);
     if (!key) {
       return data;
     }
@@ -115,8 +115,8 @@ export const remove: ActionCreator<'storage.delete'> = ({ definition, remap }) =
 ];
 
 export const append: ActionCreator<'storage.append'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
     if (!key) {
       return data;
     }
@@ -125,7 +125,7 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 
     let storageData: Object | Object[] = await readStorage(storage, key);
 
-    const value = remap(definition.value, data);
+    const value = remap(definition.value, data, context);
 
     if (Array.isArray(storageData)) {
       storageData.push(value);
@@ -141,8 +141,8 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
 ];
 
 export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
     if (!key) {
       return data;
     }
@@ -172,10 +172,10 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
 ];
 
 export const update: ActionCreator<'storage.update'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
-    const item = remap(definition.item, data);
-    const value = remap(definition.value, data);
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
+    const item = remap(definition.item, data, context);
+    const value = remap(definition.value, data, context);
     if (!key || !value) {
       return data;
     }
