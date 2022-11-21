@@ -1403,6 +1403,11 @@ export interface BasePageDefinition {
   name: string;
 
   /**
+   * Whether or not the page name should be displayed in the *app bar*.
+   */
+  hideName: boolean;
+
+  /**
    * The name of the page when displayed in the navigation menu.
    *
    * Context property `name` can be used to access the name of the page.

@@ -164,7 +164,7 @@ export function Page(): ReactElement {
         data-path={prefix}
         data-path-index={prefixIndex}
       >
-        <TitleBar>{pageName}</TitleBar>
+        <TitleBar hideName={page.hideName}>{pageName}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
             data={data}

@@ -144,6 +144,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -263,6 +267,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -387,6 +395,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -520,6 +532,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -649,6 +665,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -937,6 +957,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1056,6 +1080,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1180,6 +1208,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1313,6 +1345,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1442,6 +1478,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1648,6 +1688,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1768,6 +1812,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1893,6 +1941,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -2027,6 +2079,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -2157,6 +2213,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
