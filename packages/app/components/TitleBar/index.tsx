@@ -7,7 +7,7 @@ import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-interface TitleBarProps {
+interface AppBarProps {
   children?: ReactChild;
   hideName?: boolean;
 }
@@ -17,7 +17,7 @@ interface TitleBarProps {
  *
  * This displays the app name,
  */
-export function TitleBar({ children, hideName }: TitleBarProps): ReactElement {
+export function AppBar({ children, hideName }: AppBarProps): ReactElement {
   const { definition } = useAppDefinition();
   const { role, teams } = useUser();
   const { page } = usePage();

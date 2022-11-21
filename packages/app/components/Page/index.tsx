@@ -24,7 +24,7 @@ import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
 import { TabsPage } from '../TabsPage/index.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -164,7 +164,7 @@ export function Page(): ReactElement {
         data-path={prefix}
         data-path-index={prefixIndex}
       >
-        <TitleBar hideName={page.hideName}>{pageName}</TitleBar>
+        <AppBar hideName={page.hideName}>{pageName}</AppBar>
         {page.type === 'tabs' ? (
           <TabsPage
             data={data}
