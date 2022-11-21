@@ -14,7 +14,17 @@ import './custom.js';
 import { Diagnostic } from './Diagnostic/index.js';
 import styles from './index.module.css';
 
-editor.setTheme('vs');
+editor.defineTheme('vs-custom', {
+  base: 'vs',
+  inherit: true,
+  rules: [],
+  colors: {
+    'editorHoverWidget.background': '#FFFFFF',
+    'editorHoverWidget.border': '#E1E1E1',
+  },
+});
+
+editor.setTheme('vs-custom');
 
 interface MonacoEditorProps {
   /**
