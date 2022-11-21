@@ -1476,9 +1476,9 @@ export interface FlowPageDefinition extends BasePageDefinition {
   progress?: 'corner-dots' | 'hidden';
 
   /**
-   * Whether to clear the flow data when navigating away to another page outside the flow.
+   * Whether to retain the flow data when navigating away to another page outside the flow.
    *
-   * By default the flow page retains it's data after navigating once.
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
    *
    * @default true
    */
