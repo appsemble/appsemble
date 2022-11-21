@@ -446,6 +446,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -577,6 +585,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -707,6 +723,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1239,6 +1263,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -1370,6 +1402,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -1500,6 +1540,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1952,6 +2000,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -2084,6 +2140,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "hidden",
               ],
             },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
+            },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
 
@@ -2215,6 +2279,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to clear the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
