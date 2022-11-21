@@ -1,0 +1,1 @@
+`hideFromMenu` to `hideNavTitle`.
