@@ -1,1 +1,1 @@
-`hideFromMenu` to `hideNavTitle`.
+Rename `hideFromMenu` to `hideNavTitle`.
