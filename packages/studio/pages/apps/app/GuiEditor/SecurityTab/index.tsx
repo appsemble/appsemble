@@ -1,5 +1,10 @@
 import { Button, useMessages, useToggle } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  ResourceCall,
+  ResourceDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -147,17 +152,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                 );
               }
             }
-<<<<<<< HEAD
-=======
-            if (['create', 'delete', 'update'].includes(queryKeys)) {
-              const queryKey = queryKeys as keyof ResourceDefinition;
-              const query = resource[queryKey] as ResourceCall;
-              if (query.hooks?.notification?.to?.includes(oldRole)) {
-                (app.definition.resources[key][queryKey] as ResourceCall).hooks.notification.to =
-                  query.hooks.notification.to.map((role) => (role === oldRole ? newRole : role));
-              }
-            }
->>>>>>> cefcdc229 (Add renaming roles changing all references)
           }
         }
         // Rename role in pages
@@ -245,7 +239,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
 
-<<<<<<< HEAD
   const onCreateRoleName = useCallback(
     (event: ChangeEvent<HTMLInputElement>, input: string) => {
       if (input !== '') {
@@ -271,8 +264,19 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [app, createRoleDefinition, setCreateRoleDefinition],
   );
 
-=======
->>>>>>> cefcdc229 (Add renaming roles changing all references)
+  const onCreateRoleDescription = useCallback(
+    (input: string) => {
+      if (input === '') {
+        delete createRoleDefinition.description;
+      } else {
+        createRoleDefinition.description = input;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [createRoleDefinition, setCreateRoleDefinition],
+  );
+
+>>>>>>> 37fc634f3 (Add create roll and inheritance cycle)
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">

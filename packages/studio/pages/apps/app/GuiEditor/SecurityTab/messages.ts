@@ -20,4 +20,7 @@ export const messages = defineMessages({
   roleInheritedLabel: 'Inherits from',
   addNewRoleLabel: 'Add new role',
   noRoleOptions: 'No more roles available',
+  teamsJoinLabel: 'Join Team',
+  teamsCreateLabel: 'Create Team',
+  teamsInviteLabel: 'Invite Team',
 });
