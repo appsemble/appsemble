@@ -1,5 +1,10 @@
 import { Button, useMessages, useToggle } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  ResourceCall,
+  ResourceDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -43,6 +48,8 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const [selectedRole, setSelectedRole] = useState<string>(null);
   const [editRoleName, setEditRoleName] = useState<string>(null);
   const [newRoleName, setNewRoleName] = useState<string>(null);
+  const [createRoleName, setCreateRoleName] = useState<string>(null);
+  const [createRoleDefinition, setCreateRoleDefinition] = useState<RoleDefinition>(null);
   const modalRoleName = useToggle();
   const push = useMessages();
 
@@ -219,6 +226,43 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     }
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
+
+  const onCreateRoleName = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, input: string) => {
+      if (input !== '') {
+        if (Object.entries(app.definition.security?.roles || []).some(([key]) => key === input)) {
+          push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
+        } else {
+          setCreateRoleName(input);
+        }
+      }
+    },
+    [app, push, formatMessage],
+  );
+
+  const onCreateRoleDefaultPage = useCallback(
+    (pageNr: number) => {
+      if (pageNr === 0) {
+        delete createRoleDefinition.defaultPage;
+      } else {
+        createRoleDefinition.defaultPage = app.definition.pages[pageNr - 1].name;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [app, createRoleDefinition, setCreateRoleDefinition],
+  );
+
+  const onCreateRoleDescription = useCallback(
+    (input: string) => {
+      if (input === '') {
+        delete createRoleDefinition.description;
+      } else {
+        createRoleDefinition.description = input;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [createRoleDefinition, setCreateRoleDefinition],
+  );
 
   return (
     <>
