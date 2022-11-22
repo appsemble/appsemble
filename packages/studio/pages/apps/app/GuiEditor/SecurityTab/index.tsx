@@ -6,7 +6,12 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  ResourceCall,
+  ResourceDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -63,6 +68,16 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
       }
     },
     [setCurrentSideBar, setSelectedRole],
+  );
+
+  const onChangeTeamsJoin = useCallback(
+    (index: number) => {
+      if (app.definition.security.teams) {
+        app.definition.security.teams.join = teamsJoinOptions[index];
+        setApp({ ...app });
+      }
+    },
+    [app, setApp],
   );
 
   const onRoleSelect = useCallback(
@@ -238,6 +253,31 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     }
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
+
+  const onCreateRoleName = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, input: string) => {
+      if (input !== '') {
+        if (Object.entries(app.definition.security?.roles || []).some(([key]) => key === input)) {
+          push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
+        } else {
+          setCreateRoleName(input);
+        }
+      }
+    },
+    [app, push, formatMessage],
+  );
+
+  const onCreateRoleDefaultPage = useCallback(
+    (pageNr: number) => {
+      if (pageNr === 0) {
+        delete createRoleDefinition.defaultPage;
+      } else {
+        createRoleDefinition.defaultPage = app.definition.pages[pageNr - 1].name;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [app, createRoleDefinition, setCreateRoleDefinition],
+  );
 
   return (
     <>
