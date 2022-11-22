@@ -17,6 +17,10 @@ as in the side navigational menu.
 > **Note**: The URL used to navigate to pages is determined by this property.
 `,
     },
+    hideName: {
+      type: 'boolean',
+      description: 'Whether or not the page name should be displayed in the *app bar*.',
+    },
     navTitle: {
       $ref: '#/components/schemas/RemapperDefinition',
       description: `The name of the page when displayed in the navigation menu.
