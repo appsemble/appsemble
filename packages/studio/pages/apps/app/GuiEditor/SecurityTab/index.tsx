@@ -6,7 +6,12 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  ResourceCall,
+  ResourceDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -83,6 +88,16 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
       setCurrentSideBar(Tabs[2]);
     },
     [app],
+  );
+
+  const onChangeTeamsJoin = useCallback(
+    (index: number) => {
+      if (app.definition.security.teams) {
+        app.definition.security.teams.join = teamsJoinOptions[index];
+        setApp({ ...app });
+      }
+    },
+    [app, setApp],
   );
 
   const onRoleSelect = useCallback(
@@ -259,6 +274,43 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
 
+  const onCreateRoleName = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, input: string) => {
+      if (input !== '') {
+        if (Object.entries(app.definition.security?.roles || []).some(([key]) => key === input)) {
+          push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
+        } else {
+          setCreateRoleName(input);
+        }
+      }
+    },
+    [app, push, formatMessage],
+  );
+
+  const onCreateRoleDefaultPage = useCallback(
+    (pageNr: number) => {
+      if (pageNr === 0) {
+        delete createRoleDefinition.defaultPage;
+      } else {
+        createRoleDefinition.defaultPage = app.definition.pages[pageNr - 1].name;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [app, createRoleDefinition, setCreateRoleDefinition],
+  );
+
+  const onCreateRoleDescription = useCallback(
+    (input: string) => {
+      if (input === '') {
+        delete createRoleDefinition.description;
+      } else {
+        createRoleDefinition.description = input;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [createRoleDefinition, setCreateRoleDefinition],
+  );
+
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
@@ -296,7 +348,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
-<<<<<<< HEAD
         <div className={styles.rightBar}>
           {currentSideBar.tab === 'default' && <DefaultPage onChangeTab={onChangeTab} />}
           {currentSideBar.tab === 'teams' && <TeamsPage onChangeTab={onChangeTab} />}
@@ -305,152 +356,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
           ) : null}
           {currentSideBar.tab === 'roles' && !selectedRole ? <CreateRolePage /> : null}
         </div>
-=======
-        <>
-          {currentSideBar.tab === 'default' && (
-            <div className={styles.rightBar}>
-              <InputList
-                label={formatMessage(messages.defaultRoleLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultRole}
-                options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
-                value={app.definition.security?.default.role || ''}
-              />
-              <InputList
-                label={formatMessage(messages.defaultPolicyLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultPolicy}
-                options={policyOptions}
-                value={app.definition.security?.default.policy || ''}
-              />
-              {!app.definition.security?.roles && (
-                <>
-                  <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-                  <Button
-                    className="is-primary"
-                    icon="add"
-                    onClick={() => {
-                      setCurrentSideBar(Tabs[2]);
-                      setSelectedRole(null);
-                    }}
-                  >
-                    {formatMessage(messages.defaultCreateNewRole)}
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
-          {currentSideBar.tab === 'teams' && (
-            <div className={styles.rightBar}>
-              <InputList
-                label={formatMessage(messages.defaultRoleLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultRole}
-                options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
-                value={app.definition.security?.default.role || ''}
-              />
-              <InputList
-                label={formatMessage(messages.defaultPolicyLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultPolicy}
-                options={policyOptions}
-                value={app.definition.security?.default.policy || ''}
-              />
-              {!app.definition.security?.roles && (
-                <>
-                  <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-                  <Button
-                    className="is-primary"
-                    icon="add"
-                    onClick={() => {
-                      setCurrentSideBar(Tabs[2]);
-                      setSelectedRole(null);
-                    }}
-                  >
-                    {formatMessage(messages.defaultCreateNewRole)}
-                  </Button>
-                </>
-              )}
-            </div>
-          )}
-          {currentSideBar.tab === 'roles' && (
-            <>
-              {Object.entries(app.definition.security?.roles || []).map(([key, roleDefinition]) => {
-                if (key === selectedRole) {
-                  return (
-                    <div className={styles.rightBar} key={key}>
-                      <InputString
-                        label={formatMessage(messages.roleNameLabel)}
-                        maxLength={40}
-                        minLength={1}
-                        onClick={() => onOpenEditRoleName(key)}
-                        value={key}
-                      />
-                      <ModalCard
-                        cardClassName={styles.modal}
-                        component={Form}
-                        footer={
-                          <>
-                            <CardFooterButton onClick={closeEditRoleName}>
-                              <FormattedMessage {...messages.cancelRoleNameButton} />
-                            </CardFooterButton>
-                            <CardFooterButton color="primary" type="submit">
-                              <FormattedMessage {...messages.editRoleNameButton} />
-                            </CardFooterButton>
-                          </>
-                        }
-                        isActive={modalRoleName.enabled}
-                        onClose={closeEditRoleName}
-                        onSubmit={onEditRoleNameSubmit}
-                        title={<FormattedMessage {...messages.editNameRoleTitle} />}
-                      >
-                        <>
-                          <p>{formatMessage(messages.editRoleNameDescription)}</p>
-                          <br />
-                          <InputString
-                            allowNumbers
-                            allowSpaces={false}
-                            allowSymbols
-                            label={formatMessage(messages.roleNameLabel)}
-                            labelPosition="top"
-                            maxLength={40}
-                            minLength={1}
-                            onChange={onNewRoleNameChange}
-                            value={newRoleName}
-                          />
-                        </>
-                      </ModalCard>
-                      <InputList
-                        key={`${key}defaultPage`}
-                        label={formatMessage(messages.defaultPageLabel)}
-                        labelPosition="top"
-                        onChange={(pageNr) => onRoleChangeDefaultPage(key, pageNr)}
-                        options={[formatMessage(messages.noneLabel)].concat(
-                          app.definition.pages.map((option) => option.name),
-                        )}
-                        value={roleDefinition.defaultPage || formatMessage(messages.noneLabel)}
-                      />
-                      <InputTextArea
-                        allowSymbols
-                        label={formatMessage(messages.roleDescriptionLabel)}
-                        maxLength={80}
-                        minLength={0}
-                        onChange={(event, value) => onRoleDescriptionChange(key, value)}
-                        value={app.definition.security?.roles[key].description || ''}
-                      />
-                      <RolesInheritanceList
-                        label={formatMessage(messages.roleInheritedLabel)}
-                        labelPosition="top"
-                        roleKey={key}
-                      />
-                    </div>
-                  );
-                }
-              })}
-            </>
-          )}
-        </>
->>>>>>> 7df68998f (Security inheritance cycling check)
       </Sidebar>
     </>
   );
