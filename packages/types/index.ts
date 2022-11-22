@@ -1405,7 +1405,7 @@ export interface BasePageDefinition {
   /**
    * Whether or not the page name should be displayed in the *app bar*.
    */
-  hideName: boolean;
+  hideName?: boolean;
 
   /**
    * The name of the page when displayed in the navigation menu.
