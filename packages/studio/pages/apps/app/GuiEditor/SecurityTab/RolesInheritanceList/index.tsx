@@ -27,10 +27,10 @@ export function RolesInheritanceList({
       if (!app.definition.security.roles[role].inherits) {
         return true;
       }
-      if (app.definition.security.roles[role].inherits.includes(roleToCheck)) {
+      if (app.definition.security.roles[role].inherits.includes(roleKey)) {
         return false;
       }
-      return app.definition.security.roles[role].inherits.every(checkInheritance);
+      return app.definition.security.roles[role].inherits.every((r) => checkInheritance(r));
     };
     return checkInheritance(roleToCheck);
   };
