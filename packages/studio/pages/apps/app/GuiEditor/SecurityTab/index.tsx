@@ -75,6 +75,16 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [app],
   );
 
+  const onChangeTeamsJoin = useCallback(
+    (index: number) => {
+      if (app.definition.security.teams) {
+        app.definition.security.teams.join = teamsJoinOptions[index];
+        setApp({ ...app });
+      }
+    },
+    [app, setApp],
+  );
+
   const onRoleSelect = useCallback(
     (index: number) => {
       setSelectedRole(
@@ -248,6 +258,43 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     }
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
+
+  const onCreateRoleName = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, input: string) => {
+      if (input !== '') {
+        if (Object.entries(app.definition.security?.roles || []).some(([key]) => key === input)) {
+          push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
+        } else {
+          setCreateRoleName(input);
+        }
+      }
+    },
+    [app, push, formatMessage],
+  );
+
+  const onCreateRoleDefaultPage = useCallback(
+    (pageNr: number) => {
+      if (pageNr === 0) {
+        delete createRoleDefinition.defaultPage;
+      } else {
+        createRoleDefinition.defaultPage = app.definition.pages[pageNr - 1].name;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [app, createRoleDefinition, setCreateRoleDefinition],
+  );
+
+  const onCreateRoleDescription = useCallback(
+    (input: string) => {
+      if (input === '') {
+        delete createRoleDefinition.description;
+      } else {
+        createRoleDefinition.description = input;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [createRoleDefinition, setCreateRoleDefinition],
+  );
 
   return (
     <>
