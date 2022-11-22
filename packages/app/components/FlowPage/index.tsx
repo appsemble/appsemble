@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
-import { ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
@@ -53,6 +53,12 @@ export function FlowPage({
     defaultMessage: step.name,
   }).format() as string;
   useMeta(name === `{${id}}` ? null : name);
+
+  useEffect(() => {
+    if (page.retainFlowData === false) {
+      return () => setData({});
+    }
+  }, [page.retainFlowData, setData]);
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
