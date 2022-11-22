@@ -6,7 +6,12 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  ResourceCall,
+  ResourceDefinition,
+  RoleDefinition,
+} from '@appsemble/types';
 import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -43,6 +48,7 @@ const Tabs = [
 type LeftSidebar = (typeof Tabs)[number];
 
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
+const teamsJoinOptions = ['anyone', 'invite'] as const;
 
 export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
   const { formatMessage } = useIntl();
@@ -52,6 +58,8 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const [selectedRole, setSelectedRole] = useState<string>(null);
   const [editRoleName, setEditRoleName] = useState<string>(null);
   const [newRoleName, setNewRoleName] = useState<string>(null);
+  const [createRoleName, setCreateRoleName] = useState<string>(null);
+  const [createRoleDefinition, setCreateRoleDefinition] = useState<RoleDefinition>(null);
   const modalRoleName = useToggle();
   const push = useMessages();
 
@@ -71,6 +79,16 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
         app.definition.security.default.role = Object.entries(
           app.definition.security?.roles || [],
         ).map(([key]) => key)[index];
+        setApp({ ...app });
+      }
+    },
+    [app, setApp],
+  );
+
+  const onChangeTeamsJoin = useCallback(
+    (index: number) => {
+      if (app.definition.security.teams) {
+        app.definition.security.teams.join = teamsJoinOptions[index];
         setApp({ ...app });
       }
     },
@@ -251,6 +269,43 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
 
+  const onCreateRoleName = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, input: string) => {
+      if (input !== '') {
+        if (Object.entries(app.definition.security?.roles || []).some(([key]) => key === input)) {
+          push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
+        } else {
+          setCreateRoleName(input);
+        }
+      }
+    },
+    [app, push, formatMessage],
+  );
+
+  const onCreateRoleDefaultPage = useCallback(
+    (pageNr: number) => {
+      if (pageNr === 0) {
+        delete createRoleDefinition.defaultPage;
+      } else {
+        createRoleDefinition.defaultPage = app.definition.pages[pageNr - 1].name;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [app, createRoleDefinition, setCreateRoleDefinition],
+  );
+
+  const onCreateRoleDescription = useCallback(
+    (input: string) => {
+      if (input === '') {
+        delete createRoleDefinition.description;
+      } else {
+        createRoleDefinition.description = input;
+      }
+      setCreateRoleDefinition({ ...createRoleDefinition });
+    },
+    [createRoleDefinition, setCreateRoleDefinition],
+  );
+
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
@@ -325,37 +380,15 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
           {currentSideBar.tab === 'teams' && (
             <div className={styles.rightBar}>
               <InputList
-                label={formatMessage(messages.defaultRoleLabel)}
+                label={formatMessage(messages.teamsJoinLabel)}
                 labelPosition="top"
-                onChange={onChangeDefaultRole}
-                options={Object.entries(app.definition.security?.roles || []).map(([key]) => key)}
-                value={app.definition.security?.default.role || ''}
+                onChange={onChangeTeamsJoin}
+                options={['anyone', 'invite']}
+                value={app.definition.security?.teams?.join || 'anyone'}
               />
-              <InputList
-                label={formatMessage(messages.defaultPolicyLabel)}
-                labelPosition="top"
-                onChange={onChangeDefaultPolicy}
-                options={policyOptions}
-                value={app.definition.security?.default.policy || ''}
-              />
-              {!app.definition.security?.roles && (
-                <>
-                  <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-                  <Button
-                    className="is-primary"
-                    icon="add"
-                    onClick={() => {
-                      setCurrentSideBar(Tabs[2]);
-                      setSelectedRole(null);
-                    }}
-                  >
-                    {formatMessage(messages.defaultCreateNewRole)}
-                  </Button>
-                </>
-              )}
             </div>
           )}
-          {currentSideBar.tab === 'roles' && (
+          {currentSideBar.tab === 'roles' && selectedRole ? (
             <>
               {Object.entries(app.definition.security?.roles || []).map(([key, roleDefinition]) => {
                 if (key === selectedRole) {
@@ -430,6 +463,33 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
                 }
               })}
             </>
+          ) : (
+            <div className={styles.rightBar}>
+              <InputString
+                label={formatMessage(messages.roleNameLabel)}
+                maxLength={40}
+                minLength={1}
+                onChange={onCreateRoleName}
+                value={createRoleName}
+              />
+              <InputList
+                label={formatMessage(messages.defaultPageLabel)}
+                labelPosition="top"
+                onChange={(pageNr) => onCreateRoleDefaultPage(pageNr)}
+                options={[formatMessage(messages.noneLabel)].concat(
+                  app.definition.pages.map((option) => option.name),
+                )}
+                value={formatMessage(messages.noneLabel)}
+              />
+              <InputTextArea
+                allowSymbols
+                label={formatMessage(messages.roleDescriptionLabel)}
+                maxLength={80}
+                minLength={0}
+                onChange={(event, value) => onCreateRoleDescription(value)}
+                value=""
+              />
+            </div>
           )}
         </>
       </Sidebar>
