@@ -311,7 +311,10 @@ async function createIngressFunction(): Promise<
             [customSSL ? { op: 'remove', path } : { op: 'add', path, value: secretName }],
             {
               ...config,
-              headers: { ...config.headers, 'content-type': 'application/json-patch+json' },
+              headers: {
+                ...(config.headers as Record<string, string>),
+                'content-type': 'application/json-patch+json',
+              },
             },
           );
         } catch (err) {
