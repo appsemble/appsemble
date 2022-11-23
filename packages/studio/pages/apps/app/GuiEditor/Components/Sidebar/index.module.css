@@ -57,7 +57,6 @@
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 0 4px 0 0;
-  overflow: hidden;
   width: 100%;
 }
 
@@ -65,6 +64,5 @@
   background-color: hsl(0deg 0% 100%);
   border-bottom: none;
   border-radius: 4px 0 0;
-  overflow: hidden;
   width: 100%;
 }
