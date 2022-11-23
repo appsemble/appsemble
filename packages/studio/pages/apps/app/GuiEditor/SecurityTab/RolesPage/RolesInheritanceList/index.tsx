@@ -2,8 +2,8 @@ import { Button, useMessages } from '@appsemble/react-components';
 import { ReactElement, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { useApp } from '../../../index.js';
-import { InputList } from '../../Components/InputList/index.js';
+import { useApp } from '../../../../index.js';
+import { InputList } from '../../../Components/InputList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
