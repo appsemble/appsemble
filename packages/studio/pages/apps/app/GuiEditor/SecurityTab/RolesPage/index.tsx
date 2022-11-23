@@ -25,8 +25,11 @@ interface RoleReferences {
   inheritReferences: string[];
   foundInTeamsCreate: boolean;
   foundInTeamsInvite: boolean;
+<<<<<<< HEAD
   foundInAppRoles: boolean;
   foundInDefaultRole: boolean;
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
   resourceRolesReferences: string[];
   resourceViewsRolesReferences: string[];
   resourceQueryRolesReferences: string[];
@@ -142,7 +145,10 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           return page;
         });
         setApp({ ...app });
+<<<<<<< HEAD
         /* Send API request to server to rename roles from users currently using it */
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
       }
     },
     [app, setApp],
@@ -206,17 +212,23 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       } else {
         onRoleNameChange(editRoleName, newRoleName);
       }
+<<<<<<< HEAD
       /* Send API request to server to rename roles from users currently using it */
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
     }
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
 
   const onRoleDelete = useCallback(
     (key: string) => {
+<<<<<<< HEAD
       if (Object.entries(app.definition.security?.roles || []).length <= 1) {
         push({ body: formatMessage(messages.lastRole), color: 'danger' });
         return;
       }
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
@@ -225,10 +237,13 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           inheritReferences.push(roleKey);
         }
       }
+<<<<<<< HEAD
       // Search in app roles
       const foundInAppRoles = app.definition.roles?.includes(key);
       // Search in default security settings
       const foundInDefaultRole = app.definition.security.default.role === key;
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
       // Search in teams
       const foundInTeamsCreate = app.definition.security.teams?.create?.includes(key);
       const foundInTeamsInvite = app.definition.security.teams?.invite?.includes(key);
@@ -282,8 +297,11 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
         inheritReferences.length > 0 ||
         foundInTeamsCreate ||
         foundInTeamsInvite ||
+<<<<<<< HEAD
         foundInDefaultRole ||
         foundInAppRoles ||
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
         resourceRolesReferences.length > 0 ||
         resourceViewsRolesReferences.length > 0 ||
         resourceQueryRolesReferences.length > 0 ||
@@ -294,8 +312,11 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           inheritReferences,
           foundInTeamsCreate,
           foundInTeamsInvite,
+<<<<<<< HEAD
           foundInAppRoles,
           foundInDefaultRole,
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
           resourceRolesReferences,
           resourceViewsRolesReferences,
           resourceQueryRolesReferences,
@@ -305,9 +326,12 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
         modalDeleteRole.enable();
         return;
       }
+<<<<<<< HEAD
       /* Send API request to server to delete roles from users currently using it,
       give the user a dropdown to select which
       role to replace it with instead before it deletes */
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
       delete app.definition.security.roles[key];
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: key }), color: 'success' });
@@ -322,6 +346,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onForceDeleteRole = useCallback(() => {
     if (roleReferences) {
+<<<<<<< HEAD
       const {
         blockRolesReferences,
         foundInAppRoles,
@@ -666,10 +691,32 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       role to replace it with instead before it deletes.
       And force user to select a new role if default roles is using it */
       delete app.definition.security.roles[selectedRole];
+=======
+      const { foundInTeamsCreate, foundInTeamsInvite, inheritReferences } = roleReferences;
+      if (editRoleName) {
+        delete app.definition.security.roles[editRoleName];
+      }
+      // Remove references
+      // Remove from roles
+      for (const roleKey of inheritReferences) {
+        const role = app.definition.security.roles[roleKey];
+        if (role.inherits) {
+          role.inherits = role.inherits.filter((r) => r !== editRoleName);
+        }
+      }
+      // Remove from teams
+      if (foundInTeamsCreate) {
+        delete app.definition.security.teams.create;
+      }
+      if (foundInTeamsInvite) {
+        delete app.definition.security.teams.invite;
+      }
+>>>>>>> 16fc07f16 (Refactor security tab)
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }
     onCloseDeleteRole();
+<<<<<<< HEAD
   }, [
     app,
     editRoleName,
@@ -680,6 +727,9 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
     selectedRole,
     setApp,
   ]);
+=======
+  }, [app, editRoleName, formatMessage, onCloseDeleteRole, push, roleReferences, setApp]);
+>>>>>>> 16fc07f16 (Refactor security tab)
 
   return (
     <>
@@ -865,6 +915,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
                         })}
                       </p>
                     ) : null}
+<<<<<<< HEAD
                     {roleReferences?.foundInAppRoles ? (
                       <p className="is-size-6 has-text-weight-bold has-text-primary">
                         {formatMessage(messages.deleteRoleInAppRoles, {
@@ -879,6 +930,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
                         })}
                       </p>
                     ) : null}
+=======
+>>>>>>> 16fc07f16 (Refactor security tab)
                   </div>
                   <p className="is-size-4">{formatMessage(messages.deleteRoleWarning)}</p>
                 </>
