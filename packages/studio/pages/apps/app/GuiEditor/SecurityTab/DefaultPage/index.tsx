@@ -10,7 +10,7 @@ import { messages } from './messages.js';
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
 
 interface DefaultPageProps {
-  onChangeTab: (tab: typeof tabChangeOptions[number]) => void;
+  onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
 export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
   const { app, setApp } = useApp();
