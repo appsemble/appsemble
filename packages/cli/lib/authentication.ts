@@ -1,5 +1,5 @@
-import { AddressInfo, Server } from 'net';
-import { hostname } from 'os';
+import { AddressInfo, Server } from 'node:net';
+import { hostname } from 'node:os';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';

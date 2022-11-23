@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';

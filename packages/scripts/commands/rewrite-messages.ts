@@ -1,6 +1,6 @@
-import { readdir, readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
-import { fileURLToPath } from 'url';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { compareStrings } from '@appsemble/utils';

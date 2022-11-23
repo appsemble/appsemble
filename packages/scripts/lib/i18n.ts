@@ -1,5 +1,5 @@
-import { readdir } from 'fs/promises';
-import { join, parse } from 'path';
+import { readdir } from 'node:fs/promises';
+import { join, parse } from 'node:path';
 
 import { readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';

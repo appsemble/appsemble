@@ -1,5 +1,5 @@
-import { randomBytes } from 'crypto';
-import { isDeepStrictEqual } from 'util';
+import { randomBytes } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { App as AppType, BlockManifest } from '@appsemble/types';

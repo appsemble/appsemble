@@ -1,5 +1,5 @@
-import { EOL } from 'os';
-import { inspect } from 'util';
+import { EOL } from 'node:os';
+import { inspect } from 'node:util';
 
 import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';

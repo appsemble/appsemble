@@ -1,5 +1,5 @@
-import { readdir, readFile, rm, writeFile } from 'fs/promises';
-import { basename, dirname, join, parse } from 'path';
+import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { basename, dirname, join, parse } from 'node:path';
 
 import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { AppsembleMessages } from '@appsemble/types';

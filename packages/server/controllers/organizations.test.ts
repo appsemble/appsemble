@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';

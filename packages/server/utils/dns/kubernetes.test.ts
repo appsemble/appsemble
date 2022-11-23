@@ -1,4 +1,4 @@
-import { Agent } from 'https';
+import { Agent } from 'node:https';
 
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';

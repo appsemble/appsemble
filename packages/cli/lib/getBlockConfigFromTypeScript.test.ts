@@ -1,6 +1,6 @@
-import { readdirSync } from 'fs';
-import process from 'process';
-import { fileURLToPath } from 'url';
+import { readdirSync } from 'node:fs';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';

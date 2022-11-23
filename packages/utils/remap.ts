@@ -172,10 +172,17 @@ const mapperImplementations: MapperImplementations = {
     throw new Error(`Unknown page property: ${prop}`);
   },
 
-  context: (prop, input, context) =>
-    String(prop)
-      .split('.')
-      .reduce((acc, p) => acc?.[p] ?? null, context.context),
+  context(prop, input, context) {
+    const propArray = String(prop).split('.');
+    let result = context.context;
+    for (const p of propArray) {
+      if (result == null) {
+        return result;
+      }
+      result = result[p];
+    }
+    return result;
+  },
 
   equals(mappers, input: any, context) {
     if (mappers.length <= 1) {
@@ -260,14 +267,14 @@ const mapperImplementations: MapperImplementations = {
     const result = { ...input };
     for (const key of keys) {
       if (Array.isArray(key)) {
-        key.reduce((acc, k, index) => {
+        let acc = result;
+        for (const [index, k] of key.entries()) {
           if (index === key.length - 1) {
             delete acc[k];
           } else {
-            return acc?.[k];
+            acc = acc?.[k];
           }
-          return acc;
-        }, result);
+        }
       } else {
         delete result[key];
       }
@@ -327,7 +334,16 @@ const mapperImplementations: MapperImplementations = {
 
   static: (input) => input,
 
-  prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),
+  prop(prop, obj) {
+    let result: any = obj;
+    for (const p of [prop].flat()) {
+      if (result == null) {
+        return result;
+      }
+      result = result[p];
+    }
+    return result;
+  },
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
@@ -386,14 +402,14 @@ const mapperImplementations: MapperImplementations = {
     const result = { ...(context.history[index] as Record<string, any>) };
     for (const key of keys) {
       if (Array.isArray(key)) {
-        key.reduce((acc, k, i) => {
+        let acc = result;
+        for (const [i, k] of key.entries()) {
           if (i === key.length - 1) {
             delete acc[k];
           } else {
-            return acc?.[k];
+            acc = acc?.[k];
           }
-          return acc;
-        }, result);
+        }
       } else {
         delete result[key];
       }
