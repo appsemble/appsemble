@@ -32,8 +32,8 @@ export function BooleanInput({
       color={color}
       disabled={disabled}
       error={dirty ? error : null}
-      inline={inline}
       icon={icon}
+      inline={inline}
       label={checkboxLabel as string}
       name={name}
       onChange={onChange}
