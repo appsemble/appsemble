@@ -1,6 +1,7 @@
 import { ComponentChild, ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
+import { IconCheckbox } from '../IconCheckbox/index.js';
 import { Checkbox, FormComponent, SharedFormComponentProps } from '../index.js';
 
 type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, 'error'> &
@@ -36,7 +37,9 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       title,
       tag,
       optionalLabel,
+      icon,
       inline,
+      switch: isSwitch,
       ...props
     },
     ref,
@@ -51,7 +54,27 @@ export const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
       required
       tag={tag}
     >
-      <Checkbox {...props} error={Boolean(error)} id={id} label={title} name={name} ref={ref} />
+      {icon && !isSwitch ? (
+        <IconCheckbox
+          {...props}
+          error={Boolean(error)}
+          icon={icon}
+          id={id}
+          label={title}
+          name={name}
+          ref={ref}
+        />
+      ) : (
+        <Checkbox
+          {...props}
+          error={Boolean(error)}
+          id={id}
+          label={title}
+          name={name}
+          ref={ref}
+          switch={isSwitch}
+        />
+      )}
     </FormComponent>
   ),
 );

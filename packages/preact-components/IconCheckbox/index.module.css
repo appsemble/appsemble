@@ -1,0 +1,101 @@
+.checkbox[type='checkbox'] {
+  opacity: 0;
+}
+
+.checkbox[type='checkbox'] + label {
+  border-radius: 4px;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.checkbox[type='checkbox'] + label > span {
+  border: 0.1rem solid hsl(0deg 0% 86%);
+  border-radius: 4px;
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.checkbox[type='checkbox']:checked + label > span {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.checkbox[type='checkbox'] + label > span:hover {
+  border-color: var(--primary-color);
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.primary:hover,
+.checkbox[type='checkbox']:checked + label > span.primary {
+  border-color: var(--primary-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.link:hover,
+.checkbox[type='checkbox']:checked + label > span.link {
+  border-color: var(--link-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.success:hover,
+.checkbox[type='checkbox']:checked + label > span.success {
+  border-color: var(--success-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.info:hover,
+.checkbox[type='checkbox']:checked + label > span.info {
+  border-color: var(--info-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.warning:hover,
+.checkbox[type='checkbox']:checked + label > span.warning {
+  border-color: var(--warning-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.danger:hover,
+.checkbox[type='checkbox']:checked + label > span.danger {
+  border-color: var(--danger-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.dark:hover,
+.checkbox[type='checkbox']:checked + label > span.dark {
+  border-color: var(--white-color) !important;
+}
+
+/* stylelint-disable-next-line selector-max-type */
+.white:hover,
+.checkbox[type='checkbox']:checked + label > span.white {
+  border-color: var(--dark-color) !important;
+}
+
+.large {
+  font-size: 2rem;
+  height: 7.5rem !important;
+  width: 7.5rem !important;
+}
+
+.medium {
+  font-size: 1.5rem;
+  height: 3.5rem !important;
+  width: 3.5rem !important;
+}
+
+.normal {
+  font-size: 1rem;
+  height: 1.5rem !important;
+  width: 1.5rem !important;
+}
+
+.small {
+  font-size: 0.75rem;
+  height: 1.125rem !important;
+  width: 1.125rem !important;
+}
