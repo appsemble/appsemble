@@ -12,7 +12,7 @@ interface InputStringProps {
   allowSymbols?: boolean;
   allowNumbers?: boolean;
   allowSpaces?: boolean;
-  pattern?: RegExp | string;
+  pattern?: RegExp;
   onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   value: string;
   readonly?: boolean;
@@ -50,7 +50,9 @@ export function InputString({
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
       if (pattern) {
-        onChange(event, input);
+        if (pattern.test(input) || input === '') {
+          onChange(event, input);
+        }
         return;
       }
       let finalValue = '';
@@ -66,7 +68,9 @@ export function InputString({
   );
 
   const onClickInput = useCallback(() => {
-    onClick(value);
+    if (onClick) {
+      onClick(value);
+    }
   }, [onClick, value]);
 
   if (!label) {
@@ -77,7 +81,6 @@ export function InputString({
         minLength={minLength}
         onChange={onInputChange}
         onClick={onClickInput}
-        pattern={pattern}
         readOnly={readonly}
         value={value}
       />
@@ -97,7 +100,6 @@ export function InputString({
         minLength={minLength}
         onChange={onInputChange}
         onClick={onClickInput}
-        pattern={pattern}
         readOnly={readonly}
         value={value}
       />
