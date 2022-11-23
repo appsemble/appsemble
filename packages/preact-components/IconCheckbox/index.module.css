@@ -1,12 +1,11 @@
 .checkbox[type='checkbox'] {
   opacity: 0;
+  position: absolute;
 }
 
 .checkbox[type='checkbox'] + label {
   border-radius: 4px;
   cursor: pointer;
-  left: 0;
-  position: absolute;
 }
 
 /* stylelint-disable-next-line selector-max-type */
