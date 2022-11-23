@@ -1,6 +1,6 @@
-import { Dirent, Stats } from 'fs';
-import { mkdir, opendir, readFile, stat, writeFile } from 'fs/promises';
-import { dirname, extname, join } from 'path';
+import { Dirent, Stats } from 'node:fs';
+import { mkdir, opendir, readFile, stat, writeFile } from 'node:fs/promises';
+import { dirname, extname, join } from 'node:path';
 
 import { compareStrings } from '@appsemble/utils';
 import parseJson from 'parse-json';

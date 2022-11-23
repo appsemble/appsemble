@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';

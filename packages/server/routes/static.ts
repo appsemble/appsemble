@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 import { Middleware } from 'koa';
 import serve from 'koa-static';

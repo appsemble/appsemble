@@ -1,5 +1,5 @@
-import { createRequire } from 'module';
-import { join } from 'path';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 
 import { BlockConfig } from '@appsemble/types';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';

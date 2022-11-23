@@ -1,4 +1,4 @@
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { has } from '@appsemble/utils';
