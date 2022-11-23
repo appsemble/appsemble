@@ -173,15 +173,14 @@ const mapperImplementations: MapperImplementations = {
   },
 
   context(prop, input, context) {
-    const propArray = String(prop).split('.');
     let result = context.context;
-    for (const p of propArray) {
+    for (const p of String(prop).split('.')) {
       if (result == null) {
-        return result;
+        return null;
       }
       result = result[p];
     }
-    return result;
+    return result ?? null;
   },
 
   equals(mappers, input: any, context) {
