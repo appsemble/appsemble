@@ -33,22 +33,6 @@ type CheckboxProps = Omit<
   value?: boolean;
 
   /**
-   * Whether the component should render as a switch or as a square checkbox.
-   */
-  switch?: boolean;
-
-  /**
-   * Style options for when the checkbox is displaying as a switch.
-   *
-   * Does nothing if `switch` is set to `false`.
-   */
-  switchOptions?: {
-    outlined?: boolean;
-    thin?: boolean;
-    rounded?: boolean;
-  };
-
-  /**
    * The color of the checkbox.
    */
   color?: BulmaColor;
@@ -59,13 +43,6 @@ type CheckboxProps = Omit<
    * @default 'normal'
    */
   size?: BulmaSize;
-
-  /**
-   * Whether the label should be displayed to the right of the checkbox or to the left.
-   *
-   * By default (false), the label will be rendered after the checkbox.
-   */
-  rtl?: boolean;
 };
 
 /**
@@ -83,7 +60,6 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
       id = name,
       size = 'normal',
       color,
-      rtl,
       icon,
       ...props
     },
@@ -108,7 +84,7 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           type="checkbox"
         />
-        <label className={classNames({ 'is-danger': error })} htmlFor={id}>
+        <label htmlFor={id}>
           {icon ? (
             <Icon
               className={classNames(styles[color], styles[size], {
