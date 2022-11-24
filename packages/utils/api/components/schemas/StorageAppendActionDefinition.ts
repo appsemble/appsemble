@@ -1,29 +1,30 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const StorageAppendActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type', 'key', 'value'],
   properties: {
     type: {
-      enum: ['storage.write'],
-      description: `Write data to the app’s local storage.
+      enum: ['storage.append'],
+      description: `Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
-type: storage.write
+type: storage.append
 key: temp
 value: { root }
 storage: localStorage
 remapBefore:
   object.from:
-    data:
-      cool data
+    text:
+      This is a new data item
     value:
       1
 \`\`\`
-      `,
+`,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',
@@ -31,7 +32,7 @@ remapBefore:
     },
     value: {
       $ref: '#/components/schemas/RemapperDefinition',
-      description: 'The data to write to the storage entry.',
+      description: 'The data to write on top of the storage entry.',
     },
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],

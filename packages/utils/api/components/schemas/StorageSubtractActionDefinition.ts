@@ -1,23 +1,26 @@
 import { BaseActionDefinition } from './BaseActionDefinition.js';
 import { extendJSONSchema } from './utils.js';
 
-export const StorageReadActionDefinition = extendJSONSchema(BaseActionDefinition, {
+export const StorageSubtractActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
   required: ['type', 'key'],
   properties: {
     type: {
-      enum: ['storage.read'],
-      description: `Read data from the app’s local storage.
+      enum: ['storage.subtract'],
+      description: `Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it into a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
-type: storage.read
+type: storage.subtract
 key: temp
 storage: localStorage
 \`\`\`
-
-      `,
+        `,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',

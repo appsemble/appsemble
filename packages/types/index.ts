@@ -974,6 +974,77 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
 
 type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
 
+export interface StorageAppendActionDefinition extends BaseActionDefinition<'storage.append'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The data to write to the app’s storage.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageDeleteActionDefinition extends BaseActionDefinition<'storage.delete'> {
+  /**
+   * The key of the entry to delete from the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to delete the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageSubtractActionDefinition extends BaseActionDefinition<'storage.subtract'> {
+  /**
+   * The key of the entry to subtract the last entry from
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageUpdateActionDefinition extends BaseActionDefinition<'storage.update'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The key of the item to update.
+   */
+  item: Remapper;
+
+  /**
+   * The data to update the specified item with.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
 export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
   /**
    * The key of the entry to read from the app’s storage.
@@ -1271,7 +1342,11 @@ export type ActionDefinition =
   | ResourceUpdateActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
+  | StorageAppendActionDefinition
+  | StorageDeleteActionDefinition
   | StorageReadActionDefinition
+  | StorageSubtractActionDefinition
+  | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
   | UserLoginAction
