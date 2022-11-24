@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { MutableRefObject, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
@@ -27,6 +27,7 @@ interface FlowPageProps {
   setData: (data: unknown) => void;
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
+  stepRef: MutableRefObject<unknown>;
 }
 
 export function FlowPage({
@@ -41,6 +42,7 @@ export function FlowPage({
   setData,
   showDialog,
   showShareDialog,
+  stepRef,
 }: FlowPageProps): ReactElement {
   const navigate = useNavigate();
   const params = useParams();
@@ -86,13 +88,13 @@ export function FlowPage({
       if (currentStep + 1 === steps.length) {
         return finish(d);
       }
-
       setData(d);
       setCurrentStep(currentStep + 1);
+      stepRef.current = (data as Record<string, any>)[currentStep + 1];
 
       return d;
     },
-    [currentStep, finish, page, setData],
+    [currentStep, finish, page, setData, data, stepRef],
   );
 
   const back = useCallback(
@@ -105,10 +107,11 @@ export function FlowPage({
 
       setData(d);
       setCurrentStep(currentStep - 1);
+      stepRef.current = (data as Record<string, any>)[currentStep - 1];
 
       return d;
     },
-    [currentStep, setData],
+    [currentStep, setData, data, stepRef],
   );
 
   const cancel = useCallback(
@@ -131,10 +134,11 @@ export function FlowPage({
 
       setData(d);
       setCurrentStep(found);
+      stepRef.current = (data as Record<string, any>)[found];
 
       return d;
     },
-    [page, setData],
+    [page, setData, data, stepRef],
   );
 
   const flowActions = useMemo(

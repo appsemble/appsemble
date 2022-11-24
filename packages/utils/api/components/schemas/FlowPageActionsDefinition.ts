@@ -5,6 +5,10 @@ export const FlowPageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
   description: 'These actions are fired on a flow page.',
   additionalProperties: false,
   properties: {
+    onLoad: {
+      $ref: '#/components/schemas/ActionDefinition',
+      description: 'This action is used to define the data to pass onto the loop type array',
+    },
     onFlowCancel: {
       $ref: '#/components/schemas/ActionDefinition',
       description: 'This action gets triggered when `flow.cancel` gets called.',
