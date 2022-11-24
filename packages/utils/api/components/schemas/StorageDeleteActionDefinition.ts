@@ -8,7 +8,7 @@ export const StorageDeleteActionDefinition = extendJSONSchema(BaseActionDefiniti
   properties: {
     type: {
       enum: ['storage.delete'],
-      description: `Delete the dataset that is stored at the specified key.
+      description: `Delete the item that is stored at the specified key.
 
 For example:
 \`\`\`yaml

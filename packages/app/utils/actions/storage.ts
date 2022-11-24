@@ -130,9 +130,7 @@ export const append: ActionCreator<'storage.append'> = ({ definition, remap }) =
     if (Array.isArray(storageData)) {
       storageData.push(value);
     } else {
-      const storageArray: Object[] = [];
-      storageArray.push(storageData, value);
-      storageData = storageArray;
+      storageData = [storageData, value];
     }
 
     writeStorage(storage, key, storageData);
@@ -152,10 +150,9 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ definition, remap 
     let storageData: Object | Object[] = await readStorage(storage, key);
 
     if (Array.isArray(storageData)) {
-      storageData.pop();
+      const last = storageData.pop();
       if (storageData.length <= 1) {
-        const [storageObject] = storageData;
-        storageData = storageObject;
+        storageData = last;
       }
     } else {
       storageData = null;

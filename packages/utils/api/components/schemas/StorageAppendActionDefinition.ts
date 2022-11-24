@@ -31,7 +31,7 @@ remapBefore:
     },
     value: {
       $ref: '#/components/schemas/RemapperDefinition',
-      description: 'The data to write ontop of the storage entry.',
+      description: 'The data to write on top of the storage entry.',
     },
     storage: {
       enum: ['indexedDB', 'localStorage', 'sessionStorage'],
