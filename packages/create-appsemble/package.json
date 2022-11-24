@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.20.20",
+  "version": "0.20.21",
   "description": "Bootstrap an Appsemble project",
   "keywords": [
     "app",
@@ -33,7 +33,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.20",
+    "@appsemble/node-utils": "0.20.21",
     "inquirer": "^9.0.0",
     "type-fest": "^2.0.0",
     "yargs": "^17.0.0"
