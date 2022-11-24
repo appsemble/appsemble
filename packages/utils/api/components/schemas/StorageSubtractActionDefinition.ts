@@ -10,7 +10,7 @@ export const StorageSubtractActionDefinition = extendJSONSchema(BaseActionDefini
       enum: ['storage.subtract'],
       description: `Subtract last item from a storage entry.
 
-      If the entry consists of only one item, turns it a singular object.
+      If the entry consists of only one item, turns it into a singular object.
 
       If the entry is a single item, the entry is removed entirely.
 
