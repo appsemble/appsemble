@@ -2126,7 +2126,8 @@ This is useful for example for stubbing data.
                       ],
                     },
                     "type": {
-                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+                      "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -2148,7 +2149,7 @@ remapBefore:
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write ontop of the storage entry.",
+                      "description": "The data to write on top of the storage entry.",
                     },
                   },
                   "required": [
@@ -2193,7 +2194,8 @@ remapBefore:
                       ],
                     },
                     "type": {
-                      "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+                      "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -2215,7 +2217,7 @@ remapBefore:
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write ontop of the storage entry.",
+                      "description": "The data to write on top of the storage entry.",
                     },
                   },
                   "required": [
@@ -2241,7 +2243,8 @@ remapBefore:
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+                  "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -2296,7 +2299,11 @@ remapBefore:
                       ],
                     },
                     "type": {
-                      "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+                      "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -2332,7 +2339,11 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+                  "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -2620,7 +2631,7 @@ remapBefore:
                   "properties": {
                     "item": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The key of the item to update.",
+                      "description": "The key of the item in an array to update.",
                     },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
@@ -2640,7 +2651,7 @@ remapBefore:
                       ],
                     },
                     "type": {
-                      "description": "Update data from an existing dataset in storage
+                      "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -2691,7 +2702,7 @@ remapBefore:
                   "properties": {
                     "item": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The key of the item to update.",
+                      "description": "The key of the item in an array to update.",
                     },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
@@ -2711,7 +2722,7 @@ remapBefore:
                       ],
                     },
                     "type": {
-                      "description": "Update data from an existing dataset in storage
+                      "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -2759,7 +2770,7 @@ remapBefore:
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Update data from an existing dataset in storage
+                  "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -2814,7 +2825,7 @@ remapBefore:
                       ],
                     },
                     "type": {
-                      "description": "Delete the dataset that is stored at the specified key.
+                      "description": "Delete the item that is stored at the specified key.
 
 For example:
 \`\`\`yaml
@@ -2850,7 +2861,7 @@ storage: localStorage
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Delete the dataset that is stored at the specified key.
+                  "description": "Delete the item that is stored at the specified key.
 
 For example:
 \`\`\`yaml
@@ -5770,7 +5781,8 @@ This is useful for example for stubbing data.
               ],
             },
             "type": {
-              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+              "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -5792,7 +5804,7 @@ remapBefore:
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write ontop of the storage entry.",
+              "description": "The data to write on top of the storage entry.",
             },
           },
           "required": [
@@ -5837,7 +5849,8 @@ remapBefore:
               ],
             },
             "type": {
-              "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+              "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -5859,7 +5872,7 @@ remapBefore:
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write ontop of the storage entry.",
+              "description": "The data to write on top of the storage entry.",
             },
           },
           "required": [
@@ -5885,7 +5898,8 @@ remapBefore:
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Append data to an existing dataset in storage. If the data is a single object, it turns it into an array to append the data on.
+          "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
 
 For example:
 \`\`\`yaml
@@ -5940,7 +5954,11 @@ remapBefore:
               ],
             },
             "type": {
-              "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+              "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -5976,7 +5994,11 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+          "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
@@ -6264,7 +6286,7 @@ remapBefore:
           "properties": {
             "item": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The key of the item to update.",
+              "description": "The key of the item in an array to update.",
             },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
@@ -6284,7 +6306,7 @@ remapBefore:
               ],
             },
             "type": {
-              "description": "Update data from an existing dataset in storage
+              "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -6335,7 +6357,7 @@ remapBefore:
           "properties": {
             "item": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The key of the item to update.",
+              "description": "The key of the item in an array to update.",
             },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
@@ -6355,7 +6377,7 @@ remapBefore:
               ],
             },
             "type": {
-              "description": "Update data from an existing dataset in storage
+              "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -6403,7 +6425,7 @@ remapBefore:
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Update data from an existing dataset in storage
+          "description": "Update an existing item in storage, or update an item inside a stored array.
 
 For example:
 \`\`\`yaml
@@ -6458,7 +6480,7 @@ remapBefore:
               ],
             },
             "type": {
-              "description": "Delete the dataset that is stored at the specified key.
+              "description": "Delete the item that is stored at the specified key.
 
 For example:
 \`\`\`yaml
@@ -6494,7 +6516,7 @@ storage: localStorage
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Delete the dataset that is stored at the specified key.
+          "description": "Delete the item that is stored at the specified key.
 
 For example:
 \`\`\`yaml

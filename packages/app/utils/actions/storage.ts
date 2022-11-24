@@ -20,24 +20,21 @@ export function getDB(): Promise<IDBPDatabase> {
 export async function readStorage(storageType: string, key: string): Promise<Object> {
   const storage = storageType || 'indexedDB';
 
-  switch (true) {
-    case storage !== 'indexedDB': {
-      const store = storage === 'localStorage' ? localStorage : sessionStorage;
-      const value = store.getItem(`appsemble-${appId}-${key}`);
-      if (!value) {
-        throw new Error('Could not find data at this key.');
-      }
-      return JSON.parse(value);
+  if (storage !== 'indexedDB') {
+    const store = storage === 'localStorage' ? localStorage : sessionStorage;
+    const value = store.getItem(`appsemble-${appId}-${key}`);
+    if (!value) {
+      throw new Error('Could not find data at this key.');
     }
-    default: {
-      const db = await getDB();
-      const value = db.get('storage', key);
-      if (!value) {
-        throw new Error('Could not find data at this key.');
-      }
-      return value;
-    }
+    return JSON.parse(value);
   }
+
+  const db = await getDB();
+  const value = db.get('storage', key);
+  if (!value) {
+    throw new Error('Could not find data at this key.');
+  }
+  return value;
 }
 
 export function writeStorage(storage: string, key: string, value: any): void {
@@ -110,7 +107,7 @@ export const remove: ActionCreator<'storage.delete'> = ({ definition, remap }) =
     }
 
     deleteStorage(definition.storage, key);
-    return true;
+    return data;
   },
 ];
 

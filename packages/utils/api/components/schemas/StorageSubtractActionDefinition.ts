@@ -8,7 +8,11 @@ export const StorageSubtractActionDefinition = extendJSONSchema(BaseActionDefini
   properties: {
     type: {
       enum: ['storage.subtract'],
-      description: `Subtract last item from a storage entry. If the dataset consists of only one item, turns it a singular object.
+      description: `Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
 
 For example:
 \`\`\`yaml
