@@ -67,7 +67,7 @@ If the input is not an array an empty array is returned.`,
     'array.omit': {
       type: 'array',
       items: {
-        type: 'number',
+        $ref: '#/components/schemas/RemapperDefinition',
       },
       description: `Remove item(s) from an array given a predefined array of remappable indices.
 
