@@ -84,15 +84,8 @@ export const IconCheckbox = forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           type="checkbox"
         />
-        <label htmlFor={id}>
-          {icon ? (
-            <Icon
-              className={classNames(styles[color], styles[size], {
-                [`has-text-${color}`]: color && value,
-              })}
-              icon={icon as IconName}
-            />
-          ) : null}
+        <label className={classNames(styles[size], styles[color])} htmlFor={id}>
+          {icon ? <Icon icon={icon as IconName} /> : null}
           {label}
         </label>
       </span>
