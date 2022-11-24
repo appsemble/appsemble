@@ -85,6 +85,10 @@ interface InternalContext extends RemapperContext {
     index: number;
     length: number;
   };
+
+  stepRef?: {
+    current: Record<string, any>;
+  };
 }
 
 type MapperImplementations = {
@@ -190,6 +194,10 @@ const mapperImplementations: MapperImplementations = {
 
     const values = mappers.map((mapper) => remap(mapper, input, context));
     return values.every((value) => equal(values[0], value));
+  },
+
+  step(mapper, input, context) {
+    return context.stepRef.current[mapper];
   },
 
   gt: ([left, right], input: any, context) =>

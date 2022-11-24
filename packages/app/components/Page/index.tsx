@@ -7,7 +7,13 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import { PageDefinition, Remapper } from '@appsemble/types';
+import {
+  BlockDefinition,
+  FlowPageDefinition,
+  PageDefinition,
+  Remapper,
+  SubPage,
+} from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -56,6 +62,8 @@ export function Page(): ReactElement {
     [],
   );
 
+  const stepRef = useRef<unknown>();
+
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
     // eslint-disable-next-line unicorn/prefer-event-target
@@ -95,6 +103,7 @@ export function Page(): ReactElement {
         history: context?.history,
         root: input,
         locale: lang,
+        stepRef,
       }),
     [data, getMessage, lang, userInfo],
   );
@@ -142,6 +151,53 @@ export function Page(): ReactElement {
       setPage(page);
     }
   }, [checkPagePermissions, navPage, page, setPage]);
+
+  useEffect(() => {
+    if (page.type === 'flow' && page.actions.onLoad && page.foreach) {
+      // Const templateStep = page.foreach;
+      const loopResource = [{ title: 'Title 1' }, { title: 'Title 2' }, { title: 'Title 3' }];
+      const templateBlocks: BlockDefinition[] = [
+        {
+          type: 'detail-viewer',
+          version: '0.20.20',
+          parameters: {
+            fields: [
+              {
+                label: { step: 'title' },
+              },
+            ],
+          },
+        },
+        {
+          type: 'control-buttons',
+          version: '0.20.20',
+          actions: {
+            onBack: {
+              type: 'flow.back',
+            },
+            onForward: {
+              type: 'flow.next',
+            },
+          },
+        },
+      ];
+      for (const resourceData of loopResource) {
+        if (resourceData) {
+          const step: SubPage = {
+            name: 'New loop page',
+            blocks: templateBlocks,
+          };
+          page.steps.push(step);
+        }
+      }
+      setData(loopResource);
+    }
+  }, [
+    page.type,
+    (page as FlowPageDefinition).actions.onLoad,
+    (page as FlowPageDefinition).foreach,
+    (page as FlowPageDefinition).steps,
+  ]);
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
@@ -195,6 +251,7 @@ export function Page(): ReactElement {
                     setData={setData}
                     showDialog={showDialog}
                     showShareDialog={showShareDialog}
+                    stepRef={stepRef}
                   />
                 ) : (
                   <BlockList
