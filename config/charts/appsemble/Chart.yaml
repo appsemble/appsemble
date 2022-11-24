@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.21
-appVersion: 0.20.21
+version: 0.20.22
+appVersion: 0.20.22
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,29 +25,15 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add inline property to form fields."
+      description: "App: Add storage.append action."
     - kind: added
-      description: "Block(form): Allow the required requirement to be remapped for
-        conditionally required form fields."
+      description: "App: Add storage.delete action."
     - kind: added
-      description: "App: Add Indonesian translations."
+      description: "App: Add storage.subtract action."
     - kind: added
-      description: "App: Add retainFlowData prop to flow page."
-    - kind: added
-      description: "App: Added Russian translations."
-    - kind: added
-      description: "Studio: Add Indonesian translations."
-    - kind: added
-      description: "Studio: Added Russian translations."
-    - kind: added
-      description: "Types: Add hideName prop to pages."
-    - kind: added
-      description: "Utils: Add from.history remapper."
-    - kind: changed
-      description: "Types: array.omit remapper now supports an array of remappers as input."
+      description: "App: Add storage.update action."
     - kind: fixed
-      description: "App: Resolve link.back action not navigating to the previous page
-        if current page is translated."
+      description: "Utils: Resolve array.omit not accepting an array of remappers."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

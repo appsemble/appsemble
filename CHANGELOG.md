@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.22](https://gitlab.com/appsemble/appsemble/-/releases/0.20.22)] - 2022-11-24
+
+### Added
+
+- App: Add storage.append action.
+- App: Add storage.delete action.
+- App: Add storage.subtract action.
+- App: Add storage.update action.
+
+### Fixed
+
+- Utils: Resolve `array.omit` not accepting an array of remappers.
+
 ## \[[0.20.21](https://gitlab.com/appsemble/appsemble/-/releases/0.20.21)] - 2022-11-24
 
 ### Added

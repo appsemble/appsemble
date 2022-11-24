@@ -1,1 +1,0 @@
-Add storage.update action
