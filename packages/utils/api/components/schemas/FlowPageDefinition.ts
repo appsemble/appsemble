@@ -21,6 +21,9 @@ export const FlowPageDefinition = extendJSONSchema(BasePageDefinition, {
     actions: {
       $ref: '#/components/schemas/FlowPageActionsDefinition',
     },
+    foreach: {
+      $ref: '#/components/schemas/SubPage',
+    },
     progress: {
       description: 'The method that should be used to display the status of flow pages.',
       enum: ['corner-dots', 'hidden'],

@@ -312,6 +312,11 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
+   * Get data stored at the current flow page step
+   */
+  step: string;
+
+  /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is greater than the second entry.
@@ -1463,7 +1468,13 @@ export interface BasicPageDefinition extends BasePageDefinition {
 
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
-  steps: SubPage[];
+
+  steps?: SubPage[];
+
+  /**
+   * Template step that the loop will pass data onto
+   */
+  foreach?: SubPage;
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -1471,6 +1482,7 @@ export interface FlowPageDefinition extends BasePageDefinition {
   actions?: {
     onFlowCancel?: ActionDefinition;
     onFlowFinish?: ActionDefinition;
+    onLoad?: ActionDefinition;
   };
 
   /**
