@@ -410,7 +410,7 @@ function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Repo
   }
 
   if (page.parameters) {
-    report(defaultPage, 'may not specifiy parameters', ['defaultPage']);
+    report(defaultPage, 'may not specify parameters', ['defaultPage']);
   }
 }
 

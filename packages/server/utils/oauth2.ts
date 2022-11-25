@@ -61,14 +61,14 @@ export async function getAccessToken(
  * Get user info given an OAuth2 provider preset and a token response.
  *
  * 1. If an ID token is present, try to extract information from it.
- * 2. If the information is still incomplete, extract information from the access token.
- * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
+ * 2. If the information is still  lacking, extract information from the access token.
+ * 3. If the information is still lacking, fetch information from the userinfo endpoint.
  *
  * @param accessToken The access token from which to extract user data. or to request user info
  * with.
  * @param idToken The ID token from which to extract user data.
  * @param userInfoUrl The URL from which to request userinfo, if needed.
- * @param remapper An optional remapper to apply onto the response from the user infoendpoint.
+ * @param remapper An optional remapper to apply onto the response from the user info endpoint.
  * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
 export async function getUserInfo(

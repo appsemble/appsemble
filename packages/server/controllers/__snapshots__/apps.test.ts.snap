@@ -49,7 +49,7 @@ Content-Type: application/json; charset=utf-8
             },
             "parameters": {
               "additionalProperties": true,
-              "description": "A free form mapping of named paramters.
+              "description": "A free form mapping of named parameters.
 
 The exact meaning of the parameters depends on the block type.
 ",
@@ -886,7 +886,7 @@ Content-Type: application/json; charset=utf-8
             },
             "parameters": {
               "additionalProperties": true,
-              "description": "A free form mapping of named paramters.
+              "description": "A free form mapping of named parameters.
 
 The exact meaning of the parameters depends on the block type.
 ",

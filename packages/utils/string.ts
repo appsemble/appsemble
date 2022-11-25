@@ -1,7 +1,7 @@
 /**
- * A minimalistic implementation to convert camelcase strings to hyphenated ones.
+ * A minimalist implementation to convert camel case strings to hyphenated ones.
  *
- * @param string The camelcase input.
+ * @param string The camel case input.
  * @returns The input, but hyphenated.
  */
 export function camelToHyphen(string: string): string {

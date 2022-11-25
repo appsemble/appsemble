@@ -92,7 +92,7 @@ export interface BlockDefinition {
   theme?: Partial<Theme>;
 
   /**
-   * A free form mapping of named paramters.
+   * A free form mapping of named parameters.
    *
    * The exact meaning of the parameters depends on the block type.
    */
@@ -1913,7 +1913,7 @@ export interface Organization {
 }
 
 /**
- * An invite for an organizaton.
+ * An invite for an organization.
  */
 export interface OrganizationInvite {
   /**

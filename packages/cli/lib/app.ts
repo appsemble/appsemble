@@ -635,7 +635,7 @@ export async function createApp({
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
   logger.verbose(`App remote: ${remote}`);
-  logger.verbose(`App organzation: ${organizationId}`);
+  logger.verbose(`App organization: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
   logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);

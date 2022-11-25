@@ -4,7 +4,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.13.11';
 
 /**
- * Symmary:
+ * Summary:
  * - Remove column coreStyle from Organization.
  * - Remove column sharedStyle from Organization.
  * - Drop the OrganizationBlockStyle table.

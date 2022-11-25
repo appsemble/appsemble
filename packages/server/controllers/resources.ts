@@ -87,7 +87,7 @@ function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
  * @param app App as fetched from the database.
  * This must include the app member and organization relationships.
  * @param resourceType The resource type to check the role for.
- * @param action The resource action to theck the role for.
+ * @param action The resource action to check the role for.
  * @returns Query options to filter the resource for the user context.
  */
 async function verifyPermission(

@@ -9,7 +9,7 @@ import mustache from 'mustache';
  * Render settings as an HTML script tag.
  *
  * @param settings The settings to render. This must be a JSON serializable object.
- * @param statements Custom JavaScript statemets to append.
+ * @param statements Custom JavaScript statements to append.
  * @returns A tuple of the digest and the HTML script tag. The digest should be added to the CSP
  * `script-src`.
  */
