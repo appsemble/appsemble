@@ -25,6 +25,8 @@ interface RoleReferences {
   inheritReferences: string[];
   foundInTeamsCreate: boolean;
   foundInTeamsInvite: boolean;
+  foundInAppRoles: boolean;
+  foundInDefaultRole: boolean;
   resourceRolesReferences: string[];
   resourceViewsRolesReferences: string[];
   resourceQueryRolesReferences: string[];
@@ -140,6 +142,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           return page;
         });
         setApp({ ...app });
+        /* Send API request to server to rename roles from users currently using it */
       }
     },
     [app, setApp],
@@ -203,12 +206,17 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       } else {
         onRoleNameChange(editRoleName, newRoleName);
       }
+      /* Send API request to server to rename roles from users currently using it */
     }
     closeEditRoleName();
   }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
 
   const onRoleDelete = useCallback(
     (key: string) => {
+      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
+        push({ body: formatMessage(messages.lastRole), color: 'danger' });
+        return;
+      }
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
@@ -217,6 +225,10 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           inheritReferences.push(roleKey);
         }
       }
+      // Search in app roles
+      const foundInAppRoles = app.definition.roles?.includes(key);
+      // Search in default security settings
+      const foundInDefaultRole = app.definition.security.default.role === key;
       // Search in teams
       const foundInTeamsCreate = app.definition.security.teams?.create?.includes(key);
       const foundInTeamsInvite = app.definition.security.teams?.invite?.includes(key);
@@ -270,6 +282,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
         inheritReferences.length > 0 ||
         foundInTeamsCreate ||
         foundInTeamsInvite ||
+        foundInDefaultRole ||
+        foundInAppRoles ||
         resourceRolesReferences.length > 0 ||
         resourceViewsRolesReferences.length > 0 ||
         resourceQueryRolesReferences.length > 0 ||
@@ -280,6 +294,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           inheritReferences,
           foundInTeamsCreate,
           foundInTeamsInvite,
+          foundInAppRoles,
+          foundInDefaultRole,
           resourceRolesReferences,
           resourceViewsRolesReferences,
           resourceQueryRolesReferences,
@@ -289,6 +305,9 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
         modalDeleteRole.enable();
         return;
       }
+      /* Send API request to server to delete roles from users currently using it,
+      give the user a dropdown to select which
+      role to replace it with instead before it deletes */
       delete app.definition.security.roles[key];
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: key }), color: 'success' });
@@ -303,30 +322,139 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onForceDeleteRole = useCallback(() => {
     if (roleReferences) {
-      const { foundInTeamsCreate, foundInTeamsInvite, inheritReferences } = roleReferences;
-      if (editRoleName) {
-        delete app.definition.security.roles[editRoleName];
-      }
-      // Remove references
-      // Remove from roles
-      for (const roleKey of inheritReferences) {
-        const role = app.definition.security.roles[roleKey];
-        if (role.inherits) {
-          role.inherits = role.inherits.filter((r) => r !== editRoleName);
+      const {
+        blockRolesReferences,
+        foundInAppRoles,
+        foundInDefaultRole,
+        foundInTeamsCreate,
+        foundInTeamsInvite,
+        inheritReferences,
+        pageRolesReferences,
+        resourceQueryRolesReferences,
+        resourceRolesReferences,
+        resourceViewsRolesReferences,
+      } = roleReferences;
+      if (foundInTeamsCreate) {
+        app.definition.security.teams.create = app.definition.security.teams.create.filter(
+          (role) => role !== selectedRole,
+        );
+        if (app.definition.security.teams.create.length === 0) {
+          delete app.definition.security.teams.create;
         }
       }
-      // Remove from teams
-      if (foundInTeamsCreate) {
-        delete app.definition.security.teams.create;
-      }
       if (foundInTeamsInvite) {
-        delete app.definition.security.teams.invite;
+        app.definition.security.teams.invite = app.definition.security.teams.invite.filter(
+          (role) => role !== selectedRole,
+        );
       }
+      if (foundInAppRoles) {
+        app.definition.roles = app.definition.roles.filter((role) => role !== selectedRole);
+      }
+      if (foundInDefaultRole) {
+        app.definition.security.default.role = Object.entries(app.definition.security.roles)
+          .map(([key]) => key)
+          .find((role) => role !== selectedRole);
+      }
+      if (inheritReferences.length > 0) {
+        for (const [roleKey, role] of Object.entries(app.definition.security.roles || [])) {
+          if (role.inherits?.includes(selectedRole)) {
+            app.definition.security.roles[roleKey].inherits = role.inherits.filter(
+              (roleName) => roleName !== selectedRole,
+            );
+            if (app.definition.security.roles[roleKey].inherits.length === 0) {
+              delete app.definition.security.roles[roleKey].inherits;
+            }
+          }
+        }
+      }
+      if (pageRolesReferences.length > 0) {
+        app.definition.pages = app.definition.pages.map((page) => {
+          if (page.roles?.includes(selectedRole)) {
+            const newPage = { ...page };
+            newPage.roles = page.roles.filter((role) => role !== selectedRole);
+            if (newPage.roles.length === 0) {
+              delete newPage.roles;
+            }
+            return newPage;
+          }
+          return page;
+        });
+      }
+      if (blockRolesReferences.length > 0) {
+        app.definition.pages = app.definition.pages.map((page) => {
+          if (page.type === 'page') {
+            const newPage = { ...page };
+            newPage.blocks = (page as BasicPageDefinition).blocks.map((block) => {
+              if (block.roles?.includes(selectedRole)) {
+                const newBlock = { ...block };
+                newBlock.roles = block.roles.filter((role) => role !== selectedRole);
+                if (newBlock.roles.length === 0) {
+                  delete newBlock.roles;
+                }
+                return newBlock;
+              }
+              return block;
+            });
+            return newPage;
+          }
+          return page;
+        });
+      }
+      if (resourceRolesReferences.length > 0) {
+        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
+          if (resource.roles?.includes(selectedRole)) {
+            app.definition.resources[resourceKey].roles = resource.roles.filter(
+              (role) => role !== selectedRole,
+            );
+            if (app.definition.resources[resourceKey].roles.length === 0) {
+              delete app.definition.resources[resourceKey].roles;
+            }
+          }
+        }
+      }
+      if (resourceViewsRolesReferences.length > 0) {
+        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
+          for (const [viewKey, view] of Object.entries(resource.views || [])) {
+            if (view.roles?.includes(selectedRole)) {
+              app.definition.resources[resourceKey].views[viewKey].roles = view.roles.filter(
+                (role) => role !== selectedRole,
+              );
+              if (app.definition.resources[resourceKey].views[viewKey].roles.length === 0) {
+                delete app.definition.resources[resourceKey].views[viewKey].roles;
+              }
+            }
+          }
+        }
+      }
+      if (resourceQueryRolesReferences.length > 0) {
+        for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
+          app.definition.resources[resourceKey].query.roles = resource.query.roles.filter(
+            (role) => role !== selectedRole,
+          );
+          if (app.definition.resources[resourceKey].query.roles.length === 0) {
+            delete app.definition.resources[resourceKey].query.roles;
+          }
+        }
+      }
+
+      /* Send API request to server to delete roles from users currently using it,
+      give the user a dropdown to select which
+      role to replace it with instead before it deletes.
+      And force user to select a new role if default roles is using it */
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }
     onCloseDeleteRole();
-  }, [app, editRoleName, formatMessage, onCloseDeleteRole, push, roleReferences, setApp]);
+  }, [
+    app,
+    editRoleName,
+    formatMessage,
+    onCloseDeleteRole,
+    push,
+    roleReferences,
+    selectedRole,
+    setApp,
+  ]);
 
   return (
     <>
