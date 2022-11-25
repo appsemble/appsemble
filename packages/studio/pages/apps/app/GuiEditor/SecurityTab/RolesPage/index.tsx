@@ -665,6 +665,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       give the user a dropdown to select which
       role to replace it with instead before it deletes.
       And force user to select a new role if default roles is using it */
+      delete app.definition.security.roles[selectedRole];
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }
