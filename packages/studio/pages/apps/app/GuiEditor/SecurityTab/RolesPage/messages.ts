@@ -12,7 +12,6 @@ export const messages = defineMessages({
   roleDescriptionLabel: 'Description',
   roleInheritedLabel: 'Inherits from',
   deleteRoleButton: 'Delete role',
-  deleteRoleInheritsReference: 'The following roles inherit from',
   roleDeleted: 'The role {name} has been deleted.',
   deleteRole: 'Delete role',
   deleteRoleWarning:
@@ -29,5 +28,7 @@ export const messages = defineMessages({
   deleteRolePages: 'The following pages are using the role "{roleName}":',
   deleteRoleBlocks: 'The following blocks are using the role "{roleName}":',
   lastRole:
-    'You cannot this role because it is the last one in the app. You must have at least one role in the app.',
+    'You cannot delete this role because it is the last one in the app. You must have at least one role in the app.',
+  deleteRoleInAppRoles: '"{roleName}" is being used in the app\'s roles.',
+  deleteRoleInDefaultRole: '"{roleName}" is being used as the app\'s default role.',
 });
