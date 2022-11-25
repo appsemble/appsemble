@@ -104,6 +104,9 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeLoginOption = useCallback(
     (index: number) => {
+      if (!app.definition.layout) {
+        app.definition.layout = {};
+      }
       app.definition.layout.login = loginOptions[index];
       setApp({ ...app });
     },
@@ -112,6 +115,9 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeSettingsOption = useCallback(
     (index: number) => {
+      if (!app.definition.layout) {
+        app.definition.layout = {};
+      }
       app.definition.layout.settings = settingsOptions[index];
       setApp({ ...app });
     },
@@ -120,6 +126,9 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeFeedbackOption = useCallback(
     (index: number) => {
+      if (!app.definition.layout) {
+        app.definition.layout = {};
+      }
       app.definition.layout.feedback = feedBackOptions[index];
       setApp({ ...app });
     },
@@ -128,6 +137,9 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onChangeNavigationOption = useCallback(
     (index: number) => {
+      if (!app.definition.layout) {
+        app.definition.layout = {};
+      }
       app.definition.layout.navigation = navigationOptions[index];
       setApp({ ...app });
     },
