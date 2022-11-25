@@ -28,4 +28,6 @@ export const messages = defineMessages({
   deleteRoleResourceQuery: 'The following resource queries are using the role "{roleName}":',
   deleteRolePages: 'The following pages are using the role "{roleName}":',
   deleteRoleBlocks: 'The following blocks are using the role "{roleName}":',
+  lastRole:
+    'You cannot this role because it is the last one in the app. You must have at least one role in the app.',
 });
