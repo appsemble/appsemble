@@ -441,6 +441,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       give the user a dropdown to select which
       role to replace it with instead before it deletes.
       And force user to select a new role if default roles is using it */
+      delete app.definition.security.roles[selectedRole];
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }
@@ -636,6 +637,20 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
                     {roleReferences?.foundInTeamsInvite ? (
                       <p className="is-size-6 has-text-weight-bold has-text-primary">
                         {formatMessage(messages.deleteRoleInTeamsInvite, {
+                          roleName: selectedRole,
+                        })}
+                      </p>
+                    ) : null}
+                    {roleReferences?.foundInAppRoles ? (
+                      <p className="is-size-6 has-text-weight-bold has-text-primary">
+                        {formatMessage(messages.deleteRoleInAppRoles, {
+                          roleName: selectedRole,
+                        })}
+                      </p>
+                    ) : null}
+                    {roleReferences?.foundInDefaultRole ? (
+                      <p className="is-size-6 has-text-weight-bold has-text-primary">
+                        {formatMessage(messages.deleteRoleInDefaultRole, {
                           roleName: selectedRole,
                         })}
                       </p>
