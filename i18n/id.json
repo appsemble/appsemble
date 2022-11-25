@@ -237,6 +237,10 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "",
+<<<<<<< HEAD
+=======
+  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "",
+>>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "",

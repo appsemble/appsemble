@@ -205,6 +205,12 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.roleCreated": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.inheritsLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "",
+<<<<<<< HEAD
+=======
+  "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "",
+  "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "",
+  "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
+>>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.defaultRoleLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.defaultPolicyLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.noRoles": "",
@@ -234,6 +240,10 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "",
+<<<<<<< HEAD
+=======
+  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "",
+>>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "",
@@ -244,9 +254,12 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "",
+<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "Pregled programa",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "Generira se SSL certifikat za zaštitu tvojih korisnika.",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "To može potrajati do 24 sata, ali obično je brže. Ako potraje duže, obrati se podršci.",
+=======
+>>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.components.AsyncDataView.retry": "Pokušaj ponovo",
   "studio.components.Breadcrumbs.breadcrumbs": "Navigacijski lanac",
   "studio.components.Breadcrumbs.switchToGuiEditor": "",
