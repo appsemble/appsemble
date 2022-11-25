@@ -28,14 +28,14 @@ export function InputTextArea({
   onChange,
   value,
 }: InputStringProps): ReactElement {
-  const chars = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
+  const charsRegex = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
 
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>, input: string) => {
-      const finalValue = getCheckedString(chars, input);
+      const finalValue = getCheckedString(charsRegex, input);
       onChange(event, finalValue);
     },
-    [chars, onChange],
+    [charsRegex, onChange],
   );
 
   return (

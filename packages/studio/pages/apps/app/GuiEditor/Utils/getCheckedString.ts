@@ -1,10 +1,9 @@
-export default function getCheckedString(allowedChars: string, str: string): string {
+export default function getCheckedString(allowedChars: RegExp, str: string): string {
   let finalValue = '';
   for (const char of str) {
-    if (!allowedChars.includes(char)) {
-      continue;
+    if (allowedChars.test(char)) {
+      finalValue += char;
     }
-    finalValue += char;
-    return finalValue;
   }
+  return finalValue;
 }
