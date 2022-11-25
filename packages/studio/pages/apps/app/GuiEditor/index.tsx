@@ -66,7 +66,6 @@ export default function EditPage(): ReactElement {
   const currentTab = tabs.find((tab) => tab.hash === location.hash) || tabs[2];
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const { formatMessage } = useIntl();
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);

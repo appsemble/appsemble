@@ -32,7 +32,7 @@ export function InputString({
   pattern,
   value,
 }: InputStringProps): ReactElement {
-  const chars = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
+  const charsRegex = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
 
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -41,10 +41,10 @@ export function InputString({
         onChange(event, input);
         return;
       }
-      const finalValue = getCheckedString(chars, input);
+      const finalValue = getCheckedString(charsRegex, input);
       onChange(event, finalValue);
     },
-    [chars, onChange, pattern],
+    [charsRegex, onChange, pattern],
   );
 
   return (
