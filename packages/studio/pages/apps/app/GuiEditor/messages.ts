@@ -7,4 +7,6 @@ export const messages = defineMessages({
   pagesTab: 'Pages',
   themeTab: 'Theme',
   securityTab: 'Security',
+  saved: 'Saved app.',
+  failed: 'Failed to save.',
 });

@@ -1,8 +1,12 @@
-import { Button, useMeta } from '@appsemble/react-components';
+import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
+import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import { Navigate, useLocation } from 'react-router-dom';
+import { stringify } from 'yaml';
 
+import { useApp } from '../index.js';
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -53,11 +57,15 @@ const tabs: GuiEditorTabs[] = [
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);
+  const { formatMessage } = useIntl();
+  const { app, setApp } = useApp();
+  const push = useMessages();
+  const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
+  const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
   const location = useLocation();
   const currentTab = tabs.find((tab) => tab.hash === location.hash) || tabs[2];
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const { formatMessage } = useIntl();
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);
@@ -67,9 +75,21 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
-  const handleSave = useCallback(() => {
-    /* TODO: Save the app */
-  }, []);
+  const handleSave = useCallback(async () => {
+    const ymlString = stringify(app.definition);
+    try {
+      const formData = new FormData();
+      formData.append('yaml', ymlString);
+      formData.append('coreStyle', coreStyle);
+      formData.append('sharedStyle', sharedStyle);
+
+      const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
+      setApp(data);
+      push({ body: formatMessage(messages.saved), color: 'success' });
+    } catch {
+      push({ body: formatMessage(messages.failed), color: 'danger' });
+    }
+  }, [app.definition, app.id, coreStyle, formatMessage, push, setApp, sharedStyle]);
 
   if (!location.hash || !tabs.some((tab) => tab.hash === location.hash)) {
     return <Navigate to={{ ...location, hash: '#pages' }} />;
@@ -118,7 +138,7 @@ export default function EditPage(): ReactElement {
       </div>
       <div className={`${styles.guiEditorContainer} m-0 p-0`}>
         {currentTab.tabName === 'general' && (
-          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
         {currentTab.tabName === 'resources' && (
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
