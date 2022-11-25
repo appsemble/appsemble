@@ -330,7 +330,7 @@ export async function cleanupDNS(): Promise<void> {
 }
 
 /**
- * Restore ingresses for all apps andorganizations.
+ * Restore ingresses for all apps and organizations.
  */
 export async function restoreDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);
