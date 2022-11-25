@@ -1,4 +1,5 @@
 import { roles, Permission } from '@appsemble/utils';
+import { messages } from '@appsemble/studio/pages/organizations/messages';
 
 # Organizations
 
@@ -50,7 +51,7 @@ These roles are the following:
       .filter((permission) => isNaN(Number(permission)))
       .map((permission) => (
         <tr key={permission}>
-          <td>{permission}</td>
+          <td title={messages[permission].defaultMessage}>{permission} </td>
           {Object.keys(roles).map((role) => (
             <td key={role} align="center">
               {roles[role].includes(Permission[permission]) ? '✓' : ''}
