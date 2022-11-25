@@ -1,4 +1,4 @@
-import { createReadStream } from 'fs';
+import { createReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';

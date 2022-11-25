@@ -1,4 +1,4 @@
-import querystring from 'querystring';
+import querystring from 'node:querystring';
 
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';

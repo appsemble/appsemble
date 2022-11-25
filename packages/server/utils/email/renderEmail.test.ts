@@ -1,6 +1,6 @@
-import { readdirSync } from 'fs';
-import { readFile } from 'fs/promises';
-import { parse } from 'path';
+import { readdirSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { parse } from 'node:path';
 
 import { assetDir } from '../readAsset.js';
 import { renderEmail } from './renderEmail.js';

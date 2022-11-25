@@ -25,5 +25,13 @@ export const FlowPageDefinition = extendJSONSchema(BasePageDefinition, {
       description: 'The method that should be used to display the status of flow pages.',
       enum: ['corner-dots', 'hidden'],
     },
+    retainFlowData: {
+      type: 'boolean',
+      description: `Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+`,
+      default: true,
+    },
   },
 });

@@ -1,4 +1,4 @@
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 
 import { logger } from '@appsemble/node-utils';
 import { Theme as ThemeType } from '@appsemble/types';

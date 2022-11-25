@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { AppsembleError, logger, readData } from '@appsemble/node-utils';
 import { Resource } from '@appsemble/types';

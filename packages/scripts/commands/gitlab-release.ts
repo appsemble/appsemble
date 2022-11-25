@@ -1,5 +1,5 @@
-import { readdir } from 'fs/promises';
-import { join } from 'path';
+import { readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { logger, readData } from '@appsemble/node-utils';
 import { PackageJson } from 'type-fest';

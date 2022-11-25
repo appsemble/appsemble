@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.20
-appVersion: 0.20.20
+version: 0.20.22
+appVersion: 0.20.22
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,8 +24,16 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "App: Add storage.append action."
+    - kind: added
+      description: "App: Add storage.delete action."
+    - kind: added
+      description: "App: Add storage.subtract action."
+    - kind: added
+      description: "App: Add storage.update action."
     - kind: fixed
-      description: "App: Resolve sub-page URLs on tabs pages not being translated."
+      description: "Utils: Resolve array.omit not accepting an array of remappers."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

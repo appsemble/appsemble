@@ -144,6 +144,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -263,6 +267,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -389,6 +397,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -445,6 +457,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -520,6 +540,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -576,6 +600,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -651,6 +683,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -707,6 +743,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -937,6 +981,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1056,6 +1104,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1182,6 +1234,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1238,6 +1294,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1313,6 +1377,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1369,6 +1437,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1444,6 +1520,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1500,6 +1580,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1648,6 +1736,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1768,6 +1860,10 @@ instructed to contact the app owner to get permissions.
 By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
 page from menus.
 ",
+              "type": "boolean",
+            },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1895,6 +1991,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -1951,6 +2051,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2027,6 +2135,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -2083,6 +2195,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2159,6 +2279,10 @@ page from menus.
 ",
               "type": "boolean",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "icon": {
               "description": "An optional icon from the fontawesome icon set
 
@@ -2215,6 +2339,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.

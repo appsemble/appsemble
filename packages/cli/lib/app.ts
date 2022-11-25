@@ -1,7 +1,7 @@
-import { createReadStream, existsSync, ReadStream } from 'fs';
-import { mkdir, readdir, readFile, stat } from 'fs/promises';
-import { join, parse, relative, resolve } from 'path';
-import { inspect } from 'util';
+import { createReadStream, existsSync, ReadStream } from 'node:fs';
+import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
+import { join, parse, relative, resolve } from 'node:path';
+import { inspect } from 'node:util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
 import { App, AppDefinition, AppsembleMessages, AppVisibility, Messages } from '@appsemble/types';
@@ -194,7 +194,7 @@ export async function traverseAppDirectory(
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, filestat) => {
     switch (filestat.name.toLowerCase()) {
-      case '.appsemblerc.yaml': {
+      case '.appsemblerc.yaml':
         logger.info(`Reading app settings from ${filepath}`);
         [rc] = await readData<AppsembleRC>(filepath);
         if ('iconBackground' in rc) {
@@ -205,7 +205,6 @@ export async function traverseAppDirectory(
           logger.verbose(`Using context: ${inspect(discoveredContext, { colors: true })}`);
         }
         break;
-      }
 
       case 'app-definition.yaml': {
         logger.info(`Using app definition from ${filepath}`);
@@ -341,10 +340,9 @@ export async function writeAppMessages(
 
   await opendirSafe(path, async (filepath, filestat) => {
     switch (filestat.name.toLowerCase()) {
-      case 'app-definition.yaml': {
+      case 'app-definition.yaml':
         [app] = await readData<AppDefinition>(filepath);
         break;
-      }
       case 'i18n': {
         // For case insensitivity
         i18nDir = filepath;

@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.22](https://gitlab.com/appsemble/appsemble/-/releases/0.20.22)] - 2022-11-24
+
+### Added
+
+- App: Add storage.append action.
+- App: Add storage.delete action.
+- App: Add storage.subtract action.
+- App: Add storage.update action.
+
+### Fixed
+
+- Utils: Resolve `array.omit` not accepting an array of remappers.
+
+## \[[0.20.21](https://gitlab.com/appsemble/appsemble/-/releases/0.20.21)] - 2022-11-24
+
+### Added
+
+- Block(`form`): Add `inline` property to form fields.
+- Block(`form`): Allow the required requirement to be remapped for conditionally required form
+  fields.
+- App: Add Indonesian translations.
+- App: Add `retainFlowData` prop to flow page.
+- App: Added Russian translations.
+- Studio: Add Indonesian translations.
+- Studio: Added Russian translations.
+- Types: Add `hideName` prop to pages.
+- Utils: Add `from.history` remapper.
+
+### Changed
+
+- Types: `array.omit` remapper now supports an array of remappers as input.
+
+### Fixed
+
+- App: Resolve `link.back` action not navigating to the previous page if current page is translated.
+
 ## \[[0.20.20](https://gitlab.com/appsemble/appsemble/-/releases/0.20.20)] - 2022-11-09
 
 ### Fixed

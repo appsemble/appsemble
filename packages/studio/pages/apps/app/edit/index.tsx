@@ -108,10 +108,9 @@ export default function EditPage(): ReactElement {
   const onMonacoChange = useCallback(
     (event, value: string, model: editor.ITextModel) => {
       switch (String(model.uri)) {
-        case 'file:///app.yaml': {
+        case 'file:///app.yaml':
           setAppDefinition(value);
           break;
-        }
         case 'file:///core.css':
           setCoreStyle(value);
           break;
