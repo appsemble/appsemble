@@ -16,7 +16,7 @@ In an app definition this can be defined as follows, taking the `data-loader` bl
 ```yaml copy
 blocks:
   - type: data-loader
-    version: 0.20.22
+    version: 0.20.23
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -71,7 +71,7 @@ For example, let’s say we want an `action-button` to trigger the `data-loader`
 ```yaml copy
 blocks:
   - type: data-loader
-    version: 0.20.22
+    version: 0.20.23
     actions:
       onLoad: # load some form of data from somewhere
         type: resource.query
@@ -82,7 +82,7 @@ blocks:
       listen:
         refresh: refreshExample
   - type: action-button
-    version: 0.20.22
+    version: 0.20.23
     parameters:
       icon: sync
     actions:
