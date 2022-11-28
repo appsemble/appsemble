@@ -84,6 +84,7 @@ export * from './SecurityDefaultDefinition.js';
 export * from './SecurityDefinition.js';
 export * from './SecurityRoleDefinition.js';
 export * from './ShareActionDefinition.js';
+export * from './SSLSecret.js';
 export * from './SSOConfiguration.js';
 export * from './StaticActionDefinition.js';
 export * from './StorageReadActionDefinition.js';

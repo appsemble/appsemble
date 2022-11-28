@@ -26,4 +26,5 @@ export const messages = defineMessages({
   emailSettingsError: 'Something went wrong when trying to fetch the email settings',
   emailLoading: 'Loading email settings…',
   submit: 'Submit',
+  ssl: 'SSL',
 });

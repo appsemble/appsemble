@@ -7,12 +7,22 @@ metadata:
     {{ include "appsemble.labels" . }}
 rules:
   - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - create
+      - deletecollection
+      - patch
+      - update
+  - apiGroups:
       - networking.k8s.io
     resources:
       - ingresses
     verbs:
       - create
       - deletecollection
+      - patch
   - apiGroups:
       - cert-manager.io
     resources:
