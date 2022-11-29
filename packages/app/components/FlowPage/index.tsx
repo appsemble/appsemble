@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 
 import { useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
-import { AppDefinition, FlowPageDefinition, Remapper } from '@appsemble/types';
+import { AppDefinition, FlowPageDefinition, Remapper, SubPage } from '@appsemble/types';
 import { MutableRefObject, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -28,6 +28,8 @@ interface FlowPageProps {
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
   stepRef: MutableRefObject<unknown>;
+  updateStepRef: (data: unknown) => void;
+  steps: SubPage[];
 }
 
 export function FlowPage({
@@ -43,6 +45,8 @@ export function FlowPage({
   showDialog,
   showShareDialog,
   stepRef,
+  steps,
+  updateStepRef,
 }: FlowPageProps): ReactElement {
   const navigate = useNavigate();
   const params = useParams();
@@ -51,8 +55,9 @@ export function FlowPage({
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
   const { getAppMessage } = useAppMessages();
-  const step = page.steps[currentStep];
+  const step = steps[currentStep];
   const id = `${prefix}.steps.${currentStep}`;
+
   const name = getAppMessage({
     id,
     defaultMessage: step.name,
@@ -67,6 +72,10 @@ export function FlowPage({
       };
     }
   }, [page.retainFlowData, appStorage, setData]);
+
+  if (!stepRef.current) {
+    updateStepRef((data as Record<string, any>)[0]);
+  }
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
@@ -83,18 +92,16 @@ export function FlowPage({
   const next = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
-      const { steps } = page;
-
       if (currentStep + 1 === steps.length) {
         return finish(d);
       }
       setData(d);
       setCurrentStep(currentStep + 1);
-      stepRef.current = (data as Record<string, any>)[currentStep + 1];
+      updateStepRef((data as Record<string, any>)[currentStep + 1]);
 
       return d;
     },
-    [currentStep, finish, page, setData, data, stepRef],
+    [currentStep, steps.length, setData, updateStepRef, data, finish],
   );
 
   const back = useCallback(
@@ -107,11 +114,11 @@ export function FlowPage({
 
       setData(d);
       setCurrentStep(currentStep - 1);
-      stepRef.current = (data as Record<string, any>)[currentStep - 1];
+      updateStepRef((data as Record<string, any>)[currentStep - 1]);
 
       return d;
     },
-    [currentStep, setData, data, stepRef],
+    [currentStep, setData, updateStepRef, data],
   );
 
   const cancel = useCallback(
@@ -127,18 +134,18 @@ export function FlowPage({
       if (typeof stepName !== 'string') {
         throw new TypeError(`Expected page to be a string, got: ${JSON.stringify(stepName)}`);
       }
-      const found = page.steps.findIndex((p) => p.name === stepName);
+      const found = steps.findIndex((p) => p.name === stepName);
       if (found === -1) {
         throw new Error(`No matching page was found for ${stepName}`);
       }
 
       setData(d);
       setCurrentStep(found);
-      stepRef.current = (data as Record<string, any>)[found];
+      updateStepRef((data as Record<string, any>)[found]);
 
       return d;
     },
-    [page, setData, data, stepRef],
+    [steps, setData, updateStepRef, data],
   );
 
   const flowActions = useMemo(
@@ -207,9 +214,7 @@ export function FlowPage({
 
   return (
     <>
-      {progress === 'corner-dots' && (
-        <DotProgressBar active={currentStep} amount={page.steps.length} />
-      )}
+      {progress === 'corner-dots' && <DotProgressBar active={currentStep} amount={steps.length} />}
       <BlockList
         appStorage={appStorage}
         blocks={step.blocks}

@@ -3,20 +3,15 @@ import { EventEmitter } from 'events';
 import {
   Button,
   Content,
+  Loader,
   Message,
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import {
-  BlockDefinition,
-  FlowPageDefinition,
-  PageDefinition,
-  Remapper,
-  SubPage,
-} from '@appsemble/types';
+import { FlowPageDefinition, PageDefinition, Remapper, SubPage } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
@@ -49,6 +44,8 @@ export function Page(): ReactElement {
 
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [stepRef, setStepRef] = useState(useRef<unknown>());
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -63,7 +60,12 @@ export function Page(): ReactElement {
     [],
   );
 
-  const stepRef = useRef<unknown>();
+  const updateStepRef = (refData: any): void => {
+    setStepRef(() => ({
+      ...stepRef,
+      current: refData,
+    }));
+  };
 
   const appStorage = useRef<AppStorage>();
   if (!appStorage.current) {
@@ -95,6 +97,17 @@ export function Page(): ReactElement {
   const internalPageName = page ? normalize(page.name) : null;
   const prefix = index === -1 ? null : `pages.${internalPageName}`;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
+  const [loopSteps, setLoopSteps] = useState<SubPage[]>();
+
+  const steps = useMemo(() => {
+    if (page.type === 'flow') {
+      const flowPage: FlowPageDefinition = page;
+      if (flowPage.steps) {
+        return flowPage.steps;
+      }
+      return loopSteps;
+    }
+  }, [loopSteps, page]);
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: Record<string, any>) =>
@@ -111,8 +124,32 @@ export function Page(): ReactElement {
         locale: lang,
         stepRef,
       }),
-    [data, getMessage, lang, userInfo],
+    [data, getMessage, lang, stepRef, userInfo],
   );
+
+  const generateSubpages = useCallback(async () => {
+    const mockResource = [{ title: 'Title 1' }, { title: 'Title 2' }, { title: 'Title 3' }];
+
+    // TODO: Move this whole data / resource declaration outside of the page generation
+    setData(mockResource);
+    const { blocks } = (page as FlowPageDefinition).foreach;
+
+    function createSteps(): SubPage[] {
+      const newSteps: SubPage[] = [];
+      for (const resourceData of mockResource) {
+        if (resourceData) {
+          const step: SubPage = {
+            name: 'New loop page',
+            blocks,
+          };
+          newSteps.push(step);
+        }
+      }
+      return newSteps;
+    }
+    const result = await createSteps();
+    return result;
+  }, [page]);
 
   const showDialog = useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -120,6 +157,13 @@ export function Page(): ReactElement {
       setDialog(null);
     };
   }, []);
+
+  // Generate subpages from a loop
+  useEffect(() => {
+    if (page.type === 'flow' && !(page as FlowPageDefinition).steps) {
+      generateSubpages().then(setLoopSteps);
+    }
+  }, [page, page.type, generateSubpages]);
 
   useEffect(() => {
     if (!page) {
@@ -136,6 +180,14 @@ export function Page(): ReactElement {
     },
     [page],
   );
+
+  useEffect(() => {
+    if (steps) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [steps, page, setLoopSteps]);
 
   const checkPagePermissions = useCallback(
     (p: PageDefinition): boolean => {
@@ -158,52 +210,9 @@ export function Page(): ReactElement {
     }
   }, [checkPagePermissions, navPage, page, setPage]);
 
-  useEffect(() => {
-    if (page.type === 'flow' && page.actions.onLoad && page.foreach) {
-      // Const templateStep = page.foreach;
-      const loopResource = [{ title: 'Title 1' }, { title: 'Title 2' }, { title: 'Title 3' }];
-      const templateBlocks: BlockDefinition[] = [
-        {
-          type: 'detail-viewer',
-          version: '0.20.20',
-          parameters: {
-            fields: [
-              {
-                label: { step: 'title' },
-              },
-            ],
-          },
-        },
-        {
-          type: 'control-buttons',
-          version: '0.20.20',
-          actions: {
-            onBack: {
-              type: 'flow.back',
-            },
-            onForward: {
-              type: 'flow.next',
-            },
-          },
-        },
-      ];
-      for (const resourceData of loopResource) {
-        if (resourceData) {
-          const step: SubPage = {
-            name: 'New loop page',
-            blocks: templateBlocks,
-          };
-          page.steps.push(step);
-        }
-      }
-      setData(loopResource);
-    }
-  }, [
-    page.type,
-    (page as FlowPageDefinition).actions.onLoad,
-    (page as FlowPageDefinition).foreach,
-    (page as FlowPageDefinition).steps,
-  ]);
+  if (loading) {
+    return <Loader />;
+  }
 
   // If the user is on an existing page and is allowed to view it, render it.
   if (page && checkPagePermissions(page)) {
@@ -260,6 +269,8 @@ export function Page(): ReactElement {
                     showDialog={showDialog}
                     showShareDialog={showShareDialog}
                     stepRef={stepRef}
+                    steps={steps}
+                    updateStepRef={updateStepRef}
                   />
                 ) : (
                   <BlockList
