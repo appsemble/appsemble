@@ -424,7 +424,7 @@ update dependencies:
     - git commit --all --message 'Update yarn.lock'
     - git push --force origin update-lockfile
       -o merge_request.create
-      -o merge_request.label=chore
+      -o merge_request.label=Chore
       -o merge_request.merge_when_pipeline_succeeds
       -o merge_request.remove_source_branch
 
