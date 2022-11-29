@@ -133,7 +133,7 @@ export function extractAppMessages(
         }
       }
 
-      if (page.type === 'flow') {
+      if (page.type === 'flow' && page.steps) {
         for (const [index, step] of page.steps.entries()) {
           messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
         }

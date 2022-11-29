@@ -4,7 +4,7 @@ import { extendJSONSchema } from './utils.js';
 export const FlowPageDefinition = extendJSONSchema(BasePageDefinition, {
   type: 'object',
   description: 'This describes what a page will look like in the app.',
-  required: ['type', 'steps'],
+  required: ['type'],
   additionalProperties: false,
   properties: {
     type: {
