@@ -3063,6 +3063,12 @@ If this is set to \`true\`, any help text appearing will cause the form input to
         },
         "type": "array",
       },
+      "skipInitialLoad": {
+        "description": "By default the form block will wait until event data is received.
+
+By setting this to \`true\`, this won’t happen.",
+        "type": "boolean",
+      },
     },
     "type": "object",
   },

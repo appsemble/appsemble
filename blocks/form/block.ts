@@ -1003,5 +1003,12 @@ declare module '@appsemble/sdk' {
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
+
+    /**
+     * By default the form block will wait until event data is received.
+     *
+     * By setting this to `true`, this won’t happen.
+     */
+    skipInitialLoad?: boolean;
   }
 }
