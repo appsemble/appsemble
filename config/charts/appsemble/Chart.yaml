@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.23
-appVersion: 0.20.23
+version: 0.20.24
+appVersion: 0.20.24
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(form): Add skipInitialLoad property to form block parameters."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

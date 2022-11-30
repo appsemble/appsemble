@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.24](https://gitlab.com/appsemble/appsemble/-/releases/0.20.24)] - 2022-11-30
+
+### Added
+
+- Block(`form`): Add `skipInitialLoad` property to form block parameters.
+
 ## \[[0.20.23](https://gitlab.com/appsemble/appsemble/-/releases/0.20.23)] - 2022-11-28
 
 ## \[[0.20.22](https://gitlab.com/appsemble/appsemble/-/releases/0.20.22)] - 2022-11-24
