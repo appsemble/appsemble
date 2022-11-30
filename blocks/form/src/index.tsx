@@ -20,11 +20,19 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { autofill, dense, fields: initialFields, previous, requirements },
+    parameters: {
+      autofill,
+      dense,
+      fields: initialFields,
+      previous,
+      requirements,
+      skipInitialLoad = false,
+    },
     path,
     ready,
     utils,
   }) => {
+    const initialLoad = useRef(true);
     const [fields, setFields] = useState(initialFields);
     const defaultValues = useMemo<Values>(
       () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
@@ -34,7 +42,7 @@ bootstrap(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
     const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
-    const [dataLoading, setDataLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(!skipInitialLoad);
     const [fieldsLoading, setFieldsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
@@ -241,9 +249,13 @@ bootstrap(
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      setDataLoading(hasListener);
+      if (!skipInitialLoad || !initialLoad.current) {
+        setDataLoading(hasListener);
+      } else {
+        initialLoad.current = false;
+      }
       ready();
-    }, [events, ready, receiveData]);
+    }, [events, ready, receiveData, skipInitialLoad]);
 
     const loading = dataLoading || fieldsLoading;
 
