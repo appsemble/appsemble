@@ -133,9 +133,13 @@ export function extractAppMessages(
         }
       }
 
-      if (page.type === 'flow' && page.steps) {
-        for (const [index, step] of page.steps.entries()) {
-          messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
+      if (page.type === 'flow' && (page.steps != null || page.steps !== undefined)) {
+        if (page.foreach) {
+          messages.app[`${prefix}.step`] = page.foreach.name ?? '';
+        } else {
+          for (const [index, step] of page.steps.entries()) {
+            messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
+          }
         }
       }
     },

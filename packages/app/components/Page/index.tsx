@@ -44,8 +44,8 @@ export function Page(): ReactElement {
 
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
-  const [loading, setLoading] = useState<boolean>(true);
   const [stepRef, setStepRef] = useState(useRef<unknown>());
+  const [loopSteps, setLoopSteps] = useState<SubPage[]>();
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -97,7 +97,7 @@ export function Page(): ReactElement {
   const internalPageName = page ? normalize(page.name) : null;
   const prefix = index === -1 ? null : `pages.${internalPageName}`;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
-  const [loopSteps, setLoopSteps] = useState<SubPage[]>();
+  const [loading, setLoading] = useState<boolean>(page.type === 'flow');
 
   const steps = useMemo(() => {
     if (page.type === 'flow') {
@@ -105,9 +105,10 @@ export function Page(): ReactElement {
       if (flowPage.steps) {
         return flowPage.steps;
       }
+      setPage({ ...page, steps: loopSteps });
       return loopSteps;
     }
-  }, [loopSteps, page]);
+  }, [loopSteps, page, setPage]);
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: Record<string, any>) =>
@@ -182,7 +183,7 @@ export function Page(): ReactElement {
   );
 
   useEffect(() => {
-    if (steps) {
+    if (page.type !== 'flow' || steps) {
       setLoading(false);
     } else {
       setLoading(true);
