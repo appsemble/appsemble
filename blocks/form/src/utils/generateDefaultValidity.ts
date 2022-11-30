@@ -26,25 +26,23 @@ export function generateDefaultValidity(
     }
 
     if (field.type === 'object') {
-      if (field.repeated) {
-        validity[field.name] = value.map((d: unknown) =>
-          generateDefaultValidity(
+      validity[field.name] = field.repeated
+        ? value.map((d: unknown) =>
+            generateDefaultValidity(
+              field.fields,
+              d,
+              utils,
+              defaultError,
+              defaultValues[field.name] as Values,
+            ),
+          )
+        : generateDefaultValidity(
             field.fields,
-            d,
+            value,
             utils,
             defaultError,
             defaultValues[field.name] as Values,
-          ),
-        );
-      } else {
-        validity[field.name] = generateDefaultValidity(
-          field.fields,
-          value,
-          utils,
-          defaultError,
-          defaultValues[field.name] as Values,
-        );
-      }
+          );
     } else {
       validity[field.name] = validate(field, data, utils, defaultError, defaultValues[field.name]);
     }
