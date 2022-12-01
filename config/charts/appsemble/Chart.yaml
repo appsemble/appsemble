@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.24
-appVersion: 0.20.24
+version: 0.20.25
+appVersion: 0.20.25
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,8 +24,12 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(form): Add skipInitialLoad property to form block parameters."
+    - kind: changed
+      description: "Types: Breaking: Rename hideFromMenu to hideNavTitle."
+    - kind: fixed
+      description: "App: Add timezone to user registration."
+    - kind: fixed
+      description: "App: Fix values being treated as parameters in request action."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -67,7 +67,7 @@ Content-Disposition: form-data; name="app"
       "blocks": [
         {
           "type": "action-button",
-          "version": "0.20.24",
+          "version": "0.20.25",
           "parameters": {
             "icon": "plus"
           },

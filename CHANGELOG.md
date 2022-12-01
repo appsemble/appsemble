@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.25](https://gitlab.com/appsemble/appsemble/-/releases/0.20.25)] - 2022-12-01
+
+### Changed
+
+- Types: **Breaking:** Rename `hideFromMenu` to `hideNavTitle`.
+
+### Fixed
+
+- App: Add timezone to user registration.
+- App: Fix values being treated as parameters in request action.
+
 ## \[[0.20.24](https://gitlab.com/appsemble/appsemble/-/releases/0.20.24)] - 2022-11-30
 
 ### Added
