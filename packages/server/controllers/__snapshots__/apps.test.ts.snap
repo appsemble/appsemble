@@ -135,6 +135,10 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -142,10 +146,6 @@ will remain the same until it is manually updated.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -259,6 +259,10 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -266,10 +270,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -386,6 +386,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -393,10 +397,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -528,6 +528,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -535,10 +539,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -670,6 +670,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -677,10 +681,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -967,6 +967,10 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -974,10 +978,6 @@ will remain the same until it is manually updated.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1091,6 +1091,10 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1098,10 +1102,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1218,6 +1218,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1225,10 +1229,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1360,6 +1360,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1367,10 +1371,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1502,6 +1502,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1509,10 +1513,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1717,6 +1717,10 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1724,10 +1728,6 @@ will remain the same until it is manually updated.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1842,6 +1842,10 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1849,10 +1853,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -1970,6 +1970,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -1977,10 +1981,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -2113,6 +2113,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -2120,10 +2124,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
@@ -2256,6 +2256,10 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
             "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
@@ -2263,10 +2267,6 @@ instructed to contact the app owner to get permissions.
   By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
   page from menus.
   ",
-              "type": "boolean",
-            },
-            "hideName": {
-              "description": "Whether or not the page name should be displayed in the *app bar*.",
               "type": "boolean",
             },
             "icon": {
