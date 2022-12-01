@@ -4,7 +4,7 @@ import { checkAppRole } from '@appsemble/utils';
 export function shouldShowMenu(app: AppDefinition, userRole: string, teams: TeamMember[]): boolean {
   return (
     app.pages.filter((page) => {
-      if (page.hideFromMenu) {
+      if (page.hideNavTitle) {
         return false;
       }
       if (page.parameters) {

@@ -8,7 +8,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Main } from '../Main/index.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -59,7 +59,7 @@ export function OpenIDCallback(): ReactElement {
   if (!isOk) {
     return (
       <Main>
-        <TitleBar />
+        <AppBar />
         <Content className={styles.error} padding>
           <Message color="danger">
             {errorMessage === 'access_denied' ? (

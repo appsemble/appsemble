@@ -1470,7 +1470,7 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu,
+   * This will be displayed at the *app bar* of each page and in the side menu,
    * unless @see navTitle is set.
    *
    * The name of the page is used to determine the URL path of the page.
@@ -1488,6 +1488,11 @@ export interface BasePageDefinition {
    * Context property `name` can be used to access the name of the page.
    */
   navTitle?: Remapper;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideNavTitle?: boolean;
 
   /**
    * The navigation type to use for the page.
@@ -1516,11 +1521,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * Whether or not the page should be displayed in navigational menus.
-   */
-  hideFromMenu?: boolean;
 }
 
 /**
