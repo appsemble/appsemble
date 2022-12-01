@@ -23,7 +23,11 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
-      if (typeof definition.query === 'string' || typeof definition.query === 'number') {
+      if (
+        typeof definition.query === 'string' ||
+        typeof definition.query === 'number' ||
+        typeof definition.query === 'boolean'
+      ) {
         req.url = `${req.url}/${definition.query}`;
         req.params = null;
       }
