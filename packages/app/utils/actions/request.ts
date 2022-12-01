@@ -10,7 +10,6 @@ import { ActionCreator } from './index.js';
 export const request: ActionCreator<'request'> = ({ definition, prefixIndex, remap }) => {
   const { body, method: uncasedMethod = 'GET', proxy = true, schema, url } = definition;
   const method = uncasedMethod.toUpperCase() as HTTPMethods;
-
   return [
     async (data, context) => {
       const req = proxy
@@ -19,13 +18,19 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
             url: `${apiUrl}/api/apps/${appId}/action/${prefixIndex}`,
           }
         : formatRequestAction(definition, data, remap, context);
-
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
         req.data = serializeResource(body ? remap(body, data, context) : data);
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
-
+      if (
+        typeof definition.query === 'string' ||
+        typeof definition.query === 'number' ||
+        typeof definition.query === 'boolean'
+      ) {
+        req.url = `${req.url}/${definition.query}`;
+        req.params = null;
+      }
       const response = await axios(req);
       let responseBody = response.data;
       if (
