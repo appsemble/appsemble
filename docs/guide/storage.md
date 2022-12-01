@@ -13,14 +13,14 @@ Storing data on the server enables the option to share data between multiple cli
 
 Below are some materials on server based storage.
 
-- [Resources](http://localhost:9999/en/docs/guide/resources)
-- [Assets](http://localhost:9999/en/docs/guide/assets)
+- [Resources](/docs/guide/resources)
+- [Assets](/docs/guide/assets)
 
 ## Client Storage
 
-All client storage types can be accessed through the storage
-[actions](http://localhost:9999/en/docs/reference/action). Storage actions allow you to share data
-between blocks. There are 2 main Client Storage options, `Browser`- and `App` Storage.
+All client storage types can be accessed through the storage [actions](/docs/reference/action).
+Storage actions allow you to share data between blocks. There are 2 main Client Storage options,
+`Browser`- and `App` Storage.
 
 ### Browser Storage
 
@@ -44,9 +44,8 @@ over to the storage section.
 App Storage can be used to store data directly in the app (in memory). The App Storage will be
 cleared whenever the user refreshes their page. This means that App Storage is mainly useful when
 you want to briefly store data on the client. A common use case for App Storage is to use it within
-a flow page with
-[retain-flow-data](http://localhost:9999/en/docs/reference/app#-flow-page-definition-retain-flow-data)
-set to `false`.
+a flow page with [retain-flow-data](/docs/reference/app#-flow-page-definition-retain-flow-data) set
+to `false`.
 
 There is also an `Internal Storage` which loads any data automatically stored within. Data can only
 be persisted to Internal Storage by switching pages in a flow with flow actions.
