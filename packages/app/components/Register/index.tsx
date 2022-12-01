@@ -4,6 +4,7 @@ import {
   RegistrationFormValues,
   useMeta,
 } from '@appsemble/react-components';
+import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
@@ -24,6 +25,8 @@ export function Register(): ReactElement {
       formData.append('email', values.email);
       formData.append('password', values.password);
       formData.append('locale', lang);
+      formData.append('timezone', timezone);
+
       if (values.name) {
         formData.append('name', values.name);
       }
