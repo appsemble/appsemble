@@ -17,6 +17,7 @@ import { NavigateFunction, Params } from 'react-router-dom';
 import { JsonValue } from 'type-fest';
 
 import { ActionCreators } from './utils/actions/index.js';
+import { AppStorage } from './utils/storage.js';
 
 declare module '@appsemble/sdk' {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
@@ -114,6 +115,7 @@ export type UpdateTeam = (team: TeamMember) => void;
 export interface MakeActionParameters<D extends ActionDefinition> {
   app: AppDefinition;
   getAppMessage: MessageGetter;
+  appStorage: AppStorage;
   definition: D;
   extraCreators: ActionCreators;
   flowActions: FlowActions;

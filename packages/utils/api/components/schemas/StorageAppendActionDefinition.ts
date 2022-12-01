@@ -35,7 +35,7 @@ remapBefore:
       description: 'The data to write on top of the storage entry.',
     },
     storage: {
-      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to store the data.',
       default: 'indexedDB',
     },

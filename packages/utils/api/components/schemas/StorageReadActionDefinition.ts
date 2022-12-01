@@ -24,7 +24,7 @@ storage: localStorage
       description: 'The key of the storage entry.',
     },
     storage: {
-      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to read the data from.',
       default: 'indexedDB',
     },

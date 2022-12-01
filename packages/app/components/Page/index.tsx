@@ -17,6 +17,7 @@ import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 import { ShowDialogParams, ShowShareDialog } from '../../types.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
@@ -55,6 +56,11 @@ export function Page(): ReactElement {
       }),
     [],
   );
+
+  const appStorage = useRef<AppStorage>();
+  if (!appStorage.current) {
+    appStorage.current = new AppStorage();
+  }
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
@@ -167,6 +173,7 @@ export function Page(): ReactElement {
         <TitleBar hideName={page.hideName}>{pageName}</TitleBar>
         {page.type === 'tabs' ? (
           <TabsPage
+            appStorage={appStorage.current}
             data={data}
             ee={ee.current}
             key={prefix}
@@ -184,6 +191,7 @@ export function Page(): ReactElement {
               element={
                 page.type === 'flow' ? (
                   <FlowPage
+                    appStorage={appStorage.current}
                     data={data}
                     definition={definition}
                     ee={ee.current}
@@ -198,6 +206,7 @@ export function Page(): ReactElement {
                   />
                 ) : (
                   <BlockList
+                    appStorage={appStorage.current}
                     blocks={page.blocks}
                     data={data}
                     ee={ee.current}
@@ -218,6 +227,7 @@ export function Page(): ReactElement {
           </MetaSwitch>
         )}
         <PageDialog
+          appStorage={appStorage.current}
           dialog={dialog}
           ee={ee.current}
           page={page}

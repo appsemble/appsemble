@@ -23,7 +23,7 @@ storage: localStorage
       description: 'The key of the storage entry to remove.',
     },
     storage: {
-      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to remove the data from.',
       default: 'indexedDB',
     },

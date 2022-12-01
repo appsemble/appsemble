@@ -176,6 +176,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
     navigate: null,
     pageReady: Promise.resolve(),
+    appStorage: null,
     prefix: null,
     prefixIndex: null,
     pushNotifications: null,

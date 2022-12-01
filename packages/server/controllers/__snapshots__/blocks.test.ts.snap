@@ -2123,6 +2123,7 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2191,6 +2192,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2296,6 +2298,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2388,6 +2391,7 @@ storage: localStorage
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2474,6 +2478,7 @@ storage: localStorage
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2541,6 +2546,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2648,6 +2654,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2719,6 +2726,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -2822,6 +2830,7 @@ remapBefore:
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
@@ -5778,6 +5787,7 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -5846,6 +5856,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -5951,6 +5962,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6043,6 +6055,7 @@ storage: localStorage
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6129,6 +6142,7 @@ storage: localStorage
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6196,6 +6210,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6303,6 +6318,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6374,6 +6390,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
@@ -6477,6 +6494,7 @@ remapBefore:
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {

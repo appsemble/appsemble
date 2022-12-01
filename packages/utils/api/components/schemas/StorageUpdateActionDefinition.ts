@@ -38,7 +38,7 @@ remapBefore:
       description: 'The data to update the specified item with.',
     },
     storage: {
-      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to store the data.',
       default: 'indexedDB',
     },
