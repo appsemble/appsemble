@@ -237,7 +237,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "De volgende resource queries gebruiken de rol \"{roleName}\":",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "De volgende pagina's gebruiken de rol \"{roleName}\":",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "De volgende blokken gebruiken de rol \"{roleName}\":",
-  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "Je kunt deze rol niet verwijderen omdat het de laatste is in de app. U moet ten minste één rol in de app hebben.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "\"{roleName}\" wordt gebruikt in de rollen van de app.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "\"{roleName}\" wordt gebruikt als de standaard rol van de app.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "Join Team",
