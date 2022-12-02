@@ -32,6 +32,7 @@ const Tabs = [
     title: messages.rolesTab,
   },
 ] as const;
+export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
 type LeftSidebar = typeof Tabs[number];
 
 export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
@@ -40,6 +41,18 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
+
+  const onChangeTab = useCallback(
+    (tab: typeof tabChangeOptions[number]) => {
+      if (tab === 'createRole') {
+        setCurrentSideBar(Tabs[2]);
+        setSelectedRole(null);
+      } else {
+        setCurrentSideBar(Tabs.find(({ tab: t }) => t === tab));
+      }
+    },
+    [setCurrentSideBar, setSelectedRole],
+  );
 
   const onRoleSelect = useCallback(
     (index: number) => {
@@ -89,8 +102,8 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
-          {currentSideBar.tab === 'default' && <DefaultPage />}
-          {currentSideBar.tab === 'teams' && <TeamsPage />}
+          {currentSideBar.tab === 'default' && <DefaultPage onChangeTab={onChangeTab} />}
+          {currentSideBar.tab === 'teams' && <TeamsPage onChangeTab={onChangeTab} />}
           {currentSideBar.tab === 'roles' && selectedRole ? (
             <RolesPage selectedRole={selectedRole} />
           ) : null}

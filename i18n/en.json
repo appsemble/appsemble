@@ -233,7 +233,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "The following resource queries are using the role \"{roleName}\":",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "The following pages are using the role \"{roleName}\":",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "The following blocks are using the role \"{roleName}\":",
-  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "You cannot delete this role because it is the last one in the app. You must have at least one role in the app.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "\"{roleName}\" is being used in the app's roles.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "\"{roleName}\" is being used as the app's default role.",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "Join Team",
