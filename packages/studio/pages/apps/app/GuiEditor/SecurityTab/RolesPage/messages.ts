@@ -27,11 +27,8 @@ export const messages = defineMessages({
   deleteRoleResourceQuery: 'The following resource queries are using the role "{roleName}":',
   deleteRolePages: 'The following pages are using the role "{roleName}":',
   deleteRoleBlocks: 'The following blocks are using the role "{roleName}":',
-<<<<<<< HEAD
-=======
   lastRole:
     'You cannot delete this role because it is the last one in the app. You must have at least one role in the app.',
->>>>>>> 54f52d664 (Add translation keys and delete unused messages)
   deleteRoleInAppRoles: '"{roleName}" is being used in the app\'s roles.',
   deleteRoleInDefaultRole: '"{roleName}" is being used as the app\'s default role.',
 });
