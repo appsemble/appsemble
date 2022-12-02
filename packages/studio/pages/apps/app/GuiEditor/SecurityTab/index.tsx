@@ -33,6 +33,7 @@ const Tabs = [
   },
 ] as const;
 type LeftSidebar = (typeof Tabs)[number];
+export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
 
 export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
   const { formatMessage } = useIntl();
@@ -67,6 +68,18 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
       }
     },
     [app, setApp],
+  );
+
+  const onChangeTab = useCallback(
+    (tab: (typeof tabChangeOptions)[number]) => {
+      if (tab === 'createRole') {
+        setCurrentSideBar(Tabs[2]);
+        setSelectedRole(null);
+      } else {
+        setCurrentSideBar(Tabs.find(({ tab: t }) => t === tab));
+      }
+    },
+    [setCurrentSideBar, setSelectedRole],
   );
 
   const onRoleSelect = useCallback(
