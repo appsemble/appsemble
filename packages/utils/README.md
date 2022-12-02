@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.25/config/assets/logo.svg) Appsemble Utilities
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.26/config/assets/logo.svg) Appsemble Utilities
 
 > Internal utility functions used across multiple Appsemble projects.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/utils)](https://www.npmjs.com/package/@appsemble/utils)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.25/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.25)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.25/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.26/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.26)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.26/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
@@ -21,5 +21,5 @@ not guaranteed.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.25/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.26/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.26](https://gitlab.com/appsemble/appsemble/-/releases/0.20.26)] - 2022-12-02
+
+### Added
+
+- App: Add `appStorage` to storage actions.
+
 ## \[[0.20.25](https://gitlab.com/appsemble/appsemble/-/releases/0.20.25)] - 2022-12-01
 
 ### Changed
