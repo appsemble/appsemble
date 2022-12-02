@@ -1,6 +1,6 @@
 # Storage
 
-Appsemble provides different types of storage options, both server- and client side.
+Appsemble provides different types of storage options, both server and client side.
 
 ## Storage Types
 
@@ -20,7 +20,7 @@ Below are some materials on server based storage.
 
 All client storage types can be accessed through the storage [actions](/docs/reference/action).
 Storage actions allow you to share data between blocks. There are 2 main Client Storage options,
-`Browser`- and `App` Storage.
+`Browser` and `App` Storage.
 
 ### Browser Storage
 
