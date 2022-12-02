@@ -4,8 +4,16 @@ Appsemble provides different types of storage options, both server and client si
 
 ## Storage Types
 
-- [Server storage](#server-storage)
-- [Client storage](#client-storage)
+Most often, you want to use server storage over client storage to store your application data.
+However, sometimes you may come across a situation where just want to share data between different
+parts of the app, this is where client storage comes into to play.
+
+- [Server storage](#server-storage): Allows you to share data between users.
+- [Client storage](#client-storage): Allows you to store data in the browser or application often
+  used for more private temporary storage.
+
+> Note: All client storage types can either be cleared by clearing your browser cache or by
+> refreshing your page.
 
 ## Server Storage
 
