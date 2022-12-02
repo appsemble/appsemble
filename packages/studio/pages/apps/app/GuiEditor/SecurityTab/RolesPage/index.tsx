@@ -213,10 +213,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onRoleDelete = useCallback(
     (key: string) => {
-      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
-        push({ body: formatMessage(messages.lastRole), color: 'danger' });
-        return;
-      }
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
@@ -428,20 +424,51 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       }
       if (resourceQueryRolesReferences.length > 0) {
         for (const [resourceKey, resource] of Object.entries(app.definition.resources || [])) {
-          app.definition.resources[resourceKey].query.roles = resource.query.roles.filter(
-            (role) => role !== selectedRole,
-          );
-          if (app.definition.resources[resourceKey].query.roles.length === 0) {
-            delete app.definition.resources[resourceKey].query.roles;
+          for (const queryKeys of Object.keys(resource)) {
+            if (['create', 'delete', 'get', 'query', 'count', 'update'].includes(queryKeys)) {
+              const queryKey = queryKeys as keyof ResourceDefinition;
+              const query = resource[queryKey] as ResourceCall;
+              if (query.roles?.includes(selectedRole)) {
+                (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles =
+                  query.roles.filter((role) => role !== selectedRole);
+                if (
+                  (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles.length ===
+                  0
+                ) {
+                  delete (app.definition.resources[resourceKey][queryKey] as ResourceCall).roles;
+                }
+              }
+            }
+            if (['create', 'delete', 'update'].includes(queryKeys)) {
+              const queryKey = queryKeys as keyof ResourceDefinition;
+              const query = resource[queryKey] as ResourceCall;
+              if (query.hooks?.notification?.to?.includes(selectedRole)) {
+                (
+                  app.definition.resources[resourceKey][queryKey] as ResourceCall
+                ).hooks.notification.to = query.hooks.notification.to.filter(
+                  (role) => role !== selectedRole,
+                );
+                if (
+                  (app.definition.resources[resourceKey][queryKey] as ResourceCall).hooks
+                    .notification.to.length === 0
+                ) {
+                  delete (app.definition.resources[resourceKey][queryKey] as ResourceCall).hooks
+                    .notification.to;
+                }
+              }
+            }
           }
         }
       }
 
       /* Send API request to server to delete roles from users currently using it,
       give the user a dropdown to select which
-      role to replace it with instead before it deletes.
-      And force user to select a new role if default roles is using it */
-      delete app.definition.security.roles[selectedRole];
+      role to replace it with instead before it deletes. */
+      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
+        delete app.definition.security;
+      } else {
+        delete app.definition.security.roles[selectedRole];
+      }
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }

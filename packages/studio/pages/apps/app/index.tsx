@@ -202,7 +202,7 @@ export function AppRoutes(): ReactElement {
                 <GuiEditorPage />
               </Suspense>
             }
-            path="/edit/gui"
+            path="/edit/gui/*"
           />
           <Route
             element={

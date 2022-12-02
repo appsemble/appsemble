@@ -1,15 +1,18 @@
 import { Button } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
-import { NavLink } from 'react-router-dom';
 
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
+import { tabChangeOptions } from '../index.js';
 import { messages } from './messages.js';
 
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
 
-export function DefaultPage(): ReactElement {
+interface DefaultPageProps {
+  onChangeTab: (tab: typeof tabChangeOptions[number]) => void;
+}
+export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
@@ -35,8 +38,8 @@ export function DefaultPage(): ReactElement {
     return (
       <>
         <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-        <Button className="is-primary" component="a" icon="add">
-          <NavLink to="#security/roles">{formatMessage(messages.defaultCreateNewRole)}</NavLink>
+        <Button className="is-primary" icon="add" onClick={() => onChangeTab('createRole')}>
+          {formatMessage(messages.defaultCreateNewRole)}
         </Button>
       </>
     );

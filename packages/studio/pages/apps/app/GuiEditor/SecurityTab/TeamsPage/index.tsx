@@ -1,17 +1,20 @@
 import { Button } from '@appsemble/react-components';
 import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
-import { NavLink } from 'react-router-dom';
 
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { OptionalList } from '../../Components/OptionalList/index.js';
+import { tabChangeOptions } from '../index.js';
 import { messages } from './messages.js';
 
 const teamsJoinOptions = ['anyone', 'invite'] as const;
 const teamsInviteOptions = ['$team:member', '$team:manager'] as const;
 
-export function TeamsPage(): ReactElement {
+interface TeamsPageProps {
+  onChangeTab: (tab: typeof tabChangeOptions[number]) => void;
+}
+export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactElement {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
@@ -55,8 +58,13 @@ export function TeamsPage(): ReactElement {
     return (
       <>
         <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
-        <Button className="is-primary" component="a" icon="add">
-          <NavLink to="#security/roles">{formatMessage(messages.createNewRole)}</NavLink>
+        <Button
+          className="is-primary"
+          component="a"
+          icon="add"
+          onClick={() => onChangeTab('createRole')}
+        >
+          {formatMessage(messages.createNewRole)}
         </Button>
       </>
     );
