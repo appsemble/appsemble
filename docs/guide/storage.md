@@ -21,8 +21,9 @@ Storing data on the server enables the option to share data between multiple cli
 
 Below are some materials on server based storage.
 
-- [Resources](/docs/guide/resources)
-- [Assets](/docs/guide/assets)
+- **[Resources](/docs/guide/resources)**: Allows you to persist structured data with the resource
+  [actions](/docs/reference/action).
+- **[Assets](/docs/guide/assets)**: Allows for (public) file and media storage.
 
 ## Client Storage
 
