@@ -213,10 +213,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onRoleDelete = useCallback(
     (key: string) => {
-      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
-        push({ body: formatMessage(messages.lastRole), color: 'danger' });
-        return;
-      }
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
