@@ -1,9 +1,11 @@
 import { IDBPDatabase } from 'idb';
 
 import { createTestAction } from '../makeActions.js';
+import { AppStorage } from '../storage.js';
 import { getDB, readStorage, writeStorage } from './storage.js';
 
 let db: IDBPDatabase;
+let appStorage: AppStorage;
 
 beforeEach(async () => {
   db = await getDB();
@@ -16,6 +18,8 @@ beforeEach(async () => {
     'appsemble-42-data',
     JSON.stringify('This is default test data from sessionStorage!'),
   );
+  appStorage = new AppStorage();
+  appStorage.set('data', 'This is default test data from appStorage!');
 });
 
 describe('storage.read', () => {
@@ -24,9 +28,11 @@ describe('storage.read', () => {
     ${'localStorage'}   | ${'This is default test data from localStorage!'}
     ${'sessionStorage'} | ${'This is default test data from sessionStorage!'}
     ${'indexedDB'}      | ${'This is default test data!'}
+    ${'appStorage'}     | ${'This is default test data from appStorage!'}
   `('should read from $storageType', async ({ expectedResult, storageType }) => {
     const action = createTestAction({
       definition: { type: 'storage.read', key: { prop: 'test' }, storage: storageType },
+      appStorage,
     });
     const result = await action({ test: 'data' });
     expect(result).toBe(expectedResult);
@@ -35,6 +41,7 @@ describe('storage.read', () => {
   it('should return undefined for unknown keys in the store', async () => {
     const action = createTestAction({
       definition: { type: 'storage.read', key: { prop: 'test' } },
+      appStorage,
     });
     const result = await action({ test: 'bla' });
     expect(result).toBeUndefined();
@@ -43,6 +50,7 @@ describe('storage.read', () => {
   it('should throw error when key is not valid', async () => {
     const action = createTestAction({
       definition: { type: 'storage.read', key: { prop: 'key' }, storage: 'localStorage' },
+      appStorage,
     });
     let result;
 
@@ -62,6 +70,7 @@ describe('storage.write', () => {
     ${'localStorage'}
     ${'sessionStorage'}
     ${'indexedDB'}
+    ${'appStorage'}
   `('should store data using $storageType', async ({ storageType }) => {
     const action = createTestAction({
       definition: {
@@ -70,6 +79,7 @@ describe('storage.write', () => {
         value: { prop: 'data' },
         storage: storageType,
       },
+      appStorage,
     });
     const data = {
       key: 'key',
@@ -80,7 +90,7 @@ describe('storage.write', () => {
       key: 'key',
       data,
     });
-    const storageData = await readStorage(storageType, 'key');
+    const storageData = await readStorage(storageType, 'key', appStorage);
     expect(result).toStrictEqual({ key: 'key', data });
     expect(storageData).toStrictEqual(data);
   });
@@ -92,6 +102,7 @@ describe('storage.delete', () => {
     ${'localStorage'}   | ${'Could not find data at this key.'}
     ${'sessionStorage'} | ${'Could not find data at this key.'}
     ${'indexedDB'}      | ${undefined}
+    ${'appStorage'}     | ${'Could not find data at this key.'}
   `(
     'should delete an existing item entirely using $storageType',
     async ({ expectedResult, storageType }) => {
@@ -101,12 +112,13 @@ describe('storage.delete', () => {
           key: { prop: 'key' },
           storage: storageType,
         },
+        appStorage,
       });
       await action({ key: 'data' });
       let result;
 
       try {
-        result = await readStorage(storageType, 'data');
+        result = await readStorage(storageType, 'data', appStorage);
       } catch (error) {
         result = (error as Error).message;
       }
@@ -122,6 +134,7 @@ describe('storage.append', () => {
     ${'localStorage'}
     ${'sessionStorage'}
     ${'indexedDB'}
+    ${'appStorage'}
   `('should add a new item to an existing dataset using $storageType', async ({ storageType }) => {
     const action = createTestAction({
       definition: {
@@ -130,19 +143,20 @@ describe('storage.append', () => {
         value: { prop: 'data' },
         storage: storageType,
       },
+      appStorage,
     });
     const data = {
       key: 'key',
       data: { text: 'test' },
     };
-    writeStorage(storageType, 'key', [data, data]);
+    writeStorage(storageType, 'key', [data, data], appStorage);
 
     const result = await action({
       key: 'key',
       data,
     });
 
-    const newStorage = await readStorage(storageType, 'key');
+    const newStorage = await readStorage(storageType, 'key', appStorage);
 
     expect(result).toStrictEqual({ key: 'key', data });
     expect((newStorage as Object[])[1]).toStrictEqual({ key: 'key', data: data.data });
@@ -156,6 +170,7 @@ describe('storage.append', () => {
         value: { prop: 'data' },
         storage: 'localStorage',
       },
+      appStorage,
     });
     const data = {
       key: 'key',
@@ -167,7 +182,7 @@ describe('storage.append', () => {
       data,
     });
 
-    const newStorage = await readStorage('localStorage', 'key');
+    const newStorage = await readStorage('localStorage', 'key', appStorage);
 
     expect(result).toStrictEqual({ key: 'key', data });
     expect(Array.isArray(newStorage)).toBe(true);
@@ -180,6 +195,7 @@ describe('storage.subtract', () => {
     ${'localStorage'}
     ${'sessionStorage'}
     ${'indexedDB'}
+    ${'appStorage'}
   `(
     'should remove the last item from an existing dataset using $storageType',
     async ({ storageType }) => {
@@ -189,18 +205,19 @@ describe('storage.subtract', () => {
           key: { prop: 'key' },
           storage: storageType,
         },
+        appStorage,
       });
       const data = {
         key: 'key',
         data: { text: 'test' },
       };
-      writeStorage(storageType, 'key', [data, data, data]);
+      writeStorage(storageType, 'key', [data, data, data], appStorage);
 
       const result = await action({
         key: 'key',
       });
 
-      const newStorage = await readStorage(storageType, 'key');
+      const newStorage = await readStorage(storageType, 'key', appStorage);
 
       expect(result).toStrictEqual({ key: 'key' });
       expect(newStorage).toHaveLength(2);
@@ -214,18 +231,19 @@ describe('storage.subtract', () => {
         key: { prop: 'key' },
         storage: 'localStorage',
       },
+      appStorage,
     });
     const data = {
       key: 'key',
       data: { text: 'test' },
     };
-    writeStorage('localStorage', 'key', [data, data]);
+    writeStorage('localStorage', 'key', [data, data], appStorage);
 
     await action({
       key: 'key',
     });
 
-    const result = await readStorage('localStorage', 'key');
+    const result = await readStorage('localStorage', 'key', appStorage);
 
     expect(result).toStrictEqual(data);
   });
@@ -237,12 +255,13 @@ describe('storage.subtract', () => {
         key: { prop: 'key' },
         storage: 'localStorage',
       },
+      appStorage,
     });
     const data = {
       key: 'key',
       data: { text: 'test' },
     };
-    writeStorage('localStorage', 'key', data);
+    writeStorage('localStorage', 'key', data, appStorage);
 
     await action({
       key: 'key',
@@ -250,7 +269,7 @@ describe('storage.subtract', () => {
     let result;
 
     try {
-      result = await readStorage('localStorage', 'key');
+      result = await readStorage('localStorage', 'key', appStorage);
     } catch (error) {
       result = (error as Error).message;
     }
@@ -265,6 +284,7 @@ describe('storage.update', () => {
     ${'localStorage'}
     ${'sessionStorage'}
     ${'indexedDB'}
+    ${'appStorage'}
   `(
     'should update the specified item in the dataset using $storageType',
     async ({ storageType }) => {
@@ -276,12 +296,13 @@ describe('storage.update', () => {
           value: { prop: 'value' },
           storage: storageType,
         },
+        appStorage,
       });
       const data = {
         key: 'key',
         data: { text: 'test' },
       };
-      writeStorage(storageType, 'key', [data, data]);
+      writeStorage(storageType, 'key', [data, data], appStorage);
 
       await action({
         key: 'key',
@@ -292,7 +313,7 @@ describe('storage.update', () => {
         },
       });
 
-      const result = await readStorage(storageType, 'key');
+      const result = await readStorage(storageType, 'key', appStorage);
 
       expect((result as Object[])[1]).toStrictEqual({
         key: 'key',
@@ -310,12 +331,13 @@ describe('storage.update', () => {
         value: { prop: 'value' },
         storage: 'localStorage',
       },
+      appStorage,
     });
     const data = {
       key: 'key',
       data: { text: 'test' },
     };
-    writeStorage('localStorage', 'key', data);
+    writeStorage('localStorage', 'key', data, appStorage);
 
     await action({
       key: 'key',
@@ -325,7 +347,7 @@ describe('storage.update', () => {
       },
     });
 
-    const result = await readStorage('localStorage', 'key');
+    const result = await readStorage('localStorage', 'key', appStorage);
 
     expect(result).toStrictEqual({
       key: 'key',

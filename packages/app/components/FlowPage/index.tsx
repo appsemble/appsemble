@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
 import { makeActions } from '../../utils/makeActions.js';
+import { AppStorage } from '../../utils/storage.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';
@@ -19,6 +20,7 @@ interface FlowPageProps {
   definition: AppDefinition;
   ee: EventEmitter;
   page: FlowPageDefinition;
+  appStorage: AppStorage;
   prefix: string;
   prefixIndex: string;
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
@@ -28,6 +30,7 @@ interface FlowPageProps {
 }
 
 export function FlowPage({
+  appStorage,
   data,
   definition,
   ee,
@@ -56,9 +59,12 @@ export function FlowPage({
 
   useEffect(() => {
     if (page.retainFlowData === false) {
-      return () => setData({});
+      return () => {
+        setData({});
+        appStorage.clear();
+      };
     }
-  }, [page.retainFlowData, setData]);
+  }, [page.retainFlowData, appStorage, setData]);
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
@@ -145,6 +151,7 @@ export function FlowPage({
   actions = useMemo(
     () =>
       makeActions({
+        appStorage,
         getAppMessage,
         actions: { onFlowFinish: {}, onFlowCancel: {} },
         app: definition,
@@ -171,6 +178,7 @@ export function FlowPage({
     [
       definition,
       page,
+      appStorage,
       navigate,
       showDialog,
       showShareDialog,
@@ -199,6 +207,7 @@ export function FlowPage({
         <DotProgressBar active={currentStep} amount={page.steps.length} />
       )}
       <BlockList
+        appStorage={appStorage}
         blocks={step.blocks}
         data={data}
         ee={ee}

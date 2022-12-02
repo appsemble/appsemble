@@ -972,7 +972,7 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
-type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
+export type StorageType = 'appStorage' | 'indexedDB' | 'localStorage' | 'sessionStorage';
 
 export interface StorageAppendActionDefinition extends BaseActionDefinition<'storage.append'> {
   /**
