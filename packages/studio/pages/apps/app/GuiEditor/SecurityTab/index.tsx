@@ -73,6 +73,18 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
     [app, setApp],
   );
 
+  const onChangeTab = useCallback(
+    (tab: (typeof tabChangeOptions)[number]) => {
+      if (tab === 'createRole') {
+        setCurrentSideBar(Tabs[2]);
+        setSelectedRole(null);
+      } else {
+        setCurrentSideBar(Tabs.find(({ tab: t }) => t === tab));
+      }
+    },
+    [setCurrentSideBar, setSelectedRole],
+  );
+
   const onRoleSelect = useCallback(
     (index: number) => {
       setSelectedRole(

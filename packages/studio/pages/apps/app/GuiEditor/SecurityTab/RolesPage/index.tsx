@@ -213,10 +213,6 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onRoleDelete = useCallback(
     (key: string) => {
-      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
-        push({ body: formatMessage(messages.lastRole), color: 'danger' });
-        return;
-      }
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
@@ -565,9 +561,12 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
       /* Send API request to server to delete roles from users currently using it,
       give the user a dropdown to select which
-      role to replace it with instead before it deletes.
-      And force user to select a new role if default roles is using it */
-      delete app.definition.security.roles[selectedRole];
+      role to replace it with instead before it deletes. */
+      if (Object.entries(app.definition.security?.roles || []).length <= 1) {
+        delete app.definition.security;
+      } else {
+        delete app.definition.security.roles[selectedRole];
+      }
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: editRoleName }), color: 'success' });
     }

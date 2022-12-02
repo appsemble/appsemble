@@ -168,11 +168,7 @@
   "studio.components.AppIcon.alt": "Symbol für {appName}",
   "studio.components.AppPreview.iframeTitle": "App-Vorschau",
   "studio.components.AppPreview.sslGenerating": "Ein SSL-Zertifikat wird generiert, um Ihre Benutzer zu schützen.",
-<<<<<<< HEAD
   "studio.components.AppPreview.sslInfo": "Dies kann bis zu 24 Stunden dauern, in der Regel geht es aber schneller. Wenn es länger dauert, wenden Sie sich bitte an den Kundendienst.",
-=======
-  "studio.components.AppPreview.sslInfo": "",
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.title": "",
   "studio.pages.apps.app.GuiEditor.generalTab": "",
   "studio.pages.apps.app.GuiEditor.resourcesTab": "",
@@ -209,10 +205,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.roleCreated": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.inheritsLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "",
-<<<<<<< HEAD
-=======
-  "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "",
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.defaultRoleLabel": "",
@@ -244,10 +236,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "",
-<<<<<<< HEAD
-=======
-  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "",
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "",
@@ -258,10 +246,7 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "",
-<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "App-Vorschau",
-=======
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.components.AsyncDataView.retry": "Wiederholen",
   "studio.components.Breadcrumbs.breadcrumbs": "Semmelbrösel",
   "studio.components.Breadcrumbs.switchToGuiEditor": "",

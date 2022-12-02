@@ -205,12 +205,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.roleCreated": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.inheritsLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "",
-<<<<<<< HEAD
-=======
-  "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "",
-  "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "",
-  "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.defaultRoleLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.defaultPolicyLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.DefaultPage.noRoles": "",
@@ -240,10 +234,6 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleResourceQuery": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRolePages": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleBlocks": "",
-<<<<<<< HEAD
-=======
-  "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.lastRole": "",
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInAppRoles": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.deleteRoleInDefaultRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsJoinLabel": "",
@@ -254,12 +244,9 @@
   "studio.pages.apps.app.GuiEditor.SecurityTab.TeamsPage.teamsAddRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.addNewRole": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.RolesPage.RolesInheritanceList.allRolesSelected": "",
-<<<<<<< HEAD
   "studio.pages.apps.app.GuiEditor.Components.Preview.iframeTitle": "Предварительный просмотр приложения",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslGenerating": "",
   "studio.pages.apps.app.GuiEditor.Components.Preview.sslInfo": "",
-=======
->>>>>>> 26f7081f3 (Add translation keys and delete unused messages)
   "studio.components.AsyncDataView.retry": "Повторить",
   "studio.components.Breadcrumbs.breadcrumbs": "Навигационная цепочка",
   "studio.components.Breadcrumbs.switchToGuiEditor": "",
