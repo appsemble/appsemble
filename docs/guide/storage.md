@@ -56,7 +56,9 @@ you want to briefly store data on the client. A common use case for App Storage 
 a flow page with [retain-flow-data](/docs/reference/app#-flow-page-definition-retain-flow-data) set
 to `false`.
 
-There is also an `Internal Storage` which loads any data automatically stored within. Data can only
-be persisted to Internal Storage by switching pages in a flow with flow actions.
+There is also another form of app storage called `Page Storage`, which automatically loads data into
+blocks when switching pages. Data can only be persisted to Page Storage by switching pages in a flow
+with flow actions. This is how flow pages keep track of the data filled into a form when switching
+to the next step.
 
-> Note: Both the `App Storage` and the `Internal Storage` are effected by the `retainFlowData` prop.
+> Note: Both the `App Storage` and the `Page Storage` are effected by the `retainFlowData` prop.
