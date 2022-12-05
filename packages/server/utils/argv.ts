@@ -88,6 +88,16 @@ export interface Argv {
    */
   ingressClassName: string;
 
+  /**
+   * The name of the cert-manager issuer to use for apps.
+   */
+  issuer?: string;
+
+  /**
+   * The name of the cert-manager cluster issuer to use for apps.
+   */
+  clusterIssuer?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //

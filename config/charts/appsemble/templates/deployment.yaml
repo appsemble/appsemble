@@ -149,6 +149,14 @@ spec:
             - name: PROXY
               value: 'true'
             {{- end }}
+            {{- with .Values.ingress.issuer }}
+            - name: ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.ingress.clusterIssuer }}
+            - name: CLUSTER_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
