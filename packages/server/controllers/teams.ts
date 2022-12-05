@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { checkAppRole, Permission, TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';

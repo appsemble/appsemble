@@ -49,7 +49,7 @@ Content-Type: application/json; charset=utf-8
             },
             "parameters": {
               "additionalProperties": true,
-              "description": "A free form mapping of named paramters.
+              "description": "A free form mapping of named parameters.
 
 The exact meaning of the parameters depends on the block type.
 ",
@@ -135,13 +135,17 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -155,8 +159,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -167,8 +170,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -256,13 +259,17 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -276,8 +283,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -288,8 +294,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -380,13 +386,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -400,8 +410,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -412,8 +421,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -445,6 +454,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -511,13 +528,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -531,8 +552,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -543,8 +563,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -576,6 +596,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -642,13 +670,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -662,8 +694,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -674,8 +705,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -707,6 +738,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -842,7 +881,7 @@ Content-Type: application/json; charset=utf-8
             },
             "parameters": {
               "additionalProperties": true,
-              "description": "A free form mapping of named paramters.
+              "description": "A free form mapping of named parameters.
 
 The exact meaning of the parameters depends on the block type.
 ",
@@ -928,13 +967,17 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -948,8 +991,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -960,8 +1002,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1049,13 +1091,17 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1069,8 +1115,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1081,8 +1126,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1173,13 +1218,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1193,8 +1242,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1205,8 +1253,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1238,6 +1286,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1304,13 +1360,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1324,8 +1384,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1336,8 +1395,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1369,6 +1428,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1435,13 +1502,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1455,8 +1526,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1467,8 +1537,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1500,6 +1570,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -1639,13 +1717,17 @@ will remain the same until it is manually updated.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1659,8 +1741,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1671,8 +1752,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1761,13 +1842,17 @@ instructed to contact the app owner to get permissions.
           "additionalProperties": true,
           "description": "This describes what a page will look like in the app.",
           "properties": {
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1781,8 +1866,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1793,8 +1877,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1886,13 +1970,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -1906,8 +1994,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -1918,8 +2005,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -1951,6 +2038,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2018,13 +2113,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -2038,8 +2137,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -2050,8 +2148,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -2083,6 +2181,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.
@@ -2150,13 +2256,17 @@ instructed to contact the app owner to get permissions.
             "actions": {
               "$ref": "#/components/schemas/FlowPageActionsDefinition",
             },
-            "hideFromMenu": {
+            "hideName": {
+              "description": "Whether or not the page name should be displayed in the *app bar*.",
+              "type": "boolean",
+            },
+            "hideNavTitle": {
               "default": false,
               "description": "Whether or not the page should be displayed in navigational menus.
 
-By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
-page from menus.
-",
+  By default all pages without parameters are added to navigational menus. Set to \`true\` to hide the
+  page from menus.
+  ",
               "type": "boolean",
             },
             "icon": {
@@ -2170,8 +2280,7 @@ This will be displayed in the navigation menu.
               "description": "The name of an app.
 
 This field is always required and must be unique within the app, meaning that it is not possible to
-have two pages with the same name. The name of the page is displayed at the top of each page as well
-as in the side navigational menu.
+have two pages with the same name. The name of the page is displayed at the *app bar* of each page as well as in the side navigational menu.
 
 > **Note**: The URL used to navigate to pages is determined by this property.
 ",
@@ -2182,8 +2291,8 @@ as in the side navigational menu.
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The name of the page when displayed in the navigation menu.
 
-Context property \`name\` can be used to access the name of the page.
-",
+  Context property \`name\` can be used to access the name of the page.
+  ",
             },
             "navigation": {
               "$ref": "#/components/schemas/AppLayoutDefinition/properties/navigation",
@@ -2215,6 +2324,14 @@ passing \`id\` through is sufficient, depending on the block.
                 "corner-dots",
                 "hidden",
               ],
+            },
+            "retainFlowData": {
+              "default": true,
+              "description": "Whether to retain the flow data when navigating away to another page outside the flow.
+
+By default the flow page retains it's data after navigating once. Set to false to clear it.
+",
+              "type": "boolean",
             },
             "roles": {
               "description": "The list of roles that are allowed to view this page.

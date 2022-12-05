@@ -17,6 +17,7 @@ import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
@@ -47,6 +48,7 @@ interface BlockProps {
    * The page in which the block is rendered.
    */
   page: PageDefinition;
+  appStorage: AppStorage;
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
   ready: (block: BlockDefinition) => void;
@@ -63,6 +65,7 @@ interface BlockProps {
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
 export function Block({
+  appStorage,
   block,
   data,
   ee,
@@ -117,6 +120,7 @@ export function Block({
 
     const actions = makeActions({
       getAppMessage,
+      appStorage,
       actions: manifest.actions,
       app: definition,
       context: block,
@@ -199,6 +203,7 @@ export function Block({
     data,
     definition,
     ee,
+    appStorage,
     extraCreators,
     flowActions,
     getBlockMessage,

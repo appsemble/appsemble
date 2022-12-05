@@ -1,6 +1,6 @@
-import { readFile } from 'fs/promises';
-import { Agent } from 'https';
-import { join } from 'path';
+import { readFile } from 'node:fs/promises';
+import { Agent } from 'node:https';
+import { join } from 'node:path';
 
 import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
@@ -330,7 +330,7 @@ export async function cleanupDNS(): Promise<void> {
 }
 
 /**
- * Restore ingresses for all apps andorganizations.
+ * Restore ingresses for all apps and organizations.
  */
 export async function restoreDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);

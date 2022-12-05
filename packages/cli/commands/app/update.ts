@@ -1,4 +1,4 @@
-import { ReadStream } from 'fs';
+import { ReadStream } from 'node:fs';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { AppVisibility } from '@appsemble/types';

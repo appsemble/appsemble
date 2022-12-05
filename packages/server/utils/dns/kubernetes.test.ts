@@ -1,4 +1,4 @@
-import { Agent } from 'https';
+import { Agent } from 'node:https';
 
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -15,7 +15,7 @@ const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
 // @ts-expect-error this is fine actually
-import.meta.jest.unstable_mockModule('fs/promises', () => fs.promises);
+import.meta.jest.unstable_mockModule('node:fs/promises', () => fs.promises);
 
 useTestDatabase('kubernetes');
 

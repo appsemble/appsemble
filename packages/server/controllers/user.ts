@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import jwt, { JwtPayload } from 'jsonwebtoken';

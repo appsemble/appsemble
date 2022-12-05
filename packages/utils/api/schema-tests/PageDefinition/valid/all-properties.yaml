@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://appsemble.app/api.json#/components/schemas/PageDefinition
 name: Test page
-hideFromMenu: true
 icon: book
-navigation: bottom
 navTitle: { translate: testPageTitle }
+hideNavTitle: true
+navigation: bottom
 theme:
   primaryColor: '#dfeb08'
 parameters:

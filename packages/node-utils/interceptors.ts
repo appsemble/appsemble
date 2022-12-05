@@ -1,4 +1,4 @@
-import { arch, type } from 'os';
+import { arch, type } from 'node:os';
 
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { highlight } from 'cli-highlight';

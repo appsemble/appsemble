@@ -3,3 +3,4 @@ extends:
   - remcohaszing/web
 rules:
   react/prop-types: off
+  unicorn/prefer-node-protocol: off

@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.20/config/assets/logo.svg) Appsemble React Components
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.26/config/assets/logo.svg) Appsemble React Components
 
 > Reusable React components
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.20/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.20)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.20/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.26/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.26)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.26/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Usage
@@ -13,5 +13,5 @@ repository.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.20/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.26/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

@@ -18,7 +18,7 @@ function sortData(givenWordsList: any): string[] {
       }
     } else if (typeof unknownData === 'string') {
       filteredList.push(unknownData);
-    } else if (typeof unknownData === 'undefined' || unknownData == null) {
+    } else if (unknownData == null) {
       return null;
     } else {
       filteredList.push(unknownData.String());

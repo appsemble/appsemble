@@ -92,7 +92,7 @@ export interface BlockDefinition {
   theme?: Partial<Theme>;
 
   /**
-   * A free form mapping of named paramters.
+   * A free form mapping of named parameters.
    *
    * The exact meaning of the parameters depends on the block type.
    */
@@ -972,7 +972,78 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
-type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
+export type StorageType = 'appStorage' | 'indexedDB' | 'localStorage' | 'sessionStorage';
+
+export interface StorageAppendActionDefinition extends BaseActionDefinition<'storage.append'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The data to write to the app’s storage.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageDeleteActionDefinition extends BaseActionDefinition<'storage.delete'> {
+  /**
+   * The key of the entry to delete from the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to delete the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageSubtractActionDefinition extends BaseActionDefinition<'storage.subtract'> {
+  /**
+   * The key of the entry to subtract the last entry from
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageUpdateActionDefinition extends BaseActionDefinition<'storage.update'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The key of the item to update.
+   */
+  item: Remapper;
+
+  /**
+   * The data to update the specified item with.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
 
 export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
   /**
@@ -1271,7 +1342,11 @@ export type ActionDefinition =
   | ResourceUpdateActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
+  | StorageAppendActionDefinition
+  | StorageDeleteActionDefinition
   | StorageReadActionDefinition
+  | StorageSubtractActionDefinition
+  | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
   | UserLoginAction
@@ -1395,7 +1470,7 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu,
+   * This will be displayed at the *app bar* of each page and in the side menu,
    * unless @see navTitle is set.
    *
    * The name of the page is used to determine the URL path of the page.
@@ -1403,11 +1478,21 @@ export interface BasePageDefinition {
   name: string;
 
   /**
+   * Whether or not the page name should be displayed in the *app bar*.
+   */
+  hideName?: boolean;
+
+  /**
    * The name of the page when displayed in the navigation menu.
    *
    * Context property `name` can be used to access the name of the page.
    */
   navTitle?: Remapper;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideNavTitle?: boolean;
 
   /**
    * The navigation type to use for the page.
@@ -1436,11 +1521,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * Whether or not the page should be displayed in navigational menus.
-   */
-  hideFromMenu?: boolean;
 }
 
 /**
@@ -1474,6 +1554,15 @@ export interface FlowPageDefinition extends BasePageDefinition {
    * @default 'corner-dots'
    */
   progress?: 'corner-dots' | 'hidden';
+
+  /**
+   * Whether to retain the flow data when navigating away to another page outside the flow.
+   *
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
+   *
+   * @default true
+   */
+  retainFlowData?: boolean;
 }
 
 export interface TabsPageDefinition extends BasePageDefinition {
@@ -1824,7 +1913,7 @@ export interface Organization {
 }
 
 /**
- * An invite for an organizaton.
+ * An invite for an organization.
  */
 export interface OrganizationInvite {
   /**

@@ -126,8 +126,7 @@ prettier:
 # Spellings Check using cspell
 cspell:
   script:
-    - npx cspell **/*.tsx
-    - npx cspell docs/*/**.md
+    - npx cspell **/*.tsx **/*.ts
 
 # Lint Markdown using remark.
 remark lint:
@@ -376,7 +375,7 @@ release minor:
 #  Deploy Stage                                                                                   #
 ###################################################################################################
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 cleanup k8s jobs:
   image: dtzar/helm-kubectl:3
   stage: deploy
@@ -389,7 +388,7 @@ cleanup k8s jobs:
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 update dependencies:
   extends: .yarn
   stage: deploy
@@ -425,7 +424,7 @@ update dependencies:
     - git commit --all --message 'Update yarn.lock'
     - git push --force origin update-lockfile
       -o merge_request.create
-      -o merge_request.label=chore
+      -o merge_request.label=Chore
       -o merge_request.merge_when_pipeline_succeeds
       -o merge_request.remove_source_branch
 

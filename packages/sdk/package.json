@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.20.20",
+  "version": "0.20.26",
   "description": "Build your own blocks",
   "keywords": [
     "app",
@@ -34,7 +34,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.20",
+    "@appsemble/types": "0.20.26",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^2.0.0"
   }

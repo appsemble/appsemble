@@ -1,6 +1,6 @@
-import { Dirent, Stats } from 'fs';
-import { mkdir, opendir, readFile, stat, writeFile } from 'fs/promises';
-import { dirname, extname, join } from 'path';
+import { Dirent, Stats } from 'node:fs';
+import { mkdir, opendir, readFile, stat, writeFile } from 'node:fs/promises';
+import { dirname, extname, join } from 'node:path';
 
 import { compareStrings } from '@appsemble/utils';
 import parseJson from 'parse-json';
@@ -14,7 +14,7 @@ import { AppsembleError } from './index.js';
  * Test if the error is a NodeJS errno exception.
  *
  * @param error The value to check
- * @param code If specified, theck if the code matches
+ * @param code If specified, check if the code matches
  * @returns Whether or not the error is a NodeJS errno exception.
  */
 export function isErrno(error: unknown, code?: string): error is NodeJS.ErrnoException {
