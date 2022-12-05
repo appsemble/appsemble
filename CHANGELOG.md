@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.27](https://gitlab.com/appsemble/appsemble/-/releases/0.20.27)] - 2022-12-05
+
+### Added
+
+- Server: Add support for custom SSL certificates for apps.
+- Studio: Add support for custom SSL certificates for apps.
+
 ## \[[0.20.26](https://gitlab.com/appsemble/appsemble/-/releases/0.20.26)] - 2022-12-02
 
 ### Added

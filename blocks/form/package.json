@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.20.26",
+  "version": "0.20.27",
   "private": true,
   "description": "A block used for inputting and submitting sets of data.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.26",
-    "@appsemble/preact-components": "0.20.26",
-    "@appsemble/sdk": "0.20.26",
-    "@appsemble/utils": "0.20.26",
+    "@appsemble/preact": "0.20.27",
+    "@appsemble/preact-components": "0.20.27",
+    "@appsemble/sdk": "0.20.27",
+    "@appsemble/utils": "0.20.27",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
