@@ -24,7 +24,7 @@ For each of our internal merge requests a review environment is started at
 
 | Resource | Minimum | Recommended |
 | -------- | ------- | ----------- |
-| CPU      | 1 GHz   | 2 GHz>      |
+| CPU      | 1 GHz   | >2 GHz      |
 | CPUs     | 1       | 2>          |
 | RAM      | 12GB    | 16GB>       |
 | Disk     | 3 GiB   | >           |
