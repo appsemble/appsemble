@@ -29,14 +29,15 @@ export async function readStorage(
   if (storage === 'appStorage') {
     let value = appStorage.get(key);
 
+    if (value === undefined) {
+      throw new Error('Could not find data at this key.');
+    }
+
     // Re-assign value to prevent referential equality search issues
     if (typeof value === 'object') {
       value = Array.isArray(value) ? [...value] : { ...value };
     }
 
-    if (value === undefined) {
-      throw new Error('Could not find data at this key.');
-    }
     return value;
   }
   if (storage !== 'indexedDB') {
