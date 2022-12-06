@@ -3,7 +3,7 @@ import { App } from '@appsemble/types';
 import axios from 'axios';
 import { ReactElement, useCallback, useState } from 'react';
 import { MessageDescriptor, useIntl } from 'react-intl';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
 import { stringify } from 'yaml';
 
 import { useApp } from '../index.js';
@@ -20,36 +20,36 @@ export interface GuiEditorTabs {
   tabName: TabTypes;
   title: MessageDescriptor;
   icon: string;
-  hash: string;
+  path: string;
 }
 const tabs: GuiEditorTabs[] = [
   {
     title: messages.generalTab,
-    hash: '#general',
+    path: 'general',
     tabName: 'general',
     icon: 'fas fa-cog',
   },
   {
     title: messages.resourcesTab,
-    hash: '#resources',
+    path: 'resources',
     tabName: 'resources',
     icon: 'fas fa-database',
   },
   {
     title: messages.pagesTab,
-    hash: '#pages',
+    path: 'pages',
     tabName: 'pages',
     icon: 'fa-regular fa-file',
   },
   {
     title: messages.themeTab,
-    hash: '#theme',
+    path: 'theme',
     tabName: 'theme',
     icon: 'fas fa-palette',
   },
   {
     title: messages.securityTab,
-    hash: '#security',
+    path: 'security',
     tabName: 'security',
     icon: 'fas fa-lock',
   },
@@ -63,9 +63,14 @@ export default function EditPage(): ReactElement {
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
   const location = useLocation();
-  const currentTab = tabs.find((tab) => tab.hash === location.hash) || tabs[2];
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+
+  const match = useMatch('/:lang/apps/:id/edit/gui/*');
+  const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
+  const { id, lang } = match.params;
+  const tabPath = matchTabPath?.params.tab;
+  const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);
@@ -91,8 +96,8 @@ export default function EditPage(): ReactElement {
     }
   }, [app.definition, app.id, coreStyle, formatMessage, push, setApp, sharedStyle]);
 
-  if (!location.hash || !tabs.some((tab) => tab.hash === location.hash)) {
-    return <Navigate to={{ ...location, hash: '#pages' }} />;
+  if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
+    return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
   }
 
   return (
@@ -112,13 +117,13 @@ export default function EditPage(): ReactElement {
         </div>
         <ul>
           {tabs.map((tab) => (
-            <li className={tab.hash === location.hash ? 'is-active' : ''} key={tab.tabName}>
-              <a href={tab.hash}>
+            <li className={tab.path === tabPath ? 'is-active' : ''} key={tab.tabName}>
+              <Link to={tab.path}>
                 <span className="icon">
                   <i aria-hidden="true" className={tab.icon} />
                 </span>
                 <span>{formatMessage(tab.title)}</span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -150,7 +155,7 @@ export default function EditPage(): ReactElement {
           <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
         )}
         {currentTab.tabName === 'security' && (
-          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
       </div>
     </div>
