@@ -1,4 +1,4 @@
-# Set up Account and Organisation
+# Set up Account and Organization
 
 To start using Appsemble you have to create an account.
 
