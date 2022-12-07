@@ -8,10 +8,6 @@ Welcome to the Appsemble app building tutorial. First this tutorial will give yo
 understanding of Appsemble so that you will understand its concept. This tutorial will also help you
 to create your first Appsemble account.
 
-The tutorial will end with a step by step guide on how to build an inventory management system. When
-you have completed this tutorial you have seen and worked with the most commonly used elements
-within Appsemble and which enables you to build apps by yourself.
-
 Here a short tutorial on how to set up your account and organization:
 
 - [Set up Account and Organization](account_setup.md)
