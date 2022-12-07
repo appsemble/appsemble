@@ -1,0 +1,28 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "User who can answer a questionnaire",
+    "description": "Questionnaire with results page for team barometer",
+    "name": "Team barometer app",
+    "pages.addreminder": "Add Reminder",
+    "pages.editreminder": "Edit Reminder",
+    "pages.gebruiker-selecteren": "Select user",
+    "pages.maak-vragenlijst": "Create questionnaire",
+    "pages.opmerkingen-wolk": "Comment cloud",
+    "pages.reminders": "Reminders",
+    "pages.resultaat": "Result",
+    "pages.resultaten": "Results",
+    "pages.teambarometer": "Teambarometer",
+    "pages.vragenlijst-bedankt": "Questionnaire thank you",
+    "pages.vragenlijst-details": "Questionnaire details",
+    "pages.vragenlijst-details.steps.0": "New questionnaire",
+    "pages.vragenlijst-details.steps.1": "Questions",
+    "pages.vragenlijst-details.steps.2": "Control",
+    "pages.vragenlijst-details.steps.3": "Plan in",
+    "pages.vragenlijst-invullen": "Fill in questionnaire",
+    "pages.vragenlijst-invullen.step": "Title"
+  },
+  "messageIds": {
+    "buttonToPlanning": "Plan in"
+  }
+}

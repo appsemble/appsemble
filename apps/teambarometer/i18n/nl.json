@@ -1,0 +1,28 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "Gebruiker die een vragenlijst in kan vullen",
+    "description": "Vragenlijst met resultaten beeld voor team barometer",
+    "name": "Team barometer app",
+    "pages.addreminder": "Reminder toevoegen",
+    "pages.editreminder": "Reminder bewerken",
+    "pages.gebruiker-selecteren": "Gebruiker selecteren",
+    "pages.maak-vragenlijst": "Maak vragenlijst",
+    "pages.opmerkingen-wolk": "Opmerkingen wolk",
+    "pages.reminders": "Reminders",
+    "pages.resultaat": "Resultaat",
+    "pages.resultaten": "Resultaten",
+    "pages.teambarometer": "Teambarometer",
+    "pages.vragenlijst-bedankt": "Vragenlijst bedankt",
+    "pages.vragenlijst-details": "Vragenlijst maken",
+    "pages.vragenlijst-details.steps.0": "Nieuwe vragenlijst",
+    "pages.vragenlijst-details.steps.1": "Vragen",
+    "pages.vragenlijst-details.steps.2": "Controle",
+    "pages.vragenlijst-details.steps.3": "Inplannen",
+    "pages.vragenlijst-invullen": "Vragenlijst invullen",
+    "pages.vragenlijst-invullen.step": "Titel"
+  },
+  "messageIds": {
+    "buttonToPlanning": "Inplannen"
+  }
+}
