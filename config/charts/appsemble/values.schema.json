@@ -84,6 +84,14 @@
               "description": "The secret name to use to configure TLS for the direct wildcard host."
             }
           }
+        },
+        "issuer": {
+          "type": "string",
+          "description": "The name of the cert-manager issuer to use for apps."
+        },
+        "clusterIssuer": {
+          "type": "string",
+          "description": "The name of the cert-manager cluster issuer to use for apps."
         }
       }
     },

@@ -1,6 +1,6 @@
-import { existsSync } from 'fs';
-import { basename, dirname, join, relative } from 'path';
-import { isDeepStrictEqual } from 'util';
+import { existsSync } from 'node:fs';
+import { basename, dirname, join, relative } from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
 import { getWorkspaces, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';

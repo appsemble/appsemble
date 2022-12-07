@@ -9,6 +9,7 @@ describe('makeActions', () => {
   beforeEach(() => {
     testDefaults = {
       app: null,
+      appStorage: null,
       context: null,
       ee: null,
       extraCreators: null,

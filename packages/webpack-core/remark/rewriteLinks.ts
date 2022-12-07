@@ -1,4 +1,4 @@
-import { relative, resolve } from 'path';
+import { relative, resolve } from 'node:path';
 
 import { Link, Root } from 'mdast';
 import { Plugin, Transformer } from 'unified';

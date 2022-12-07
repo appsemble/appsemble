@@ -1,6 +1,6 @@
-import { createReadStream, ReadStream } from 'fs';
-import { readFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
+import { createReadStream, ReadStream } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
 let baseDir: string;
 

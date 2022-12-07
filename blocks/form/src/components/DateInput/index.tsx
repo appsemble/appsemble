@@ -7,7 +7,7 @@ import { useCallback, useMemo } from 'preact/hooks';
 import { DateField, InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
 import { extractDate } from '../../utils/extractDate.js';
-import { getDisabledDays, getMaxDate, getMinDate, isRequired } from '../../utils/requirements.js';
+import { getDisabledDays, getMaxDate, getMinDate } from '../../utils/requirements.js';
 
 type DateTimeInputProps = InputProps<string, DateField>;
 
@@ -21,15 +21,14 @@ export function DateInput({
   error,
   field,
   onChange,
+  required,
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { label, name, placeholder, readOnly, tag } = field;
+  const { inline, label, name, placeholder, readOnly, tag } = field;
 
   const dateLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
-
-  const required = isRequired(field);
 
   const handleOnChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void =>
@@ -56,6 +55,7 @@ export function DateInput({
       error={dirty ? error : null}
       icon={field.icon}
       id={name}
+      inline={inline}
       label={dateLabel}
       locale={locale}
       maxDate={maxDate}

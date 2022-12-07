@@ -24,7 +24,7 @@ interface SharedExistingTeamParams extends SharedTeamParams {
 
 interface SharedTeamMemberParams extends SharedExistingTeamParams {
   /**
-   * The ID or email adress of the team member.
+   * The ID or email address of the team member.
    */
   user: string;
 }

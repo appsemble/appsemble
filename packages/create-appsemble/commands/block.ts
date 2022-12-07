@@ -1,5 +1,5 @@
-import { cp, readdir } from 'fs/promises';
-import { join } from 'path';
+import { cp, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
 import inquirer from 'inquirer';

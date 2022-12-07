@@ -1452,6 +1452,13 @@ The action should return an array of objects that contain the \`label\` and \`va
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -1523,6 +1530,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -1663,6 +1677,13 @@ The date value can be accessed using the \`root\` remapper.",
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -1912,6 +1933,13 @@ The event should return an array of objects that contain the \`label\` and \`val
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2024,6 +2052,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -2368,6 +2403,13 @@ By default a \`number\` input field is displayed.",
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2658,8 +2700,12 @@ Supported values: \`g\`, \`m\`, \`i\`, \`y\`, \`u\`, \`s\`",
             "format": "remapper",
           },
           "required": {
-            "description": "Whether the field is required.",
-            "type": "boolean",
+            "description": "Whether the field is required.
+
+We recommend passing a boolean value e.g. \`true\`.
+
+Another option is to pass a remapper returning a boolean value. This way you can conditionally control if the field is required.",
+            "format": "remapper",
           },
         },
         "required": [
@@ -2681,6 +2727,13 @@ This field does not contain a name or a value.",
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -2769,6 +2822,13 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
             "format": "fontawesome",
             "type": "string",
           },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
           "label": {
             "description": "The label displayed next to the field.",
             "format": "remapper",
@@ -2856,6 +2916,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
             "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
           },
           "label": {
             "description": "The label displayed next to the field.",
@@ -2995,6 +3062,12 @@ If this is set to \`true\`, any help text appearing will cause the form input to
           "$ref": "#/definitions/FormRequirement",
         },
         "type": "array",
+      },
+      "skipInitialLoad": {
+        "description": "By default the form block will wait until event data is received.
+
+By setting this to \`true\`, this won’t happen.",
+        "type": "boolean",
       },
     },
     "type": "object",

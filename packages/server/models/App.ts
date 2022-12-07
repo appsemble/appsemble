@@ -61,6 +61,12 @@ export class App extends Model {
   @Column({ type: DataType.STRING(253) })
   domain: string;
 
+  @Column({ type: DataType.TEXT })
+  sslCertificate: string;
+
+  @Column({ type: DataType.TEXT })
+  sslKey: string;
+
   @Column
   icon?: Buffer;
 

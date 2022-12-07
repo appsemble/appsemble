@@ -10,7 +10,7 @@ export interface CommonJSONSchemaEditorProps<T = never> {
   disabled?: boolean;
 
   /**
-   * The name of the property thas is being rendered.
+   * The name of the property that is being rendered.
    *
    * The name is determined by the parent schema. It is used for recursion.
    */

@@ -6,6 +6,8 @@ export const supportedLanguages = {
   de: 'German (Deutsch)',
   fr: 'French (Français)',
   hr: 'Croatian (Hrvatski)',
+  id: 'Indonesian (Indonesia)',
   nl: 'Dutch (Nederlands)',
+  ru: 'Russian (русский)',
   en: 'English',
 };

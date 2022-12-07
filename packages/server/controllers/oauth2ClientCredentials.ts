@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { badRequest, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';

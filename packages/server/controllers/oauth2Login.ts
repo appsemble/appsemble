@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 import { Context } from 'koa';

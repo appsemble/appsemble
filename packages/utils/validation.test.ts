@@ -1136,7 +1136,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should allow $author in resource notifcation hooks', async () => {
+  it('should allow $author in resource notification hooks', async () => {
     const app = createTestApp();
     app.resources.person.update.hooks = {
       notification: {
@@ -1247,7 +1247,7 @@ describe('validateAppDefinition', () => {
     );
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
-      new ValidationError('may not specifiy parameters', 'Page with parameters', undefined, [
+      new ValidationError('may not specify parameters', 'Page with parameters', undefined, [
         'defaultPage',
       ]),
     ]);

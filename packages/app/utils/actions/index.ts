@@ -17,7 +17,7 @@ import { request } from './request.js';
 import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
-import { read, write } from './storage.js';
+import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList } from './team.js';
 import { throwAction } from './throw.js';
 import { login, register, update } from './user.js';
@@ -80,8 +80,12 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.status': resource.status,
   share,
   static: staticAction,
-  'storage.read': read,
-  'storage.write': write,
+  'storage.read': storage.read,
+  'storage.write': storage.write,
+  'storage.append': storage.append,
+  'storage.subtract': storage.subtract,
+  'storage.update': storage.update,
+  'storage.delete': storage.remove,
   'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,

@@ -68,7 +68,7 @@ If a user does not have the right role, the block is not rendered.
     },
     parameters: {
       type: 'object',
-      description: `A free form mapping of named paramters.
+      description: `A free form mapping of named parameters.
 
 The exact meaning of the parameters depends on the block type.
 `,

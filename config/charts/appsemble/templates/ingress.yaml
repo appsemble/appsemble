@@ -5,10 +5,17 @@ metadata:
   name: {{ include "appsemble.fullname" . }}
   labels:
     {{ include "appsemble.labels" . }}
-  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{ with .Values.ingress.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{ end }}
+
+    {{ with .Values.ingress.issuer }}
+    cert-manager.io/issuer: {{ . | quote }}
+    {{ end }}
+    {{ with .Values.ingress.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ . | quote }}
+    {{ end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
 {{- if .Values.ingress.tls }}
