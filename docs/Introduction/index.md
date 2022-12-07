@@ -40,7 +40,7 @@ An app can consist of the following elements:
 
 - name (name of the app)\*
 - description (description of the app)
-- `defaultPage` (app `startingpage)`\*
+- `defaultPage` (app `startingpage`)\*
 - pages (list of pages in the app)\*
 - blocks (list of blocks in the app)
 - resource (the resources where you store and collect your data)

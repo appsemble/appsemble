@@ -92,9 +92,9 @@ The following is the table block:
   parameters:
     fields:
       - value: { prop: firstName }
-        label: Fistname
+        label: First name
       - value: { prop: lastName }
-        label: Lastname
+        label: Last name
 ```
 
 The table element listens to the people event in order to get the correct data. In this example we
