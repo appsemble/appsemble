@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/feed",
-  "version": "0.20.27",
+  "version": "0.20.28",
   "private": true,
   "description": "A block that displays a feed of cards.",
   "homepage": "https://appsemble.app",
@@ -17,9 +17,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.27",
-    "@appsemble/preact-components": "0.20.27",
-    "@appsemble/sdk": "0.20.27",
+    "@appsemble/preact": "0.20.28",
+    "@appsemble/preact-components": "0.20.28",
+    "@appsemble/sdk": "0.20.28",
     "@types/leaflet": "^1.0.0",
     "leaflet": "~1.5.0",
     "preact": "^10.0.0"
