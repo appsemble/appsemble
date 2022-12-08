@@ -27,10 +27,17 @@ export async function readStorage(
   const storage = storageType || 'indexedDB';
 
   if (storage === 'appStorage') {
-    const value = appStorage.get(key);
+    let value = appStorage.get(key);
+
     if (value === undefined) {
       throw new Error('Could not find data at this key.');
     }
+
+    // Re-assign value to prevent referential equality search issues
+    if (typeof value === 'object') {
+      value = Array.isArray(value) ? [...value] : { ...value };
+    }
+
     return value;
   }
   if (storage !== 'indexedDB') {
