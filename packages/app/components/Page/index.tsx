@@ -8,13 +8,7 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import {
-  FlowPageDefinition,
-  LoopPageDefinition,
-  PageDefinition,
-  Remapper,
-  SubPage,
-} from '@appsemble/types';
+import { LoopPageDefinition, PageDefinition, Remapper, SubPage } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -103,18 +97,16 @@ export function Page(): ReactElement {
   const internalPageName = page ? normalize(page.name) : null;
   const prefix = index === -1 ? null : `pages.${internalPageName}`;
   const prefixIndex = index === -1 ? null : `pages.${index}`;
-  const [loading, setLoading] = useState<boolean>(page.type === 'flow');
+  const [loading, setLoading] = useState<boolean>(page.type === 'loop' || page.type === 'flow');
 
   const steps = useMemo(() => {
     if (page.type === 'flow') {
-      const flowPage: FlowPageDefinition = page;
-      if (flowPage.steps) {
-        return flowPage.steps;
-      }
-      setPage({ ...page, steps: loopSteps });
+      return page.steps;
+    }
+    if (page.type === 'loop') {
       return loopSteps;
     }
-  }, [loopSteps, page, setPage]);
+  }, [loopSteps, page]);
 
   const remapWithContext = useCallback(
     (mappers: Remapper, input: any, context: Record<string, any>) =>
@@ -165,12 +157,12 @@ export function Page(): ReactElement {
     };
   }, []);
 
-  // Generate subpages from a loop
+  // Genereate loop steps
   useEffect(() => {
-    if (page.type === 'loop' && !steps) {
+    if (page.type === 'loop') {
       generateSubpages().then(setLoopSteps);
     }
-  }, [page, page.type, generateSubpages, steps]);
+  }, [generateSubpages, page.type]);
 
   useEffect(() => {
     if (!page) {
@@ -189,12 +181,12 @@ export function Page(): ReactElement {
   );
 
   useEffect(() => {
-    if (page.type !== 'loop' || steps) {
+    if ((page.type === 'flow' || page.type === 'loop') && steps) {
       setLoading(false);
     } else {
       setLoading(true);
     }
-  }, [steps, page, setLoopSteps]);
+  }, [steps, page, setLoopSteps, loopSteps]);
 
   const checkPagePermissions = useCallback(
     (p: PageDefinition): boolean => {

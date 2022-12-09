@@ -509,11 +509,12 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type.startsWith('flow.')) {
         const page = definition.pages?.[Number(path[1])];
-        if (page?.type !== 'flow') {
-          report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
-            ...path,
-            'type',
-          ]);
+        if (page.type !== 'flow' && page.type !== 'loop') {
+          report(
+            action.type,
+            'flow actions can only be used on pages with the type ‘flow’ or ‘loop’',
+            [...path, 'type'],
+          );
           return;
         }
 
@@ -539,6 +540,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (
+          page.type === 'flow' &&
           action.type === 'flow.next' &&
           Number(path[3]) === page.steps.length - 1 &&
           !page.actions?.onFlowFinish
@@ -551,7 +553,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (action.type === 'flow.to' && !page.steps.some((step) => step.name === action.step)) {
+        if (
+          page.type === 'flow' &&
+          action.type === 'flow.to' &&
+          !page.steps.some((step) => step.name === action.step)
+        ) {
           report(action.type, 'refers to a step that doesn’t exist', [...path, 'step']);
           return;
         }

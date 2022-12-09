@@ -11,7 +11,7 @@ export const LoopPageDefinition = extendJSONSchema(BasePageDefinition, {
       enum: ['loop'],
     },
     actions: {
-      $ref: '#/components/schemas/LoopPageActionsDefinition.ts',
+      $ref: '#/components/schemas/LoopPageActionsDefinition',
     },
     foreach: {
       $ref: '#/components/schemas/SubPage',
