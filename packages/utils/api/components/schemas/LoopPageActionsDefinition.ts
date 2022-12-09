@@ -1,10 +1,15 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-export const FlowPageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
+export const LoopPageActionsDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  description: 'These actions are fired on a flow page.',
+  description: 'These actions are fired on a loop page.',
+  required: ['onLoad'],
   additionalProperties: false,
   properties: {
+    onLoad: {
+      $ref: '#/components/schemas/ActionDefinition',
+      description: 'This action is used to define the data to pass onto the loop type array',
+    },
     onFlowCancel: {
       $ref: '#/components/schemas/ActionDefinition',
       description: 'This action gets triggered when `flow.cancel` gets called.',

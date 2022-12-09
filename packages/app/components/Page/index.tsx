@@ -8,7 +8,13 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import { FlowPageDefinition, PageDefinition, Remapper, SubPage } from '@appsemble/types';
+import {
+  FlowPageDefinition,
+  LoopPageDefinition,
+  PageDefinition,
+  Remapper,
+  SubPage,
+} from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -133,7 +139,7 @@ export function Page(): ReactElement {
 
     // TODO: Move this whole data / resource declaration outside of the page generation
     setData(mockResource);
-    const { blocks } = (page as FlowPageDefinition).foreach;
+    const { blocks } = (page as LoopPageDefinition).foreach;
 
     function createSteps(): SubPage[] {
       const newSteps: SubPage[] = [];
@@ -161,10 +167,10 @@ export function Page(): ReactElement {
 
   // Generate subpages from a loop
   useEffect(() => {
-    if (page.type === 'flow' && !(page as FlowPageDefinition).steps) {
+    if (page.type === 'loop' && !steps) {
       generateSubpages().then(setLoopSteps);
     }
-  }, [page, page.type, generateSubpages]);
+  }, [page, page.type, generateSubpages, steps]);
 
   useEffect(() => {
     if (!page) {
@@ -183,7 +189,7 @@ export function Page(): ReactElement {
   );
 
   useEffect(() => {
-    if (page.type !== 'flow' || steps) {
+    if (page.type !== 'loop' || steps) {
       setLoading(false);
     } else {
       setLoading(true);
@@ -255,7 +261,7 @@ export function Page(): ReactElement {
           <MetaSwitch title={pageName}>
             <Route
               element={
-                page.type === 'flow' ? (
+                page.type === 'flow' || page.type === 'loop' ? (
                   <FlowPage
                     appStorage={appStorage.current}
                     data={data}

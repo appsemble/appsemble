@@ -1544,7 +1544,35 @@ export interface BasicPageDefinition extends BasePageDefinition {
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
 
-  steps?: SubPage[];
+  steps: SubPage[];
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onFlowCancel?: ActionDefinition;
+    onFlowFinish?: ActionDefinition;
+  };
+
+  /**
+   * The method used to display the progress of the flow page.
+   *
+   * @default 'corner-dots'
+   */
+  progress?: 'corner-dots' | 'hidden';
+
+  /**
+   * Whether to retain the flow data when navigating away to another page outside the flow.
+   *
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
+   *
+   * @default true
+   */
+  retainFlowData?: boolean;
+}
+
+export interface LoopPageDefinition extends BasePageDefinition {
+  type: 'loop';
 
   /**
    * Template step that the loop will pass data onto
@@ -1582,7 +1610,11 @@ export interface TabsPageDefinition extends BasePageDefinition {
   tabs: SubPage[];
 }
 
-export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
+export type PageDefinition =
+  | BasicPageDefinition
+  | FlowPageDefinition
+  | LoopPageDefinition
+  | TabsPageDefinition;
 
 export interface AppDefinition {
   /**

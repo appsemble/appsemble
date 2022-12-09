@@ -2,7 +2,13 @@ import { EventEmitter } from 'events';
 
 import { useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
-import { AppDefinition, FlowPageDefinition, Remapper, SubPage } from '@appsemble/types';
+import {
+  AppDefinition,
+  FlowPageDefinition,
+  LoopPageDefinition,
+  Remapper,
+  SubPage,
+} from '@appsemble/types';
 import { MutableRefObject, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -19,7 +25,7 @@ interface FlowPageProps {
   data: unknown;
   definition: AppDefinition;
   ee: EventEmitter;
-  page: FlowPageDefinition;
+  page: FlowPageDefinition | LoopPageDefinition;
   appStorage: AppStorage;
   prefix: string;
   prefixIndex: string;
@@ -72,10 +78,6 @@ export function FlowPage({
       };
     }
   }, [page.retainFlowData, appStorage, setData]);
-
-  if (!stepRef.current) {
-    updateStepRef((data as Record<string, any>)[0]);
-  }
 
   if (!stepRef.current) {
     updateStepRef((data as Record<string, any>)[0]);

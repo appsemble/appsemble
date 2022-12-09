@@ -135,12 +135,6 @@ export function iterPage(
       );
     }
 
-    if ('foreach' in page) {
-      result = !page.foreach.blocks.some((block, index) => {
-        iterBlock(block, callbacks, [...prefix, 'block', index, 'block']);
-      });
-    }
-
     return (
       result ||
       (page.type === 'flow'
@@ -152,6 +146,11 @@ export function iterPage(
           ))
     );
   }
+
+  if (page.type === 'loop') {
+    return iterBlockList(page.foreach.blocks, callbacks, [...prefix, 'blocks']);
+  }
+
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
 }
 
