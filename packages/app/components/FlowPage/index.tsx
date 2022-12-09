@@ -77,6 +77,10 @@ export function FlowPage({
     updateStepRef((data as Record<string, any>)[0]);
   }
 
+  if (!stepRef.current) {
+    updateStepRef((data as Record<string, any>)[0]);
+  }
+
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
 
