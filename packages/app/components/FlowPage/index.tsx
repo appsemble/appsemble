@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { useMessages, useMeta } from '@appsemble/react-components';
+import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
 import { BootstrapParams } from '@appsemble/sdk';
 import {
   AppDefinition,
@@ -34,8 +34,6 @@ interface FlowPageProps {
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
   stepRef: MutableRefObject<unknown>;
-  updateStepRef: (data: unknown) => void;
-  steps: SubPage[];
 }
 
 export function FlowPage({
@@ -51,8 +49,6 @@ export function FlowPage({
   showDialog,
   showShareDialog,
   stepRef,
-  steps,
-  updateStepRef,
 }: FlowPageProps): ReactElement {
   const navigate = useNavigate();
   const params = useParams();
@@ -61,12 +57,13 @@ export function FlowPage({
   const showMessage = useMessages();
   const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
   const { getAppMessage } = useAppMessages();
-  const step = steps[currentStep];
+  const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
+  const [error, setError] = useState(false);
   const id = `${prefix}.steps.${currentStep}`;
 
   const name = getAppMessage({
     id,
-    defaultMessage: step.name,
+    defaultMessage: steps?.[currentStep]?.name,
   }).format() as string;
   useMeta(name === `{${id}}` ? null : name);
 
@@ -78,10 +75,6 @@ export function FlowPage({
       };
     }
   }, [page.retainFlowData, appStorage, setData]);
-
-  if (!stepRef.current) {
-    updateStepRef((data as Record<string, any>)[0]);
-  }
 
   // XXX Something weird is going on here.
   let actions: BootstrapParams['actions'];
@@ -101,13 +94,13 @@ export function FlowPage({
       if (currentStep + 1 === steps.length) {
         return finish(d);
       }
-      setData(d);
       setCurrentStep(currentStep + 1);
-      updateStepRef((data as Record<string, any>)[currentStep + 1]);
+      applyRefs((data as Record<string, any>)[currentStep + 1], stepRef);
+      setData(d);
 
       return d;
     },
-    [currentStep, steps.length, setData, updateStepRef, data, finish],
+    [currentStep, steps, setData, data, stepRef, finish],
   );
 
   const back = useCallback(
@@ -118,13 +111,13 @@ export function FlowPage({
         return d;
       }
 
-      setData(d);
       setCurrentStep(currentStep - 1);
-      updateStepRef((data as Record<string, any>)[currentStep - 1]);
+      applyRefs((data as Record<string, any>)[currentStep - 1], stepRef);
+      setData(d);
 
       return d;
     },
-    [currentStep, setData, updateStepRef, data],
+    [currentStep, setData, data, stepRef],
   );
 
   const cancel = useCallback(
@@ -145,13 +138,13 @@ export function FlowPage({
         throw new Error(`No matching page was found for ${stepName}`);
       }
 
-      setData(d);
       setCurrentStep(found);
-      updateStepRef((data as Record<string, any>)[found]);
+      applyRefs((data as Record<string, any>)[found], stepRef);
+      setData(d);
 
       return d;
     },
-    [steps, setData, updateStepRef, data],
+    [steps, setData, data, stepRef],
   );
 
   const flowActions = useMemo(
@@ -170,7 +163,7 @@ export function FlowPage({
       makeActions({
         appStorage,
         getAppMessage,
-        actions: { onFlowFinish: {}, onFlowCancel: {} },
+        actions: { onFlowFinish: {}, onFlowCancel: {}, onLoad: {} },
         app: definition,
         context: page,
         navigate,
@@ -216,6 +209,46 @@ export function FlowPage({
     ],
   );
 
+  // Generate loop steps and data
+  useEffect(() => {
+    if (page.type === 'loop' && !steps) {
+      actions
+        .onLoad()
+        .then((results: any) => {
+          const { blocks } = page.foreach;
+
+          function createSteps(): SubPage[] {
+            const newSteps: SubPage[] = [];
+            for (const resourceData of results) {
+              if (resourceData) {
+                const newStep: SubPage = {
+                  name: 'New loop page',
+                  blocks,
+                };
+                newSteps.push(newStep);
+              }
+            }
+            return newSteps;
+          }
+          const result = createSteps();
+          setSteps(result);
+          applyRefs(results[0], stepRef);
+          setData(results);
+        })
+        .catch(() => {
+          setError(true);
+        });
+    }
+  }, [actions, page, setData, stepRef, steps]);
+
+  if (error) {
+    return <p>Error loading steps</p>;
+  }
+
+  if (!steps) {
+    return <Loader />;
+  }
+
   const { progress = 'corner-dots' } = page;
 
   return (
@@ -223,7 +256,7 @@ export function FlowPage({
       {progress === 'corner-dots' && <DotProgressBar active={currentStep} amount={steps.length} />}
       <BlockList
         appStorage={appStorage}
-        blocks={step.blocks}
+        blocks={steps[currentStep].blocks}
         data={data}
         ee={ee}
         flowActions={flowActions}
