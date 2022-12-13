@@ -353,7 +353,7 @@ editing the resource, but for now we’ll focus on viewing.
 
 Add a new page:
 
-```yaml copy
+```yaml indent={2} copy
 - name: Person details
   parameters:
     - id
