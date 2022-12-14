@@ -1,0 +1,40 @@
+.root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.leftLabel {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.leftLabel > * {
+  margin-right: 0.5rem;
+}
+
+.topLabel {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.inheritFrom {
+  color: hsl(0deg 0% 50%);
+  justify-content: flex-end;
+}
+
+.colorAndReset {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+}
