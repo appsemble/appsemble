@@ -291,34 +291,34 @@ pages:
       - type: form
         version: 0.20.28
         parameters:
-        fields:
-          - name: firstName
-            type: string
-            label: First Name
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: lastName
-            type: string
-            label: Surname
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: email
-            type: string
-            label: Email Address
-            format: email
-            requirements:
-              - required: true
-                errorMessage: This field is required
-          - name: description
-            type: string
-            label: Description
-            multiline: true
-            requirements:
-              - maxLength: 500
+          fields:
+            - name: firstName
+              type: string
+              label: First Name
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: lastName
+              type: string
+              label: Surname
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: email
+              type: string
+              label: Email Address
+              format: email
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+            - name: description
+              type: string
+              label: Description
+              multiline: true
+              requirements:
+                - maxLength: 500
 
   - name: People
     blocks:
