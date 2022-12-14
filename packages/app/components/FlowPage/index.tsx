@@ -97,7 +97,10 @@ export function FlowPage({
         if (page.type === 'flow') {
           return finish(d);
         }
-        const stepData = [...stepsData, { ...loopData[currentStep], ...d }];
+        const stepData =
+          stepsData === undefined
+            ? [{ ...loopData[currentStep], ...d }]
+            : [...stepsData, { ...loopData[currentStep], ...d }];
         setStepsData(stepData);
         return finish(stepData);
       }
