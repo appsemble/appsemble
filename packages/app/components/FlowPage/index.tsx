@@ -59,6 +59,8 @@ export function FlowPage({
   const { getAppMessage } = useAppMessages();
   const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
   const [error, setError] = useState(false);
+  const [loopData, setLoopData] = useState<Object[]>();
+  const [stepsData, setStepsData] = useState<Object[]>();
   const id = `${prefix}.steps.${currentStep}`;
 
   const name = getAppMessage({
@@ -92,15 +94,25 @@ export function FlowPage({
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
       if (currentStep + 1 === steps.length) {
-        return finish(d);
+        if (page.type === 'flow') {
+          return finish(d);
+        }
+        const stepData = [...stepsData, { ...loopData[currentStep], ...d }];
+        setStepsData(stepData);
+        return finish(stepData);
+      }
+
+      if (page.type === 'loop') {
+        const stepData = { ...loopData[currentStep], ...d };
+        setStepsData((current: Object[]) => [...current, stepData]);
+        applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
+      } else {
+        setData(d);
       }
       setCurrentStep(currentStep + 1);
-      applyRefs((data as Record<string, any>)[currentStep + 1], stepRef);
-      setData(d);
-
       return d;
     },
-    [currentStep, steps, setData, data, stepRef, finish],
+    [currentStep, steps, page, stepsData, loopData, finish, stepRef, setData],
   );
 
   const back = useCallback(
@@ -111,13 +123,16 @@ export function FlowPage({
         return d;
       }
 
+      if (page.type === 'loop') {
+        stepsData.pop();
+        applyRefs((loopData as Record<string, any>)[currentStep - 1], stepRef);
+      } else {
+        setData(d);
+      }
       setCurrentStep(currentStep - 1);
-      applyRefs((data as Record<string, any>)[currentStep - 1], stepRef);
-      setData(d);
-
       return d;
     },
-    [currentStep, setData, data, stepRef],
+    [currentStep, page, stepsData, loopData, stepRef, setData],
   );
 
   const cancel = useCallback(
@@ -233,7 +248,8 @@ export function FlowPage({
           const result = createSteps();
           setSteps(result);
           applyRefs(results[0], stepRef);
-          setData(results);
+          setLoopData(results);
+          setStepsData([]);
         })
         .catch(() => {
           setError(true);
