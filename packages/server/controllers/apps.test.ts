@@ -2429,6 +2429,9 @@ describe('createApp', () => {
                         {
                           "$ref": "#/components/schemas/FlowPageDefinition",
                         },
+                        {
+                          "$ref": "#/components/schemas/LoopPageDefinition",
+                        },
                       ],
                     },
                     "minItems": 1,
@@ -3199,6 +3202,9 @@ describe('patchApp', () => {
                         {
                           "$ref": "#/components/schemas/FlowPageDefinition",
                         },
+                        {
+                          "$ref": "#/components/schemas/LoopPageDefinition",
+                        },
                       ],
                     },
                     "minItems": 1,
@@ -3332,6 +3338,9 @@ describe('patchApp', () => {
                         },
                         {
                           "$ref": "#/components/schemas/FlowPageDefinition",
+                        },
+                        {
+                          "$ref": "#/components/schemas/LoopPageDefinition",
                         },
                       ],
                     },

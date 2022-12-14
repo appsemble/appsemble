@@ -1496,7 +1496,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'flow actions can only be used on pages with the type ‘flow’',
+        'flow actions can only be used on pages with the type ‘flow’ or ‘loop’',
         'flow.next',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
