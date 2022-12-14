@@ -1,5 +1,5 @@
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
+import { Remapper, TokenResponse, UserEmails, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -69,6 +69,7 @@ export async function getAccessToken(
  * @param idToken The ID token from which to extract user data.
  * @param userInfoUrl The URL from which to request userinfo, if needed.
  * @param remapper An optional remapper to apply onto the response from the user info endpoint.
+ * @param userEmailsUrl The URL from which to request user emails, if needed.
  * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
 export async function getUserInfo(
@@ -76,6 +77,7 @@ export async function getUserInfo(
   idToken?: string,
   userInfoUrl?: string,
   remapper?: Remapper,
+  userEmailsUrl?: string,
 ): Promise<Partial<UserInfo>> {
   let email: string;
   let emailVerified: boolean;
@@ -121,10 +123,20 @@ export async function getUserInfo(
   }
 
   if (shouldTryNext() && userInfoUrl) {
-    const { data } = await axios.get<UserInfo>(userInfoUrl, {
+    const requestConfig = {
       headers: { authorization: `Bearer ${accessToken}` },
-    });
-    assign(remapper ? (remap(remapper, data, null) as UserInfo) : data);
+    };
+    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
+    const actualData: UserInfo = remapper
+      ? (remap(remapper, data, null) as UserInfo)
+      : (data as UserInfo);
+    if (!actualData.email && userEmailsUrl) {
+      const { data: emailsData } = await axios.get<UserEmails>(userEmailsUrl, requestConfig);
+      if (emailsData.length > 0) {
+        actualData.email = emailsData[0].email;
+      }
+    }
+    assign(actualData);
   }
 
   // Sub is very important. All other information is optional.
