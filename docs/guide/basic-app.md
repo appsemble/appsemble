@@ -152,6 +152,7 @@ resources:
     roles: [$public]
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName
@@ -189,11 +190,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 ```
 
