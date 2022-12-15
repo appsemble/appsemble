@@ -152,6 +152,7 @@ resources:
     roles: [$public]
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName
@@ -189,11 +190,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 ```
 
@@ -292,34 +291,34 @@ pages:
       - type: form
         version: 0.20.28
         parameters:
-        fields:
-          - name: firstName
-            type: string
-            label: First Name
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: lastName
-            type: string
-            label: Surname
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: email
-            type: string
-            label: Email Address
-            format: email
-            requirements:
-              - required: true
-                errorMessage: This field is required
-          - name: description
-            type: string
-            label: Description
-            multiline: true
-            requirements:
-              - maxLength: 500
+          fields:
+            - name: firstName
+              type: string
+              label: First Name
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: lastName
+              type: string
+              label: Surname
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: email
+              type: string
+              label: Email Address
+              format: email
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+            - name: description
+              type: string
+              label: Description
+              multiline: true
+              requirements:
+                - maxLength: 500
 
   - name: People
     blocks:
@@ -438,6 +437,35 @@ pages:
     blocks:
       - type: form
         version: 0.20.28
+        parameters:
+          fields:
+            - name: firstName
+              type: string
+              label: First Name
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: lastName
+              type: string
+              label: Surname
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: email
+              type: string
+              label: Email Address
+              format: email
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+            - name: description
+              type: string
+              label: Description
+              multiline: true
+              requirements:
+                - maxLength: 500
         actions:
           onSubmit:
             type: resource.create
@@ -445,35 +473,6 @@ pages:
             onSuccess:
               type: link
               to: Person details
-        parameters:
-        fields:
-          - name: firstName
-            type: string
-            label: First Name
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: lastName
-            type: string
-            label: Surname
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: email
-            type: string
-            label: Email Address
-            format: email
-            requirements:
-              - required: true
-                errorMessage: This field is required
-          - name: description
-            type: string
-            label: Description
-            multiline: true
-            requirements:
-              - maxLength: 500
 
   - name: People
     blocks:
@@ -497,11 +496,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 
   - name: Person details
