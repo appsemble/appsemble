@@ -126,5 +126,8 @@
     "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret",
     "aes-secret": "Local Appsmeble development AES secret"
+  },
+  "dependencies": {
+    "remark": "^14.0.2"
   }
 }
