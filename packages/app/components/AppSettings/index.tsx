@@ -4,7 +4,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { Main } from '../Main/index.js';
 import { ProfileSettings } from '../ProfileSettings/index.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import { AppSubscriptions } from './AppSubscriptions/index.js';
 import { LanguagePreference } from './LanguagePreference/index.js';
@@ -18,9 +18,9 @@ export function AppSettings(): ReactElement {
   const { isLoggedIn } = useUser();
   return (
     <Content padding>
-      <TitleBar>
+      <AppBar>
         <FormattedMessage {...messages.settings} />
-      </TitleBar>
+      </AppBar>
       <Main>
         {isLoggedIn ? <ProfileSettings /> : null}
         <LanguagePreference />

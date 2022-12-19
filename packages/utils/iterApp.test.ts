@@ -383,7 +383,7 @@ describe('iterPage', () => {
     expect(result).toBe(false);
   });
 
-  it('should call onAction and onBlockList for pages with actions and subpages', () => {
+  it('should call onAction and onBlockList for pages with actions and sub pages', () => {
     const onAction = import.meta.jest.fn();
     const onPage = import.meta.jest.fn();
     const onBlockList = import.meta.jest.fn();

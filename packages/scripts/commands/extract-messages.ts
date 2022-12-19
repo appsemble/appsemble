@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join } from 'node:path';
 
 import { logger, writeData } from '@appsemble/node-utils';
 

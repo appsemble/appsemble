@@ -6,7 +6,7 @@ import { useCallback } from 'preact/hooks';
 export interface InputProps
   extends Omit<ComponentProps<'input'>, 'label' | 'loading' | 'onChange' | 'onInput' | 'pattern'> {
   /**
-   * If specified, a datalist element will be rendered to provided autocomplete options.
+   * If specified, a datalist element will be rendered to provided auto complete options.
    */
   datalist?: string[];
 

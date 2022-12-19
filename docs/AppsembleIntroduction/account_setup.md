@@ -1,4 +1,4 @@
-# Set up Account and Organisation
+# Set up Account and Organization
 
 To start using Appsemble you have to create an account.
 
@@ -6,7 +6,7 @@ Go to [register](https://appsemble.app/nl/register)
 
 ![Appsemble Account Registration](../../config/assets/tutorial_assets/EN/Register_account.png 'Appsemble Account Registration')
 
-Fill out the information. After your account is created you can `logind`.
+Fill out the information. After your account is created you can _login_.
 
 Go to [login](https://appsemble.app/nl/login)
 

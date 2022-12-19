@@ -1,6 +1,6 @@
-import { randomUUID } from 'crypto';
-import { promisify } from 'util';
-import { deflateRaw } from 'zlib';
+import { randomUUID } from 'node:crypto';
+import { promisify } from 'node:util';
+import { deflateRaw } from 'node:zlib';
 
 import { logger } from '@appsemble/node-utils';
 import { SAMLStatus } from '@appsemble/types';

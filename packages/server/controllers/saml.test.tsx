@@ -1,5 +1,5 @@
-import { promisify } from 'util';
-import { inflateRaw } from 'zlib';
+import { promisify } from 'node:util';
+import { inflateRaw } from 'node:zlib';
 
 import { readFixture } from '@appsemble/node-utils';
 import { SAMLRedirectResponse } from '@appsemble/types';

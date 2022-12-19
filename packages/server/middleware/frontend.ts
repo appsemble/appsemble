@@ -1,4 +1,4 @@
-import { isIP } from 'net';
+import { isIP } from 'node:net';
 
 import { Context, Middleware } from 'koa';
 import compose from 'koa-compose';

@@ -1,11 +1,12 @@
 export function getNestedByKey(obj: Object, keyToFind: string): string[] {
-  return Object.entries(obj).reduce(
-    (acc, [key, value]) =>
+  let result: string[] = [];
+  for (const [key, value] of Object.entries(obj)) {
+    result =
       key === keyToFind
-        ? acc.concat(value)
+        ? result.concat(value)
         : typeof value === 'object'
-        ? acc.concat(getNestedByKey(value, keyToFind))
-        : acc,
-    [],
-  );
+        ? result.concat(getNestedByKey(value, keyToFind))
+        : result;
+  }
+  return result;
 }

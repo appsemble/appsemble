@@ -1,5 +1,5 @@
-import { createRequire } from 'module';
-import { dirname } from 'path';
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
 
 import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };

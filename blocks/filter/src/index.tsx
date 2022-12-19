@@ -139,7 +139,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
             {fields.map(
               (field) =>
                 field === highlightedField || (
-                  <div className="field">
+                  <div className="field" key={field.name}>
                     {field.label ? (
                       <label className="label">{utils.remap(field.label, {}) as string}</label>
                     ) : null}

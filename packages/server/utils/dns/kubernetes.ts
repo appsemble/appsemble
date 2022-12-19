@@ -1,11 +1,12 @@
-import { readFile } from 'fs/promises';
-import { Agent } from 'https';
-import { join } from 'path';
+import { readFile } from 'node:fs/promises';
+import { Agent } from 'node:https';
+import { join } from 'node:path';
 
 import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
+import { escapeJsonPointer } from 'koas-core/lib/jsonRefs.js';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
@@ -212,6 +213,11 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
   };
 }
 
+function generateSSLSecretName(domain: string): string {
+  const name = normalize(domain);
+  return `${name}-tls${domain.startsWith('*') ? '-wilcard' : ''}`;
+}
+
 /**
  * Create a function for creating ingresses.
  *
@@ -220,18 +226,37 @@ async function getAxiosConfig(): Promise<AxiosRequestConfig> {
  * The ingress function takes a domain name to create an ingress for. The rest is determined from
  * the command line arguments and the environment.
  */
-async function createIngressFunction(): Promise<(domain: string) => Promise<void>> {
-  const { ingressAnnotations, ingressClassName, serviceName, servicePort } = argv;
+async function createIngressFunction(): Promise<
+  (domain: string, customSSL?: boolean) => Promise<void>
+> {
+  const { clusterIssuer, ingressAnnotations, ingressClassName, issuer, serviceName, servicePort } =
+    argv;
   const namespace = await readK8sSecret('namespace');
   const config = await getAxiosConfig();
-  const annotations = ingressAnnotations ? JSON.parse(ingressAnnotations) : undefined;
+  const defaultAnnotations: Record<string, string> = ingressAnnotations
+    ? JSON.parse(ingressAnnotations)
+    : undefined;
+  const issuerAnnotationKey = clusterIssuer
+    ? 'cert-manager.io/cluster-issuer'
+    : issuer
+    ? 'cert-manager.io/issuer'
+    : undefined;
+  const issuerAnnotationValue = clusterIssuer || issuer;
 
-  return async (domain) => {
+  return async (domain, customSSL) => {
     const name = normalize(domain);
+    const url = `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
+    const annotations = { ...defaultAnnotations };
+    const secretName = generateSSLSecretName(domain);
+
+    if (!customSSL && issuerAnnotationKey) {
+      annotations[issuerAnnotationKey] = issuerAnnotationValue;
+    }
+
     logger.info(`Registering ingress ${name} for ${domain}`);
     try {
       await axios.post(
-        `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+        url,
         {
           metadata: {
             annotations,
@@ -265,7 +290,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
             tls: [
               {
                 hosts: [domain],
-                secretName: `${name}-tls${domain.startsWith('*') ? '-wilcard' : ''}`,
+                secretName,
               },
             ],
           },
@@ -277,6 +302,72 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
         throw error;
       }
       logger.warn(`Conflict registering ingress ${name}`);
+      if (issuerAnnotationKey) {
+        logger.info(`Patching ingress ${name} instead`);
+        const path = `/metadata/annotations/${escapeJsonPointer(issuerAnnotationKey)}`;
+        try {
+          await axios.patch(
+            `${url}/${name}`,
+            [customSSL ? { op: 'remove', path } : { op: 'add', path, value: secretName }],
+            {
+              ...config,
+              headers: { ...config.headers, 'content-type': 'application/json-patch+json' },
+            },
+          );
+        } catch (err) {
+          if (axios.isAxiosError(err) && err.response.status !== 422) {
+            throw err;
+          }
+
+          logger.warn('Patching ingress failed. It was likely already up to date');
+        }
+      }
+    }
+    logger.info(`Successfully registered ingress ${name} for ${domain}`);
+  };
+}
+async function createSSLSecretFunction(): Promise<
+  (domain: string, certificate: string, key: string) => Promise<void>
+> {
+  const { serviceName } = argv;
+  const namespace = await readK8sSecret('namespace');
+  const config = await getAxiosConfig();
+
+  return async (domain, certificate, key) => {
+    const instance = normalize(domain);
+    const url = `/api/v1/namespaces/${namespace}/secrets`;
+    const name = generateSSLSecretName(domain);
+
+    const secret = {
+      type: 'kubernetes.io/tls',
+      metadata: {
+        // https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/#labels
+        labels: {
+          'app.kubernetes.io/component': 'domain',
+          'app.kubernetes.io/instance': instance,
+          'app.kubernetes.io/managed-by': serviceName,
+          'app.kubernetes.io/name': 'appsemble',
+          'app.kubernetes.io/part-of': serviceName,
+          'app.kubernetes.io/version': pkg.version,
+        },
+        name,
+      },
+      data: {
+        'tls.crt': Buffer.from(certificate, 'utf8').toString('base64'),
+        'tls.key': Buffer.from(key, 'utf8').toString('base64'),
+      },
+    };
+
+    logger.info(`Creating TLS secret ${name}`);
+    try {
+      await axios.post(url, secret, config);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response.status !== 409) {
+        throw error;
+      }
+      logger.warn(`Conflict registering secret ${name}`);
+      logger.info(`Updating TLS secret ${name}`);
+      await axios.put(`${url}/${name}`, secret, config);
     }
     logger.info(`Successfully registered ingress ${name} for ${domain}`);
   };
@@ -293,6 +384,7 @@ async function createIngressFunction(): Promise<(domain: string) => Promise<void
 export async function configureDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);
   const createIngress = await createIngressFunction();
+  const createSSLSecret = await createSSLSecretFunction();
 
   /**
    * Register a wildcard domain name ingress for organizations.
@@ -303,11 +395,13 @@ export async function configureDNS(): Promise<void> {
    * Register a domain name for apps who have defined a custom domain name.
    */
   App.afterSave('dns', async (app) => {
-    const oldDomain = app.previous('domain');
-    const { domain } = app;
+    const { domain, sslCertificate, sslKey } = app;
 
-    if (domain && oldDomain !== domain) {
-      await createIngress(domain);
+    if (domain) {
+      await createIngress(domain, Boolean(sslCertificate && sslKey));
+      if (sslKey && sslCertificate) {
+        await createSSLSecret(domain, sslCertificate, sslKey);
+      }
     }
   });
 }
@@ -326,11 +420,20 @@ export async function cleanupDNS(): Promise<void> {
       labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
     },
   });
-  logger.info(`Successfully Deleted all ingresses for ${serviceName}`);
+  logger.info(`Successfully deleted all ingresses for ${serviceName}`);
+
+  logger.warn(`Deleting all secrets for ${serviceName}`);
+  await axios.delete(`/api/v1/namespaces/${namespace}/secrets`, {
+    ...config,
+    params: {
+      labelSelector: `app.kubernetes.io/managed-by=${serviceName}`,
+    },
+  });
+  logger.info(`Successfully deleted all secrets for ${serviceName}`);
 }
 
 /**
- * Restore ingresses for all apps andorganizations.
+ * Restore ingresses for all apps and organizations.
  */
 export async function restoreDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);

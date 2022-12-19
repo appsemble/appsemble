@@ -1,4 +1,4 @@
-import { Agent } from 'https';
+import { Agent } from 'node:https';
 
 import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -15,7 +15,7 @@ const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
 // @ts-expect-error this is fine actually
-import.meta.jest.unstable_mockModule('fs/promises', () => fs.promises);
+import.meta.jest.unstable_mockModule('node:fs/promises', () => fs.promises);
 
 useTestDatabase('kubernetes');
 
@@ -59,6 +59,7 @@ describe('configureDNS', () => {
     expect(config.httpsAgent.options.ca).toBe(ca);
     expect(JSON.parse(config.data)).toStrictEqual({
       metadata: {
+        annotations: {},
         labels: {
           'app.kubernetes.io/component': 'domain',
           'app.kubernetes.io/instance': 'testorg-host-example',
@@ -121,6 +122,7 @@ describe('configureDNS', () => {
     expect(config.httpsAgent.options.ca).toBe(ca);
     expect(JSON.parse(config.data)).toStrictEqual({
       metadata: {
+        annotations: {},
         labels: {
           'app.kubernetes.io/component': 'domain',
           'app.kubernetes.io/instance': 'example-com',
@@ -234,9 +236,9 @@ describe('configureDNS', () => {
 
 describe('cleanupDNS', () => {
   it('should delete all ingresses managed by the service', async () => {
-    let config: AxiosRequestConfig;
+    const configs: AxiosRequestConfig[] = [];
     mock.onDelete(/.*/).reply((request) => {
-      config = request;
+      configs.push(request);
       return [204];
     });
 
@@ -247,9 +249,14 @@ describe('cleanupDNS', () => {
     });
     await kubernetes.cleanupDNS();
 
-    expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
-    expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-    expect(config.params).toStrictEqual({
+    expect(configs[1].url).toBe('/api/v1/namespaces/test/secrets');
+    expect(configs[1].baseURL).toBe('https://kubernetes.default.svc:443');
+    expect(configs[1].params).toStrictEqual({
+      labelSelector: 'app.kubernetes.io/managed-by=review-service',
+    });
+    expect(configs[0].url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
+    expect(configs[0].baseURL).toBe('https://kubernetes.default.svc:443');
+    expect(configs[0].params).toStrictEqual({
       labelSelector: 'app.kubernetes.io/managed-by=review-service',
     });
   });
@@ -287,6 +294,7 @@ describe('restoreDNS', () => {
     expect(ingresses).toStrictEqual([
       {
         metadata: {
+          annotations: {},
           labels: {
             'app.kubernetes.io/component': 'domain',
             'app.kubernetes.io/instance': 'test-host-example',
@@ -318,6 +326,7 @@ describe('restoreDNS', () => {
       },
       {
         metadata: {
+          annotations: {},
           labels: {
             'app.kubernetes.io/component': 'domain',
             'app.kubernetes.io/instance': 'app-example',

@@ -7,8 +7,9 @@ import { usePage } from '../MenuProvider/index.js';
 import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-interface TitleBarProps {
+interface AppBarProps {
   children?: ReactChild;
+  hideName?: boolean;
 }
 
 /**
@@ -16,7 +17,7 @@ interface TitleBarProps {
  *
  * This displays the app name,
  */
-export function TitleBar({ children }: TitleBarProps): ReactElement {
+export function AppBar({ children, hideName }: AppBarProps): ReactElement {
   const { definition } = useAppDefinition();
   const { role, teams } = useUser();
   const { page } = usePage();
@@ -34,7 +35,7 @@ export function TitleBar({ children }: TitleBarProps): ReactElement {
           </div>
         ) : null}
         <div className="navbar-brand is-flex-grow-1">
-          <h2 className="navbar-item title is-4">{children || definition.name}</h2>
+          <h2 className="navbar-item title is-4">{!hideName && (children || definition.name)}</h2>
         </div>
         {definition.layout?.login == null || definition.layout?.login === 'navbar' ? (
           <div className="navbar-end is-flex is-align-items-stretch is-justify-content-flex-end ml-auto">

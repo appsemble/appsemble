@@ -9,7 +9,7 @@ import { Member } from '../models/index.js';
  * Check if the authenticated user has permission to perform an action within an organization.
  *
  * @param ctx The Koa context that should contain the authenticated user and the database.
- * @param organizationId The id of which to check if the user may persoem the action for.
+ * @param organizationId The id of which to check if the user may perform the action for.
  * @param permissions An array of required permissions or a single required permission.
  * @param queryOptions Additional query options. Use this to include for example the user or
  * organization the member is linked to.

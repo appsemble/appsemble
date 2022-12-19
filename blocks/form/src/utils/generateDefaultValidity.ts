@@ -19,34 +19,32 @@ export function generateDefaultValidity(
   for (const field of fields) {
     const value = data[field.name];
 
-    if (!isRequired(field) && value === defaultValues[field.name]) {
+    if (!isRequired(field, utils, data) && value === defaultValues[field.name]) {
       // If the user has entered something and then reverted it to its default value,
       // it should be treated as if it’s pristine.
       continue;
     }
 
     if (field.type === 'object') {
-      if (field.repeated) {
-        validity[field.name] = value.map((d: unknown) =>
-          generateDefaultValidity(
+      validity[field.name] = field.repeated
+        ? value.map((d: unknown) =>
+            generateDefaultValidity(
+              field.fields,
+              d,
+              utils,
+              defaultError,
+              defaultValues[field.name] as Values,
+            ),
+          )
+        : generateDefaultValidity(
             field.fields,
-            d,
+            value,
             utils,
             defaultError,
             defaultValues[field.name] as Values,
-          ),
-        );
-      } else {
-        validity[field.name] = generateDefaultValidity(
-          field.fields,
-          value,
-          utils,
-          defaultError,
-          defaultValues[field.name] as Values,
-        );
-      }
+          );
     } else {
-      validity[field.name] = validate(field, value, utils, defaultError, defaultValues[field.name]);
+      validity[field.name] = validate(field, data, utils, defaultError, defaultValues[field.name]);
     }
   }
   return validity;

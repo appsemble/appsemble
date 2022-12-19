@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { getAppBlocks, parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Context } from 'koa';

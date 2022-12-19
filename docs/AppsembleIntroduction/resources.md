@@ -2,12 +2,12 @@
 
 Another frequently used part of creating an app is that you are able to create, read, update and
 delete data (CRUD). In Appsemble you can configure your own resources. When you are starting out
-with Appsemble there isn't directly a need for external resources. It is possible to use external
+with Appsemble there isn’t directly a need for external resources. It is possible to use external
 resources in Appsemble. How you can do this is not part of this starters tutorial.
 
 You can define your resource under the element resources. In the code below the resource person is
-created. This resource contains: Firstname, Lastname, email and description. You could use this
-resource for a contesters overview for example.
+created. This resource contains: `firstName`, `lastName`, `email` and `description`. You could use
+this resource for a participant overview for example.
 
 ```yaml
 resources:
@@ -92,9 +92,9 @@ The following is the table block:
   parameters:
     fields:
       - value: { prop: firstName }
-        label: Fistname
+        label: First name
       - value: { prop: lastName }
-        label: Lastname
+        label: Last name
 ```
 
 The table element listens to the people event in order to get the correct data. In this example we

@@ -1,6 +1,8 @@
+import { StorageType } from '@appsemble/types';
 import { IDBPDatabase, openDB } from 'idb';
 
 import { appId } from '../settings.js';
+import { AppStorage } from '../storage.js';
 import { ActionCreator } from './index.js';
 
 let dbPromise: Promise<IDBPDatabase>;
@@ -17,43 +19,48 @@ export function getDB(): Promise<IDBPDatabase> {
   return dbPromise;
 }
 
-export const read: ActionCreator<'storage.read'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
-    if (!key) {
-      return;
+export async function readStorage(
+  storageType: StorageType,
+  key: string,
+  appStorage: AppStorage,
+): Promise<Object> {
+  const storage = storageType || 'indexedDB';
+
+  if (storage === 'appStorage') {
+    const value = appStorage.get(key);
+    if (value === undefined) {
+      throw new Error('Could not find data at this key.');
     }
-
-    const storage = definition.storage || 'indexedDB';
-    if (storage !== 'indexedDB') {
-      const store = storage === 'localStorage' ? localStorage : sessionStorage;
-      const value = store.getItem(`appsemble-${appId}-${key}`);
-      if (!value) {
-        return;
-      }
-      try {
-        return JSON.parse(value);
-      } catch {
-        // Invalid data may be stored due to various reasons. In that case pretend there is no data.
-        return;
-      }
+    return value;
+  }
+  if (storage !== 'indexedDB') {
+    const store = storage === 'localStorage' ? localStorage : sessionStorage;
+    const value = store.getItem(`appsemble-${appId}-${key}`);
+    if (!value) {
+      throw new Error('Could not find data at this key.');
     }
+    return JSON.parse(value);
+  }
 
-    const db = await getDB();
-    return db.get('storage', key);
-  },
-];
+  const db = await getDB();
+  const value = db.get('storage', key);
+  if (!value) {
+    throw new Error('Could not find data at this key.');
+  }
+  return value;
+}
 
-export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => [
-  async (data) => {
-    const key = remap(definition.key, data);
-    if (!key) {
-      return data;
-    }
-
-    const value = remap(definition.value, data);
-
-    switch (definition.storage) {
+export function writeStorage(
+  storage: StorageType,
+  key: string,
+  value: any,
+  appStorage: AppStorage,
+): void {
+  async function write(): Promise<void> {
+    switch (storage) {
+      case 'appStorage':
+        appStorage.set(key, value);
+        break;
       case 'localStorage':
         localStorage.setItem(`appsemble-${appId}-${key}`, JSON.stringify(value));
         break;
@@ -62,10 +69,146 @@ export const write: ActionCreator<'storage.write'> = ({ definition, remap }) => 
         break;
       default: {
         const db = await getDB();
-        await db.put('storage', remap(definition.value, data), key);
+        await db.put('storage', value, key);
       }
     }
+  }
+  write();
+}
 
+export function deleteStorage(storage: StorageType, key: string, appStorage: AppStorage): void {
+  async function remove(): Promise<void> {
+    switch (storage) {
+      case 'appStorage':
+        appStorage.remove(key);
+        break;
+      case 'localStorage':
+        localStorage.removeItem(`appsemble-${appId}-${key}`);
+        break;
+      case 'sessionStorage':
+        sessionStorage.removeItem(`appsemble-${appId}-${key}`);
+        break;
+      default: {
+        const db = await getDB();
+        await db.delete('storage', key);
+      }
+    }
+  }
+  remove();
+}
+
+export const read: ActionCreator<'storage.read'> = ({ appStorage, definition, remap }) => [
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
+    if (!key) {
+      return;
+    }
+
+    const result = await readStorage(definition.storage, key, appStorage);
+    return result;
+  },
+];
+
+export const write: ActionCreator<'storage.write'> = ({ appStorage, definition, remap }) => [
+  (data, context) => {
+    const key = remap(definition.key, data, context);
+    if (!key) {
+      return data;
+    }
+
+    const value = remap(definition.value, data, context);
+
+    writeStorage(definition.storage, key, value, appStorage);
+    return data;
+  },
+];
+
+export const remove: ActionCreator<'storage.delete'> = ({ appStorage, definition, remap }) => [
+  (data, context) => {
+    const key = remap(definition.key, data, context);
+    if (!key) {
+      return data;
+    }
+
+    deleteStorage(definition.storage, key, appStorage);
+    return data;
+  },
+];
+
+export const append: ActionCreator<'storage.append'> = ({ appStorage, definition, remap }) => [
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
+    if (!key) {
+      return data;
+    }
+
+    const { storage } = definition;
+
+    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+
+    const value = remap(definition.value, data, context);
+
+    if (Array.isArray(storageData)) {
+      storageData.push(value);
+    } else {
+      storageData = [storageData, value];
+    }
+
+    writeStorage(storage, key, storageData, appStorage);
+    return data;
+  },
+];
+
+export const subtract: ActionCreator<'storage.subtract'> = ({ appStorage, definition, remap }) => [
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
+    if (!key) {
+      return data;
+    }
+
+    const { storage } = definition;
+
+    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+
+    if (Array.isArray(storageData)) {
+      const last = storageData.pop();
+      if (storageData.length <= 1) {
+        storageData = last;
+      }
+    } else {
+      storageData = null;
+    }
+
+    if (storageData == null) {
+      deleteStorage(storage, key, appStorage);
+    } else {
+      writeStorage(storage, key, storageData, appStorage);
+    }
+
+    return data;
+  },
+];
+
+export const update: ActionCreator<'storage.update'> = ({ appStorage, definition, remap }) => [
+  async (data, context) => {
+    const key = remap(definition.key, data, context);
+    const item = remap(definition.item, data, context);
+    const value = remap(definition.value, data, context);
+    if (!key || !value) {
+      return data;
+    }
+
+    const { storage } = definition;
+
+    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+
+    if (Array.isArray(storageData)) {
+      storageData[item as number] = value;
+    } else {
+      storageData = value;
+    }
+
+    writeStorage(storage, key, storageData, appStorage);
     return data;
   },
 ];

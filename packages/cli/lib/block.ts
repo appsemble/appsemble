@@ -1,7 +1,7 @@
-import { createReadStream, existsSync } from 'fs';
-import { mkdir, readdir, readFile, rm } from 'fs/promises';
-import { basename, join, relative, resolve as resolvePath } from 'path';
-import { inspect } from 'util';
+import { createReadStream, existsSync } from 'node:fs';
+import { mkdir, readdir, readFile, rm } from 'node:fs/promises';
+import { basename, join, relative, resolve as resolvePath } from 'node:path';
+import { inspect } from 'node:util';
 
 import {
   AppsembleError,

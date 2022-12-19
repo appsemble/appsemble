@@ -88,6 +88,16 @@ export interface Argv {
    */
   ingressClassName: string;
 
+  /**
+   * The name of the cert-manager issuer to use for apps.
+   */
+  issuer?: string;
+
+  /**
+   * The name of the cert-manager cluster issuer to use for apps.
+   */
+  clusterIssuer?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -309,7 +319,7 @@ export const argv = { ...defaults };
  *
  * Unspecified options will be reset to their default values.
  *
- * @param options The argument overrises to set.
+ * @param options The argument overrides to set.
  * @returns The argv instance.
  */
 export function setArgv(options: Partial<Argv>): Argv {

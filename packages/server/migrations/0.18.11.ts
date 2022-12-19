@@ -46,11 +46,10 @@ export async function up(db: Sequelize): Promise<void> {
         const type = `${org}/${blockName}`;
         if (!newMessages.blocks[type]) {
           newMessages.blocks[type] = { [version]: { [messageId]: value } };
-          // eslint-disable-next-line no-negated-condition
-        } else if (!newMessages.blocks[type][version]) {
-          newMessages.blocks[type][version] = { [messageId]: value };
-        } else {
+        } else if (newMessages.blocks[type][version]) {
           newMessages.blocks[type][version][messageId] = value;
+        } else {
+          newMessages.blocks[type][version] = { [messageId]: value };
         }
       } else if (id.startsWith('app.src.') || id.startsWith('react-components.src.')) {
         newMessages.core[id] = value;

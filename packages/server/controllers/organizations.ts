@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
@@ -162,7 +162,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     throw notFound('Organization not found.');
   }
 
-  // Sequelize does not support subqueries
+  // Sequelize does not support sub queries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
   const blockVersions = await getDB().query<BlockVersion>(

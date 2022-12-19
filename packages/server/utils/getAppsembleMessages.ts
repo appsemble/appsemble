@@ -1,4 +1,4 @@
-import { readdir, readFile } from 'fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 
 import { defaultLocale } from '@appsemble/utils';
 

@@ -1,5 +1,5 @@
 // eslint-disable-next-line unicorn/import-style
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import {
   createThemeURL,

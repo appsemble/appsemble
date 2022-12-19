@@ -1,5 +1,5 @@
-import http from 'http';
-import https from 'https';
+import http from 'node:http';
+import https from 'node:https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
@@ -96,6 +96,14 @@ export function builder(yargs: Argv): Argv {
     .option('ingress-class-name', {
       desc: 'The class name of the ingresses to create.',
       default: 'nginx',
+    })
+    .option('issuer', {
+      desc: 'The name of the cert-manager issuer to use for apps.',
+      conflicts: ['cluster-issuer'],
+    })
+    .option('cluster-issuer', {
+      desc: 'The name of the cert-manager cluster issuer to use for apps.',
+      conflicts: ['issuer'],
     })
     .option('ingress-annotations', {
       desc: 'A JSON string representing ingress annotations to add to created ingresses.',

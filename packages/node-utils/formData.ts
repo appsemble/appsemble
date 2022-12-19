@@ -1,4 +1,4 @@
-import { ReadStream } from 'fs';
+import { ReadStream } from 'node:fs';
 
 import FormData from 'form-data';
 

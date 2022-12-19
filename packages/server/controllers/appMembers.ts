@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { logger } from '@appsemble/node-utils';
 import { AppAccount, AppMember as AppMemberType, SSOConfiguration } from '@appsemble/types';

@@ -126,8 +126,7 @@ prettier:
 # Spellings Check using cspell
 cspell:
   script:
-    - npx cspell **/*.tsx
-    - npx cspell docs/*/**.md
+    - npx cspell **/*.tsx **/*.ts
 
 # Lint Markdown using remark.
 remark lint:
@@ -376,7 +375,7 @@ release minor:
 #  Deploy Stage                                                                                   #
 ###################################################################################################
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 cleanup k8s jobs:
   image: dtzar/helm-kubectl:3
   stage: deploy
@@ -389,7 +388,7 @@ cleanup k8s jobs:
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 update dependencies:
   extends: .yarn
   stage: deploy
@@ -425,7 +424,7 @@ update dependencies:
     - git commit --all --message 'Update yarn.lock'
     - git push --force origin update-lockfile
       -o merge_request.create
-      -o merge_request.label=chore
+      -o merge_request.label=Chore
       -o merge_request.merge_when_pipeline_succeeds
       -o merge_request.remove_source_branch
 
@@ -459,8 +458,8 @@ review:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
@@ -528,8 +527,8 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=main"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
@@ -573,8 +572,8 @@ production:
       --set "global.postgresql.auth.database=$POSTGRESQL_DATABASE"
       --set "global.postgresql.auth.username=$POSTGRESQL_USERNAME"
       --set "global.postgresql.service.ports.postgresql=$POSTGRESQL_PORT"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=appsemble-tls"

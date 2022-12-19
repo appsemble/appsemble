@@ -4,7 +4,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.13.14';
 
 /**
- * Symmary:
+ * Summary:
  * - Add `expires` column to Resource
  *
  * @param db The sequelize database.

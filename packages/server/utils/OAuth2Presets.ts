@@ -40,7 +40,7 @@ export interface OAuth2Preset {
 }
 
 /**
- * An OAuth2 preset for loggin in with GitHub.
+ * An OAuth2 preset for login in with GitHub.
  */
 export const githubPreset: OAuth2Preset = {
   authorizationUrl: 'https://github.com/login/oauth/authorize',
@@ -61,7 +61,7 @@ export const githubPreset: OAuth2Preset = {
 };
 
 /**
- * An OAuth2 preset for loggin in with GitLab.
+ * An OAuth2 preset for login in with GitLab.
  */
 export const gitlabPreset: OAuth2Preset = {
   authorizationUrl: 'https://gitlab.com/oauth/authorize',
@@ -73,7 +73,7 @@ export const gitlabPreset: OAuth2Preset = {
 };
 
 /**
- * An OAuth2 preset for loggin in with Google.
+ * An OAuth2 preset for login in with Google.
  */
 export const googlePreset: OAuth2Preset = {
   authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
