@@ -4,13 +4,16 @@ icon: home
 
 # Appsemble Introduction
 
-Welcome to the Appsemble app building tutorial. First this tutorial will give you the basic
-understanding of Appsemble so that you will understand its concept. This tutorial will also help you
-to create your first Appsemble account.
+Welcome to the Appsemble Introduction. Appsemble is one of the few open source low-code platforms.
+Without being a programmer you can build apps for your phone or tablet; faster, cheaper and far more
+flexible. With Appsemble you have access to other existing apps in the app store. You can use these
+apps as a template to configure your own app. Next to that you can also use the different building
+blocks from the block store to add more features to your app. This introduction will explain what
+Appsemble is and will show you how you can start working in Appsemble so you can start building your
+first app.
 
-The tutorial will end with a step by step guide on how to build an inventory management system. When
-you have completed this tutorial you have seen and worked with the most commonly used elements
-within Appsemble and which enables you to build apps by yourself.
+This tutorial will give you the basic understanding of Appsemble so that you will understand the
+concept of Appsemble.
 
 Here a short tutorial on how to set up your account and organization:
 
@@ -61,10 +64,7 @@ elements.
 
 ## Conclusion Introduction
 
-As you have seen, reading YAML code is not that hard if you understand the basics. However, to
-create a fully working app from scratch is still quite a challenge after studying this manual. What
-you should be able to do is understand how existing apps work and you should also be able to look at
-documentation in the Block Store. We recommend that you take a look at some existing apps and even
-clone them. Try making changes to the configuration in the App Definition and see if the app behaves
-the way you want it to. Once you have done that, you can take it to the next step and try to build
-an app yourself.
+As you have seen, reading YAML code from the examples and existing apps is not that hard now that
+you understand the basics of Appsemble. To get to the next step and build an app yourself we
+recommend that you take a look at the existing apps in the app store. You can clone an app and try
+to make changes to the configuration of the App. See if the app behaves the way you want it to.
