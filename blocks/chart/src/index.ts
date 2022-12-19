@@ -59,6 +59,10 @@ bootstrap(
       options: {
         responsive: true,
         onClick(e, element) {
+          if (!element || element.length === 0) {
+            actions.onClick({});
+            return;
+          }
           // $context isn't a property in the ActiveElement interface, but it is there at runtime
           if ('$context' in element[0].element) {
             const { x, y }: { x: number; y: number } = (element as any)[0].element.$context.parsed;

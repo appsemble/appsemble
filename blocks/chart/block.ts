@@ -94,7 +94,7 @@ declare module '@appsemble/sdk' {
      *
      * Returns the data of the clicked data in the format of `label`, `data`.
      *
-     * Returns an empty array if the user clicks outside of a data entry.
+     * Returns an empty object if the user clicks outside of a data entry.
      */
     onClick?: never;
   }
