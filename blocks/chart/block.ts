@@ -87,4 +87,15 @@ declare module '@appsemble/sdk' {
      */
     yAxis: YAxis;
   }
+
+  interface Actions {
+    /**
+     * This action is launched whenever a user clicks on the chart canvas.
+     *
+     * Returns the data of the clicked data in the format of `label`, `data`.
+     *
+     * Returns an empty array if the user clicks outside of a data entry.
+     */
+    onClick?: never;
+  }
 }
