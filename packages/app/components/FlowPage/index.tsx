@@ -84,16 +84,14 @@ export function FlowPage({
   const finish = useCallback(
     async (d: any): Promise<any> => {
       if (page.type === 'loop') {
-        const newData = [...stepsData, { ...loopData[currentStep], ...d }];
-        await actions.onFlowFinish(newData);
-        setData(newData);
-        return newData;
+        await actions.onFlowFinish(stepsData);
+        setData(stepsData);
       }
       await actions.onFlowFinish(d);
       setData(d);
       return d;
     },
-    [actions, currentStep, loopData, page.type, setData, stepsData],
+    [actions, page.type, setData, stepsData],
   );
 
   const next = useCallback(
