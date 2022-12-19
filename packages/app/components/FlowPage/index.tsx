@@ -84,38 +84,43 @@ export function FlowPage({
   const finish = useCallback(
     async (d: any): Promise<any> => {
       if (page.type === 'loop') {
-        await actions.onFlowFinish(stepsData);
-        setData(stepsData);
+        applyRefs(null, stepRef);
+        const newData = { ...loopData[currentStep], ...d };
+        let stepData = stepsData;
+        if (Array.isArray(stepData) && stepData.length > 0) {
+          stepData.push(newData);
+        } else {
+          stepData = newData;
+        }
+        await actions.onFlowFinish(stepData);
+        return stepData;
       }
       await actions.onFlowFinish(d);
       setData(d);
       return d;
     },
-    [actions, page.type, setData, stepsData],
+    [actions, currentStep, loopData, page.type, setData, stepRef, stepsData],
   );
 
   const next = useCallback(
     // eslint-disable-next-line require-await
     async (d: any): Promise<any> => {
       if (currentStep + 1 === steps.length) {
-        if (page.type === 'flow') {
-          return finish(d);
-        }
-        const stepData =
-          stepsData === undefined
-            ? [{ ...loopData[currentStep], ...d }]
-            : [...stepsData, { ...loopData[currentStep], ...d }];
-        setStepsData(stepData);
-        return finish(stepData);
+        return finish(d);
       }
 
       if (page.type === 'loop') {
-        const stepData = { ...loopData[currentStep], ...d };
-        setStepsData((current: Object[]) => [...current, stepData]);
         applyRefs((loopData as Record<string, any>)[currentStep + 1], stepRef);
-      } else {
-        setData(d);
+        const newData = { ...loopData[currentStep], ...d };
+        if (Array.isArray(stepsData) && stepsData.length > 0) {
+          setStepsData((previous: Object[]) => [...previous, newData]);
+        } else {
+          setStepsData([newData]);
+        }
+        setCurrentStep(currentStep + 1);
       }
+
+      setData(d);
       setCurrentStep(currentStep + 1);
       return d;
     },
