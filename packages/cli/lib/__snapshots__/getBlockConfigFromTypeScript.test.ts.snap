@@ -194,7 +194,15 @@ Describe what the button does. This helps with accessibility for people using sc
 
 exports[`getBlockConfigFromTypeScript official blocks chart 1`] = `
 {
-  "actions": undefined,
+  "actions": {
+    "onClick": {
+      "description": "This action is launched whenever a user clicks on the chart canvas.
+
+Returns the data of the clicked data in the format of \`label\`, \`data\`.
+
+Returns an empty array if the user clicks outside of a data entry.",
+    },
+  },
   "events": {
     "emit": undefined,
     "listen": {
@@ -3565,6 +3573,30 @@ foundQr event only holds the string of the QR.",
     },
     "type": "object",
   },
+}
+`;
+
+exports[`getBlockConfigFromTypeScript official blocks results-loader 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that is dispatched during the initial load.",
+    },
+  },
+  "events": {
+    "emit": {
+      "data": {
+        "description": "Event that gets emitted once the \`onLoad\` action has finished.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": {
+    "loadErrorMessage": {
+      "description": "The error message that should be shown when data failed to load.",
+    },
+  },
+  "parameters": undefined,
 }
 `;
 
