@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/detail-viewer",
-  "version": "0.20.28",
+  "version": "0.20.29",
   "private": true,
   "description": "A block that can be used to display various fields based on input data.",
   "homepage": "https://appsemble.app",
@@ -17,9 +17,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.28",
-    "@appsemble/preact-components": "0.20.28",
-    "@appsemble/sdk": "0.20.28",
+    "@appsemble/preact": "0.20.29",
+    "@appsemble/preact-components": "0.20.29",
+    "@appsemble/sdk": "0.20.29",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "leaflet": "~1.5.0",

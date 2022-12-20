@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.28
-appVersion: 0.20.28
+version: 0.20.29
+appVersion: 0.20.29
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,9 +24,17 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
+    - kind: added
+      description: "App: Add page type loop."
+    - kind: added
+      description: "Utils: Added step remapper."
     - kind: fixed
-      description: "App: Resolved an issue where loading in data into a table block
-        using the appStorage option would not update the table block."
+      description: "Block(form): Resolved an issue where the autofill feature wouldn’t
+        allow you to submit if a property was missing in the response and the input
+        required."
+    - kind: fixed
+      description: "Block(form): Resolved an issue where the label of a number input
+        would not accept remappers."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

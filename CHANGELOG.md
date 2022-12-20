@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.29](https://gitlab.com/appsemble/appsemble/-/releases/0.20.29)] - 2022-12-20
+
+### Added
+
+- App: Add page type `loop`.
+- Utils: Added `step` remapper.
+
+### Fixed
+
+- Block(`form`): Resolved an issue where the `autofill` feature wouldn’t allow you to submit if a
+  property was missing in the response and the input required.
+- Block(`form`): Resolved an issue where the label of a number input would not accept remappers.
+
 ## \[[0.20.28](https://gitlab.com/appsemble/appsemble/-/releases/0.20.28)] - 2022-12-08
 
 ### Fixed

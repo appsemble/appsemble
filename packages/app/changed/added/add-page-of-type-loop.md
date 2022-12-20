@@ -1,1 +1,0 @@
-Add page type `loop`.
