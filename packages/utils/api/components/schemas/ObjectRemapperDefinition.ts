@@ -101,6 +101,10 @@ If the input is not an array an empty array is returned.`,
 Returns \`true\` if all entries are equal, otherwise \`false\`.
 `,
     },
+    step: {
+      type: 'string',
+      description: 'Get flow page step current data',
+    },
     gt: {
       type: 'array',
       description: `Compare the first computed remapper value with the second computed remapper value.

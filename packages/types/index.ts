@@ -312,6 +312,11 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
+   * Get data stored at the current flow page step
+   */
+  step: string;
+
+  /**
    * Compares the first computed remapper value with the second computed remapper value.
    *
    * Returns `true` of the first entry is greater than the second entry.
@@ -1538,6 +1543,7 @@ export interface BasicPageDefinition extends BasePageDefinition {
 
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
+
   steps: SubPage[];
 
   /**
@@ -1565,12 +1571,50 @@ export interface FlowPageDefinition extends BasePageDefinition {
   retainFlowData?: boolean;
 }
 
+export interface LoopPageDefinition extends BasePageDefinition {
+  type: 'loop';
+
+  /**
+   * Template step that the loop will pass data onto
+   */
+  foreach?: SubPage;
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onFlowCancel?: ActionDefinition;
+    onFlowFinish?: ActionDefinition;
+    onLoad?: ActionDefinition;
+  };
+
+  /**
+   * The method used to display the progress of the flow page.
+   *
+   * @default 'corner-dots'
+   */
+  progress?: 'corner-dots' | 'hidden';
+
+  /**
+   * Whether to retain the flow data when navigating away to another page outside the flow.
+   *
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
+   *
+   * @default true
+   */
+  retainFlowData?: boolean;
+}
+
 export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
   tabs: SubPage[];
 }
 
-export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
+export type PageDefinition =
+  | BasicPageDefinition
+  | FlowPageDefinition
+  | LoopPageDefinition
+  | TabsPageDefinition;
 
 export interface AppDefinition {
   /**

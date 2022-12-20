@@ -43,6 +43,7 @@ export function Page(): ReactElement {
 
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
+  const stepRef = useRef<unknown>();
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -101,8 +102,9 @@ export function Page(): ReactElement {
         history: context?.history,
         root: input,
         locale: lang,
+        stepRef,
       }),
-    [data, getMessage, lang, userInfo],
+    [data, getMessage, lang, stepRef, userInfo],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {
@@ -189,7 +191,7 @@ export function Page(): ReactElement {
           <MetaSwitch title={pageName}>
             <Route
               element={
-                page.type === 'flow' ? (
+                page.type === 'flow' || page.type === 'loop' ? (
                   <FlowPage
                     appStorage={appStorage.current}
                     data={data}
@@ -203,6 +205,7 @@ export function Page(): ReactElement {
                     setData={setData}
                     showDialog={showDialog}
                     showShareDialog={showShareDialog}
+                    stepRef={stepRef}
                   />
                 ) : (
                   <BlockList
