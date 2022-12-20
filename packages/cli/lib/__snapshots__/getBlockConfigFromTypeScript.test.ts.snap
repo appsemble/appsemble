@@ -194,7 +194,15 @@ Describe what the button does. This helps with accessibility for people using sc
 
 exports[`getBlockConfigFromTypeScript official blocks chart 1`] = `
 {
-  "actions": undefined,
+  "actions": {
+    "onClick": {
+      "description": "This action is launched whenever a user clicks on the chart canvas.
+
+Returns the data of the clicked data in the format of \`label\`, \`data\`.
+
+Returns an empty object if the user clicks outside of a data entry.",
+    },
+  },
   "events": {
     "emit": undefined,
     "listen": {
