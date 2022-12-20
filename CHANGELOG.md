@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.30](https://gitlab.com/appsemble/appsemble/-/releases/0.20.30)] - 2022-12-20
+
+### Added
+
+- Block(`chart`): Added `onClick` action to chart block.
+
 ## \[[0.20.29](https://gitlab.com/appsemble/appsemble/-/releases/0.20.29)] - 2022-12-20
 
 ### Added
