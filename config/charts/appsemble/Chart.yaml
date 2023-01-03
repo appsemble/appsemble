@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.28
-appVersion: 0.20.28
+version: 0.20.30
+appVersion: 0.20.30
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,10 +23,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: fixed
-      description: "App: Resolved an issue where loading in data into a table block
-        using the appStorage option would not update the table block."
+  artifacthub.io/changes: |
+    - kind: added
+      description: "Block(chart): Added onClick action to chart block."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

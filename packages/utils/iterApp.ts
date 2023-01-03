@@ -146,6 +146,11 @@ export function iterPage(
           ))
     );
   }
+
+  if (page.type === 'loop') {
+    return iterBlockList(page.foreach.blocks, callbacks, [...prefix, 'blocks']);
+  }
+
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
 }
 

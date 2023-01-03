@@ -26,12 +26,13 @@ export function NumberInput({
   const { bottomLabels, display, icon, inline, label, placeholder, readOnly, tag, topLabels } =
     field;
 
+  const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
     className: classNames('appsemble-number', className),
     disabled,
     error: dirty && error,
     icon,
-    label,
+    label: remappedLabel as string,
     max: getMax(field),
     min: getMin(field),
     name,

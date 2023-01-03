@@ -225,12 +225,15 @@ bootstrap(
             const body = await response.json();
             const remappedValues = mapValues(autofill.response, (mapper) =>
               utils.remap(mapper, body),
-            ) as Record<string, string>;
+            );
+            for (const [key] of Object.entries(remappedValues)) {
+              remappedValues[key] ??= defaultValues[key];
+            }
             setValues((prev) => ({ ...prev, ...remappedValues }));
             setLastChanged(null);
           }
         }, autofill?.delay),
-      [autofill, utils],
+      [autofill, defaultValues, utils],
     );
 
     useEffect(() => {

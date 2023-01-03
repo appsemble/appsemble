@@ -138,6 +138,10 @@ export function extractAppMessages(
           messages.app[`${prefix}.steps.${index}`] = step.name ?? '';
         }
       }
+
+      if (page.type === 'loop') {
+        messages.app[`${prefix}.step`] = page.foreach.name ?? '';
+      }
     },
   });
 

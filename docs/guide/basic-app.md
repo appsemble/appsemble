@@ -84,7 +84,7 @@ pages:
   - name: People
     blocks:
       - type: table
-        version: 0.20.28
+        version: 0.20.30
         events:
           listen:
             data: people
@@ -125,7 +125,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onLoad:
             type: resource.query
@@ -134,7 +134,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.28
+        version: 0.20.30
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -152,6 +152,7 @@ resources:
     roles: [$public]
     schema:
       type: object
+      additionalProperties: false
       required:
         - firstName
         - lastName
@@ -174,7 +175,7 @@ pages:
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onLoad:
             type: resource.query
@@ -183,17 +184,15 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.28
+        version: 0.20.30
         events:
           listen:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 ```
 
@@ -207,7 +206,7 @@ Add a new page:
 - name: Register
   blocks:
     - type: form
-      version: 0.20.28
+      version: 0.20.30
       actions:
         onSubmit:
           type: resource.create
@@ -290,41 +289,41 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.20.28
+        version: 0.20.30
         parameters:
-        fields:
-          - name: firstName
-            type: string
-            label: First Name
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: lastName
-            type: string
-            label: Surname
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: email
-            type: string
-            label: Email Address
-            format: email
-            requirements:
-              - required: true
-                errorMessage: This field is required
-          - name: description
-            type: string
-            label: Description
-            multiline: true
-            requirements:
-              - maxLength: 500
+          fields:
+            - name: firstName
+              type: string
+              label: First Name
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: lastName
+              type: string
+              label: Surname
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: email
+              type: string
+              label: Email Address
+              format: email
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+            - name: description
+              type: string
+              label: Description
+              multiline: true
+              requirements:
+                - maxLength: 500
 
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onLoad:
             type: resource.query
@@ -333,7 +332,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.28
+        version: 0.20.30
         events:
           listen:
             data: people
@@ -359,7 +358,7 @@ Add a new page:
     - id
   blocks:
     - type: data-loader
-      version: 0.20.28
+      version: 0.20.30
       actions:
         onLoad:
           type: resource.get
@@ -368,7 +367,7 @@ Add a new page:
         emit:
           data: person
     - type: detail-viewer
-      version: 0.20.28
+      version: 0.20.30
       events:
         listen:
           data: person
@@ -437,7 +436,36 @@ pages:
   - name: Register
     blocks:
       - type: form
-        version: 0.20.28
+        version: 0.20.30
+        parameters:
+          fields:
+            - name: firstName
+              type: string
+              label: First Name
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: lastName
+              type: string
+              label: Surname
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+                - maxLength: 80
+            - name: email
+              type: string
+              label: Email Address
+              format: email
+              requirements:
+                - required: true
+                  errorMessage: This field is required
+            - name: description
+              type: string
+              label: Description
+              multiline: true
+              requirements:
+                - maxLength: 500
         actions:
           onSubmit:
             type: resource.create
@@ -445,40 +473,11 @@ pages:
             onSuccess:
               type: link
               to: Person details
-        parameters:
-        fields:
-          - name: firstName
-            type: string
-            label: First Name
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: lastName
-            type: string
-            label: Surname
-            requirements:
-              - required: true
-                errorMessage: This field is required
-              - maxLength: 80
-          - name: email
-            type: string
-            label: Email Address
-            format: email
-            requirements:
-              - required: true
-                errorMessage: This field is required
-          - name: description
-            type: string
-            label: Description
-            multiline: true
-            requirements:
-              - maxLength: 500
 
   - name: People
     blocks:
       - type: data-loader
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onLoad:
             type: resource.query
@@ -487,7 +486,7 @@ pages:
           emit:
             data: people
       - type: table
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onClick:
             type: link
@@ -497,11 +496,9 @@ pages:
             data: people
         parameters:
           fields:
-            - type: string
-              value: { prop: firstName }
+            - value: { prop: firstName }
               label: First Name
-            - type: string
-              value: { prop: lastName }
+            - value: { prop: lastName }
               label: Surname
 
   - name: Person details
@@ -509,7 +506,7 @@ pages:
       - id
     blocks:
       - type: data-loader
-        version: 0.20.28
+        version: 0.20.30
         actions:
           onLoad:
             type: resource.get
@@ -518,7 +515,7 @@ pages:
           emit:
             data: person
       - type: detail-viewer
-        version: 0.20.28
+        version: 0.20.30
         events:
           listen:
             data: person

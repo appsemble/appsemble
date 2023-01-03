@@ -106,3 +106,5 @@ export * from './UserEmail.js';
 export * from './UserLoginActionDefinition.js';
 export * from './UserRegisterActionDefinition.js';
 export * from './UserUpdateActionDefinition.js';
+export * from './LoopPageDefinition.js';
+export * from './LoopPageActionsDefinition.js';
