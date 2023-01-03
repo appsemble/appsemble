@@ -1,5 +1,5 @@
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { Remapper, TokenResponse, UserEmails, UserInfo } from '@appsemble/types';
+import { Remapper, TokenResponse, UserEmail, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -131,7 +131,7 @@ export async function getUserInfo(
       ? (remap(remapper, data, null) as UserInfo)
       : (data as UserInfo);
     if (!actualData.email && userEmailsUrl) {
-      const { data: emailsData } = await axios.get<UserEmails>(userEmailsUrl, requestConfig);
+      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
       if (emailsData.length > 0) {
         actualData.email = emailsData[0].email;
       }
