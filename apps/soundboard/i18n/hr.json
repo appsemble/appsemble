@@ -1,0 +1,7 @@
+{
+  "app": {
+    "description": "Ovaj program prikazuje gumbe koji sviraju zvukove kad se pritisnu.",
+    "name": "Ploča zvukova",
+    "pages.soundboard": "Ploča zvukova"
+  }
+}
