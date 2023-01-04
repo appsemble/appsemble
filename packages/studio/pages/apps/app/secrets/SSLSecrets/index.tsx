@@ -49,13 +49,13 @@ export function SSLSecrets(): ReactElement {
       loadingMessage={<FormattedMessage {...messages.loadingMessage} />}
       result={result}
     >
-      {app.domain ? null : (
-        <Message color="warning">
-          <FormattedMessage {...messages.prequisiteWarning} />
-        </Message>
-      )}
       {(secret) => (
         <SimpleForm defaultValues={secret} onSubmit={onSubmit}>
+          {app.domain ? null : (
+            <Message color="warning">
+              <FormattedMessage {...messages.prequisiteWarning} />
+            </Message>
+          )}
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
           <SimpleFormField
             component={TextAreaField}
