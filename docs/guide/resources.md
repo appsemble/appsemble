@@ -50,7 +50,7 @@ delete) actions.
 
 ## type
 
-The following types can be used to define the properties
+The following types can be used to define the type of a property:
 
 | Type name         |  Description                            |
 | ------------------| --------------------------------------- |
