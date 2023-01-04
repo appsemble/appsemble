@@ -185,8 +185,8 @@ build docker image:
   stage: build
   needs: []
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.
 pack:
@@ -291,11 +291,13 @@ publish docker:
     - if: $CI_COMMIT_TAG
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "appsemble/appsemble:latest"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "appsemble/appsemble:$CI_COMMIT_TAG"
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SLUG" "$CI_REGISTRY_IMAGE:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SLUG" "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SLUG" "appsemble/appsemble:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SLUG" "appsemble/appsemble:$CI_COMMIT_TAG"
     - docker push "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
@@ -456,7 +458,7 @@ review:
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "image.tag=$CI_COMMIT_REF_SLUG"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.clusterIssuer=letsencrypt-dev"
       --set "ingress.enabled=true"
