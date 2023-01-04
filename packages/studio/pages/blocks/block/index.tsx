@@ -43,7 +43,7 @@ export function BlockPage(): ReactElement {
     lang: string;
   }>();
 
-  const url = `${lang}/blocks/@${organization}/${blockName}`;
+  const url = `${lang}/blocks/${organization}/${blockName}`;
 
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ export function BlockPage(): ReactElement {
     data: blockVersions,
     error,
     loading,
-  } = useData<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`);
+  } = useData<BlockManifest[]>(`/api/blocks/${organization}/${blockName}/versions`);
 
   const onSelectedVersionChange = useCallback(
     (event, value: string) => {
@@ -62,7 +62,7 @@ export function BlockPage(): ReactElement {
 
   const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
 
-  useMeta(`@${organization}/${blockName}`, selectedBlockManifest?.description);
+  useMeta(`${organization}/${blockName}`, selectedBlockManifest?.description);
 
   const examples = useMemo(
     () =>
@@ -111,7 +111,9 @@ export function BlockPage(): ReactElement {
             {blockName}
           </Title>
           <Subtitle lang={defaultLocale} level={4}>
-            <Link to={`/${lang}/organizations/${organization}`}>@{organization}</Link>
+            <Link to={`/${lang}/organizations/${organization.replace(/^@/, '')}`}>
+              {organization}
+            </Link>
           </Subtitle>
         </header>
       </>
