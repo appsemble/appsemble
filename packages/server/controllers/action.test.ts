@@ -10,7 +10,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 
-useTestDatabase('apps');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

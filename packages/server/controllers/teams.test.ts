@@ -22,7 +22,7 @@ let app: App;
 let user: User;
 let server: Koa;
 
-useTestDatabase('teams');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

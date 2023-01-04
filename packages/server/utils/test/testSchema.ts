@@ -1,3 +1,5 @@
+import { parse } from 'node:path';
+
 import { Sequelize } from 'sequelize';
 
 import { initDB, InitDBParams } from '../../models/index.js';
@@ -7,10 +9,10 @@ import { initDB, InitDBParams } from '../../models/index.js';
  *
  * The database will be truncated after each test. It will be deleted after all tests have run.
  *
- * @param spec The name of the test case.
+ * @param meta The `import.meta` property.
  * @param options Additional sequelize options.
  */
-export function useTestDatabase(spec: string, options: InitDBParams = {}): void {
+export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): void {
   let dbName: string;
   let rootDB: Sequelize;
   let db: Sequelize;
@@ -25,10 +27,10 @@ export function useTestDatabase(spec: string, options: InitDBParams = {}): void 
 
     // eslint-disable-next-line unicorn/prefer-string-slice
     dbName = rootDB
-      .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
+      .escape(`appsemble_test_${parse(meta.url).name}_${new Date().toISOString()}`)
       .replace(/'/g, '')
       .replace(/\W+/g, '_')
-      .substr(0, 63)
+      .substring(0, 63)
       .toLowerCase();
 
     await rootDB.query(`CREATE DATABASE ${dbName}`);

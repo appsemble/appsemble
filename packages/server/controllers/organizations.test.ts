@@ -24,7 +24,7 @@ let organization: Organization;
 let server: Koa;
 let user: User;
 
-useTestDatabase('organizations');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

@@ -258,7 +258,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
     OrganizationId: orgId,
   });
 
-useTestDatabase('resources');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

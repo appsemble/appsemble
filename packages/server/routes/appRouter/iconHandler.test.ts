@@ -7,7 +7,7 @@ import { setArgv } from '../../utils/argv.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 import { appRouter } from './index.js';
 
-useTestDatabase('iconHandler');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   request.defaults.responseType = 'arraybuffer';

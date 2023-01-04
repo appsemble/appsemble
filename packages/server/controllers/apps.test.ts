@@ -29,7 +29,7 @@ let user: User;
 
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
-useTestDatabase('apps');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv(argv);

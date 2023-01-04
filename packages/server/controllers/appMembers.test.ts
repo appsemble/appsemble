@@ -48,7 +48,7 @@ function createDefaultApp(org: Organization): Promise<App> {
   });
 }
 
-useTestDatabase('appmembers');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

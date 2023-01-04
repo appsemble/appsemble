@@ -174,7 +174,7 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-useTestDatabase('saml');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
