@@ -50,7 +50,7 @@ describe('configureDNS', () => {
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
     expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-    expect(config.headers).toStrictEqual({
+    expect({ ...config.headers }).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
       'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ describe('configureDNS', () => {
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
     expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-    expect(config.headers).toStrictEqual({
+    expect({ ...config.headers }).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
       'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ describe('configureDNS', () => {
 
     expect(config.url).toBe('/apis/networking.k8s.io/v1/namespaces/test/ingresses');
     expect(config.baseURL).toBe('https://kubernetes.default.svc:443');
-    expect(config.headers).toStrictEqual({
+    expect({ ...config.headers }).toStrictEqual({
       Accept: 'application/json, text/plain, */*',
       authorization: 'Bearer kubenetes.serviceaccount.token',
       'Content-Type': 'application/json',

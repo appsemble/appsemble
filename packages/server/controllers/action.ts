@@ -120,7 +120,7 @@ async function handleRequestProxy(
   if (useBody) {
     axiosConfig.data = data;
   }
-  axiosConfig.headers['user-agent'] = `AppsembleServer/${pkg.version}`;
+  (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${pkg.version}`;
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
 

@@ -33,7 +33,7 @@
   "dependencies": {
     "@appsemble/utils": "0.20.30",
     "@types/koa": "^2.0.0",
-    "axios": "^0.27.0",
+    "axios": "^1.0.0",
     "chalk": "^4.0.0",
     "cli-highlight": "^2.0.0",
     "fast-glob": "^3.0.0",
@@ -53,7 +53,7 @@
     "@types/parse-json": "^4.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
     "axios-mock-adapter": "^1.0.0",
-    "axios-test-instance": "^6.0.0"
+    "axios-test-instance": "^7.0.0"
   },
   "peerDependencies": {
     "prettier": "^2"

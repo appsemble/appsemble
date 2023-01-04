@@ -1,7 +1,7 @@
 import { Loader } from '@appsemble/react-components';
 import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import jwtDecode from 'jwt-decode';
 import {
   createContext,
@@ -109,8 +109,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       const interceptor = axios.interceptors.request.use((config) => {
         // Only add the authorization headers for internal requests.
         if (config.url.startsWith('/')) {
-          // eslint-disable-next-line no-param-reassign
-          config.headers.authorization = `Bearer ${accessToken}`;
+          (config.headers as AxiosHeaders).set('authorization', `Bearer ${accessToken}`);
         }
         return config;
       });
