@@ -7,11 +7,11 @@ export const SSLSecret: OpenAPIV3.SchemaObject = {
   properties: {
     certificate: {
       type: 'string',
-      description: 'The fully resolved SSL certificate in PEM format.',
+      description: 'The public SSL certificate chain in PEM format.',
     },
     key: {
       type: 'string',
-      description: 'The fully SSL key in PEM format.',
+      description: 'The SSL private key in PEM format.',
     },
   },
 };

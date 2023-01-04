@@ -1,14 +1,16 @@
 import {
   Button,
+  Message,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
   TextAreaField,
   useData,
+  useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { useApp } from '../../index.js';
@@ -27,16 +29,17 @@ interface SSLSecret {
 }
 
 export function SSLSecrets(): ReactElement {
-  const {
-    app: { id },
-  } = useApp();
+  const { app } = useApp();
+  const push = useMessages();
+  const { formatMessage } = useIntl();
 
-  const url = `/api/apps/${id}/secrets/ssl`;
+  const url = `/api/apps/${app.id}/secrets/ssl`;
 
   const result = useData<SSLSecret>(url);
 
   const onSubmit = async (values: SSLSecret): Promise<void> => {
     const { data } = await axios.put(url, values);
+    push({ body: formatMessage(messages.submitSuccess), color: 'success' });
     result.setData(data);
   };
 
@@ -48,6 +51,11 @@ export function SSLSecrets(): ReactElement {
     >
       {(secret) => (
         <SimpleForm defaultValues={secret} onSubmit={onSubmit}>
+          {app.domain ? null : (
+            <Message color="warning">
+              <FormattedMessage {...messages.prequisiteWarning} />
+            </Message>
+          )}
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
           <SimpleFormField
             component={TextAreaField}
