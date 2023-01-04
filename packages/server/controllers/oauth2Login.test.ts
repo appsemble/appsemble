@@ -12,7 +12,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 const mock = new MockAdapter(axios);
 let user: User;
 
-useTestDatabase('oauth2login');
+useTestDatabase(import.meta);
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

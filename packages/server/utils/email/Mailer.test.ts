@@ -10,7 +10,7 @@ import { Mailer } from './Mailer.js';
 
 let mailer: Mailer;
 
-useTestDatabase('mailer');
+useTestDatabase(import.meta);
 
 beforeEach(() => {
   setArgv({ host: '', smtpFrom: 'test@example.com' });

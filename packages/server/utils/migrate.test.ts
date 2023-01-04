@@ -12,7 +12,7 @@ let m010: Migration;
 let m100: Migration;
 let migrations: Migration[];
 
-useTestDatabase('migrate');
+useTestDatabase(import.meta);
 
 beforeEach(() => {
   m000 = { key: '0.0.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };

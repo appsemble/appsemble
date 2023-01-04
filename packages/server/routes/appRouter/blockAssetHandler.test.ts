@@ -7,7 +7,7 @@ import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 import { appRouter } from './index.js';
 
-useTestDatabase('blockassethandler');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   await setTestApp(new Koa().use(boomMiddleware()).use(appRouter));

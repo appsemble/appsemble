@@ -7,7 +7,7 @@ import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
-useTestDatabase('auth');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

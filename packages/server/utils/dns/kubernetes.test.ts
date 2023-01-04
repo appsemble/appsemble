@@ -17,7 +17,7 @@ const ca = `-----BEGIN CERTIFICATE-----
 // @ts-expect-error this is fine actually
 import.meta.jest.unstable_mockModule('node:fs/promises', () => fs.promises);
 
-useTestDatabase('kubernetes');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   kubernetes = await import('./kubernetes.js');

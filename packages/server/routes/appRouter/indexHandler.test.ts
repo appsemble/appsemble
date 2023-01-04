@@ -10,7 +10,7 @@ import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let requestURL: URL;
 
-useTestDatabase('approuter');
+useTestDatabase(import.meta);
 
 beforeEach(() => {
   import.meta.jest.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));

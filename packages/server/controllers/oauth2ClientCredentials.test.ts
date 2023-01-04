@@ -10,7 +10,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase('oauth2clientcredentials');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

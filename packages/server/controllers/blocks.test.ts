@@ -11,7 +11,7 @@ import { createServer } from '../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
-useTestDatabase('blocks');
+useTestDatabase(import.meta);
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

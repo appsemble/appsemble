@@ -13,7 +13,7 @@ let organization: Organization;
 let user: User;
 let app: App;
 
-useTestDatabase('assets');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
