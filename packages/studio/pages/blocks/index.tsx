@@ -13,8 +13,8 @@ export function BlockRoutes(): ReactElement {
   return (
     <MetaSwitch description={messages.description} title={messages.title}>
       <Route element={<IndexPage />} path="/" />
-      <Route element={<BlockPage />} path="/@:organization/:blockName/:version" />
-      <Route element={<BlockPage />} path="/@:organization/:blockName/*" />
+      <Route element={<BlockPage />} path="/:organization/:blockName/:version" />
+      <Route element={<BlockPage />} path="/:organization/:blockName/*" />
       <Route element={<Navigate to="/" />} path="*" />
     </MetaSwitch>
   );
