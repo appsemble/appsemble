@@ -39,7 +39,7 @@
     "babel-plugin-formatjs": "^10.0.0",
     "babel-plugin-react-intl-auto": "^3.0.0",
     "date-fns": "^2.0.0",
-    "fs-extra": "^10.0.0",
+    "fs-extra": "^11.0.0",
     "globby": "^13.0.0",
     "lodash-es": "^4.0.0",
     "mdast-util-from-markdown": "^1.0.0",

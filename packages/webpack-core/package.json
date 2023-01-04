@@ -34,7 +34,6 @@
     "@types/mdast": "^3.0.0",
     "@types/sass": "^1.0.0",
     "@types/unused-webpack-plugin": "^2.0.0",
-    "@types/workbox-webpack-plugin": "^5.0.0",
     "babel-loader": "^9.0.0",
     "bulma": "0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
