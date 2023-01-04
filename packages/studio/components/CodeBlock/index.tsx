@@ -1,6 +1,7 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import { downloadBlob } from '@appsemble/web-utils';
 import classNames from 'classnames';
+import indentString from 'indent-string';
 import { ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -30,6 +31,11 @@ interface CodeBlockProps {
   filename?: string;
 
   /**
+   * Indent the code by this number of spaces.
+   */
+  indent?: number;
+
+  /**
    * The language to use for highlighting the code.
    */
   language?: string;
@@ -43,6 +49,7 @@ export function CodeBlock({
   className,
   copy,
   filename,
+  indent,
   language,
 }: CodeBlockProps): ReactElement {
   const { formatMessage } = useIntl();
@@ -59,6 +66,9 @@ export function CodeBlock({
   }
   if (Array.isArray(code)) {
     [code] = code;
+  }
+  if (typeof code === 'string' && indent) {
+    code = indentString(code, indent);
   }
 
   const onDownload = useCallback(() => {
