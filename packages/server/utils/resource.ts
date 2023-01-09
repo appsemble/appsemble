@@ -149,6 +149,13 @@ async function sendSubscriptionNotifications(
     subscriptions.push(...resourceSubscribers);
   }
 
+  Object.assign(
+    app,
+    await App.findByPk(app.id, {
+      attributes: ['vapidPrivateKey', 'vapidPublicKey'],
+    }),
+  );
+
   for (const subscription of subscriptions) {
     sendNotification(app, subscription, options);
   }
