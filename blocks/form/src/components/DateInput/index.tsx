@@ -21,11 +21,12 @@ export function DateInput({
   error,
   field,
   onChange,
+  readOnly,
   required,
   value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { inline, label, name, placeholder, readOnly, tag } = field;
+  const { inline, label, name, placeholder, tag } = field;
 
   const dateLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');

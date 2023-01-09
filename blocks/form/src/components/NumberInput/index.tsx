@@ -19,12 +19,12 @@ export function NumberInput({
   field,
   name,
   onChange,
+  readOnly,
   required,
   value,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
-  const { bottomLabels, display, icon, inline, label, placeholder, readOnly, tag, topLabels } =
-    field;
+  const { bottomLabels, display, icon, inline, label, placeholder, tag, topLabels } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {

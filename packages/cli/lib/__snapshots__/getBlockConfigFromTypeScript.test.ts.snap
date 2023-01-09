@@ -1486,7 +1486,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -1564,7 +1564,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -1707,7 +1707,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "All requirements that are applicable to this type of field.",
@@ -1796,7 +1796,7 @@ The date value can be accessed using the \`root\` remapper.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "All requirements that are applicable to this type of field.",
@@ -1967,7 +1967,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -2094,7 +2094,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "repeated": {
             "default": false,
@@ -2225,7 +2225,7 @@ This can be used to set the location to something that is more relevant to the u
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "show": {
             "description": "Displays field only if condition is true.
@@ -2278,7 +2278,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "show": {
             "description": "Displays field only if condition is true.
@@ -2432,7 +2432,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -2527,7 +2527,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "removeLabel": {
             "default": "Add",
@@ -2608,7 +2608,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -2757,7 +2757,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "show": {
             "description": "Displays field only if condition is true.
@@ -2856,7 +2856,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -2946,7 +2946,7 @@ Fields are combined in order if set to true.",
           },
           "readOnly": {
             "description": "Whether the field should be read-only.",
-            "type": "boolean",
+            "format": "remapper",
           },
           "requirements": {
             "description": "The requirements that are used to validate the field with.
@@ -3051,6 +3051,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 
 If this is set to \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
         "type": "boolean",
+      },
+      "disabled": {
+        "default": false,
+        "description": "If this remapper yields true, the submit button will be disabled.",
+        "format": "remapper",
       },
       "fields": {
         "description": "A list of objects describing each field that can be entered in the form.",

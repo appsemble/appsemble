@@ -19,6 +19,7 @@ export function RadioInput({
   field,
   name,
   onChange,
+  readOnly,
   required,
   value,
 }: RadioInputProps): VNode {
@@ -45,6 +46,7 @@ export function RadioInput({
             disabled={disabled}
             id={id}
             key={id}
+            readOnly={readOnly}
             required={required}
             value={option.value}
             wrapperClassName={styles.choice}

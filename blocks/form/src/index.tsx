@@ -23,6 +23,7 @@ bootstrap(
     parameters: {
       autofill,
       dense,
+      disabled,
       fields: initialFields,
       previous,
       requirements,
@@ -290,6 +291,7 @@ bootstrap(
                 key={f.name}
                 name={f.name}
                 onChange={onChange}
+                readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
                 required={isRequired(f, utils, values)}
                 value={values[f.name]}
               />
@@ -303,7 +305,13 @@ bootstrap(
           ) : null}
           <Button
             color="primary"
-            disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}
+            disabled={Boolean(
+              loading ||
+                submitting ||
+                formErrors.some(Boolean) ||
+                !isFormValid(errors) ||
+                utils.remap(disabled, values),
+            )}
             type="submit"
           >
             {utils.formatMessage('submitLabel')}

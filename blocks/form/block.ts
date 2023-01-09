@@ -286,7 +286,7 @@ interface AbstractField {
   /**
    * Whether the field should be read-only.
    */
-  readOnly?: boolean;
+  readOnly?: Remapper;
 
   /**
    * The label that is shown to the right of the label.
@@ -853,6 +853,11 @@ export interface InputProps<T, F extends Field> {
   dirty?: boolean;
 
   /**
+   * Whether or not the field is read-only.
+   */
+  readOnly?: boolean;
+
+  /**
    * Whether or not the input is required.
    */
   required?: boolean;
@@ -976,6 +981,13 @@ declare module '@appsemble/sdk' {
        */
       delay?: number;
     };
+
+    /**
+     * If this remapper yields true, the submit button will be disabled.
+     *
+     * @default false
+     */
+    disabled?: Remapper;
 
     /**
      * A list of objects describing each field that can be entered in the form.
