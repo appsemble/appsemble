@@ -30,7 +30,7 @@
     "@appsemble/utils": "0.20.30",
     "@appsemble/webpack-core": "0.20.30",
     "@babel/core": "^7.0.0",
-    "@types/fs-extra": "^9.0.0",
+    "@types/fs-extra": "^11.0.0",
     "@types/lodash-es": "^4.0.0",
     "@types/mdast": "^3.0.0",
     "@types/normalize-path": "^3.0.0",
