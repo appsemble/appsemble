@@ -539,7 +539,7 @@ export async function createResource(ctx: Context): Promise<void> {
   const action = 'create';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -608,7 +608,7 @@ export async function updateResources(ctx: Context): Promise<void> {
   const action = 'update';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -733,7 +733,7 @@ export async function updateResource(ctx: Context): Promise<void> {
   const action = 'update';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -828,7 +828,7 @@ export async function deleteResource(ctx: Context): Promise<void> {
   const action = 'delete';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -869,7 +869,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
 
   const action = 'delete';
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
