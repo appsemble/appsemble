@@ -18,6 +18,7 @@ export function EnumInput({
   field,
   name,
   onChange,
+  readOnly,
   required,
   value,
 }: EnumInputProps): VNode {
@@ -80,6 +81,7 @@ export function EnumInput({
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, {}) as string}
+      readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value) as string}
       value={value}

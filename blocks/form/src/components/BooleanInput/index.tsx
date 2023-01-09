@@ -18,11 +18,12 @@ export function BooleanInput({
   field,
   name,
   onChange,
+  readOnly,
   required,
   value,
 }: BooleanInputProps): VNode {
   const { utils } = useBlock();
-  const { color, icon, inline, label, labelText, readOnly, size, switch: switchType, tag } = field;
+  const { color, icon, inline, label, labelText, size, switch: switchType, tag } = field;
 
   const checkboxLabel = utils.remap(label, value);
 

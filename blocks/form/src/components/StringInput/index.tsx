@@ -19,11 +19,12 @@ export function StringInput({
   field,
   name,
   onChange,
+  readOnly,
   required,
   value,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
-  const { format, icon, inline, label, multiline, placeholder, readOnly, tag } = field;
+  const { format, icon, inline, label, multiline, placeholder, tag } = field;
 
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
