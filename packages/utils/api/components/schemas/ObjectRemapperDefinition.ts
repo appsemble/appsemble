@@ -83,6 +83,10 @@ If the input is not an array an empty array is returned.`,
       type: 'string',
       description: 'Add the specified value to a given date.',
     },
+    'date.format': {
+      enum: [null],
+      description: 'Format a date according to rfc3339.',
+    },
     'date.now': {
       enum: [null],
       description: 'Returns the current date.',

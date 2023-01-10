@@ -367,6 +367,16 @@ const mapperImplementations: MapperImplementations = {
     return addMilliseconds(input, expireDuration);
   },
 
+  'date.format'(args, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+        ? new Date(input)
+        : parseISO(String(input));
+    return date.toJSON();
+  },
+
   'null.strip': (args, input) => stripNullValues(input, args || {}),
 
   'random.choice': (args, input: any[]) =>
