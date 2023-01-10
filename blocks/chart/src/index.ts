@@ -30,6 +30,8 @@ interface DataSet {
   data: number[];
 
   labels?: string[];
+
+  color: string;
 }
 
 bootstrap(
@@ -117,7 +119,7 @@ bootstrap(
       chart.data.datasets.push({
         type: datasetType as 'bar',
         label: dataset.label ?? '',
-        backgroundColor,
+        backgroundColor: dataset.color ?? backgroundColor,
         data: dataset.data,
         yAxisID,
       });

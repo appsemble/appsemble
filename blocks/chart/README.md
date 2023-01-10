@@ -10,5 +10,5 @@ expected to adhere to a certain interface.
 - `data`: The data should be an object of the following format:
   - `data`: array of numbers.
   - `labels`: array of strings representing each data entry.
-
+  - `color`: the color to give this dataset. Requires a `string` in a hexadecimal format.
 If a value is null, it’s skipped from the chart.
