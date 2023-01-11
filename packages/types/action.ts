@@ -68,6 +68,7 @@ export type Action =
   | BaseAction<'link.next'>
   | BaseAction<'message'>
   | BaseAction<'noop'>
+  | BaseAction<'notify'>
   | BaseAction<'resource.subscription.status'>
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.toggle'>

@@ -56,6 +56,7 @@ export * from './MessageActionDefinition.js';
 export * from './NoopActionDefinition.js';
 export * from './NotificationHookDataDefinition.js';
 export * from './NotificationHookDefinition.js';
+export * from './NotifyActionDefinition.js';
 export * from './OAuth2AuthorizationCode.js';
 export * from './OAuth2ClientCredentials.js';
 export * from './ObjectRemapperDefinition.js';
