@@ -19,10 +19,7 @@ export const NotifyActionDefinition = extendJSONSchema(BaseActionDefinition, {
       description: 'The description of the notification.',
     },
     to: {
-      anyOf: [
-        { type: 'string', enum: ['all'] },
-        { $ref: '#/components/schemas/RemapperDefinition' },
-      ],
+      anyOf: [{ enum: ['all'] }, { $ref: '#/components/schemas/RemapperDefinition' }],
       description: `To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
