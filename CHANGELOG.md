@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.31](https://gitlab.com/appsemble/appsemble/-/releases/0.20.31)] - 2023-01-11
+
+### Added
+
+- Block(`chart`): Added `color` option to chart datasets.
+- Block(`form`): Add the `disabled` parameter.
+- Block(`form`): Make the `readOnly` field property a remapper.
+- App: Add the `date.format` remapper.
+
+### Fixed
+
+- Server: Resolved an issue where resource notifications would not work.
+
 ## \[[0.20.30](https://gitlab.com/appsemble/appsemble/-/releases/0.20.30)] - 2022-12-20
 
 ### Added
