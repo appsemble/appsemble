@@ -184,6 +184,26 @@ describe('date.add', () => {
   });
 });
 
+describe('date.format', () => {
+  runTests({
+    'format date objects': {
+      input: new Date('2020-01-02T03:04:05Z'),
+      mappers: { 'date.format': null },
+      expected: '2020-01-02T03:04:05.000Z',
+    },
+    'format date strings': {
+      input: '2020-01-02T03:04:05Z',
+      mappers: { 'date.format': null },
+      expected: '2020-01-02T03:04:05.000Z',
+    },
+    'format unix timestamps': {
+      input: 0,
+      mappers: { 'date.format': null },
+      expected: '1970-01-01T00:00:00.000Z',
+    },
+  });
+});
+
 describe('le', () => {
   runTests({
     'return true if the left value is less than the right value': {

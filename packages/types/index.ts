@@ -305,6 +305,11 @@ export interface Remappers {
   'date.add': string;
 
   /**
+   * Format a date to an iso8601 / rfc3339 compatible string.
+   */
+  'date.format': null;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
