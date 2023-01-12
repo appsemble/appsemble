@@ -1,18 +1,18 @@
 import { NotifyActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 
-import { App, AppSubscription } from '../../models/index.js';
+import { AppSubscription } from '../../models/index.js';
 import { getRemapperContext } from '../app.js';
 import { sendNotification } from '../sendNotification.js';
 import { ServerActionParameters } from './index.js';
 
 export async function notify({
   action,
-  app: { id: appId },
+  app,
   data,
   user,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
-  const app = await App.findByPk(appId, {
+  await app?.reload({
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
     include: [
       {
