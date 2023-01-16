@@ -1,1 +1,1 @@
-Added `notify` action.
+Add `notify` action.
