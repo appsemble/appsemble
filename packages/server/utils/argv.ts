@@ -266,6 +266,13 @@ export interface Argv {
    * @example 'https://appsemble.app'
    */
   remote: string;
+
+  /**
+   * How many minutes are between each cron job run.
+   *
+   * @default 5
+   */
+  interval: number;
 }
 
 const defaults: Argv = {
@@ -290,6 +297,7 @@ const defaults: Argv = {
   databaseName: undefined,
   databaseSsl: false,
   databaseUrl: undefined,
+  interval: 5,
   migrateTo: undefined,
   ssl: false,
   sslKey: undefined,
