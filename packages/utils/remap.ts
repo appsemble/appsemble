@@ -57,6 +57,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * The history stack containing the states before an action was called.
+   */
+  history?: unknown[];
+
+  /**
    * The current locale of the app.
    */
   locale: string;
@@ -79,7 +84,6 @@ export interface RemapperContext {
 
 interface InternalContext extends RemapperContext {
   root?: unknown;
-  history?: unknown[];
 
   array?: {
     index: number;
