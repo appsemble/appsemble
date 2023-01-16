@@ -12,16 +12,6 @@ export async function notify({
   data,
   user,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
-  await app?.reload({
-    attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
-    include: [
-      {
-        model: AppSubscription,
-        attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-      },
-    ],
-  });
-
   const context = await getRemapperContext(
     app,
     app.definition.defaultLanguage || defaultLocale,
@@ -34,23 +24,31 @@ export async function notify({
     },
   );
 
+  const to = remap(action.to, data, context) as string;
+
+  await app?.reload({
+    attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
+    include: [
+      to === 'all'
+        ? {
+            model: AppSubscription,
+            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+          }
+        : {
+            model: AppSubscription,
+            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+            where: {
+              UserId: to,
+            },
+          },
+    ],
+  });
+
   const title = remap(action.title, data, context) as string;
   const body = remap(action.body, data, context) as string;
 
-  if (action.to === 'all') {
-    for (const subscription of app.AppSubscriptions) {
-      sendNotification(app, subscription, { title, body });
-    }
-    return data;
+  for (const subscription of app.AppSubscriptions) {
+    sendNotification(app, subscription, { title, body });
   }
-
-  const subscribedUser = app.AppSubscriptions.find(
-    (sub) => sub.UserId === remap(action.to, data, context),
-  );
-
-  if (subscribedUser) {
-    sendNotification(app, subscribedUser, { title, body });
-  }
-
   return data;
 }

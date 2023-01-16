@@ -971,7 +971,7 @@ export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
    * To whom the notification should be sent.
    *
    * Use `all` to send the notification to all app subscribed users.
-   * Otherwise you can pass the users id using remappers to notify a specific user.
+   * Or notify specific users by passing either a single user id or an array of user ids.
    *
    * Nothing is sent if the value is **not** a valid user id.
    */

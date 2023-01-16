@@ -1072,20 +1072,11 @@ This is the default action for block actions that are not required.
                       "description": "The title of the notification.",
                     },
                     "to": {
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "all",
-                          ],
-                        },
-                        {
-                          "$ref": "#/components/schemas/RemapperDefinition",
-                        },
-                      ],
+                      "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
@@ -1135,20 +1126,11 @@ Nothing is sent if the value is **not** a valid user id.
                       "description": "The title of the notification.",
                     },
                     "to": {
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "all",
-                          ],
-                        },
-                        {
-                          "$ref": "#/components/schemas/RemapperDefinition",
-                        },
-                      ],
+                      "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
@@ -1198,20 +1180,11 @@ Nothing is sent if the value is **not** a valid user id.
                       "description": "The title of the notification.",
                     },
                     "to": {
-                      "anyOf": [
-                        {
-                          "enum": [
-                            "all",
-                          ],
-                        },
-                        {
-                          "$ref": "#/components/schemas/RemapperDefinition",
-                        },
-                      ],
+                      "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
@@ -4956,20 +4929,11 @@ This is the default action for block actions that are not required.
               "description": "The title of the notification.",
             },
             "to": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "all",
-                  ],
-                },
-                {
-                  "$ref": "#/components/schemas/RemapperDefinition",
-                },
-              ],
+              "$ref": "#/components/schemas/RemapperDefinition",
               "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
@@ -5019,20 +4983,11 @@ Nothing is sent if the value is **not** a valid user id.
               "description": "The title of the notification.",
             },
             "to": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "all",
-                  ],
-                },
-                {
-                  "$ref": "#/components/schemas/RemapperDefinition",
-                },
-              ],
+              "$ref": "#/components/schemas/RemapperDefinition",
               "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
@@ -5082,20 +5037,11 @@ Nothing is sent if the value is **not** a valid user id.
               "description": "The title of the notification.",
             },
             "to": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "all",
-                  ],
-                },
-                {
-                  "$ref": "#/components/schemas/RemapperDefinition",
-                },
-              ],
+              "$ref": "#/components/schemas/RemapperDefinition",
               "description": "To whom the notification should be sent.
 
 Use \`all\` to send the notification to all app subscribed users.
-Otherwise you can pass the users id using remappers to notify a specific user.
+Or notify specific users by passing either a single user id or an array of user ids.
 
 Nothing is sent if the value is **not** a valid user id.
 ",
