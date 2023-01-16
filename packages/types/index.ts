@@ -961,10 +961,12 @@ export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
    * The title of the notification.
    */
   title: Remapper;
+
   /**
    * The description of the notification.
    */
   body: Remapper;
+
   /**
    * To whom the notification should be sent.
    *
