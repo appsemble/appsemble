@@ -1,1 +1,1 @@
-Added history remapper support.
+Add history remapper support.
