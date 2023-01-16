@@ -37,6 +37,7 @@ export async function notify({
         : {
             model: AppSubscription,
             attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+            required: false,
             where: {
               UserId: to,
             },
