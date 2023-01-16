@@ -5,6 +5,7 @@ import {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -97,6 +98,17 @@ export function SimpleForm<T extends {}>({
     },
     [preprocess, setFormError],
   );
+
+  useEffect(() => {
+    const filledValues = Object.entries(values)
+      .map(([name, value]) => (value ? name : null))
+      .filter(Boolean);
+
+    for (const name of filledValues) {
+      setPristine((prevPristine) => ({ ...prevPristine, [name]: false }));
+      setFormError(name);
+    }
+  }, [values, setFormError]);
 
   const value = useMemo(
     () => ({
