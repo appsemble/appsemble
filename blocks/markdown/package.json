@@ -18,7 +18,12 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.20.31",
-    "@types/marked": "^2.0.0",
-    "marked": "^2.0.0"
+    "rehype-dom-stringify": "^3.0.0",
+    "rehype-raw": "^6.0.0",
+    "rehype-sanitize": "^5.0.0",
+    "remark-gfm": "^3.0.0",
+    "remark-parse": "^10.0.0",
+    "remark-rehype": "^10.0.0",
+    "unified": "^10.0.0"
   }
 }
