@@ -52,7 +52,6 @@ export function createJestConfig({ url }) {
     displayName: pkg.name,
     extensionsToTreatAsEsm: ['.ts', '.tsx'],
     moduleNameMapper,
-    passWithNoTests: true,
     preset: 'ts-jest/presets/default-esm-legacy',
     resetMocks: true,
     restoreMocks: true,
