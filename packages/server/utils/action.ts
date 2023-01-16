@@ -13,11 +13,12 @@ export async function handleAction(
   url.hostname =
     params.app.domain || `${params.app.path}.${params.app.OrganizationId}.${url.hostname}`;
   const appUrl = String(url);
-  const context: RemapperContext = {
+  const context: RemapperContext = params.internalContext ?? {
     appId: params.app.id,
     appUrl,
     url: String(url),
     context: {},
+    history: [],
     // XXX: Implement getMessage and default language selections
     getMessage() {
       return null;
@@ -30,16 +31,19 @@ export async function handleAction(
       ? remap(params.action.remapBefore, params.data, context)
       : params.data;
 
+  const updatedContext = { ...context, history: [].concat(context.history, [data]) };
+
   try {
-    data = await action({ ...params, data });
+    data = await action({ ...params, data, internalContext: updatedContext });
     if ('remapAfter' in params.action) {
-      data = remap(params.action.remapAfter, data, context);
+      data = remap(params.action.remapAfter, data, updatedContext);
     }
     if (params.action.onSuccess) {
       await handleAction(actions[params.action.onSuccess.type], {
         ...params,
         action: params.action.onSuccess,
         data,
+        internalContext: updatedContext,
       });
     }
   } catch (error) {
@@ -49,6 +53,7 @@ export async function handleAction(
         ...params,
         action: params.action.onError,
         data,
+        internalContext: updatedContext,
       });
     }
     throw error;

@@ -1,4 +1,5 @@
 import { ActionDefinition } from '@appsemble/types';
+import { RemapperContext } from '@appsemble/utils';
 
 import { App, User } from '../../models/index.js';
 import { Mailer } from '../email/Mailer.js';
@@ -16,6 +17,7 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
   user: User;
   mailer: Mailer;
   data: unknown;
+  internalContext?: RemapperContext;
 }
 
 export const actions = {
