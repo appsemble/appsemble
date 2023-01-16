@@ -17,6 +17,11 @@ export const description = 'Runs all cronjobs associated with apps.';
 
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
+    .option('interval', {
+      desc: 'How many minutes are between each cron job run.',
+      type: 'number',
+      default: 5,
+    })
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
     })
@@ -69,7 +74,7 @@ export async function handler(): Promise<void> {
   const mailer = new Mailer(argv);
 
   // 1 hour ago
-  const startDate = Date.now() - 60 * 60 * 1e3;
+  const startDate = Date.now() - argv.interval * 60 * 1e3;
 
   for await (const app of iterTable(App, {
     attributes: [

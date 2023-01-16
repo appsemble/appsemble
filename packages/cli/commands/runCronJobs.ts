@@ -8,6 +8,11 @@ export const description = 'Runs all cronjobs associated with apps.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
+    .option('interval', {
+      desc: 'How many minutes are between each cron job run.',
+      type: 'number',
+      default: 5,
+    })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',
     })
