@@ -1455,6 +1455,11 @@ The action should return an array of objects that contain the \`label\` and \`va
             "$ref": "#/definitions/JsonValue",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1485,6 +1490,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -1534,6 +1540,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The default value of the field.",
             "type": "boolean",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1563,6 +1574,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -1681,6 +1693,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1706,6 +1723,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -1771,6 +1789,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1795,6 +1818,7 @@ The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -1929,6 +1953,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/JsonValue",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "event": {
             "description": "Wait until an event has been fired containing the list of options.
 
@@ -1966,6 +1995,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2051,6 +2081,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The default value for the field.",
             "type": "string",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "emptyFileLabel": {
             "default": " ",
             "description": "The label that is shown for empty files.",
@@ -2093,6 +2128,7 @@ Fields are combined in order if set to true.",
             "type": "number",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2201,6 +2237,11 @@ This can be used to set the location to something that is more relevant to the u
             "$ref": "#/definitions/Record%3Cstring%2Cnumber%3E",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2224,6 +2265,7 @@ This can be used to set the location to something that is more relevant to the u
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2259,6 +2301,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/JsonValue",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2277,6 +2324,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2399,6 +2447,11 @@ This type can be useful to enforce some input to be JSON-compatible or as a supe
             "description": "The default value of the field.",
             "type": "number",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "display": {
             "const": "slider",
             "description": "How to display the numeric field.
@@ -2431,6 +2484,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2500,6 +2554,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "The label to show on the button for adding a new entry for repeated fields.",
             "format": "remapper",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "fields": {
             "description": "The fields contained by this object.",
             "items": {
@@ -2526,6 +2585,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2582,6 +2642,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/JsonValue",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2607,6 +2672,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2731,6 +2797,11 @@ This field does not contain a name or a value.",
             "description": "The content to display.",
             "format": "remapper",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2756,6 +2827,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2816,6 +2888,11 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
             "description": "The default value of the field.",
             "type": "string",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "format": {
             "description": "The format to use for validation.",
             "enum": [
@@ -2855,6 +2932,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
@@ -2913,6 +2991,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/JsonValue",
             "description": "The default value of the field.",
           },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
           "enum": {
             "description": "The list of available choices.",
             "items": {
@@ -2945,6 +3028,7 @@ Fields are combined in order if set to true.",
             "format": "remapper",
           },
           "readOnly": {
+            "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },

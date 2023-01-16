@@ -285,7 +285,11 @@ bootstrap(
             .map((f) => (
               <FormInput
                 className={classNames({ [styles.dense]: dense })}
-                disabled={dataLoading || submitting}
+                disabled={
+                  dataLoading ||
+                  submitting ||
+                  Boolean(utils.remap(f.disabled, values[f.name], { values }))
+                }
                 error={errors[f.name]}
                 field={f}
                 key={f.name}
