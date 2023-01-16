@@ -263,6 +263,13 @@ interface AbstractField {
   show?: Remapper;
 
   /**
+   * Whether the field should always be be disabled.
+   *
+   * @default false
+   */
+  disabled?: Remapper;
+
+  /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
    */
@@ -285,6 +292,8 @@ interface AbstractField {
 
   /**
    * Whether the field should be read-only.
+   *
+   * @default false
    */
   readOnly?: Remapper;
 
