@@ -49,7 +49,7 @@
     "prettier": "^2.0.0",
     "semver": "^7.0.0",
     "twitter-api-v2": "^1.0.0",
-    "type-fest": "^2.0.0",
+    "type-fest": "^3.0.0",
     "unist-util-visit": "^4.0.0",
     "webpack": "^5.0.0",
     "yaml": "^2.0.0",
