@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.32](https://gitlab.com/appsemble/appsemble/-/releases/0.20.32)] - 2023-01-17
+
+### Added
+
+- Block(`form`): Add `disabled` property on individual fields.
+- Server: Add history remapper support.
+
+### Changed
+
+- Block(`map`): Use another implementation to render markdown.
+
 ## \[[0.20.31](https://gitlab.com/appsemble/appsemble/-/releases/0.20.31)] - 2023-01-11
 
 ### Added
