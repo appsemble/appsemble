@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
@@ -11,9 +11,13 @@ export function PermissionRequest(): ReactElement {
   const { definition } = useAppDefinition();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
-  if (definition.notifications && definition.notifications === 'startup') {
+  useEffect(() => {
+    if (definition.notifications !== 'startup') {
+      return;
+    }
+
     if (window.Notification?.permission === 'denied') {
-      return null;
+      return;
     }
 
     requestPermission().then((p) => {
@@ -21,7 +25,7 @@ export function PermissionRequest(): ReactElement {
         subscribe();
       }
     });
-  }
+  }, [definition.notifications, requestPermission, subscribe]);
 
   return permission === 'pending' ? <div className={`modal-background ${styles.overlay}`} /> : null;
 }
