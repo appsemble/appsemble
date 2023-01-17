@@ -2,6 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import {
   ActionDefinition,
   EmailActionDefinition,
+  NotifyActionDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
@@ -11,10 +12,11 @@ import { Context, Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization } from '../models/index.js';
+import { App, AppSubscription, EmailAuthorization } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { email } from '../utils/actions/email.js';
 import { getRemapperContext } from '../utils/app.js';
+import { sendNotification } from '../utils/sendNotification.js';
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -26,7 +28,7 @@ const allowResponseHeaders = [
   'transfer-encoding',
 ];
 
-const supportedActions = ['email', 'request'];
+const supportedActions = ['email', 'notify', 'request'];
 
 async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition): Promise<void> {
   const {
@@ -54,6 +56,69 @@ async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition
   });
 
   await email({ action, app, data, mailer, user });
+  ctx.status = 204;
+}
+
+async function handleNotify(ctx: Context, app: App, action: NotifyActionDefinition): Promise<void> {
+  const {
+    request: { body: data },
+    user,
+  } = ctx;
+
+  await user?.reload({
+    attributes: ['primaryEmail', 'name', 'timezone'],
+    include: [
+      {
+        required: false,
+        model: EmailAuthorization,
+        attributes: ['verified'],
+        where: {
+          email: { [Op.col]: 'User.primaryEmail' },
+        },
+      },
+    ],
+  });
+
+  const context = await getRemapperContext(
+    app,
+    app.definition.defaultLanguage || defaultLocale,
+    user && {
+      sub: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      zoneinfo: user.timezone,
+    },
+  );
+
+  const to = remap(action.to, data, context) as string;
+
+  await app?.reload({
+    attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
+    include: [
+      to === 'all'
+        ? {
+            model: AppSubscription,
+            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+          }
+        : {
+            model: AppSubscription,
+            attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+            required: false,
+            where: {
+              UserId: to,
+            },
+          },
+    ],
+  });
+
+  const title = remap(action.title, data, context) as string;
+  const body = remap(action.body, data, context) as string;
+
+  for (const subscription of app.AppSubscriptions) {
+    sendNotification(app, subscription, { title, body });
+  }
+
   ctx.status = 204;
 }
 
@@ -170,6 +235,8 @@ function createProxyHandler(useBody: boolean): Middleware {
     switch (action) {
       case 'email':
         return handleEmail(ctx, app, appAction as EmailActionDefinition);
+      case 'notify':
+        return handleNotify(ctx, app, appAction as NotifyActionDefinition);
       case 'request':
         return handleRequestProxy(ctx, app, appAction as RequestLikeActionDefinition, useBody);
       default:
