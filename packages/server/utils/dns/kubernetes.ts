@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { logger } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { RawAxiosRequestConfig } from 'axios';
 import { escapeJsonPointer } from 'koas-core/lib/jsonRefs.js';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
@@ -202,7 +202,7 @@ function readK8sSecret(filename: string): Promise<string> {
  *
  * @returns A partial Axios request configuration for making ingress related requests.
  */
-async function getAxiosConfig(): Promise<AxiosRequestConfig> {
+async function getAxiosConfig(): Promise<RawAxiosRequestConfig> {
   const K8S_HOST = `https://${argv.kubernetesServiceHost}:${argv.kubernetesServicePort}`;
   const ca = await readK8sSecret('ca.crt');
   const token = await readK8sSecret('token');
