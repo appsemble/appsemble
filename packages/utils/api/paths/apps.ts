@@ -449,7 +449,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The subscription has successfully been registered.',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ app: ['openid'] }, {}],
     },
     patch: {
       tags: ['app'],
