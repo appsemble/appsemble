@@ -1,1 +1,1 @@
-Fixed value of type `null` in `storage.update` action from being rejected
+Allow storing falsy values using the `storage.update` action.
