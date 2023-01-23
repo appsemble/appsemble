@@ -1725,7 +1725,7 @@ export interface AppDefinition {
    *
    * If this is omitted, push notifications can not be sent.
    */
-  notifications?: 'opt-in' | 'startup';
+  notifications?: 'login' | 'opt-in' | 'startup';
 
   /**
    * The pages of the app.

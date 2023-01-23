@@ -249,9 +249,14 @@ function checkCyclicRoleInheritance(
  * @param report A function used to report a value.
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
-  const { security } = definition;
+  const { notifications, security } = definition;
   const defaultAllow = ['$none', '$public', '$team:member', '$team:manager'];
+
   if (!security) {
+    if (notifications === 'login') {
+      report(notifications, 'only works if security is defined', ['notifications']);
+    }
+
     return;
   }
 

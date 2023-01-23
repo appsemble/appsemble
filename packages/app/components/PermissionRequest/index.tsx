@@ -2,6 +2,7 @@ import { ReactElement, useEffect } from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
+import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 
 /**
@@ -9,10 +10,15 @@ import styles from './index.module.css';
  */
 export function PermissionRequest(): ReactElement {
   const { definition } = useAppDefinition();
+  const { userInfo } = useUser();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
   useEffect(() => {
-    if (definition.notifications !== 'startup') {
+    if (definition.notifications === 'opt-in') {
+      return;
+    }
+
+    if (definition.notifications === 'login' && !userInfo?.sub) {
       return;
     }
 
@@ -25,7 +31,7 @@ export function PermissionRequest(): ReactElement {
         subscribe();
       }
     });
-  }, [definition.notifications, requestPermission, subscribe]);
+  }, [definition.notifications, requestPermission, subscribe, userInfo?.sub]);
 
   return permission === 'pending' ? <div className={`modal-background ${styles.overlay}`} /> : null;
 }

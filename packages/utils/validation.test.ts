@@ -730,6 +730,19 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
   });
 
+  it('should report if notifications is "login" without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = 'login';
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', 'login', undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
   it('should validate the default role exists', async () => {
     const app = createTestApp();
     app.security.default.role = 'Unknown';
