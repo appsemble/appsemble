@@ -7,6 +7,7 @@ import { condition } from './condition.js';
 import { each } from './each.js';
 import { email } from './email.js';
 import { noop } from './noop.js';
+import { notify } from './notify.js';
 import { request } from './request.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
@@ -41,6 +42,7 @@ export const actions = {
   log: noop,
   message: noop,
   noop,
+  notify,
   request,
   'resource.create': request,
   'resource.delete': request,

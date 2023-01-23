@@ -956,6 +956,28 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   to: string[] | string;
 }
 
+export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
+  /**
+   * The title of the notification.
+   */
+  title: Remapper;
+
+  /**
+   * The description of the notification.
+   */
+  body: Remapper;
+
+  /**
+   * To whom the notification should be sent.
+   *
+   * Use `all` to send the notification to all app subscribed users.
+   * Or notify specific users by passing either a single user id or an array of user ids.
+   *
+   * Nothing is sent if the value is **not** a valid user id.
+   */
+  to: Remapper;
+}
+
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   /**
    * The logging level on which to log.
@@ -1339,6 +1361,7 @@ export type ActionDefinition =
   | LinkActionDefinition
   | LogActionDefinition
   | MessageActionDefinition
+  | NotifyActionDefinition
   | RequestActionDefinition
   | ResourceCountActionDefinition
   | ResourceCreateActionDefinition

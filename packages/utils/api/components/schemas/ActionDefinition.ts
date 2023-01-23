@@ -50,6 +50,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/LogActionDefinition' },
         { $ref: '#/components/schemas/MessageActionDefinition' },
         { $ref: '#/components/schemas/NoopActionDefinition' },
+        { $ref: '#/components/schemas/NotifyActionDefinition' },
         { $ref: '#/components/schemas/RequestActionDefinition' },
         { $ref: '#/components/schemas/ResourceCountActionDefinition' },
         { $ref: '#/components/schemas/ResourceCreateActionDefinition' },
