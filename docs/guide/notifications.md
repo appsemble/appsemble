@@ -10,8 +10,8 @@ This page serves to explain the concepts used to send out these notifications.
 
 In order to enable notifications, you must set the
 [`notifications`](/docs/reference/app#app-definition-notifications) property to either `opt-in`
-(recommended) or `startup`. Doing so allows app creators to access the “Notifications” page, from
-which notifications can be manually pushed to all users who are currently subscribed.
+(recommended), `login`,or `startup`. Doing so allows app creators to access the “Notifications”
+page, from which notifications can be manually pushed to all users who are currently subscribed.
 
 By setting the `notifications` property, users are able to set their notification preferences in the
 app settings page. After they give permission by flipping the “subscribe” switch, they are ready to
