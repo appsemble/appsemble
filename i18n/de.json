@@ -26,7 +26,7 @@
   "app.components.ErrorFallback.home": "Zurück zur Startseite",
   "app.components.ErrorFallback.message": "Ein unerwarteter Fehler ist aufgetreten.",
   "app.components.Login.login": "Anmelden",
-  "app.components.Login.permissionError": "",
+  "app.components.Login.permissionError": "Aufgrund falsch konfigurierter Berechtigungen können Sie sich nicht bei der App anmelden. Wenn Sie der Meinung sind, dass dies ein Fehler ist, hinterlassen Sie bitte eine Nachricht auf der <link>Appsemble Store-Seite</link>.",
   "app.components.MenuProvider.storeLink": "Im App-Store ansehen",
   "app.components.OpenIDCallback.accessDenied": "Der Zugriff wurde verweigert",
   "app.components.OpenIDCallback.error": "Beim Anmelden ist ein unerwarteter Fehler aufgetreten",
