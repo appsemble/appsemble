@@ -96,6 +96,12 @@ codecov:
     - chmod +x codecov
     - ./codecov -R "$CI_PROJECT_DIR"
 
+# Spell check using cspell
+cspell:
+  extends: .yarn
+  script:
+    - yarn cspell
+
 # Lint JavaScript code using ESLint.
 eslint:
   extends: .yarn
@@ -122,11 +128,6 @@ prettier:
   extends: .yarn
   script:
     - yarn prettier .
-
-# Spellings Check using cspell
-cspell:
-  script:
-    - npx cspell **/*.tsx **/*.ts
 
 # Lint Markdown using remark.
 remark lint:

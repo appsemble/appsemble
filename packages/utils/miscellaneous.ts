@@ -27,7 +27,6 @@ export interface StripNullValuesOptions {
   depth?: number;
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Strip all null, undefined, and empty array values from an object.
  *
