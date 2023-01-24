@@ -72,6 +72,11 @@ bootstrap(
           }
         },
         scales: {
+          x: {
+            ticks: {
+              font: { size: 16 },
+            },
+          },
           [yAxisID]: {
             min: yAxis.min,
             max: yAxis.max,
