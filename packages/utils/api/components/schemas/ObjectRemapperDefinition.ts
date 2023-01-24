@@ -93,7 +93,29 @@ If the input is not an array an empty array is returned.`,
     },
     'date.parse': {
       type: 'string',
-      description: 'Convert a string to a date using a given format.',
+      description: `Convert a string to a date using a given format.
+
+For example:
+\`\`\`yaml
+date.parse:
+  - MM/dd/yyyy # The given format to parse the date with
+  - 02/11/2014 # The date string to parse
+               # => Tue Feb 11 2014 00:00:00 
+\`\`\`
+
+See [date-fns](https://date-fns.org/v2.29.3/docs/parse) for the supported formats.
+
+Leaving the format empty will try to parse the date using the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+For example:
+\`\`\`yaml
+date.parse:
+  - (empty)             # The given format to parse the date with
+  - 2014-02-11T11:30:30 # The date string to parse
+                        # => Tue Feb 11 2014 11:30:30
+\`\`\`
+
+Please refer to the [date-fns](https://date-fns.org/docs/Getting-Started) documentation for more information.
+`,
     },
     equals: {
       type: 'array',
