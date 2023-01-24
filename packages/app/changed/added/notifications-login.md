@@ -1,1 +1,0 @@
-Add `notifications` option `login`.

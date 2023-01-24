@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.32/config/assets/logo.svg) Appsemble SDK
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.33/config/assets/logo.svg) Appsemble SDK
 
 > Build your own blocks
 
 [![npm](https://img.shields.io/npm/v/@appsemble/sdk)](https://www.npmjs.com/package/@appsemble/sdk)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.32/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.32)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.32/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.33/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.33)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.33/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
@@ -144,5 +144,5 @@ declare module '@appsemble/sdk' {
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.32/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.33/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

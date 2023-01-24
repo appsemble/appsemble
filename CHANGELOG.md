@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.33](https://gitlab.com/appsemble/appsemble/-/releases/0.20.33)] - 2023-01-24
+
+### Added
+
+- App: Add `notifications` option `login`.
+- App: Add `notify` action.
+- Server: Add `notify` action.
+
+### Fixed
+
+- App: Allow storing falsy values using the `storage.update` action.
+
 ## \[[0.20.32](https://gitlab.com/appsemble/appsemble/-/releases/0.20.32)] - 2023-01-17
 
 ### Added

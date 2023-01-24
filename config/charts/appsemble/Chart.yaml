@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.32
-appVersion: 0.20.32
+version: 0.20.33
+appVersion: 0.20.33
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,13 +23,15 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
+  artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Add disabled property on individual fields."
+      description: "App: Add notifications option login."
     - kind: added
-      description: "Server: Add history remapper support."
-    - kind: changed
-      description: "Block(map): Use another implementation to render markdown."
+      description: "App: Add notify action."
+    - kind: added
+      description: "Server: Add notify action."
+    - kind: fixed
+      description: "App: Allow storing falsy values using the storage.update action."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
