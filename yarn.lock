@@ -4912,7 +4912,7 @@ cspell-trie-lib@6.19.2:
     fs-extra "^11.1.0"
     gensequence "^4.0.3"
 
-cspell@^6.19.2:
+cspell@^6.0.0:
   version "6.19.2"
   resolved "https://registry.yarnpkg.com/cspell/-/cspell-6.19.2.tgz#ebb7c49c4155d9320ac45281d196a7d8d025d562"
   integrity sha512-nyrxnTcv1UzzdElZe96OMU8mxJGaLBnmPCR/HOaFE367EZD+WS5fcpoDBHC9tfD7yJv4+q5sjByYZltcV6jo0A==
