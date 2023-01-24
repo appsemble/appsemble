@@ -17,7 +17,8 @@
       "addWords": true
     }
   ],
-  "ignorePaths": ["./packages/server/utils/email/Mailer.test.ts"],
+  "files": ["**/*.ts", "**/*.tsx"],
+  "ignorePaths": ["node_modules", "packages/server/utils/email/Mailer.test.ts"],
   "ignoreRegExpList": [
     "import[^\\;]*",
     "const[^\\;]*",

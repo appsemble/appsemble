@@ -45,6 +45,7 @@
     "@typescript-eslint/parser": "^5.0.0",
     "babel-jest": "^29.0.0",
     "babel-plugin-react-intl-auto": "^3.0.0",
+    "cspell": "^6.19.2",
     "dictionary-en": "^3.0.0",
     "eslint": "^8.0.0",
     "eslint-config-remcohaszing": "^8.0.0",
