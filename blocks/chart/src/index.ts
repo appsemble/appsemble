@@ -22,6 +22,44 @@ Chart.register(
   PointElement,
 );
 
+function formatLabel(str: string, maxWidth: number): string[] {
+  const sections = [];
+  const words = str.split(' ');
+  let temp = '';
+
+  for (const [index, item] of words.entries()) {
+    if (temp.length > 0) {
+      const concat = `${temp} ${item}`;
+
+      if (concat.length > maxWidth) {
+        sections.push(temp);
+        temp = '';
+      } else {
+        if (index === words.length - 1) {
+          sections.push(concat);
+          continue;
+        } else {
+          temp = concat;
+          continue;
+        }
+      }
+    }
+
+    if (index === words.length - 1) {
+      sections.push(item);
+      continue;
+    }
+
+    if (item.length < maxWidth) {
+      temp = item;
+    } else {
+      sections.push(item);
+    }
+  }
+
+  return sections;
+}
+
 interface DataSet {
   type?: 'bar' | 'line';
 
@@ -43,6 +81,22 @@ bootstrap(
     theme,
     utils: { remap },
   }) => {
+    const filteredLabels: unknown[] = [];
+    const labelsOptions: Record<string, unknown>[] = [];
+
+    if (labels) {
+      for (const label of labels) {
+        try {
+          const parsed = JSON.parse(remap(label, {}) as string);
+          labelsOptions.push(parsed);
+        } catch {
+          filteredLabels.push(remap(label, {}));
+        }
+      }
+    }
+
+    const [labelOptions] = labelsOptions;
+
     const loader = document.createElement('progress');
     loader.classList.add('progress', 'is-small', 'is-primary');
     shadowRoot.append(loader);
@@ -55,11 +109,12 @@ bootstrap(
     const chart = new Chart(ctx, {
       type,
       data: {
-        labels: labels?.map((label) => remap(label, {})),
+        labels: filteredLabels,
         datasets: [],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         onClick(e, element) {
           if (!element || element.length === 0) {
             actions.onClick({});
@@ -74,7 +129,16 @@ bootstrap(
         scales: {
           x: {
             ticks: {
-              font: { size: 16 },
+              callback(tickValue) {
+                const value = tickValue as number;
+
+                return labelOptions?.maxWidth
+                  ? formatLabel(this.getLabelForValue(value), labelOptions?.maxWidth as number)
+                  : this.getLabelForValue(value);
+              },
+              font: {
+                size: labelOptions?.fontSize as number,
+              },
             },
           },
           [yAxisID]: {
