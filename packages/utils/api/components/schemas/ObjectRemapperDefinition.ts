@@ -97,9 +97,8 @@ If the input is not an array an empty array is returned.`,
 
 For example:
 \`\`\`yaml
-date.parse:
-  - MM/dd/yyyy # The given format to parse the date with
-  - 02/11/2014 # The date string to parse
+  - static: 02/11/2014     # The date string to parse
+  - date.parse: MM/dd/yyyy # The given format to parse the date with
                # => Tue Feb 11 2014 00:00:00 
 \`\`\`
 
