@@ -7,6 +7,13 @@ import { Remapper } from '@appsemble/sdk';
  */
 type Color = string;
 
+export interface LabelOptions {
+  font: {
+    size: number;
+  };
+  maxWidth: number;
+}
+
 export interface YAxis {
   /**
    * The minimal value to render on the vertical axis.
@@ -86,6 +93,7 @@ declare module '@appsemble/sdk' {
      * Configuration options for the vertical axis.
      */
     yAxis: YAxis;
+    labelOptions?: LabelOptions;
   }
 
   interface Actions {

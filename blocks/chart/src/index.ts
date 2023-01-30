@@ -76,27 +76,11 @@ bootstrap(
   ({
     actions,
     events,
-    parameters: { backgroundColors, labels, type = 'line', yAxis },
+    parameters: { backgroundColors, labelOptions, labels, type = 'line', yAxis },
     shadowRoot,
     theme,
     utils: { remap },
   }) => {
-    const filteredLabels: unknown[] = [];
-    const labelsOptions: Record<string, unknown>[] = [];
-
-    if (labels) {
-      for (const label of labels) {
-        try {
-          const parsed = JSON.parse(remap(label, {}) as string);
-          labelsOptions.push(parsed);
-        } catch {
-          filteredLabels.push(remap(label, {}));
-        }
-      }
-    }
-
-    const [labelOptions] = labelsOptions;
-
     const loader = document.createElement('progress');
     loader.classList.add('progress', 'is-small', 'is-primary');
     shadowRoot.append(loader);
@@ -109,12 +93,11 @@ bootstrap(
     const chart = new Chart(ctx, {
       type,
       data: {
-        labels: filteredLabels,
+        labels: labels?.map((label) => remap(label, {})),
         datasets: [],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
         onClick(e, element) {
           if (!element || element.length === 0) {
             actions.onClick({});
@@ -129,15 +112,13 @@ bootstrap(
         scales: {
           x: {
             ticks: {
+              font: labelOptions?.font,
               callback(tickValue) {
                 const value = tickValue as number;
 
                 return labelOptions?.maxWidth
                   ? formatLabel(this.getLabelForValue(value), labelOptions?.maxWidth as number)
                   : this.getLabelForValue(value);
-              },
-              font: {
-                size: labelOptions?.fontSize as number,
               },
             },
           },

@@ -40,6 +40,7 @@ export function isValidTime(time: string): boolean {
   return /^([01]\d|2[0-3]):([0-5]\d)$/.test(time);
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the earliest date of a field.
  *
@@ -93,6 +94,7 @@ export function getMaxTime(field: FieldWithRequirements): string {
   return '23:59';
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the last date of a field.
  *
@@ -141,6 +143,7 @@ export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => 
   return [(date) => disabled.has(date.getDay())];
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the absolute minimum length of a field.
  *
@@ -154,6 +157,7 @@ export function getMinLength(field: FieldWithRequirements): number | undefined {
   }
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the absolute maximum length of a field.
  *
@@ -167,8 +171,9 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
   }
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
- * Get the absolute minimum value of a field.
+ * Get the absolute minumum value of a field.
  *
  * @param field The field to check.
  * @returns The minumum value of the field.
@@ -180,6 +185,7 @@ export function getMin(field: FieldWithRequirements): number | undefined {
   }
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the absolute maximum value of a field.
  *
@@ -193,6 +199,7 @@ export function getMax(field: FieldWithRequirements): number | undefined {
   }
 }
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the minimum step of a field.
  *

@@ -28,6 +28,7 @@ type Validator = (
   remap?: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
 ) => BaseRequirement;
 
+// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Validate a field based on its set of requirements.
  *
