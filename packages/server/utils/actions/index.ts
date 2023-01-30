@@ -6,6 +6,7 @@ import { Mailer } from '../email/Mailer.js';
 import { condition } from './condition.js';
 import { each } from './each.js';
 import { email } from './email.js';
+import { log } from './log.js';
 import { noop } from './noop.js';
 import { notify } from './notify.js';
 import { request } from './request.js';
@@ -39,7 +40,7 @@ export const actions = {
   link: noop,
   'link.back': noop,
   'link.next': noop,
-  log: noop,
+  log,
   message: noop,
   noop,
   notify,
