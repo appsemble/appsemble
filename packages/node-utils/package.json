@@ -49,7 +49,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@sinonjs/fake-timers": "^9.0.0",
+    "@sinonjs/fake-timers": "^10.0.0",
     "@types/parse-json": "^4.0.0",
     "@types/sinonjs__fake-timers": "^8.0.0",
     "axios-mock-adapter": "^1.0.0",
