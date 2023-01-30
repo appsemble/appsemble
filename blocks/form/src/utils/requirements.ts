@@ -168,7 +168,7 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
 }
 
 /**
- * Get the absolute minumum value of a field.
+ * Get the absolute minimum value of a field.
  *
  * @param field The field to check.
  * @returns The minumum value of the field.
