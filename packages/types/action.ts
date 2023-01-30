@@ -45,6 +45,7 @@ export type ResourceGetAction = RequestLikeAction<'resource.get'>;
 export type ResourceQueryAction = RequestLikeAction<'resource.query'>;
 export type ResourceCountAction = RequestLikeAction<'resource.count'>;
 export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
+export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
 
 /**
  * An action that can be called from within a block.
@@ -95,5 +96,6 @@ export type Action =
   | ResourceCreateAction
   | ResourceDeleteAction
   | ResourceGetAction
+  | ResourcePatchAction
   | ResourceQueryAction
   | ResourceUpdateAction;

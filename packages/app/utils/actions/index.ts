@@ -74,6 +74,7 @@ export const actionCreators: ActionCreators = {
   'resource.count': resource.count,
   'resource.create': resource.create,
   'resource.update': resource.update,
+  'resource.patch': resource.patch,
   'resource.delete': resource.remove,
   'resource.subscription.subscribe': resource.subscribe,
   'resource.subscription.unsubscribe': resource.unsubscribe,

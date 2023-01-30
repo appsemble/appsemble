@@ -50,6 +50,7 @@ export const actions = {
   'resource.get': request,
   'resource.query': request,
   'resource.update': request,
+  'resource.patch': noop,
   'resource.count': request,
   'resource.subscription.status': noop,
   'resource.subscription.subscribe': noop,
