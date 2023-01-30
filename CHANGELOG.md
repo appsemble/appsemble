@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.34](https://gitlab.com/appsemble/appsemble/-/releases/0.20.34)] - 2023-01-30
+
+### Fixed
+
+- Server: Use correct value for the Kubernetes issuer when updating an ingress.
+
 ## \[[0.20.33](https://gitlab.com/appsemble/appsemble/-/releases/0.20.33)] - 2023-01-24
 
 ### Added

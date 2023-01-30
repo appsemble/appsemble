@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-config",
-  "version": "0.20.33",
+  "version": "0.20.34",
   "description": "NodeJS utilities used by Appsemble internally.",
   "keywords": [
     "app",
@@ -31,7 +31,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.33",
+    "@appsemble/types": "0.20.34",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^4.0.0",

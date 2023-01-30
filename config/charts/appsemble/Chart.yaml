@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.33
-appVersion: 0.20.33
+version: 0.20.34
+appVersion: 0.20.34
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,14 +24,9 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "App: Add notifications option login."
-    - kind: added
-      description: "App: Add notify action."
-    - kind: added
-      description: "Server: Add notify action."
     - kind: fixed
-      description: "App: Allow storing falsy values using the storage.update action."
+      description: "Server: Use correct value for the Kubernetes issuer when updating
+        an ingress."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
