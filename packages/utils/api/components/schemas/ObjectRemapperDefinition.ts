@@ -113,7 +113,6 @@ date.parse:
                         # => Tue Feb 11 2014 11:30:30
 \`\`\`
 
-Please refer to the [date-fns](https://date-fns.org/docs/Getting-Started) documentation for more information.
 `,
     },
     equals: {
