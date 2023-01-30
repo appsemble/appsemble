@@ -108,8 +108,8 @@ Leaving the format empty will try to parse the date using the [ISO 8601](https:/
 For example:
 \`\`\`yaml
 date.parse:
-  - (empty)             # The given format to parse the date with
-  - 2014-02-11T11:30:30 # The date string to parse
+  - static: 2014-02-11T11:30:30 # The date string to parse
+  - date.parse: ''              # The given format to parse the date with
                         # => Tue Feb 11 2014 11:30:30
 \`\`\`
 
