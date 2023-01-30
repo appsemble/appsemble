@@ -308,7 +308,11 @@ async function createIngressFunction(): Promise<
         try {
           await axios.patch(
             `${url}/${name}`,
-            [customSSL ? { op: 'remove', path } : { op: 'add', path, value: secretName }],
+            [
+              customSSL
+                ? { op: 'remove', path }
+                : { op: 'add', path, value: issuerAnnotationValue },
+            ],
             {
               ...config,
               headers: {

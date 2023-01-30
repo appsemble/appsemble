@@ -17,7 +17,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.33",
+    "@appsemble/sdk": "0.20.34",
     "chart.js": "^3.0.0"
   }
 }
