@@ -33,7 +33,6 @@ declare module 'jsonschema' {
   }
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Generate data based on a JSON schema.
  *

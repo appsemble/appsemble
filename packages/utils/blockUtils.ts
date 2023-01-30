@@ -33,7 +33,6 @@ export function stripBlockName(name: string): string {
   return name;
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Parse a block name into a tuple of organization id and block id.
  *
