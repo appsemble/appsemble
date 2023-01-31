@@ -880,6 +880,10 @@ export interface DownloadActionDefinition extends BaseActionDefinition<'download
 
 export interface EachActionDefinition extends BaseActionDefinition<'each'> {
   /**
+   * Run the actions in series instead of parallel.
+   */
+  serial?: boolean;
+  /**
    * Run an action for each entry in an array.
    *
    * The actions are run in parallel.
