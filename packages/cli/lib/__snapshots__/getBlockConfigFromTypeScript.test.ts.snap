@@ -246,10 +246,10 @@ Refer to the block description for more information on the supported data format
         "properties": {
           "font": {
             "$ref": "#/definitions/Font",
-            "description": "Options for the font style for the labels on the horizontal axes.",
+            "description": "Options for the font style for the labels on the horizontal axis.",
           },
           "maxWidth": {
-            "description": "The maximum length (words) of the labels on the horizontal axes",
+            "description": "The maximum length (words) of the labels on the horizontal axis.",
             "type": "number",
           },
         },

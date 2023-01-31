@@ -16,11 +16,11 @@ interface Font {
 
 export interface LabelOptions {
   /**
-   * Options for the font style for the labels on the horizontal axes.
+   * Options for the font style for the labels on the horizontal axis.
    */
   font: Font;
   /**
-   * The maximum length (words) of the labels on the horizontal axes
+   * The maximum length (words) of the labels on the horizontal axis.
    */
   maxWidth: number;
 }
