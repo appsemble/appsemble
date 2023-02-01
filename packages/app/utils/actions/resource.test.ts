@@ -163,6 +163,25 @@ describe('resource.update', () => {
   });
 });
 
+describe('resource.patch', () => {
+  it('should make a PATCH request', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { ...JSON.parse(req.data), id: 84 }, {}];
+    });
+    const action = createTestAction({
+      app,
+      definition: { type: 'resource.patch', resource: 'pet' },
+    });
+    const result = await action({ id: 84, type: 'fish' });
+    expect(request.method).toBe('patch');
+    expect(request.url).toBe(`${apiUrl}/api/apps/42/resources/pet/84`);
+    expect(request.params).toBeUndefined();
+    expect(request.data).toBe('{"id":84,"type":"fish"}');
+    expect(result).toStrictEqual({ id: 84, type: 'fish' });
+  });
+});
+
 describe('resource.delete', () => {
   it('should make a DELETE request', async () => {
     mock.onAny(/.*/).reply((req) => {

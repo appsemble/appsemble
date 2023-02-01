@@ -10,7 +10,7 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 84,
+          "length": 86,
           "valid": {
             "disableFormat": false,
             "errors": [
@@ -2192,6 +2192,101 @@ disabled by setting this to \`false\`
                 "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
               },
               {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "resource"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "resource": {
+                      "description": "The type of the resource to patch.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Patch a resource.",
+                      "enum": [
+                        "resource.patch",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "resource"",
+              },
+              {
+                "argument": [
+                  "resource.patch",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: resource.patch",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Patch a resource.",
+                  "enum": [
+                    "resource.patch",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.patch",
+              },
+              {
                 "argument": [
                   "share",
                 ],
@@ -3367,6 +3462,7 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
                   "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
                   "<#/components/schemas/ResourceUpdateActionDefinition>",
+                  "<#/components/schemas/ResourcePatchActionDefinition>",
                   "<#/components/schemas/ShareActionDefinition>",
                   "<#/components/schemas/StaticActionDefinition>",
                   "<#/components/schemas/StorageAppendActionDefinition>",
@@ -3386,7 +3482,7 @@ Does nothing if the user isn’t logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -3489,6 +3585,9 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                     },
                     {
+                      "$ref": "#/components/schemas/ResourcePatchActionDefinition",
+                    },
+                    {
                       "$ref": "#/components/schemas/ShareActionDefinition",
                     },
                     {
@@ -3535,7 +3634,7 @@ Does nothing if the user isn’t logged in.",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
               },
             ],
             "instance": {
@@ -3646,6 +3745,9 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                 },
                 {
+                  "$ref": "#/components/schemas/ResourcePatchActionDefinition",
+                },
+                {
                   "$ref": "#/components/schemas/ShareActionDefinition",
                 },
                 {
@@ -3697,7 +3799,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 84 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 86 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -3825,6 +3927,9 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                 },
                 {
+                  "$ref": "#/components/schemas/ResourcePatchActionDefinition",
+                },
+                {
                   "$ref": "#/components/schemas/ShareActionDefinition",
                 },
                 {
@@ -3873,7 +3978,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 84 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 86 error[s]:",
       },
       {
         "argument": "target",
@@ -6053,6 +6158,101 @@ disabled by setting this to \`false\`
         "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
       },
       {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "resource"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "resource": {
+              "description": "The type of the resource to patch.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Patch a resource.",
+              "enum": [
+                "resource.patch",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "resource"",
+      },
+      {
+        "argument": [
+          "resource.patch",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: resource.patch",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Patch a resource.",
+          "enum": [
+            "resource.patch",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.patch",
+      },
+      {
         "argument": [
           "share",
         ],
@@ -7228,6 +7428,7 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
           "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
           "<#/components/schemas/ResourceUpdateActionDefinition>",
+          "<#/components/schemas/ResourcePatchActionDefinition>",
           "<#/components/schemas/ShareActionDefinition>",
           "<#/components/schemas/StaticActionDefinition>",
           "<#/components/schemas/StorageAppendActionDefinition>",
@@ -7247,7 +7448,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -7350,6 +7551,9 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
             },
             {
+              "$ref": "#/components/schemas/ResourcePatchActionDefinition",
+            },
+            {
               "$ref": "#/components/schemas/ShareActionDefinition",
             },
             {
@@ -7396,7 +7600,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
       },
     ],
   },

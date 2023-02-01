@@ -748,6 +748,11 @@ export interface ResourceDefinition {
   update?: ResourceCall;
 
   /**
+   * The definition for the `resource.patch` action.
+   */
+  patch?: ResourceCall;
+
+  /**
    * The property to use as the id.
    *
    * @default `id`
@@ -1261,6 +1266,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1371,6 +1377,7 @@ export type ActionDefinition =
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
+  | ResourcePatchActionDefinition
   | ResourceQueryActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | ResourceSubscriptionSubscribeActionDefinition

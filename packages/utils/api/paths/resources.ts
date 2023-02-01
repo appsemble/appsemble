@@ -259,6 +259,22 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
     },
+    patch: {
+      tags: ['resource'],
+      description: 'Patch an existing app resource.',
+      operationId: 'patchResource',
+      requestBody: {
+        required: true,
+        $ref: '#/components/requestBodies/resource',
+      },
+      responses: {
+        200: {
+          description: 'The patched resource.',
+          $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
     delete: {
       tags: ['resource'],
       description: 'Delete an existing app resource.',
