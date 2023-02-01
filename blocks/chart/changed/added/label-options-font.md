@@ -1,0 +1,1 @@
+Add `font` to `labelOptions`.
