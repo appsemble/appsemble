@@ -1,1 +1,0 @@
-Add `maxWidth` to `labelOptions`.

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.35](https://gitlab.com/appsemble/appsemble/-/releases/0.20.35)] - 2023-02-01
+
+### Added
+
+- Block(`chart`): Add `font` to `labelOptions`.
+- Block(`chart`): Add `maxWidth` to `labelOptions`.
+- App: Add `resource.patch` action.
+- App: Add `serial` option to each action.
+
 ## \[[0.20.34](https://gitlab.com/appsemble/appsemble/-/releases/0.20.34)] - 2023-01-30
 
 ### Fixed
