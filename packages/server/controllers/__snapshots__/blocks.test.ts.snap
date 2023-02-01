@@ -375,6 +375,10 @@ The dialog action that opened the dialog will be rejected with the data passed t
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
+                    "serial": {
+                      "description": "Runs the action in series instead of parallel",
+                      "type": "boolean",
+                    },
                     "type": {
                       "description": "Run an action for each entry in an array.
 
@@ -4232,6 +4236,10 @@ The dialog action that opened the dialog will be rejected with the data passed t
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
+            "serial": {
+              "description": "Runs the action in series instead of parallel",
+              "type": "boolean",
+            },
             "type": {
               "description": "Run an action for each entry in an array.
 
