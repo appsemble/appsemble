@@ -228,6 +228,37 @@ Refer to the block description for more information on the supported data format
         "pattern": "^#[a-fA-F\\d]{6}$",
         "type": "string",
       },
+      "Font": {
+        "additionalProperties": false,
+        "properties": {
+          "size": {
+            "description": "The size of the label's font in px.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "size",
+        ],
+        "type": "object",
+      },
+      "LabelOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "font": {
+            "$ref": "#/definitions/Font",
+            "description": "Options for the font style for the labels on the horizontal axis.",
+          },
+          "maxWidth": {
+            "description": "The maximum length (words) of the labels on the horizontal axis.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "font",
+          "maxWidth",
+        ],
+        "type": "object",
+      },
       "YAxis": {
         "additionalProperties": false,
         "properties": {
@@ -275,6 +306,10 @@ By default the primary color of the theme will be used.",
         },
         "minItems": 1,
         "type": "array",
+      },
+      "labelOptions": {
+        "$ref": "#/definitions/LabelOptions",
+        "description": "Configuration options for the labels on the horizontal axis.",
       },
       "labels": {
         "description": "The labels to display at the bottom of the chart.",

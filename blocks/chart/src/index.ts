@@ -22,6 +22,44 @@ Chart.register(
   PointElement,
 );
 
+function formatLabel(str: string, maxWidth: number): string[] {
+  const sections = [];
+  const words = str.split(' ');
+  let temp = '';
+
+  for (const [index, item] of words.entries()) {
+    if (temp.length > 0) {
+      const concat = `${temp} ${item}`;
+
+      if (concat.length > maxWidth) {
+        sections.push(temp);
+        temp = '';
+      } else {
+        if (index === words.length - 1) {
+          sections.push(concat);
+          continue;
+        } else {
+          temp = concat;
+          continue;
+        }
+      }
+    }
+
+    if (index === words.length - 1) {
+      sections.push(item);
+      continue;
+    }
+
+    if (item.length < maxWidth) {
+      temp = item;
+    } else {
+      sections.push(item);
+    }
+  }
+
+  return sections;
+}
+
 interface DataSet {
   type?: 'bar' | 'line';
 
@@ -38,7 +76,7 @@ bootstrap(
   ({
     actions,
     events,
-    parameters: { backgroundColors, labels, type = 'line', yAxis },
+    parameters: { backgroundColors, labelOptions, labels, type = 'line', yAxis },
     shadowRoot,
     theme,
     utils: { remap },
@@ -72,6 +110,18 @@ bootstrap(
           }
         },
         scales: {
+          x: {
+            ticks: {
+              font: labelOptions?.font,
+              callback(tickValue) {
+                const value = tickValue as number;
+
+                return labelOptions?.maxWidth
+                  ? formatLabel(this.getLabelForValue(value), labelOptions?.maxWidth as number)
+                  : this.getLabelForValue(value);
+              },
+            },
+          },
           [yAxisID]: {
             min: yAxis.min,
             max: yAxis.max,
