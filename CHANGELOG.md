@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.37](https://gitlab.com/appsemble/appsemble/-/releases/0.20.37)] - 2023-02-02
+
+### Fixed
+
+- Block(`form`): Resolve issue regarding date fields breaking a page when navigating away and back
+  to the form.
+
 ## \[[0.20.36](https://gitlab.com/appsemble/appsemble/-/releases/0.20.36)] - 2023-02-02
 
 ### Added

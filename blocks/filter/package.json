@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.20.36",
+  "version": "0.20.37",
   "private": true,
   "description": "A block that allows users to filter data.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.36",
-    "@appsemble/preact-components": "0.20.36",
-    "@appsemble/sdk": "0.20.36",
-    "@appsemble/utils": "0.20.36",
+    "@appsemble/preact": "0.20.37",
+    "@appsemble/preact-components": "0.20.37",
+    "@appsemble/sdk": "0.20.37",
+    "@appsemble/utils": "0.20.37",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   }
