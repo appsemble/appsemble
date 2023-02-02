@@ -44,6 +44,7 @@ export function RadioInput({
         return (
           <RadioButton
             disabled={disabled}
+            icon={option.icon}
             id={id}
             key={id}
             readOnly={readOnly}

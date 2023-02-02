@@ -250,6 +250,11 @@ export interface Choice {
   label?: Remapper;
 
   /**
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+   */
+  icon?: IconName;
+
+  /**
    * The value to use when selecting the option.
    */
   value: JsonValue;

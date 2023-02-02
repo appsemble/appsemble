@@ -1,7 +1,9 @@
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import { ComponentChild, JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { useValuePicker } from '../index.js';
+import { Icon, useValuePicker } from '../index.js';
+import styles from './index.module.css';
 
 interface RadioButtonProps<T>
   extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {
@@ -35,6 +37,7 @@ export function RadioButton<T>({
   value,
   valueToString = JSON.stringify,
   wrapperClassName,
+  icon,
   ...props
 }: RadioButtonProps<T>): VNode {
   const { name, onChange, value: currentValue } = useValuePicker();
@@ -49,14 +52,17 @@ export function RadioButton<T>({
       <input
         {...props}
         checked={value === currentValue}
-        className="is-checkradio"
+        className={icon ? styles.iconradio : 'is-checkradio'}
         id={id}
         name={name}
         onChange={handleChange}
         type="radio"
         value={valueToString(value)}
       />
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id}>
+        {icon ? <Icon className={styles.icon} icon={icon as IconName} /> : null}
+        {children}
+      </label>
     </div>
   );
 }
