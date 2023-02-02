@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.36](https://gitlab.com/appsemble/appsemble/-/releases/0.20.36)] - 2023-02-02
+
+### Added
+
+- Block(`form`): Support icons on `radio` field options.
+
 ## \[[0.20.35](https://gitlab.com/appsemble/appsemble/-/releases/0.20.35)] - 2023-02-01
 
 ### Added

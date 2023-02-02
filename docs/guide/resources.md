@@ -152,7 +152,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.20.35
+        version: 0.20.36
         actions:
           onLoad:
             type: resource.query

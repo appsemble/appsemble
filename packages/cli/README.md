@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.35/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.36/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.35/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.35)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.35/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.36/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.36)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.36/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Installation
@@ -95,5 +95,5 @@ appsemble asset create --app-id 1 path/to/example-asset.png
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.35/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.36/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

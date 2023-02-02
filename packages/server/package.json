@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.20.35",
+  "version": "0.20.36",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -34,9 +34,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.35",
-    "@appsemble/types": "0.20.35",
-    "@appsemble/utils": "0.20.35",
+    "@appsemble/node-utils": "0.20.36",
+    "@appsemble/types": "0.20.36",
+    "@appsemble/utils": "0.20.36",
     "@formatjs/fast-memoize": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",

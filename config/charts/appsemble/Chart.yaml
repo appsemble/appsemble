@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.35
-appVersion: 0.20.35
+version: 0.20.36
+appVersion: 0.20.36
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,13 +25,7 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: "Block(chart): Add font to labelOptions."
-    - kind: added
-      description: "Block(chart): Add maxWidth to labelOptions."
-    - kind: added
-      description: "App: Add resource.patch action."
-    - kind: added
-      description: "App: Add serial option to each action."
+      description: "Block(form): Support icons on radio field options."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

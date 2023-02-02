@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/audio",
-  "version": "0.20.35",
+  "version": "0.20.36",
   "private": true,
   "description": "A block that renders audio and emits it using url or events API.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.35"
+    "@appsemble/sdk": "0.20.36"
   }
 }
