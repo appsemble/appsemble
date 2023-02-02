@@ -1,0 +1,21 @@
+.iconradio {
+  opacity: 0;
+  position: absolute;
+}
+
+.iconradio + label {
+  margin: 0.5em 0.5em 0.5em 0;
+  padding: 0.2rem 0.5rem 0.2rem 2rem;
+  position: relative;
+}
+
+.iconradio:checked + label {
+  color: var(--primary-color);
+}
+
+.icon {
+  cursor: pointer;
+  font-size: 1.5rem;
+  left: 0;
+  position: absolute;
+}
