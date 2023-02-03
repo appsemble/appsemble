@@ -1,0 +1,18 @@
+.tooltip {
+  background-color: hsl(0deg 0% 100%);
+  border: hsl(0deg 0% 88%) 1px solid;
+  padding: 2px;
+  position: absolute;
+  z-index: 999;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.line {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

@@ -149,7 +149,7 @@ export default function EditPage(): ReactElement {
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
         )}
         {currentTab.tabName === 'pages' && (
-          <PagesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
+          <PagesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
         {currentTab.tabName === 'theme' && (
           <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
