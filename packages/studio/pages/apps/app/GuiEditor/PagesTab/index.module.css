@@ -2,3 +2,11 @@
   flex: 1;
   height: 80vh;
 }
+
+.rightBar {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  row-gap: 0.8rem;
+  width: 100%;
+}
