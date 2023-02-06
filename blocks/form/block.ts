@@ -1027,6 +1027,16 @@ declare module '@appsemble/sdk' {
     dense?: boolean;
 
     /**
+     * Whether or not to disable populating fields with default data values.
+     *
+     * If this is set to `true`, the default values for the fields won't contain
+     * data from context
+     *
+     * @default false
+     */
+    disableDefault?: boolean;
+
+    /**
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
