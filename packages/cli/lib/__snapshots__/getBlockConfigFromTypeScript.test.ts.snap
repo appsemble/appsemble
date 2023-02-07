@@ -3165,6 +3165,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 If this is set to \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
         "type": "boolean",
       },
+      "disableDefault": {
+        "default": false,
+        "description": "Whether or not to disable populating fields with default data values.
+
+If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/guide/storage#app-storage).",
+        "type": "boolean",
+      },
       "disabled": {
         "default": false,
         "description": "If this remapper yields true, the submit button will be disabled.",

@@ -23,6 +23,7 @@ bootstrap(
     parameters: {
       autofill,
       dense,
+      disableDefault = false,
       disabled,
       fields: initialFields,
       previous,
@@ -35,10 +36,15 @@ bootstrap(
   }) => {
     const initialLoad = useRef(true);
     const [fields, setFields] = useState(initialFields);
-    const defaultValues = useMemo<Values>(
-      () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
-      [data, fields],
-    );
+    const defaultValues = useMemo<Values>(() => {
+      const valuesFromData = generateDefaultValues(fields);
+
+      if (disableDefault) {
+        return valuesFromData;
+      }
+
+      return { ...valuesFromData, ...(data as Record<string, unknown>) };
+    }, [data, disableDefault, fields]);
     const [formErrors, setFormErrors] = useState(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
@@ -134,7 +140,7 @@ bootstrap(
         }
 
         actions
-          .onSubmit(values)
+          .onSubmit({ ...(data as Record<string, unknown>), ...values })
           .catch((submitActionError: unknown) => {
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
@@ -147,7 +153,7 @@ bootstrap(
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, errors, fields, formErrors, submitting, utils, values]);
+    }, [actions, data, errors, fields, formErrors, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious(values);
