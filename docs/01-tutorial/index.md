@@ -17,7 +17,7 @@ concept of Appsemble.
 
 Here a short tutorial on how to set up your account and organization:
 
-- [Set up Account and Organization](account-setup.md)
+- [Set up Account and Organization](01-account-setup.md)
 
 ## Introduction Appsemble App
 
