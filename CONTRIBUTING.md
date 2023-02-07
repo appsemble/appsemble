@@ -49,6 +49,15 @@ To run tests for a single file, run
 yarn test path/to/file
 ```
 
+Appsemble uses jest snapshots to assert large serializable objects like block manifests, HTTP
+responses and some react-components. These need
+[manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
+which can simply be done by running the commands mentioned with the `-u` argument.
+
+```sh
+yarn test -u
+```
+
 #### End 2 End Tests
 
 The end 2 end tests are run using
