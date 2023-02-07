@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.37
-appVersion: 0.20.37
+version: 0.20.38
+appVersion: 0.20.38
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,9 +24,9 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: fixed
-      description: "Block(form): Resolve issue regarding date fields breaking a page
-        when navigating away and back to the form."
+    - kind: added
+      description: "Block(form): Add disableDefault option to disable setting default
+        values with page data."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
