@@ -1,0 +1,18 @@
+{
+  "app": {
+    "description": "Просто приложение, което показва информация за празници в различни страни.",
+    "name": "Празници",
+    "pages.holidays-in-america": "Празници в Америка",
+    "pages.holidays-in-america.tabs.0": "САЩ",
+    "pages.holidays-in-america.tabs.1": "Канада",
+    "pages.holidays-in-america.tabs.2": "Мексико",
+    "pages.holidays-in-europe": "Празници в Европа",
+    "pages.holidays-in-europe.tabs.0": "Нидерландия",
+    "pages.holidays-in-europe.tabs.1": "Германия",
+    "pages.holidays-in-europe.tabs.2": "Испания"
+  },
+  "messageIds": {
+    "date": "Дата",
+    "name": "Име"
+  }
+}
