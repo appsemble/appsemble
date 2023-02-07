@@ -20,9 +20,10 @@ want to remark and then press `ALT + /` or on a mac `CMD + /`
 
 ## Conclusion
 
-This concludes the Appsemble tutorial. If anything was unclear you can always go to the part you got stuck on and try again.
-If you're still stuck and unsure how to proceed, we have a discord set up where you can ask any question you're stuck with.
-We are happy to help with any problems and to get you on track with creating your own apps!
+This concludes the Appsemble tutorial. If anything was unclear you can always go to the part you got
+stuck on and try again. If you are still stuck and unsure how to proceed, we have a discord set up
+where you can ask any question you’re stuck with. We are happy to help with any problems and to get
+you on track with creating your own apps!
 
 Click [here](https://discord.gg/5qtDyFvd9K) to join our discord!
 

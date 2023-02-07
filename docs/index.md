@@ -12,9 +12,8 @@ location of the content that you need.
 
 ## New to Appsemble?
 
-Creating an app all by yourself can be a difficult task.
-To help you get started with Appsemble, we have provided an easy to understand tutorial
-so you can get right into creating your very own app
+Creating an app all by yourself can be a difficult task. To help you get started with Appsemble, we
+have provided an easy to understand tutorial so you can get right into creating your very own app
 
 - [Appsemble tutorial](01-tutorial/index.md)
 
