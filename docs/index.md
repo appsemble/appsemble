@@ -1,8 +1,8 @@
 ---
-icon: home
+icon: book-open
 ---
 
-# Getting Started
+# Reading guide
 
 Some of the content in the Appsemble documentation is of interest to a wide range of software
 development and IT professionals. This section provides you with links to topics that are organized
