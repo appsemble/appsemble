@@ -158,6 +158,6 @@ With resource.create this form block can update the person resource with the inf
 being provided in the form. The `onsucces` events makes sure that when the form is submitted
 successfully the user is being redirected to the Home page.
 
-- [Previous: Blocks](resources.md)
-- [Next: Appsemble Studio](appsemble-studio.md)
+- [Previous: Blocks](02-blocks.md)
+- [Next: Tips and tricks](04-tips-and-tricks.md)
 - [Back to Introduction](index.md)

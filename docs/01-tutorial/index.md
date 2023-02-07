@@ -2,9 +2,9 @@
 icon: home
 ---
 
-# Appsemble Introduction
+# Appsemble Tutorial
 
-Welcome to the Appsemble Introduction. Appsemble is one of the few open source low-code platforms.
+Welcome to the Appsemble Tutorial. Appsemble is one of the few open source low-code platforms.
 Without being a programmer you can build apps for your phone or tablet; faster, cheaper and far more
 flexible. With Appsemble you have access to other existing apps in the app store. You can use these
 apps as a template to configure your own app. Next to that you can also use the different building
@@ -29,7 +29,7 @@ to look into some of the example applications in the
 internet about YAML.
 
 You can build an App with elements like Resources, Blocks, Roles, etc which are pieces of code which
-you can add (copy paste) and adjust.
+you can add and adjust.
 
 In the App store you can open an app by clicking on an app in the app overview. Then you can view
 the code of that app via the Editor in the left menu. For the best examples you can start with apps
@@ -49,22 +49,20 @@ An app can consist of the following elements:
 - description (description of the app)
 - `defaultPage` (app `startingpage`)\*
 - pages (list of pages in the app)\*
-- blocks (list of blocks in the app)
+- blocks (list of blocks in the app)\*
 - resource (the resources where you store and collect your data)
 - security (also user rights)
 - roles (who can use the app)
 - layout
 - themes (to tweak the general style of the app)
 
-The starred items are minimum required. The following is an explanation of the most commonly used
-elements.
+The starred items are the minimum required pieces for building a functional app.
 
-- [Blocks](blocks.md)
-- [Resources](resources.md)
-
-## Conclusion Introduction
+## Conclusion
 
 As you have seen, reading YAML code from the examples and existing apps is not that hard now that
 you understand the basics of Appsemble. To get to the next step and build an app yourself we
 recommend that you take a look at the existing apps in the app store. You can clone an app and try
 to make changes to the configuration of the App. See if the app behaves the way you want it to.
+
+- [Next: Account setup](01-account-setup.md)

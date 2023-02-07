@@ -1,4 +1,4 @@
-# Appsemble Studio
+# Tips and tricks
 
 Here is an overview of Tips and Tricks when working in Appsemble Studio
 
@@ -18,6 +18,15 @@ in front of that line.
 You could also toggle the remark symbol to complete code blocks by selecting the all the lines you
 want to remark and then press `ALT + /` or on a mac `CMD + /`
 
-- [Blocks](blocks.md)
-- [resources](resources.md)
-- [Back to Introduction](index.md)
+## Conclusion
+
+This concludes the Appsemble tutorial. If anything was unclear you can always go to the part you got stuck on and try again.
+If you're still stuck and unsure how to proceed, we have a discord set up where you can ask any question you're stuck with.
+We are happy to help with any problems and to get you on track with creating your own apps!
+
+Click [here](https://discord.gg/5qtDyFvd9K) to join our discord!
+
+- [Introduction](index.md)
+- [Account setup](01-account-setup.md)
+- [Blocks](02-blocks.md)
+- [Resources](03-resources.md)
