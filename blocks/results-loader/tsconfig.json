@@ -1,7 +1,0 @@
-{
-  "extends": "../../tsconfig",
-  "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["@appsemble/webpack-config/types", "jest"]
-  }
-}
