@@ -2,12 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## \[[0.20.38](https://gitlab.com/appsemble/appsemble/-/releases/0.20.38)] - 2023-02-07
-
-### Added
-
-- Block(`form`): Add `disableDefault` option to disable setting default values with page data.
-
 ## \[[0.20.37](https://gitlab.com/appsemble/appsemble/-/releases/0.20.37)] - 2023-02-02
 
 ### Fixed

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/wordcloud",
-  "version": "0.20.38",
+  "version": "0.20.37",
   "private": true,
   "description": "A block that displays data in a wordcloud",
   "homepage": "https://appsemble.app",
@@ -17,8 +17,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.38",
-    "@appsemble/sdk": "0.20.38",
+    "@appsemble/preact": "0.20.37",
+    "@appsemble/sdk": "0.20.37",
     "preact": "^10.0.0",
     "wordcloud": "^1.2.2"
   }

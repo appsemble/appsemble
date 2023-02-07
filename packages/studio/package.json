@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.20.38",
+  "version": "0.20.37",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -25,10 +25,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.20.38",
-    "@appsemble/types": "0.20.38",
-    "@appsemble/utils": "0.20.38",
-    "@appsemble/web-utils": "0.20.38",
+    "@appsemble/react-components": "0.20.37",
+    "@appsemble/types": "0.20.37",
+    "@appsemble/utils": "0.20.37",
+    "@appsemble/web-utils": "0.20.37",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
