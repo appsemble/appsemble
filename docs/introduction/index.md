@@ -17,7 +17,7 @@ concept of Appsemble.
 
 Here a short tutorial on how to set up your account and organization:
 
-- [Set up Account and Organization](account_setup.md)
+- [Set up Account and Organization](account-setup.md)
 
 ## Introduction Appsemble App
 
@@ -35,7 +35,7 @@ In the App store you can open an app by clicking on an app in the app overview. 
 the code of that app via the Editor in the left menu. For the best examples you can start with apps
 from Appsemble itself.
 
-![App Store Menu](../../config/assets/tutorial_assets/EN/Editor_menu.png 'App Store Menu')
+![App Store Menu](../../config/assets/tutorial-assets/editor-menu.png 'App Store Menu')
 
 ## The building blocks of an Appsemble App
 
@@ -43,7 +43,7 @@ An app consists of a page or multiple pages. Always define the default page for 
 
 An app can consist of the following elements:
 
-![app elements](../../config/assets/tutorial_assets/EN/Appsemble_app_elements_diagram.png 'app elements')
+![app elements](../../config/assets/tutorial-assets/appsemble-app-elements-diagram.png 'app elements')
 
 - name (name of the app)\*
 - description (description of the app)

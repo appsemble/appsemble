@@ -43,7 +43,7 @@ description so the length of those fields are restricted to 80 characters.
 As soon as you define a source and save your file your resource will appear in the left menu item
 under Resources:
 
-![Resources Menu](../../config/assets/tutorial_assets/EN/Resources_menu_person.png 'Resources Menu')
+![Resources Menu](../../config/assets/tutorial-assets/resources-menu-person.png 'Resources Menu')
 
 In this menu you can add records to your resource. If you click on the person link you will see a
 new screen where you can update the person resource. We want to update the person resource in the
@@ -159,5 +159,5 @@ being provided in the form. The `onsucces` events makes sure that when the form 
 successfully the user is being redirected to the Home page.
 
 - [Previous: Blocks](resources.md)
-- [Next: Appsemble Studio](appsemble_studio.md)
+- [Next: Appsemble Studio](appsemble-studio.md)
 - [Back to Introduction](index.md)
