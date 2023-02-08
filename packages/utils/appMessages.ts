@@ -140,7 +140,7 @@ export function extractAppMessages(
       }
 
       if (page.type === 'loop') {
-        messages.app[`${prefix}.step`] = page.foreach.name ?? '';
+        messages.app[`${prefix}.steps`] = 'step';
       }
     },
   });
