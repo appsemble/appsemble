@@ -8,7 +8,7 @@ Select the code: use TAB to indent to the right and use SHIFT + TAB to indent to
 
 ## **Saving the file**
 
-To save the file you can press ALT + S of on a mac `CMD + S`
+To save the file you can press `CTRL + S` or on a mac `CMD + S`
 
 ## **Remark**
 
@@ -16,7 +16,7 @@ When you want to add a remark or extra information that is not part of the code 
 in front of that line.
 
 You could also toggle the remark symbol to complete code blocks by selecting the all the lines you
-want to remark and then press `ALT + /` or on a mac `CMD + /`
+want to remark and then press `CTRL + /` or on a mac `CMD + /`
 
 ## Conclusion
 

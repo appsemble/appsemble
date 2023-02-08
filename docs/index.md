@@ -6,9 +6,7 @@ icon: book-open
 
 Some of the content in the Appsemble documentation is of interest to a wide range of software
 development and IT professionals. This section provides you with links to topics that are organized
-by professional role and common task scenarios. Because the roles in your organization might be
-different from the roles described here, consider this information as a recommendation to the
-location of the content that you need.
+by professional role and common task scenarios.
 
 ## New to Appsemble?
 

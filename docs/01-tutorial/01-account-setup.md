@@ -34,4 +34,4 @@ To learn more about the fundamentals of building your own app, follow the tutori
 information on how the building... blocks of an app work.
 
 - [Next: Blocks](02-blocks.md)
-- [Back to Introduction](index.md)
+- [Back to tutorial index](index.md)
