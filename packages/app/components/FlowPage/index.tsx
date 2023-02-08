@@ -66,6 +66,9 @@ export function FlowPage({
     if (!currentStep) {
       return `${loopPrefix}.steps.first`;
     }
+    if (steps?.length === currentStep + 1) {
+      return `${loopPrefix}.steps.last`;
+    }
     return `${loopPrefix}.steps`;
   };
 

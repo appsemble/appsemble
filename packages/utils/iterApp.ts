@@ -156,7 +156,7 @@ export function iterPage(
     }
     return (
       result ||
-      ['steps.first', 'steps'].some((suffix) =>
+      ['steps.first', 'steps', 'steps.last'].some((suffix) =>
         iterBlockList(page.foreach.blocks, callbacks, [...prefix, suffix, 'blocks']),
       )
     );
