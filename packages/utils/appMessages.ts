@@ -140,6 +140,7 @@ export function extractAppMessages(
       }
 
       if (page.type === 'loop') {
+        messages.app[`${prefix}.steps.first`] = 'first';
         messages.app[`${prefix}.steps`] = 'step';
       }
     },

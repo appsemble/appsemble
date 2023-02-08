@@ -62,11 +62,18 @@ export function FlowPage({
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
 
-  const id = page.type === 'loop' ? `${prefix}.steps` : `${prefix}.steps.${currentStep}`;
+  const generateLoopPrefix = (loopPrefix: string): string => {
+    if (!currentStep) {
+      return `${loopPrefix}.steps.first`;
+    }
+    return `${loopPrefix}.steps`;
+  };
+
+  const id = page.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
   const name = getAppMessage({
     id,
-    defaultMessage: page.type === 'loop' ? `${prefix}.steps` : steps?.[currentStep]?.name,
+    defaultMessage: page.type === 'loop' ? generateLoopPrefix(prefix) : steps?.[currentStep]?.name,
   }).format() as string;
   useMeta(name === `{${id}}` ? null : name);
 
@@ -292,11 +299,13 @@ export function FlowPage({
         key={currentStep}
         page={page}
         prefix={
-          page.type === 'loop' ? `${prefix}.steps.blocks` : `${prefix}.steps.${currentStep}.blocks`
+          page.type === 'loop'
+            ? `${generateLoopPrefix(prefix)}.blocks`
+            : `${prefix}.steps.${currentStep}.blocks`
         }
         prefixIndex={
           page.type === 'loop'
-            ? `${prefixIndex}.steps.blocks`
+            ? `${generateLoopPrefix(prefixIndex)}.blocks`
             : `${prefixIndex}.steps.${currentStep}.blocks`
         }
         remap={remap}

@@ -154,7 +154,12 @@ export function iterPage(
         iterAction(action, callbacks, [...prefix, 'actions', key]),
       );
     }
-    return result || iterBlockList(page.foreach.blocks, callbacks, [...prefix, 'steps', 'blocks']);
+    return (
+      result ||
+      ['steps.first', 'steps'].some((suffix) =>
+        iterBlockList(page.foreach.blocks, callbacks, [...prefix, suffix, 'blocks']),
+      )
+    );
   }
 
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
