@@ -5,7 +5,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in [here](docs/deployment/helm.md).
+be found in [here](docs/04-deployment/helm.md).
 
 ### Live Environments
 
