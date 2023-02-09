@@ -1337,6 +1337,13 @@ export interface BaseMessage {
    * @default false
    */
   dismissable?: boolean;
+
+  /**
+   * The position of the message on the screen.
+   *
+   * @default 'bottom'
+   */
+  layout?: 'bottom' | 'top';
 }
 
 export type MessageActionDefinition = BaseActionDefinition<'message'> &

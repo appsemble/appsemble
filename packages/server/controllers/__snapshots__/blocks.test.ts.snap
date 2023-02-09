@@ -973,6 +973,14 @@ This is mostly useful for debugging blocks during development.
                       "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
                       "type": "boolean",
                     },
+                    "layout": {
+                      "default": "bottom",
+                      "description": "The position of the message on the screen.",
+                      "enum": [
+                        "bottom",
+                        "top",
+                      ],
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "remapAfter": {},
@@ -4938,6 +4946,14 @@ This is mostly useful for debugging blocks during development.
             "dismissable": {
               "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
               "type": "boolean",
+            },
+            "layout": {
+              "default": "bottom",
+              "description": "The position of the message on the screen.",
+              "enum": [
+                "bottom",
+                "top",
+              ],
             },
             "onError": {},
             "onSuccess": {},
