@@ -18,6 +18,13 @@ in front of that line.
 You could also toggle the remark symbol to complete code blocks by selecting the all the lines you
 want to remark and then press `CTRL + /` or on a mac `CMD + /`
 
+## **Code suggestions**
+
+While coding your application you can press `CTRL + SPACE` to show suggestions on how to complete
+the code. This can be incredibly handy when you have to choose an item from a list, like an action.
+
+![Code suggestions](../../config/assets/tutorial-assets/type-suggestions.png 'Code suggestions')
+
 ## Conclusion
 
 This concludes the Appsemble tutorial. If anything was unclear you can always go to the part you got

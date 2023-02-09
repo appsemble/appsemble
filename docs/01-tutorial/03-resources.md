@@ -155,8 +155,8 @@ in the resource the first 3 fields, firstName, `lastName` and email are required
 the fields are defined. This all needs to match with the resource.
 
 With resource.create this form block can update the person resource with the information that is
-being provided in the form. The `onsucces` events makes sure that when the form is submitted
-successfully the user is being redirected to the Home page.
+being provided in the form. `onSuccess` allows you to make a chain of actions, which in this case
+makes sure that when the form is submitted successfully the user is redirected to the Home page.
 
 - [Next: Tips and tricks](04-tips-and-tricks.md)
 - [Previous: Blocks](02-blocks.md)
