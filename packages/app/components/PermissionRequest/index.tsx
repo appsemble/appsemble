@@ -26,6 +26,10 @@ export function PermissionRequest(): ReactElement {
       return;
     }
 
+    if (definition.notifications !== 'startup') {
+      return;
+    }
+
     requestPermission().then((p) => {
       if (p === 'granted') {
         subscribe();
