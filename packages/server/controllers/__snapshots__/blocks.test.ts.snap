@@ -2156,7 +2156,7 @@ disabled by setting this to \`false\`
                     "remapAfter": {},
                     "remapBefore": {},
                     "resource": {
-                      "description": "The type of the resource to query.",
+                      "description": "The type of the resource to update.",
                       "type": "string",
                     },
                     "schema": {
@@ -6130,7 +6130,7 @@ disabled by setting this to \`false\`
             "remapAfter": {},
             "remapBefore": {},
             "resource": {
-              "description": "The type of the resource to query.",
+              "description": "The type of the resource to update.",
               "type": "string",
             },
             "schema": {

@@ -14,7 +14,7 @@ export const ResourceUpdateActionDefinition = extendJSONSchema(
       },
       resource: {
         type: 'string',
-        description: 'The type of the resource to query.',
+        description: 'The type of the resource to update.',
       },
     },
   },
