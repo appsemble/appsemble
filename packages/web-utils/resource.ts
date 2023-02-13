@@ -13,7 +13,7 @@ export function serializeResource(data: any): FormData | JsonValue {
     if (value instanceof Date) {
       return value.toJSON();
     }
-    if (value instanceof Object) {
+    if (value && typeof value === 'object') {
       return mapValues(value as JsonObject, extractAssets);
     }
     return value;
