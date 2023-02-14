@@ -17,6 +17,7 @@ setResponseTransformer(
       connection,
       'content-length': contentLength,
       date,
+      'keep-alive': keepAlive,
       vary,
       ...headers
     },
