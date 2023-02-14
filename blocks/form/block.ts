@@ -1,5 +1,6 @@
 import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
-import { JsonValue } from 'type-fest';
+
+type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
 /**
  * Properties that are shared between all requirements.
@@ -247,6 +248,11 @@ export interface Choice {
    * The label used to display the option.
    */
   label?: Remapper;
+
+  /**
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+   */
+  icon?: IconName;
 
   /**
    * The value to use when selecting the option.
@@ -1019,6 +1025,16 @@ declare module '@appsemble/sdk' {
      * @default false
      */
     dense?: boolean;
+
+    /**
+     * Whether or not to disable populating fields with default data values.
+     *
+     * If this is set to `true`, the default values for the fields won't contain
+     * data from [page storage](../../../docs/guide/storage#app-storage).
+     *
+     * @default false
+     */
+    disableDefault?: boolean;
 
     /**
      * A list of requirements that are checked across all of the form data.

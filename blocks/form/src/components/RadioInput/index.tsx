@@ -44,6 +44,7 @@ export function RadioInput({
         return (
           <RadioButton
             disabled={disabled}
+            icon={option.icon}
             id={id}
             key={id}
             readOnly={readOnly}
@@ -51,7 +52,7 @@ export function RadioInput({
             value={option.value}
             wrapperClassName={styles.choice}
           >
-            {(utils.remap(option.label, {}) as string) ?? option.value}
+            {(utils.remap(option.label, {}) ?? option.value) as string}
           </RadioButton>
         );
       })}

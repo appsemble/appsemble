@@ -2,6 +2,63 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.38](https://gitlab.com/appsemble/appsemble/-/releases/0.20.38)] - 2023-02-07
+
+### Added
+
+- Block(`form`): Add `disableDefault` option to disable setting default values with page data.
+
+## \[[0.20.37](https://gitlab.com/appsemble/appsemble/-/releases/0.20.37)] - 2023-02-02
+
+### Fixed
+
+- Block(`form`): Resolve issue regarding date fields breaking a page when navigating away and back
+  to the form.
+
+## \[[0.20.36](https://gitlab.com/appsemble/appsemble/-/releases/0.20.36)] - 2023-02-02
+
+### Added
+
+- Block(`form`): Support icons on `radio` field options.
+
+## \[[0.20.35](https://gitlab.com/appsemble/appsemble/-/releases/0.20.35)] - 2023-02-01
+
+### Added
+
+- Block(`chart`): Add `font` to `labelOptions`.
+- Block(`chart`): Add `maxWidth` to `labelOptions`.
+- App: Add `resource.patch` action.
+- App: Add `serial` option to each action.
+
+## \[[0.20.34](https://gitlab.com/appsemble/appsemble/-/releases/0.20.34)] - 2023-01-30
+
+### Fixed
+
+- Server: Use correct value for the Kubernetes issuer when updating an ingress.
+
+## \[[0.20.33](https://gitlab.com/appsemble/appsemble/-/releases/0.20.33)] - 2023-01-24
+
+### Added
+
+- App: Add `notifications` option `login`.
+- App: Add `notify` action.
+- Server: Add `notify` action.
+
+### Fixed
+
+- App: Allow storing falsy values using the `storage.update` action.
+
+## \[[0.20.32](https://gitlab.com/appsemble/appsemble/-/releases/0.20.32)] - 2023-01-17
+
+### Added
+
+- Block(`form`): Add `disabled` property on individual fields.
+- Server: Add history remapper support.
+
+### Changed
+
+- Block(`map`): Use another implementation to render markdown.
+
 ## \[[0.20.31](https://gitlab.com/appsemble/appsemble/-/releases/0.20.31)] - 2023-01-11
 
 ### Added

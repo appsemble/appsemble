@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.20.31",
+  "version": "0.20.38",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -26,8 +26,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.31",
-    "@appsemble/utils": "0.20.31",
+    "@appsemble/node-utils": "0.20.38",
+    "@appsemble/utils": "0.20.38",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@mdx-js/loader": "^2.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
@@ -53,7 +53,7 @@
     "remark-mermaidjs": "^4.0.0",
     "sass": "^1.0.0",
     "sass-loader": "^13.0.0",
-    "svgo-loader": "^3.0.0",
+    "svgo-loader": "^4.0.0",
     "ts-loader": "^9.0.0",
     "unified": "^10.0.0",
     "unist-util-visit": "^4.0.0",

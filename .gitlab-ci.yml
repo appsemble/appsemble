@@ -96,6 +96,12 @@ codecov:
     - chmod +x codecov
     - ./codecov -R "$CI_PROJECT_DIR"
 
+# Spell check using cspell
+cspell:
+  extends: .yarn
+  script:
+    - yarn cspell
+
 # Lint JavaScript code using ESLint.
 eslint:
   extends: .yarn
@@ -122,11 +128,6 @@ prettier:
   extends: .yarn
   script:
     - yarn prettier .
-
-# Spellings Check using cspell
-cspell:
-  script:
-    - npx cspell **/*.tsx **/*.ts
 
 # Lint Markdown using remark.
 remark lint:
@@ -382,8 +383,6 @@ cleanup k8s jobs:
   stage: deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
-  environment:
-    name: review/cleanup
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
@@ -443,6 +442,7 @@ review:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+    auto_stop_in: 1 day
   variables:
     GIT_STRATEGY: none
   script:

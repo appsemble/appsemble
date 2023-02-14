@@ -13,6 +13,7 @@ import { back, link, next } from './link.js';
 import { log } from './log.js';
 import { message } from './message.js';
 import { noop } from './noop.js';
+import { notify } from './notify.js';
 import { request } from './request.js';
 import * as resource from './resource.js';
 import { share } from './share.js';
@@ -51,14 +52,6 @@ export const actionCreators: ActionCreators = {
   analytics,
   condition,
   download,
-  link,
-  'link.back': back,
-  'link.next': next,
-  log,
-  message,
-  noop,
-  throw: throwAction,
-  request,
   dialog,
   each,
   event,
@@ -68,11 +61,20 @@ export const actionCreators: ActionCreators = {
   'flow.back': flow.back,
   'flow.cancel': flow.cancel,
   'flow.to': flow.to,
+  link,
+  'link.back': back,
+  'link.next': next,
+  log,
+  message,
+  noop,
+  notify,
+  request,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.count': resource.count,
   'resource.create': resource.create,
   'resource.update': resource.update,
+  'resource.patch': resource.patch,
   'resource.delete': resource.remove,
   'resource.subscription.subscribe': resource.subscribe,
   'resource.subscription.unsubscribe': resource.unsubscribe,
@@ -89,6 +91,7 @@ export const actionCreators: ActionCreators = {
   'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,
+  throw: throwAction,
   'user.login': login,
   'user.register': register,
   'user.update': update,

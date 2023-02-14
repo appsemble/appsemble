@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.31
-appVersion: 0.20.31
+version: 0.20.38
+appVersion: 0.20.38
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,15 +25,8 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(chart): Added color option to chart datasets."
-    - kind: added
-      description: "Block(form): Add the disabled parameter."
-    - kind: added
-      description: "Block(form): Make the readOnly field property a remapper."
-    - kind: added
-      description: "App: Add the date.format remapper."
-    - kind: fixed
-      description: "Server: Resolved an issue where resource notifications would not work."
+      description: "Block(form): Add disableDefault option to disable setting default
+        values with page data."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

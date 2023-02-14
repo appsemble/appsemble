@@ -352,6 +352,7 @@ export function processResourceBody(
 
   const patchedSchema = {
     ...definition.schema,
+    required: ctx.request.method === 'PATCH' ? [] : definition.schema.required,
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },

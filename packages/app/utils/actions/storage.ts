@@ -201,7 +201,7 @@ export const update: ActionCreator<'storage.update'> = ({ appStorage, definition
     const key = remap(definition.key, data, context);
     const item = remap(definition.item, data, context);
     const value = remap(definition.value, data, context);
-    if (!key || !value) {
+    if (!key) {
       return data;
     }
 

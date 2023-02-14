@@ -7,7 +7,6 @@ import { Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import { createFormatter, createParser, SchemaGenerator, ts } from 'ts-json-schema-generator';
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the tsdoc comment for a TypeScript node.
  *
@@ -31,7 +30,6 @@ function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string 
   }
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Process keys from an interface into an object.
  *
@@ -145,7 +143,6 @@ function processEvents(
   return (emit || listen) && { emit, listen };
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Get the JSON schema for parameters based on a TypeScript program.
  *

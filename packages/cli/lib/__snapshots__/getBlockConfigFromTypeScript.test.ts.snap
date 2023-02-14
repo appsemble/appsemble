@@ -228,6 +228,37 @@ Refer to the block description for more information on the supported data format
         "pattern": "^#[a-fA-F\\d]{6}$",
         "type": "string",
       },
+      "Font": {
+        "additionalProperties": false,
+        "properties": {
+          "size": {
+            "description": "The size of the label's font in px.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "size",
+        ],
+        "type": "object",
+      },
+      "LabelOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "font": {
+            "$ref": "#/definitions/Font",
+            "description": "Options for the font style for the labels on the horizontal axis.",
+          },
+          "maxWidth": {
+            "description": "The maximum length (words) of the labels on the horizontal axis.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "font",
+          "maxWidth",
+        ],
+        "type": "object",
+      },
       "YAxis": {
         "additionalProperties": false,
         "properties": {
@@ -275,6 +306,10 @@ By default the primary color of the theme will be used.",
         },
         "minItems": 1,
         "type": "array",
+      },
+      "labelOptions": {
+        "$ref": "#/definitions/LabelOptions",
+        "description": "Configuration options for the labels on the horizontal axis.",
       },
       "labels": {
         "description": "The labels to display at the bottom of the chart.",
@@ -1664,6 +1699,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "An option that is displayed in a dropdown menu or radio button field.",
         "properties": {
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.",
+            "format": "fontawesome",
+            "type": "string",
+          },
           "label": {
             "description": "The label used to display the option.",
             "format": "remapper",
@@ -2352,44 +2392,33 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         ],
         "type": "object",
       },
-      "JsonArray": {
-        "description": "Matches a JSON array.",
-        "items": {
-          "$ref": "#/definitions/JsonValue",
-        },
-        "type": "array",
-      },
-      "JsonObject": {
-        "additionalProperties": {
-          "$ref": "#/definitions/JsonValue",
-        },
-        "description": "Matches a JSON object.
-
-This type can be useful to enforce some input to be JSON-compatible or as a super-type to be extended from. Don't use this as a direct return type as the user would have to double-cast it: \`jsonObject as unknown as CustomResponse\`. Instead, you could extend your CustomResponse type from it to ensure your type only uses JSON-compatible types: \`interface CustomResponse extends JsonObject { … }\`.",
-        "type": "object",
-      },
-      "JsonPrimitive": {
-        "description": "Matches any valid JSON primitive value.",
-        "type": [
-          "string",
-          "number",
-          "boolean",
-          "null",
-        ],
-      },
       "JsonValue": {
         "anyOf": [
           {
-            "$ref": "#/definitions/JsonPrimitive",
+            "items": {
+              "$ref": "#/definitions/JsonValue",
+            },
+            "type": "array",
           },
           {
-            "$ref": "#/definitions/JsonObject",
+            "type": "boolean",
           },
           {
-            "$ref": "#/definitions/JsonArray",
+            "type": "number",
+          },
+          {
+            "type": "string",
+          },
+          {
+            "additionalProperties": {
+              "$ref": "#/definitions/JsonValue",
+            },
+            "type": "object",
+          },
+          {
+            "type": "null",
           },
         ],
-        "description": "Matches any valid JSON value.",
       },
       "LengthRequirement": {
         "additionalProperties": false,
@@ -3134,6 +3163,13 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "description": "Whether or not space should be reserved for the help text.
 
 If this is set to \`true\`, any help text appearing will cause the form input to jump around due to layout changes.",
+        "type": "boolean",
+      },
+      "disableDefault": {
+        "default": false,
+        "description": "Whether or not to disable populating fields with default data values.
+
+If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/guide/storage#app-storage).",
         "type": "boolean",
       },
       "disabled": {

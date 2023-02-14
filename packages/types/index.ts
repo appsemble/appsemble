@@ -748,6 +748,11 @@ export interface ResourceDefinition {
   update?: ResourceCall;
 
   /**
+   * The definition for the `resource.patch` action.
+   */
+  patch?: ResourceCall;
+
+  /**
    * The property to use as the id.
    *
    * @default `id`
@@ -880,6 +885,10 @@ export interface DownloadActionDefinition extends BaseActionDefinition<'download
 
 export interface EachActionDefinition extends BaseActionDefinition<'each'> {
   /**
+   * Run the actions in series instead of parallel.
+   */
+  serial?: boolean;
+  /**
    * Run an action for each entry in an array.
    *
    * The actions are run in parallel.
@@ -954,6 +963,28 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    * This should be a page name.
    */
   to: string[] | string;
+}
+
+export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
+  /**
+   * The title of the notification.
+   */
+  title: Remapper;
+
+  /**
+   * The description of the notification.
+   */
+  body: Remapper;
+
+  /**
+   * To whom the notification should be sent.
+   *
+   * Use `all` to send the notification to all app subscribed users.
+   * Or notify specific users by passing either a single user id or an array of user ids.
+   *
+   * Nothing is sent if the value is **not** a valid user id.
+   */
+  to: Remapper;
 }
 
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -1235,6 +1266,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1305,6 +1337,13 @@ export interface BaseMessage {
    * @default false
    */
   dismissable?: boolean;
+
+  /**
+   * The position of the message on the screen.
+   *
+   * @default 'bottom'
+   */
+  layout?: 'bottom' | 'top';
 }
 
 export type MessageActionDefinition = BaseActionDefinition<'message'> &
@@ -1339,11 +1378,13 @@ export type ActionDefinition =
   | LinkActionDefinition
   | LogActionDefinition
   | MessageActionDefinition
+  | NotifyActionDefinition
   | RequestActionDefinition
   | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
+  | ResourcePatchActionDefinition
   | ResourceQueryActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | ResourceSubscriptionSubscribeActionDefinition
@@ -1702,7 +1743,7 @@ export interface AppDefinition {
    *
    * If this is omitted, push notifications can not be sent.
    */
-  notifications?: 'opt-in' | 'startup';
+  notifications?: 'login' | 'opt-in' | 'startup';
 
   /**
    * The pages of the app.

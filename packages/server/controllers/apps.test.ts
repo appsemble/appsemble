@@ -2408,10 +2408,13 @@ describe('createApp', () => {
       app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
       receiving push notifications by pressing the subscribe button in the App settings page. Setting this
       to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+      If this is set to \`login\`, the app will request permissions for push notification once the user
+      logs in.
 
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
                     "enum": [
+                      "login",
                       "opt-in",
                       "startup",
                     ],
@@ -3181,10 +3184,13 @@ describe('patchApp', () => {
       app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
       receiving push notifications by pressing the subscribe button in the App settings page. Setting this
       to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+      If this is set to \`login\`, the app will request permissions for push notification once the user
+      logs in.
 
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
                     "enum": [
+                      "login",
                       "opt-in",
                       "startup",
                     ],
@@ -3318,10 +3324,13 @@ describe('patchApp', () => {
       app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
       receiving push notifications by pressing the subscribe button in the App settings page. Setting this
       to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+      If this is set to \`login\`, the app will request permissions for push notification once the user
+      logs in.
 
       > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
       ",
                     "enum": [
+                      "login",
                       "opt-in",
                       "startup",
                     ],

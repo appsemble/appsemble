@@ -110,6 +110,10 @@ export function DateTimeField({
   );
 
   useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
     let template = '';
     if (!noCalendar) {
       template += '{date, date, full}';

@@ -61,11 +61,22 @@ export function FlowPage({
   const [error, setError] = useState(false);
   const [loopData, setLoopData] = useState<Object[]>();
   const [stepsData, setStepsData] = useState<Object[]>();
-  const id = `${prefix}.steps.${currentStep}`;
+
+  const generateLoopPrefix = (loopPrefix: string): string => {
+    if (!currentStep) {
+      return `${loopPrefix}.steps.first`;
+    }
+    if (steps?.length === currentStep + 1) {
+      return `${loopPrefix}.steps.last`;
+    }
+    return `${loopPrefix}.steps`;
+  };
+
+  const id = page.type === 'loop' ? generateLoopPrefix(prefix) : `${prefix}.steps.${currentStep}`;
 
   const name = getAppMessage({
     id,
-    defaultMessage: steps?.[currentStep]?.name,
+    defaultMessage: page.type === 'loop' ? generateLoopPrefix(prefix) : steps?.[currentStep]?.name,
   }).format() as string;
   useMeta(name === `{${id}}` ? null : name);
 
@@ -290,8 +301,16 @@ export function FlowPage({
         flowActions={flowActions}
         key={currentStep}
         page={page}
-        prefix={`${prefix}.steps.${currentStep}.blocks`}
-        prefixIndex={`${prefixIndex}.steps.${currentStep}.blocks`}
+        prefix={
+          page.type === 'loop'
+            ? `${generateLoopPrefix(prefix)}.blocks`
+            : `${prefix}.steps.${currentStep}.blocks`
+        }
+        prefixIndex={
+          page.type === 'loop'
+            ? `${generateLoopPrefix(prefixIndex)}.blocks`
+            : `${prefixIndex}.steps.${currentStep}.blocks`
+        }
         remap={remap}
         showDialog={showDialog}
         showShareDialog={showShareDialog}
