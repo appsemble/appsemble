@@ -109,7 +109,7 @@ contains two pages that link to each other by clicking the button created by the
 > directory is checked for this, but other directories such as `../amsterdam/blocks`, assuming this
 > directory exists and has blocks, will be hot-reloaded as well.
 
-Now lets make the text of the button configurable using the app definition.
+The definition of the block can be found in the blocks/test/src directory. Lets make the text of the button configurable using the app definition.
 
 ```js copy
 button.type = 'button';
