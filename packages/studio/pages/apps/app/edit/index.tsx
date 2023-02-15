@@ -21,6 +21,7 @@ import { parse } from 'yaml';
 import { AppPreview } from '../../../../components/AppPreview/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
+import { Shortcuts } from '../../../../components/MonacoEditor/Shortcuts/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 import { EditorTab } from './EditorTab/index.js';
@@ -45,11 +46,16 @@ export default function EditPage(): ReactElement {
 
   const [pristine, setPristine] = useState(true);
 
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+
   const frame = useRef<HTMLIFrameElement>();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
   const push = useMessages();
+
+  const openShortcuts = (): void => setIsShortcutsOpen(true);
+  const closeShortcuts = (): void => setIsShortcutsOpen(false);
 
   const changeTab = useCallback((event, hash: string) => navigate({ hash }), [navigate]);
 
@@ -189,6 +195,9 @@ export default function EditPage(): ReactElement {
           >
             <FormattedMessage {...messages.viewLive} />
           </Button>
+          <Button icon="keyboard" onClick={openShortcuts}>
+            <FormattedMessage {...messages.shortcuts} />
+          </Button>
         </div>
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
@@ -214,6 +223,7 @@ export default function EditPage(): ReactElement {
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
       <AppPreview app={app} iframeRef={frame} />
+      <Shortcuts handleClose={closeShortcuts} isOpen={isShortcutsOpen} />
     </div>
   );
 }

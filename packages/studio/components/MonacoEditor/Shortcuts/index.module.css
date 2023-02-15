@@ -1,0 +1,31 @@
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: x-large;
+  font-weight: 500;
+}
+
+.shortcut {
+  border-bottom: 1px solid hsl(0deg 0% 93%);
+  display: flex;
+  gap: 5rem;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.shortcut:first-of-type {
+  border-top: 1px solid hsl(0deg 0% 93%);
+}
+
+.key_combo {
+  background-color: hsl(0deg 0% 91%);
+  border: 1px solid hsl(0deg 0% 75%);
+  border-radius: 2px;
+  padding: 0 4px;
+  white-space: nowrap;
+}
