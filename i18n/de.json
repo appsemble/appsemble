@@ -383,6 +383,7 @@
   "studio.pages.apps.app.edit.resourceWarning": "Die Ressourcendefinitionen in diesem App-Definition enthalten andere Daten als das Original. Dies kann zu unerwarteten Ergebnissen führen, wenn Sie ältere Daten verwenden.",
   "studio.pages.apps.app.edit.resourceWarningTitle": "Ressourcen-Warnung",
   "studio.pages.apps.app.edit.sharedStyle": "Geteilter Stil",
+  "studio.pages.apps.app.edit.shortcuts": "Abkürzungen",
   "studio.pages.apps.app.edit.title": "{name} - Editor",
   "studio.pages.apps.app.edit.updateSuccess": "Erfolgreich aktualisiertes App-Definition",
   "studio.pages.apps.app.edit.viewLive": "Ansicht live",
