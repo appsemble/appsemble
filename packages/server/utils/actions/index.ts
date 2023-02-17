@@ -42,6 +42,7 @@ export const actions = {
   'link.next': noop,
   log,
   message: noop,
+  match: noop,
   noop,
   notify,
   request,

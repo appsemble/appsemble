@@ -11,6 +11,7 @@ import { event } from './event.js';
 import * as flow from './flow.js';
 import { back, link, next } from './link.js';
 import { log } from './log.js';
+import { match } from './match.js';
 import { message } from './message.js';
 import { noop } from './noop.js';
 import { notify } from './notify.js';
@@ -65,6 +66,7 @@ export const actionCreators: ActionCreators = {
   'link.back': back,
   'link.next': next,
   log,
+  match,
   message,
   noop,
   notify,
