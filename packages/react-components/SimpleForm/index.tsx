@@ -5,7 +5,6 @@ import {
   ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -26,6 +25,7 @@ type FormErrors = Record<string, ReactNode>;
 type FormValues = Record<string, any>;
 
 interface SimpleFormContext {
+  id: string;
   formErrors: FormErrors;
   pristine: Record<string, boolean>;
   setFormError: (name: string, errorMessage: ReactNode) => void;
@@ -99,19 +99,9 @@ export function SimpleForm<T extends {}>({
     [preprocess, setFormError],
   );
 
-  useEffect(() => {
-    const filledValues = Object.entries(values)
-      .map(([name, value]) => (value ? name : null))
-      .filter(Boolean);
-
-    for (const name of filledValues) {
-      setPristine((prevPristine) => ({ ...prevPristine, [name]: false }));
-      setFormError(name);
-    }
-  }, [values, setFormError]);
-
   const value = useMemo(
     () => ({
+      id: props.id,
       formErrors,
       pristine,
       setFormError,
@@ -121,7 +111,7 @@ export function SimpleForm<T extends {}>({
       submitting,
       values,
     }),
-    [formErrors, pristine, setFormError, setValue, submitError, submitting, values],
+    [formErrors, pristine, props.id, setFormError, setValue, submitError, submitting, values],
   );
 
   return (
