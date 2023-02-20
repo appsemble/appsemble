@@ -1,24 +1,18 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { VNode } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import WordCloud from 'wordcloud';
+import WordCloud, { ListEntry } from 'wordcloud';
 
 import styles from './wordcloud.module.css';
 
-function mapArrayToWordcloudObject(obj: string[]): object[] {
-  const kvPair: Record<string, number> = {};
-  const tempWordlist = [];
+function mapArrayToWordcloudObject(words: string[]): ListEntry[] {
+  const kvPair: Record<string, number> = Object.create(null);
 
-  for (const word of obj) {
+  for (const word of words) {
     kvPair[word] = (kvPair[word] || 0) + 1;
   }
 
-  const keys = Object.keys(kvPair);
-
-  for (const key of keys) {
-    tempWordlist.push([key, kvPair[key]]);
-  }
-  return tempWordlist;
+  return Object.entries(kvPair);
 }
 
 interface WordcloudProps {
