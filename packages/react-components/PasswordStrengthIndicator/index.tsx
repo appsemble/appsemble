@@ -52,8 +52,8 @@ export function PasswordStrengthIndicator({
 
   const {
     feedback: {
-      warning,
       suggestions: [suggestion],
+      warning,
     },
     score = -1,
   } = result;

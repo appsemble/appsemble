@@ -20,6 +20,6 @@
     "@appsemble/preact": "0.20.38",
     "@appsemble/sdk": "0.20.38",
     "preact": "^10.0.0",
-    "wordcloud": "^1.2.2"
+    "wordcloud": "^1.0.0"
   }
 }

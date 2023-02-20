@@ -427,7 +427,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password, picture, locale, properties = {}, timezone },
+      body: { locale, name, password, picture, properties = {}, timezone },
     },
   } = ctx;
 
