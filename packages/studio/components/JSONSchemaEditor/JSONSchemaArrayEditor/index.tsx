@@ -15,8 +15,8 @@ import { messages } from './messages.js';
 export function JSONSchemaArrayEditor({
   disabled,
   name,
-  prefix,
   onChange,
+  prefix,
   schema,
   value = [],
 }: CommonJSONSchemaEditorProps<any[]>): ReactElement {

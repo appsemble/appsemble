@@ -104,12 +104,12 @@ function preprocessWebsite(link: string): string {
  * Render the CreateOrganizationForm component in a modal card.
  */
 export function CreateOrganizationModal({
+  defaultValues = defaults,
+  disabled,
   help,
   isActive,
   onClose,
   onCreateOrganization,
-  defaultValues = defaults,
-  disabled,
   title,
 }: CreateOrganizationModalProps): ReactElement {
   const { organizations, setOrganizations } = useUser();

@@ -33,11 +33,11 @@ interface RadioButtonProps<T>
  */
 export function RadioButton<T>({
   children,
+  icon,
   id,
   value,
   valueToString = JSON.stringify,
   wrapperClassName,
-  icon,
   ...props
 }: RadioButtonProps<T>): VNode {
   const { name, onChange, value: currentValue } = useValuePicker();

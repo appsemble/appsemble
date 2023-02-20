@@ -87,13 +87,13 @@ export {
 };
 
 export function initDB({
-  host = process.env.NODE_ENV === 'production' ? 'postgres' : 'localhost',
-  port,
-  username,
-  password,
   database,
-  uri,
+  host = process.env.NODE_ENV === 'production' ? 'postgres' : 'localhost',
+  password,
+  port,
   ssl = false,
+  uri,
+  username,
 }: InitDBParams): Sequelize {
   if (db) {
     throw new Error('initDB() was called multiple times within the same context.');
