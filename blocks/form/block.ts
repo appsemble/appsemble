@@ -245,6 +245,13 @@ export type ObjectRequirement = LengthRequirement;
  */
 export interface Choice {
   /**
+   * If true, the choice will be disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
    * The label used to display the option.
    */
   label?: Remapper;
