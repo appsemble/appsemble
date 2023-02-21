@@ -25,6 +25,7 @@ type FormErrors = Record<string, ReactNode>;
 type FormValues = Record<string, any>;
 
 interface SimpleFormContext {
+  id: string;
   formErrors: FormErrors;
   pristine: Record<string, boolean>;
   setFormError: (name: string, errorMessage: ReactNode) => void;
@@ -100,6 +101,7 @@ export function SimpleForm<T extends {}>({
 
   const value = useMemo(
     () => ({
+      id: props.id,
       formErrors,
       pristine,
       setFormError,
@@ -109,7 +111,7 @@ export function SimpleForm<T extends {}>({
       submitting,
       values,
     }),
-    [formErrors, pristine, setFormError, setValue, submitError, submitting, values],
+    [formErrors, pristine, props.id, setFormError, setValue, submitError, submitting, values],
   );
 
   return (

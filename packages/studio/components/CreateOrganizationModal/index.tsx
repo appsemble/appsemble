@@ -145,6 +145,7 @@ export function CreateOrganizationModal({
           submitLabel={<FormattedMessage {...messages.createButton} />}
         />
       }
+      id="create-organization"
       isActive={isActive}
       onClose={onClose}
       onSubmit={submitOrganization}
