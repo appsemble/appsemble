@@ -41,49 +41,49 @@ export function Shortcuts({ handleClose, isOpen }: IProps): ReactElement {
         <div>
           <ul className={styles.shortcuts}>
             <li className={styles.shortcut}>
-              <code>CTRL + S</code>
+              <kbd className={styles.key_combo}>CTRL + S</kbd>
               <div className="action">
                 <p>Saves changes</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + Space</code>
+              <kbd className={styles.key_combo}>CTRL + Space</kbd>
               <div className="action">
                 <p>Show auto complete suggestions</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + C</code>
+              <kbd className={styles.key_combo}>CTRL + C</kbd>
               <div className="action">
                 <p>Copies selection. Copies line if there&apos;s no selection</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + X</code>
+              <kbd className={styles.key_combo}>CTRL + X</kbd>
               <div className="action">
                 <p>Cuts selection. Cuts line if there&apos;s no selection</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + V</code>
+              <kbd className={styles.key_combo}>CTRL + V</kbd>
               <div className="action">
                 <p>Pastes copied text</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + /</code>
+              <kbd className={styles.key_combo}>CTRL + /</kbd>
               <div className="action">
                 <p>Toggle line comment</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + Z</code>
+              <kbd className={styles.key_combo}>CTRL + Z</kbd>
               <div className="action">
                 <p>Undo</p>
               </div>
             </li>
             <li className={styles.shortcut}>
-              <code>CTRL + Y</code>
+              <kbd className={styles.key_combo}>CTRL + Y</kbd>
               <div className="action">
                 <p>Redo</p>
               </div>

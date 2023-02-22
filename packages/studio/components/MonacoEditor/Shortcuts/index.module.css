@@ -23,9 +23,9 @@ h2 {
 }
 
 .key_combo {
-  background-color: hsl(0deg 0% 91%);
-  border: 1px solid hsl(0deg 0% 75%);
-  border-radius: 2px;
-  padding: 0 4px;
+  background-color: hsl(0deg 0% 95%);
+  border: 1px solid hsl(0deg 0% 82%);
+  border-radius: 4px;
+  padding: 0.15em 0.5em;
   white-space: nowrap;
 }

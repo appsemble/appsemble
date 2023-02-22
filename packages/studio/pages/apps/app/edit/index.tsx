@@ -7,6 +7,7 @@ import {
   useData,
   useMessages,
   useMeta,
+  useToggle,
 } from '@appsemble/react-components';
 import { App, AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
@@ -46,16 +47,13 @@ export default function EditPage(): ReactElement {
 
   const [pristine, setPristine] = useState(true);
 
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const { enabled: isShortcutsOpen, toggle } = useToggle();
 
   const frame = useRef<HTMLIFrameElement>();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
   const push = useMessages();
-
-  const openShortcuts = (): void => setIsShortcutsOpen(true);
-  const closeShortcuts = (): void => setIsShortcutsOpen(false);
 
   const changeTab = useCallback((event, hash: string) => navigate({ hash }), [navigate]);
 
@@ -195,7 +193,7 @@ export default function EditPage(): ReactElement {
           >
             <FormattedMessage {...messages.viewLive} />
           </Button>
-          <Button icon="keyboard" onClick={openShortcuts}>
+          <Button icon="keyboard" onClick={toggle}>
             <FormattedMessage {...messages.shortcuts} />
           </Button>
         </div>
@@ -217,13 +215,14 @@ export default function EditPage(): ReactElement {
             onSave={onSave}
             readOnly={app.locked}
             showDiagnostics
+            toggleKeyCombos={toggle}
             {...monacoProps}
           />
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
       <AppPreview app={app} iframeRef={frame} />
-      <Shortcuts handleClose={closeShortcuts} isOpen={isShortcutsOpen} />
+      <Shortcuts handleClose={toggle} isOpen={isShortcutsOpen} />
     </div>
   );
 }
