@@ -35,9 +35,9 @@ interface CreateSamlResponseOptions {
  * @returns the base64 encoded SAML response object.
  */
 function createSamlResponse({
+  digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
   statusCode = 'urn:oasis:names:tc:SAML:2.0:status:Success',
   subject = { nameId: 'user@idp.example', loginId: 'id00000000-0000-0000-0000-000000000000' },
-  digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
 }: CreateSamlResponseOptions = {}): string {
   const tree = (
     <samlp:Response

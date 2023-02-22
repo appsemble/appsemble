@@ -1,7 +1,7 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { VNode } from 'preact';
-import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 
 import { ItemRow } from './components/ItemRow/index.js';
 
@@ -13,16 +13,6 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
-  const loadData = useCallback((d: Item[], err: string): void => {
-    if (err) {
-      setError(true);
-    } else {
-      setData(d);
-      setError(false);
-    }
-    setLoading(false);
-  }, []);
 
   const headers = useMemo<VNode>(() => {
     const heads = fields.flatMap((field) => {
@@ -52,9 +42,18 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
   }, [fields, utils]);
 
   useEffect(() => {
-    events.on.data(loadData);
+    events.on.data((d: Item | Item[], err) => {
+      if (err) {
+        setError(true);
+      } else {
+        const items = Array.isArray(d) ? d : [d];
+        setData(items.filter((item) => item != null));
+        setError(false);
+      }
+      setLoading(false);
+    });
     ready();
-  }, [events, loadData, ready, utils]);
+  }, [events, ready, utils]);
 
   if (loading) {
     return <Loader />;

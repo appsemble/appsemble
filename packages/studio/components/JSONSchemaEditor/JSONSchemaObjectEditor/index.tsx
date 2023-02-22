@@ -10,8 +10,8 @@ import styles from './index.module.css';
 export function JSONSchemaObjectEditor({
   disabled,
   name,
-  onChange,
   nested,
+  onChange,
   prefix,
   schema,
   value = {},
