@@ -69,9 +69,10 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-A new account can be registered by going to `http://localhost:9999/register`, or you can login on
+A new account can be registered by going to `http://localhost:9999/register`. Later you can login on
 `http://localhost:9999/login`. If you use email registration to register an account, the email
-containing the verification link will be printed in the server logs.
+containing the verification link will be printed in the server logs. You need to click this link in
+order to use your account!
 
 #### CLI Login
 
@@ -83,9 +84,9 @@ yarn appsemble login
 
 #### Registering an Organization
 
-To get started developing locally, an `appsemble` organization named “appsemble” needs to be
-created. This organization can be created either in Appsemble Studio, or using the following CLI
-command.
+To get started developing locally, an Appsemble organization identified through id: `appsemble`
+needs to be created. This organization can be created either in Appsemble Studio, or using the
+following CLI command.
 
 ```sh
 yarn appsemble organization create --name Appsemble appsemble
