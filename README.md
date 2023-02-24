@@ -38,6 +38,8 @@ In order to run the Appsemble project in development mode, the following must be
 - [NodeJS 18][nodejs]
 - [Yarn][]
 
+If you insist (not recommended!) on running a different NodeJS version, remove the `.yarnrc` file.
+
 ### Getting started
 
 Clone and setup the project.
