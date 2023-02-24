@@ -52,6 +52,7 @@ export * from './LinkBackActionDefinition.js';
 export * from './LinkNextActionDefinition.js';
 export * from './LogActionDefinition.js';
 export * from './Member.js';
+export * from './MatchActionDefinition.js';
 export * from './MessageActionDefinition.js';
 export * from './NoopActionDefinition.js';
 export * from './NotificationHookDataDefinition.js';

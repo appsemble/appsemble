@@ -48,6 +48,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/LinkBackActionDefinition' },
         { $ref: '#/components/schemas/LinkNextActionDefinition' },
         { $ref: '#/components/schemas/LogActionDefinition' },
+        { $ref: '#/components/schemas/MatchActionDefinition' },
         { $ref: '#/components/schemas/MessageActionDefinition' },
         { $ref: '#/components/schemas/NoopActionDefinition' },
         { $ref: '#/components/schemas/NotifyActionDefinition' },

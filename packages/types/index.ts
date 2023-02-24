@@ -854,6 +854,24 @@ export interface ConditionActionDefinition extends BaseActionDefinition<'conditi
   else: ActionDefinition;
 }
 
+export interface MatchActionDefinition extends BaseActionDefinition<'match'> {
+  /**
+   * Run another action if one of the cases is true.
+   *
+   * Only the first case that equals true is called.
+   */
+  match: {
+    /**
+     * The case to be matched.
+     */
+    case: Remapper;
+    /**
+     * Action to be called if the case equals true.
+     */
+    action: ActionDefinition;
+  }[];
+}
+
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
@@ -1377,6 +1395,7 @@ export type ActionDefinition =
   | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
+  | MatchActionDefinition
   | MessageActionDefinition
   | NotifyActionDefinition
   | RequestActionDefinition
