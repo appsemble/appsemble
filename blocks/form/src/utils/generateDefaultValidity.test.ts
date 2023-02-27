@@ -72,10 +72,10 @@ describe('generate default validity', () => {
     expect(errors).toStrictEqual({ a: 'the value is invalid' });
   });
 
-  it('should validate child fields in object field', () => {
+  it('should validate child fields in fieldset', () => {
     const fields = [
       {
-        type: 'object',
+        type: 'fieldset',
         name: 'a',
         fields: [
           {
@@ -88,7 +88,7 @@ describe('generate default validity', () => {
             requirements: [{ required: true }],
           },
           {
-            type: 'object',
+            type: 'fieldset',
             name: 'd',
             fields: [
               {
@@ -145,10 +145,10 @@ describe('generate default validity', () => {
     });
   });
 
-  it('should validate child fields in repeated object field', () => {
+  it('should validate child fields in repeated fieldset', () => {
     const fields = [
       {
-        type: 'object',
+        type: 'fieldset',
         name: 'a',
         repeated: true,
         fields: [
@@ -162,7 +162,7 @@ describe('generate default validity', () => {
             requirements: [{ required: true }],
           },
           {
-            type: 'object',
+            type: 'fieldset',
             name: 'd',
             repeated: true,
             fields: [

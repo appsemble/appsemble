@@ -21,7 +21,7 @@ export function generateDefaultValidity(
   for (const field of fields) {
     const value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, data);
 
-    if (field.type === 'object') {
+    if (field.type === 'fieldset') {
       validity[field.name] = field.repeated
         ? (value as []).map((d: unknown, index: number) =>
             generateDefaultValidity(

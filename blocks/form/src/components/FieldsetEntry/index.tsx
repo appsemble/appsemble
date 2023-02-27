@@ -1,10 +1,10 @@
 import { VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldErrorMap, InputProps, ObjectField, Values } from '../../../block.js';
+import { FieldErrorMap, Fieldset, InputProps, Values } from '../../../block.js';
 import { FieldGroup } from '../FieldGroup/index.js';
 
-interface ObjectEntryProps extends InputProps<Values, ObjectField> {
+interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
   /**
    * If defined, the index is used in the change `onChange` handler instead of the field name.
    */
@@ -12,9 +12,9 @@ interface ObjectEntryProps extends InputProps<Values, ObjectField> {
 }
 
 /**
- * An input element for a simple object entry.
+ * An input element for a simple fieldset entry.
  */
-export function ObjectEntry({
+export function FieldsetEntry({
   disabled,
   error,
   field,
@@ -22,7 +22,7 @@ export function ObjectEntry({
   index,
   name,
   onChange,
-}: ObjectEntryProps): VNode {
+}: FieldsetEntryProps): VNode {
   const onChangeIndex = useCallback(
     (localName: string, values: Values) => {
       onChange(String(index), values);

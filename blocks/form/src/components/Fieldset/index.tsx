@@ -3,25 +3,25 @@ import { Button, FormButtons } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldError, InputProps, ObjectField, Values } from '../../../block.js';
+import { FieldError, Fieldset as FieldsetType, InputProps, Values } from '../../../block.js';
 import { generateDefaultValues } from '../../utils/generateDefaultValues.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength } from '../../utils/requirements.js';
-import { ObjectEntry } from '../ObjectEntry/index.js';
+import { FieldsetEntry } from '../FieldsetEntry/index.js';
 
-type ObjectInputProps = InputProps<Values | Values[], ObjectField>;
+type FieldsetProps = InputProps<Values | Values[], FieldsetType>;
 
 /**
- * An input element for an object field
+ * An input element for a fieldset
  */
-export function ObjectInput({
+export function Fieldset({
   disabled,
   error,
   field,
   formValues,
   name,
   onChange,
-}: ObjectInputProps): VNode {
+}: FieldsetProps): VNode {
   const { utils } = useBlock();
   const localValues = getValueByNameSequence(name, formValues) as Values[];
   const errors = error as FieldError[];
@@ -54,14 +54,14 @@ export function ObjectInput({
   );
 
   return (
-    <fieldset className="appsemble-object">
+    <fieldset className="appsemble-fieldset">
       <legend className="title is-5">{utils.remap(field.label, localValues) as string}</legend>
       {field.repeated ? (
         <>
           {(localValues || []).map((val, index) => (
             // eslint-disable-next-line react/jsx-key
             <div>
-              <ObjectEntry
+              <FieldsetEntry
                 disabled={disabled}
                 error={errors?.[index]}
                 field={field}
@@ -88,7 +88,7 @@ export function ObjectInput({
           ) : null}
         </>
       ) : (
-        <ObjectEntry
+        <FieldsetEntry
           disabled={disabled}
           error={error}
           field={field}
