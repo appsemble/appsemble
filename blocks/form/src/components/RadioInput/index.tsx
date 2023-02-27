@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, RadioField } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
+import { isRequired } from '../../utils/requirements.js';
 import styles from './index.module.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
@@ -17,14 +19,15 @@ export function RadioInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
   readOnly,
-  required,
-  value,
 }: RadioInputProps): VNode {
   const { utils } = useBlock();
   const { label, options, tag } = field;
+  const required = isRequired(field, utils, formValues);
+  const value = getValueByNameSequence(name, formValues);
 
   return (
     <RadioGroup
