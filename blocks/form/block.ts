@@ -878,9 +878,9 @@ export interface InputProps<T, F extends Field> {
   required?: boolean;
 
   /**
-   * The current value.
+   * The current form values.
    */
-  value: T;
+  formValues: Values;
 }
 
 /**

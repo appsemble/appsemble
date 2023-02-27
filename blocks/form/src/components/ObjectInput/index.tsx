@@ -5,6 +5,7 @@ import { useCallback } from 'preact/hooks';
 
 import { FieldError, InputProps, ObjectField, Values } from '../../../block.js';
 import { generateDefaultValues } from '../../utils/generateDefaultValues.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength } from '../../utils/requirements.js';
 import { ObjectEntry } from '../ObjectEntry/index.js';
 
@@ -17,59 +18,59 @@ export function ObjectInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
-  value,
 }: ObjectInputProps): VNode {
   const { utils } = useBlock();
-  const values = value as Values[];
+  const localValues = getValueByNameSequence(name, formValues) as Values[];
   const errors = error as FieldError[];
   const minLength = getMinLength(field);
   const maxLength = getMaxLength(field);
 
   const changeArray = useCallback(
-    (localName: string, val: Values | Values) => {
+    (localName: string, val: Values) => {
       const index = Number(localName);
       onChange(
         localName,
-        values.map((v, i) => (index === i ? val : v)),
+        localValues.map((v, i) => (index === i ? val : v)),
       );
     },
-    [onChange, values],
+    [onChange, localValues],
   );
 
   const addEntry = useCallback(() => {
     const newEntry = generateDefaultValues(field.fields);
-    onChange(field.name, [...(value as Values[]), newEntry]);
-  }, [field, onChange, value]);
+    onChange(field.name, [...(localValues as Values[]), newEntry]);
+  }, [field, onChange, localValues]);
 
   const removeEntry = useCallback(
     (event: JSX.TargetedMouseEvent<HTMLButtonElement>) => {
       const index = Number(event.currentTarget.name);
 
-      onChange(field.name, values.slice(0, index).concat(values.slice(index + 1)));
+      onChange(field.name, localValues.slice(0, index).concat(localValues.slice(index + 1)));
     },
-    [field, onChange, values],
+    [field, onChange, localValues],
   );
 
   return (
     <fieldset className="appsemble-object">
-      <legend className="title is-5">{utils.remap(field.label, value) as string}</legend>
+      <legend className="title is-5">{utils.remap(field.label, localValues) as string}</legend>
       {field.repeated ? (
         <>
-          {(values || []).map((val, index) => (
+          {(localValues || []).map((val, index) => (
             // eslint-disable-next-line react/jsx-key
             <div>
               <ObjectEntry
                 disabled={disabled}
-                error={errors[index]}
+                error={errors?.[index]}
                 field={field}
+                formValues={formValues}
                 index={index}
-                name={name}
+                name={`${name}.${index}`}
                 onChange={changeArray}
-                value={val}
               />
-              {!minLength || values.length > minLength ? (
+              {!minLength || formValues.length > minLength ? (
                 <FormButtons>
                   <Button icon="minus" name={String(index)} onClick={removeEntry}>
                     {utils.remap(field.removeLabel ?? 'Remove', val) as string}
@@ -78,10 +79,10 @@ export function ObjectInput({
               ) : null}
             </div>
           ))}
-          {!maxLength || values.length < maxLength ? (
+          {!maxLength || formValues.length < maxLength ? (
             <FormButtons className="mt-2">
               <Button icon="plus" onClick={addEntry}>
-                {utils.remap(field.addLabel ?? 'Add', value) as string}
+                {utils.remap(field.addLabel ?? 'Add', localValues) as string}
               </Button>
             </FormButtons>
           ) : null}
@@ -91,9 +92,9 @@ export function ObjectInput({
           disabled={disabled}
           error={error}
           field={field}
+          formValues={formValues}
           name={name}
           onChange={onChange}
-          value={value as Values}
         />
       )}
     </fieldset>

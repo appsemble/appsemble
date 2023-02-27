@@ -18,13 +18,13 @@ export function ObjectEntry({
   disabled,
   error,
   field,
+  formValues,
   index,
   name,
   onChange,
-  value,
 }: ObjectEntryProps): VNode {
   const onChangeIndex = useCallback(
-    (localName: string, values: Values | Values) => {
+    (localName: string, values: Values) => {
       onChange(String(index), values);
     },
     [index, onChange],
@@ -35,9 +35,9 @@ export function ObjectEntry({
       disabled={disabled}
       errors={error as FieldErrorMap}
       fields={field.fields}
+      formValues={formValues}
       name={name}
       onChange={index == null ? onChange : onChangeIndex}
-      value={value}
     />
   );
 }
