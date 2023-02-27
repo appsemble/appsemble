@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@lhci/cli": "^0.10.0",
+    "@lhci/cli": "^0.11.0",
     "@testing-library/jest-dom": "^5.0.0",
     "@types/jest": "^29.0.0",
     "@types/wordcloud": "^1.1.3",
