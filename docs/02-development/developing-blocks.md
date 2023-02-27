@@ -40,10 +40,10 @@ The following templates are available by default:
 > attached to the Shadow DOM.
 
 For now, lets bootstrap a vanilla JavaScript block using the block name `test` and organization name
-`org`. The output should look like this:
+`appsemble`. The output should look like this:
 
 ```
-? For which organization is the block? org
+? For which organization is the block? appsemble
 ? What should be the name of the block? test
 ? What kind of block project should be bootstrapped?
    mini-jsx
@@ -77,7 +77,7 @@ defaultPage: Home
 pages:
   - name: Home
     blocks:
-      - type: '@org/test'
+      - type: '@appsemble/test'
         version: 0.0.0
         actions:
           onClick:
@@ -85,13 +85,16 @@ pages:
             to: Other Page
   - name: Other Page
     blocks:
-      - type: '@org/test'
+      - type: '@appsemble/test'
         version: 0.0.0
         actions:
           onClick:
             type: link
             to: Home
 ```
+
+> **Note**: When creating blocks for the organization `appsemble` the `@appsemble/` can be omitted
+> from the type field.
 
 Enter this app definition, save it, and it should display the new block in the app preview. The app
 contains two pages that link to each other by clicking the button created by the new test block. ✨
@@ -103,11 +106,9 @@ contains two pages that link to each other by clicking the button created by the
 
 ## Modifying the Block
 
-> **Note**: Any block that can be found within the list of workspaces listed in `package.json` will
-> be hot-reloaded after having published it. This means that when developing blocks, it is not
-> necessary to keep publishing new versions of blocks to test changes. By default, the `blocks`
-> directory is checked for this, but other directories such as `../amsterdam/blocks`, assuming this
-> directory exists and has blocks, will be hot-reloaded as well.
+> **Note**: In order for updates to the definition of your block to be applied in Appsemble studio
+> you need to publish a new version of your block. To do this you also have to increment the version
+> number found in the block’s package.json.
 
 The definition of the block can be found in the `blocks/test/src` directory. Lets make the text of
 the button configurable using the app definition.
