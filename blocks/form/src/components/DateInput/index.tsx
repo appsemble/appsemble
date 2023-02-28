@@ -40,8 +40,14 @@ export function DateInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
-  const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const maxDate = useMemo(
+    () => extractDate(getMaxDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
+  const minDate = useMemo(
+    () => extractDate(getMinDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
   const disable = useMemo(() => getDisabledDays(field), [field]);
 
   const locale = useLocale(field);

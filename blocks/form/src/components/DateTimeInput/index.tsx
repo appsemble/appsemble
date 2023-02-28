@@ -45,8 +45,14 @@ export function DateTimeInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
-  const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const maxDate = useMemo(
+    () => extractDate(getMaxDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
+  const minDate = useMemo(
+    () => extractDate(getMinDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
   const minTime = useMemo(() => getMinTime(field), [field]);
   const maxTime = useMemo(() => getMaxTime(field), [field]);
   const disable = useMemo(() => getDisabledDays(field), [field]);
