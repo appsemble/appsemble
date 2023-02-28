@@ -77,7 +77,7 @@ $ docker compose down
 ```
 
 Once Appsemble is up and running, you probably want to upload blocks. In order to do this, clone the
-Appsemble git repository and continue to the section on publishing blocks in the
-[readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
+Appsemble git repository and continue to the
+[Publishing blocks readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
 
 [appsemble tags page]: https://hub.docker.com/r/appsemble/appsemble/tags
