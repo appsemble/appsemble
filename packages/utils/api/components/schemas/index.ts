@@ -7,6 +7,7 @@ export * from './AppLayoutDefinition.js';
 export * from './AppMessages.js';
 export * from './AppOAuth2Secret.js';
 export * from './AppsembleMessages.js';
+export * from './ArrayRemapperDefinition.js';
 export * from './Asset.js';
 export * from './BlockDefinition.js';
 export * from './BlockVersion.js';
