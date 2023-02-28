@@ -141,9 +141,17 @@ The resulting Docker image can be built using the Docker CLI.
 docker build --tag appsemble .
 ```
 
-### Contributing
+## Contributing
 
 Please read our [contributing guidelines](./CONTRIBUTING.md).
+
+## Security
+
+Please read our [security policy](./SECURITY.md).
+
+## License
+
+[LGPL-3.0-only](./LICENSE.md) © [Appsemble](https://appsemble.com)
 
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
