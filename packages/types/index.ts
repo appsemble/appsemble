@@ -584,7 +584,7 @@ export interface Remappers {
 
 export type ObjectRemapper = RequireExactlyOne<Remappers>;
 
-export type ArrayRemapper = ArrayRemapper[] | ObjectRemapper[];
+export type ArrayRemapper = (ArrayRemapper | ObjectRemapper)[];
 
 export type Remapper = ArrayRemapper | ObjectRemapper | boolean | number | string;
 
