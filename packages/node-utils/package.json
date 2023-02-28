@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@appsemble/utils": "0.20.38",
+    "@hapi/boom": "^10.0.1",
     "@types/koa": "^2.0.0",
     "axios": "^1.0.0",
     "chalk": "^4.0.0",

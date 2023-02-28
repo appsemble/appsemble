@@ -6,7 +6,7 @@ import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'j
 import mount from 'koa-mount';
 import serve from 'koa-static';
 
-import { tinyRouter } from '../../middleware/tinyRouter.js';
+import { tinyRouter } from '../../../node-utils/tinyRouter.js';
 import { staticHandler } from '../static.js';
 import { blockAssetHandler } from './blockAssetHandler.js';
 import { blockCSSHandler } from './blockCSSHandler.js';
