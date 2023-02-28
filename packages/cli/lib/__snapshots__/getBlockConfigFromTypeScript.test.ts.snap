@@ -1699,6 +1699,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "An option that is displayed in a dropdown menu or radio button field.",
         "properties": {
+          "disabled": {
+            "default": false,
+            "description": "If true, the choice will be disabled.",
+            "type": "boolean",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.",
             "format": "fontawesome",

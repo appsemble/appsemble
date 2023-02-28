@@ -91,7 +91,7 @@ export function EnumInput({
     >
       {loading ||
         options.map((choice) => (
-          <Option key={choice.value} value={choice.value}>
+          <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
             {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
           </Option>
         ))}
