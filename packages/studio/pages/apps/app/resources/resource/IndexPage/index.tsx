@@ -3,6 +3,7 @@ import {
   Checkbox,
   Icon,
   ModalCard,
+  PaginationNavigator,
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
@@ -12,7 +13,6 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
 import { type Resource } from '@appsemble/types';
 import { generateDataFromSchema, has } from '@appsemble/utils';
 import { download, serializeResource } from '@appsemble/web-utils';

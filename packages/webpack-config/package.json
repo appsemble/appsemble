@@ -21,6 +21,13 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ],
+    "./README.md": "./README.md"
+  },
   "files": [
     "**/*.d.ts",
     "**/*.js",
