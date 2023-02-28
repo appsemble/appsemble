@@ -1,4 +1,4 @@
-import { Remapper, Remappers, UserInfo } from '@appsemble/types';
+import { ObjectRemapper, Remapper, Remappers, UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { createEvent, EventAttributes } from 'ics';
@@ -124,7 +124,10 @@ export function remap(
   }
 
   let result = input;
-  const remappers = Array.isArray(remapper) ? remapper : [remapper];
+  // Workaround for ts(2589) Type instantiation is excessively deep and possibly infinite
+  const remappers = Array.isArray(remapper)
+    ? (remapper.flat(Number.POSITIVE_INFINITY as 1) as ObjectRemapper[])
+    : [remapper];
   for (const mapper of remappers) {
     const entries = Object.entries(mapper) as [keyof MapperImplementations, unknown][];
     if (entries.length !== 1) {

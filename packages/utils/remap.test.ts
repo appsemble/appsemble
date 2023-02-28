@@ -54,6 +54,16 @@ describe('Primitive values', () => {
   });
 });
 
+describe('Nested arrays', () => {
+  runTests({
+    'flatten remappers': {
+      input: { value: 123 },
+      mappers: [[[[[{ prop: 'value' }]]]]],
+      expected: 123,
+    },
+  });
+});
+
 describe('app', () => {
   runTests({
     'return the app id': {
