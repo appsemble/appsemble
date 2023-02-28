@@ -1,53 +1,45 @@
 # Docker Compose
 
 Appsemble is published as a Docker image. This makes it easy to deploy using
-[Docker Compose](https://docs.docker.com/compose). Copy the following contents in a file named
-_.docker-compose.yaml_.
+[Docker Compose](https://docs.docker.com/compose). You will find the following contents in a file
+named _.docker-compose.yaml_.
 
 ```yaml copy filename="docker-compose.yml"
-version: '3.5'
-
-x-database-name: &database-name ${DATABASE_NAME:-appsemble_database_name}
-x-database-user: &database-user ${DATABASE_USER:-appsemble_database_user}
-x-database-password: &database-password ${DATABASE_PASSWORD:-appsemble_database_password}
-x-secret: &secret ${SECRET:-appsemble_secret_LwP4gsYuuoFb3dRhEW_4iPVPLcfIvsDuBHDJHDbjQ}
-
-networks:
-  appsemble:
-    name: appsemble
+version: '3.3'
 
 services:
-  appsemble:
-    image: appsemble/appsemble:latest
-    depends_on:
-      - postgresql
-    networks:
-      - appsemble
+  # A persistent database for local development.
+  postgres-dev:
+    image: postgres:14
     restart: always
     environment:
-      DATABASE_HOST: postgresql
-      DATABASE_NAME: *database-name
-      DATABASE_USER: *database-user
-      DATABASE_PASSWORD: *database-password
-      HOST: http://localhost:8000
-      SECRET: *secret
-    ports:
-      # Expose Appsemble at port 8000.
-      - '8000:9999'
-
-  postgresql:
-    image: postgres:11
-    networks:
-      - appsemble
-    restart: always
-    environment:
-      POSTGRES_DB: *database-name
-      POSTGRES_USER: *database-user
-      POSTGRES_PASSWORD: *database-password
-    volumes:
-      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql/data
+      POSTGRES_DB: appsemble
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
     ports:
       - '5432:5432'
+
+  # A database using tmpfs for faster test runs.
+  postgres-test:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_DB: appsemble
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - '54321:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: info@appsemble.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    ports:
+      - '2345:80'
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
@@ -62,7 +54,9 @@ To start the service, run the following command.
 $ docker compose up -d
 ```
 
-The Appsemble studio should now be available on [localhost:8000](http://localhost:8000). The
+If this
+
+The Appsemble studio should now be available on [localhost:9999](http://localhost:9999). The
 database will be stored in `~/.local/share/appsemble-postgresql` in your own home folder.
 
 The database needs to be migrated to the current version first. This can be done by running:
@@ -83,7 +77,7 @@ $ docker compose down
 ```
 
 Once Appsemble is up and running, you probably want to upload blocks. In order to do this, clone the
-Appsemble git repository and continue to the
-[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
+Appsemble git repository and continue to the section on publishing blocks in the
+[readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
 
 [appsemble tags page]: https://hub.docker.com/r/appsemble/appsemble/tags
