@@ -12,7 +12,6 @@ import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
 import { getNestedByKey } from './utils/getNested.js';
-import { isRequired } from './utils/requirements.js';
 import { isFormValid } from './utils/validity.js';
 
 bootstrap(
@@ -298,12 +297,11 @@ bootstrap(
                 }
                 error={errors[f.name]}
                 field={f}
+                formValues={values}
                 key={f.name}
                 name={f.name}
                 onChange={onChange}
                 readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
-                required={isRequired(f, utils, values)}
-                value={values[f.name]}
               />
             ))}
         </div>

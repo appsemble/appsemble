@@ -582,12 +582,11 @@ export interface Remappers {
   user: keyof UserInfo;
 }
 
-export type Remapper =
-  | RequireExactlyOne<Remappers>
-  | RequireExactlyOne<Remappers>[]
-  | boolean
-  | number
-  | string;
+export type ObjectRemapper = RequireExactlyOne<Remappers>;
+
+export type ArrayRemapper = (ArrayRemapper | ObjectRemapper)[];
+
+export type Remapper = ArrayRemapper | ObjectRemapper | boolean | number | string;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -852,6 +851,24 @@ export interface ConditionActionDefinition extends BaseActionDefinition<'conditi
    * The action to run if the condition is false.
    */
   else: ActionDefinition;
+}
+
+export interface MatchActionDefinition extends BaseActionDefinition<'match'> {
+  /**
+   * Run another action if one of the cases is true.
+   *
+   * Only the first case that equals true is called.
+   */
+  match: {
+    /**
+     * The case to be matched.
+     */
+    case: Remapper;
+    /**
+     * Action to be called if the case equals true.
+     */
+    action: ActionDefinition;
+  }[];
 }
 
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
@@ -1377,6 +1394,7 @@ export type ActionDefinition =
   | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
+  | MatchActionDefinition
   | MessageActionDefinition
   | NotifyActionDefinition
   | RequestActionDefinition

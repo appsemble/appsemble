@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.20.38",
+  "version": "0.20.39",
   "private": true,
   "description": "The frontend for managing Appsemble apps and organizations",
   "keywords": [
@@ -25,10 +25,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.20.38",
-    "@appsemble/types": "0.20.38",
-    "@appsemble/utils": "0.20.38",
-    "@appsemble/web-utils": "0.20.38",
+    "@appsemble/react-components": "0.20.39",
+    "@appsemble/types": "0.20.39",
+    "@appsemble/utils": "0.20.39",
+    "@appsemble/web-utils": "0.20.39",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -49,7 +49,7 @@
     "indent-string": "^5.0.0",
     "jsonschema": "^1.0.0",
     "jwt-decode": "^3.0.0",
-    "monaco-editor": "^0.33.0",
+    "monaco-editor": "^0.36.0",
     "monaco-marker-data-provider": "^1.0.0",
     "monaco-worker-manager": "^2.0.0",
     "monaco-yaml": "^4.0.0",

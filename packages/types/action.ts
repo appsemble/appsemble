@@ -67,6 +67,7 @@ export type Action =
   | BaseAction<'flow.to'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
+  | BaseAction<'match'>
   | BaseAction<'message'>
   | BaseAction<'noop'>
   | BaseAction<'notify'>

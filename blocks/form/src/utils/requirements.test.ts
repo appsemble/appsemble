@@ -2,9 +2,11 @@ import { Utils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 
 import { Field, Values } from '../../block.js';
-import { getDisabledDays, isRequired } from './requirements.js';
+import { getDisabledDays, getMaxDate, getMinDate, isRequired } from './requirements.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
+
+const utils = { remap } as unknown as Utils;
 
 describe('is required', () => {
   it('should be required', () => {
@@ -34,8 +36,6 @@ describe('is required', () => {
       requirements: [{ max: 5 }, { required: { equals: [{ prop: 'field1' }, 'foo'] } }],
     } as FieldWithRequirements;
 
-    const utils = { remap } as unknown as Utils;
-
     const values: Values = {
       field1: 'foo',
       field2: 'bar',
@@ -51,8 +51,6 @@ describe('is required', () => {
         { required: { equals: [{ prop: 'field1' }, { prop: 'field2' }] } },
       ],
     } as FieldWithRequirements;
-
-    const utils = { remap } as unknown as Utils;
 
     const values: Values = {
       field1: 'foo',
@@ -138,5 +136,67 @@ describe('getDisabledDays', () => {
     } as FieldWithRequirements;
 
     expect(getDisabledDays(field)).toStrictEqual([]);
+  });
+});
+
+describe('get min date', () => {
+  it('should get min date', () => {
+    const minDate = new Date('2023-02-28');
+    const field = {
+      requirements: [{ from: { static: minDate } }],
+    } as FieldWithRequirements;
+
+    expect(getMinDate(field, utils)).toStrictEqual(minDate);
+  });
+
+  it('should remap date as min date', () => {
+    const minDate = new Date('2023-02-28');
+    const values = { date: minDate };
+    const field = {
+      requirements: [{ from: { prop: 'date' } }],
+    } as FieldWithRequirements;
+
+    expect(getMinDate(field, utils, values)).toStrictEqual(minDate);
+  });
+
+  it('should get earliest date', () => {
+    const firstMinDate = new Date('2023-02-28');
+    const lastMinDate = new Date('2023-02-29');
+    const field = {
+      requirements: [{ from: { static: firstMinDate } }, { from: { static: lastMinDate } }],
+    } as FieldWithRequirements;
+
+    expect(getMinDate(field, utils)).toStrictEqual(firstMinDate);
+  });
+});
+
+describe('get max date', () => {
+  it('should get max date', () => {
+    const maxDate = new Date('2023-02-28');
+    const field = {
+      requirements: [{ to: { static: maxDate } }],
+    } as FieldWithRequirements;
+
+    expect(getMaxDate(field, utils)).toStrictEqual(maxDate);
+  });
+
+  it('should remap date as max date', () => {
+    const maxDate = new Date('2023-02-28');
+    const values = { date: maxDate };
+    const field = {
+      requirements: [{ to: { prop: 'date' } }],
+    } as FieldWithRequirements;
+
+    expect(getMaxDate(field, utils, values)).toStrictEqual(maxDate);
+  });
+
+  it('should get latest date', () => {
+    const firstMaxDate = new Date('2023-02-28');
+    const lastMaxDate = new Date('2023-02-29');
+    const field = {
+      requirements: [{ to: { static: firstMaxDate } }, { to: { static: lastMaxDate } }],
+    } as FieldWithRequirements;
+
+    expect(getMaxDate(field, utils)).toStrictEqual(lastMaxDate);
   });
 });

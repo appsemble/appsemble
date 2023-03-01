@@ -5,6 +5,8 @@ import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { Choice, EnumField, InputProps } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
+import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
 
@@ -16,11 +18,10 @@ export function EnumInput({
   dirty,
   disabled,
   field,
+  formValues,
   name,
   onChange,
   readOnly,
-  required,
-  value,
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
   const [loading, setLoading] = useState('action' in field || 'event' in field);
@@ -28,6 +29,8 @@ export function EnumInput({
   const [error, setError] = useState<string>(null);
 
   const { icon, inline, label, placeholder, tag } = field;
+  const value = getValueByNameSequence(name, formValues);
+  const required = isRequired(field, utils, formValues);
 
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
@@ -88,7 +91,7 @@ export function EnumInput({
     >
       {loading ||
         options.map((choice) => (
-          <Option key={choice.value} value={choice.value}>
+          <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
             {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
           </Option>
         ))}

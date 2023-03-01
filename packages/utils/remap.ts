@@ -124,7 +124,10 @@ export function remap(
   }
 
   let result = input;
-  const remappers = Array.isArray(remapper) ? remapper : [remapper];
+  // Workaround for ts(2589) Type instantiation is excessively deep and possibly infinite
+  const remappers = Array.isArray(remapper)
+    ? remapper.flat(Number.POSITIVE_INFINITY as 1)
+    : [remapper];
   for (const mapper of remappers) {
     const entries = Object.entries(mapper) as [keyof MapperImplementations, unknown][];
     if (entries.length !== 1) {

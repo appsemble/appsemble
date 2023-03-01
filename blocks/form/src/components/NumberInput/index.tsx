@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, NumberField } from '../../../block.js';
-import { getMax, getMin, getStep } from '../../utils/requirements.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
+import { getMax, getMin, getStep, isRequired } from '../../utils/requirements.js';
 
 type NumberInputProps = InputProps<number, NumberField>;
 
@@ -17,15 +18,15 @@ export function NumberInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
   readOnly,
-  required,
-  value,
 }: NumberInputProps): VNode {
   const { utils } = useBlock();
   const { bottomLabels, display, icon, inline, label, placeholder, tag, topLabels } = field;
 
+  const value = getValueByNameSequence(name, formValues) as string;
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
     className: classNames('appsemble-number', className),
@@ -39,7 +40,7 @@ export function NumberInput({
     onChange,
     optionalLabel: <FormattedMessage id="optionalLabel" />,
     readOnly,
-    required,
+    required: isRequired(field, utils, formValues),
     step: getStep(field),
     tag: utils.remap(tag, value) as string,
     value,

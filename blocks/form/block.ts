@@ -236,14 +236,21 @@ export type DateTimeRequirement =
   | RequiredRequirement
   | TimeRangeRequirement;
 /**
- * All requirements applicable to object fields.
+ * All requirements applicable to fieldsets.
  */
-export type ObjectRequirement = LengthRequirement;
+export type FieldsetRequirement = LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
 export interface Choice {
+  /**
+   * If true, the choice will be disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
   /**
    * The label used to display the option.
    */
@@ -769,14 +776,14 @@ export interface StringField extends AbstractField, InlineField {
   requirements?: StringRequirement[];
 }
 
-export interface ObjectField extends AbstractField {
+export interface Fieldset extends AbstractField {
   /**
    * The type of the field.
    */
-  type: 'object';
+  type: 'fieldset';
 
   /**
-   * If true, this field represents an array of objects.
+   * If true, this fieldset represents an array of objects.
    */
   repeated?: boolean;
 
@@ -795,16 +802,16 @@ export interface ObjectField extends AbstractField {
   removeLabel?: Remapper;
 
   /**
-   * The fields contained by this object.
+   * The fields contained by this fieldset.
    *
    * @minItems 1
    */
   fields: Field[];
 
   /**
-   * Requirements that are applicable to an object field.
+   * Requirements that are applicable to a fieldset.
    */
-  requirements?: ObjectRequirement[];
+  requirements?: FieldsetRequirement[];
 }
 
 export type Field =
@@ -812,11 +819,11 @@ export type Field =
   | DateField
   | DateTimeField
   | EnumField
+  | Fieldset
   | FileField
   | GeoCoordinatesField
   | HiddenField
   | NumberField
-  | ObjectField
   | RadioField
   | StaticField
   | StringField;
@@ -878,9 +885,9 @@ export interface InputProps<T, F extends Field> {
   required?: boolean;
 
   /**
-   * The current value.
+   * The current form values.
    */
-  value: T;
+  formValues: Values;
 }
 
 /**

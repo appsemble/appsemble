@@ -1,7 +1,5 @@
 import { mapValues, schemas } from '@appsemble/utils';
 import { Schema } from 'jsonschema';
-import 'monaco-editor/esm/vs/basic-languages/css/css.contribution.js';
-import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js';
 import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
 import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js';
@@ -9,19 +7,14 @@ import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
 import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
 import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions.js';
 import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover.js';
-import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletionsContribution.js';
-import { Environment } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/ghostText.contribution.js';
+import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
 import { setDiagnosticsOptions } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation/index.js';
-
-declare global {
-  interface Window {
-    MonacoEnvironment: Environment;
-  }
-}
+import './languages.js';
 
 window.MonacoEnvironment = {
   getWorker(workerId, label) {

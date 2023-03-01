@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.39](https://gitlab.com/appsemble/appsemble/-/releases/0.20.39)] - 2023-02-28
+
+### Added
+
+- Block(`form`): Support disabled options in enum fields.
+- App: Add `layout` option to set the position of a message on the screen.
+- App: Add `match` action.
+- App: Add support for deeply nested array remappers.
+- App: Add translation path for the first subpage in the loop page.
+- App: Add translation path for the last subpage in the loop page.
+- Server: Add support for deeply nested array remappers.
+
+### Changed
+
+- Block(`form`): Child fields in repeated object fields now contain an index in their naming
+  sequence, **breaking** styling in some instances when applied to child fields.
+- Block(`form`): Object field is now usable within another object field.
+- Block(`form`): Rename object field to fieldset. Apps using the object field that need to be
+  updated to version 0.20.39 will **break**. To fix this, change the field type from `object` to
+  `fieldset`.
+
+### Fixed
+
+- Block(`form`): Required remapper is now properly supported in nested fields.
+- Block(`form`): Resolve validation issue causing object fields to be broken.
+- App: Apply the same translation path for all subpages between the first and last subpage in the
+  loop page.
+
 ## \[[0.20.38](https://gitlab.com/appsemble/appsemble/-/releases/0.20.38)] - 2023-02-07
 
 ### Added
