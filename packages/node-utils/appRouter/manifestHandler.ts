@@ -1,13 +1,16 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Middleware } from 'koa';
+import { Context, Middleware } from 'koa';
 
 import { AppRouterOptions } from '../types.js';
 
 const iconSizes = [48, 144, 192, 512];
 
-export function createManifestHandler({ getApp, getAppScreenshots }: AppRouterOptions): Middleware {
-  return async (ctx) => {
+export function createManifestHandler({
+  getApp,
+  getAppScreenshotsInfo,
+}: AppRouterOptions): Middleware {
+  return async (ctx: Context) => {
     const app = await getApp({ context: ctx });
 
     if (!app) {
@@ -38,7 +41,7 @@ export function createManifestHandler({ getApp, getAppScreenshots }: AppRouterOp
       name,
       orientation: 'any',
       scope: '/',
-      screenshots: getAppScreenshots({ app }),
+      screenshots: await getAppScreenshotsInfo({ app }),
       short_name: name,
       start_url: `/${normalize(defaultPage)}`,
       theme_color: themeColor,

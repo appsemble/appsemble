@@ -1,9 +1,9 @@
-import { Middleware } from 'koa';
+import { Context, Middleware } from 'koa';
 
 import { AppRouterOptions } from '../types.js';
 
 export function createBlockAssetHandler({ getBlockAsset }: AppRouterOptions): Middleware {
-  return async (ctx) => {
+  return async (ctx: Context) => {
     const {
       params: { filename, name, version },
     } = ctx;

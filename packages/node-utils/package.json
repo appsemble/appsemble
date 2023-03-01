@@ -37,6 +37,7 @@
     "axios": "^1.0.0",
     "chalk": "^4.0.0",
     "cli-highlight": "^2.0.0",
+    "date-fns": "^2.29.3",
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.0",
     "koa": "^2.0.0",
