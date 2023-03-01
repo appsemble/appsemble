@@ -40,7 +40,7 @@ The following templates are available by default:
 > attached to the Shadow DOM.
 
 For now, lets bootstrap a vanilla JavaScript block using the block name `test` and organization name
-`appsemble`. The output should look like this:
+`your-org`. The output should look like this:
 
 ```
 ? For which organization is the block? appsemble
@@ -60,9 +60,9 @@ The project structure looks like this:
  ├── appsemble/
      ├── apps/
      │
-     ├── blocks/
+     ├── your-org/blocks/
      │   └── test/
-     |        ├── readme.md
+     |        ├── README.md
      |        ├── block.ts
      |        └── src
      ├── package.json
@@ -71,7 +71,7 @@ The project structure looks like this:
 
 ```
 
-In the `readme.md` you can specify a description for the functionality of the block. The interface
+In the `README.md` you can specify a description for the functionality of the block. The interface
 of the block is specified in the `block.ts` file and the blocks definition can be found in the `src`
 folder.
 
@@ -130,7 +130,7 @@ contains two pages that link to each other by clicking the button created by the
 
 > **Note**: In order for updates to the definition of your block to be applied in Appsemble studio
 > you need to publish a new version of your block. To do this you also have to increment the version
-> number found in the block’s package.json.
+> number found in the block’s `package.json`.
 
 The definition of the block can be found in the `blocks/test/src` directory. Lets make the text of
 the button configurable using the app definition.
