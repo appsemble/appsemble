@@ -37,12 +37,12 @@ graph BT
   F(SDK) --> C
   G(Block) --> F
   style A fill:#eee,stroke:#777,color: #000
-    style B fill:#eee,stroke:#777,color: #000
-      style C fill:#eee,stroke:#777,color: #000
-        style D fill:#eee,stroke:#777,color: #000
-          style E fill:#eee,stroke:#777,color: #000
-            style F fill:#eee,stroke:#777,color: #000
-              style G fill:#eee,stroke:#777,color: #000
+  style B fill:#eee,stroke:#777,color: #000
+  style C fill:#eee,stroke:#777,color: #000
+  style D fill:#eee,stroke:#777,color: #000
+  style E fill:#eee,stroke:#777,color: #000
+  style F fill:#eee,stroke:#777,color: #000
+  style G fill:#eee,stroke:#777,color: #000
 ```
 
 ### App
