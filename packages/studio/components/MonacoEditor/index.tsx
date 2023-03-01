@@ -71,12 +71,6 @@ interface MonacoEditorProps {
   showDiagnostics?: boolean;
 
   /**
-   * Called when F1 is pressed.
-   * Opens shortcuts modal
-   */
-  toggleKeyCombos: () => void;
-
-  /**
    * The filename of the resource.
    */
   uri: string;
@@ -90,17 +84,7 @@ interface MonacoEditorProps {
  */
 export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
   (
-    {
-      className,
-      language,
-      onChange,
-      onSave,
-      readOnly = false,
-      showDiagnostics,
-      toggleKeyCombos,
-      uri,
-      value = '',
-    },
+    { className, language, onChange, onSave, readOnly = false, showDiagnostics, uri, value = '' },
     ref,
   ) => {
     const editorRef = useRef<editor.IStandaloneCodeEditor>();
@@ -202,28 +186,6 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
 
       return () => disposable.dispose();
     }, [onSave]);
-
-    /**
-     * Manage the CTRL+S key binding for saving
-     */
-    useEffect(() => {
-      const ed = editorRef.current;
-      if (!ed) {
-        return;
-      }
-
-      const disposable = ed.addAction({
-        // The same values are used as in VS Code
-        id: 'workbench.action.files.help',
-        label: 'File: Help',
-        keybindings: [KeyCode.F1],
-        run() {
-          toggleKeyCombos();
-        },
-      });
-
-      return () => disposable.dispose();
-    }, [toggleKeyCombos]);
 
     /**
      * Update the markers when they change.

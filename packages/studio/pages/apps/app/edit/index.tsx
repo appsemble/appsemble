@@ -7,7 +7,6 @@ import {
   useData,
   useMessages,
   useMeta,
-  useToggle,
 } from '@appsemble/react-components';
 import { App, AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
@@ -22,7 +21,6 @@ import { parse } from 'yaml';
 import { AppPreview } from '../../../../components/AppPreview/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
-import { Shortcuts } from '../../../../components/MonacoEditor/Shortcuts/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 import { EditorTab } from './EditorTab/index.js';
@@ -47,9 +45,8 @@ export default function EditPage(): ReactElement {
 
   const [pristine, setPristine] = useState(true);
 
-  const { enabled: isShortcutsOpen, toggle } = useToggle();
-
   const frame = useRef<HTMLIFrameElement>();
+  const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
@@ -153,6 +150,17 @@ export default function EditPage(): ReactElement {
     return () => disposable.dispose();
   }, []);
 
+  const openShortcuts = useCallback(() => {
+    const ed = editorRef.current;
+    if (!ed) {
+      return;
+    }
+
+    const action = ed.getAction('editor.action.quickCommand');
+    ed.focus();
+    action.run();
+  }, []);
+
   const monacoProps =
     location.hash === '#editor'
       ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
@@ -193,7 +201,7 @@ export default function EditPage(): ReactElement {
           >
             <FormattedMessage {...messages.viewLive} />
           </Button>
-          <Button icon="keyboard" onClick={toggle}>
+          <Button icon="keyboard" onClick={openShortcuts}>
             <FormattedMessage {...messages.shortcuts} />
           </Button>
         </div>
@@ -214,15 +222,14 @@ export default function EditPage(): ReactElement {
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
+            ref={editorRef}
             showDiagnostics
-            toggleKeyCombos={toggle}
             {...monacoProps}
           />
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
       <AppPreview app={app} iframeRef={frame} />
-      <Shortcuts handleClose={toggle} isOpen={isShortcutsOpen} />
     </div>
   );
 }

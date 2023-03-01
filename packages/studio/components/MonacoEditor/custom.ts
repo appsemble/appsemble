@@ -8,6 +8,8 @@ import 'monaco-editor/esm/vs/editor/contrib/folding/browser/folding.js';
 import 'monaco-editor/esm/vs/editor/contrib/format/browser/formatActions.js';
 import 'monaco-editor/esm/vs/editor/contrib/hover/browser/hover.js';
 import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/ghostText.contribution.js';
+import 'monaco-editor/esm/vs/editor/contrib/inlineCompletions/browser/inlineCompletionsContribution.js';
+import { Environment } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import 'monaco-editor/esm/vs/editor/standalone/browser/quickAccess/standaloneCommandsQuickAccess.js';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution.js';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution.js';
@@ -15,6 +17,12 @@ import { setDiagnosticsOptions } from 'monaco-yaml';
 
 import { appValidationLabel } from './appValidation/index.js';
 import './languages.js';
+
+declare global {
+  interface Window {
+    MonacoEnvironment: Environment;
+  }
+}
 
 window.MonacoEnvironment = {
   getWorker(workerId, label) {
