@@ -97,7 +97,7 @@ pages:
 > from the type field.
 
 Enter this app definition, save it, and it should display the new block in the app preview. The app
-contains two pages that link to each other by clicking the button created by the new test block. ✨
+contains two pages that link to each other by clicking the button created by the new test block.
 
 > **Note**: You may have noticed the block already has the `button` class and a specific style. This
 > is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into

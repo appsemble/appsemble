@@ -83,11 +83,11 @@ yarn appsemble login
 ```
 
 This will open Appsemble studio in a new window in your browser. A panel will pop up where you must
-select the permissions you need. You will need to select at least _blocks:write_ and
-_organizations:write_ to complete the steps below. Clicking confirm creates an OAuth2 access token,
-which is required in order to publish blocks and apps. Click register and your OAuth2 client
-credentials will be shown. This will be required when you proceed with the publishing blocks and
-apps steps below.
+select the permissions you need. You will need to select at least _blocks:write_,
+_organizations:write_ and _apps:write_ to complete the steps below. Clicking confirm creates an
+OAuth2 access token, which is required in order to publish blocks and apps. Click register and your
+OAuth2 client credentials will be shown. This will be required when you proceed with the publishing
+blocks and apps steps below.
 
 #### Registering an Organization
 
