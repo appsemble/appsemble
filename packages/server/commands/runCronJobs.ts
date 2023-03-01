@@ -80,6 +80,8 @@ export async function handler(): Promise<void> {
     attributes: [
       'definition',
       'id',
+      'OrganizationId',
+      'path',
       'emailHost',
       'emailUser',
       'emailPassword',
