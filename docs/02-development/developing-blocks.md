@@ -53,6 +53,28 @@ For now, lets bootstrap a vanilla JavaScript block using the block name `test` a
 
 The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.
 
+The project structure looks like this:
+
+```
+.
+ ├── appsemble/
+     ├── apps/
+     │
+     ├── blocks/
+     │   └── test/
+     |        ├── readme.md
+     |        ├── block.ts
+     |        └── src
+     ├── package.json
+     ├── docker-compose.yml
+     └── ..
+
+```
+
+In the `readme.md` you can specify a description for the functionality of the block. The interface
+of the block is specified in the `block.ts` file and the blocks definition can be found in the `src`
+folder.
+
 Make sure the local Appsemble server is running, then run the following to publish the newly created
 block.
 
