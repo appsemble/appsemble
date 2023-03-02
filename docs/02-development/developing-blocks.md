@@ -57,7 +57,7 @@ The project structure looks like this:
 
 ```
 .
- ├── appsemble/
+ └── appsemble/
      ├── apps/
      │
      ├── your-org/blocks/

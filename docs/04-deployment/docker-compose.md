@@ -1,46 +1,8 @@
 # Docker Compose
 
 Appsemble is published as a Docker image. This makes it easy to deploy using
-[Docker Compose](https://docs.docker.com/compose). You will find the following contents in a file
-named _.docker-compose.yaml_.
-
-```yaml copy filename="docker-compose.yml"
-version: '3.3'
-
-services:
-  # A persistent database for local development.
-  postgres-dev:
-    image: postgres:14
-    restart: always
-    environment:
-      POSTGRES_DB: appsemble
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-    ports:
-      - '5432:5432'
-
-  # A database using tmpfs for faster test runs.
-  postgres-test:
-    image: postgres:14
-    restart: always
-    environment:
-      POSTGRES_DB: appsemble
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-    ports:
-      - '54321:5432'
-    tmpfs:
-      - /var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: info@appsemble.com
-      PGADMIN_DEFAULT_PASSWORD: password
-    ports:
-      - '2345:80'
-```
+[Docker Compose](https://docs.docker.com/compose). The image is already setup in the repository. You
+can find the files `.docker-compose.yaml` and `dockerfile` in the project root.
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
 `latest` with a specific version. All available versions can be found on [Appsemble tags page][] on
