@@ -27,7 +27,7 @@ export function isRequired(field: FieldWithRequirements, utils?: Utils, values?:
  * @returns Whether the date is a valid date object.
  */
 export function isValidDate(date: Date): boolean {
-  return date instanceof Date && !Number.isNaN(date);
+  return date instanceof Date && !Number.isNaN(Number(date));
 }
 
 /**
