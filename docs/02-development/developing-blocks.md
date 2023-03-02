@@ -43,7 +43,7 @@ For now, lets bootstrap a vanilla JavaScript block using the block name `test` a
 `your-org`. The output should look like this:
 
 ```
-? For which organization is the block? appsemble
+? For which organization is the block? your-org
 ? What should be the name of the block? test
 ? What kind of block project should be bootstrapped?
    mini-jsx
@@ -99,7 +99,7 @@ defaultPage: Home
 pages:
   - name: Home
     blocks:
-      - type: '@appsemble/test'
+      - type: '@your-org/test'
         version: 0.0.0
         actions:
           onClick:
@@ -107,7 +107,7 @@ pages:
             to: Other Page
   - name: Other Page
     blocks:
-      - type: '@appsemble/test'
+      - type: '@your-org/test'
         version: 0.0.0
         actions:
           onClick:
@@ -150,7 +150,7 @@ defaultPage: Home
 pages:
   - name: Home
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         parameters:
           text: Go to the other page.
@@ -160,7 +160,7 @@ pages:
             to: Other Page
   - name: Other Page
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         parameters:
           text: Go to the home page.
@@ -278,8 +278,8 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 });
 ```
 
-The event will be emitted to all blocks on the page. Go on and add a second `@org/test` block the
-page to see the event is received by both blocks.
+The event will be emitted to all blocks on the page. Go on and add a second `@your-org/test` block
+the page to see the event is received by both blocks.
 
 ## Further Reading
 
