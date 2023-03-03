@@ -2,7 +2,13 @@ import { Utils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 
 import { Field, Values } from '../../block.js';
-import { getDisabledDays, getMaxDate, getMinDate, isRequired } from './requirements.js';
+import {
+  getDisabledDays,
+  getMaxDate,
+  getMinDate,
+  isRequired,
+  isValidDate,
+} from './requirements.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 
@@ -198,5 +204,15 @@ describe('get max date', () => {
     } as FieldWithRequirements;
 
     expect(getMaxDate(field, utils)).toStrictEqual(lastMaxDate);
+  });
+});
+
+describe('is valid date', () => {
+  it('should return true when date object is valid', () => {
+    expect(isValidDate(new Date())).toBeTruthy();
+  });
+
+  it('should return false when date object is invalid', () => {
+    expect(isValidDate(new Date('invalid'))).toBeFalsy();
   });
 });

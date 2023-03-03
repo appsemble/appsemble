@@ -1,7 +1,7 @@
 import { Remapper, Utils } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
-import { BaseRequirement, Field } from '../../../block.js';
+import { BaseRequirement, Field, Values } from '../../../block.js';
 import { getValueByNameSequence } from '../getNested.js';
 import { isRequired } from '../requirements.js';
 import { validateDateTime } from './validateDateTime.js';
@@ -27,6 +27,7 @@ type Validator = (
   field: Field,
   value: unknown,
   remap?: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  values?: Values,
 ) => BaseRequirement;
 
 /**
@@ -61,7 +62,7 @@ export function validate(
     return;
   }
 
-  const requirement = validators[field.type](field, value, utils.remap);
+  const requirement = validators[field.type](field, value, utils.remap, values);
   if (requirement) {
     return (
       (utils.remap(requirement.errorMessage, value) as string) ||
