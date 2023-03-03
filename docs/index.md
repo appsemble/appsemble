@@ -43,7 +43,7 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started.
 
-- [Tutorial on getting started with a new block](02-development/developing-blocks.md)
+- [Tutorial on getting started with a new block](02-development/02-developing-blocks.md)
 - [Documentation on existing blocks](/blocks)
 
 ## Core Developer
