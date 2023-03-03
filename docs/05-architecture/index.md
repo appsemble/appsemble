@@ -49,7 +49,7 @@ graph BT
 
 The app component handles everything that is necessary in order to render apps as well as submitting
 new data. Apps are uploaded to the database using the Appsemble editor after which it can be
-displayed by retrieving the app definition from the database.
+viewed by going to the app in the [App Store](/apps).
 
 The app definition contains information about how an app should be built, such as resource
 definitions, security, pages and blocks. Depending on the configuration apps may communicate with
