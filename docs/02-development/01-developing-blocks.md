@@ -55,6 +55,7 @@ The block will be created in the _blocks/_ directory. Its version will be `0.0.0
 
 The project structure looks like this:
 
+```
 .
  └── appsemble/
      ├── apps/
@@ -67,6 +68,7 @@ The project structure looks like this:
      |        ├── package.json
      |        └── README.md
      └── ..
+```
 
 In the `README.md` you can specify a description for the functionality of the block. The interface
 of the block is specified in the `block.ts` file and the blocks definition can be found in the `src`
