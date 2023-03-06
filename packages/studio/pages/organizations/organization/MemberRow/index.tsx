@@ -6,7 +6,7 @@ import {
 } from '@appsemble/react-components';
 import { Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -67,7 +67,7 @@ export function MemberRow({
   } = useUser();
 
   const onChangeRole = useCallback(
-    async (event, role: string) => {
+    async (event: ChangeEvent<HTMLSelectElement>, role: string) => {
       const { data } = await axios.put<Member>(
         `/api/organizations/${organizationId}/members/${id}/role`,
         { role },

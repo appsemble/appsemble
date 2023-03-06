@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
@@ -54,7 +54,7 @@ export function BlockPage(): ReactElement {
   } = useData<BlockManifest[]>(`/api/blocks/${organization}/${blockName}/versions`);
 
   const onSelectedVersionChange = useCallback(
-    (event, value: string) => {
+    (event: ChangeEvent, value: string) => {
       navigate(`/${url}/${urlVersion}`.replace(urlVersion, value));
     },
     [navigate, url, urlVersion],

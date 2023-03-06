@@ -1,6 +1,7 @@
 import {
   Content,
   EditPassword as EditPasswordForm,
+  EditPasswordValues,
   Title,
   useMeta,
   useQuery,
@@ -21,7 +22,7 @@ export function EditPassword(): ReactElement {
   const token = qs.get('token');
   const { lang } = useParams<{ lang: string }>();
   const onSubmit = useCallback(
-    async ({ password }) => {
+    async ({ password }: EditPasswordValues) => {
       await axios.post(`${apiUrl}/api/user/apps/${appId}/account/reset`, { token, password });
       setSuccess(true);
     },

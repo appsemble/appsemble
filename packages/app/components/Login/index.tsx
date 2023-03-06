@@ -65,7 +65,7 @@ export function Login(): ReactElement {
           <FormattedMessage
             {...messages.permissionError}
             values={{
-              link: (text: string) => (
+              link: (text) => (
                 <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
                   {text}
                 </a>

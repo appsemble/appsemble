@@ -1,8 +1,17 @@
 import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { Resource } from '@appsemble/types';
-import { download, serializeResource } from '@appsemble/web-utils';
+import { download, NamedEvent, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
-import { lazy, ReactElement, Suspense, useCallback, useEffect, useState } from 'react';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import {
+  lazy,
+  ReactElement,
+  Suspense,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -58,7 +67,10 @@ export function ResourceDetailsPage(): ReactElement {
     }
   }, [editingResource, result, setResource]);
 
-  const onClickTab = useCallback((unused, tab: string) => navigate({ hash: tab }), [navigate]);
+  const onClickTab = useCallback(
+    (unused: SyntheticEvent, tab: string) => navigate({ hash: tab }),
+    [navigate],
+  );
   const onCopyResource = useCallback(() => {
     try {
       navigator.clipboard.writeText(JSON.stringify(result.data, null, 2));
@@ -72,13 +84,16 @@ export function ResourceDetailsPage(): ReactElement {
     await download(resourceUrl, `${resourceName} ${resourceId}.json`, 'application/json');
   }, [resourceName, resourceId, resourceUrl]);
 
-  const onEditChange = useCallback((unused, value: Resource) => {
+  const onEditChange = useCallback((unused: NamedEvent, value: Resource) => {
     setEditingResource(value);
   }, []);
 
-  const onEditJsonChange = useCallback((unused, value: string) => {
-    setEditingResourceJson(value);
-  }, []);
+  const onEditJsonChange = useCallback(
+    (unused: editor.IModelContentChangedEvent, value: string) => {
+      setEditingResourceJson(value);
+    },
+    [],
+  );
 
   const onEditSubmit = useCallback(async () => {
     try {

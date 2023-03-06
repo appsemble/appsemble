@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ReactElement, ReactNode, useCallback } from 'react';
+import { MouseEvent, ReactElement, ReactNode, useCallback } from 'react';
 
 import { useValuePicker } from '../index.js';
 
@@ -37,7 +37,7 @@ export function Tab({ children, className, href, value }: TabProps): ReactElemen
   const { onChange, value: currentValue } = useValuePicker();
 
   const handleClick = useCallback(
-    (event) => {
+    (event: MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault();
 
       onChange(event, value);
