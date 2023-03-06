@@ -134,7 +134,6 @@
     "@types/node": "*",
     "@types/node-forge": "^1.0.0",
     "@types/nodemailer": "^6.0.0",
-    "@types/sass": "^1.0.0",
     "@types/semver": "^7.0.0",
     "@types/sharp": "^0.31.0",
     "@types/validator": "^13.0.0",
