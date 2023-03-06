@@ -13,7 +13,7 @@ import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { parse } from 'yaml';
@@ -52,7 +52,10 @@ export default function EditPage(): ReactElement {
   const navigate = useNavigate();
   const push = useMessages();
 
-  const changeTab = useCallback((event, hash: string) => navigate({ hash }), [navigate]);
+  const changeTab = useCallback(
+    (event: SyntheticEvent, hash: string) => navigate({ hash }),
+    [navigate],
+  );
 
   const onSave = useCallback(async () => {
     const definition = parse(appDefinition) as AppDefinition;
@@ -107,7 +110,7 @@ export default function EditPage(): ReactElement {
   }, [appDefinition, app, uploadApp, promptUpdateApp]);
 
   const onMonacoChange = useCallback(
-    (event, value: string, model: editor.ITextModel) => {
+    (event: editor.IModelContentChangedEvent, value: string, model: editor.ITextModel) => {
       switch (String(model.uri)) {
         case 'file:///app.yaml':
           setAppDefinition(value);

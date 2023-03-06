@@ -43,7 +43,7 @@ export function UsersPage(): ReactElement {
           <FormattedMessage
             {...messages.inviteOrganization}
             values={{
-              link: (text: string) => (
+              link: (text) => (
                 <Link to={`/${lang}/organizations/@${app.OrganizationId}`}>{text}</Link>
               ),
             }}

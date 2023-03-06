@@ -1,5 +1,5 @@
 import { OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
-import { ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
+import { ComponentPropsWithoutRef, MouseEvent, ReactElement, useCallback, useState } from 'react';
 
 import { Button } from '../index.js';
 
@@ -23,7 +23,7 @@ export function OAuth2LoginButton({
   const [loading, setLoading] = useState(false);
 
   const handleClick = useCallback(
-    (event) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       setLoading(true);
       onClick?.(event);
       // This returns immediately, but loading the authorization URL may take some time. The user

@@ -50,9 +50,7 @@ export function NotificationsPage(): ReactElement {
             <FormattedMessage
               {...messages.enableInstructions}
               values={{
-                link: (link: string) => (
-                  <Link to={`/${lang}/apps/${app.id}/edit#editor`}>{link}</Link>
-                ),
+                link: (link) => <Link to={`/${lang}/apps/${app.id}/edit#editor`}>{link}</Link>,
                 navigation: (
                   <Link
                     rel="noopener noreferrer"

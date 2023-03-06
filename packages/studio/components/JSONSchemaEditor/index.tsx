@@ -1,3 +1,4 @@
+import { NamedEvent } from '@appsemble/web-utils';
 import { forwardRef, ReactElement, useCallback } from 'react';
 
 import { RecursiveJSONSchemaEditor } from './RecursiveJSONSchemaEditor/index.js';
@@ -13,7 +14,7 @@ export const JSONSchemaEditor = forwardRef<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(({ disabled, name, onChange, schema, value }, ref): ReactElement => {
   const handleChange = useCallback(
-    (event, val) => {
+    (event: NamedEvent, val: string) => {
       onChange({ currentTarget: { name } }, val);
     },
     [name, onChange],

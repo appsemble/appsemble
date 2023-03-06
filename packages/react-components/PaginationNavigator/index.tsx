@@ -77,7 +77,7 @@ export function PaginationNavigator({
             {rowsPerPageOptions.map((option) => (
               <option key={option} value={option}>
                 {option === Number.POSITIVE_INFINITY
-                  ? messages.allRowsLabel.defaultMessage
+                  ? (messages.allRowsLabel.defaultMessage as string)
                   : option}
               </option>
             ))}
