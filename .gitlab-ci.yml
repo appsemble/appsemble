@@ -85,17 +85,6 @@ workflow:
 #  Test Stage                                                                                     #
 ###################################################################################################
 
-# Upload the coverage report to codecov
-codecov:
-  image: alpine
-  allow_failure: true
-  needs:
-    - test node 18
-  script:
-    - wget https://uploader.codecov.io/latest/alpine/codecov
-    - chmod +x codecov
-    - ./codecov -R "$CI_PROJECT_DIR"
-
 # Spell check using cspell
 cspell:
   extends: .yarn
