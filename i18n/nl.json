@@ -383,6 +383,7 @@
   "studio.pages.apps.app.edit.resourceWarning": "De resource-definitie in deze appdefinitie bevat andere gegevens dan voorheen. Dit kan onverwachte gevolgen veroorzaken met oudere data.",
   "studio.pages.apps.app.edit.resourceWarningTitle": "Waarschuwing resources",
   "studio.pages.apps.app.edit.sharedStyle": "Gedeelde stijl",
+  "studio.pages.apps.app.edit.shortcuts": "Snelkoppelingen",
   "studio.pages.apps.app.edit.title": "Editor",
   "studio.pages.apps.app.edit.updateSuccess": "Appdefinitie is succesvol gewijzigd",
   "studio.pages.apps.app.edit.viewLive": "Bekijk live",

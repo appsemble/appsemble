@@ -383,6 +383,7 @@
   "studio.pages.apps.app.edit.resourceWarning": "Определения ресурсов в этом определении приложения содержат данные, отличные от исходных. Это может привести к неожиданным результатам при использовании старых данных.",
   "studio.pages.apps.app.edit.resourceWarningTitle": "Предупреждение о ресурсах",
   "studio.pages.apps.app.edit.sharedStyle": "Общий стиль",
+  "studio.pages.apps.app.edit.shortcuts": "Ярлыки",
   "studio.pages.apps.app.edit.title": "Редактор",
   "studio.pages.apps.app.edit.updateSuccess": "Определение приложения успешно обновлено",
   "studio.pages.apps.app.edit.viewLive": "Смотреть в прямом эфире",

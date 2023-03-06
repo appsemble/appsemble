@@ -46,6 +46,7 @@ export default function EditPage(): ReactElement {
   const [pristine, setPristine] = useState(true);
 
   const frame = useRef<HTMLIFrameElement>();
+  const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
@@ -149,6 +150,17 @@ export default function EditPage(): ReactElement {
     return () => disposable.dispose();
   }, []);
 
+  const openShortcuts = useCallback(() => {
+    const ed = editorRef.current;
+    if (!ed) {
+      return;
+    }
+
+    const action = ed.getAction('editor.action.quickCommand');
+    ed.focus();
+    action.run();
+  }, []);
+
   const monacoProps =
     location.hash === '#editor'
       ? { language: 'yaml', uri: 'app.yaml', value: appDefinition }
@@ -189,6 +201,9 @@ export default function EditPage(): ReactElement {
           >
             <FormattedMessage {...messages.viewLive} />
           </Button>
+          <Button icon="keyboard" onClick={openShortcuts}>
+            <FormattedMessage {...messages.shortcuts} />
+          </Button>
         </div>
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
@@ -207,6 +222,7 @@ export default function EditPage(): ReactElement {
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
+            ref={editorRef}
             showDiagnostics
             {...monacoProps}
           />
