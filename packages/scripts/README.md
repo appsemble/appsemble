@@ -3,7 +3,6 @@
 > Internal scripts for use in the Appsemble repository.
 
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.40/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.40/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Usage

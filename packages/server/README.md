@@ -4,7 +4,6 @@
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.40/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.40/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 The Appsemble server is distributed as a Docker image.
