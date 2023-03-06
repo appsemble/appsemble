@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.40](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)] - 2023-03-06
+
+### Added
+
+- Block(`form`): Make block data accessible to `from` and `to` requirements.
+
+### Fixed
+
+- App: Resolve issue related to startup notifications being enabled by default for all apps.
+- Server: Resolve issue where the app name and organization id are undefined in the URL subdomain
+  when using the app remapper URL option.
+
 ## \[[0.20.39](https://gitlab.com/appsemble/appsemble/-/releases/0.20.39)] - 2023-02-28
 
 ### Added

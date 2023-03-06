@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.39
-appVersion: 0.20.39
+version: 0.20.40
+appVersion: 0.20.40
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,36 +25,13 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Support disabled options in enum fields."
-    - kind: added
-      description: "App: Add layout option to set the position of a message on the screen."
-    - kind: added
-      description: "App: Add match action."
-    - kind: added
-      description: "App: Add support for deeply nested array remappers."
-    - kind: added
-      description: "App: Add translation path for the first subpage in the loop page."
-    - kind: added
-      description: "App: Add translation path for the last subpage in the loop page."
-    - kind: added
-      description: "Server: Add support for deeply nested array remappers."
-    - kind: changed
-      description: "Block(form): Child fields in repeated object fields now contain an
-        index in their naming sequence, breaking styling in some instances when
-        applied to child fields."
-    - kind: changed
-      description: "Block(form): Object field is now usable within another object field."
-    - kind: changed
-      description: "Block(form): Rename object field to fieldset. Apps using the
-        object field that need to be updated to version 0.20.39 will break. To fix
-        this, change the field type from object to fieldset."
+      description: "Block(form): Make block data accessible to from and to requirements."
     - kind: fixed
-      description: "Block(form): Required remapper is now properly supported in nested fields."
+      description: "App: Resolve issue related to startup notifications being enabled
+        by default for all apps."
     - kind: fixed
-      description: "Block(form): Resolve validation issue causing object fields to be broken."
-    - kind: fixed
-      description: "App: Apply the same translation path for all subpages between the
-        first and last subpage in the loop page."
+      description: "Server: Resolve issue where the app name and organization id are
+        undefined in the URL subdomain when using the app remapper URL option."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

@@ -115,7 +115,7 @@ pages:
       - $team:member
     blocks:
       - type: action-button
-        version: 0.20.39
+        version: 0.20.40
         roles: $team:member
         actions:
           onClick:

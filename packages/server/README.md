@@ -1,10 +1,10 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.39/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.40/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.39/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.39)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.39/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.40/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)
+[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.40/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 The Appsemble server is distributed as a Docker image.
@@ -110,5 +110,5 @@ Check the `read_user` scope, and click _Save application_.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.39/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.40/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
