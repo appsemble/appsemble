@@ -174,7 +174,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                     remarkMermaid,
                     {
                       launchOptions: { executablePath: process.env.CHROME_BIN || 'google-chrome' },
-                      svgo: false,
                     },
                   ],
                   remarkMdxCodeMeta,
