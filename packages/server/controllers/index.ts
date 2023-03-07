@@ -6,6 +6,7 @@ export * from './appNotifications.js';
 export * from './appOAuth2Secrets.js';
 export * from './appMessages.js';
 export * from './appSamlSecrets.js';
+export * from './appSSLSecrets.js';
 export * from './studioMessages.js';
 export * from './assets.js';
 export * from './auth.js';

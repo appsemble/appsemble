@@ -335,4 +335,25 @@ describe('request', () => {
       ],
     });
   });
+
+  it('should set parameter as end of URL when presented as a single string', async () => {
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      return [200, { hello: 'data' }, {}];
+    });
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        method: 'get',
+        url: 'https://example.com/api',
+        query: 0,
+        proxy: false,
+      },
+    });
+    const result = await action({ hello: 'get' });
+    expect(request.method).toBe('get');
+    expect(request.url).toBe('https://example.com/api/0');
+    expect(request.params).toBeNull();
+    expect(result).toStrictEqual({ hello: 'data' });
+  });
 });

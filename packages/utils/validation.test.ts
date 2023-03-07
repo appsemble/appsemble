@@ -730,6 +730,19 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
   });
 
+  it('should report if notifications is "login" without a security definition', async () => {
+    const app = createTestApp();
+    delete app.security;
+    app.notifications = 'login';
+    const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('only works if security is defined', 'login', undefined, [
+        'notifications',
+      ]),
+    ]);
+  });
+
   it('should validate the default role exists', async () => {
     const app = createTestApp();
     app.security.default.role = 'Unknown';
@@ -1136,7 +1149,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should allow $author in resource notifcation hooks', async () => {
+  it('should allow $author in resource notification hooks', async () => {
     const app = createTestApp();
     app.resources.person.update.hooks = {
       notification: {
@@ -1247,7 +1260,7 @@ describe('validateAppDefinition', () => {
     );
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
-      new ValidationError('may not specifiy parameters', 'Page with parameters', undefined, [
+      new ValidationError('may not specify parameters', 'Page with parameters', undefined, [
         'defaultPage',
       ]),
     ]);
@@ -1496,7 +1509,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError(
-        'flow actions can only be used on pages with the type ‘flow’',
+        'flow actions can only be used on pages with the type ‘flow’ or ‘loop’',
         'flow.next',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'type'],
@@ -1825,6 +1838,91 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toStrictEqual([
       new ValidationError('Unexpected error: Boom!', null, undefined, []),
+    ]);
+  });
+
+  it('should prevent block with layout float to be used in a dialog action', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onClick: {
+          type: 'dialog',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        layout: 'float',
+        actions: {
+          onClick: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'block with layout type: "float" is not allowed in a dialog action',
+        '1.2.3',
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'type'],
+      ),
+    ]);
+  });
+
+  it('should check app definition for blocks that have their layout manually set to float', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      actions: {
+        onClick: {
+          type: 'dialog',
+          blocks: [
+            {
+              type: 'test',
+              version: '1.2.3',
+              layout: 'float',
+            },
+          ],
+        },
+      },
+    });
+    const result = await validateAppDefinition(app, () => [
+      {
+        name: '@appsemble/test',
+        version: '1.2.3',
+        files: [],
+        languages: [],
+        layout: 'hidden',
+        actions: {
+          onClick: {},
+        },
+      },
+    ]);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'block with layout type: "float" is not allowed in a dialog action',
+        {
+          layout: 'float',
+          type: 'test',
+          version: '1.2.3',
+        },
+        undefined,
+        ['pages', 0, 'blocks', 0, 'actions', 'onClick', 'type'],
+      ),
     ]);
   });
 });

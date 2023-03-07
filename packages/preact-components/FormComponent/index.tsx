@@ -11,6 +11,11 @@ import styles from './index.module.css';
  */
 export interface SharedFormComponentProps {
   /**
+   * An optional class name.
+   */
+  className?: string;
+
+  /**
    * A Bulma addon to display.
    */
   addon?: ComponentChild;
@@ -31,9 +36,14 @@ export interface SharedFormComponentProps {
   help?: ComponentChild;
 
   /**
-   * A fontaweome icon to render on the left side of the input.
+   * A fontawesome icon to render on the left side of the input.
    */
   icon?: IconName;
+
+  /**
+   * An optional id for the HTML element. If not set, this will fall back to `name`.
+   */
+  id?: string;
 
   /**
    * The label element to render.
@@ -48,23 +58,30 @@ export interface SharedFormComponentProps {
   optionalLabel?: ComponentChild;
 
   /**
+   * The name for the HTML element.
+   */
+  name?: string;
+
+  /**
+   * Whether or not the field is required
+   */
+  required?: boolean;
+
+  /**
    * The tag to display next to the label.
    */
   tag?: ComponentChild;
+
+  /**
+   * Combines fields on the same row.
+   *
+   * Fields are combined in order if set to true.
+   */
+  inline?: true;
 }
 
 export interface FormComponentProps extends SharedFormComponentProps {
   children: ComponentChild;
-
-  /**
-   * A class name to pass to the field element.
-   */
-  className?: string;
-
-  /**
-   * An optional id for the HTML element. If not set, this will fall back to `name`.
-   */
-  id?: string;
 
   /**
    * An extra message to display right of the help text.
@@ -98,6 +115,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
       helpExtra,
       icon,
       id,
+      inline,
       label,
       optionalLabel = '(Optional)',
       required,
@@ -127,7 +145,7 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
     );
 
     return (
-      <div className={classNames('field', className)} ref={ref}>
+      <div className={classNames('field', className, { [styles.inline]: inline })} ref={ref}>
         {label ? (
           <label className="label" htmlFor={id}>
             {label}

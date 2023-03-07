@@ -182,10 +182,10 @@ export function CloneButton({ app }: CloneButtonProps): ReactElement {
             <FormattedMessage
               {...messages.cloneLoginMessage}
               values={{
-                loginLink: (content: string) => (
+                loginLink: (content) => (
                   <Link to={`/${lang}/login?${new URLSearchParams({ redirect })}`}>{content}</Link>
                 ),
-                registerLink: (content: string) => (
+                registerLink: (content) => (
                   <Link to={`/${lang}/register?${new URLSearchParams({ redirect })}`}>
                     {content}
                   </Link>

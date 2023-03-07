@@ -195,7 +195,7 @@ export function OAuth2Modal({
           <FormattedMessage
             {...messages.remapperHelp}
             values={{
-              link: (link: string) => (
+              link: (link) => (
                 <Link target="_blank" to={`/${lang}/docs/guide/remappers`}>
                   {link}
                 </Link>

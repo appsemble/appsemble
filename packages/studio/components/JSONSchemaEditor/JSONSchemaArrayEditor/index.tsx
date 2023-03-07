@@ -15,8 +15,8 @@ import { messages } from './messages.js';
 export function JSONSchemaArrayEditor({
   disabled,
   name,
-  prefix,
   onChange,
+  prefix,
   schema,
   value = [],
 }: CommonJSONSchemaEditorProps<any[]>): ReactElement {
@@ -25,7 +25,7 @@ export function JSONSchemaArrayEditor({
   const [removingItem, setRemovingItem] = useState<number>();
 
   const onPropertyChange = useCallback(
-    ({ currentTarget }: NamedEvent, val) => {
+    ({ currentTarget }: NamedEvent, val: string) => {
       const index = Number(currentTarget.name.slice(name.length + 1));
       onChange(
         { currentTarget: { name } },

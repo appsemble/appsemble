@@ -87,14 +87,14 @@ function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
  * @param app App as fetched from the database.
  * This must include the app member and organization relationships.
  * @param resourceType The resource type to check the role for.
- * @param action The resource action to theck the role for.
+ * @param action The resource action to check the role for.
  * @returns Query options to filter the resource for the user context.
  */
 async function verifyPermission(
   ctx: Context,
   app: App,
   resourceType: string,
-  action: 'count' | 'create' | 'delete' | 'get' | 'query' | 'update',
+  action: 'count' | 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update',
 ): Promise<WhereOptions> {
   const resourceDefinition = app.definition.resources[resourceType];
 
@@ -121,7 +121,7 @@ async function verifyPermission(
       ? resourceDefinition.views[view].roles
       : resourceDefinition[action]?.roles ?? resourceDefinition.roles) || [];
 
-  if ((!roles || !roles.length) && app.definition.roles?.length) {
+  if (!roles?.length && app.definition.roles?.length) {
     roles.push(...app.definition.roles);
   }
 
@@ -244,7 +244,7 @@ async function verifyPermission(
 export async function queryResources(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceType },
-    queryParams: { $select, $top },
+    queryParams: { $select, $skip, $top },
     user,
   } = ctx;
 
@@ -274,6 +274,7 @@ export async function queryResources(ctx: Context): Promise<void> {
       { association: 'Editor', attributes: ['id', 'name'], required: false },
     ],
     limit: $top,
+    offset: $skip,
     order,
     where: {
       [Op.and]: [
@@ -538,7 +539,7 @@ export async function createResource(ctx: Context): Promise<void> {
   const action = 'create';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -607,7 +608,7 @@ export async function updateResources(ctx: Context): Promise<void> {
   const action = 'update';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -732,7 +733,7 @@ export async function updateResource(ctx: Context): Promise<void> {
   const action = 'update';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -819,6 +820,99 @@ export async function updateResource(ctx: Context): Promise<void> {
   processHooks(user, app, resource, action);
 }
 
+export async function patchResource(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, resourceId, resourceType },
+    user,
+  } = ctx;
+  const action = 'patch';
+
+  const app = await App.findByPk(appId, {
+    attributes: ['id', 'definition', 'OrganizationId'],
+    include: user
+      ? [
+          { model: Organization, attributes: ['id'] },
+          {
+            model: AppMember,
+            attributes: ['role', 'UserId'],
+            required: false,
+            where: { UserId: user.id },
+          },
+        ]
+      : [],
+  });
+
+  const definition = getResourceDefinition(app, resourceType);
+  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+
+  const resource = await Resource.findOne({
+    where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
+    include: [
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { model: Asset, attributes: ['id'], required: false },
+    ],
+  });
+
+  if (!resource) {
+    throw notFound('Resource not found');
+  }
+
+  const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
+    ctx,
+    definition,
+    resource.Assets.map((asset) => asset.id),
+    resource.expires,
+  );
+  const {
+    $clonable: clonable,
+    $expires: expires,
+    ...patchData
+  } = updatedResource as Record<string, unknown>;
+
+  await transactional((transaction) => {
+    const oldData = resource.data;
+    const data = { ...oldData, ...patchData };
+    const previousEditorId = resource.EditorId;
+    const promises: Promise<unknown>[] = [
+      resource.update({ data, clonable, expires, EditorId: user?.id }, { transaction }),
+    ];
+
+    if (preparedAssets.length) {
+      promises.push(
+        Asset.bulkCreate(
+          preparedAssets.map((asset) => ({
+            ...asset,
+            AppId: app.id,
+            ResourceId: resource.id,
+            UserId: user?.id,
+          })),
+          { logging: false, transaction },
+        ),
+      );
+    }
+
+    if (definition.history) {
+      promises.push(
+        ResourceVersion.create(
+          {
+            ResourceId: resourceId,
+            UserId: previousEditorId,
+            data: definition.history === true || definition.history.data ? oldData : undefined,
+          },
+          { transaction },
+        ),
+      );
+    } else {
+      promises.push(Asset.destroy({ where: { id: deletedAssetIds }, transaction }));
+    }
+
+    return Promise.all(promises);
+  });
+  await resource.reload({ include: [{ association: 'Editor' }] });
+
+  ctx.body = resource;
+}
+
 export async function deleteResource(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, resourceId, resourceType },
@@ -827,7 +921,7 @@ export async function deleteResource(ctx: Context): Promise<void> {
   const action = 'delete';
 
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },
@@ -868,7 +962,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
 
   const action = 'delete';
   const app = await App.findByPk(appId, {
-    attributes: ['id', 'definition', 'OrganizationId'],
+    attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
       ? [
           { model: Organization, attributes: ['id'] },

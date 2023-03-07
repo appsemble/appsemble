@@ -14,6 +14,10 @@ The actions are run in parallel.
 
 If the input is not an array, the action will be applied to the input instead.`,
     },
+    serial: {
+      description: 'Runs the action in series instead of parallel',
+      type: 'boolean',
+    },
     do: {
       description: 'This action is called for each item in the input array.',
       $ref: '#/components/schemas/ActionDefinition',

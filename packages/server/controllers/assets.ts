@@ -10,24 +10,11 @@ import { checkRole } from '../utils/checkRole.js';
 export async function getAssets(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
+    queryParams: { $skip, $top },
   } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
-    include: [
-      {
-        model: Asset,
-        attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
-        required: false,
-        include: [
-          {
-            model: Resource,
-            attributes: ['type'],
-            required: false,
-          },
-        ],
-      },
-    ],
   });
 
   if (!app) {
@@ -36,7 +23,21 @@ export async function getAssets(ctx: Context): Promise<void> {
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
-  ctx.body = app.Assets.map((asset) => ({
+  const assets = await Asset.findAll({
+    attributes: ['id', 'mime', 'filename', 'name', 'ResourceId'],
+    include: [
+      {
+        model: Resource,
+        attributes: ['type'],
+        required: false,
+      },
+    ],
+    where: { AppId: appId },
+    offset: $skip,
+    limit: $top,
+  });
+
+  ctx.body = assets.map((asset) => ({
     id: asset.id,
     resourceId: asset.ResourceId ?? undefined,
     resourceType: asset.Resource?.type,
@@ -44,6 +45,25 @@ export async function getAssets(ctx: Context): Promise<void> {
     filename: asset.filename,
     name: asset.name || undefined,
   }));
+}
+
+export async function countAssets(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['OrganizationId'],
+  });
+
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
+
+  const count = await Asset.count({ where: { AppId: appId } });
+  ctx.body = count;
 }
 
 export async function getAssetById(ctx: Context): Promise<void> {

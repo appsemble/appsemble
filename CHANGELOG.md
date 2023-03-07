@@ -2,6 +2,294 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.40](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)] - 2023-03-06
+
+### Added
+
+- Block(`form`): Make block data accessible to `from` and `to` requirements.
+
+### Fixed
+
+- App: Resolve issue related to startup notifications being enabled by default for all apps.
+- Server: Resolve issue where the app name and organization id are undefined in the URL subdomain
+  when using the app remapper URL option.
+
+## \[[0.20.39](https://gitlab.com/appsemble/appsemble/-/releases/0.20.39)] - 2023-02-28
+
+### Added
+
+- Block(`form`): Support disabled options in enum fields.
+- App: Add `layout` option to set the position of a message on the screen.
+- App: Add `match` action.
+- App: Add support for deeply nested array remappers.
+- App: Add translation path for the first subpage in the loop page.
+- App: Add translation path for the last subpage in the loop page.
+- Server: Add support for deeply nested array remappers.
+
+### Changed
+
+- Block(`form`): Child fields in repeated object fields now contain an index in their naming
+  sequence, **breaking** styling in some instances when applied to child fields.
+- Block(`form`): Object field is now usable within another object field.
+- Block(`form`): Rename object field to fieldset. Apps using the object field that need to be
+  updated to version 0.20.39 will **break**. To fix this, change the field type from `object` to
+  `fieldset`.
+
+### Fixed
+
+- Block(`form`): Required remapper is now properly supported in nested fields.
+- Block(`form`): Resolve validation issue causing object fields to be broken.
+- App: Apply the same translation path for all subpages between the first and last subpage in the
+  loop page.
+
+## \[[0.20.38](https://gitlab.com/appsemble/appsemble/-/releases/0.20.38)] - 2023-02-07
+
+### Added
+
+- Block(`form`): Add `disableDefault` option to disable setting default values with page data.
+
+## \[[0.20.37](https://gitlab.com/appsemble/appsemble/-/releases/0.20.37)] - 2023-02-02
+
+### Fixed
+
+- Block(`form`): Resolve issue regarding date fields breaking a page when navigating away and back
+  to the form.
+
+## \[[0.20.36](https://gitlab.com/appsemble/appsemble/-/releases/0.20.36)] - 2023-02-02
+
+### Added
+
+- Block(`form`): Support icons on `radio` field options.
+
+## \[[0.20.35](https://gitlab.com/appsemble/appsemble/-/releases/0.20.35)] - 2023-02-01
+
+### Added
+
+- Block(`chart`): Add `font` to `labelOptions`.
+- Block(`chart`): Add `maxWidth` to `labelOptions`.
+- App: Add `resource.patch` action.
+- App: Add `serial` option to each action.
+
+## \[[0.20.34](https://gitlab.com/appsemble/appsemble/-/releases/0.20.34)] - 2023-01-30
+
+### Fixed
+
+- Server: Use correct value for the Kubernetes issuer when updating an ingress.
+
+## \[[0.20.33](https://gitlab.com/appsemble/appsemble/-/releases/0.20.33)] - 2023-01-24
+
+### Added
+
+- App: Add `notifications` option `login`.
+- App: Add `notify` action.
+- Server: Add `notify` action.
+
+### Fixed
+
+- App: Allow storing falsy values using the `storage.update` action.
+
+## \[[0.20.32](https://gitlab.com/appsemble/appsemble/-/releases/0.20.32)] - 2023-01-17
+
+### Added
+
+- Block(`form`): Add `disabled` property on individual fields.
+- Server: Add history remapper support.
+
+### Changed
+
+- Block(`map`): Use another implementation to render markdown.
+
+## \[[0.20.31](https://gitlab.com/appsemble/appsemble/-/releases/0.20.31)] - 2023-01-11
+
+### Added
+
+- Block(`chart`): Added `color` option to chart datasets.
+- Block(`form`): Add the `disabled` parameter.
+- Block(`form`): Make the `readOnly` field property a remapper.
+- App: Add the `date.format` remapper.
+
+### Fixed
+
+- Server: Resolved an issue where resource notifications would not work.
+
+## \[[0.20.30](https://gitlab.com/appsemble/appsemble/-/releases/0.20.30)] - 2022-12-20
+
+### Added
+
+- Block(`chart`): Added `onClick` action to chart block.
+
+## \[[0.20.29](https://gitlab.com/appsemble/appsemble/-/releases/0.20.29)] - 2022-12-20
+
+### Added
+
+- App: Add page type `loop`.
+- Utils: Added `step` remapper.
+
+### Fixed
+
+- Block(`form`): Resolved an issue where the `autofill` feature wouldn’t allow you to submit if a
+  property was missing in the response and the input required.
+- Block(`form`): Resolved an issue where the label of a number input would not accept remappers.
+
+## \[[0.20.28](https://gitlab.com/appsemble/appsemble/-/releases/0.20.28)] - 2022-12-08
+
+### Fixed
+
+- App: Resolved an issue where loading in data into a table block using the `appStorage` option
+  would not update the table block.
+
+## \[[0.20.27](https://gitlab.com/appsemble/appsemble/-/releases/0.20.27)] - 2022-12-05
+
+### Added
+
+- Server: Add support for custom SSL certificates for apps.
+- Studio: Add support for custom SSL certificates for apps.
+
+## \[[0.20.26](https://gitlab.com/appsemble/appsemble/-/releases/0.20.26)] - 2022-12-02
+
+### Added
+
+- App: Add `appStorage` to storage actions.
+
+## \[[0.20.25](https://gitlab.com/appsemble/appsemble/-/releases/0.20.25)] - 2022-12-01
+
+### Changed
+
+- Types: **Breaking:** Rename `hideFromMenu` to `hideNavTitle`.
+
+### Fixed
+
+- App: Add timezone to user registration.
+- App: Fix values being treated as parameters in request action.
+
+## \[[0.20.24](https://gitlab.com/appsemble/appsemble/-/releases/0.20.24)] - 2022-11-30
+
+### Added
+
+- Block(`form`): Add `skipInitialLoad` property to form block parameters.
+
+## \[[0.20.23](https://gitlab.com/appsemble/appsemble/-/releases/0.20.23)] - 2022-11-28
+
+## \[[0.20.22](https://gitlab.com/appsemble/appsemble/-/releases/0.20.22)] - 2022-11-24
+
+### Added
+
+- App: Add storage.append action.
+- App: Add storage.delete action.
+- App: Add storage.subtract action.
+- App: Add storage.update action.
+
+### Fixed
+
+- Utils: Resolve `array.omit` not accepting an array of remappers.
+
+## \[[0.20.21](https://gitlab.com/appsemble/appsemble/-/releases/0.20.21)] - 2022-11-24
+
+### Added
+
+- Block(`form`): Add `inline` property to form fields.
+- Block(`form`): Allow the required requirement to be remapped for conditionally required form
+  fields.
+- App: Add Indonesian translations.
+- App: Add `retainFlowData` prop to flow page.
+- App: Added Russian translations.
+- Studio: Add Indonesian translations.
+- Studio: Added Russian translations.
+- Types: Add `hideName` prop to pages.
+- Utils: Add `from.history` remapper.
+
+### Changed
+
+- Types: `array.omit` remapper now supports an array of remappers as input.
+
+### Fixed
+
+- App: Resolve `link.back` action not navigating to the previous page if current page is translated.
+
+## \[[0.20.20](https://gitlab.com/appsemble/appsemble/-/releases/0.20.20)] - 2022-11-09
+
+### Fixed
+
+- App: Resolve sub-page URLs on tabs pages not being translated.
+
+## \[[0.20.19](https://gitlab.com/appsemble/appsemble/-/releases/0.20.19)] - 2022-11-08
+
+### Added
+
+- Utils: Add `array.append` remapper.
+- Utils: Add `array.from` remapper.
+- Utils: Add `array.omit` remapper.
+
+### Changed
+
+- Block(`form`): Rename `showIf` property to `show`.
+
+### Fixed
+
+- Block(`form`): Resolved an issue where the string field would not display icons.
+- Block(`table`): Resolve an issue where buttons would not add the id to the resource route when
+  using the link action in the table block.
+- App: Resolve page parameters on tabs pages not working.
+
+## \[[0.20.18](https://gitlab.com/appsemble/appsemble/-/releases/0.20.18)] - 2022-10-26
+
+### Fixed
+
+- Block(`form`): Fix bug where forms would not load without defining the auto-fill parameter.
+
+## \[[0.20.17](https://gitlab.com/appsemble/appsemble/-/releases/0.20.17)] - 2022-10-24
+
+### Added
+
+- Block(`action-button`): Add the icon for the action button block.
+- Block(`audio`): Add the icon for the audio block.
+- Block(`chart`): Add the icon for the chart block.
+- Block(`control-buttons`): Add the icon for the control buttons block.
+- Block(`feed`): Add the icon for the feed block.
+- Block(`filter`): Add the icon for the filter block.
+- Block(`form`): Add form auto-fill.
+- Block(`form`): Add the icon for the form block.
+- Block(`html`): Add the icon for the HTML block.
+- Block(`image`): Add the icon for the image block.
+- Block(`list`): Add the icon for the list block.
+- Block(`map`): Add the icon for the map block.
+- Block(`markdown`): Add the icon for the markdown block.
+- Block(`qr-scan`): Add the icon for the qr-scan block.
+- Block(`table`): Add the icon for the table block.
+- Block(`tiles`): Add the icon for the tiles block.
+- Block(`timer`): Add the icon for the timer block.
+- Block(`video`): Add the icon for the video block.
+- Utils: Add assign.history remapper.
+- Utils: Add history remapper.
+- Utils: Add omit.history remapper.
+
+### Fixed
+
+- Studio: Resolved not being able to create apps in an organization with sufficient permissions when
+  your first organization gave you insufficient permission to create apps.
+
+## \[[0.20.16](https://gitlab.com/appsemble/appsemble/-/releases/0.20.16)] - 2022-10-13
+
+### Added
+
+- Block(`form`): Block(form): Add conditional field rendering.
+- App: Add the `each` action.
+- Server: Add the `each` action.
+
+### Changed
+
+- App: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+- React-components: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+- Server: Accepts the `examples` property for JSON schemata instead of `example`.
+- Studio: Upgrade from “react-router-dom” 5.0.0 to 6.0.0.
+
+### Fixed
+
+- App: Fix user.register action.
+- Server: Fix content security policy for OAuth2 client credentials login process.
+- Studio: Fixed editor console errors persisting after fixing the error.
+- Studio: Studio(blocks): Change name in block examples to type.
+
 ## \[[0.20.15](https://gitlab.com/appsemble/appsemble/-/releases/0.20.15)] - 2022-09-14
 
 ### Added

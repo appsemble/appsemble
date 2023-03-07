@@ -34,12 +34,8 @@ export function ResourceDefinitionDetailsPage(): ReactElement {
           {...messages.description}
           values={{
             public: <code>$public</code>,
-            securityLink: (content: string) => (
-              <Link to={`/${lang}/docs/guide/api`}>{content}</Link>
-            ),
-            apiLink: (content: string) => (
-              <Link to={`/${lang}/docs/guide/resources`}>{content}</Link>
-            ),
+            securityLink: (content) => <Link to={`/${lang}/docs/guide/api`}>{content}</Link>,
+            apiLink: (content) => <Link to={`/${lang}/docs/guide/resources`}>{content}</Link>,
           }}
         />
       </p>

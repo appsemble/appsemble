@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { sentryDsn } from '../../utils/settings.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import { messages } from './messages.js';
 
@@ -13,9 +13,9 @@ export function SentryFeedback(): ReactElement {
 
   return (
     <Content main padding>
-      <TitleBar>
+      <AppBar>
         <FormattedMessage {...messages.feedback} />
-      </TitleBar>
+      </AppBar>
       <SentryForm dsn={sentryDsn} email={userInfo?.email} name={userInfo?.name} />
     </Content>
   );

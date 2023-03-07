@@ -22,6 +22,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       id = name,
       tag,
       optionalLabel,
+      inline,
       ...props
     },
     ref,
@@ -31,6 +32,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       help={help}
       icon={icon}
       id={id}
+      inline={inline}
       label={label}
       optionalLabel={optionalLabel}
       required={required}

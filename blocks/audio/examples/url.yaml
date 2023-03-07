@@ -1,0 +1,5 @@
+parameters:
+  src: https://cdn.freesound.org/previews/109/109502_1888103-lq.mp3
+events:
+  listen:
+    onAudio: onPlayAudio

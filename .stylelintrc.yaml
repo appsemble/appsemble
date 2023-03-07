@@ -6,6 +6,7 @@ plugins:
   - stylelint-color-format
   - stylelint-no-unsupported-browser-features
   - stylelint-order
+reportNeedlessDisables: true
 rules:
   # Disallow naming conventions. This allows to mix bulma classes and camelCase classes for CSS modules.
   keyframes-name-pattern: null

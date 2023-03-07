@@ -4,7 +4,7 @@ import { Sequelize } from 'sequelize';
 export const key = '0.13.12';
 
 /**
- * Symmary:
+ * Summary:
  * - Rename style to coreStyle in App
  *
  * @param db The sequelize database.

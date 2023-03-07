@@ -1,17 +1,40 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 import { Context } from 'koa';
+import { Transaction } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
-import { Recipient } from '../utils/email/Mailer.js';
+import { Mailer, Recipient } from '../utils/email/Mailer.js';
 import { getAccessToken, getUserInfo } from '../utils/oauth2.js';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets.js';
 
+const processEmailAuthorization = async (
+  mailer: Mailer,
+  id: string,
+  name: string,
+  email: string,
+  verified: boolean,
+  transaction: Transaction,
+): Promise<void> => {
+  const key = verified ? null : randomBytes(40).toString('hex');
+  await EmailAuthorization.create(
+    { UserId: id, email: email.toLowerCase(), key, verified },
+    { transaction },
+  );
+  if (!verified) {
+    await mailer.sendTemplateEmail({ email, name } as Recipient, 'resend', {
+      url: `${argv.host}/verify?token=${key}`,
+      name: 'The Appsemble Team',
+    });
+  }
+};
+
 export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   const {
+    mailer,
     request: {
       body: { authorizationUrl, code },
       headers,
@@ -65,12 +88,27 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
     idToken,
     preset.userInfoUrl,
     preset.remapper,
+    preset.userEmailsUrl,
   );
 
   const authorization = await OAuthAuthorization.findOne({
     where: { authorizationUrl, sub },
   });
   if (authorization?.UserId) {
+    const dbUser = await User.findOne({ where: { id: authorization.UserId } });
+    if (dbUser && !dbUser.primaryEmail && userInfo.email) {
+      await transactional(async (transaction) => {
+        await dbUser.update({ primaryEmail: userInfo.email }, { transaction });
+        await processEmailAuthorization(
+          mailer,
+          dbUser.id,
+          userInfo.name,
+          userInfo.email,
+          Boolean(userInfo.email_verified),
+          transaction,
+        );
+      });
+    }
     // If the combination of authorization url and sub exists, update the entry and allow the user
     // to login to Appsemble.
     await authorization.update({ accessToken, refreshToken }, { where: { authorizationUrl, sub } });
@@ -132,6 +170,7 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
       null,
       preset.userInfoUrl,
       preset.remapper,
+      preset.userEmailsUrl,
     );
     await transactional(async (transaction) => {
       user = await User.create(
@@ -154,18 +193,14 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
             throw conflict('This email address has already been linked to an existing account.');
           }
         } else {
-          const verified = Boolean(userInfo.email_verified);
-          const key = verified ? null : randomBytes(40).toString('hex');
-          await EmailAuthorization.create(
-            { UserId: user.id, email: userInfo.email.toLowerCase(), key, verified },
-            { transaction },
+          await processEmailAuthorization(
+            mailer,
+            user.id,
+            userInfo.name,
+            userInfo.email,
+            Boolean(userInfo.email_verified),
+            transaction,
           );
-          if (!verified) {
-            await mailer.sendTemplateEmail(userInfo as Recipient, 'resend', {
-              url: `${argv.host}/verify?token=${key}`,
-              name: 'The Appsemble Team',
-            });
-          }
         }
       }
     });

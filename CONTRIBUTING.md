@@ -49,6 +49,15 @@ To run tests for a single file, run
 yarn test path/to/file
 ```
 
+Appsemble uses jest snapshots to assert large serializable objects like block manifests, HTTP
+responses and some react-components. These need
+[manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
+which can simply be done by running the commands mentioned with the `-u` argument.
+
+```sh
+yarn test -u
+```
+
 #### End 2 End Tests
 
 The end 2 end tests are run using
@@ -112,6 +121,14 @@ The hosts file can be found in the following location:
 - Most systems: `/etc/hosts`
 
 ## Releasing
+
+Before releasing, manually inspect the changelog to be published (quoting from the `.release` job):
+
+```sh
+# Make sure you're on master, clean working tree.
+yarn scripts release minor
+yarn --silent scripts get-release-notes
+```
 
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in
 the pipeline for the `main` branch.

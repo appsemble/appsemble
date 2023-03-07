@@ -25,7 +25,11 @@ const entries = (definitions as OpenAPIV3.NonArraySchemaObject).anyOf
         properties: Object.fromEntries(
           Object.entries(schema.properties).filter(
             ([prop]) =>
-              prop !== 'type' && prop !== 'remap' && prop !== 'onSuccess' && prop !== 'onError',
+              prop !== 'onError' &&
+              prop !== 'onSuccess' &&
+              prop !== 'remapAfter' &&
+              prop !== 'remapBefore' &&
+              prop !== 'type',
           ),
         ),
       },

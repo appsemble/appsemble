@@ -11,7 +11,7 @@ import {
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { authorizeApp, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -60,7 +60,7 @@ const defaultApp = (OrganizationId: string): Promise<App> =>
     OrganizationId,
   });
 
-useTestDatabase('appnotifications');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -96,7 +96,7 @@ describe('getSubscription', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -157,7 +157,7 @@ describe('addSubscription', () => {
   it('should subscribe to apps', async () => {
     const app = await defaultApp(organization.id);
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.post(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       keys: { p256dh: 'abc', auth: 'def' },
@@ -191,7 +191,7 @@ describe('updateSubscription', () => {
       auth: 'def',
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -238,7 +238,7 @@ describe('updateSubscription', () => {
     });
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -296,7 +296,7 @@ describe('updateSubscription', () => {
       action: 'create',
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -348,7 +348,7 @@ describe('updateSubscription', () => {
       params: { endpoint: 'https://example.com' },
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     const response = await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -412,7 +412,7 @@ describe('updateSubscription', () => {
       auth: 'def',
     });
 
-    authorizeStudio();
+    authorizeApp(app);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',
@@ -477,7 +477,7 @@ describe('updateSubscription', () => {
     });
     const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
-    authorizeStudio();
+    authorizeApp(app);
     await request.patch(`/api/apps/${app.id}/subscriptions`, {
       endpoint: 'https://example.com',
       resource: 'person',

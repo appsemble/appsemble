@@ -1,4 +1,4 @@
-import { parse } from 'querystring';
+import { parse } from 'node:querystring';
 
 import { loggerMiddleware } from '@appsemble/node-utils';
 import { api, convertToCsv } from '@appsemble/utils';

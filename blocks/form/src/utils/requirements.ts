@@ -2,7 +2,7 @@ import { Utils } from '@appsemble/sdk';
 import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
-import { Field } from '../../block.js';
+import { Field, Values } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 
@@ -10,10 +10,14 @@ type FieldWithRequirements = Field & { requirements?: any[] };
  * Check if a field is required.
  *
  * @param field The field to check.
+ * @param utils The Appsemble SDK utils.
+ * @param values The values of all form fields.
  * @returns Whether or not the field is required.
  */
-export function isRequired(field: FieldWithRequirements): boolean {
-  return Boolean(field.requirements?.some(({ required }) => required));
+export function isRequired(field: FieldWithRequirements, utils?: Utils, values?: Values): boolean {
+  return Boolean(
+    field.requirements?.some(({ required }) => utils?.remap(required, values) ?? required),
+  );
 }
 
 /**
@@ -23,7 +27,7 @@ export function isRequired(field: FieldWithRequirements): boolean {
  * @returns Whether the date is a valid date object.
  */
 export function isValidDate(date: Date): boolean {
-  return date instanceof Date && !Number.isNaN(date);
+  return date instanceof Date && !Number.isNaN(Number(date));
 }
 
 /**
@@ -41,12 +45,17 @@ export function isValidTime(time: string): boolean {
  *
  * @param field The field to check.
  * @param utils The Appsemble SDK utils.
+ * @param values The block values.
  * @returns A date object matching the earliest date.
  */
-export function getMinDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
+export function getMinDate(
+  field: FieldWithRequirements,
+  utils: Utils,
+  values: Values = null,
+): Date | undefined {
   const minDates = field.requirements
     ?.filter((r) => 'from' in r)
-    .map((r) => new Date(utils.remap(r.from, null) as any))
+    .map((r) => new Date(utils.remap(r.from, values) as any))
     .filter(isValidDate);
   if (minDates?.length) {
     return minDates.sort(compareAsc)[0];
@@ -94,12 +103,17 @@ export function getMaxTime(field: FieldWithRequirements): string {
  *
  * @param field The field to check.
  * @param utils The Appsemble SDK utils.
+ * @param values The block values.
  * @returns A date object matching the last date.
  */
-export function getMaxDate(field: FieldWithRequirements, utils: Utils): Date | undefined {
+export function getMaxDate(
+  field: FieldWithRequirements,
+  utils: Utils,
+  values: Values = null,
+): Date | undefined {
   const maxDates = field.requirements
     ?.filter((r) => 'to' in r)
-    .map((r) => new Date(utils.remap(r.to, null) as any))
+    .map((r) => new Date(utils.remap(r.to, values) as any))
     .filter(isValidDate);
   if (maxDates?.length) {
     return maxDates.sort(compareDesc)[0];
@@ -117,6 +131,10 @@ const weekdays = [
 ] as const;
 
 export function getDisabledDays(field: FieldWithRequirements): ((date: Date) => boolean)[] {
+  if (!field.requirements) {
+    return [];
+  }
+
   const disabled = new Set<number>();
   for (const current of field.requirements) {
     for (const [index, name] of weekdays.entries()) {
@@ -160,7 +178,7 @@ export function getMaxLength(field: FieldWithRequirements): number | undefined {
 }
 
 /**
- * Get the absolute minumum value of a field.
+ * Get the absolute minimum value of a field.
  *
  * @param field The field to check.
  * @returns The minumum value of the field.

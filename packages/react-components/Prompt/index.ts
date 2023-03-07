@@ -1,65 +1,50 @@
-import { Blocker, History, Transition } from 'history';
-import { ContextType, ReactElement, useCallback, useContext, useEffect } from 'react';
-import {
-  Navigator as BaseNavigator,
-  UNSAFE_NavigationContext as NavigationContext,
-} from 'react-router-dom';
+import { ReactElement, useCallback, useContext, useEffect } from 'react';
+import { UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
 
 /**
- * Source: https://github.com/remix-run/react-router/commit/256cad70d3fd4500b1abcfea66f3ee622fb90874
+ * Source: https://github.com/remix-run/react-router/issues/8139#issuecomment-1291561405
  */
 
-interface Navigator extends BaseNavigator {
-  block: History['block'];
-}
+function useConfirmExit(confirmExit: () => boolean, when = true): void {
+  const { navigator } = useContext(NavigationContext);
 
-type NavigationContextWithBlock = ContextType<typeof NavigationContext> & { navigator: Navigator };
-
-function useBlocker(blocker: Blocker, when = true): void {
-  const { navigator } = useContext(NavigationContext) as NavigationContextWithBlock;
   useEffect(() => {
     if (!when) {
       return;
     }
 
-    const unblock = navigator.block((tx) => {
-      const autoUnblockingTx = {
-        ...tx,
-        retry() {
-          unblock();
-          tx.retry();
-        },
-      };
-      blocker(autoUnblockingTx);
-    });
-    return unblock;
-  }, [navigator, blocker, when]);
+    const { push } = navigator;
+
+    navigator.push = (...args: Parameters<typeof push>) => {
+      const result = confirmExit();
+      if (result !== false) {
+        push(...args);
+      }
+    };
+
+    return () => {
+      navigator.push = push;
+    };
+  }, [navigator, confirmExit, when]);
 }
 
-function usePrompt(
-  message: string | ((location: Transition['location'], action: Transition['action']) => string),
-  when = true,
-): void {
-  const blocker = useCallback(
-    (tx: Transition) => {
-      let response;
-      if (typeof message === 'function') {
-        response = message(tx.location, tx.action);
-        if (typeof response === 'string') {
-          // eslint-disable-next-line no-alert
-          response = window.confirm(response);
-        }
-      } else {
-        // eslint-disable-next-line no-alert
-        response = window.confirm(message);
-      }
-      if (response) {
-        tx.retry();
-      }
-    },
-    [message],
-  );
-  return useBlocker(blocker, when);
+export function usePrompt(message: string, when = true): void {
+  useEffect(() => {
+    if (when) {
+      window.onbeforeunload = () => message;
+    }
+
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [message, when]);
+
+  const confirmExit = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    const confirm = window.confirm(message);
+    return confirm;
+  }, [message]);
+  useConfirmExit(confirmExit, when);
 }
 
 interface PromptProps {

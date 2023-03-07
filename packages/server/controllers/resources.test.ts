@@ -258,7 +258,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
     OrganizationId: orgId,
   });
 
-useTestDatabase('resources');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -3957,6 +3957,849 @@ describe('updateResource', () => {
       data: { string: 'rev1' },
     });
     const response = await request.put(
+      `/api/apps/${app.id}/resources/testHistoryDataFalse/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: null,
+      id: expect.stringMatching(uuid4Pattern),
+    });
+  });
+});
+
+describe('patchResource', () => {
+  it('should be able to patch an existing resource', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.', bar: 'I am Bar.' },
+    });
+
+    import.meta.jest.advanceTimersByTime(20e3);
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:20.000Z",
+        "bar": "I am Bar.",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `,
+    );
+
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+
+    expect(responseB).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:20.000Z",
+        "bar": "I am Bar.",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `,
+    );
+  });
+
+  it('should be able to patch an existing resource from another team', async () => {
+    const app = await exampleApp(organization.id);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      AuthorId: userB.id,
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          $author: { id: expect.any(String) },
+          $editor: { id: expect.any(String) },
+        },
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": null,
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `,
+    );
+  });
+
+  it('should not be able to patch an existing resource from another team if not part of the team', async () => {
+    const app = await exampleApp(organization.id);
+    const team = await Team.create({ name: 'Test Team', AppId: app.id });
+    const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const resource = await Resource.create({
+      type: 'testResourceTeam',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+      AuthorId: userB.id,
+    });
+
+    authorizeApp(app);
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceTeam/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "This action is private.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not be possible to patch an existing resource through another resource', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should not be possible to patch an existing resource through another app', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const appB = await exampleApp(organization.id, 'app-b');
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should not be possible to patch a non-existent resource', async () => {
+    const app = await exampleApp(organization.id);
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}/resources/testResource/0`, {
+      foo: 'I am not Foo.',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
+      }
+    `);
+  });
+
+  it('should validate resources', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { bar: 123 },
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": [
+                "string",
+              ],
+              "instance": 123,
+              "message": "is not of a type(s) string",
+              "name": "type",
+              "path": [
+                "bar",
+              ],
+              "property": "instance.bar",
+              "schema": {
+                "type": "string",
+              },
+              "stack": "instance.bar is not of a type(s) string",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should set clonable if specified in the request', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.', $clonable: true },
+    );
+
+    await resource.reload();
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+    `,
+    );
+    expect(resource.clonable).toBe(true);
+  });
+
+  it('should set $expires', async () => {
+    const app = await exampleApp(organization.id);
+    const {
+      data: { id },
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+      $expires: '1970-01-01T00:05:00.000Z',
+    });
+
+    const responseA = await request.patch(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+      {
+        foo: 'updated',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    );
+    const responseB = await request.get(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+    );
+
+    expect(responseA).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:07:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
+
+    expect(responseB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$expires": "1970-01-01T00:07:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "updated",
+        "id": 1,
+      }
+    `);
+  });
+
+  it('should not set $expires if the date has already passed', async () => {
+    // 10 minutes
+    import.meta.jest.advanceTimersByTime(600e3);
+
+    const app = await exampleApp(organization.id);
+    const {
+      data: { id },
+    } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
+      foo: 'test',
+    });
+
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
+      {
+        foo: 'updated',
+        $expires: '1970-01-01T00:07:00.000Z',
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "instance": "1970-01-01T00:07:00.000Z",
+              "message": "has already passed",
+              "path": [
+                "$expires",
+              ],
+              "property": "instance.$expires",
+              "stack": "instance.$expires has already passed",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should accept assets as form data', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const response = await request.patch<ResourceType>(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({
+        resource: { file: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
+    const assets = await Asset.findAll({ where: { ResourceId: response.data.id }, raw: true });
+    expect(assets).toStrictEqual([
+      {
+        AppId: app.id,
+        ResourceId: 1,
+        UserId: null,
+        created: new Date('1970-01-01T00:00:00.000Z'),
+        data: expect.any(Buffer),
+        filename: null,
+        id: response.data.file,
+        mime: 'application/octet-stream',
+        name: null,
+        updated: new Date('1970-01-01T00:00:00.000Z'),
+      },
+    ]);
+    expect(Buffer.from('Test resource a').equals(assets[0].data)).toBe(true);
+  });
+
+  it('should disallow unused assets', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({
+        resource: { string: '0' },
+        assets: Buffer.from('Test resource a'),
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "format",
+              "instance": 0,
+              "message": "is not referenced from the resource",
+              "name": "binary",
+              "path": [
+                "assets",
+                0,
+              ],
+              "property": "instance.assets[0]",
+              "stack": "instance.assets[0] is not referenced from the resource",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should block unknown asset references', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({
+        resource: { file: '1' },
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "data": {
+          "errors": [
+            {
+              "argument": "binary",
+              "instance": "1",
+              "message": "does not conform to the "binary" format",
+              "name": "format",
+              "path": [
+                "file",
+              ],
+              "property": "instance.file",
+              "schema": {
+                "format": "binary",
+                "type": "string",
+              },
+              "stack": "instance.file does not conform to the "binary" format",
+            },
+          ],
+        },
+        "error": "Bad Request",
+        "message": "Resource validation failed",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should allow referencing existing assets', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
+    const asset = await Asset.create({
+      ResourceId: resource.id,
+      AppId: app.id,
+      data: Buffer.alloc(0),
+    });
+    const response = await request.patch<ResourceType>(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({ resource: { file: asset.id } }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.any(String) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": Any<String>,
+        "id": 1,
+      }
+    `,
+    );
+    expect(response.data.file).toBe(asset.id);
+  });
+
+  it('should delete dereferenced assets', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testAssets',
+      data: { file: 'test-asset' },
+    });
+    const asset = await Asset.create({
+      id: 'test-asset',
+      ResourceId: resource.id,
+      AppId: app.id,
+      data: Buffer.alloc(0),
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
+      createFormData({ resource: { file: '0' }, assets: Buffer.alloc(0) }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { file: expect.stringMatching(/^[0-f]{8}(?:-[0-f]{4}){3}-[0-f]{12}$/) } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "file": StringMatching /\\^\\[0-f\\]\\{8\\}\\(\\?:-\\[0-f\\]\\{4\\}\\)\\{3\\}-\\[0-f\\]\\{12\\}\\$/,
+        "id": 1,
+      }
+    `,
+    );
+    await expect(() => asset.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should allow organization app editors to patch resources using Studio', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "baz",
+        "id": 1,
+      }
+    `,
+    );
+  });
+
+  it('should not allow organization members to patch resources using Studio', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should allow organization app editors to patch resources using client credentials', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "baz",
+        "id": 1,
+      }
+    `,
+    );
+  });
+
+  it('should not allow organization members to patch resources using client credentials', async () => {
+    await member.update({
+      role: 'Member',
+    });
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await authorizeClientCredentials('resources:write');
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResourceAuthorOnly/${resource.id}`,
+      { foo: 'baz' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should set the updater', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am Foo too!' },
+    );
+    expect(response).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo too!",
+        "id": 1,
+      }
+    `,
+    );
+
+    await resource.reload();
+    expect(resource.EditorId).toBe(user.id);
+  });
+
+  it('should keep an old resource version including data if history is true', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryTrue',
+      data: { string: 'rev1' },
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testHistoryTrue/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: { string: 'rev1' },
+      id: expect.stringMatching(uuid4Pattern),
+    });
+  });
+
+  it('should keep an old resource version including data if history.data is true', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryDataTrue',
+      data: { string: 'rev1' },
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}/resources/testHistoryDataTrue/${resource.id}`,
+      { string: 'rev2' },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "id": 1,
+        "string": "rev2",
+      }
+    `);
+    await resource.reload();
+    expect(resource.data).toStrictEqual({
+      string: 'rev2',
+    });
+    const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
+    expect(resourceVersion).toStrictEqual({
+      ResourceId: resource.id,
+      UserId: null,
+      created: new Date(),
+      data: { string: 'rev1' },
+      id: expect.stringMatching(uuid4Pattern),
+    });
+  });
+
+  it('should keep an old resource version excluding data if history.data is false', async () => {
+    const app = await exampleApp(organization.id);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testHistoryDataFalse',
+      data: { string: 'rev1' },
+    });
+    const response = await request.patch(
       `/api/apps/${app.id}/resources/testHistoryDataFalse/${resource.id}`,
       { string: 'rev2' },
     );

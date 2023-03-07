@@ -3,7 +3,7 @@ describe('/docs', () => {
     cy.visit('/en/docs');
   });
 
-  it('should render the getting started page', () => {
-    cy.contains('Getting Started').should('exist');
+  it('should render the reading guide page', () => {
+    cy.contains('Reading guide').should('exist');
   });
 });

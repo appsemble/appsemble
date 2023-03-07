@@ -18,7 +18,12 @@ export function TabsPage({
   prefixIndex,
   ...blockListProps
 }: TabsPageProps): ReactElement {
-  const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
+  const {
+    '*': wildcard,
+    lang,
+    pageId,
+  } = useParams<{ lang: string; pageId: string; '*': string }>();
+
   const { getAppMessage } = useAppMessages();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -35,7 +40,10 @@ export function TabsPage({
             id: `${prefix}.tabs.${index}`,
             defaultMessage: name,
           }).format() as string;
-          const value = `/${lang}/${pageId}/${normalize(translatedName)}`;
+
+          const value = `${['', lang, pageId, normalize(translatedName)].join('/')}${
+            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+          }`;
 
           return (
             <Tab href={value} key={name} value={value}>
@@ -65,7 +73,9 @@ export function TabsPage({
                 />
               }
               key={name}
-              path={`/${normalize(translatedName)}`}
+              path={`/${normalize(translatedName)}${String(
+                (page.parameters || []).map((param) => `/:${param}`),
+              )}`}
             />
           );
         })}
@@ -76,7 +86,10 @@ export function TabsPage({
             defaultMessage: name,
           }).format() as string;
 
-          const exactPath = `/${lang}/${pageId}/${normalize(translatedName)}`;
+          const exactPath = `/${lang}/${pageId}/${normalize(translatedName)}${
+            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
+          }`;
+
           return <Route element={<Navigate to={exactPath} />} key={exactPath} path="/*" />;
         })}
 

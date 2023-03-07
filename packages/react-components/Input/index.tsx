@@ -4,7 +4,7 @@ import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from '
 export interface InputProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'loading' | 'onChange' | 'pattern'> {
   /**
-   * If specified, a datalist element will be rendered to provided autocomplete options.
+   * If specified, a datalist element will be rendered to provided auto complete options.
    */
   datalist?: string[];
 

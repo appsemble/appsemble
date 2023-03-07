@@ -1,9 +1,9 @@
-import { AddressInfo, Server } from 'net';
-import { hostname } from 'os';
+import { AddressInfo, Server } from 'node:net';
+import { hostname } from 'node:os';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { TokenResponse } from '@appsemble/types';
-import axios from 'axios';
+import axios, { AxiosHeaders } from 'axios';
 import inquirer from 'inquirer';
 import Koa, { Context } from 'koa';
 import open from 'open';
@@ -182,10 +182,7 @@ export async function authenticate(
   authorizedRemotes.add(remote);
   axios.interceptors.request.use((config) => {
     if (config.baseURL === remote) {
-      return {
-        ...config,
-        headers: { authorization: `Bearer ${data.access_token}`, ...config.headers },
-      };
+      (config.headers as AxiosHeaders).set('authorization', `Bearer ${data.access_token}`);
     }
     return config;
   });

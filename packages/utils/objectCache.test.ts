@@ -1,7 +1,7 @@
 import { objectCache } from './objectCache.js';
 
 describe('objectCache', () => {
-  it('should cache reslts', () => {
+  it('should cache results', () => {
     let count = 0;
     const cache = objectCache((id) => {
       count += 1;

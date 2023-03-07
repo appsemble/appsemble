@@ -1,5 +1,5 @@
-import { readdirSync } from 'fs';
-import { readFile } from 'fs/promises';
+import { readdirSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 
 import { createValidator } from 'koas-core/lib/validation.js';
 import { parse } from 'yaml';

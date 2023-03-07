@@ -74,7 +74,7 @@ export function IconTool({ disabled }: IconToolProps): ReactElement {
   useEffect(() => () => URL.revokeObjectURL(icon), [icon]);
   useEffect(() => () => URL.revokeObjectURL(maskableIcon), [maskableIcon]);
 
-  const shapeShift = useCallback((event, value) => setShape(value), []);
+  const shapeShift = useCallback((event: ChangeEvent, value: typeof shape) => setShape(value), []);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: unknown) => {

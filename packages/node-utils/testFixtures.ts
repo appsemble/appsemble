@@ -1,6 +1,6 @@
-import { createReadStream, ReadStream } from 'fs';
-import { readFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
+import { createReadStream, ReadStream } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
 let baseDir: string;
 
@@ -30,7 +30,6 @@ export function resolveFixture(path: string): string {
   return fileURLToPath(new URL(`__fixtures__/${path}`, baseDir));
 }
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Read a test fixture.
  *

@@ -134,20 +134,13 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
 
 function validateBlocks(
   definition: AppDefinition,
-  blockVersions: BlockManifest[],
+  blockVersions: Map<string, Map<string, BlockManifest>>,
   report: Report,
 ): void {
-  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
-  for (const version of blockVersions) {
-    if (!blockVersionMap.has(version.name)) {
-      blockVersionMap.set(version.name, new Map());
-    }
-    blockVersionMap.get(version.name).set(version.version, version);
-  }
   iterApp(definition, {
     onBlock(block, path) {
       const type = normalizeBlockName(block.type);
-      const versions = blockVersionMap.get(type);
+      const versions = blockVersions.get(type);
       if (!versions) {
         report(block.type, 'is not a known block type', [...path, 'type']);
         return;
@@ -256,9 +249,14 @@ function checkCyclicRoleInheritance(
  * @param report A function used to report a value.
  */
 function validateSecurity(definition: AppDefinition, report: Report): void {
-  const { security } = definition;
+  const { notifications, security } = definition;
   const defaultAllow = ['$none', '$public', '$team:member', '$team:manager'];
+
   if (!security) {
+    if (notifications === 'login') {
+      report(notifications, 'only works if security is defined', ['notifications']);
+    }
+
     return;
   }
 
@@ -417,7 +415,7 @@ function validateDefaultPage({ defaultPage, pages }: AppDefinition, report: Repo
   }
 
   if (page.parameters) {
-    report(defaultPage, 'may not specifiy parameters', ['defaultPage']);
+    report(defaultPage, 'may not specify parameters', ['defaultPage']);
   }
 }
 
@@ -516,11 +514,12 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type.startsWith('flow.')) {
         const page = definition.pages?.[Number(path[1])];
-        if (page?.type !== 'flow') {
-          report(action.type, 'flow actions can only be used on pages with the type ‘flow’', [
-            ...path,
-            'type',
-          ]);
+        if (page.type !== 'flow' && page.type !== 'loop') {
+          report(
+            action.type,
+            'flow actions can only be used on pages with the type ‘flow’ or ‘loop’',
+            [...path, 'type'],
+          );
           return;
         }
 
@@ -546,6 +545,7 @@ function validateActions(definition: AppDefinition, report: Report): void {
         }
 
         if (
+          page.type === 'flow' &&
           action.type === 'flow.next' &&
           Number(path[3]) === page.steps.length - 1 &&
           !page.actions?.onFlowFinish
@@ -558,7 +558,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
           return;
         }
 
-        if (action.type === 'flow.to' && !page.steps.some((step) => step.name === action.step)) {
+        if (
+          page.type === 'flow' &&
+          action.type === 'flow.to' &&
+          !page.steps.some((step) => step.name === action.step)
+        ) {
           report(action.type, 'refers to a step that doesn’t exist', [...path, 'step']);
           return;
         }
@@ -602,7 +606,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
   });
 }
 
-function validateEvents(definition: AppDefinition, report: Report): void {
+function validateEvents(
+  definition: AppDefinition,
+  blockVersions: Map<string, Map<string, BlockManifest>>,
+  report: Report,
+): void {
   const indexMap = new Map<
     number,
     {
@@ -636,6 +644,32 @@ function validateEvents(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (action.type === 'dialog') {
+        for (const block of action.blocks) {
+          const versions = blockVersions.get(normalizeBlockName(block.type));
+          const version = versions.get(block.version);
+          if (version.layout === 'float') {
+            report(
+              block.version,
+              'block with layout type: "'
+                .concat(version.layout)
+                .concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+          }
+
+          if (block.layout === 'float') {
+            report(
+              block,
+              'block with layout type: "'
+                .concat(block.layout)
+                .concat('" is not allowed in a dialog action'),
+              [...path, 'type'],
+            );
+          }
+        }
+        return;
+      }
       if (action.type !== 'event') {
         return;
       }
@@ -710,9 +744,17 @@ export async function validateAppDefinition(
   if (!definition) {
     return result;
   }
-
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
+
+  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
+  for (const version of blockVersions) {
+    if (!blockVersionMap.has(version.name)) {
+      blockVersionMap.set(version.name, new Map());
+    }
+    blockVersionMap.get(version.name).set(version.version, version);
+  }
+
   const report: Report = (instance, message, path) => {
     result.errors.push(new ValidationError(message, instance, undefined, path));
   };
@@ -725,9 +767,9 @@ export async function validateAppDefinition(
     validateResourceReferences(definition, report);
     validateResourceSchemas(definition, report);
     validateSecurity(definition, report);
-    validateBlocks(definition, blockVersions, report);
+    validateBlocks(definition, blockVersionMap, report);
     validateActions(definition, report);
-    validateEvents(definition, report);
+    validateEvents(definition, blockVersionMap, report);
   } catch (error) {
     report(null, `Unexpected error: ${error instanceof Error ? error.message : error}`, []);
   }

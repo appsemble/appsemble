@@ -53,7 +53,7 @@ export const JSONField = forwardRef<HTMLTextAreaElement, JSONFieldProps>(
     }, [oldValue, value]);
 
     const handleChange = useCallback(
-      (event, v) => {
+      (event: ChangeEvent<HTMLTextAreaElement>, v: string) => {
         let val: any;
         setOldValue(val);
         try {

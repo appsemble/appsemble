@@ -1,4 +1,4 @@
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 import { AppsembleError } from '@appsemble/node-utils';
 import { SSLStatusMap } from '@appsemble/types';

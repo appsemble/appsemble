@@ -47,7 +47,7 @@ export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElemen
     <BrowserRouter>
       <PageTracker />
       <Routes>
-        {/* Simple way to get optional paramaters back */}
+        {/* Simple way to get optional parameters back */}
         <Route element={appContent} path="/*" />
         <Route element={appContent} path="/:lang/*" />
       </Routes>

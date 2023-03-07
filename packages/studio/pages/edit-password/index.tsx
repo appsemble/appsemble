@@ -1,4 +1,10 @@
-import { Content, EditPassword, useMeta, useQuery } from '@appsemble/react-components';
+import {
+  Content,
+  EditPassword,
+  EditPasswordValues,
+  useMeta,
+  useQuery,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import { ReactElement, useCallback } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
@@ -12,7 +18,7 @@ export function EditPasswordPage(): ReactElement {
   const token = qs.get('token');
   const { lang } = useParams<{ lang: string }>();
   const onSubmit = useCallback(
-    async ({ password }) => {
+    async ({ password }: EditPasswordValues) => {
       await axios.post('/api/email/reset', { token, password });
     },
     [token],

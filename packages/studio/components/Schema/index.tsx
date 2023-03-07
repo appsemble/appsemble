@@ -34,7 +34,7 @@ export interface SchemaProps {
   schema: SchemaType;
 
   /**
-   * The name of the propery to render for nested a nested schema.
+   * The name of the property to render for nested a nested schema.
    */
   name?: string;
 
@@ -187,7 +187,7 @@ export function Schema({
       )}
       {mergedSchema.pattern ? (
         <SchemaDescriptor label={<FormattedMessage {...messages.pattern} />}>
-          <code>{mergedSchema.pattern}</code>
+          <code>{mergedSchema.pattern as string}</code>
         </SchemaDescriptor>
       ) : null}
       {description ? <MarkdownContent content={description} /> : null}

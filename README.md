@@ -5,7 +5,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in [here](docs/deployment/helm.md).
+be found in [here](docs/04-deployment/helm.md).
 
 ### Live Environments
 
@@ -19,6 +19,17 @@ For each of our internal merge requests a review environment is started at
 `${CI_MERGE_REQUEST_IID}.appsemble.review`.
 
 ### Requirements
+
+**Minimum Hardware Requirements**
+
+| Resource | Minimum | Recommended |
+| -------- | ------- | ----------- |
+| CPU      | 1 GHz   | >2 GHz      |
+| CPUs     | 1       | 2>          |
+| RAM      | 12GB    | 16GB>       |
+| Disk     | 3 GiB   | >           |
+
+**Software Requirements**
 
 In order to run the Appsemble project in development mode, the following must be installed.
 
@@ -58,23 +69,31 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-A new account can be registered by going to `http://localhost:9999/register`, or you can login on
+A new account can be registered by going to `http://localhost:9999/register`. Later you can login on
 `http://localhost:9999/login`. If you use email registration to register an account, the email
-containing the verification link will be printed in the server logs.
+containing the verification link will be printed in the server logs. You need to click this link in
+order to use your account.
 
 #### CLI Login
 
-To login using the Appsemble CLI, run the following command, then follow the instructions.
+To login using the Appsemble CLI, run the following command.
 
 ```sh
 yarn appsemble login
 ```
 
+This will open Appsemble studio in a new window in your browser. A panel will pop up where you must
+select the permissions you need. You will need to select at least _blocks:write_,
+_organizations:write_ and _apps:write_ to complete the steps below. Clicking confirm creates an
+OAuth2 access token, which is required in order to publish blocks and apps. Click register and your
+OAuth2 client credentials will be shown. This will be required when you proceed with the publishing
+blocks and apps steps below.
+
 #### Registering an Organization
 
-To get started developing locally, an `appsemble` organization named “appsemble” needs to be
-created. This organization can be created either in Appsemble Studio, or using the following CLI
-command.
+To get started developing locally, an Appsemble organization identified through id: `appsemble`
+needs to be created. This organization can be created either in Appsemble Studio, or using the
+following CLI command.
 
 ```sh
 yarn appsemble organization create --name Appsemble appsemble
@@ -89,6 +108,9 @@ command.
 yarn appsemble block publish blocks/*
 ```
 
+If prompted, select the OAuth2 credential you created earlier to proceed. You will now see the
+published blocks in the `Block store` page.
+
 Any block that is found within the workspaces listed in `package.json` will be hot-reloaded. More
 information about block development and hot-reloading can be found
 [here](https://appsemble.app/docs/development/developing-blocks).
@@ -102,6 +124,8 @@ logging in. To publish these apps, run the following command.
 ```sh
 yarn appsemble app create --context development apps/*
 ```
+
+The published apps will be displayed on the `App store` page.
 
 ### Tests
 
@@ -130,9 +154,17 @@ The resulting Docker image can be built using the Docker CLI.
 docker build --tag appsemble .
 ```
 
-### Contributing
+## Contributing
 
 Please read our [contributing guidelines](./CONTRIBUTING.md).
+
+## Security
+
+Please read our [security policy](./SECURITY.md).
+
+## License
+
+[LGPL-3.0-only](./LICENSE.md) © [Appsemble](https://appsemble.com)
 
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose

@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
@@ -43,7 +43,7 @@ export function BlockPage(): ReactElement {
     lang: string;
   }>();
 
-  const url = `${lang}/blocks/@${organization}/${blockName}`;
+  const url = `${lang}/blocks/${organization}/${blockName}`;
 
   const navigate = useNavigate();
 
@@ -51,10 +51,10 @@ export function BlockPage(): ReactElement {
     data: blockVersions,
     error,
     loading,
-  } = useData<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`);
+  } = useData<BlockManifest[]>(`/api/blocks/${organization}/${blockName}/versions`);
 
   const onSelectedVersionChange = useCallback(
-    (event, value: string) => {
+    (event: ChangeEvent, value: string) => {
       navigate(`/${url}/${urlVersion}`.replace(urlVersion, value));
     },
     [navigate, url, urlVersion],
@@ -62,7 +62,7 @@ export function BlockPage(): ReactElement {
 
   const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
 
-  useMeta(`@${organization}/${blockName}`, selectedBlockManifest?.description);
+  useMeta(`${organization}/${blockName}`, selectedBlockManifest?.description);
 
   const examples = useMemo(
     () =>
@@ -71,7 +71,7 @@ export function BlockPage(): ReactElement {
         const { contents } = doc;
         if (isMap(contents)) {
           contents.items.unshift(
-            doc.createPair('name', stripBlockName(selectedBlockManifest.name)),
+            doc.createPair('type', stripBlockName(selectedBlockManifest.name)),
             doc.createPair('version', selectedBlockManifest.version),
           );
         }
@@ -111,7 +111,9 @@ export function BlockPage(): ReactElement {
             {blockName}
           </Title>
           <Subtitle lang={defaultLocale} level={4}>
-            <Link to={`/${lang}/organizations/${organization}`}>@{organization}</Link>
+            <Link to={`/${lang}/organizations/${organization.replace(/^@/, '')}`}>
+              {organization}
+            </Link>
           </Subtitle>
         </header>
       </>

@@ -1,25 +1,29 @@
 parameters:
   fields:
-    - name: name
-      type: string
-      requirements:
-        - required: true
-    - name: birthdate
-      type: date
-      requirements:
-        - required: true
-    - species:
+    - label: species
       type: enum
+      name: type
       enum:
-        - Cat
-        - Dog
-        - Rabbit
-        - Unicorn
+        - label: Cat
+          value: cat
+        - label: Dog
+          value: dog
+        - label: Rabbit
+          value: rabbit
+        - label: Unicorn
+          value: unicorn
       requirements:
         - required: true
     - name: photo
       type: file
+      requirements:
+        - required: { equals: [{ prop: species }, 'unicorn'] }
+    - name: special
+      type: static
+      content: You picked a special species
+      show: { equals: [{ prop: species }, 'Unicorn'] }
 actions:
   onSubmit:
     type: resource.create
     resource: pet
+# To better see how to use this block, look at the default 'Unlittered' app.

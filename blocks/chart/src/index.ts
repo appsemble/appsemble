@@ -22,6 +22,44 @@ Chart.register(
   PointElement,
 );
 
+function formatLabel(str: string, maxWidth: number): string[] {
+  const sections = [];
+  const words = str.split(' ');
+  let temp = '';
+
+  for (const [index, item] of words.entries()) {
+    if (temp.length > 0) {
+      const concat = `${temp} ${item}`;
+
+      if (concat.length > maxWidth) {
+        sections.push(temp);
+        temp = '';
+      } else {
+        if (index === words.length - 1) {
+          sections.push(concat);
+          continue;
+        } else {
+          temp = concat;
+          continue;
+        }
+      }
+    }
+
+    if (index === words.length - 1) {
+      sections.push(item);
+      continue;
+    }
+
+    if (item.length < maxWidth) {
+      temp = item;
+    } else {
+      sections.push(item);
+    }
+  }
+
+  return sections;
+}
+
 interface DataSet {
   type?: 'bar' | 'line';
 
@@ -30,12 +68,15 @@ interface DataSet {
   data: number[];
 
   labels?: string[];
+
+  color: string;
 }
 
 bootstrap(
   ({
+    actions,
     events,
-    parameters: { backgroundColors, labels, type = 'line', yAxis },
+    parameters: { backgroundColors, labelOptions, labels, type = 'line', yAxis },
     shadowRoot,
     theme,
     utils: { remap },
@@ -57,7 +98,30 @@ bootstrap(
       },
       options: {
         responsive: true,
+        onClick(e, element) {
+          if (!element || element.length === 0) {
+            actions.onClick({});
+            return;
+          }
+          // $context isn't a property in the ActiveElement interface, but it is there at runtime
+          if ('$context' in element[0].element) {
+            const { x, y }: { x: number; y: number } = (element as any)[0].element.$context.parsed;
+            actions.onClick({ label: chart.data.labels[x], value: y });
+          }
+        },
         scales: {
+          x: {
+            ticks: {
+              font: labelOptions?.font,
+              callback(tickValue) {
+                const value = tickValue as number;
+
+                return labelOptions?.maxWidth
+                  ? formatLabel(this.getLabelForValue(value), labelOptions?.maxWidth as number)
+                  : this.getLabelForValue(value);
+              },
+            },
+          },
           [yAxisID]: {
             min: yAxis.min,
             max: yAxis.max,
@@ -105,7 +169,7 @@ bootstrap(
       chart.data.datasets.push({
         type: datasetType as 'bar',
         label: dataset.label ?? '',
-        backgroundColor,
+        backgroundColor: dataset.color ?? backgroundColor,
         data: dataset.data,
         yAxisID,
       });

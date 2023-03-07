@@ -81,19 +81,21 @@ export function createAction<T extends ActionDefinition['type']>({
   const action = (async (args?: any, context?: Record<string, any>) => {
     await pageReady;
     let result;
+    let updatedContext;
 
     try {
-      result = await dispatch(
-        has(definition, 'remapBefore')
-          ? localRemap(definition.remapBefore, args, context)
-          : has(definition, 'remap')
-          ? localRemap(definition.remap, args, context)
-          : args,
-        context,
-      );
+      const data = has(definition, 'remapBefore')
+        ? localRemap(definition.remapBefore, args, context)
+        : has(definition, 'remap')
+        ? localRemap(definition.remap, args, context)
+        : args;
+
+      updatedContext = { ...context, history: [].concat(context?.history || [], [data]) };
+
+      result = await dispatch(data, updatedContext);
 
       if (has(definition, 'remapAfter')) {
-        result = localRemap(definition.remapAfter, result, context);
+        result = localRemap(definition.remapAfter, result, updatedContext);
       }
       addBreadcrumb({
         category: 'appsemble.action',
@@ -106,14 +108,14 @@ export function createAction<T extends ActionDefinition['type']>({
         level: 'warning',
       });
       if (onError) {
-        return onError(error, context);
+        return onError(error, updatedContext);
       }
 
       throw error;
     }
 
     if (onSuccess) {
-      return onSuccess(result, context);
+      return onSuccess(result, updatedContext);
     }
 
     return result;
@@ -171,8 +173,10 @@ export function createTestAction<T extends ActionDefinition['type']>(
     ee: null,
     extraCreators: null,
     flowActions: null,
+    getAppMessage: ({ defaultMessage }) => new IntlMessageFormat(defaultMessage),
     navigate: null,
     pageReady: Promise.resolve(),
+    appStorage: null,
     prefix: null,
     prefixIndex: null,
     pushNotifications: null,

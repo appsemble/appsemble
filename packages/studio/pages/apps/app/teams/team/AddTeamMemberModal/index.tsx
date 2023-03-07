@@ -28,7 +28,7 @@ export function AddTeamMemberModal({
 }: AddTeamMemberModalProps): ReactElement {
   const { app } = useApp();
   const result = useData<Member[]>(`/api/apps/${app.id}/members`);
-  const onSubmit = useCallback(({ memberId }) => onAdd(memberId), [onAdd]);
+  const onSubmit = useCallback(({ memberId }: typeof defaultValues) => onAdd(memberId), [onAdd]);
 
   const defaultValues = {
     memberId: result?.data?.find((member) => !teamMembers.map((tm) => tm.id).includes(member.id))

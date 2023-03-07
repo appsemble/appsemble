@@ -13,11 +13,15 @@ declare module '@appsemble/sdk' {
   interface Parameters {
     /**
      * The configuration for the back button.
+     *
+     * Set to `false` to hide back button.
      */
     back?: Button | false;
 
     /**
      * The configuration for the forward button.
+     *
+     * Set to `false` to hide forward button.
      */
     forward?: Button | false;
   }

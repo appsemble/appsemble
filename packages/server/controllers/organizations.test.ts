@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
@@ -24,7 +24,7 @@ let organization: Organization;
 let server: Koa;
 let user: User;
 
-useTestDatabase('organizations');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

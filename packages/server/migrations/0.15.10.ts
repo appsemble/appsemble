@@ -5,7 +5,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.15.10';
 
 /**
- * Symmary:
+ * Summary:
  * - Add Team table
  * - Add TeamMember table
  *
@@ -62,7 +62,7 @@ export async function up(db: Sequelize): Promise<void> {
 }
 
 /**
- * Symmary:
+ * Summary:
  * - Drop the Team table.
  * - Drop the TeamMember table.
  *

@@ -2,7 +2,7 @@ import { User } from '../models/index.js';
 import { iterTable } from './database.js';
 import { useTestDatabase } from './test/testSchema.js';
 
-useTestDatabase('apps');
+useTestDatabase(import.meta);
 
 describe('iterTable', () => {
   it('should iterate if the length is not divisible by chunk size', async () => {

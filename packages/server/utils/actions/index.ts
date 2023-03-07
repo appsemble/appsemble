@@ -1,11 +1,14 @@
 import { ActionDefinition } from '@appsemble/types';
+import { RemapperContext } from '@appsemble/utils';
 
 import { App, User } from '../../models/index.js';
 import { Mailer } from '../email/Mailer.js';
 import { condition } from './condition.js';
 import { each } from './each.js';
 import { email } from './email.js';
+import { log } from './log.js';
 import { noop } from './noop.js';
+import { notify } from './notify.js';
 import { request } from './request.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
@@ -16,6 +19,7 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
   user: User;
   mailer: Mailer;
   data: unknown;
+  internalContext?: RemapperContext;
 }
 
 export const actions = {
@@ -36,15 +40,18 @@ export const actions = {
   link: noop,
   'link.back': noop,
   'link.next': noop,
-  log: noop,
+  log,
   message: noop,
+  match: noop,
   noop,
+  notify,
   request,
   'resource.create': request,
   'resource.delete': request,
   'resource.get': request,
   'resource.query': request,
   'resource.update': request,
+  'resource.patch': noop,
   'resource.count': request,
   'resource.subscription.status': noop,
   'resource.subscription.subscribe': noop,
@@ -54,6 +61,10 @@ export const actions = {
   static: staticAction,
   'storage.read': noop,
   'storage.write': noop,
+  'storage.append': noop,
+  'storage.subtract': noop,
+  'storage.update': noop,
+  'storage.delete': noop,
   'team.invite': noop,
   'team.join': noop,
   'team.list': noop,

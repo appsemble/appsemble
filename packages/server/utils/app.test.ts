@@ -5,7 +5,7 @@ import { compareApps, getApp, getRemapperContext } from './app.js';
 import { setArgv } from './argv.js';
 import { useTestDatabase } from './test/testSchema.js';
 
-useTestDatabase('getapp');
+useTestDatabase(import.meta);
 
 beforeEach(async () => {
   await Organization.create({

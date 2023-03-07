@@ -1,6 +1,7 @@
 import { Remapper, Utils } from '@appsemble/sdk';
 
 import { Field, FieldErrorMap, Values } from '../../block.js';
+import { getValueByNameSequence } from './getNested.js';
 import { isRequired } from './requirements.js';
 import { validate } from './validators/index.js';
 
@@ -10,6 +11,7 @@ export function generateDefaultValidity(
   utils: Utils,
   defaultError: Remapper,
   defaultValues: Values,
+  prefix = '',
 ): FieldErrorMap {
   const validity: FieldErrorMap = {};
   if (!fields) {
@@ -17,36 +19,47 @@ export function generateDefaultValidity(
   }
 
   for (const field of fields) {
-    const value = data[field.name];
+    const value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, data);
 
-    if (!isRequired(field) && value === defaultValues[field.name]) {
+    if (field.type === 'fieldset') {
+      validity[field.name] = field.repeated
+        ? (value as []).map((d: unknown, index: number) =>
+            generateDefaultValidity(
+              field.fields,
+              data,
+              utils,
+              defaultError,
+              defaultValues[field.name] as Values,
+              prefix ? `${prefix}.${field.name}.${index}` : `${field.name}.${index}`,
+            ),
+          )
+        : generateDefaultValidity(
+            field.fields,
+            data,
+            utils,
+            defaultError,
+            defaultValues[field.name] as Values,
+            prefix ? `${prefix}.${field.name}` : field.name,
+          );
+      return validity;
+    }
+
+    if (!isRequired(field, utils, data) && value === defaultValues?.[field.name]) {
       // If the user has entered something and then reverted it to its default value,
       // it should be treated as if it’s pristine.
       continue;
     }
 
-    if (field.type === 'object') {
-      if (field.repeated) {
-        validity[field.name] = value.map((d: unknown) =>
-          generateDefaultValidity(
-            field.fields,
-            d,
-            utils,
-            defaultError,
-            defaultValues[field.name] as Values,
-          ),
-        );
-      } else {
-        validity[field.name] = generateDefaultValidity(
-          field.fields,
-          value,
-          utils,
-          defaultError,
-          defaultValues[field.name] as Values,
-        );
-      }
-    } else {
-      validity[field.name] = validate(field, value, utils, defaultError, defaultValues[field.name]);
+    const fieldValidity = validate(
+      field,
+      data,
+      utils,
+      defaultError,
+      defaultValues?.[field.name],
+      prefix,
+    );
+    if (typeof fieldValidity === 'string' || typeof fieldValidity === 'boolean') {
+      validity[field.name] = fieldValidity;
     }
   }
   return validity;

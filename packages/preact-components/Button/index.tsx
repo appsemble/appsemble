@@ -7,6 +7,11 @@ import { Icon } from '../index.js';
 
 interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
   /**
+   * A custom class name to add to the button.
+   */
+  className?: string;
+
+  /**
    * The bulma color to apply to the button.
    */
   color?: BulmaColor;

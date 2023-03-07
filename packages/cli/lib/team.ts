@@ -24,7 +24,7 @@ interface SharedExistingTeamParams extends SharedTeamParams {
 
 interface SharedTeamMemberParams extends SharedExistingTeamParams {
   /**
-   * The ID or email adress of the team member.
+   * The ID or email address of the team member.
    */
   user: string;
 }
@@ -78,10 +78,10 @@ export function resolveAnnotations(annotations: string[]): Record<string, string
 }
 
 export async function createTeam({
+  annotations = [],
   appId,
   name,
   remote,
-  annotations = [],
 }: CreateTeamParams): Promise<void> {
   logger.info(`Creating team ${name}`);
   const {
@@ -104,11 +104,11 @@ export async function deleteTeam({ appId, id, remote }: SharedExistingTeamParams
 }
 
 export async function updateTeam({
+  annotations = [],
   appId,
   id,
   name,
   remote,
-  annotations = [],
 }: UpdateTeamParams): Promise<void> {
   logger.info(`Updating team ${id}`);
   await axios.put(

@@ -3,3 +3,5 @@ events:
     data: updatedMessages
   listen:
     data: newMessages
+# This example is missing critical setup.
+# To better see how to use this block, look at the default 'Unlittered' app.

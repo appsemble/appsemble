@@ -11,13 +11,15 @@ import { event } from './event.js';
 import * as flow from './flow.js';
 import { back, link, next } from './link.js';
 import { log } from './log.js';
+import { match } from './match.js';
 import { message } from './message.js';
 import { noop } from './noop.js';
+import { notify } from './notify.js';
 import { request } from './request.js';
 import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
-import { read, write } from './storage.js';
+import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList } from './team.js';
 import { throwAction } from './throw.js';
 import { login, register, update } from './user.js';
@@ -51,14 +53,6 @@ export const actionCreators: ActionCreators = {
   analytics,
   condition,
   download,
-  link,
-  'link.back': back,
-  'link.next': next,
-  log,
-  message,
-  noop,
-  throw: throwAction,
-  request,
   dialog,
   each,
   event,
@@ -68,11 +62,21 @@ export const actionCreators: ActionCreators = {
   'flow.back': flow.back,
   'flow.cancel': flow.cancel,
   'flow.to': flow.to,
+  link,
+  'link.back': back,
+  'link.next': next,
+  log,
+  match,
+  message,
+  noop,
+  notify,
+  request,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.count': resource.count,
   'resource.create': resource.create,
   'resource.update': resource.update,
+  'resource.patch': resource.patch,
   'resource.delete': resource.remove,
   'resource.subscription.subscribe': resource.subscribe,
   'resource.subscription.unsubscribe': resource.unsubscribe,
@@ -80,11 +84,16 @@ export const actionCreators: ActionCreators = {
   'resource.subscription.status': resource.status,
   share,
   static: staticAction,
-  'storage.read': read,
-  'storage.write': write,
+  'storage.read': storage.read,
+  'storage.write': storage.write,
+  'storage.append': storage.append,
+  'storage.subtract': storage.subtract,
+  'storage.update': storage.update,
+  'storage.delete': storage.remove,
   'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,
+  throw: throwAction,
   'user.login': login,
   'user.register': register,
   'user.update': update,

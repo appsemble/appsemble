@@ -13,6 +13,8 @@ export const DialogActionDefinition = extendJSONSchema(BaseActionDefinition, {
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 `,
     },
     title: {

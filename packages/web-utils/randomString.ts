@@ -1,7 +1,7 @@
 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 /**
- * Generate a cryptographycally secure alphanumeric random string.
+ * Generate a cryptographically secure alphanumeric random string.
  *
  * @param length The length of the generated string.
  * @returns A cryptographically secure string.

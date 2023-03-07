@@ -8,7 +8,22 @@ export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinitio
   properties: {
     type: {
       enum: ['storage.write'],
-      description: 'Write data to the app’s local storage.',
+      description: `Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      `,
     },
     key: {
       $ref: '#/components/schemas/RemapperDefinition',
@@ -19,7 +34,7 @@ export const StorageWriteActionDefinition = extendJSONSchema(BaseActionDefinitio
       description: 'The data to write to the storage entry.',
     },
     storage: {
-      enum: ['indexedDB', 'localStorage', 'sessionStorage'],
+      enum: ['indexedDB', 'localStorage', 'sessionStorage', 'appStorage'],
       description: 'The mechanism used to store the data.',
       default: 'indexedDB',
     },

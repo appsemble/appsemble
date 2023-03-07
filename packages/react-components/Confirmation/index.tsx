@@ -54,7 +54,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
   const [options, setOptions] = useState<DeferredConfirmationOptions>(null);
   const [isActive, setIsActive] = useState(false);
 
-  const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args) => {
+  const confirm = useCallback(async (opts: ConfirmationOptions<any, any[]>, args: unknown[]) => {
     try {
       await new Promise<void>((resolve, reject) => {
         setOptions({ ...opts, resolve, reject });
@@ -91,7 +91,7 @@ export function Confirmation({ children }: ConfirmationProps): ReactElement {
 }
 
 /**
- * A hook to easily create a configmration dialog.
+ * A hook to easily create a configuration dialog.
  *
  * @param options The configuration options for the modal.
  * @returns A function which triggers the confirmation dialog when called.

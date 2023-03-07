@@ -1,5 +1,6 @@
 import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
-import { JsonValue } from 'type-fest';
+
+type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
 /**
  * Properties that are shared between all requirements.
@@ -44,8 +45,13 @@ interface StepRequirement extends BaseRequirement {
 export interface RequiredRequirement extends BaseRequirement {
   /**
    * Whether the field is required.
+   *
+   * We recommend passing a boolean value e.g. `true`.
+   *
+   * Another option is to pass a remapper returning a boolean value.
+   * This way you can conditionally control if the field is required.
    */
-  required: boolean;
+  required: Remapper;
 }
 
 interface FormRequirement extends BaseRequirement {
@@ -230,18 +236,30 @@ export type DateTimeRequirement =
   | RequiredRequirement
   | TimeRangeRequirement;
 /**
- * All requirements applicable to object fields.
+ * All requirements applicable to fieldsets.
  */
-export type ObjectRequirement = LengthRequirement;
+export type FieldsetRequirement = LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
 export interface Choice {
   /**
+   * If true, the choice will be disabled.
+   *
+   * @default false
+   */
+  disabled?: boolean;
+
+  /**
    * The label used to display the option.
    */
   label?: Remapper;
+
+  /**
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.
+   */
+  icon?: IconName;
 
   /**
    * The value to use when selecting the option.
@@ -250,6 +268,20 @@ export interface Choice {
 }
 
 interface AbstractField {
+  /**
+   * Displays field only if condition is true.
+   *
+   * If not specified, the field will display.
+   */
+  show?: Remapper;
+
+  /**
+   * Whether the field should always be be disabled.
+   *
+   * @default false
+   */
+  disabled?: Remapper;
+
   /**
    * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
    * the label.
@@ -273,8 +305,10 @@ interface AbstractField {
 
   /**
    * Whether the field should be read-only.
+   *
+   * @default false
    */
-  readOnly?: boolean;
+  readOnly?: Remapper;
 
   /**
    * The label that is shown to the right of the label.
@@ -283,6 +317,15 @@ interface AbstractField {
    * Won’t display if the field has no label of its own.
    */
   tag?: Remapper;
+}
+
+interface InlineField {
+  /**
+   * Combines fields on the same row.
+   *
+   * Fields are combined in order if set to true.
+   */
+  inline?: true;
 }
 
 /**
@@ -334,7 +377,7 @@ export interface DateTimeField extends AbstractField {
 /**
  * A date/time picker that results in an exact date and time.
  */
-export interface DateField extends AbstractField {
+export interface DateField extends AbstractField, InlineField {
   /**
    * Whether the confirm button should be shown
    *
@@ -372,7 +415,7 @@ export interface DateField extends AbstractField {
 /**
  * A checkbox that returns `true` when checked and `false` when not.
  */
-export interface BooleanField extends AbstractField {
+export interface BooleanField extends AbstractField, InlineField {
   /**
    * The default value of the field.
    */
@@ -456,7 +499,7 @@ export interface RadioField extends AbstractField {
   requirements?: RequiredRequirement[];
 }
 
-interface AbstractEnumField extends AbstractField {
+interface AbstractEnumField extends AbstractField, InlineField {
   /**
    * The type of the field.
    */
@@ -532,7 +575,7 @@ export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 /**
  * An input field used to upload files.
  */
-export interface FileField extends AbstractField {
+export interface FileField extends AbstractField, InlineField {
   /**
    * The default value for the field.
    */
@@ -629,7 +672,7 @@ export interface HiddenField extends AbstractField {
 /**
  * A number entry field.
  */
-export interface NumberField extends AbstractField {
+export interface NumberField extends AbstractField, InlineField {
   /**
    * The default value of the field.
    */
@@ -674,7 +717,7 @@ export interface NumberField extends AbstractField {
  *
  * This field does not contain a name or a value.
  */
-export interface StaticField extends AbstractField {
+export interface StaticField extends AbstractField, InlineField {
   /**
    * The type of the field.
    */
@@ -703,7 +746,7 @@ export interface StaticField extends AbstractField {
  *     errorMessage: Value does not end with “@appsemble.com”
  * ```
  */
-export interface StringField extends AbstractField {
+export interface StringField extends AbstractField, InlineField {
   /**
    * The default value of the field.
    */
@@ -733,14 +776,14 @@ export interface StringField extends AbstractField {
   requirements?: StringRequirement[];
 }
 
-export interface ObjectField extends AbstractField {
+export interface Fieldset extends AbstractField {
   /**
    * The type of the field.
    */
-  type: 'object';
+  type: 'fieldset';
 
   /**
-   * If true, this field represents an array of objects.
+   * If true, this fieldset represents an array of objects.
    */
   repeated?: boolean;
 
@@ -759,16 +802,16 @@ export interface ObjectField extends AbstractField {
   removeLabel?: Remapper;
 
   /**
-   * The fields contained by this object.
+   * The fields contained by this fieldset.
    *
    * @minItems 1
    */
   fields: Field[];
 
   /**
-   * Requirements that are applicable to an object field.
+   * Requirements that are applicable to a fieldset.
    */
-  requirements?: ObjectRequirement[];
+  requirements?: FieldsetRequirement[];
 }
 
 export type Field =
@@ -776,11 +819,11 @@ export type Field =
   | DateField
   | DateTimeField
   | EnumField
+  | Fieldset
   | FileField
   | GeoCoordinatesField
   | HiddenField
   | NumberField
-  | ObjectField
   | RadioField
   | StaticField
   | StringField;
@@ -827,14 +870,24 @@ export interface InputProps<T, F extends Field> {
   onChange: (name: Event | string, value?: T) => void;
 
   /**
-   * Whether ot not the input has been modified by the user.
+   * Whether or not the input has been modified by the user.
    */
   dirty?: boolean;
 
   /**
-   * The current value.
+   * Whether or not the field is read-only.
    */
-  value: T;
+  readOnly?: boolean;
+
+  /**
+   * Whether or not the input is required.
+   */
+  required?: boolean;
+
+  /**
+   * The current form values.
+   */
+  formValues: Values;
 }
 
 /**
@@ -928,6 +981,37 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * This allows you to add automatic form completion through external API's.
+     */
+    autofill?: {
+      /**
+       * The api route (url) to request data from.
+       */
+      route: string;
+      /**
+       * Set the search parameters given some predefined mapper keys.
+       */
+      params?: Record<string, Remapper>;
+      /**
+       * Set the field values given some predefined mapper keys.
+       */
+      response: Record<string, Remapper>;
+      /**
+       * Set how many `milliseconds` it must take between keystrokes to be able to send a request.
+       *
+       * @default 1000
+       */
+      delay?: number;
+    };
+
+    /**
+     * If this remapper yields true, the submit button will be disabled.
+     *
+     * @default false
+     */
+    disabled?: Remapper;
+
+    /**
      * A list of objects describing each field that can be entered in the form.
      *
      * @minItems 1
@@ -950,8 +1034,25 @@ declare module '@appsemble/sdk' {
     dense?: boolean;
 
     /**
+     * Whether or not to disable populating fields with default data values.
+     *
+     * If this is set to `true`, the default values for the fields won't contain
+     * data from [page storage](../../../docs/guide/storage#app-storage).
+     *
+     * @default false
+     */
+    disableDefault?: boolean;
+
+    /**
      * A list of requirements that are checked across all of the form data.
      */
     requirements?: FormRequirement[];
+
+    /**
+     * By default the form block will wait until event data is received.
+     *
+     * By setting this to `true`, this won’t happen.
+     */
+    skipInitialLoad?: boolean;
   }
 }

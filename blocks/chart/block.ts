@@ -7,6 +7,24 @@ import { Remapper } from '@appsemble/sdk';
  */
 type Color = string;
 
+interface Font {
+  /**
+   * The size of the label's font in px.
+   */
+  size: number;
+}
+
+export interface LabelOptions {
+  /**
+   * Options for the font style for the labels on the horizontal axis.
+   */
+  font: Font;
+  /**
+   * The maximum length (words) of the labels on the horizontal axis.
+   */
+  maxWidth: number;
+}
+
 export interface YAxis {
   /**
    * The minimal value to render on the vertical axis.
@@ -86,5 +104,21 @@ declare module '@appsemble/sdk' {
      * Configuration options for the vertical axis.
      */
     yAxis: YAxis;
+
+    /**
+     * Configuration options for the labels on the horizontal axis.
+     */
+    labelOptions?: LabelOptions;
+  }
+
+  interface Actions {
+    /**
+     * This action is launched whenever a user clicks on the chart canvas.
+     *
+     * Returns the data of the clicked data in the format of `label`, `data`.
+     *
+     * Returns an empty object if the user clicks outside of a data entry.
+     */
+    onClick?: never;
   }
 }

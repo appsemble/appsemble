@@ -39,8 +39,27 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
   const { formatMessage } = useIntl();
   const { organizations, userInfo } = useUser();
 
+  const organizationIndex = organizations?.findIndex((org) =>
+    checkRole(org.role, Permission.CreateApps),
+  );
+
+  const defaultValues = {
+    name: '',
+    description: '',
+    resources: false,
+    visibility: 'unlisted',
+    includeResources: Boolean(templates?.[selectedTemplate]?.resources),
+    selectedOrganization: organizationIndex,
+  };
+
   const onCreate = useCallback(
-    async ({ description, includeResources, name, selectedOrganization, visibility }) => {
+    async ({
+      description,
+      includeResources,
+      name,
+      selectedOrganization,
+      visibility,
+    }: typeof defaultValues) => {
       const { id, resources } = templates[selectedTemplate];
 
       const { data } = await axios.post<App>('/api/templates', {
@@ -82,14 +101,7 @@ export function CreateAppButton({ className }: { className: string }): ReactElem
       {createOrganizations?.length ? (
         <ModalCard
           component={SimpleForm}
-          defaultValues={{
-            name: '',
-            description: '',
-            resources: false,
-            visibility: 'unlisted',
-            includeResources: templates[selectedTemplate].resources,
-            selectedOrganization: 0,
-          }}
+          defaultValues={defaultValues}
           footer={
             <SimpleModalFooter
               cancelLabel={<FormattedMessage {...messages.cancel} />}

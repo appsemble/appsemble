@@ -16,11 +16,13 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
 import { Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSearchParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -44,12 +46,47 @@ export function AssetsPage(): ReactElement {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const push = useMessages();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const assetsResult = useData<Asset[]>(`/api/apps/${app.id}/assets`);
+  const offset = Number(searchParams.get('offset'));
+  const limit =
+    searchParams.get('limit') === 'none'
+      ? Number.POSITIVE_INFINITY
+      : Number(searchParams.get('limit')) || 10;
+  const rowsPerPage = limit;
+  const page = limit === Number.POSITIVE_INFINITY ? 1 : Math.floor(offset / limit) + 1;
+
+  const resultCount = useData<number>(`/api/apps/${app.id}/assets/$count`);
+  const assetsResult = useData<Asset[]>(
+    `/api/apps/${app.id}/assets?${new URLSearchParams({
+      $skip: String(offset),
+      ...(Number.isFinite(limit) && { $top: String(limit) }),
+    })}`,
+  );
+
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const dialog = useToggle();
 
   const { setData } = assetsResult;
+  const count = resultCount.data;
+
+  const updatePagination = useCallback(
+    (newCount: number) => {
+      const newPage =
+        rowsPerPage === Number.POSITIVE_INFINITY
+          ? 1
+          : page >= Math.ceil(newCount / rowsPerPage)
+          ? Math.ceil(newCount / rowsPerPage)
+          : page;
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? { offset: String((newPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          : { offset: '0', limit: 'none' },
+      );
+      resultCount.setData(newCount);
+    },
+    [page, resultCount, rowsPerPage, setSearchParams],
+  );
 
   const submitAsset = useCallback(
     async ({ file, name }: FormValues) => {
@@ -63,9 +100,10 @@ export function AssetsPage(): ReactElement {
       push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
       setData((assets) => [...assets, data]);
+      updatePagination(count + 1);
       dialog.disable();
     },
-    [app.id, dialog, formatMessage, push, setData],
+    [app.id, count, dialog, formatMessage, push, setData, updatePagination],
   );
 
   const onDelete = useConfirmation({
@@ -93,6 +131,7 @@ export function AssetsPage(): ReactElement {
       });
       setData((assets) => assets.filter((asset) => !selectedAssets.includes(String(asset.id))));
       setSelectedAssets([]);
+      updatePagination(count - selectedAssets.length);
     },
   });
 
@@ -112,6 +151,33 @@ export function AssetsPage(): ReactElement {
         : assetsResult.data.map((asset) => asset.id),
     );
   }, [assetsResult]);
+
+  const onPageChange = useCallback(
+    (updatedPage: number) => {
+      setSelectedAssets([]);
+      setSearchParams(
+        Number.isFinite(rowsPerPage)
+          ? { offset: String((updatedPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
+          : { offset: '0', limit: 'none' },
+      );
+    },
+    [rowsPerPage, setSearchParams],
+  );
+
+  const onRowsPerPageChange = useCallback(
+    (updatedRowsPerPage: number) => {
+      setSelectedAssets([]);
+      setSearchParams(
+        Number.isFinite(updatedRowsPerPage)
+          ? {
+              offset: String(offset - (offset % updatedRowsPerPage)),
+              limit: String(updatedRowsPerPage),
+            }
+          : { offset: '0', limit: 'none' },
+      );
+    },
+    [offset, setSearchParams],
+  );
 
   return (
     <>
@@ -138,53 +204,63 @@ export function AssetsPage(): ReactElement {
         result={assetsResult}
       >
         {(assets) => (
-          <Table>
-            <thead>
-              <tr>
-                <th>
-                  <Checkbox
-                    className={`pr-2 is-inline-block ${styles.boolean} `}
-                    indeterminate={
-                      selectedAssets.length
-                        ? selectedAssets.length !== assetsResult.data?.length
-                        : null
-                    }
-                    name="select-all"
-                    onChange={onSelectAll}
-                    value={selectedAssets.length === assetsResult.data?.length}
+          <>
+            <Table>
+              <thead>
+                <tr>
+                  <th>
+                    <Checkbox
+                      className={`pr-2 is-inline-block ${styles.boolean} `}
+                      indeterminate={
+                        selectedAssets.length
+                          ? selectedAssets.length !== assetsResult.data?.length
+                          : null
+                      }
+                      name="select-all"
+                      onChange={onSelectAll}
+                      value={selectedAssets.length === assetsResult.data?.length}
+                    />
+                    <span className="is-inline-block">
+                      <FormattedMessage {...messages.actions} />
+                    </span>
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.id} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.resource} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.mime} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.filename} />
+                  </th>
+                  <th>
+                    <FormattedMessage {...messages.preview} />
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {assets.map((asset) => (
+                  <AssetRow
+                    asset={asset}
+                    isSelected={selectedAssets.includes(asset.id)}
+                    key={asset.id}
+                    onSelect={onAssetCheckboxClick}
                   />
-                  <span className="is-inline-block">
-                    <FormattedMessage {...messages.actions} />
-                  </span>
-                </th>
-                <th>
-                  <FormattedMessage {...messages.id} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.resource} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.mime} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.filename} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.preview} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {assets.map((asset) => (
-                <AssetRow
-                  asset={asset}
-                  isSelected={selectedAssets.includes(asset.id)}
-                  key={asset.id}
-                  onSelect={onAssetCheckboxClick}
-                />
-              ))}
-            </tbody>
-          </Table>
+                ))}
+              </tbody>
+            </Table>
+            <PaginationNavigator
+              count={count}
+              onPageChange={onPageChange}
+              onRowsPerPageChange={onRowsPerPageChange}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[10, 25, 100, 500, Number.POSITIVE_INFINITY]}
+            />
+          </>
         )}
       </AsyncDataView>
       <ModalCard

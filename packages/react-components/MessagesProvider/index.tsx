@@ -86,7 +86,10 @@ export function MessagesProvider({ children }: MessagesProviderProps): ReactElem
               key={message.id}
               timeout={300}
             >
-              <Message className={styles.content} color={message.color || 'danger'}>
+              <Message
+                className={`${styles.content} ${styles[message.layout || 'bottom']}`}
+                color={message.color || 'danger'}
+              >
                 <span>{message?.body}</span>
                 {message.dismissable ? (
                   <button

@@ -48,6 +48,33 @@ If the value Remapper result in \`undefined\` or \`null\`, the entire entry is u
 
 If the input is not an array, the input is returned without any modifications.`,
     },
+    'array.from': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: 'Create a new array with an array of predefined remappers.',
+    },
+    'array.append': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: `Append new values to the end of an array.
+
+If the input is not an array an empty array is returned.`,
+    },
+    'array.omit': {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: `Remove item(s) from an array given a predefined array of remappable indices.
+
+Only the remapped values that are turned into numbers are applied.
+
+If the input is not an array an empty array is returned.`,
+    },
     context: {
       type: 'string',
       description: 'Get a property from the context.',
@@ -56,13 +83,37 @@ If the input is not an array, the input is returned without any modifications.`,
       type: 'string',
       description: 'Add the specified value to a given date.',
     },
+    'date.format': {
+      enum: [null],
+      description: 'Format a date according to rfc3339.',
+    },
     'date.now': {
       enum: [null],
       description: 'Returns the current date.',
     },
     'date.parse': {
       type: 'string',
-      description: 'Convert a string to a date using a given format.',
+      description: `Convert a string to a date using a given format.
+
+For example:
+\`\`\`yaml
+  - static: 02/11/2014     # The date string to parse
+  - date.parse: MM/dd/yyyy # The given format to parse the date with
+               # => Tue Feb 11 2014 00:00:00 
+\`\`\`
+
+See [date-fns](https://date-fns.org/v2.29.3/docs/parse) for the supported formats.
+
+Leaving the format empty will try to parse the date using the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+For example:
+\`\`\`yaml
+date.parse:
+  - static: 2014-02-11T11:30:30 # The date string to parse
+  - date.parse: ''              # The given format to parse the date with
+                        # => Tue Feb 11 2014 11:30:30
+\`\`\`
+
+`,
     },
     equals: {
       type: 'array',
@@ -73,6 +124,10 @@ If the input is not an array, the input is returned without any modifications.`,
 
 Returns \`true\` if all entries are equal, otherwise \`false\`.
 `,
+    },
+    step: {
+      type: 'string',
+      description: 'Get flow page step current data',
     },
     gt: {
       type: 'array',
@@ -278,6 +333,101 @@ Supported properties:
     root: {
       enum: [null],
       description: 'Get the input data as it was initially passed to the remap function.',
+    },
+    history: {
+      type: 'integer',
+      description: `Get the data at a certain index from the history stack prior to an action.
+
+0 is the index of the first item in the history stack.`,
+    },
+    'from.history': {
+      type: 'object',
+      required: ['index', 'props'],
+      description: 'Create a new object with properties from the history stack at a certain index.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+
+0 is the index of the first item in the history stack.
+`,
+        },
+        props: {
+          description: 'Predefined mapper keys to choose what properties to apply.',
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
+        },
+      },
+    },
+    'assign.history': {
+      type: 'object',
+      required: ['index', 'props'],
+      description:
+        'Assign properties from the history stack at a certain index to an existing object.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+
+0 is the index of the first item in the history stack.
+`,
+        },
+        props: {
+          description: 'Predefined mapper keys to choose what properties to assign.',
+          additionalProperties: {
+            $ref: '#/components/schemas/RemapperDefinition',
+          },
+        },
+      },
+    },
+    'omit.history': {
+      type: 'object',
+      required: ['index', 'keys'],
+      description:
+        'Assign properties from the history stack at a certain index and exclude the unwanted properties.',
+      additionalProperties: false,
+      properties: {
+        index: {
+          type: 'integer',
+          description: `The index of the history stack item to assign.
+
+0 is the index of the first item in the history stack.
+`,
+        },
+        keys: {
+          description: `Exclude properties from the history stack item, based on the given object keys.
+
+Nested properties can be excluded using arrays of keys.
+
+For example:
+\`\`\`yaml
+omit.history:
+  index: 0
+  keys:
+    - foo   # Excludes the property foo
+    - - bar # Excludes the property baz inside of bar
+      - baz
+\`\`\`
+`,
+          type: 'array',
+          items: {
+            minItems: 1,
+            anyOf: [
+              { type: 'string' },
+              {
+                type: 'array',
+                minItems: 2,
+                items: {
+                  type: 'string',
+                },
+              },
+            ],
+          },
+        },
+      },
     },
     static: {
       description: 'Use a static value.',

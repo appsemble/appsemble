@@ -13,7 +13,7 @@ export const messages = defineMessages({
   secrets: 'Secrets',
   snapshots: 'Snapshots',
   notifications: 'Notifications',
-  users: 'Users',
+  users: 'App members',
   teams: 'Teams',
   translations: 'Translations',
   locked:

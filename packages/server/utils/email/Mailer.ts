@@ -125,13 +125,13 @@ export class Mailer {
   }
 
   async sendTranslatedEmail({
+    app,
     appId,
     emailName,
     from = 'Appsemble',
     locale = defaultLocale,
     to,
     values,
-    app,
   }: {
     to: Recipient;
     appId: number;
@@ -262,15 +262,15 @@ export class Mailer {
    * @param options The options specifying the contents and metadata of the email
    */
   async sendEmail({
-    to,
-    from,
-    cc,
-    bcc,
-    subject,
-    html,
-    text,
-    attachments = [],
     app,
+    attachments = [],
+    bcc,
+    cc,
+    from,
+    html,
+    subject,
+    text,
+    to,
   }: SendMailOptions): Promise<void> {
     let { transport } = this;
     if (app?.emailHost && app?.emailUser && app?.emailPassword) {

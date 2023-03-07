@@ -21,6 +21,7 @@ import { useApp } from '../index.js';
 import { messages } from './messages.js';
 import { OAuth2Secrets } from './OAuth2Secrets/index.js';
 import { SamlSecrets } from './SamlSecrets/index.js';
+import { SSLSecrets } from './SSLSecrets/index.js';
 
 interface EmailFormParameters {
   emailName: string;
@@ -162,6 +163,9 @@ export function SecretsPage(): ReactElement {
       </Collapsible>
       <OAuth2Secrets />
       <SamlSecrets />
+      <Collapsible title={<FormattedMessage {...messages.ssl} />}>
+        <SSLSecrets />
+      </Collapsible>
     </Content>
   );
 }

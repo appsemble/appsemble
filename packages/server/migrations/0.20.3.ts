@@ -114,7 +114,7 @@ export async function up(db: Sequelize): Promise<void> {
     const teamsDefinition: TeamsDefinition = { join: 'anyone', invite: ['$team:member'] };
     definition.security.teams = teamsDefinition;
     doc.setIn(['security', 'teams'], teamsDefinition);
-    logger.warn(`Adding old teams behaviour for app ${id}`);
+    logger.warn(`Adding old teams behavior for app ${id}`);
     await db.query('UPDATE "App" SET definition = ? where id = ?', {
       type: QueryTypes.UPDATE,
       replacements: [JSON.stringify(definition), id],

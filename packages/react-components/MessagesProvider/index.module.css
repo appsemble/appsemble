@@ -1,9 +1,5 @@
 .root {
-  bottom: 10px;
   box-sizing: border-box;
-  position: fixed;
-  width: calc(100vw - 20px);
-  z-index: 6001; /* 1 more than the z-index of modals */
 }
 
 .messageEnter {
@@ -26,11 +22,29 @@
 
 .content {
   min-height: 64px;
-  position: relative;
+  position: fixed;
+  width: calc(100vw - 20px);
+  z-index: 6001; /* 1 more than the z-index of modals */
 }
 
 .deleteButton {
   position: absolute;
   right: 5px;
   top: 5px;
+}
+
+.bottom {
+  bottom: 10px;
+}
+
+.bottom:not(:last-child) {
+  margin-bottom: 4.5rem;
+}
+
+.top {
+  top: 10px;
+}
+
+.top:not(:last-child) {
+  margin-top: 4.5rem;
 }

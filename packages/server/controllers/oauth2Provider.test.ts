@@ -17,7 +17,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase('oauth2provider');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
