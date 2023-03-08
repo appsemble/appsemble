@@ -41,7 +41,15 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
     }
 
     return (
-      <IntlProvider defaultLocale={defaultLocale} locale={lang} messages={messages}>
+      <IntlProvider
+        defaultLocale={defaultLocale}
+        locale={lang}
+        messages={messages}
+        onError={(err) => {
+          // eslint-disable-next-line no-console
+          console.log(err.message);
+        }}
+      >
         {children}
       </IntlProvider>
     );

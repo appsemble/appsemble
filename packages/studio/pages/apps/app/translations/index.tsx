@@ -17,7 +17,7 @@ import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/util
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -34,9 +34,7 @@ interface LanguageFormValues {
 export function TranslationsPage(): ReactElement {
   useMeta(messages.title);
 
-  const { pathname } = useLocation();
-  const pathnameArray = pathname.split('/');
-  let [, pageLanguage] = pathnameArray;
+  let { lang: pageLanguage } = useParams<{ lang: string }>();
 
   const { app } = useApp();
   const push = useMessages();
