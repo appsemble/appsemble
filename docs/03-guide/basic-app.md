@@ -116,6 +116,9 @@ block then emits the data to other blocks on the page, such as the `table` block
 ```mermaid
 graph LR
     resource[Resource API] --> data-loader --> table
+    style resource fill:#eee,stroke:#777,color: #000
+    style data-loader fill:#eee,stroke:#777,color: #000
+    style table fill:#eee,stroke:#777,color: #000
 ```
 
 Let’s add such a `data-loader` block.

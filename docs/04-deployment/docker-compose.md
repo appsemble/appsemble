@@ -2,7 +2,7 @@
 
 Appsemble is published as a Docker image. This makes it easy to deploy using
 [Docker Compose](https://docs.docker.com/compose). Copy the following contents in a file named
-_.docker-compose.yaml_.
+_.docker-compose.yml_.
 
 ```yaml copy filename="docker-compose.yml"
 version: '3.5'
@@ -51,8 +51,8 @@ services:
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
-`latest` with a specific version. All available versions can be found on [Appsemble tags page][] on
-Docker Hub.
+`latest` with a specific version. All available versions can be found on [Appsemble tags
+page][https://hub.docker.com/r/appsemble/appsemble/tags] on Docker Hub.
 
 It is also recommended to modify the database name, user, and password, and the Appsemble secret.
 
@@ -81,9 +81,3 @@ To stop the service, run the following command.
 ```
 $ docker compose down
 ```
-
-Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
-repository and continue to the
-[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).
-
-[appsemble tags page]: https://hub.docker.com/r/appsemble/appsemble/tags

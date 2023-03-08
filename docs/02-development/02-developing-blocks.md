@@ -40,10 +40,10 @@ The following templates are available by default:
 > attached to the Shadow DOM.
 
 For now, lets bootstrap a vanilla JavaScript block using the block name `test` and organization name
-`org`. The output should look like this:
+`your-org`. The output should look like this:
 
 ```
-? For which organization is the block? org
+? For which organization is the block? your-org
 ? What should be the name of the block? test
 ? What kind of block project should be bootstrapped?
    mini-jsx
@@ -52,6 +52,27 @@ For now, lets bootstrap a vanilla JavaScript block using the block name `test` a
 ```
 
 The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.
+
+The project structure looks like this:
+
+```
+.
+ └── appsemble/
+     ├── apps/
+     │
+     ├── blocks/
+     │   └── test/
+     |        ├── src
+     |        |    └── index.ts
+     |        ├── block.ts
+     |        ├── package.json
+     |        └── README.md
+     └── ..
+```
+
+In the `README.md` you can specify a description for the functionality of the block. The interface
+of the block is specified in the `block.ts` file and the blocks definition can be found in the `src`
+folder.
 
 Make sure the local Appsemble server is running, then run the following to publish the newly created
 block.
@@ -77,7 +98,7 @@ defaultPage: Home
 pages:
   - name: Home
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         actions:
           onClick:
@@ -85,7 +106,7 @@ pages:
             to: Other Page
   - name: Other Page
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         actions:
           onClick:
@@ -93,8 +114,11 @@ pages:
             to: Home
 ```
 
+> **Note**: When creating blocks for the organization `appsemble` the `@appsemble/` can be omitted
+> from the type field.
+
 Enter this app definition, save it, and it should display the new block in the app preview. The app
-contains two pages that link to each other by clicking the button created by the new test block. ✨
+contains two pages that link to each other by clicking the button created by the new test block.
 
 > **Note**: You may have noticed the block already has the `button` class and a specific style. This
 > is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into
@@ -103,11 +127,9 @@ contains two pages that link to each other by clicking the button created by the
 
 ## Modifying the Block
 
-> **Note**: Any block that can be found within the list of workspaces listed in `package.json` will
-> be hot-reloaded after having published it. This means that when developing blocks, it is not
-> necessary to keep publishing new versions of blocks to test changes. By default, the `blocks`
-> directory is checked for this, but other directories such as `../amsterdam/blocks`, assuming this
-> directory exists and has blocks, will be hot-reloaded as well.
+> **Note**: In order for updates to the definition of your block to be applied in Appsemble studio
+> you need to publish a new version of your block. To do this you also have to increment the version
+> number found in the block’s `package.json`.
 
 The definition of the block can be found in the `blocks/test/src` directory. Lets make the text of
 the button configurable using the app definition.
@@ -127,7 +149,7 @@ defaultPage: Home
 pages:
   - name: Home
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         parameters:
           text: Go to the other page.
@@ -137,7 +159,7 @@ pages:
             to: Other Page
   - name: Other Page
     blocks:
-      - type: '@org/test'
+      - type: '@your-org/test'
         version: 0.0.0
         parameters:
           text: Go to the home page.
@@ -255,8 +277,8 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 });
 ```
 
-The event will be emitted to all blocks on the page. Go on and add a second `@org/test` block the
-page to see the event is received by both blocks.
+The event will be emitted to all blocks on the page. Go on and add a second `@your-org/test` block
+the page to see the event is received by both blocks.
 
 ## Further Reading
 

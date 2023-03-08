@@ -7,20 +7,6 @@ icon: project-diagram
 This page serves as brief description of the general architecture of Appsemble and how each
 component interacts with each other.
 
-```mermaid
-graph BT
-  subgraph Docker Container
-    A("Server (API)")
-    C(App) --> A
-    D(Studio) --> A
-  end
-  B(Database)
-  A --> B
-  E(CLI) --> A
-  F(SDK) --> C
-  G(Block) --> F
-```
-
 ## About the architecture of Appsemble
 
 Appsemble is split up in different components that communicate with each other in order to create
@@ -36,6 +22,29 @@ These components are:
 - SDK
 - Block
 
+In the diagram below the structure of Appsemble components is described.
+
+```mermaid
+graph BT
+  subgraph Docker Container
+    A("Server (API)")
+    C(App) --> A
+    D(Studio) --> A
+  end
+  B(Database)
+  A --> B
+  E(CLI) --> A
+  F(SDK) --> C
+  G(Block) --> F
+  style A fill:#eee,stroke:#777,color: #000
+  style B fill:#eee,stroke:#777,color: #000
+  style C fill:#eee,stroke:#777,color: #000
+  style D fill:#eee,stroke:#777,color: #000
+  style E fill:#eee,stroke:#777,color: #000
+  style F fill:#eee,stroke:#777,color: #000
+  style G fill:#eee,stroke:#777,color: #000
+```
+
 ### App
 
 The app component handles everything that is necessary in order to render apps as well as submitting
@@ -49,11 +58,11 @@ Appsemble server.
 
 ### Editor
 
-The editor component allows users to manage their apps via an interactive environment. Apps can be
-edited by making changes to the app definition defined in `YAML`, which in turn can be previewed
-before submitting it to the server. It does this by communicating directly with the app component.
-The editor itself does _not_ communicate with anything other than the Appsemble server on its own,
-though apps in the preview panel can.
+The editor component allows users to create and manage their apps via an interactive environment.
+Apps can be edited by making changes to the app definition defined in `YAML`, which in turn can be
+previewed before submitting it to the server. It does this by communicating directly with the app
+component. The editor itself does _not_ communicate with anything other than the Appsemble server on
+its own, though apps in the preview panel can.
 
 ### Server
 
@@ -75,7 +84,9 @@ resources and parameters.
 
 Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
 order to create apps that do exactly what the user needs. Blocks can be developed in any language
-that is compatible with the Appsemble SDK, such as plain JavaScript, React, and Vue.
+that is compatible with the Appsemble SDK, such as plain JavaScript, React, and Vue. See section
+[Developing Blocks](https://appsemble.app/en/docs/02-development/developing-blocks) on how to create
+blocks.
 
 Within apps blocks are contained in their own environments, disallowing them from communicating with
 each other in order to prevent conflicts.
