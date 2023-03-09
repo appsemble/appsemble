@@ -207,7 +207,6 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-
           {currentSideBar.tab === 'layout' && (
             <div className={styles.rightBar}>
               <InputList
