@@ -31,7 +31,7 @@ For each of our internal merge requests a review environment is started at
 
 **Software Requirements**
 
-In order to run the Appsemble project in development mode on Linux or Windows, the following must be
+In order to run the Appsemble project in development mode on Linux, macOS or Windows, the following must be
 installed.
 
 - [Docker][]
