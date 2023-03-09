@@ -41,34 +41,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
-  const [editRoleName, setEditRoleName] = useState<string>(null);
-  const [newRoleName, setNewRoleName] = useState<string>(null);
-  const [createRoleName, setCreateRoleName] = useState<string>(null);
-  const [createRoleDefinition, setCreateRoleDefinition] = useState<RoleDefinition>(null);
-  const modalRoleName = useToggle();
-  const push = useMessages();
-
-  const onChangeTab = useCallback(
-    (tab: (typeof tabChangeOptions)[number]) => {
-      if (tab === 'createRole') {
-        setCurrentSideBar(Tabs[2]);
-        setSelectedRole(null);
-      } else {
-        setCurrentSideBar(Tabs.find(({ tab: t }) => t === tab));
-      }
-    },
-    [setCurrentSideBar, setSelectedRole],
-  );
-
-  const onChangeTeamsJoin = useCallback(
-    (index: number) => {
-      if (app.definition.security.teams) {
-        app.definition.security.teams.join = teamsJoinOptions[index];
-        setApp({ ...app });
-      }
-    },
-    [app, setApp],
-  );
 
   const onChangeTab = useCallback(
     (tab: (typeof tabChangeOptions)[number]) => {
