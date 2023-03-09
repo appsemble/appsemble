@@ -1061,12 +1061,16 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 0c7d3de79 (Update yarn.lock with adobe/css-tools version and remapping version)
+=======
+>>>>>>> 4ceb4d2ac (Resolve merge conflict in Sidebar)
 "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.15.4", "@babel/runtime@^7.20.7", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.21.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
   integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 =======
@@ -1174,6 +1178,10 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 >>>>>>> 0c7d3de79 (Update yarn.lock with adobe/css-tools version and remapping version)
+=======
+  dependencies:
+    regenerator-runtime "^0.13.11"
+>>>>>>> 4ceb4d2ac (Resolve merge conflict in Sidebar)
 
 "@babel/template@^7.18.10", "@babel/template@^7.20.7", "@babel/template@^7.3.3":
   version "7.20.7"
@@ -14005,6 +14013,7 @@ regenerate@^1.4.2:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 4ceb4d2ac (Resolve merge conflict in Sidebar)
 =======
@@ -14017,10 +14026,13 @@ regenerate@^1.4.2:
 >>>>>>> dbc65b0b5 (Add renaming roles changing all references)
 =======
 >>>>>>> 0c7d3de79 (Update yarn.lock with adobe/css-tools version and remapping version)
+=======
+>>>>>>> 4ceb4d2ac (Resolve merge conflict in Sidebar)
 regenerator-runtime@^0.13.11:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -14063,6 +14075,8 @@ regenerator-runtime@^0.13.4:
 >>>>>>> 4d7c17a0c (Add security sidebar)
 =======
 >>>>>>> 0c7d3de79 (Update yarn.lock with adobe/css-tools version and remapping version)
+=======
+>>>>>>> 4ceb4d2ac (Resolve merge conflict in Sidebar)
 
 regenerator-transform@^0.15.1:
   version "0.15.1"
