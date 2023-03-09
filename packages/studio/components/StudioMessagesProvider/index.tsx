@@ -47,7 +47,7 @@ export function StudioMessagesProvider({ children }: IntlMessagesProviderProps):
         messages={messages}
         onError={(err) => {
           // eslint-disable-next-line no-console
-          console.log(err.message);
+          console.info(err.message);
         }}
       >
         {children}
