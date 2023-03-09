@@ -83,7 +83,7 @@ To login using the Appsemble CLI, run the following command.
 yarn appsemble login
 ```
 
-> Note: when using `WSL` the module `keytar` is not installed by default. The workaround for this is
+> Note: when using Windows Subsystem for Linux (WSL) the module `keytar` is not installed by default. The workaround for this is
 > manually adding OAuth2 credentials and passing them to the CLI using `--client-credentials=`.
 
 This will open Appsemble studio in a new window in your browser. A panel will pop up where you must
