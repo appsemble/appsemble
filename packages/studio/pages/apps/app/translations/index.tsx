@@ -17,6 +17,7 @@ import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/util
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
@@ -33,18 +34,27 @@ interface LanguageFormValues {
 export function TranslationsPage(): ReactElement {
   useMeta(messages.title);
 
+  let { lang: pageLanguage } = useParams<{ lang: string }>();
+
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
 
   const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
-
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const modal = useToggle();
 
+  if (!languageIds?.data?.includes(pageLanguage)) {
+    pageLanguage = 'en';
+  }
+
   const languageId =
-    selectedLanguage || languageIds.data?.[0] || app.definition.defaultLanguage || 'en';
+    selectedLanguage ||
+    pageLanguage ||
+    app.definition.defaultLanguage ||
+    languageIds.data?.[0] ||
+    'en';
 
   const onSelectedLanguageChange = useCallback((event: ChangeEvent, lang: string) => {
     setSelectedLanguage(lang);
