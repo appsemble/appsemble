@@ -94,8 +94,9 @@ Result:
 
 #### [object.omit](/docs/reference/remapper#object.omit)
 
-In contrary to the previous remapper, what if you have an object where you want to remove a value
-from? Then you can use `object.omit`. The remapper can remove properties from an existing object
+In contrary to the previous remapper, what if you have an object from which you want to remove a 
+value? 
+Then you can use `object.omit`. The remapper can remove properties from an existing object
 based on the given object keys. This includes nested properties.
 
 Input:
