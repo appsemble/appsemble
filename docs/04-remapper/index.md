@@ -177,8 +177,8 @@ function containing two remappers:
    user and checks if it is equal to “Eindhoven”. If this is true, it removes the `city` property
    from the person’s properties. If this is false, it sets the person object to null.
 
-When this remapper is done, the output should be an array that is filled with people that had the
-value of “Eindhoven” under the `city` property. The people that didn’t got set to null.
+When this remapper is done, the output is an array that is filled with people that had the
+value of “Eindhoven” under the `city` property. The people that didn’t are set to null.
 
 > **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
 > **context** of the remapper itself.
