@@ -13,10 +13,6 @@
   scrollbar-width: none;
 }
 
-.root::-webkit-scrollbar {
-  display: none;
-}
-
 .leftBar {
   border: hsl(0deg 0% 83%) 1px solid;
   display: flex;
