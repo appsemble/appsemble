@@ -4,6 +4,7 @@ import { paths as appOAuth2Secrets } from './appOAuth2Secrets.js';
 import { paths as apps } from './apps.js';
 import { paths as appSamlSecrets } from './appSamlSecrets.js';
 import { paths as appsembleMessages } from './appsembleMessages.js';
+import { paths as appSSLSecrets } from './appSSLSecrets.js';
 import { paths as assets } from './assets.js';
 import { paths as blocks } from './blocks.js';
 import { paths as emails } from './emails.js';
@@ -24,6 +25,7 @@ export const paths = {
   ...apps,
   ...appSamlSecrets,
   ...appsembleMessages,
+  ...appSSLSecrets,
   ...assets,
   ...blocks,
   ...emails,

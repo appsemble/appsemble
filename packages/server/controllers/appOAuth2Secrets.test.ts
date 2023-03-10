@@ -20,7 +20,7 @@ let app: App;
 let mock: MockAdapter;
 let member: Member;
 
-useTestDatabase('appnotifications');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

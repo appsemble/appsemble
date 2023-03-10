@@ -2,6 +2,7 @@ import { ComponentChildren, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Field, FieldErrorMap, Values } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import { FormInput } from '../FormInput/index.js';
 
 interface FieldGroupProps {
@@ -11,7 +12,7 @@ interface FieldGroupProps {
   disabled?: boolean;
 
   /**
-   * The erors that apply to the input values.
+   * The errors that apply to the input values.
    */
   errors: FieldErrorMap;
 
@@ -35,9 +36,9 @@ interface FieldGroupProps {
   onChange: (name: string, value: Values) => void;
 
   /**
-   * The current values.
+   * The current form values.
    */
-  value: Values;
+  formValues: Values;
 }
 
 /**
@@ -47,26 +48,26 @@ export function FieldGroup({
   disabled,
   errors,
   fields,
+  formValues,
   name,
   onChange,
-  value,
 }: FieldGroupProps): VNode {
   const handleChange = useCallback(
     (localName: string, val: unknown) => {
-      onChange(name, { ...value, [localName]: val });
+      onChange(name, { ...(getValueByNameSequence(name, formValues) as Values), [localName]: val });
     },
-    [name, onChange, value],
+    [name, onChange, formValues],
   );
 
   return fields.map((f) => (
     <FormInput
       disabled={disabled}
-      error={errors[f.name]}
+      error={errors?.[f.name]}
       field={f}
+      formValues={formValues}
       key={f.name}
       name={name ? `${name}.${f.name}` : f.name}
       onChange={handleChange}
-      value={value[f.name]}
     />
   )) as ComponentChildren as VNode;
 }

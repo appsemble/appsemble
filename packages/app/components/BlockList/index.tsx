@@ -8,6 +8,7 @@ import { Navigate } from 'react-router-dom';
 
 import { ShowDialogAction, ShowShareDialog } from '../../types.js';
 import { ActionCreators } from '../../utils/actions/index.js';
+import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Block } from '../Block/index.js';
 import { useUser } from '../UserProvider/index.js';
@@ -21,6 +22,7 @@ interface BlockListProps {
   page: PageDefinition;
   prefix: string;
   prefixIndex: string;
+  appStorage: AppStorage;
   remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
   showDialog: ShowDialogAction;
   showShareDialog: ShowShareDialog;
@@ -43,6 +45,7 @@ function filterBlocks(
 }
 
 export function BlockList({
+  appStorage,
   blocks,
   data,
   ee,
@@ -103,6 +106,7 @@ export function BlockList({
       {blockList.map(([block, index]) => (
         <Block
           // As long as blocks are in a static list, using the index as a key should be fine.
+          appStorage={appStorage}
           block={block}
           data={data}
           ee={ee}

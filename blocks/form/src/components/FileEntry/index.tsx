@@ -10,8 +10,8 @@ import styles from './index.module.css';
 
 type FileEntryProps = InputProps<Blob | string, FileField>;
 
-export function FileEntry({ field, name, onChange, value }: FileEntryProps): VNode {
-  const url = useObjectURL(value);
+export function FileEntry({ field, formValues: value, name, onChange }: FileEntryProps): VNode {
+  const url = useObjectURL(value as unknown as Blob | string);
   const { utils } = useBlock();
   const modal = useToggle();
 

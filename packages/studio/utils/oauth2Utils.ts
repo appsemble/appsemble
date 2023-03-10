@@ -16,14 +16,14 @@ export function oauth2Redirect(qs: URLSearchParams, params: Record<string, strin
 }
 
 /**
- * Verify if the query parameters of the authorization request are valie.
+ * Verify if the query parameters of the authorization request are value.
  *
  * If the query parameters are invalid, the user is redirected back to the redirect URI as specified
  * in [RFC 6749](https://tools.ietf.org/html/rfc6749#section-4.1.2.1).
  *
  * It verifies that:
  * - No required parameters are missing.
- * - No duplicate parameters are oresent.
+ * - No duplicate parameters are present.
  * - The response type is valid.
  * - The scope is valid.
  *

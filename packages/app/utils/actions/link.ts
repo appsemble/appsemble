@@ -8,6 +8,7 @@ const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 export const link: ActionCreator<'link'> = ({
   app: { pages },
   definition: { to },
+  getAppMessage,
   navigate,
   params,
 }) => {
@@ -22,14 +23,24 @@ export const link: ActionCreator<'link'> = ({
 
     const toPage = pages.find(({ name }) => name === toBase);
     let subPage: SubPage;
+    let index: number;
 
-    if (toPage.type === 'tabs') {
-      subPage = toPage.tabs.find(({ name }) => name === toSub);
+    if (toPage?.type === 'tabs') {
+      subPage = toPage.tabs.find(({ name }) => name === toSub) ?? toPage.tabs[0];
+      index = toPage.tabs.findIndex(({ name }) => name === subPage.name);
     }
 
     if (toPage == null || (toSub && subPage == null)) {
       throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
     }
+
+    const normalizedPageName = normalize(toPage.name);
+    const translatedPageName = normalize(
+      getAppMessage({
+        id: `pages.${normalizedPageName}`,
+        defaultMessage: normalizedPageName,
+      }).format() as string,
+    );
 
     href = (data = {}) => {
       if (typeof data === 'string' && urlRegex.test(data)) {
@@ -39,9 +50,18 @@ export const link: ActionCreator<'link'> = ({
       return [
         '',
         params.lang,
-        normalize(toPage.name),
+        translatedPageName,
+        ...(subPage
+          ? [
+              normalize(
+                getAppMessage({
+                  id: `pages.${normalizedPageName}.tabs.${index}`,
+                  defaultMessage: normalize(subPage.name),
+                }).format() as string,
+              ),
+            ]
+          : []),
         ...(toPage.parameters || []).map((name) => data[name] ?? ''),
-        ...(subPage ? [normalize(subPage.name)] : []),
       ].join('/');
     };
   }

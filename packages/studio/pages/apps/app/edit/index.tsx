@@ -13,7 +13,7 @@ import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactElement, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { parse } from 'yaml';
@@ -46,12 +46,16 @@ export default function EditPage(): ReactElement {
   const [pristine, setPristine] = useState(true);
 
   const frame = useRef<HTMLIFrameElement>();
+  const editorRef = useRef<editor.IStandaloneCodeEditor>();
   const { formatMessage } = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
   const push = useMessages();
 
-  const changeTab = useCallback((event, hash: string) => navigate({ hash }), [navigate]);
+  const changeTab = useCallback(
+    (event: SyntheticEvent, hash: string) => navigate({ hash }),
+    [navigate],
+  );
 
   const onSave = useCallback(async () => {
     const definition = parse(appDefinition) as AppDefinition;
@@ -106,12 +110,11 @@ export default function EditPage(): ReactElement {
   }, [appDefinition, app, uploadApp, promptUpdateApp]);
 
   const onMonacoChange = useCallback(
-    (event, value: string, model: editor.ITextModel) => {
+    (event: editor.IModelContentChangedEvent, value: string, model: editor.ITextModel) => {
       switch (String(model.uri)) {
-        case 'file:///app.yaml': {
+        case 'file:///app.yaml':
           setAppDefinition(value);
           break;
-        }
         case 'file:///core.css':
           setCoreStyle(value);
           break;
@@ -148,6 +151,17 @@ export default function EditPage(): ReactElement {
     });
 
     return () => disposable.dispose();
+  }, []);
+
+  const openShortcuts = useCallback(() => {
+    const ed = editorRef.current;
+    if (!ed) {
+      return;
+    }
+
+    const action = ed.getAction('editor.action.quickCommand');
+    ed.focus();
+    action.run();
   }, []);
 
   const monacoProps =
@@ -190,6 +204,9 @@ export default function EditPage(): ReactElement {
           >
             <FormattedMessage {...messages.viewLive} />
           </Button>
+          <Button icon="keyboard" onClick={openShortcuts}>
+            <FormattedMessage {...messages.shortcuts} />
+          </Button>
         </div>
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
@@ -208,6 +225,7 @@ export default function EditPage(): ReactElement {
             onChange={onMonacoChange}
             onSave={onSave}
             readOnly={app.locked}
+            ref={editorRef}
             showDiagnostics
             {...monacoProps}
           />

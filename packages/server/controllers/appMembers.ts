@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { logger } from '@appsemble/node-utils';
 import { AppAccount, AppMember as AppMemberType, SSOConfiguration } from '@appsemble/types';
@@ -53,7 +53,6 @@ function outputAppMember(app: App, language: string, baseLanguage: string): AppA
       sso.push({
         type: 'oauth2',
         icon: secret.icon,
-        // @ts-expect-error Workaround for https://github.com/sequelize/sequelize/issues/4158
         url: secret.dataValues.authorizatio,
         name: secret.name,
       });
@@ -428,7 +427,7 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     mailer,
     pathParams: { appId },
     request: {
-      body: { name, password, picture, locale, properties = {}, timezone },
+      body: { locale, name, password, picture, properties = {}, timezone },
     },
   } = ctx;
 

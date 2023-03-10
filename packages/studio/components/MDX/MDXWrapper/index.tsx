@@ -12,7 +12,7 @@ import styles from './index.module.css';
 export function MDXWrapper({ children, main = true }: MDXProps): ReactElement {
   return main ? (
     <main className={`content pl-6 ${styles.root}`} lang={defaultLocale}>
-      {children}
+      {children as ReactElement}
     </main>
   ) : (
     (children as ReactElement)

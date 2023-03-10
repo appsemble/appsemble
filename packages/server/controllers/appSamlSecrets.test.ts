@@ -11,7 +11,7 @@ let app: App;
 let member: Member;
 let organization: Organization;
 
-useTestDatabase('appsamlsecrets');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

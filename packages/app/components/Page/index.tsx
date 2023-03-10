@@ -17,6 +17,7 @@ import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 import { ShowDialogParams, ShowShareDialog } from '../../types.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
+import { AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
@@ -24,7 +25,7 @@ import { FlowPage } from '../FlowPage/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { PageDialog } from '../PageDialog/index.js';
 import { TabsPage } from '../TabsPage/index.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -42,6 +43,7 @@ export function Page(): ReactElement {
 
   const [data, setData] = useState<unknown>({});
   const [dialog, setDialog] = useState<ShowDialogParams>();
+  const stepRef = useRef<unknown>();
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
@@ -55,6 +57,11 @@ export function Page(): ReactElement {
       }),
     [],
   );
+
+  const appStorage = useRef<AppStorage>();
+  if (!appStorage.current) {
+    appStorage.current = new AppStorage();
+  }
 
   const ee = useRef<EventEmitter>();
   if (!ee.current) {
@@ -92,10 +99,12 @@ export function Page(): ReactElement {
         pageData: data,
         userInfo,
         context,
+        history: context?.history,
         root: input,
         locale: lang,
+        stepRef,
       }),
-    [data, getMessage, lang, userInfo],
+    [data, getMessage, lang, stepRef, userInfo],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {
@@ -163,9 +172,10 @@ export function Page(): ReactElement {
         data-path={prefix}
         data-path-index={prefixIndex}
       >
-        <TitleBar>{pageName}</TitleBar>
+        <AppBar hideName={page.hideName}>{pageName}</AppBar>
         {page.type === 'tabs' ? (
           <TabsPage
+            appStorage={appStorage.current}
             data={data}
             ee={ee.current}
             key={prefix}
@@ -181,8 +191,9 @@ export function Page(): ReactElement {
           <MetaSwitch title={pageName}>
             <Route
               element={
-                page.type === 'flow' ? (
+                page.type === 'flow' || page.type === 'loop' ? (
                   <FlowPage
+                    appStorage={appStorage.current}
                     data={data}
                     definition={definition}
                     ee={ee.current}
@@ -194,9 +205,11 @@ export function Page(): ReactElement {
                     setData={setData}
                     showDialog={showDialog}
                     showShareDialog={showShareDialog}
+                    stepRef={stepRef}
                   />
                 ) : (
                   <BlockList
+                    appStorage={appStorage.current}
                     blocks={page.blocks}
                     data={data}
                     ee={ee.current}
@@ -217,6 +230,7 @@ export function Page(): ReactElement {
           </MetaSwitch>
         )}
         <PageDialog
+          appStorage={appStorage.current}
           dialog={dialog}
           ee={ee.current}
           page={page}
@@ -274,7 +288,7 @@ export function Page(): ReactElement {
           <FormattedMessage
             {...messages.permissionError}
             values={{
-              link: (text: string) => (
+              link: (text) => (
                 <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
                   {text}
                 </a>

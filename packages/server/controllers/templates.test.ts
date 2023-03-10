@@ -18,7 +18,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let templates: App[];
 
-useTestDatabase('templates');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { InputProps, StringField } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
 
 type StringInputProps = InputProps<string, StringField>;
@@ -17,19 +18,21 @@ export function StringInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
-  value,
+  readOnly,
 }: StringInputProps): VNode {
   const { utils } = useBlock();
-  const { format, icon, label, multiline, placeholder, readOnly, tag } = field;
+  const { format, icon, inline, label, multiline, placeholder, tag } = field;
 
+  const value = getValueByNameSequence(name, formValues) as string;
   const remappedLabel = utils.remap(label, value) ?? name;
   const commonProps = {
     className: classNames('appsemble-string', className),
     disabled,
     error: dirty && error,
-    iconLeft: icon,
+    icon,
     label: remappedLabel as string,
     maxLength: getMaxLength(field),
     minLength: getMinLength(field),
@@ -38,9 +41,10 @@ export function StringInput({
     optionalLabel: utils.formatMessage('optionalLabel'),
     placeholder: (utils.remap(placeholder, value) ?? remappedLabel) as string,
     readOnly,
-    required: isRequired(field),
+    required: isRequired(field, utils, formValues),
     tag: utils.remap(tag, value) as string,
     value,
+    inline,
   };
 
   return multiline ? (

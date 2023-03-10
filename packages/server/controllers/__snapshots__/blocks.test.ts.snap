@@ -10,7 +10,7 @@ Content-Type: application/json; charset=utf-8
       {
         "argument": {
           "id": "[subschema 1]",
-          "length": 76,
+          "length": 88,
           "valid": {
             "disableFormat": false,
             "errors": [
@@ -200,6 +200,8 @@ called.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
                       "enum": [
                         "dialog",
@@ -233,6 +235,8 @@ should be supported by the app.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
                   "enum": [
                     "dialog",
@@ -371,6 +375,10 @@ The dialog action that opened the dialog will be rejected with the data passed t
                     "onSuccess": {},
                     "remapAfter": {},
                     "remapBefore": {},
+                    "serial": {
+                      "description": "Runs the action in series instead of parallel",
+                      "type": "boolean",
+                    },
                     "type": {
                       "description": "Run an action for each entry in an array.
 
@@ -930,6 +938,87 @@ This is mostly useful for debugging blocks during development.
                 "stack": "instance.actions.onSubmit.type is not one of enum values: log",
               },
               {
+                "argument": "match",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "match"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "match": {
+                      "items": {
+                        "additionalProperties": false,
+                        "description": "",
+                        "properties": {
+                          "action": {
+                            "$ref": "#/components/schemas/ActionDefinition",
+                            "description": "Action to be called if the case equals true.",
+                          },
+                          "case": {
+                            "$ref": "#/components/schemas/RemapperDefinition",
+                            "description": "The case to be matched.",
+                          },
+                        },
+                        "required": [
+                          "case",
+                          "action",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "type": {
+                      "description": "Run another action if one of the cases is true.
+
+Only the first case that equals true is called.",
+                      "enum": [
+                        "match",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "match",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "match"",
+              },
+              {
+                "argument": [
+                  "match",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: match",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Run another action if one of the cases is true.
+
+Only the first case that equals true is called.",
+                  "enum": [
+                    "match",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: match",
+              },
+              {
                 "argument": "body",
                 "instance": {
                   "type": "invalid",
@@ -964,6 +1053,14 @@ This is mostly useful for debugging blocks during development.
                     "dismissable": {
                       "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
                       "type": "boolean",
+                    },
+                    "layout": {
+                      "default": "bottom",
+                      "description": "The position of the message on the screen.",
+                      "enum": [
+                        "bottom",
+                        "top",
+                      ],
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -1039,6 +1136,189 @@ This is the default action for block actions that are not required.
                   ],
                 },
                 "stack": "instance.actions.onSubmit.type is not one of enum values: noop",
+              },
+              {
+                "argument": "title",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "title"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The description of the notification.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "title": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The title of the notification.",
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+                    },
+                    "type": {
+                      "description": "Send notifications to one or all the users of an app.",
+                      "enum": [
+                        "notify",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "body",
+                    "to",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "title"",
+              },
+              {
+                "argument": "body",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "body"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The description of the notification.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "title": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The title of the notification.",
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+                    },
+                    "type": {
+                      "description": "Send notifications to one or all the users of an app.",
+                      "enum": [
+                        "notify",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "body",
+                    "to",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "body"",
+              },
+              {
+                "argument": "to",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "to"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The description of the notification.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "title": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The title of the notification.",
+                    },
+                    "to": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+                    },
+                    "type": {
+                      "description": "Send notifications to one or all the users of an app.",
+                      "enum": [
+                        "notify",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "body",
+                    "to",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "to"",
+              },
+              {
+                "argument": [
+                  "notify",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: notify",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Send notifications to one or all the users of an app.",
+                  "enum": [
+                    "notify",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: notify",
               },
               {
                 "argument": "url",
@@ -1957,7 +2237,7 @@ disabled by setting this to \`false\`
                     "remapAfter": {},
                     "remapBefore": {},
                     "resource": {
-                      "description": "The type of the resource to query.",
+                      "description": "The type of the resource to update.",
                       "type": "string",
                     },
                     "schema": {
@@ -2001,11 +2281,85 @@ disabled by setting this to \`false\`
                 "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
               },
               {
+                "argument": "resource",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "resource"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "body": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+                    },
+                    "method": {
+                      "default": "get",
+                      "description": "The type of request to make.",
+                      "enum": [
+                        "delete",
+                        "get",
+                        "patch",
+                        "post",
+                        "put",
+                      ],
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "proxy": {
+                      "default": "false",
+                      "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+                      "type": "boolean",
+                    },
+                    "query": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+                    },
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "resource": {
+                      "description": "The type of the resource to patch.",
+                      "type": "string",
+                    },
+                    "schema": {
+                      "$ref": "#/components/schemas/JSONSchema",
+                      "description": "The name of the schema to validate against before submitting data.",
+                    },
+                    "type": {
+                      "description": "Patch a resource.",
+                      "enum": [
+                        "resource.patch",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "resource",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "resource"",
+              },
+              {
                 "argument": [
-                  "share",
+                  "resource.patch",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: share",
+                "message": "is not one of enum values: resource.patch",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -2014,16 +2368,12 @@ disabled by setting this to \`false\`
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
-
-Depending on whether the user’s browser supports a native share function it will either display a
-native dialog for sharing links, or display a more limited fallback in a dialog.
-",
+                  "description": "Patch a resource.",
                   "enum": [
-                    "share",
+                    "resource.patch",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: resource.patch",
               },
               {
                 "argument": [
@@ -2139,34 +2489,125 @@ This is useful for example for stubbing data.
                     "remapBefore": {},
                     "storage": {
                       "default": "indexedDB",
-                      "description": "The mechanism used to read the data from.",
+                      "description": "The mechanism used to store the data.",
                       "enum": [
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Read data from the app’s local storage.",
+                      "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
                       "enum": [
-                        "storage.read",
+                        "storage.append",
                       ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write on top of the storage entry.",
                     },
                   },
                   "required": [
                     "type",
                     "key",
+                    "value",
                   ],
                   "type": "object",
                 },
                 "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
+                "argument": "value",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "value"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to store the data.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                        "appStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
+                      "enum": [
+                        "storage.append",
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The data to write on top of the storage entry.",
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                    "value",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "value"",
+              },
+              {
                 "argument": [
-                  "storage.read",
+                  "storage.append",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: storage.read",
+                "message": "is not one of enum values: storage.append",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -2175,12 +2616,28 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Read data from the app’s local storage.",
+                  "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
                   "enum": [
-                    "storage.read",
+                    "storage.append",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.append",
               },
               {
                 "argument": "key",
@@ -2212,10 +2669,113 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Read data from the app’s local storage.",
+                      "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it into a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
+                      "enum": [
+                        "storage.subtract",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "key"",
+              },
+              {
+                "argument": [
+                  "storage.subtract",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.subtract",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it into a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
+                  "enum": [
+                    "storage.subtract",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.subtract",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "key"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to read the data from.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                        "appStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
                       "enum": [
                         "storage.read",
                       ],
@@ -2243,7 +2803,16 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Read data from the app’s local storage.",
+                  "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
                   "enum": [
                     "storage.read",
                   ],
@@ -2280,10 +2849,26 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                       "enum": [
                         "storage.write",
                       ],
@@ -2332,10 +2917,26 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                       "enum": [
                         "storage.write",
                       ],
@@ -2368,7 +2969,22 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Write data to the app’s local storage.",
+                  "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
                   "enum": [
                     "storage.write",
                   ],
@@ -2390,6 +3006,10 @@ This is useful for example for stubbing data.
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
+                    "item": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the item in an array to update.",
+                    },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The key of the storage entry.",
@@ -2405,17 +3025,33 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                       "enum": [
-                        "storage.write",
+                        "storage.update",
                       ],
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
+                      "description": "The data to update the specified item with.",
                     },
                   },
                   "required": [
@@ -2442,6 +3078,10 @@ This is useful for example for stubbing data.
                 "schema": {
                   "additionalProperties": false,
                   "properties": {
+                    "item": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the item in an array to update.",
+                    },
                     "key": {
                       "$ref": "#/components/schemas/RemapperDefinition",
                       "description": "The key of the storage entry.",
@@ -2457,17 +3097,33 @@ This is useful for example for stubbing data.
                         "indexedDB",
                         "localStorage",
                         "sessionStorage",
+                        "appStorage",
                       ],
                     },
                     "type": {
-                      "description": "Write data to the app’s local storage.",
+                      "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                       "enum": [
-                        "storage.write",
+                        "storage.update",
                       ],
                     },
                     "value": {
                       "$ref": "#/components/schemas/RemapperDefinition",
-                      "description": "The data to write to the storage entry.",
+                      "description": "The data to update the specified item with.",
                     },
                   },
                   "required": [
@@ -2481,10 +3137,10 @@ This is useful for example for stubbing data.
               },
               {
                 "argument": [
-                  "storage.write",
+                  "storage.update",
                 ],
                 "instance": "invalid",
-                "message": "is not one of enum values: storage.write",
+                "message": "is not one of enum values: storage.update",
                 "name": "enum",
                 "path": [
                   "actions",
@@ -2493,12 +3149,112 @@ This is useful for example for stubbing data.
                 ],
                 "property": "instance.actions.onSubmit.type",
                 "schema": {
-                  "description": "Write data to the app’s local storage.",
+                  "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
                   "enum": [
-                    "storage.write",
+                    "storage.update",
                   ],
                 },
-                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.update",
+              },
+              {
+                "argument": "key",
+                "instance": {
+                  "type": "invalid",
+                },
+                "message": "requires property "key"",
+                "name": "required",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                ],
+                "property": "instance.actions.onSubmit",
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "key": {
+                      "$ref": "#/components/schemas/RemapperDefinition",
+                      "description": "The key of the storage entry to remove.",
+                    },
+                    "onError": {},
+                    "onSuccess": {},
+                    "remapAfter": {},
+                    "remapBefore": {},
+                    "storage": {
+                      "default": "indexedDB",
+                      "description": "The mechanism used to remove the data from.",
+                      "enum": [
+                        "indexedDB",
+                        "localStorage",
+                        "sessionStorage",
+                        "appStorage",
+                      ],
+                    },
+                    "type": {
+                      "description": "Delete the item that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.delete
+key: temp
+storage: localStorage
+\`\`\`
+      ",
+                      "enum": [
+                        "storage.delete",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "type",
+                    "key",
+                  ],
+                  "type": "object",
+                },
+                "stack": "instance.actions.onSubmit requires property "key"",
+              },
+              {
+                "argument": [
+                  "storage.delete",
+                ],
+                "instance": "invalid",
+                "message": "is not one of enum values: storage.delete",
+                "name": "enum",
+                "path": [
+                  "actions",
+                  "onSubmit",
+                  "type",
+                ],
+                "property": "instance.actions.onSubmit.type",
+                "schema": {
+                  "description": "Delete the item that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.delete
+key: temp
+storage: localStorage
+\`\`\`
+      ",
+                  "enum": [
+                    "storage.delete",
+                  ],
+                },
+                "stack": "instance.actions.onSubmit.type is not one of enum values: storage.delete",
               },
               {
                 "argument": [
@@ -2781,8 +3537,10 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/LinkBackActionDefinition>",
                   "<#/components/schemas/LinkNextActionDefinition>",
                   "<#/components/schemas/LogActionDefinition>",
+                  "<#/components/schemas/MatchActionDefinition>",
                   "<#/components/schemas/MessageActionDefinition>",
                   "<#/components/schemas/NoopActionDefinition>",
+                  "<#/components/schemas/NotifyActionDefinition>",
                   "<#/components/schemas/RequestActionDefinition>",
                   "<#/components/schemas/ResourceCountActionDefinition>",
                   "<#/components/schemas/ResourceCreateActionDefinition>",
@@ -2794,13 +3552,15 @@ Does nothing if the user isn’t logged in.",
                   "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
                   "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
                   "<#/components/schemas/ResourceUpdateActionDefinition>",
-                  "<#/components/schemas/ShareActionDefinition>",
+                  "<#/components/schemas/ResourcePatchActionDefinition>",
                   "<#/components/schemas/ShareActionDefinition>",
                   "<#/components/schemas/StaticActionDefinition>",
-                  "<#/components/schemas/StorageReadActionDefinition>",
+                  "<#/components/schemas/StorageAppendActionDefinition>",
+                  "<#/components/schemas/StorageSubtractActionDefinition>",
                   "<#/components/schemas/StorageReadActionDefinition>",
                   "<#/components/schemas/StorageWriteActionDefinition>",
-                  "<#/components/schemas/StorageWriteActionDefinition>",
+                  "<#/components/schemas/StorageUpdateActionDefinition>",
+                  "<#/components/schemas/StorageDeleteActionDefinition>",
                   "<#/components/schemas/TeamInviteActionDefinition>",
                   "<#/components/schemas/TeamJoinActionDefinition>",
                   "<#/components/schemas/TeamListActionDefinition>",
@@ -2812,7 +3572,7 @@ Does nothing if the user isn’t logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
                 "name": "anyOf",
                 "path": [
                   "actions",
@@ -2873,10 +3633,16 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/LogActionDefinition",
                     },
                     {
+                      "$ref": "#/components/schemas/MatchActionDefinition",
+                    },
+                    {
                       "$ref": "#/components/schemas/MessageActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/NoopActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/NotifyActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/RequestActionDefinition",
@@ -2912,7 +3678,7 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/ShareActionDefinition",
+                      "$ref": "#/components/schemas/ResourcePatchActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/ShareActionDefinition",
@@ -2921,7 +3687,10 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/StaticActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/StorageReadActionDefinition",
+                      "$ref": "#/components/schemas/StorageAppendActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/StorageSubtractActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/StorageReadActionDefinition",
@@ -2930,7 +3699,10 @@ Does nothing if the user isn’t logged in.",
                       "$ref": "#/components/schemas/StorageWriteActionDefinition",
                     },
                     {
-                      "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                      "$ref": "#/components/schemas/StorageUpdateActionDefinition",
+                    },
+                    {
+                      "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                     },
                     {
                       "$ref": "#/components/schemas/TeamInviteActionDefinition",
@@ -2955,7 +3727,7 @@ Does nothing if the user isn’t logged in.",
                     },
                   ],
                 },
-                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+                "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
               },
             ],
             "instance": {
@@ -3024,10 +3796,16 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/LogActionDefinition",
                 },
                 {
+                  "$ref": "#/components/schemas/MatchActionDefinition",
+                },
+                {
                   "$ref": "#/components/schemas/MessageActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/NoopActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/NotifyActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/RequestActionDefinition",
@@ -3063,7 +3841,7 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/ShareActionDefinition",
+                  "$ref": "#/components/schemas/ResourcePatchActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ShareActionDefinition",
@@ -3072,7 +3850,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StaticActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/StorageReadActionDefinition",
+                  "$ref": "#/components/schemas/StorageAppendActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/StorageSubtractActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageReadActionDefinition",
@@ -3081,7 +3862,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageWriteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                  "$ref": "#/components/schemas/StorageUpdateActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/TeamInviteActionDefinition",
@@ -3111,7 +3895,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "does not match allOf schema [subschema 1] with 76 error[s]:",
+        "message": "does not match allOf schema [subschema 1] with 88 error[s]:",
         "name": "allOf",
         "path": [
           "actions",
@@ -3197,10 +3981,16 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/LogActionDefinition",
                 },
                 {
+                  "$ref": "#/components/schemas/MatchActionDefinition",
+                },
+                {
                   "$ref": "#/components/schemas/MessageActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/NoopActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/NotifyActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/RequestActionDefinition",
@@ -3236,7 +4026,7 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/ShareActionDefinition",
+                  "$ref": "#/components/schemas/ResourcePatchActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/ShareActionDefinition",
@@ -3245,7 +4035,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StaticActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/StorageReadActionDefinition",
+                  "$ref": "#/components/schemas/StorageAppendActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/StorageSubtractActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/StorageReadActionDefinition",
@@ -3254,7 +4047,10 @@ Does nothing if the user isn’t logged in.",
                   "$ref": "#/components/schemas/StorageWriteActionDefinition",
                 },
                 {
-                  "$ref": "#/components/schemas/StorageWriteActionDefinition",
+                  "$ref": "#/components/schemas/StorageUpdateActionDefinition",
+                },
+                {
+                  "$ref": "#/components/schemas/StorageDeleteActionDefinition",
                 },
                 {
                   "$ref": "#/components/schemas/TeamInviteActionDefinition",
@@ -3281,7 +4077,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 76 error[s]:",
+        "stack": "instance.actions.onSubmit does not match allOf schema [subschema 1] with 88 error[s]:",
       },
       {
         "argument": "target",
@@ -3469,6 +4265,8 @@ called.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
               "enum": [
                 "dialog",
@@ -3502,6 +4300,8 @@ should be supported by the app.
 Dialogs can be closed by calling the [\`dialog.ok\`](#DialogOkActionDefinition) or
 [\`dialog.error\`](#DialogErrorActionDefinition). Users can still manually close dialogs, which
 should be supported by the app.
+
+Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in this action.
 ",
           "enum": [
             "dialog",
@@ -3640,6 +4440,10 @@ The dialog action that opened the dialog will be rejected with the data passed t
             "onSuccess": {},
             "remapAfter": {},
             "remapBefore": {},
+            "serial": {
+              "description": "Runs the action in series instead of parallel",
+              "type": "boolean",
+            },
             "type": {
               "description": "Run an action for each entry in an array.
 
@@ -4199,6 +5003,87 @@ This is mostly useful for debugging blocks during development.
         "stack": "instance.actions.onSubmit.type is not one of enum values: log",
       },
       {
+        "argument": "match",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "match"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "match": {
+              "items": {
+                "additionalProperties": false,
+                "description": "",
+                "properties": {
+                  "action": {
+                    "$ref": "#/components/schemas/ActionDefinition",
+                    "description": "Action to be called if the case equals true.",
+                  },
+                  "case": {
+                    "$ref": "#/components/schemas/RemapperDefinition",
+                    "description": "The case to be matched.",
+                  },
+                },
+                "required": [
+                  "case",
+                  "action",
+                ],
+                "type": "object",
+              },
+              "type": "array",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "type": {
+              "description": "Run another action if one of the cases is true.
+
+Only the first case that equals true is called.",
+              "enum": [
+                "match",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "match",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "match"",
+      },
+      {
+        "argument": [
+          "match",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: match",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Run another action if one of the cases is true.
+
+Only the first case that equals true is called.",
+          "enum": [
+            "match",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: match",
+      },
+      {
         "argument": "body",
         "instance": {
           "type": "invalid",
@@ -4233,6 +5118,14 @@ This is mostly useful for debugging blocks during development.
             "dismissable": {
               "description": "Boolean value indicating whether the user is able to dismiss the message manually.",
               "type": "boolean",
+            },
+            "layout": {
+              "default": "bottom",
+              "description": "The position of the message on the screen.",
+              "enum": [
+                "bottom",
+                "top",
+              ],
             },
             "onError": {},
             "onSuccess": {},
@@ -4308,6 +5201,189 @@ This is the default action for block actions that are not required.
           ],
         },
         "stack": "instance.actions.onSubmit.type is not one of enum values: noop",
+      },
+      {
+        "argument": "title",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "title"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The description of the notification.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "title": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The title of the notification.",
+            },
+            "to": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+            },
+            "type": {
+              "description": "Send notifications to one or all the users of an app.",
+              "enum": [
+                "notify",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "title",
+            "body",
+            "to",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "title"",
+      },
+      {
+        "argument": "body",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "body"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The description of the notification.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "title": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The title of the notification.",
+            },
+            "to": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+            },
+            "type": {
+              "description": "Send notifications to one or all the users of an app.",
+              "enum": [
+                "notify",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "title",
+            "body",
+            "to",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "body"",
+      },
+      {
+        "argument": "to",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "to"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The description of the notification.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "title": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The title of the notification.",
+            },
+            "to": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "To whom the notification should be sent.
+
+Use \`all\` to send the notification to all app subscribed users.
+Or notify specific users by passing either a single user id or an array of user ids.
+
+Nothing is sent if the value is **not** a valid user id.
+",
+            },
+            "type": {
+              "description": "Send notifications to one or all the users of an app.",
+              "enum": [
+                "notify",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "title",
+            "body",
+            "to",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "to"",
+      },
+      {
+        "argument": [
+          "notify",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: notify",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Send notifications to one or all the users of an app.",
+          "enum": [
+            "notify",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: notify",
       },
       {
         "argument": "url",
@@ -5226,7 +6302,7 @@ disabled by setting this to \`false\`
             "remapAfter": {},
             "remapBefore": {},
             "resource": {
-              "description": "The type of the resource to query.",
+              "description": "The type of the resource to update.",
               "type": "string",
             },
             "schema": {
@@ -5270,11 +6346,85 @@ disabled by setting this to \`false\`
         "stack": "instance.actions.onSubmit.type is not one of enum values: resource.update",
       },
       {
+        "argument": "resource",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "resource"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "remapper that results in the request body to send.
+
+If not specified, the raw input data is used.
+",
+            },
+            "method": {
+              "default": "get",
+              "description": "The type of request to make.",
+              "enum": [
+                "delete",
+                "get",
+                "patch",
+                "post",
+                "put",
+              ],
+            },
+            "onError": {},
+            "onSuccess": {},
+            "proxy": {
+              "default": "false",
+              "description": "By default requests will be proxied through the Appsemble API.
+
+This allows to protect user data and ensures
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is enabled. This behavior can be
+disabled by setting this to \`false\`
+",
+              "type": "boolean",
+            },
+            "query": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "A remapper that results in either an object containing each property of the query string, or a string that gets passed through as-is.",
+            },
+            "remapAfter": {},
+            "remapBefore": {},
+            "resource": {
+              "description": "The type of the resource to patch.",
+              "type": "string",
+            },
+            "schema": {
+              "$ref": "#/components/schemas/JSONSchema",
+              "description": "The name of the schema to validate against before submitting data.",
+            },
+            "type": {
+              "description": "Patch a resource.",
+              "enum": [
+                "resource.patch",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "resource",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "resource"",
+      },
+      {
         "argument": [
-          "share",
+          "resource.patch",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: share",
+        "message": "is not one of enum values: resource.patch",
         "name": "enum",
         "path": [
           "actions",
@@ -5283,16 +6433,12 @@ disabled by setting this to \`false\`
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "The \`share\` action can be used to display a prompt that allows the user to share something with others, primarily via social media.
-
-Depending on whether the user’s browser supports a native share function it will either display a
-native dialog for sharing links, or display a more limited fallback in a dialog.
-",
+          "description": "Patch a resource.",
           "enum": [
-            "share",
+            "resource.patch",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: share",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: resource.patch",
       },
       {
         "argument": [
@@ -5408,34 +6554,125 @@ This is useful for example for stubbing data.
             "remapBefore": {},
             "storage": {
               "default": "indexedDB",
-              "description": "The mechanism used to read the data from.",
+              "description": "The mechanism used to store the data.",
               "enum": [
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Read data from the app’s local storage.",
+              "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
               "enum": [
-                "storage.read",
+                "storage.append",
               ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write on top of the storage entry.",
             },
           },
           "required": [
             "type",
             "key",
+            "value",
           ],
           "type": "object",
         },
         "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
+        "argument": "value",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "value"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to store the data.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+                "appStorage",
+              ],
+            },
+            "type": {
+              "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
+              "enum": [
+                "storage.append",
+              ],
+            },
+            "value": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The data to write on top of the storage entry.",
+            },
+          },
+          "required": [
+            "type",
+            "key",
+            "value",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "value"",
+      },
+      {
         "argument": [
-          "storage.read",
+          "storage.append",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: storage.read",
+        "message": "is not one of enum values: storage.append",
         "name": "enum",
         "path": [
           "actions",
@@ -5444,12 +6681,28 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Read data from the app’s local storage.",
+          "description": "Append data to an existing array in storage.
+      If the storage entry is a single object, it turns it into an array to append the data on.
+
+For example:
+\`\`\`yaml
+type: storage.append
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text:
+      This is a new data item
+    value:
+      1
+\`\`\`
+",
           "enum": [
-            "storage.read",
+            "storage.append",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.read",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.append",
       },
       {
         "argument": "key",
@@ -5481,10 +6734,113 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Read data from the app’s local storage.",
+              "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it into a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
+              "enum": [
+                "storage.subtract",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "key",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "key"",
+      },
+      {
+        "argument": [
+          "storage.subtract",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.subtract",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Subtract last item from a storage entry.
+
+      If the entry consists of only one item, turns it into a singular object.
+
+      If the entry is a single item, the entry is removed entirely.
+
+For example:
+\`\`\`yaml
+type: storage.subtract
+key: temp
+storage: localStorage
+\`\`\`
+        ",
+          "enum": [
+            "storage.subtract",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.subtract",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "key"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to read the data from.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+                "appStorage",
+              ],
+            },
+            "type": {
+              "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
               "enum": [
                 "storage.read",
               ],
@@ -5512,7 +6868,16 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Read data from the app’s local storage.",
+          "description": "Read data from the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.read
+key: temp
+storage: localStorage
+\`\`\`
+
+      ",
           "enum": [
             "storage.read",
           ],
@@ -5549,10 +6914,26 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
               "enum": [
                 "storage.write",
               ],
@@ -5601,10 +6982,26 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
               "enum": [
                 "storage.write",
               ],
@@ -5637,7 +7034,22 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Write data to the app’s local storage.",
+          "description": "Write data to the app’s local storage.
+
+For example:
+\`\`\`yaml
+type: storage.write
+key: temp
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    data:
+      cool data
+    value:
+      1
+\`\`\`
+      ",
           "enum": [
             "storage.write",
           ],
@@ -5659,6 +7071,10 @@ This is useful for example for stubbing data.
         "schema": {
           "additionalProperties": false,
           "properties": {
+            "item": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the item in an array to update.",
+            },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The key of the storage entry.",
@@ -5674,17 +7090,33 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
               "enum": [
-                "storage.write",
+                "storage.update",
               ],
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
+              "description": "The data to update the specified item with.",
             },
           },
           "required": [
@@ -5711,6 +7143,10 @@ This is useful for example for stubbing data.
         "schema": {
           "additionalProperties": false,
           "properties": {
+            "item": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the item in an array to update.",
+            },
             "key": {
               "$ref": "#/components/schemas/RemapperDefinition",
               "description": "The key of the storage entry.",
@@ -5726,17 +7162,33 @@ This is useful for example for stubbing data.
                 "indexedDB",
                 "localStorage",
                 "sessionStorage",
+                "appStorage",
               ],
             },
             "type": {
-              "description": "Write data to the app’s local storage.",
+              "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
               "enum": [
-                "storage.write",
+                "storage.update",
               ],
             },
             "value": {
               "$ref": "#/components/schemas/RemapperDefinition",
-              "description": "The data to write to the storage entry.",
+              "description": "The data to update the specified item with.",
             },
           },
           "required": [
@@ -5750,10 +7202,10 @@ This is useful for example for stubbing data.
       },
       {
         "argument": [
-          "storage.write",
+          "storage.update",
         ],
         "instance": "invalid",
-        "message": "is not one of enum values: storage.write",
+        "message": "is not one of enum values: storage.update",
         "name": "enum",
         "path": [
           "actions",
@@ -5762,12 +7214,112 @@ This is useful for example for stubbing data.
         ],
         "property": "instance.actions.onSubmit.type",
         "schema": {
-          "description": "Write data to the app’s local storage.",
+          "description": "Update an existing item in storage, or update an item inside a stored array.
+
+For example:
+\`\`\`yaml
+type: storage.update
+key: temp
+item: 1
+value: { root }
+storage: localStorage
+remapBefore:
+  object.from:
+    text: { prop: text }
+    value: { prop: value }
+    newField: "New field"
+\`\`\`
+      ",
           "enum": [
-            "storage.write",
+            "storage.update",
           ],
         },
-        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.write",
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.update",
+      },
+      {
+        "argument": "key",
+        "instance": {
+          "type": "invalid",
+        },
+        "message": "requires property "key"",
+        "name": "required",
+        "path": [
+          "actions",
+          "onSubmit",
+        ],
+        "property": "instance.actions.onSubmit",
+        "schema": {
+          "additionalProperties": false,
+          "properties": {
+            "key": {
+              "$ref": "#/components/schemas/RemapperDefinition",
+              "description": "The key of the storage entry to remove.",
+            },
+            "onError": {},
+            "onSuccess": {},
+            "remapAfter": {},
+            "remapBefore": {},
+            "storage": {
+              "default": "indexedDB",
+              "description": "The mechanism used to remove the data from.",
+              "enum": [
+                "indexedDB",
+                "localStorage",
+                "sessionStorage",
+                "appStorage",
+              ],
+            },
+            "type": {
+              "description": "Delete the item that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.delete
+key: temp
+storage: localStorage
+\`\`\`
+      ",
+              "enum": [
+                "storage.delete",
+              ],
+            },
+          },
+          "required": [
+            "type",
+            "key",
+          ],
+          "type": "object",
+        },
+        "stack": "instance.actions.onSubmit requires property "key"",
+      },
+      {
+        "argument": [
+          "storage.delete",
+        ],
+        "instance": "invalid",
+        "message": "is not one of enum values: storage.delete",
+        "name": "enum",
+        "path": [
+          "actions",
+          "onSubmit",
+          "type",
+        ],
+        "property": "instance.actions.onSubmit.type",
+        "schema": {
+          "description": "Delete the item that is stored at the specified key.
+
+For example:
+\`\`\`yaml
+type: storage.delete
+key: temp
+storage: localStorage
+\`\`\`
+      ",
+          "enum": [
+            "storage.delete",
+          ],
+        },
+        "stack": "instance.actions.onSubmit.type is not one of enum values: storage.delete",
       },
       {
         "argument": [
@@ -6050,8 +7602,10 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/LinkBackActionDefinition>",
           "<#/components/schemas/LinkNextActionDefinition>",
           "<#/components/schemas/LogActionDefinition>",
+          "<#/components/schemas/MatchActionDefinition>",
           "<#/components/schemas/MessageActionDefinition>",
           "<#/components/schemas/NoopActionDefinition>",
+          "<#/components/schemas/NotifyActionDefinition>",
           "<#/components/schemas/RequestActionDefinition>",
           "<#/components/schemas/ResourceCountActionDefinition>",
           "<#/components/schemas/ResourceCreateActionDefinition>",
@@ -6063,13 +7617,15 @@ Does nothing if the user isn’t logged in.",
           "<#/components/schemas/ResourceSubscriptionToggleActionDefinition>",
           "<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>",
           "<#/components/schemas/ResourceUpdateActionDefinition>",
-          "<#/components/schemas/ShareActionDefinition>",
+          "<#/components/schemas/ResourcePatchActionDefinition>",
           "<#/components/schemas/ShareActionDefinition>",
           "<#/components/schemas/StaticActionDefinition>",
-          "<#/components/schemas/StorageReadActionDefinition>",
+          "<#/components/schemas/StorageAppendActionDefinition>",
+          "<#/components/schemas/StorageSubtractActionDefinition>",
           "<#/components/schemas/StorageReadActionDefinition>",
           "<#/components/schemas/StorageWriteActionDefinition>",
-          "<#/components/schemas/StorageWriteActionDefinition>",
+          "<#/components/schemas/StorageUpdateActionDefinition>",
+          "<#/components/schemas/StorageDeleteActionDefinition>",
           "<#/components/schemas/TeamInviteActionDefinition>",
           "<#/components/schemas/TeamJoinActionDefinition>",
           "<#/components/schemas/TeamListActionDefinition>",
@@ -6081,7 +7637,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "message": "is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
         "name": "anyOf",
         "path": [
           "actions",
@@ -6142,10 +7698,16 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/LogActionDefinition",
             },
             {
+              "$ref": "#/components/schemas/MatchActionDefinition",
+            },
+            {
               "$ref": "#/components/schemas/MessageActionDefinition",
             },
             {
               "$ref": "#/components/schemas/NoopActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/NotifyActionDefinition",
             },
             {
               "$ref": "#/components/schemas/RequestActionDefinition",
@@ -6181,7 +7743,7 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/ResourceUpdateActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/ShareActionDefinition",
+              "$ref": "#/components/schemas/ResourcePatchActionDefinition",
             },
             {
               "$ref": "#/components/schemas/ShareActionDefinition",
@@ -6190,7 +7752,10 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/StaticActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/StorageReadActionDefinition",
+              "$ref": "#/components/schemas/StorageAppendActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/StorageSubtractActionDefinition",
             },
             {
               "$ref": "#/components/schemas/StorageReadActionDefinition",
@@ -6199,7 +7764,10 @@ Does nothing if the user isn’t logged in.",
               "$ref": "#/components/schemas/StorageWriteActionDefinition",
             },
             {
-              "$ref": "#/components/schemas/StorageWriteActionDefinition",
+              "$ref": "#/components/schemas/StorageUpdateActionDefinition",
+            },
+            {
+              "$ref": "#/components/schemas/StorageDeleteActionDefinition",
             },
             {
               "$ref": "#/components/schemas/TeamInviteActionDefinition",
@@ -6224,7 +7792,7 @@ Does nothing if the user isn’t logged in.",
             },
           ],
         },
-        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
+        "stack": "instance.actions.onSubmit is not any of <#/components/schemas/AnalyticsActionDefinition>,<#/components/schemas/ConditionActionDefinition>,<#/components/schemas/DialogActionDefinition>,<#/components/schemas/DialogErrorActionDefinition>,<#/components/schemas/DialogOkActionDefinition>,<#/components/schemas/DownloadActionDefinition>,<#/components/schemas/EachActionDefinition>,<#/components/schemas/EmailActionDefinition>,<#/components/schemas/EventActionDefinition>,<#/components/schemas/FlowBackActionDefinition>,<#/components/schemas/FlowFinishActionDefinition>,<#/components/schemas/FlowNextActionDefinition>,<#/components/schemas/FlowToActionDefinition>,<#/components/schemas/LinkActionDefinition>,<#/components/schemas/LinkBackActionDefinition>,<#/components/schemas/LinkNextActionDefinition>,<#/components/schemas/LogActionDefinition>,<#/components/schemas/MatchActionDefinition>,<#/components/schemas/MessageActionDefinition>,<#/components/schemas/NoopActionDefinition>,<#/components/schemas/NotifyActionDefinition>,<#/components/schemas/RequestActionDefinition>,<#/components/schemas/ResourceCountActionDefinition>,<#/components/schemas/ResourceCreateActionDefinition>,<#/components/schemas/ResourceDeleteActionDefinition>,<#/components/schemas/ResourceGetActionDefinition>,<#/components/schemas/ResourceQueryActionDefinition>,<#/components/schemas/ResourceSubscriptionStatusActionDefinition>,<#/components/schemas/ResourceSubscriptionSubscribeActionDefinition>,<#/components/schemas/ResourceSubscriptionToggleActionDefinition>,<#/components/schemas/ResourceSubscriptionUnsubscribeActionDefinition>,<#/components/schemas/ResourceUpdateActionDefinition>,<#/components/schemas/ResourcePatchActionDefinition>,<#/components/schemas/ShareActionDefinition>,<#/components/schemas/StaticActionDefinition>,<#/components/schemas/StorageAppendActionDefinition>,<#/components/schemas/StorageSubtractActionDefinition>,<#/components/schemas/StorageReadActionDefinition>,<#/components/schemas/StorageWriteActionDefinition>,<#/components/schemas/StorageUpdateActionDefinition>,<#/components/schemas/StorageDeleteActionDefinition>,<#/components/schemas/TeamInviteActionDefinition>,<#/components/schemas/TeamJoinActionDefinition>,<#/components/schemas/TeamListActionDefinition>,<#/components/schemas/ThrowActionDefinition>,<#/components/schemas/UserLoginActionDefinition>,<#/components/schemas/UserRegisterActionDefinition>,<#/components/schemas/UserUpdateActionDefinition>",
       },
     ],
   },

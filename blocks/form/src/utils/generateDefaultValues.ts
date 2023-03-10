@@ -17,7 +17,7 @@ function generateDefaultValue(field: Field): unknown {
       return field.repeated ? [] : null;
     case 'geocoordinates':
       return {};
-    case 'object': {
+    case 'fieldset': {
       if (!field.repeated) {
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         return generateDefaultValues(field.fields);

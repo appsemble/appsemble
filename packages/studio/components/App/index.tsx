@@ -6,9 +6,8 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import { createBrowserHistory } from 'history';
 import { ReactElement } from 'react';
-import { unstable_HistoryRouter as HistoryRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { TopLevelRoutes } from '../../pages/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
@@ -66,13 +65,10 @@ const studioContent = (
 
 export function App(): ReactElement {
   return (
-    /* By using unstable_HistoryRouter the block function on navigator in the Prompt component works again. This should be considered a temporary solution, see: https://github.com/remix-run/react-router/issues/8139#issuecomment-1247080906 */
-    <HistoryRouter history={createBrowserHistory({ window })}>
-      <Routes>
-        {/* Simple way to get optional paramaters back */}
-        <Route element={studioContent} path="/:lang/*" />
-        <Route element={studioContent} path="/*" />
-      </Routes>
-    </HistoryRouter>
+    <Routes>
+      {/* Simple way to get optional parameters back */}
+      <Route element={studioContent} path="/:lang/*" />
+      <Route element={studioContent} path="/*" />
+    </Routes>
   );
 }

@@ -1,6 +1,6 @@
-import { arch, type } from 'os';
+import { arch, type } from 'node:os';
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 
@@ -23,7 +23,7 @@ declare module 'axios' {
  * @param config The axios request configuration.
  * @returns The config with additional `multipart/form-data` headers if appropriate.
  */
-export function formData(config: AxiosRequestConfig): AxiosRequestConfig {
+export function formData(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   if (config.data instanceof FormData) {
     Object.assign(config.headers, config.data.getHeaders());
   }
@@ -36,7 +36,7 @@ export function formData(config: AxiosRequestConfig): AxiosRequestConfig {
  * @param config The axios request configuration.
  * @returns The original config.
  */
-export function requestLogger(config: AxiosRequestConfig): AxiosRequestConfig {
+export function requestLogger(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
   const time = Date.now();
   logger.verbose(
     `> ${time} ${highlight(`${config.method.toUpperCase()} ${axios.getUri(config)} HTTP/1.1`, {

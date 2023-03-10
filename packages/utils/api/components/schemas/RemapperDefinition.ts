@@ -22,14 +22,7 @@ export const RemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
       $ref: '#/components/schemas/ObjectRemapperDefinition',
     },
     {
-      type: 'array',
-      description: `If a remapper is an array, it represents a chain of remappers.
-
-Each item represents a remapper which is called with the result of the remapper before it.
-`,
-      items: {
-        $ref: '#/components/schemas/ObjectRemapperDefinition',
-      },
+      $ref: '#/components/schemas/ArrayRemapperDefinition',
     },
   ],
 };

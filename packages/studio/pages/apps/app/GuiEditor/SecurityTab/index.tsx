@@ -32,8 +32,8 @@ const Tabs = [
     title: messages.rolesTab,
   },
 ] as const;
+type LeftSidebar = (typeof Tabs)[number];
 export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
-type LeftSidebar = typeof Tabs[number];
 
 export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
   const { formatMessage } = useIntl();
@@ -43,7 +43,7 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const [selectedRole, setSelectedRole] = useState<string>(null);
 
   const onChangeTab = useCallback(
-    (tab: typeof tabChangeOptions[number]) => {
+    (tab: (typeof tabChangeOptions)[number]) => {
       if (tab === 'createRole') {
         setCurrentSideBar(Tabs[2]);
         setSelectedRole(null);

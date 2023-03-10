@@ -9,6 +9,12 @@
 
 .root::-webkit-scrollbar {
   display: none;
+  padding: 0;
+  scrollbar-width: none;
+}
+
+.root::-webkit-scrollbar {
+  display: none;
 }
 
 .leftBar {

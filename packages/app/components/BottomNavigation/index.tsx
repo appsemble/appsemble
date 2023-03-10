@@ -1,7 +1,7 @@
 import { Button, Icon } from '@appsemble/react-components';
 import { PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
 
@@ -45,7 +45,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
               defaultMessage: page.name,
             }).format() as string;
             const navName = page.navTitle
-              ? remap(page.navTitle, null, {
+              ? (remap(page.navTitle, null, {
                   appId,
                   appUrl: window.location.origin,
                   url: window.location.href,
@@ -53,7 +53,7 @@ export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement
                   userInfo,
                   context: { name },
                   locale: lang,
-                })
+                }) as ReactNode)
               : name;
 
             return (

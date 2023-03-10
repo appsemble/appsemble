@@ -22,6 +22,11 @@ This is useful in combination with action chaining to notify users they have per
       default: 'info',
       description: 'The Bulma color to apply to the message.',
     },
+    layout: {
+      enum: ['bottom', 'top'],
+      default: 'bottom',
+      description: 'The position of the message on the screen.',
+    },
     dismissable: {
       type: 'boolean',
       description:

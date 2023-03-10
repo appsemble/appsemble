@@ -1,4 +1,4 @@
-import { relative } from 'path';
+import { relative } from 'node:path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockConfig, BlockManifest } from '@appsemble/types';

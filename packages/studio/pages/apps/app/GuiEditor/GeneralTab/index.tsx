@@ -42,7 +42,8 @@ const Tabs = [
     title: messages.schedule,
   },
 ] as const;
-type LeftSidebar = typeof Tabs[number];
+
+type LeftSidebar = (typeof Tabs)[number];
 
 export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();

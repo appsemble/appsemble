@@ -10,12 +10,13 @@ interface TestCase {
   messages?: AppMessages['messages'];
   userInfo?: UserInfo;
   context?: Record<string, any>;
+  history?: unknown[];
 }
 
 function runTests(tests: Record<string, TestCase>): void {
   it.each(Object.entries(tests))(
     'should %s',
-    (name, { context, expected, input, mappers, messages, userInfo }) => {
+    (name, { context, expected, history, input, mappers, messages, userInfo }) => {
       const result = remap(mappers, input, {
         getMessage: ({ defaultMessage, id }) =>
           new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
@@ -23,6 +24,7 @@ function runTests(tests: Record<string, TestCase>): void {
         appUrl: 'https://example.com',
         userInfo,
         context,
+        history,
         appId: 6789,
         locale: 'en',
         pageData: { hello: 'Page data' },
@@ -48,6 +50,16 @@ describe('Primitive values', () => {
       input: 'a string',
       mappers: false,
       expected: false,
+    },
+  });
+});
+
+describe('Nested arrays', () => {
+  runTests({
+    'flatten remappers': {
+      input: { value: 123 },
+      mappers: [[[[[{ prop: 'value' }]]]]],
+      expected: 123,
     },
   });
 });
@@ -178,6 +190,26 @@ describe('date.add', () => {
       input: new Date(1000),
       mappers: [{ 'date.add': '3dd' }],
       expected: new Date(1000),
+    },
+  });
+});
+
+describe('date.format', () => {
+  runTests({
+    'format date objects': {
+      input: new Date('2020-01-02T03:04:05Z'),
+      mappers: { 'date.format': null },
+      expected: '2020-01-02T03:04:05.000Z',
+    },
+    'format date strings': {
+      input: '2020-01-02T03:04:05Z',
+      mappers: { 'date.format': null },
+      expected: '2020-01-02T03:04:05.000Z',
+    },
+    'format unix timestamps': {
+      input: 0,
+      mappers: { 'date.format': null },
+      expected: '1970-01-01T00:00:00.000Z',
     },
   });
 });
@@ -629,6 +661,57 @@ describe('array', () => {
   });
 });
 
+describe('array.from', () => {
+  runTests({
+    'create new array with remapped values': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [{ 'object.from': { foo: { prop: 'foo' } } }, 'baz'] }],
+      expected: [{ foo: 'bar' }, 'baz'],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.from': [] }],
+      expected: [],
+    },
+  });
+});
+
+describe('array.append', () => {
+  runTests({
+    'append remapped value to array': {
+      input: ['baz'],
+      mappers: [{ 'array.append': [{ 'object.from': { foo: 'bar' } }] }],
+      expected: ['baz', { foo: 'bar' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.append': [] }],
+      expected: [],
+    },
+  });
+});
+
+describe('array.omit', () => {
+  runTests({
+    'omit objects at given remapped indices': {
+      input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+      mappers: [{ 'array.omit': [0, { context: 'index' }] }],
+      expected: [{ bar: '...' }],
+      context: { index: 2 },
+    },
+    'omit nothing': {
+      input: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+      mappers: [{ 'array.omit': [{ static: 'index' }] }],
+      expected: [{ foo: '...' }, { bar: '...' }, { baz: '...' }],
+    },
+    'create empty array': {
+      input: { foo: 'bar' },
+      mappers: [{ 'array.omit': [] }],
+      expected: [],
+    },
+  });
+});
+
 describe('null.strip', () => {
   runTests({
     'strip null values': {
@@ -772,6 +855,62 @@ describe('root', () => {
       input: { input: 'data' },
       mappers: [{ prop: 'input' }, { 'object.from': { key: { root: null } } }],
       expected: { key: { input: 'data' } },
+    },
+  });
+});
+
+describe('history', () => {
+  runTests({
+    'return the first history item': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { latest: 'monke' }],
+      mappers: [{ prop: 'input' }, { history: 0 }],
+      expected: { old: 'monke' },
+    },
+  });
+});
+
+describe('from.history', () => {
+  runTests({
+    'create new object with props from the second history item': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'from.history': { index: 1, props: { happy: { prop: 'rescue' } } } }],
+      expected: { happy: 'monke' },
+    },
+  });
+});
+
+describe('assign.history', () => {
+  runTests({
+    'assign the second history item props defined in prop remappers to the output': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'assign.history': { index: 1, props: { happy: { prop: 'rescue' } } } }],
+      expected: { input: 'data', happy: 'monke' },
+    },
+  });
+});
+
+describe('omit.history', () => {
+  runTests({
+    'assign the second history item props to the output except omitted props': {
+      input: { input: 'data' },
+      history: [{ old: 'monke' }, { rescue: 'monke', sadge: 'monke' }],
+      mappers: [{ 'omit.history': { index: 1, keys: ['sadge'] } }],
+      expected: { input: 'data', rescue: 'monke' },
+    },
+    'not assign nested omitted props': {
+      input: { input: 'data' },
+      history: [{ rescue: 'monke', nested: { sadge: 'monke', safe: 'monke' } }],
+      mappers: [{ 'omit.history': { index: 0, keys: [['nested', 'sadge']] } }],
+      expected: { input: 'data', rescue: 'monke', nested: { safe: 'monke' } },
+    },
+    'handle non existing properties': {
+      input: { input: 'data' },
+      history: [{ rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } }],
+      mappers: [{ 'omit.history': { index: 0, keys: [['nested', 'nonexistent']] } }],
+      expected: { input: 'data', rescue: 'monke', nested: { happy: 'monke', safe: 'monke' } },
     },
   });
 });

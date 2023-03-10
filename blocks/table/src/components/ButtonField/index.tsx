@@ -19,7 +19,7 @@ interface ButtonFieldProps {
   index: number;
 
   /**
-   * The index of the subrow that was clicked.
+   * The index of the sub row that was clicked.
    */
   repeatedIndex: number;
 }
@@ -77,20 +77,10 @@ export function ButtonField({
       return;
     }
 
-    action(item);
-  }, [action, disabled, item]);
+    action(item, { index, repeatedIndex });
+  }, [action, disabled, item, index, repeatedIndex]);
 
-  return action?.type === 'link' ? (
-    <a
-      className={className}
-      disabled={disabled}
-      href={action.href()}
-      onClick={onClick}
-      title={remappedTitle}
-    >
-      {content}
-    </a>
-  ) : (
+  return (
     <button
       className={className}
       disabled={disabled}

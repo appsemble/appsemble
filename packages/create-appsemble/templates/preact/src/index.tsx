@@ -1,4 +1,4 @@
-// `src/index.tsx` is the initial entry poinf of the block source code run. For small blocks this
+// `src/index.tsx` is the initial entry point of the block source code run. For small blocks this
 // often contains the entire logic of the block. Bigger blocks are often split into smaller modules.
 
 // Normally bootstrap is imported from @appsemble/sdk. When using preact, it must be imported from

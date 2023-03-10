@@ -81,7 +81,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
   };
 
   const pages = definition.pages.filter(
-    (p) => !p.parameters && !p.hideFromMenu && checkPagePermissions(p),
+    (p) => !p.parameters && !p.hideNavTitle && checkPagePermissions(p),
   );
 
   if (!pages.length) {

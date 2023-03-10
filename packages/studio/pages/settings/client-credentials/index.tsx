@@ -29,6 +29,19 @@ import { useLocation } from 'react-router-dom';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
+interface FormValues {
+  description: string;
+  expires: string;
+  'blocks:write': boolean;
+  'organizations:write': boolean;
+  'resources:read': boolean;
+  'resources:write': boolean;
+  'apps:write': boolean;
+  'teams:read': boolean;
+  'teams:write': boolean;
+  'assets:write': boolean;
+}
+
 export function ClientCredentialsPage(): ReactElement {
   useMeta(messages.title);
   const location = useLocation();
@@ -54,7 +67,7 @@ export function ClientCredentialsPage(): ReactElement {
   }, [modal]);
 
   const registerClient = useCallback(
-    async ({ description, expires, ...values }) => {
+    async ({ description, expires, ...values }: FormValues) => {
       const scopes = Object.entries(values)
         .filter(([key, value]) => value && (knownScopes as readonly string[]).includes(key))
         .map(([key]) => key);

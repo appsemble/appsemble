@@ -13,7 +13,7 @@ import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase('tokenhandler');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

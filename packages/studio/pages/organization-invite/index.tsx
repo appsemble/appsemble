@@ -39,7 +39,7 @@ export function OrganizationInvitePage(): ReactElement {
   const [joined, setJoined] = useState(false);
 
   const sendResponse = useCallback(
-    async (response) => {
+    async (response: boolean) => {
       setSubmitting(true);
 
       try {
@@ -88,7 +88,7 @@ export function OrganizationInvitePage(): ReactElement {
           <FormattedMessage
             {...messages.noInvite}
             values={{
-              link: (text: string) => <Link to={`/${lang}/apps`}>{text}</Link>,
+              link: (text) => <Link to={`/${lang}/apps`}>{text}</Link>,
             }}
           />
         </p>
@@ -140,8 +140,8 @@ export function OrganizationInvitePage(): ReactElement {
               {...messages.successJoined}
               values={{
                 organization: <strong>{organization.name || organization.id}</strong>,
-                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
-                viewOrganization: (link: string) => (
+                makeApps: (link) => <Link to={`/${lang}/apps`}>{link}</Link>,
+                viewOrganization: (link) => (
                   <Link to={`/${lang}/organizations/@${organization.id}`}>{link}</Link>
                 ),
               }}
@@ -152,7 +152,7 @@ export function OrganizationInvitePage(): ReactElement {
             <FormattedMessage
               {...messages.successDeclined}
               values={{
-                makeApps: (link: string) => <Link to={`/${lang}/apps`}>{link}</Link>,
+                makeApps: (link) => <Link to={`/${lang}/apps`}>{link}</Link>,
               }}
             />
           </Message>

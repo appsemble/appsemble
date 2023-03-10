@@ -13,6 +13,7 @@ export const messages = defineMessages({
   app: 'App',
   coreStyle: 'Core style',
   sharedStyle: 'Shared style',
+  shortcuts: 'Shortcuts',
   cancel: 'Cancel',
   notification: 'You have unsaved changes. Do you wish to continue?',
 });

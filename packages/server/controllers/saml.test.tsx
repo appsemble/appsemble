@@ -1,5 +1,5 @@
-import { promisify } from 'util';
-import { inflateRaw } from 'zlib';
+import { promisify } from 'node:util';
+import { inflateRaw } from 'node:zlib';
 
 import { readFixture } from '@appsemble/node-utils';
 import { SAMLRedirectResponse } from '@appsemble/types';
@@ -35,9 +35,9 @@ interface CreateSamlResponseOptions {
  * @returns the base64 encoded SAML response object.
  */
 function createSamlResponse({
+  digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
   statusCode = 'urn:oasis:names:tc:SAML:2.0:status:Success',
   subject = { nameId: 'user@idp.example', loginId: 'id00000000-0000-0000-0000-000000000000' },
-  digest = 'QZii75yFqDTK8/RwecJX1RFca8o=',
 }: CreateSamlResponseOptions = {}): string {
   const tree = (
     <samlp:Response
@@ -174,7 +174,7 @@ function createSamlResponse({
   return buf.toString('base64');
 }
 
-useTestDatabase('saml');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

@@ -13,7 +13,7 @@ describe('convertToCsv', () => {
     expect(() => convertToCsv(input)).toThrow(new Error('No headers could be found'));
   });
 
-  it('sould return an error if the input is a primitive', () => {
+  it('should return an error if the input is a primitive', () => {
     const input = 'foo';
 
     expect(() => convertToCsv(input as any)).toThrow(new TypeError('Data is of an invalid type'));

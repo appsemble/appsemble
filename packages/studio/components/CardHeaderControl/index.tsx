@@ -25,7 +25,7 @@ interface CardHeaderControlProps {
   description?: string;
 
   /**
-   * Additional elements to display within the card’s headder.
+   * Additional elements to display within the card’s header.
    */
   details?: ReactNode;
 

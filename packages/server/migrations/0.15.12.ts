@@ -4,7 +4,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 export const key = '0.15.12';
 
 /**
- * Symmary:
+ * Summary:
  * - Add annotations to Team table
  *
  * @param db The sequelize database.
@@ -19,7 +19,7 @@ export async function up(db: Sequelize): Promise<void> {
 }
 
 /**
- * Symmary:
+ * Summary:
  * - Remove annotations from Team table
  *
  * @param db The sequelize database.

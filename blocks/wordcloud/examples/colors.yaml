@@ -1,0 +1,12 @@
+parameters:
+  shape: pentagon
+  fields:
+    - { prop: title }
+    - { prop: body }
+  options:
+    weightFactor: 3
+    backgroundColor: rgba(236, 236, 24, 0.05)
+    color: random-dark
+  events:
+    listen:
+      data: notes

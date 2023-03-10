@@ -49,15 +49,13 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   validityMessages = {},
   ...props
 }: SimpleFormFieldProps<C>): ReactElement {
-  const { formErrors, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
+  const { formErrors, id, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
+  const prevNameValueRef = useRef<string>(values.name);
   const ref = useRef<MinimalHTMLElement>(null);
-  const internalOnChange = useCallback(
-    (event: ChangeEvent<MinimalHTMLElement>, value = event.currentTarget.value) => {
-      const val = preprocess ? preprocess(value, values) : value;
-      if (onChange) {
-        onChange(event, val);
-      }
-      const validity = event?.currentTarget?.validity;
+
+  const validateValue = useCallback(
+    (input: MinimalHTMLElement, key: string, value: string) => {
+      const validity = input?.validity;
       let message: ReactNode;
       if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(
@@ -65,10 +63,33 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
         );
         message = reason ? reason[1] : true;
       }
-      setValue(name, val, message);
+      setValue(key, value, message);
     },
-    [name, onChange, preprocess, setValue, validityMessages, values],
+    [setValue, validityMessages],
   );
+
+  const internalOnChange = useCallback(
+    (event: ChangeEvent<MinimalHTMLElement>, value = event.currentTarget.value) => {
+      const val = preprocess ? preprocess(value, values) : value;
+      if (onChange) {
+        onChange(event, val);
+      }
+
+      validateValue(event?.currentTarget, name, val);
+    },
+    [name, onChange, preprocess, validateValue, values],
+  );
+
+  useEffect(() => {
+    // Only run for create organization form
+    // Only when the name field is changed
+    if (id === 'create-organization' && values.name !== prevNameValueRef.current) {
+      const idField = document.querySelector<HTMLInputElement>('#id');
+      validateValue(idField, idField.name, idField?.value || '');
+
+      prevNameValueRef.current = values.name;
+    }
+  }, [values, validateValue, id]);
 
   useEffect(() => {
     if (!(name in formErrors)) {

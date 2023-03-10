@@ -22,7 +22,6 @@ export function mount(
 ): (params: BootstrapParams) => Promise<void> {
   return (params) =>
     new Promise((ready) => {
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
       const props = {
         ...params,
         ready,
@@ -44,7 +43,7 @@ export function bootstrap(Component: ComponentType<BlockProps>): void {
 /**
  * A HOC which passes the Appsemble block values to he wrapped Preact component.
  *
- * @param Component The Preact componen to wrap.
+ * @param Component The Preact component to wrap.
  * @returns The wrapper component.
  * @deprecated Use `useBlock()` instead.
  */

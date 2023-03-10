@@ -9,6 +9,7 @@ export const paths: OpenAPIV3.PathsObject = {
       tags: ['asset'],
       description: 'Get all of the app’s assets.',
       operationId: 'getAssets',
+      parameters: [{ $ref: '#/components/parameters/$top' }],
       responses: {
         200: {
           description: 'The assets associated with the app.',
@@ -85,6 +86,27 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
       security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:write'] }, {}],
+    },
+  },
+  '/api/apps/{appId}/assets/\\$count': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['asset'],
+      description: 'Get the number of assets in the app.',
+      operationId: 'countAssets',
+      responses: {
+        200: {
+          description: 'The number of assets in the app.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'number',
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }, { cli: ['resources:read'] }, {}],
     },
   },
   '/api/apps/{appId}/assets/{assetId}': {

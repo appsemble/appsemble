@@ -1,5 +1,5 @@
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
+import { Remapper, TokenResponse, UserEmail, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -61,14 +61,15 @@ export async function getAccessToken(
  * Get user info given an OAuth2 provider preset and a token response.
  *
  * 1. If an ID token is present, try to extract information from it.
- * 2. If the information is still incomplete, extract information from the access token.
- * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
+ * 2. If the information is still  lacking, extract information from the access token.
+ * 3. If the information is still lacking, fetch information from the userinfo endpoint.
  *
  * @param accessToken The access token from which to extract user data. or to request user info
  * with.
  * @param idToken The ID token from which to extract user data.
  * @param userInfoUrl The URL from which to request userinfo, if needed.
- * @param remapper An optional remapper to apply onto the response from the user infoendpoint.
+ * @param remapper An optional remapper to apply onto the response from the user info endpoint.
+ * @param userEmailsUrl The URL from which to request user emails, if needed.
  * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
 export async function getUserInfo(
@@ -76,6 +77,7 @@ export async function getUserInfo(
   idToken?: string,
   userInfoUrl?: string,
   remapper?: Remapper,
+  userEmailsUrl?: string,
 ): Promise<Partial<UserInfo>> {
   let email: string;
   let emailVerified: boolean;
@@ -121,10 +123,20 @@ export async function getUserInfo(
   }
 
   if (shouldTryNext() && userInfoUrl) {
-    const { data } = await axios.get<UserInfo>(userInfoUrl, {
+    const requestConfig = {
       headers: { authorization: `Bearer ${accessToken}` },
-    });
-    assign(remapper ? (remap(remapper, data, null) as UserInfo) : data);
+    };
+    const { data } = await axios.get<UserInfo>(userInfoUrl, requestConfig);
+    const actualData: UserInfo = remapper
+      ? (remap(remapper, data, null) as UserInfo)
+      : (data as UserInfo);
+    if (!actualData.email && userEmailsUrl) {
+      const { data: emailsData } = await axios.get<UserEmail[]>(userEmailsUrl, requestConfig);
+      if (emailsData.length > 0) {
+        actualData.email = emailsData[0].email;
+      }
+    }
+    assign(actualData);
   }
 
   // Sub is very important. All other information is optional.

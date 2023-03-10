@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { VNode } from 'preact';
 
 import { BooleanField, InputProps } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 
 type BooleanInputProps = InputProps<boolean, BooleanField>;
@@ -17,13 +18,15 @@ export function BooleanInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
-  value,
+  readOnly,
 }: BooleanInputProps): VNode {
   const { utils } = useBlock();
-  const { color, label, labelText, readOnly, size, switch: switchType, tag } = field;
+  const { color, icon, inline, label, labelText, size, switch: switchType, tag } = field;
 
+  const value = getValueByNameSequence(name, formValues);
   const checkboxLabel = utils.remap(label, value);
   const required = isRequired(field);
 
@@ -33,6 +36,8 @@ export function BooleanInput({
       color={color}
       disabled={disabled}
       error={dirty ? error : null}
+      icon={icon}
+      inline={inline}
       label={checkboxLabel as string}
       name={name}
       onChange={onChange}

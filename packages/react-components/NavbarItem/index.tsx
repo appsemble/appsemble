@@ -12,7 +12,7 @@ type NavbarItemProps = ComponentPropsWithoutRef<typeof ButtonChildren> &
   };
 
 /**
- * Redner a Bulma styled navbar item.
+ * Render a Bulma styled navbar item.
  *
  * If `onClick` is specified, a `<button />` is rendered. Otherwise a `<NavLink />` is rendered.
  */

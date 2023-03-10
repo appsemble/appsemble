@@ -148,6 +148,35 @@ export const update: ActionCreator<'resource.update'> = (args) => {
   });
 };
 
+export const patch: ActionCreator<'resource.patch'> = (args) => {
+  const { app, definition } = args;
+  const resource = app.resources[definition.resource];
+  const method = resource?.update?.method || 'PATCH';
+  const url =
+    resource?.update?.url ||
+    resource.url ||
+    `${apiUrl}/api/apps/${appId}/resources/${definition.resource}`;
+  const { id = 'id' } = resource;
+
+  return request({
+    ...args,
+    definition: {
+      ...definition,
+      query: definition?.query ?? resource?.patch?.query,
+      method,
+      proxy: false,
+      type: 'request',
+      url: {
+        'string.format': {
+          template: `${url}${url.endsWith('/') ? '' : '/'}{id}`,
+          values: { id: { prop: id as string } },
+        },
+      },
+      schema: resource.schema,
+    },
+  });
+};
+
 export const remove: ActionCreator<'resource.delete'> = (args) => {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];

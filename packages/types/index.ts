@@ -92,7 +92,7 @@ export interface BlockDefinition {
   theme?: Partial<Theme>;
 
   /**
-   * A free form mapping of named paramters.
+   * A free form mapping of named parameters.
    *
    * The exact meaning of the parameters depends on the block type.
    */
@@ -305,11 +305,21 @@ export interface Remappers {
   'date.add': string;
 
   /**
+   * Format a date to an iso8601 / rfc3339 compatible string.
+   */
+  'date.format': null;
+
+  /**
    * Compare all computed remapper values against each other.
    *
    * Returns `true` if all entries are equal, otherwise `false`.
    */
   equals: Remapper[];
+
+  /**
+   * Get data stored at the current flow page step
+   */
+  step: string;
 
   /**
    * Compares the first computed remapper value with the second computed remapper value.
@@ -364,6 +374,27 @@ export interface Remappers {
    * Returns nothing if array.map’s context isn’t set.
    */
   array: 'index' | 'length';
+
+  /**
+   * Create a new array with an array of predefined remappers.
+   */
+  'array.from': Remapper[];
+
+  /**
+   * Append new values to the end of an array.
+   *
+   * If the input is not an array an empty array is returned.
+   */
+  'array.append': Remapper[];
+
+  /**
+   * Remove item(s) from an array given a predefined array of remappable indices.
+   *
+   * Only the remapped values that are turned into numbers are applied.
+   *
+   * If the input is not an array an empty array is returned.
+   */
+  'array.omit': Remapper[];
 
   /**
    * Create a new object given some predefined mapper keys.
@@ -442,6 +473,76 @@ export interface Remappers {
   root: null;
 
   /**
+   * Get the data at a certain index from the history stack prior to an action.
+   *
+   * 0 is the index of the first item in the history stack.
+   */
+  history: number;
+
+  /**
+   * Create a new object with properties from the history stack at a certain index.
+   */
+  'from.history': {
+    /**
+     * The index of the history stack item to apply.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Predefined mapper keys to choose what properties to apply.
+     */
+    props: Record<string, Remapper>;
+  };
+
+  /**
+   * Assign properties from the history stack at a certain index to an existing object.
+   */
+  'assign.history': {
+    /**
+     * The index of the history stack item to assign.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Predefined mapper keys to choose what properties to assign.
+     */
+    props: Record<string, Remapper>;
+  };
+
+  /**
+   * Assign properties from the history stack at a certain index and exclude the unwanted.
+   */
+  'omit.history': {
+    /**
+     * The index of the history stack item to assign.
+     *
+     * 0 is the index of the first item in the history stack.
+     */
+    index: number;
+
+    /**
+     * Exclude properties from the history stack item, based on the given object keys.
+     *
+     * Nested properties can be excluded using arrays of keys.
+     *
+     * @example
+     * ```yaml
+     * omit.history:
+     *   index: 0
+     *   keys:
+     *     - foo   # Excludes the property foo
+     *     - - bar # Excludes the property baz inside of bar
+     *       - baz
+     * ```
+     */
+    keys: (string[] | string)[];
+  };
+
+  /**
    * Convert an input to lower or upper case.
    */
   'string.case': 'lower' | 'upper';
@@ -481,12 +582,11 @@ export interface Remappers {
   user: keyof UserInfo;
 }
 
-export type Remapper =
-  | RequireExactlyOne<Remappers>
-  | RequireExactlyOne<Remappers>[]
-  | boolean
-  | number
-  | string;
+export type ObjectRemapper = RequireExactlyOne<Remappers>;
+
+export type ArrayRemapper = (ArrayRemapper | ObjectRemapper)[];
+
+export type Remapper = ArrayRemapper | ObjectRemapper | boolean | number | string;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -647,6 +747,11 @@ export interface ResourceDefinition {
   update?: ResourceCall;
 
   /**
+   * The definition for the `resource.patch` action.
+   */
+  patch?: ResourceCall;
+
+  /**
    * The property to use as the id.
    *
    * @default `id`
@@ -748,6 +853,24 @@ export interface ConditionActionDefinition extends BaseActionDefinition<'conditi
   else: ActionDefinition;
 }
 
+export interface MatchActionDefinition extends BaseActionDefinition<'match'> {
+  /**
+   * Run another action if one of the cases is true.
+   *
+   * Only the first case that equals true is called.
+   */
+  match: {
+    /**
+     * The case to be matched.
+     */
+    case: Remapper;
+    /**
+     * Action to be called if the case equals true.
+     */
+    action: ActionDefinition;
+  }[];
+}
+
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
@@ -778,6 +901,10 @@ export interface DownloadActionDefinition extends BaseActionDefinition<'download
 }
 
 export interface EachActionDefinition extends BaseActionDefinition<'each'> {
+  /**
+   * Run the actions in series instead of parallel.
+   */
+  serial?: boolean;
   /**
    * Run an action for each entry in an array.
    *
@@ -855,6 +982,28 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   to: string[] | string;
 }
 
+export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
+  /**
+   * The title of the notification.
+   */
+  title: Remapper;
+
+  /**
+   * The description of the notification.
+   */
+  body: Remapper;
+
+  /**
+   * To whom the notification should be sent.
+   *
+   * Use `all` to send the notification to all app subscribed users.
+   * Or notify specific users by passing either a single user id or an array of user ids.
+   *
+   * Nothing is sent if the value is **not** a valid user id.
+   */
+  to: Remapper;
+}
+
 export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   /**
    * The logging level on which to log.
@@ -881,7 +1030,78 @@ export interface ShareActionDefinition extends BaseActionDefinition<'share'> {
   title?: Remapper;
 }
 
-type StorageType = 'indexedDB' | 'localStorage' | 'sessionStorage';
+export type StorageType = 'appStorage' | 'indexedDB' | 'localStorage' | 'sessionStorage';
+
+export interface StorageAppendActionDefinition extends BaseActionDefinition<'storage.append'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The data to write to the app’s storage.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageDeleteActionDefinition extends BaseActionDefinition<'storage.delete'> {
+  /**
+   * The key of the entry to delete from the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to delete the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageSubtractActionDefinition extends BaseActionDefinition<'storage.subtract'> {
+  /**
+   * The key of the entry to subtract the last entry from
+   */
+  key: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
+
+export interface StorageUpdateActionDefinition extends BaseActionDefinition<'storage.update'> {
+  /**
+   * The key of the entry to write to the app’s storage.
+   */
+  key: Remapper;
+
+  /**
+   * The key of the item to update.
+   */
+  item: Remapper;
+
+  /**
+   * The data to update the specified item with.
+   */
+  value: Remapper;
+
+  /**
+   * The mechanism used to read the data from.
+   *
+   * @default 'indexedDB'
+   */
+  storage?: StorageType;
+}
 
 export interface StorageReadActionDefinition extends BaseActionDefinition<'storage.read'> {
   /**
@@ -1063,6 +1283,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
   ViewResourceDefinition;
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1133,6 +1354,13 @@ export interface BaseMessage {
    * @default false
    */
   dismissable?: boolean;
+
+  /**
+   * The position of the message on the screen.
+   *
+   * @default 'bottom'
+   */
+  layout?: 'bottom' | 'top';
 }
 
 export type MessageActionDefinition = BaseActionDefinition<'message'> &
@@ -1166,12 +1394,15 @@ export type ActionDefinition =
   | FlowToActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
+  | MatchActionDefinition
   | MessageActionDefinition
+  | NotifyActionDefinition
   | RequestActionDefinition
   | ResourceCountActionDefinition
   | ResourceCreateActionDefinition
   | ResourceDeleteActionDefinition
   | ResourceGetActionDefinition
+  | ResourcePatchActionDefinition
   | ResourceQueryActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | ResourceSubscriptionSubscribeActionDefinition
@@ -1180,7 +1411,11 @@ export type ActionDefinition =
   | ResourceUpdateActionDefinition
   | ShareActionDefinition
   | StaticActionDefinition
+  | StorageAppendActionDefinition
+  | StorageDeleteActionDefinition
   | StorageReadActionDefinition
+  | StorageSubtractActionDefinition
+  | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
   | UserLoginAction
@@ -1304,7 +1539,7 @@ export interface BasePageDefinition {
   /**
    * The name of the page.
    *
-   * This will be displayed on the top of the page and in the side menu,
+   * This will be displayed at the *app bar* of each page and in the side menu,
    * unless @see navTitle is set.
    *
    * The name of the page is used to determine the URL path of the page.
@@ -1312,11 +1547,21 @@ export interface BasePageDefinition {
   name: string;
 
   /**
+   * Whether or not the page name should be displayed in the *app bar*.
+   */
+  hideName?: boolean;
+
+  /**
    * The name of the page when displayed in the navigation menu.
    *
    * Context property `name` can be used to access the name of the page.
    */
   navTitle?: Remapper;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideNavTitle?: boolean;
 
   /**
    * The navigation type to use for the page.
@@ -1345,11 +1590,6 @@ export interface BasePageDefinition {
    * The global theme for the page.
    */
   theme?: Partial<Theme>;
-
-  /**
-   * Whether or not the page should be displayed in navigational menus.
-   */
-  hideFromMenu?: boolean;
 }
 
 /**
@@ -1367,6 +1607,7 @@ export interface BasicPageDefinition extends BasePageDefinition {
 
 export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
+
   steps: SubPage[];
 
   /**
@@ -1383,6 +1624,49 @@ export interface FlowPageDefinition extends BasePageDefinition {
    * @default 'corner-dots'
    */
   progress?: 'corner-dots' | 'hidden';
+
+  /**
+   * Whether to retain the flow data when navigating away to another page outside the flow.
+   *
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
+   *
+   * @default true
+   */
+  retainFlowData?: boolean;
+}
+
+export interface LoopPageDefinition extends BasePageDefinition {
+  type: 'loop';
+
+  /**
+   * Template step that the loop will pass data onto
+   */
+  foreach?: SubPage;
+
+  /**
+   * A mapping of actions that can be fired by the page to action handlers.
+   */
+  actions?: {
+    onFlowCancel?: ActionDefinition;
+    onFlowFinish?: ActionDefinition;
+    onLoad?: ActionDefinition;
+  };
+
+  /**
+   * The method used to display the progress of the flow page.
+   *
+   * @default 'corner-dots'
+   */
+  progress?: 'corner-dots' | 'hidden';
+
+  /**
+   * Whether to retain the flow data when navigating away to another page outside the flow.
+   *
+   * By default the flow page retains it's data after navigating once. Set to false to clear it.
+   *
+   * @default true
+   */
+  retainFlowData?: boolean;
 }
 
 export interface TabsPageDefinition extends BasePageDefinition {
@@ -1390,7 +1674,11 @@ export interface TabsPageDefinition extends BasePageDefinition {
   tabs: SubPage[];
 }
 
-export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
+export type PageDefinition =
+  | BasicPageDefinition
+  | FlowPageDefinition
+  | LoopPageDefinition
+  | TabsPageDefinition;
 
 export interface AppDefinition {
   /**
@@ -1473,7 +1761,7 @@ export interface AppDefinition {
    *
    * If this is omitted, push notifications can not be sent.
    */
-  notifications?: 'opt-in' | 'startup';
+  notifications?: 'login' | 'opt-in' | 'startup';
 
   /**
    * The pages of the app.
@@ -1733,7 +2021,7 @@ export interface Organization {
 }
 
 /**
- * An invite for an organizaton.
+ * An invite for an organization.
  */
 export interface OrganizationInvite {
   /**

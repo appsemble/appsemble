@@ -10,7 +10,7 @@ interface IterTableOptions<M extends Model> extends Omit<FindOptions<M>, 'limit'
 /**
  * Iterate over all entries in a database table.
  *
- * @param model The sequelize model to iteratr
+ * @param model The sequelize model to iterate
  * @param options Additional properties to pass to the Sequelize query.
  * @yields All entries in the database table.
  */

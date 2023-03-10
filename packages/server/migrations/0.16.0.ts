@@ -34,7 +34,7 @@ export async function up(db: Sequelize): Promise<void> {
 }
 
 /**
- * Cancel futher down migrations.
+ * Cancel further down migrations.
  */
 export function down(): Promise<void> {
   throw new AppsembleError(

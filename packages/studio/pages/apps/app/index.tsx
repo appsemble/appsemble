@@ -244,7 +244,7 @@ export function AppRoutes(): ReactElement {
         {app.definition.security ? (
           <Route
             element={
-              <ProtectedRoute organization={organization} permission={Permission.ManageRoles} />
+              <ProtectedRoute organization={organization} permission={Permission.EditApps} />
             }
           >
             <Route element={<UsersPage />} path="/users" />

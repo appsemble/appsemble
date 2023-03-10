@@ -57,6 +57,11 @@ export interface RemapperContext {
   getMessage: MessageGetter;
 
   /**
+   * The history stack containing the states before an action was called.
+   */
+  history?: unknown[];
+
+  /**
    * The current locale of the app.
    */
   locale: string;
@@ -83,6 +88,10 @@ interface InternalContext extends RemapperContext {
   array?: {
     index: number;
     length: number;
+  };
+
+  stepRef?: {
+    current: Record<string, any>;
   };
 }
 
@@ -115,7 +124,10 @@ export function remap(
   }
 
   let result = input;
-  const remappers = Array.isArray(remapper) ? remapper : [remapper];
+  // Workaround for ts(2589) Type instantiation is excessively deep and possibly infinite
+  const remappers = Array.isArray(remapper)
+    ? remapper.flat(Number.POSITIVE_INFINITY as 1)
+    : [remapper];
   for (const mapper of remappers) {
     const entries = Object.entries(mapper) as [keyof MapperImplementations, unknown][];
     if (entries.length !== 1) {
@@ -171,10 +183,16 @@ const mapperImplementations: MapperImplementations = {
     throw new Error(`Unknown page property: ${prop}`);
   },
 
-  context: (prop, input, context) =>
-    String(prop)
-      .split('.')
-      .reduce((acc, p) => acc?.[p] ?? null, context.context),
+  context(prop, input, context) {
+    let result = context.context;
+    for (const p of String(prop).split('.')) {
+      if (result == null) {
+        return null;
+      }
+      result = result[p];
+    }
+    return result ?? null;
+  },
 
   equals(mappers, input: any, context) {
     if (mappers.length <= 1) {
@@ -183,6 +201,10 @@ const mapperImplementations: MapperImplementations = {
 
     const values = mappers.map((mapper) => remap(mapper, input, context));
     return values.every((value) => equal(values[0], value));
+  },
+
+  step(mapper, input, context) {
+    return context.stepRef.current[mapper];
   },
 
   gt: ([left, right], input: any, context) =>
@@ -259,14 +281,14 @@ const mapperImplementations: MapperImplementations = {
     const result = { ...input };
     for (const key of keys) {
       if (Array.isArray(key)) {
-        key.reduce((acc, k, index) => {
+        let acc = result;
+        for (const [index, k] of key.entries()) {
           if (index === key.length - 1) {
             delete acc[k];
           } else {
-            return acc?.[k];
+            acc = acc?.[k];
           }
-          return acc;
-        }, result);
+        }
       } else {
         delete result[key];
       }
@@ -305,9 +327,37 @@ const mapperImplementations: MapperImplementations = {
 
   array: (prop, input, context) => context.array?.[prop],
 
+  'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
+
+  'array.append': (mappers, input, context) =>
+    Array.isArray(input)
+      ? input.concat(mappers.map((mapper) => remap(mapper, input, context)))
+      : [],
+
+  'array.omit'(mappers, input, context) {
+    const indices = new Set(
+      mappers.map((mapper) => {
+        const remapped = remap(mapper, input, context);
+        if (typeof remapped === 'number') {
+          return remapped;
+        }
+      }),
+    );
+    return Array.isArray(input) ? input.filter((value, i) => !indices.has(i)) : [];
+  },
+
   static: (input) => input,
 
-  prop: (prop, obj: Record<string, unknown>) => [].concat(prop).reduce((acc, p) => acc?.[p], obj),
+  prop(prop, obj) {
+    let result: any = obj;
+    for (const p of [prop].flat()) {
+      if (result == null) {
+        return result;
+      }
+      result = result[p];
+    }
+    return result;
+  },
 
   'date.parse': (format, input: string) =>
     format ? parse(input, format, new Date()) : parseISO(input),
@@ -322,6 +372,16 @@ const mapperImplementations: MapperImplementations = {
     }
 
     return addMilliseconds(input, expireDuration);
+  },
+
+  'date.format'(args, input) {
+    const date =
+      input instanceof Date
+        ? input
+        : typeof input === 'number'
+        ? new Date(input)
+        : parseISO(String(input));
+    return date.toJSON();
   },
 
   'null.strip': (args, input) => stripNullValues(input, args || {}),
@@ -351,6 +411,35 @@ const mapperImplementations: MapperImplementations = {
   },
 
   root: (args, input, context) => context.root,
+
+  history: (index, input, context) => context.history?.[index],
+
+  'from.history': ({ index, props }, input, context) =>
+    mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+
+  'assign.history': ({ index, props }, input: any, context) => ({
+    ...input,
+    ...mapValues(props, (mapper) => remap(mapper, context.history[index], context)),
+  }),
+
+  'omit.history'({ index, keys }, input: Record<string, any>, context) {
+    const result = { ...(context.history[index] as Record<string, any>) };
+    for (const key of keys) {
+      if (Array.isArray(key)) {
+        let acc = result;
+        for (const [i, k] of key.entries()) {
+          if (i === key.length - 1) {
+            delete acc[k];
+          } else {
+            acc = acc?.[k];
+          }
+        }
+      } else {
+        delete result[key];
+      }
+    }
+    return { ...input, ...result };
+  },
 
   'string.case'(stringCase, input) {
     if (stringCase === 'lower') {

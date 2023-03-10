@@ -57,6 +57,7 @@ declare module 'koas-parameters' {
     domains: string[];
     $select: string;
     $top: number;
+    $skip: number;
     code: string;
     view: string;
   }

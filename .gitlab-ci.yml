@@ -85,16 +85,11 @@ workflow:
 #  Test Stage                                                                                     #
 ###################################################################################################
 
-# Upload the coverage report to codecov
-codecov:
-  image: alpine
-  allow_failure: true
-  needs:
-    - test node 18
+# Spell check using cspell
+cspell:
+  extends: .yarn
   script:
-    - wget https://uploader.codecov.io/latest/alpine/codecov
-    - chmod +x codecov
-    - ./codecov -R "$CI_PROJECT_DIR"
+    - yarn cspell
 
 # Lint JavaScript code using ESLint.
 eslint:
@@ -180,8 +175,8 @@ build docker image:
   stage: build
   needs: []
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.
 pack:
@@ -189,17 +184,16 @@ pack:
   stage: build
   needs: []
   script:
-    - yarn workspace @appsemble/types pack
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/preact pack
-    - yarn workspace @appsemble/utils pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/webpack-config pack
-    - yarn workspace @appsemble/cli pack
-    - yarn workspace appsemble pack
-    - yarn workspace create-appsemble pack
     - mkdir build/
-    - find packages -name '*.tgz' -exec mv {} ./build/ \;
+    - npm --pack-destination build --workspace @appsemble/types pack
+    - npm --pack-destination build --workspace @appsemble/sdk pack
+    - npm --pack-destination build --workspace @appsemble/preact pack
+    - npm --pack-destination build --workspace @appsemble/utils pack
+    - npm --pack-destination build --workspace @appsemble/node-utils pack
+    - npm --pack-destination build --workspace @appsemble/webpack-config pack
+    - npm --pack-destination build --workspace @appsemble/cli pack
+    - npm --pack-destination build --workspace appsemble pack
+    - npm --pack-destination build --workspace create-appsemble pack
   artifacts:
     name: npm packages
     expose_as: packages
@@ -287,11 +281,13 @@ publish docker:
     - if: $CI_COMMIT_TAG
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "appsemble/appsemble:latest"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "appsemble/appsemble:$CI_COMMIT_TAG"
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "appsemble/appsemble:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "appsemble/appsemble:$CI_COMMIT_TAG"
     - docker push "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
@@ -370,20 +366,18 @@ release minor:
 #  Deploy Stage                                                                                   #
 ###################################################################################################
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 cleanup k8s jobs:
   image: dtzar/helm-kubectl:3
   stage: deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
-  environment:
-    name: review/cleanup
   script:
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
-# Delete all succesful jobs for review environments nightly
+# Delete all successful jobs for review environments nightly
 update dependencies:
   extends: .yarn
   stage: deploy
@@ -419,7 +413,7 @@ update dependencies:
     - git commit --all --message 'Update yarn.lock'
     - git push --force origin update-lockfile
       -o merge_request.create
-      -o merge_request.label=chore
+      -o merge_request.label=Chore
       -o merge_request.merge_when_pipeline_succeeds
       -o merge_request.remove_source_branch
 
@@ -437,6 +431,7 @@ review:
     name: review/$CI_MERGE_REQUEST_IID
     url: https://$CI_MERGE_REQUEST_IID.appsemble.review
     on_stop: stop review
+    auto_stop_in: 1 day
   variables:
     GIT_STRATEGY: none
   script:
@@ -452,9 +447,9 @@ review:
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "image.tag=$CI_COMMIT_REF_SLUG"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=review-$CI_MERGE_REQUEST_IID-tls"
@@ -522,8 +517,8 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=main"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-dev"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
@@ -567,8 +562,8 @@ production:
       --set "global.postgresql.auth.database=$POSTGRESQL_DATABASE"
       --set "global.postgresql.auth.username=$POSTGRESQL_USERNAME"
       --set "global.postgresql.service.ports.postgresql=$POSTGRESQL_PORT"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.clusterIssuer=letsencrypt-prod"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=appsemble-tls"

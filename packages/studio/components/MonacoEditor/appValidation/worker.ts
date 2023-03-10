@@ -71,7 +71,7 @@ export interface AppValidationWorker {
   doDocumentColors: (uri: string) => languages.IColorInformation[];
 
   /**
-   * Fetch and cache block manifests usng a local cache.
+   * Fetch and cache block manifests using a local cache.
    *
    * @param blocks Identifiable blocks to get the manifest for.
    * @returns A list of block manifest that match the block manifests. If not matching manifest is

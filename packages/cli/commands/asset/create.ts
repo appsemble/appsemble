@@ -1,4 +1,4 @@
-import { parse } from 'path';
+import { parse } from 'node:path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';

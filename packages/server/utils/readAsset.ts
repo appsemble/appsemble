@@ -1,8 +1,7 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 export const assetDir = new URL('../assets/', import.meta.url);
 
-// eslint-disable-next-line jsdoc/require-returns-check
 /**
  * Read a file from the server assets directory.
  *

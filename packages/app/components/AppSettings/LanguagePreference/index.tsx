@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -17,7 +17,7 @@ export function LanguagePreference(): ReactElement {
   );
 
   const onLanguageChange = useCallback(
-    (event, language: string) => {
+    (event: ChangeEvent<HTMLSelectElement>, language: string) => {
       navigate(url.replace(preferredLanguage, language), { replace: true });
       setPreferredLanguage(language);
       localStorage.setItem('preferredLanguage', language);

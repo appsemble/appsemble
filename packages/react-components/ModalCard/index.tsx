@@ -74,7 +74,6 @@ interface ModalCardProps<T extends ElementType> {
  */
 export function ModalCard<T extends ElementType = 'div'>({
   cardClassName,
-  wrapperClassName,
   children = null,
   className,
   closable = true,
@@ -84,6 +83,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   isActive,
   onClose,
   title,
+  wrapperClassName,
   ...props
 }: ModalCardProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalCardProps<T>>): ReactElement {
   const openClass = useAnimation(isActive, 300, {

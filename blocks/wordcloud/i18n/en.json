@@ -1,0 +1,6 @@
+{
+  "empty": "There is no data to display",
+  "error": "There was a problem loading the data.",
+  "loading": "Loading…",
+  "unsupported": "Your browser does not support the wordcloud block!"
+}

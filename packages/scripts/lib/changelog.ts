@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises';
+import { readFile } from 'node:fs/promises';
 
 import { Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';

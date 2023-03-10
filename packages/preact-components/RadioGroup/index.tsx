@@ -1,41 +1,41 @@
 import { ComponentChild, JSX, VNode } from 'preact';
 
-import { FormComponent, ValuePickerProvider } from '../index.js';
+import { FormComponent, SharedFormComponentProps, ValuePickerProvider } from '../index.js';
 
-interface RadioGroupProps
-  extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> {
-  children: VNode<JSX.HTMLAttributes<HTMLInputElement>>[];
+type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> &
+  SharedFormComponentProps & {
+    children: VNode<JSX.HTMLAttributes<HTMLInputElement>>[];
 
-  /**
-   * An error message to render.
-   */
-  error?: ComponentChild;
+    /**
+     * An error message to render.
+     */
+    error?: ComponentChild;
 
-  /**
-   * The label to display above the checkbox.
-   */
-  label?: ComponentChild;
+    /**
+     * The label to display above the checkbox.
+     */
+    label?: ComponentChild;
 
-  /**
-   * This is fired when the input value has changed.
-   */
-  onChange: (event: Event, value: any) => void;
+    /**
+     * This is fired when the input value has changed.
+     */
+    onChange: (event: Event, value: any) => void;
 
-  /**
-   * The current value.
-   */
-  value: any;
+    /**
+     * The current value.
+     */
+    value: any;
 
-  /**
-   * The label to display if the input group is optional.
-   */
-  optionalLabel?: ComponentChild;
+    /**
+     * The label to display if the input group is optional.
+     */
+    optionalLabel?: ComponentChild;
 
-  /**
-   * The tag to display to the right of the label.
-   */
-  tag?: ComponentChild;
-}
+    /**
+     * The tag to display to the right of the label.
+     */
+    tag?: ComponentChild;
+  };
 
 export function RadioGroup({
   children,

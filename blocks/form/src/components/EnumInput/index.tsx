@@ -5,6 +5,7 @@ import { VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { Choice, EnumField, InputProps } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 
 type EnumInputProps = InputProps<string, EnumField>;
@@ -17,17 +18,19 @@ export function EnumInput({
   dirty,
   disabled,
   field,
+  formValues,
   name,
   onChange,
-  value,
+  readOnly,
 }: EnumInputProps): VNode {
   const { actions, events, utils } = useBlock();
   const [loading, setLoading] = useState('action' in field || 'event' in field);
   const [options, setOptions] = useState('action' in field || 'event' in field ? [] : field.enum);
   const [error, setError] = useState<string>(null);
 
-  const { icon, label, placeholder, tag } = field;
-  const required = isRequired(field);
+  const { icon, inline, label, placeholder, tag } = field;
+  const value = getValueByNameSequence(name, formValues);
+  const required = isRequired(field, utils, formValues);
 
   useEffect(() => {
     if (!loading && value !== undefined && !options.some((option) => option.value === value)) {
@@ -74,19 +77,21 @@ export function EnumInput({
       disabled={disabled || loading || options.length === 0}
       error={dirty ? error : null}
       icon={icon}
+      inline={inline}
       label={utils.remap(label, value) as string}
       loading={loading}
       name={name}
       onChange={onChange}
       optionalLabel={<FormattedMessage id="optionalLabel" />}
       placeholder={utils.remap(placeholder, {}) as string}
+      readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value) as string}
       value={value}
     >
       {loading ||
         options.map((choice) => (
-          <Option key={choice.value} value={choice.value}>
+          <Option disabled={choice.disabled} key={choice.value} value={choice.value}>
             {(utils.remap(choice.label, value) as string) ?? (choice.value as string)}
           </Option>
         ))}

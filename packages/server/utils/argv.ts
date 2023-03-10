@@ -88,6 +88,16 @@ export interface Argv {
    */
   ingressClassName: string;
 
+  /**
+   * The name of the cert-manager issuer to use for apps.
+   */
+  issuer?: string;
+
+  /**
+   * The name of the cert-manager cluster issuer to use for apps.
+   */
+  clusterIssuer?: string;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Database                                                                                     //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -256,6 +266,13 @@ export interface Argv {
    * @example 'https://appsemble.app'
    */
   remote: string;
+
+  /**
+   * How many minutes are between each cron job run.
+   *
+   * @default 5
+   */
+  interval: number;
 }
 
 const defaults: Argv = {
@@ -280,6 +297,7 @@ const defaults: Argv = {
   databaseName: undefined,
   databaseSsl: false,
   databaseUrl: undefined,
+  interval: 5,
   migrateTo: undefined,
   ssl: false,
   sslKey: undefined,
@@ -309,7 +327,7 @@ export const argv = { ...defaults };
  *
  * Unspecified options will be reset to their default values.
  *
- * @param options The argument overrises to set.
+ * @param options The argument overrides to set.
  * @returns The argv instance.
  */
 export function setArgv(options: Partial<Argv>): Argv {

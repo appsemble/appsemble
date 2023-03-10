@@ -9,7 +9,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let user: User;
 
-useTestDatabase('user');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });

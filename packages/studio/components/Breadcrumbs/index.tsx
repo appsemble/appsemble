@@ -24,7 +24,9 @@ export function Breadcrumbs(): ReactElement {
               // eslint-disable-next-line react/no-array-index-key
               key={index}
             >
-              <Link to={url}>{title}</Link>
+              <Link relative="path" to={url}>
+                {title}
+              </Link>
             </li>
           );
         })}

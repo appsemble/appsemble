@@ -45,6 +45,7 @@ export type ResourceGetAction = RequestLikeAction<'resource.get'>;
 export type ResourceQueryAction = RequestLikeAction<'resource.query'>;
 export type ResourceCountAction = RequestLikeAction<'resource.count'>;
 export type ResourceUpdateAction = RequestLikeAction<'resource.update'>;
+export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
 
 /**
  * An action that can be called from within a block.
@@ -66,15 +67,21 @@ export type Action =
   | BaseAction<'flow.to'>
   | BaseAction<'link.back'>
   | BaseAction<'link.next'>
+  | BaseAction<'match'>
   | BaseAction<'message'>
   | BaseAction<'noop'>
+  | BaseAction<'notify'>
   | BaseAction<'resource.subscription.status'>
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.toggle'>
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'share'>
   | BaseAction<'static'>
+  | BaseAction<'storage.append'>
+  | BaseAction<'storage.delete'>
   | BaseAction<'storage.read'>
+  | BaseAction<'storage.subtract'>
+  | BaseAction<'storage.update'>
   | BaseAction<'storage.write'>
   | BaseAction<'team.invite'>
   | BaseAction<'team.join'>
@@ -90,5 +97,6 @@ export type Action =
   | ResourceCreateAction
   | ResourceDeleteAction
   | ResourceGetAction
+  | ResourcePatchAction
   | ResourceQueryAction
   | ResourceUpdateAction;

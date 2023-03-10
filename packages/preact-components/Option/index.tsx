@@ -2,9 +2,14 @@ import { VNode } from 'preact';
 
 export interface OptionProps {
   /**
-   * A user facing label that representes the option.
+   * A user facing label that represents the option.
    */
   children?: string;
+
+  /**
+   * Whether or not the option is disabled.
+   */
+  disabled?: boolean;
 
   /**
    * Whether or not the option should be hidden if a value has been selected
@@ -22,10 +27,6 @@ export interface OptionProps {
  *
  * @see Select
  */
-export function Option({ children, hidden, value }: OptionProps): VNode {
-  return (
-    <option className={hidden ? 'is-hidden' : null} value={value}>
-      {children}
-    </option>
-  );
+export function Option({ hidden, ...props }: OptionProps): VNode {
+  return <option className={hidden ? 'is-hidden' : null} {...props} />;
 }

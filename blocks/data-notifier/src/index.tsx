@@ -34,7 +34,7 @@ bootstrap(({ events, parameters: { color = 'dark', id = 'id' }, utils }) => {
   });
 
   events.on.data((newData: Data) => {
-    // Just emit the data if there is nothing to compara against.
+    // Just emit the data if there is nothing to compare against.
     if (oldData === undefined) {
       oldData = newData;
       events.emit.data(newData);

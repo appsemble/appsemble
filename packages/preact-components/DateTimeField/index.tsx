@@ -90,6 +90,7 @@ export function DateTimeField({
   maxTime = '23:59',
   id = name,
   minuteIncrement = 5,
+  inline,
   ...props
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
@@ -191,6 +192,7 @@ export function DateTimeField({
       help={help}
       icon={icon}
       id={id}
+      inline={inline}
       label={label}
       optionalLabel={optionalLabel}
       ref={wrapper}

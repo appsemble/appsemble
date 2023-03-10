@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import {
   NotificationDefinition,
@@ -231,7 +231,7 @@ export async function processReferenceHooks(
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
       async ([propertyName, reference]) => {
-        if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
+        if (!reference[action]?.trigger?.length) {
           // Do nothing
           return;
         }
@@ -352,6 +352,7 @@ export function processResourceBody(
 
   const patchedSchema = {
     ...definition.schema,
+    required: ctx.request.method === 'PATCH' ? [] : definition.schema.required,
     properties: {
       ...definition.schema.properties,
       id: { type: 'integer' },

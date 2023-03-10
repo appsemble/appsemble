@@ -146,6 +146,22 @@ export function iterPage(
           ))
     );
   }
+
+  if (page.type === 'loop') {
+    let result = false;
+    if ('actions' in page) {
+      result = Object.entries(page.actions).some(([key, action]) =>
+        iterAction(action, callbacks, [...prefix, 'actions', key]),
+      );
+    }
+    return (
+      result ||
+      ['steps.first', 'steps', 'steps.last'].some((suffix) =>
+        iterBlockList(page.foreach.blocks, callbacks, [...prefix, suffix, 'blocks']),
+      )
+    );
+  }
+
   return iterBlockList(page.blocks, callbacks, [...prefix, 'blocks']);
 }
 

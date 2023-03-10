@@ -24,7 +24,7 @@ import {
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Main } from '../Main/index.js';
 import { OpenIDLogin } from '../OpenIDLogin/index.js';
-import { TitleBar } from '../TitleBar/index.js';
+import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -65,7 +65,7 @@ export function Login(): ReactElement {
           <FormattedMessage
             {...messages.permissionError}
             values={{
-              link: (text: string) => (
+              link: (text) => (
                 <a href={`${apiUrl}/apps/${appId}`} rel="noopener noreferrer" target="_blank">
                   {text}
                 </a>
@@ -79,7 +79,7 @@ export function Login(): ReactElement {
 
   return (
     <Main className={`is-flex ${styles.root}`}>
-      <TitleBar />
+      <AppBar />
       <Content
         className="is-flex is-flex-direction-column is-justify-content-center is-align-items-center is-flex-grow-1 appsemble-login"
         padding

@@ -1,9 +1,8 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.15/config/assets/logo.svg) Appsemble App
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.40/config/assets/logo.svg) Appsemble App
 
 > The core that powers Appsemble apps
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.15/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.15)
-[![Code coverage](https://codecov.io/gl/appsemble/appsemble/branch/0.20.15/graph/badge.svg)](https://codecov.io/gl/appsemble/appsemble)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.40/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Usage
@@ -12,5 +11,5 @@ This internal package is responsible for rendering an app definition into a user
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.15/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.40/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

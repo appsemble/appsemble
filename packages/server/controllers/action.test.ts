@@ -10,7 +10,7 @@ import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
 
-useTestDatabase('apps');
+useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
@@ -155,6 +155,7 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.method).toBe('GET');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
       connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
@@ -177,6 +178,7 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.method).toBe('DELETE');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
       connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
@@ -197,6 +199,7 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.method).toBe('PATCH');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
       connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',
@@ -219,6 +222,7 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.method).toBe('POST');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
       connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',
@@ -241,6 +245,7 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.method).toBe('PUT');
     expect({ ...proxiedContext.headers }).toStrictEqual({
       accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
       connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',

@@ -42,13 +42,15 @@ This will be displayed on the app store.
       description: 'Properties related to the layout of the app.',
     },
     notifications: {
-      enum: ['opt-in', 'startup'],
+      enum: ['login', 'opt-in', 'startup'],
       description: `The strategy to use for apps to subscribe to push notifications.
 
 If specified, push notifications can be sent to subscribed users via the _Notifications_ tab in the
 app details page in Appsemble Studio. Setting this to \`opt-in\` allows for users to opt into
 receiving push notifications by pressing the subscribe button in the App settings page. Setting this
 to \`startup\` will cause Appsemble to immediately request for the permission upon opening the app.
+If this is set to \`login\`, the app will request permissions for push notification once the user
+logs in.
 
 > **Note**: Setting \`notifications\` to \`startup\` is not recommended, due to its invasive nature.
 `,
@@ -90,6 +92,7 @@ The most basic resource has a \`schema\` property and defines the minimal securi
           { $ref: '#/components/schemas/PageDefinition' },
           { $ref: '#/components/schemas/TabsPageDefinition' },
           { $ref: '#/components/schemas/FlowPageDefinition' },
+          { $ref: '#/components/schemas/LoopPageDefinition' },
         ],
       },
     },

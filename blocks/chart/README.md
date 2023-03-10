@@ -7,4 +7,7 @@ expected to adhere to a certain interface.
 - `type`: This is should be a string containing either `bar` or `line`. If this is unspecified, the
   `type` defined by the block parameters is used.
 - `label`: This should be a textual description of the dataset.
-- `data`: The data should be an array of numbers. If a value is null,it’s skipped from the chart.
+- `data`: The data should be an object of the following format:
+  - `data`: array of numbers. If a value is null, it’s skipped from the chart.
+  - `labels`: array of strings representing each data entry.
+  - `color`: the color to give this dataset. Requires a type of `Color`.

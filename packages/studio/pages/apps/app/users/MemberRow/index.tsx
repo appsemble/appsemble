@@ -9,11 +9,13 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
+import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useUser } from '../../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
 import { Member } from '../index.js';
@@ -27,10 +29,13 @@ interface MemberRowProperties {
 
 export function MemberRow({ member, onChange }: MemberRowProperties): ReactElement {
   const { app } = useApp();
-  const { userInfo } = useUser();
+  const { organizations, userInfo } = useUser();
   const push = useMessages();
   const { formatMessage } = useIntl();
   const editModal = useToggle();
+
+  const organization = organizations?.find((org) => org.id === app?.OrganizationId);
+  const editRolesPermission = checkRole(organization.role, Permission.ManageRoles);
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>): Promise<void> => {
@@ -109,7 +114,7 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactEleme
         </td>
         <td className="has-text-right">
           <div className="control is-inline">
-            <AsyncSelect onChange={onChangeRole}>
+            <AsyncSelect disabled={!editRolesPermission} onChange={onChangeRole}>
               {Object.keys(app.definition.security.roles).map((role) => (
                 <option key={role} selected={role === member.role} value={role}>
                   {app.messages?.app?.[`app.roles.${role}`] || role}

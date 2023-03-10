@@ -25,8 +25,9 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
   const modal = useToggle();
   const { formatMessage } = useIntl();
 
+  const defaultValues = { rating: 0, description: '' };
   const submit = useCallback(
-    async (values) => {
+    async (values: typeof defaultValues) => {
       const { data } = await axios.post<Rating>(`/api/apps/${app.id}/ratings`, values);
       onRate(data);
       modal.disable();
@@ -41,7 +42,7 @@ export function RateApp({ app, onRate }: RateAppProps): ReactElement {
       </Button>
       <ModalCard
         component={SimpleForm}
-        defaultValues={{ rating: 0, description: '' }}
+        defaultValues={defaultValues}
         footer={
           <SimpleModalFooter
             cancelLabel={<FormattedMessage {...messages.cancel} />}

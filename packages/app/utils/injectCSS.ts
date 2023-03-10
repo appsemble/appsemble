@@ -11,7 +11,7 @@ export async function injectCSS(parent: DocumentFragment, url?: string): Promise
       return;
     }
     const link = document.createElement('link');
-    // Make sure all CSS is loaded nefore resolving.
+    // Make sure all CSS is loaded before resolving.
     link.addEventListener('load', () => resolve(), {
       capture: true,
       once: true,

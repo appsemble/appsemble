@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/web-utils",
-  "version": "0.20.15",
+  "version": "0.20.40",
   "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
   "keywords": [
@@ -26,13 +26,13 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.15",
-    "@appsemble/utils": "0.20.15",
+    "@appsemble/types": "0.20.40",
+    "@appsemble/utils": "0.20.40",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^7.0.0",
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",
-    "axios": "^0.27.0",
-    "type-fest": "^2.0.0"
+    "axios": "^1.0.0",
+    "type-fest": "^3.0.0"
   }
 }

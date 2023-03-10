@@ -7,7 +7,10 @@ import { useSimpleForm } from '../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
-type PartialResult = Pick<ZxcvbnResult, 'feedback' | 'score'>;
+interface PartialResult {
+  score?: ZxcvbnResult['score'] | -1;
+  feedback: ZxcvbnResult['feedback'];
+}
 
 interface PasswordStrengthIndicatorProps {
   name: string;
@@ -15,7 +18,6 @@ interface PasswordStrengthIndicatorProps {
 }
 
 const emptyResult: PartialResult = {
-  score: -1,
   feedback: {
     suggestions: ['required'],
     warning: 'required',
@@ -50,10 +52,10 @@ export function PasswordStrengthIndicator({
 
   const {
     feedback: {
-      warning,
       suggestions: [suggestion],
+      warning,
     },
-    score,
+    score = -1,
   } = result;
 
   const messageId =

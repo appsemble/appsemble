@@ -1,6 +1,6 @@
 import { Remapper } from '@appsemble/sdk';
 
-import { DateField, DateTimeField, DateTimeRequirement } from '../../../block.js';
+import { DateField, DateTimeField, DateTimeRequirement, Values } from '../../../block.js';
 import { isValidDate } from '../requirements.js';
 
 /**
@@ -9,12 +9,14 @@ import { isValidDate } from '../requirements.js';
  * @param field The field to validate.
  * @param value The value of the field.
  * @param remap The remap function to use within the validators.
+ * @param values The form values used in the remap function.
  * @returns The first requirement that failed validation.
  */
 export function validateDateTime(
   field: DateField | DateTimeField,
   value: string,
   remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  values?: Values,
 ): DateTimeRequirement {
   return field.requirements?.find((requirement) => {
     if ('required' in requirement && !value) {
@@ -22,7 +24,7 @@ export function validateDateTime(
     }
 
     if ('from' in requirement && value) {
-      const fromDate = new Date(remap(requirement.from, value));
+      const fromDate = new Date(remap(requirement.from, values));
 
       if (!isValidDate(fromDate)) {
         return false;
@@ -34,7 +36,7 @@ export function validateDateTime(
     }
 
     if ('to' in requirement && value) {
-      const toDate = new Date(remap(requirement.to, value));
+      const toDate = new Date(remap(requirement.to, values));
 
       if (!isValidDate(toDate)) {
         return false;

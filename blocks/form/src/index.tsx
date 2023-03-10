@@ -1,5 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import { mapValues } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -7,8 +8,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { FieldEventParameters, Values } from '../block.js';
 import { FormInput } from './components/FormInput/index.js';
 import styles from './index.module.css';
+import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
+import { getNestedByKey } from './utils/getNested.js';
 import { isFormValid } from './utils/validity.js';
 
 bootstrap(
@@ -16,21 +19,36 @@ bootstrap(
     actions,
     data,
     events,
-    parameters: { dense, fields: initialFields, previous, requirements },
+    parameters: {
+      autofill,
+      dense,
+      disableDefault = false,
+      disabled,
+      fields: initialFields,
+      previous,
+      requirements,
+      skipInitialLoad = false,
+    },
     path,
     ready,
     utils,
   }) => {
+    const initialLoad = useRef(true);
     const [fields, setFields] = useState(initialFields);
-    const defaultValues = useMemo<Values>(
-      () => ({ ...generateDefaultValues(fields), ...(data as Record<string, unknown>) }),
-      [data, fields],
-    );
+    const defaultValues = useMemo<Values>(() => {
+      const valuesFromData = generateDefaultValues(fields);
+
+      if (disableDefault) {
+        return valuesFromData;
+      }
+
+      return { ...valuesFromData, ...(data as Record<string, unknown>) };
+    }, [data, disableDefault, fields]);
     const [formErrors, setFormErrors] = useState(
       Array.from<string>({ length: requirements?.length ?? 0 }).fill(null),
     );
     const [submitErrorResult, setSubmitErrorResult] = useState<string>(null);
-    const [dataLoading, setDataLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(!skipInitialLoad);
     const [fieldsLoading, setFieldsLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [values, setValues] = useState(defaultValues);
@@ -121,7 +139,7 @@ bootstrap(
         }
 
         actions
-          .onSubmit(values)
+          .onSubmit({ ...(data as Record<string, unknown>), ...values })
           .catch((submitActionError: unknown) => {
             // Log the error to the console for troubleshooting.
             // eslint-disable-next-line no-console
@@ -134,7 +152,7 @@ bootstrap(
           })
           .finally(() => setSubmitting(false));
       }
-    }, [actions, errors, fields, formErrors, submitting, utils, values]);
+    }, [actions, data, errors, fields, formErrors, submitting, utils, values]);
 
     const onPrevious = useCallback(() => {
       actions.onPrevious(values);
@@ -205,12 +223,48 @@ bootstrap(
       events.emit.change(values);
     }, [events, values]);
 
+    const debouncedRequest = useMemo(
+      () =>
+        debounce(async (params) => {
+          const response = await fetch(`${autofill?.route}?${params}`);
+          if (response.ok && autofill) {
+            const body = await response.json();
+            const remappedValues = mapValues(autofill.response, (mapper) =>
+              utils.remap(mapper, body),
+            );
+            for (const [key] of Object.entries(remappedValues)) {
+              remappedValues[key] ??= defaultValues[key];
+            }
+            setValues((prev) => ({ ...prev, ...remappedValues }));
+            setLastChanged(null);
+          }
+        }, autofill?.delay),
+      [autofill, defaultValues, utils],
+    );
+
+    useEffect(() => {
+      if (autofill?.params && getNestedByKey(autofill.params, 'prop').includes(lastChanged)) {
+        const params = new URLSearchParams(
+          mapValues(autofill.params, (mapper) => utils.remap(mapper, values)) as Record<
+            string,
+            string
+          >,
+        );
+
+        debouncedRequest(params);
+      }
+    }, [values, autofill, lastChanged, utils, debouncedRequest]);
+
     useEffect(() => {
       // If a listener is present, wait until data has been received
       const hasListener = events.on.data(receiveData);
-      setDataLoading(hasListener);
+      if (!skipInitialLoad || !initialLoad.current) {
+        setDataLoading(hasListener);
+      } else {
+        initialLoad.current = false;
+      }
       ready();
-    }, [events, ready, receiveData]);
+    }, [events, ready, receiveData, skipInitialLoad]);
 
     const loading = dataLoading || fieldsLoading;
 
@@ -230,18 +284,27 @@ bootstrap(
         >
           <span>{submitErrorResult}</span>
         </Message>
-        {fields?.map((f) => (
-          <FormInput
-            className={classNames({ [styles.dense]: dense })}
-            disabled={dataLoading || submitting}
-            error={errors[f.name]}
-            field={f}
-            key={f.name}
-            name={f.name}
-            onChange={onChange}
-            value={values[f.name]}
-          />
-        ))}
+        <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
+          {fields
+            ?.filter((f) => f.show === undefined || utils.remap(f.show, values))
+            .map((f) => (
+              <FormInput
+                className={classNames({ [styles.dense]: dense })}
+                disabled={
+                  dataLoading ||
+                  submitting ||
+                  Boolean(utils.remap(f.disabled, values[f.name], { values }))
+                }
+                error={errors[f.name]}
+                field={f}
+                formValues={values}
+                key={f.name}
+                name={f.name}
+                onChange={onChange}
+                readOnly={Boolean(utils.remap(f.readOnly, values[f.name], { values }))}
+              />
+            ))}
+        </div>
         <FormButtons className="mt-4">
           {previous ? (
             <Button className="mr-4" disabled={dataLoading || submitting} onClick={onPrevious}>
@@ -250,7 +313,13 @@ bootstrap(
           ) : null}
           <Button
             color="primary"
-            disabled={loading || submitting || formErrors.some(Boolean) || !isFormValid(errors)}
+            disabled={Boolean(
+              loading ||
+                submitting ||
+                formErrors.some(Boolean) ||
+                !isFormValid(errors) ||
+                utils.remap(disabled, values),
+            )}
             type="submit"
           >
             {utils.formatMessage('submitLabel')}

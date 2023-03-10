@@ -9,10 +9,12 @@ describe('makeActions', () => {
   beforeEach(() => {
     testDefaults = {
       app: null,
+      appStorage: null,
       context: null,
       ee: null,
       extraCreators: null,
       flowActions: null,
+      getAppMessage: null,
       navigate: null,
       pageReady: new Promise((resolve) => {
         pageReady = resolve;
@@ -124,7 +126,7 @@ describe('makeActions', () => {
     pageReady();
     const result = await promise;
     expect(result).toBe('dialog.ok return value');
-    expect(dialogOk).toHaveBeenCalledWith('input', {});
+    expect(dialogOk).toHaveBeenCalledWith('input', { history: ['input'] });
   });
 
   it('should reject the action call if the implementation rejects', async () => {
@@ -148,7 +150,9 @@ describe('makeActions', () => {
       extraCreators: { 'dialog.ok': () => [dialogOk], 'dialog.error': () => [dialogError] },
     });
     const result = await actions.onClick('input', {});
-    expect(dialogError).toHaveBeenCalledWith('dialog.ok return value', {});
+    expect(dialogError).toHaveBeenCalledWith('dialog.ok return value', {
+      history: ['input', 'dialog.ok return value'],
+    });
     expect(result).toBe('dialog.error return value');
   });
 
@@ -163,7 +167,9 @@ describe('makeActions', () => {
       extraCreators: { 'dialog.ok': () => [dialogOk], 'dialog.error': () => [dialogError] },
     });
     const result = await actions.onClick('input', {});
-    expect(dialogError).toHaveBeenCalledWith('dialog.ok rejected value', {});
+    expect(dialogError).toHaveBeenCalledWith('dialog.ok rejected value', {
+      history: ['input', 'dialog.ok rejected value'],
+    });
     expect(result).toBe('dialog.error return value');
   });
 

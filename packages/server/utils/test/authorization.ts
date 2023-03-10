@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 import { TokenResponse } from '@appsemble/types';
 import { api } from '@appsemble/utils';
