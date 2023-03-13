@@ -85,8 +85,8 @@ yarn appsemble login
 
 > Note: when using Windows Subsystem for Linux (WSL), this command is **unsupported**. The
 > workaround for this is manually creating OAuth2 credentials at
-> `http://localhost:9999/settings/client-credentials` and passing them to the CLI using the
-> `--client-credentials` flag or setting the `APPSEMBLE_CLIENT_CREDENTIALS` environment variable.
+> `http://localhost:9999/settings/client-credentials` and passing them to the CLI by setting the
+> `APPSEMBLE_CLIENT_CREDENTIALS` environment variable.
 > [More details](https://gitlab.com/appsemble/appsemble/-/issues/958#note_1299145503).
 
 This will open Appsemble studio in a new window in your browser. A panel will pop up where you must
