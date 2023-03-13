@@ -137,7 +137,10 @@ export function SecretsPage(): ReactElement {
                 label={<FormattedMessage {...messages.emailPassword} />}
                 name="emailPassword"
                 placeholder="●●●●●●●●●●●"
-                required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
+                required={
+                  !emailSettings.emailPassword &&
+                  Boolean(emailSettings.emailHost || emailSettings.emailUser)
+                }
               />
               <SimpleFormField
                 help={<FormattedMessage {...messages.emailPortDescription} />}
