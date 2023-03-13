@@ -799,6 +799,7 @@
   "studio.pages.docs.action": "Radnja",
   "studio.pages.docs.app": "Program",
   "studio.pages.docs.changelog": "Dnevnik promjena",
+  "studio.pages.docs.packages": "",
   "studio.pages.docs.reference": "Referenca",
   "studio.pages.docs.reference.action.description": "Referentna dokumentacija za definicije Appsemble radnji",
   "studio.pages.docs.reference.action.showYaml": "Prikaži YAML",

@@ -799,6 +799,7 @@
   "studio.pages.docs.action": "Action",
   "studio.pages.docs.app": "App",
   "studio.pages.docs.changelog": "Changelog",
+  "studio.pages.docs.packages": "Packages",
   "studio.pages.docs.reference": "Reference",
   "studio.pages.docs.reference.action.description": "Reference documentation for Appsemble action definitions",
   "studio.pages.docs.reference.action.showYaml": "Show YAML",
