@@ -4,6 +4,7 @@ import {
   Content,
   PasswordField,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
   Title,
@@ -157,6 +158,9 @@ export function SecretsPage(): ReactElement {
                   emailSettings.emailHost || emailSettings.emailUser || emailSettings.emailPassword,
                 )}
               />
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.submitError} />}
+              </SimpleFormError>
               <SimpleSubmit>
                 <FormattedMessage {...messages.submit} />
               </SimpleSubmit>
