@@ -134,12 +134,11 @@ export async function bulmaHandler(ctx: Context): Promise<void> {
     );
   }
 
+  if (!result) {
+    await Theme.create({ ...theme, css });
+  }
+
   ctx.body = css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
-
-  if (!result) {
-    // This is not awaited on purpose.
-    Theme.create({ ...theme, css });
-  }
 }
