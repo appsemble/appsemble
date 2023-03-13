@@ -28,17 +28,10 @@ beforeAll(async () => {
 
 it('should generate and save cache the Bulma styles', async () => {
   const spy = import.meta.jest.spyOn(sass, 'renderSync');
-  const themeCreatedPromise = new Promise<void>((resolve) => {
-    Theme.afterCreate('afterCreate', () => {
-      Theme.removeHook('afterCreate', 'resolveThemeCreated');
-      resolve();
-    });
-  });
 
   const { data } = await request.get<string>(`/bulma/${bulma.version}/bulma.min.css`, {
     params: { primaryColor: '#ffffff' },
   });
-  await themeCreatedPromise;
 
   // Second request to check if sass is only called once.
   await request.get<string>(`/bulma/${bulma.version}/bulma.min.css`, {

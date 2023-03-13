@@ -7,7 +7,7 @@ setLogLevel(0);
 
 expect.extend({ toMatchImageSnapshot });
 
-import.meta.jest.setTimeout(15_000);
+import.meta.jest.setTimeout(10_000);
 
 setResponseTransformer(
   ({
