@@ -51,8 +51,8 @@ services:
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
-`latest` with a specific version. All available versions can be found on [Appsemble tags
-page][https://hub.docker.com/r/appsemble/appsemble/tags] on Docker Hub.
+`latest` with a specific version. All available versions can be found on
+[Appsemble tags page](https://hub.docker.com/r/appsemble/appsemble/tags) on Docker Hub.
 
 It is also recommended to modify the database name, user, and password, and the Appsemble secret.
 
