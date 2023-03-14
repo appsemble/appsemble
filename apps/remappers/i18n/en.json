@@ -1,0 +1,18 @@
+{
+  "app": {
+    "app.roles.User": "User",
+    "app.roles.User.description": "user",
+    "description": "This app contains every Remapper currently in Appsemble as of (0.20.40)",
+    "name": "Remappers",
+    "pages.arrays": "Arrays",
+    "pages.data": "Data",
+    "pages.history": "History",
+    "pages.introduction": "Introduction",
+    "pages.objects": "Objects",
+    "pages.strings": "Strings"
+  },
+  "messageIds": {
+    "weatherBody": "Sunny 28°C",
+    "weatherTitle": "Weather report today"
+  }
+}
