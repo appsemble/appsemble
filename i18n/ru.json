@@ -596,6 +596,7 @@
   "studio.pages.apps.app.secrets.emailUserDescription": "",
   "studio.pages.apps.app.secrets.ssl": "",
   "studio.pages.apps.app.secrets.submit": "",
+  "studio.pages.apps.app.secrets.submitError": "",
   "studio.pages.apps.app.secrets.title": "",
   "studio.pages.apps.app.settings": "",
   "studio.pages.apps.app.settings.IconTool.cancel": "",

@@ -596,6 +596,7 @@
   "studio.pages.apps.app.secrets.emailUserDescription": "Le nom d'utilisateur utilisé pour l'authentification pour le serveur SMTP personnalisé.",
   "studio.pages.apps.app.secrets.ssl": "",
   "studio.pages.apps.app.secrets.submit": "Soumettre",
+  "studio.pages.apps.app.secrets.submitError": "",
   "studio.pages.apps.app.secrets.title": "Secrets",
   "studio.pages.apps.app.settings": "Paramètres",
   "studio.pages.apps.app.settings.IconTool.cancel": "Annuler",
