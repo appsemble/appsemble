@@ -11,8 +11,9 @@ import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import { Context } from 'koa';
 import { File } from 'koas-body-parser';
+import { QueryParams } from 'koas-parameters';
 import parseDuration from 'parse-duration';
-import { Op } from 'sequelize';
+import { Op, Order, WhereOptions } from 'sequelize';
 
 import {
   App,
@@ -26,6 +27,7 @@ import {
 import { getRemapperContext } from './app.js';
 import { preProcessCSV } from './csv.js';
 import { handleValidatorResult } from './jsonschema.js';
+import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, SendNotificationOptions } from './sendNotification.js';
 
 /**
@@ -431,4 +433,36 @@ export function processResourceBody(
   handleValidatorResult(result, 'Resource validation failed');
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
+}
+
+/**
+ * Generate Sequelize filter objects based on ODATA filters present in the request.
+ *
+ * @param query The query parameters to extract the parameters from.
+ * @returns An object containing the generated order and query options.
+ */
+export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | '$orderby'>): {
+  order: Order;
+  query: WhereOptions;
+} {
+  const order = $orderby
+    ? odataOrderbyToSequelize(
+        $orderby
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+        renameOData,
+      )
+    : undefined;
+  const query = $filter
+    ? odataFilterToSequelize(
+        $filter
+          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
+          .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
+        Resource,
+        renameOData,
+      )
+    : undefined;
+
+  return { order, query };
 }
