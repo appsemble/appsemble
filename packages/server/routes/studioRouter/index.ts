@@ -1,6 +1,6 @@
+import { tinyRouter } from '@appsemble/node-utils';
 import { noop } from '@appsemble/utils';
 
-import { tinyRouter } from '../../../node-utils/tinyRouter.js';
 import { staticHandler } from '../static.js';
 import { faviconHandler } from './faviconHandler.js';
 import { iconHandler } from './iconHandler.js';

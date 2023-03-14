@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, serveIcon } from '@appsemble/node-utils';
 import { AppAccount, AppMember as AppMemberType, SSOConfiguration } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
@@ -31,7 +31,6 @@ import { argv } from '../utils/argv.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
 import { getGravatarUrl } from '../utils/gravatar.js';
-import { serveIcon } from '../utils/icon.js';
 
 /**
  * Create an app member as JSON output from an app.

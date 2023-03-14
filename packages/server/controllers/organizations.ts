@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { serveIcon } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
@@ -21,7 +22,6 @@ import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
-import { serveIcon } from '../utils/icon.js';
 
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({

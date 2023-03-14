@@ -1,7 +1,7 @@
-import { serveIcon } from '@appsemble/server/utils/icon.js';
 import { isEqual, parseISO } from 'date-fns';
 import { Context, Middleware } from 'koa';
 
+import { serveIcon } from '../icon.js';
 import { AppRouterOptions } from '../types.js';
 
 export function createIconHandler({

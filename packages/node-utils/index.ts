@@ -9,3 +9,6 @@ export * from './logger.js';
 export * from './loggerMiddleware.js';
 export * from './readFileOrString.js';
 export * from './testFixtures.js';
+export * from './tinyRouter.js';
+export * from './icon.js';
+export * from './readAsset.js';
