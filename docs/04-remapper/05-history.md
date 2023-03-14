@@ -38,8 +38,7 @@ The result of the final log will be:
 }
 ```
 
-The reason for this is because in the space between the beginning of the `resource.query` type and
-the final `log` type the final value to be set was that object. The result of the resource query is
+The reason for this is because remapAfter changed the resulting value of the `resource.query` action and instead  the object gets passed to the log action. The result of the resource query is
 not relevant anymore.
 
 ![history data explained](../../config/assets/remapper-tutorial/history-data-assigning-explained.png 'History data explained')
