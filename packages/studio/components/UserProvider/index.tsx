@@ -57,31 +57,27 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
   });
   const [accessToken, setAccessToken] = useState(localStorage.access_token);
 
-  const setToken = useCallback((response: TokenResponse) => {
-    localStorage.access_token = response.access_token;
-    localStorage.refresh_token = response.refresh_token;
-    setAccessToken(response.access_token);
-    setTokenResponse(response);
-  }, []);
-
   const refreshUserInfo = useCallback(async () => {
     const { data } = await axios.get<UserInfo>('/api/connect/userinfo');
     setUser({ id: data.sub });
     setUserInfo(data);
   }, []);
 
+  const login = useCallback(
+    (response: TokenResponse) => {
+      localStorage.access_token = response.access_token;
+      localStorage.refresh_token = response.refresh_token;
+      setAccessToken(response.access_token);
+      setTokenResponse(response);
+      refreshUserInfo();
+    },
+    [refreshUserInfo],
+  );
+
   const fetchOrganizations = useCallback(async () => {
     const { data } = await axios.get<UserOrganization[]>('/api/user/organizations');
     setOrganizations(data);
   }, []);
-
-  const login = useCallback(
-    (response: TokenResponse) => {
-      setToken(response);
-      refreshUserInfo();
-    },
-    [refreshUserInfo, setToken],
-  );
 
   const logout = useCallback(() => {
     setUser(null);
@@ -136,8 +132,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         const { data } = await axios.post<TokenResponse>('/api/refresh', {
           refresh_token: tokenResponse.refresh_token,
         });
-        setToken(data);
-        refreshUserInfo();
+        login(data);
       } catch {
         logout();
       }
@@ -150,7 +145,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [fetchOrganizations, logout, refreshUserInfo, setToken, tokenResponse]);
+  }, [fetchOrganizations, login, logout, tokenResponse, refreshUserInfo]);
 
   if (!initialized) {
     return <Loader />;
