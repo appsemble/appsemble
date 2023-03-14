@@ -1,0 +1,40 @@
+import { readFile } from 'node:fs/promises';
+
+import { compareStrings } from '@appsemble/utils';
+import { Context } from 'koa';
+import mustache from 'mustache';
+
+import { ContentSecurityPolicy } from './types.js';
+
+export async function render(
+  ctx: Context,
+  filename: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  if (process.env.NODE_ENV === 'test') {
+    ctx.body = JSON.stringify({ filename, data });
+  } else {
+    const template = await (process.env.NODE_ENV === 'production'
+      ? readFile(new URL(`../../../dist/${filename}`, import.meta.url), 'utf8')
+      : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
+    ctx.body = mustache.render(template, data);
+  }
+  ctx.type = 'html';
+}
+
+/**
+ * Convert a CSP key / values pair object into a real content security policy string.
+ *
+ * Any falsy values will be excluded.
+ *
+ * @param csp The CSP object to convert
+ * @returns The CSP object as a string
+ */
+export function makeCSP(csp: ContentSecurityPolicy): string {
+  return Object.entries(csp)
+    .map(([key, values]) => [key, values.filter(Boolean)] as const)
+    .filter(([, values]) => values?.length)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, values]) => `${key} ${[...new Set(values)].sort(compareStrings).join(' ')}`)
+    .join('; ');
+}

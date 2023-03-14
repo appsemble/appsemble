@@ -1,4 +1,4 @@
-import { serveIcon } from '@appsemble/server/utils/icon';
+import { serveIcon } from '@appsemble/server/utils/icon.js';
 import { isEqual, parseISO } from 'date-fns';
 import { Context, Middleware } from 'koa';
 
@@ -16,7 +16,7 @@ export function createIconHandler({
     } = ctx;
 
     const app = await getApp({ context: ctx, query: { maskable, updated } });
-    const dbUpdated = await getDbUpdated({ maskable });
+    const dbUpdated = await getDbUpdated({ app, maskable });
     const appIcon = await getAppIcon({ app });
 
     await serveIcon(ctx, {

@@ -1947,6 +1947,16 @@ export interface App {
    * Any pre-included translations of the app.
    */
   messages?: AppsembleMessages;
+
+  /**
+   * Any app styles that are shared.
+   */
+  sharedStyle?: string;
+
+  /**
+   * Any app styles that are core.
+   */
+  coreStyle?: string;
 }
 
 /**

@@ -1,15 +1,13 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
+import { extension } from 'mime-types';
 
 import { AppRouterOptions } from '../types.js';
 
 const iconSizes = [48, 144, 192, 512];
 
-export function createManifestHandler({
-  getApp,
-  getAppScreenshotsInfo,
-}: AppRouterOptions): Middleware {
+export function createManifestHandler({ getApp, getAppScreenshots }: AppRouterOptions): Middleware {
   return async (ctx: Context) => {
     const app = await getApp({ context: ctx });
 
@@ -19,6 +17,8 @@ export function createManifestHandler({
 
     const { defaultPage, description, name, theme = baseTheme } = app.definition;
     const { themeColor = '#ffffff', splashColor = themeColor } = theme;
+
+    const appScreenshots = await getAppScreenshots({ app });
 
     ctx.body = {
       background_color: splashColor,
@@ -41,7 +41,11 @@ export function createManifestHandler({
       name,
       orientation: 'any',
       scope: '/',
-      screenshots: await getAppScreenshotsInfo({ app }),
+      screenshots: appScreenshots.map(({ height, id, mime, width }) => ({
+        sizes: `${width}x${height}`,
+        src: `/screenshots/${id}.${extension(mime)}`,
+        type: mime,
+      })),
       short_name: name,
       start_url: `/${normalize(defaultPage)}`,
       theme_color: themeColor,

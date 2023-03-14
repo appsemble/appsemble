@@ -5,6 +5,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
 
+import { organizationBlocklist } from '../../node-utils/organizationBlocklist.js';
 import {
   App,
   BlockVersion,
@@ -16,7 +17,6 @@ import {
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { organizationBlocklist } from '../utils/organizationBlocklist.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 

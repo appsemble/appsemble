@@ -6,6 +6,7 @@ import { isEqual, parseISO } from 'date-fns';
 import { Context } from 'koa';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
+import { organizationBlocklist } from '../../node-utils/organizationBlocklist.js';
 import {
   App,
   AppRating,
@@ -21,7 +22,6 @@ import { argv } from '../utils/argv.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
 import { serveIcon } from '../utils/icon.js';
-import { organizationBlocklist } from '../utils/organizationBlocklist.js';
 
 export async function getOrganizations(ctx: Context): Promise<void> {
   const organizations = await Organization.findAll({

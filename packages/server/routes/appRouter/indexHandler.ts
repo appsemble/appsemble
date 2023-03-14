@@ -1,6 +1,7 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
+import { organizationBlocklist } from '@appsemble/node-utils/organizationBlocklist.js';
 import {
   createThemeURL,
   defaultLocale,
@@ -20,7 +21,6 @@ import {
 } from '../../models/index.js';
 import { getApp, getAppUrl } from '../../utils/app.js';
 import { argv } from '../../utils/argv.js';
-import { organizationBlocklist } from '../../utils/organizationBlocklist.js';
 import { createGtagCode, createSettings, makeCSP, render } from '../../utils/render.js';
 import { getSentryClientSettings } from '../../utils/sentry.js';
 import { bulmaURL, faURL } from '../../utils/styleURL.js';
