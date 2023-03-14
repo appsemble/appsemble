@@ -84,16 +84,16 @@ See the following page definition
 
 ```yaml
 name: Playlist
-  blocks:
-    - type: data-loader
-      version: 0.20.38
-      actions:
-        onLoad:
-          type: resource.query
-          resource: songs
-      events:
-        emit:
-          data: songData
+blocks:
+  - type: data-loader
+    version: 0.20.38
+    actions:
+      onLoad:
+        type: resource.query
+        resource: songs
+    events:
+      emit:
+        data: songData
 ```
 
 In here we define a `data-loader` block. In this block we call the `resource.query` action when the
@@ -153,7 +153,7 @@ actions:
           if:
             condition:
               equals:
-                - { prop: city }
+                - prop: city
                 - 'Eindhoven'
             then:
               object.omit:
@@ -177,8 +177,8 @@ function containing two remappers:
    user and checks if it is equal to “Eindhoven”. If this is true, it removes the `city` property
    from the person’s properties. If this is false, it sets the person object to null.
 
-When this remapper is done, the output is an array that is filled with people that had the
-value of “Eindhoven” under the `city` property. The people that didn’t are set to null.
+When this remapper is done, the output is an array that is filled with people that had the value of
+“Eindhoven” under the `city` property. The people that didn’t are set to null.
 
 > **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
 > **context** of the remapper itself.
@@ -187,8 +187,9 @@ value of “Eindhoven” under the `city` property. The people that didn’t are
    Considering the output of the previous remapper was an array mixed with people and null values,
    this cleans up the data so that you _only_ have actual people in the dataset.
 
-The end result of this is a fully sorted list of users from the city of Eindhoven. Next, you could
-display this information in any block you’d like using the event emitter from the data-loader block.
+The end result of this is a fully filtered list of users from the city of Eindhoven. Next, you could
+display this information in any block you’d like to use via the event emitter from the data-loader
+block.
 
 ### Conclusion
 

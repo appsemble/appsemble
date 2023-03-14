@@ -13,8 +13,8 @@ stack:
 
 ![history stack](../../config/assets/remapper-tutorial/history-stack.jpg 'History stack visualisation')
 
-Keep in mind that only the last source of data in each section will be the applied to the next
-action, and that index in the history stack.
+Keep in mind that the value passed to the action can be influenced by changing the data beforehand
+using `remapBefore` or `remapAfter`.
 
 For example, if you have the following code:
 
@@ -44,9 +44,9 @@ not relevant anymore.
 
 ![history data explained](../../config/assets/remapper-tutorial/history-data-assigning-explained.png 'History data explained')
 
-Now, if you have done a lot of remapping but you want to get this older piece of you have remapped
-before you can look back at the stack you created and determine at what index this data was formed.
-Then, using the `history` remapper you can get this data back.
+Now, if you want to get the resulting (remapped) data back from the first action, you can count the
+index of the action (in this case 1) that the data got passed along to and use it with the `history`
+remapper to retrieve it from the stack.
 
 ```yaml
 type: resource.query
@@ -63,7 +63,7 @@ onSuccess:
                   type: log
 ```
 
-Should still return the old object, no matter how many actions have appeared in between:
+Still returns the old object, no matter how many actions have appeared in between:
 
 ```json
 {
