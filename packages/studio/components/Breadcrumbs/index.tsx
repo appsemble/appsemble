@@ -30,20 +30,22 @@ export function Breadcrumbs(): ReactElement {
             </li>
           );
         })}
-        {breadcrumbs.length === 3 && breadcrumbs[2].url.includes('/gui') && (
+        {breadcrumbs.length === 3 && breadcrumbs[2].url.includes('/edit/gui') && (
           <div className="button is-rounded is-transparent is-bordered is-small">
             <Link relative="path" to={breadcrumbs[2].url}>
-              {formatMessage(messages.switchToGuiEditor)}
+              {formatMessage(messages.switchToCodeEditor)}
             </Link>
           </div>
         )}
-        {breadcrumbs.length === 3 && !breadcrumbs[2].url.includes('/gui') && (
-          <div className="button is-rounded is-transparent is-bordered is-small">
-            <Link relative="path" to={`${breadcrumbs[2].url}/gui`}>
-              {formatMessage(messages.switchToGuiEditor)}
-            </Link>
-          </div>
-        )}
+        {breadcrumbs.length === 3 &&
+          breadcrumbs[2].url.includes('/edit') &&
+          !breadcrumbs[2].url.includes('/gui') && (
+            <div className="button is-rounded is-transparent is-bordered is-small">
+              <Link relative="path" to={`${breadcrumbs[2].url}/gui`}>
+                {formatMessage(messages.switchToGuiEditor)}
+              </Link>
+            </div>
+          )}
       </ul>
     </nav>
   );
