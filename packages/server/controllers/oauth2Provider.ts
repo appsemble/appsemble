@@ -60,8 +60,8 @@ export async function getUserInfo(ctx: Context): Promise<void> {
           )
         : getGravatarUrl(appMember.email),
       sub: user.id,
-      locale: user.locale,
-      zoneinfo: user.timezone,
+      locale: appMember.User.locale,
+      zoneinfo: appMember.User.timezone,
     };
   } else {
     await user.reload({

@@ -111,9 +111,11 @@ describe('getUserInfo', () => {
       {
         "email": "test@example.com",
         "email_verified": true,
+        "locale": null,
         "name": "Test User",
         "picture": Any<String>,
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "zoneinfo": "Europe/Amsterdam",
       }
     `,
     );
@@ -150,9 +152,11 @@ describe('getUserInfo', () => {
       {
         "email": "test@example.com",
         "email_verified": true,
+        "locale": null,
         "name": "Test User",
         "picture": "https://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=128&d=mp",
         "sub": StringMatching /\\^\\[\\\\d\\[a-f\\]\\{8\\}-\\[\\\\da-f\\]\\{4\\}-4\\[\\\\da-f\\]\\{3\\}-\\[\\\\da-f\\]\\{4\\}-\\[\\\\d\\[a-f\\]\\{12\\}\\$/,
+        "zoneinfo": "Europe/Amsterdam",
       }
     `,
     );
