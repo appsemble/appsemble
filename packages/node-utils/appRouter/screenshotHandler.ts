@@ -17,7 +17,9 @@ export function createScreenshotHandler({
     }
 
     const appScreenshots = await getAppScreenshots({ app });
-    const appScreenshot = appScreenshots.find((screenshot) => screenshot.id === id);
+    const appScreenshot = appScreenshots.find(
+      (screenshot) => screenshot.id === Number.parseInt(id),
+    );
 
     if (!appScreenshot) {
       throw notFound('Screenshot not found');
