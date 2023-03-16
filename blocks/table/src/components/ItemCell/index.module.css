@@ -1,3 +1,7 @@
 .clickable {
   cursor: pointer;
 }
+
+.editable {
+  margin-right: 8px;
+}
