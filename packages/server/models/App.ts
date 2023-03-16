@@ -257,8 +257,6 @@ export class App extends Model {
         ({ id }) => `/api/apps/${this.id}/screenshots/${id}`,
       ),
       messages: this.messages,
-      sharedStyle: this.sharedStyle,
-      coreStyle: this.coreStyle,
     };
 
     return omit(result, omittedValues) as AppType;

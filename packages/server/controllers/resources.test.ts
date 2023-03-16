@@ -4915,14 +4915,10 @@ describe('deleteResources', () => {
     const responseGetEmpty = await request.get(`/api/apps/${app.id}/resources/testResource`);
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseGetEmpty).toMatchInlineSnapshot(`
-      HTTP/1.1 404 Not Found
+      HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
-      {
-        "error": "Not Found",
-        "message": "App not found",
-        "statusCode": 404,
-      }
+      []
     `);
   });
 
