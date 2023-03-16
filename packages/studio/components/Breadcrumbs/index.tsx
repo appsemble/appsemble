@@ -1,4 +1,4 @@
-import { useBreadcrumbs } from '@appsemble/react-components';
+import { Button, useBreadcrumbs } from '@appsemble/react-components';
 import { ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -31,22 +31,20 @@ export function Breadcrumbs(): ReactElement {
           );
         })}
         {breadcrumbs.length === 3 && breadcrumbs[2].url.includes('/edit/gui') && (
-          <a
-            className="button is-rounded is-transparent is-bordered is-small"
-            href={breadcrumbs[2].url}
-          >
-            {formatMessage(messages.switchToCodeEditor)}
-          </a>
+          <Link relative="path" to={breadcrumbs[2].url}>
+            <Button className="button is-rounded is-transparent is-bordered is-small">
+              {formatMessage(messages.switchToCodeEditor)}
+            </Button>
+          </Link>
         )}
         {breadcrumbs.length === 3 &&
           breadcrumbs[2].url.includes('/edit') &&
-          !breadcrumbs[2].url.includes('/edit/gui') && (
-            <a
-              className="button is-rounded is-transparent is-bordered is-small"
-              href={`${breadcrumbs[2].url}/gui`}
-            >
-              {formatMessage(messages.switchToGuiEditor)}
-            </a>
+          !breadcrumbs[2].url.includes('/gui') && (
+            <Link relative="path" to={`${breadcrumbs[2].url}/gui`}>
+              <Button className="button is-rounded is-transparent is-bordered is-small">
+                {formatMessage(messages.switchToGuiEditor)}
+              </Button>
+            </Link>
           )}
       </ul>
     </nav>
