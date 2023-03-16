@@ -130,7 +130,7 @@ export function useMeta(title: Text, description?: Text): void {
   const { pathname } = useLocation();
   // Don't count empty string-, language- and first page segments
   const segmentCount = pathname.split('/').length - 3;
-  const url = `.${'/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0)}`;
+  const url = String(pathname + '/..'.repeat(segmentCount > 0 ? segmentCount - depth : 0));
 
   useEffect(() => {
     const formatMaybe = (string: Text): string =>
