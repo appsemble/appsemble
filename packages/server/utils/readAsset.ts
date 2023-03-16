@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-export const assetDir = new URL('assets/', import.meta.url);
+export const assetDir = new URL('../assets/', import.meta.url);
 
 /**
  * Read a file from the server assets directory.

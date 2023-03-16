@@ -4086,6 +4086,26 @@ Should be an array of data.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks test 1`] = `
+{
+  "actions": {
+    "onClick": {
+      "description": "What happens if the button is clicked.",
+    },
+    "onHover": {
+      "description": undefined,
+    },
+  },
+  "events": undefined,
+  "messages": {
+    "label": {
+      "description": "The button label.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
 {
   "actions": {
