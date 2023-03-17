@@ -60,4 +60,4 @@ blocks when switching pages. Data can only be persisted to Page Storage by switc
 with flow actions. This is how flow pages keep track of the data filled into a form when switching
 to the next step.
 
-> Note: Both the `App Storage` and the `Page Storage` are effected by the `retainFlowData` prop.
+> Note: Both `App Storage` and `Page Storage` are effected by the `retainFlowData` prop.
