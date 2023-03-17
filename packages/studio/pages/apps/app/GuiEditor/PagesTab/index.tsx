@@ -78,7 +78,6 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
-
   // The left sidebar will house the hierarchy and the block store
   return (
     <>
