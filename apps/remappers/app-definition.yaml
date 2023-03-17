@@ -54,12 +54,11 @@ pages:
                     condition:
                       equals:
                         - prop: city
-                        - "Eindhoven"
+                        - 'Eindhoven'
                     then:
                       object.omit:
                         - City
-                    else:
-                      null
+                    else: null
               - null.strip: null
             onSuccess:
               type: log
@@ -107,8 +106,7 @@ pages:
             type: noop
             remapAfter:
               object.from:
-                lotteryPrize:
-                  5000
+                lotteryPrize: 5000
         events:
           emit:
             data: lotteryResults
@@ -137,8 +135,7 @@ pages:
         actions:
           onLoad:
             type: noop
-            remapBefore:
-              Eindhoven is the best city in the Netherlands
+            remapBefore: Eindhoven is the best city in the Netherlands
             remapAfter:
               string.replace:
                 (best*)\w+: cleanest
@@ -219,8 +216,7 @@ pages:
                 author: John Doe
         events:
           emit:
-            data:
-              objectAssignData
+            data: objectAssignData
       - type: detail-viewer
         version: 0.20.39
         parameters:
@@ -323,15 +319,15 @@ pages:
           onLoad:
             remapBefore:
               - array.from:
-                - object.from:
-                    name: Peter
-                    occupation: Delivery driver
-                - object.from:
-                    name: Otto
-                    occupation: Scientist
-                - object.from:
-                    name: Harry
-                    occupation: CEO
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
               - array.map:
                   object.omit:
                     - name
@@ -357,24 +353,23 @@ pages:
           onLoad:
             remapBefore:
               - array.from:
-                - object.from:
-                    name: Peter
-                    occupation: Delivery driver
-                - object.from:
-                    name: Otto
-                    occupation: Scientist
-                - object.from:
-                    name: Harry
-                    occupation: CEO
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
               - array.map:
                   if:
-                    condition: { equals: [ { prop: occupation }, Scientist ]}
+                    condition: { equals: [{ prop: occupation }, Scientist] }
                     then:
                       object.from:
                         name: { prop: name }
                         occupation: { prop: occupation }
-                    else:
-                      null
+                    else: null
               - null.strip: null
             type: noop
         events:
@@ -405,19 +400,19 @@ pages:
           onLoad:
             remapBefore:
               - array.from:
-                - object.from:
-                    name: Peter
-                    occupation: Delivery driver
-                - object.from:
-                    name: Otto
-                    occupation: Scientist
-                - object.from:
-                    name: Harry
-                    occupation: CEO
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
               - array.append:
-                - object.from:
-                    name: James
-                    occupation: News reporter
+                  - object.from:
+                      name: James
+                      occupation: News reporter
             type: noop
         events:
           emit:
@@ -447,20 +442,20 @@ pages:
           onLoad:
             remapBefore:
               - array.from:
-                - object.from:
-                    name: Peter
-                    occupation: Delivery driver
-                - object.from:
-                    name: Otto
-                    occupation: Scientist
-                - object.from:
-                    name: Harry
-                    occupation: CEO
-                - object.from:
-                    name: James
-                    occupation: News reporter
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
+                  - object.from:
+                      name: James
+                      occupation: News reporter
               - array.omit:
-                - 3
+                  - 3
             type: log
         events:
           emit:
@@ -507,7 +502,7 @@ pages:
                       name: James
                       occupation: News reporter
               - array.omit:
-                - context: index
+                  - context: index
             type: log
 
       ## array.unique
@@ -523,22 +518,22 @@ pages:
           onLoad:
             remapBefore:
               - array.from:
-                - object.from:
-                    name: Peter
-                    occupation: Delivery driver
-                    age: 19
-                - object.from:
-                    name: Peter
-                    occupation: Photographer
-                    age: 19
-                - object.from:
-                    name: Otto
-                    occupation: Scientist
-                    age: 50
-                - object.from:
-                    name: Harry
-                    occupation: CEO
-                    age: 20
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                      age: 19
+                  - object.from:
+                      name: Peter
+                      occupation: Photographer
+                      age: 19
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                      age: 50
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
+                      age: 20
               - array.unique:
                   object.from:
                     name: { prop: name }
@@ -561,263 +556,262 @@ pages:
 
   - name: Data
     blocks:
-        # root
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## root
-        - type: data-loader
-          version: 0.20.39
-          actions:
-            onLoad:
-              type: resource.query
+      # root
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## root
+      - type: data-loader
+        version: 0.20.39
+        actions:
+          onLoad:
+            type: resource.query
+            resource: people
+            query:
+              object.from:
+                $filter: city eq 'Eindhoven'
+            onSuccess:
+              remapBefore:
+                object.from:
+                  name: Residents of Eindhoven
+                  people:
+                    root: null
+              type: noop
+              remapAfter:
+                - prop: people
+        events:
+          emit:
+            data: rootData
+      - type: table
+        version: 0.20.39
+        parameters:
+          fields:
+            - label: Name
+              value: { prop: name }
+            - label: City
+              value: { prop: city }
+            - label: Email
+              value: { prop: email }
+        events:
+          listen:
+            data: rootData
+
+      # history
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## history
+      - type: data-loader
+        version: 0.20.39
+        actions:
+          onLoad:
+            remapBefore:
+              object.from:
+                title: Most influential bands of all time
+                content: ...
+            type: noop # history 0
+            onSuccess:
+              type: resource.query # history 1
               resource: people
-              query:
-                object.from:
-                  $filter: city eq 'Eindhoven'
               onSuccess:
-                remapBefore:
-                  object.from:
-                    name: Residents of Eindhoven
-                    people:
-                      root: null
-                type: noop
-                remapAfter:
-                  - prop: people
-          events:
-            emit:
-              data: rootData
-        - type: table
-          version: 0.20.39
-          parameters:
-            fields:
-              - label: Name
-                value: { prop: name }
-              - label: City
-                value: { prop: city }
-              - label: Email
-                value: { prop: email }
-          events:
-            listen:
-              data: rootData
-
-        # history
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## history
-        - type: data-loader
-          version: 0.20.39
-          actions:
-            onLoad:
-              remapBefore:
-                object.from:
-                  title: Most influential bands of all time
-                  content: ...
-              type: noop # history 0
-              onSuccess:
-                type: resource.query # history 1
-                resource: people
+                type: noop # history 2
                 onSuccess:
-                  type: noop # history 2
-                  onSuccess:
-                    remapBefore:
-                      history: 1
-                    type: noop
-          events:
-            emit:
-              data: 1historyData
-        - type: detail-viewer
-          version: 0.20.39
-          parameters:
-            fields:
-              - label: { prop: title}
-                value: { prop: content }
-          events:
-            listen:
-              data: 1historyData
+                  remapBefore:
+                    history: 1
+                  type: noop
+        events:
+          emit:
+            data: 1historyData
+      - type: detail-viewer
+        version: 0.20.39
+        parameters:
+          fields:
+            - label: { prop: title }
+              value: { prop: content }
+        events:
+          listen:
+            data: 1historyData
 
-        # app
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## app
-        - type: data-loader
-          version: 0.20.39
-          actions:
-            onLoad:
-              remapBefore:
-                object.from:
-                  id:
-                    app: id
-                  locale:
-                    app: locale
-                  url:
-                    app: url
-              type: noop
-          events:
-            emit:
-              data: appData
-        - type: detail-viewer
-          version: 0.20.39
-          parameters:
-            fields:
-              - value:
-                  string.format:
-                    template: id = {id}
-                    values:
-                      id: { prop: id }
-              - value:
-                  string.format:
-                    template: locale = {locale}
-                    values:
-                      locale: { prop: locale }
-              - value:
-                  string.format:
-                    template: url = {url}
-                    values:
-                      url: { prop: url }
-          events:
-            listen:
-              data: appData
+      # app
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## app
+      - type: data-loader
+        version: 0.20.39
+        actions:
+          onLoad:
+            remapBefore:
+              object.from:
+                id:
+                  app: id
+                locale:
+                  app: locale
+                url:
+                  app: url
+            type: noop
+        events:
+          emit:
+            data: appData
+      - type: detail-viewer
+        version: 0.20.39
+        parameters:
+          fields:
+            - value:
+                string.format:
+                  template: id = {id}
+                  values:
+                    id: { prop: id }
+            - value:
+                string.format:
+                  template: locale = {locale}
+                  values:
+                    locale: { prop: locale }
+            - value:
+                string.format:
+                  template: url = {url}
+                  values:
+                    url: { prop: url }
+        events:
+          listen:
+            data: appData
 
-        # page
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## page
-        - type: data-loader
-          version: 0.20.39
-          actions:
-            onLoad:
-              type: noop
-              remapBefore:
-                object.from:
-                  data:
-                    page: data
-                  url:
-                    page: url
-          events:
-            emit:
-              data: pageData
-        - type: detail-viewer
-          version: 0.20.39
-          parameters:
-            fields:
-              - value:
-                  string.format:
-                    template: data = {data}
-                    values:
-                      data: { prop: data }
-              - value:
-                  string.format:
-                    template: url = {url}
-                    values:
-                      url: { prop: url }
-          events:
-            listen:
-              data: pageData
+      # page
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## page
+      - type: data-loader
+        version: 0.20.39
+        actions:
+          onLoad:
+            type: noop
+            remapBefore:
+              object.from:
+                data:
+                  page: data
+                url:
+                  page: url
+        events:
+          emit:
+            data: pageData
+      - type: detail-viewer
+        version: 0.20.39
+        parameters:
+          fields:
+            - value:
+                string.format:
+                  template: data = {data}
+                  values:
+                    data: { prop: data }
+            - value:
+                string.format:
+                  template: url = {url}
+                  values:
+                    url: { prop: url }
+        events:
+          listen:
+            data: pageData
 
-        # user
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## user
-        - type: html
-          version: 0.20.39
-          parameters:
-            placeholders:
-              sub: { user: sub }
-              name: { user: name }
-              email: { user: email }
-              verified: { user: email_verified }
-              picture: { user: picture }
-              locale: { user: locale }
-            content: |
-                <b>Sub:</b>
-                <br><span data-content="sub"></span>
-                <br><b>Name:</b>
-                <br><span data-content="name"></span>
-                <br><b>Email:</b>
-                <br><span data-content="email"></span>
-                <br><b>Verified?</b>
-                <br><span data-content="verified"></span>
-                <br><b>Locale:</b>
-                <br><span data-content="locale"></span>
-                <br><b>Picture link:</b>
-                <br><span data-content="picture"></span>
+      # user
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## user
+      - type: html
+        version: 0.20.39
+        parameters:
+          placeholders:
+            sub: { user: sub }
+            name: { user: name }
+            email: { user: email }
+            verified: { user: email_verified }
+            picture: { user: picture }
+            locale: { user: locale }
+          content: |
+            <b>Sub:</b>
+            <br><span data-content="sub"></span>
+            <br><b>Name:</b>
+            <br><span data-content="name"></span>
+            <br><b>Email:</b>
+            <br><span data-content="email"></span>
+            <br><b>Verified?</b>
+            <br><span data-content="verified"></span>
+            <br><b>Locale:</b>
+            <br><span data-content="locale"></span>
+            <br><b>Picture link:</b>
+            <br><span data-content="picture"></span>
 
-        # context
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## context
-        - type: data-loader
-          version: 0.20.39
-          actions:
-            onLoad:
-              remapBefore:
-                array.from:
-                  - object.from:
-                      name: John
-                      age: 78
-                  - object.from:
-                      name: Peter
-                      age: 30
-                  - object.from:
-                      name: Tom
-                      age: 17
-              type: noop
-          events:
-            emit:
-              data:
-                contextData
-        - type: table
-          version: 0.20.39
-          events:
-            listen:
-              data: contextData
-          parameters:
-            fields:
-              - label: Name
-                value: { prop: name }
-                onClick: clickName
-              - label: Age
-                value: { prop: age }
-          actions:
-            clickName:
-              remapBefore:
-                context: index
-              type: message
-              body: { root }
-              dismissable: true
-              timeout: 4000
+      # context
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## context
+      - type: data-loader
+        version: 0.20.39
+        actions:
+          onLoad:
+            remapBefore:
+              array.from:
+                - object.from:
+                    name: John
+                    age: 78
+                - object.from:
+                    name: Peter
+                    age: 30
+                - object.from:
+                    name: Tom
+                    age: 17
+            type: noop
+        events:
+          emit:
+            data: contextData
+      - type: table
+        version: 0.20.39
+        events:
+          listen:
+            data: contextData
+        parameters:
+          fields:
+            - label: Name
+              value: { prop: name }
+              onClick: clickName
+            - label: Age
+              value: { prop: age }
+        actions:
+          clickName:
+            remapBefore:
+              context: index
+            type: message
+            body: { root }
+            dismissable: true
+            timeout: 4000
 
-        # translate
-        - type: markdown
-          version: 0.20.39
-          layout: static
-          parameters:
-            content: |
-              * ## translate
-        - type: detail-viewer
-          version: 0.20.39
-          parameters:
-            fields:
-              - label: { translate: weatherTitle }
-                value: { translate: weatherBody }
+      # translate
+      - type: markdown
+        version: 0.20.39
+        layout: static
+        parameters:
+          content: |
+            * ## translate
+      - type: detail-viewer
+        version: 0.20.39
+        parameters:
+          fields:
+            - label: { translate: weatherTitle }
+              value: { translate: weatherBody }
 
   - name: History
     blocks:
@@ -1055,9 +1049,9 @@ pages:
                 location: Amsterdam Arena
                 date: [{ static: 07-07-2022 }, { date.parse: dd-MM-yyyy }]
                 bandPasswords:
-                  array.from: [1,1,1]
+                  array.from: [1, 1, 1]
                 bankDetailsAttendees:
-                  array.from: [1,1,1]
+                  array.from: [1, 1, 1]
             onSuccess:
               type: noop
               onSuccess:
