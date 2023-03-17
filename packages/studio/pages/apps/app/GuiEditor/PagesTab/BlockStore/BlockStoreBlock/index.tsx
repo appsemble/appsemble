@@ -26,7 +26,11 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
 
   return (
-    <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
+    <div
+      className={`card is-flex ${styles.root} ${styles.BlockStoreBlock}`}
+      key={block.name}
+      title={block.name}
+    >
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
           {block.iconUrl ? (
