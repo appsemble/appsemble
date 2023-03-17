@@ -48,3 +48,8 @@
 .versionNr {
   font-size: 0.7rem;
 }
+
+.blockStoreBlock {
+  border-bottom: 1px solid;
+  border-color: hsl(0deg 0% 53%);
+}
