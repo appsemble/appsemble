@@ -2,7 +2,6 @@ import { Icon, Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { ReactElement } from 'react';
-import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -25,7 +24,6 @@ interface BlockStoreBlockProps {
 }
 export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
-  const { lang } = useParams<{ lang: string }>();
 
   return (
     <div className={`card is-flex ${styles.root}`} key={block.name} title={block.name}>
@@ -41,16 +39,18 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
           <Title
             className={`${styles.ellipsis} ${styles.title}`}
             lang={defaultLocale}
-            level={5}
-            size={4}
+            level={6}
+            size={6}
           >
             {name}
           </Title>
-          <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6}>
-            <Link to={`/${lang}/organizations/${org}`}>{`@${org}`}</Link>
+          <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6} size={6}>
+            <div className={styles.linkColor}>{`@${org}`}</div>
           </Subtitle>
         </div>
-        <span className={`subtitle is-6 has-text-grey ${styles.nogrow}`}>{block.version}</span>
+        <span className={`${styles.versionNr} has-text-grey ${styles.nogrow}`}>
+          {block.version}
+        </span>
       </header>
     </div>
   );
