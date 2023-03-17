@@ -41,6 +41,7 @@ These roles are the following:
   <thead>
     <tr>
       <th>Permissions</th>
+      <th />
       {Object.keys(roles).map((role) => (
         <th key={role}>{role}</th>
       ))}
@@ -51,7 +52,12 @@ These roles are the following:
       .filter((permission) => isNaN(Number(permission)))
       .map((permission) => (
         <tr key={permission}>
-          <td title={messages[permission].defaultMessage}>{permission} </td>
+          <td>
+            {permission}
+          </td>
+          <td>
+            <i title={messages[permission].defaultMessage} flow="right" className="fa fa-circle-question" />
+          </td>
           {Object.keys(roles).map((role) => (
             <td key={role} align="center">
               {roles[role].includes(Permission[permission]) ? '✓' : ''}
