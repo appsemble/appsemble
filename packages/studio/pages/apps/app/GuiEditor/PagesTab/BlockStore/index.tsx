@@ -4,6 +4,7 @@ import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { BlockStoreBlock } from './BlockStoreBlock/index.js';
+import styles from './index.module.css';
 import { messages } from './messages.js';
 
 /**
@@ -39,7 +40,7 @@ export function BlockStore(): ReactElement {
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="BlockStore">
+    <div className={styles.blockStore}>
       {appsembleBlocks.map((block) => (
         <BlockStoreBlock block={block} key={block.name} />
       ))}
