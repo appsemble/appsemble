@@ -12,8 +12,7 @@ parts of the app, this is where client storage comes into to play.
 - [Client storage](#client-storage): Allows you to store data in the browser or application often
   used for more private temporary storage.
 
-> Note: All client storage types can either be cleared by clearing your browser cache or by
-> refreshing your page.
+> Note: All client storage types can be cleared by clearing your browser cache.
 
 ## Server Storage
 
