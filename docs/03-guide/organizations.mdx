@@ -52,11 +52,13 @@ These roles are the following:
       .filter((permission) => isNaN(Number(permission)))
       .map((permission) => (
         <tr key={permission}>
+          <td>{permission}</td>
           <td>
-            {permission}
-          </td>
-          <td>
-            <i title={messages[permission].defaultMessage} flow="right" className="fa fa-circle-question" />
+            <i
+              title={messages[permission].defaultMessage}
+              flow="right"
+              className="fa fa-circle-question"
+            />
           </td>
           {Object.keys(roles).map((role) => (
             <td key={role} align="center">
