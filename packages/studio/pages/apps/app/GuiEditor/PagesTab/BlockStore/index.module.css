@@ -1,0 +1,10 @@
+.block {
+  background-color: hsl(0deg 0% 96%);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  overflow-x: hidden;
+  padding: 0;
+}

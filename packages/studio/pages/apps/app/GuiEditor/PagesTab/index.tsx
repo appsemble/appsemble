@@ -4,6 +4,7 @@ import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import BlockProperty from './BlockProperty/index.js';
+import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import PageProperty from './PageProperty/index.js';
@@ -54,7 +55,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
-
+  // The left sidebar will house the hierarchy and the block store
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
@@ -77,6 +78,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
             <BlockProperty selectedBlock={selectedBlock} selectedPage={selectedPage} />
           ) : null}
         </div>
+        <BlockStore />
       </Sidebar>
     </>
   );
