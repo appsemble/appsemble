@@ -1,3 +1,13 @@
 .blockStore {
   border-color: hsl(0deg 0% 53%);
 }
+
+.blockStoreHeader {
+  border-bottom: 1px solid;
+  border-color: hsl(0deg 0% 53%);
+  border-top: 1px solid;
+}
+
+.title {
+  margin: auto;
+}

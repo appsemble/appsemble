@@ -1,5 +1,6 @@
-import { Loader, Message, useData } from '@appsemble/react-components';
+import { Loader, Message, Title, useData } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
+import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -41,6 +42,20 @@ export function BlockStore(): ReactElement {
 
   return (
     <div className={styles.blockStore}>
+      <div className={styles.blockStoreHeader}>
+        <header className="px-2 py-2 is-flex">
+          <div className={styles.title}>
+            <Title
+              className={`${styles.ellipsis} ${styles.title}`}
+              lang={defaultLocale}
+              level={5}
+              size={4}
+            >
+              Block Store
+            </Title>
+          </div>
+        </header>
+      </div>
       {appsembleBlocks.map((block) => (
         <BlockStoreBlock block={block} key={block.name} />
       ))}
