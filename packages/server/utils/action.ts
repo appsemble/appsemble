@@ -7,7 +7,7 @@ import { argv } from './argv.js';
 export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
   params: ServerActionParameters,
-): Promise<void> {
+): Promise<unknown> {
   logger.info(`Running action: ${params.action.type}`);
   const url = new URL(argv.host);
   url.hostname =
@@ -39,7 +39,7 @@ export async function handleAction(
       data = remap(params.action.remapAfter, data, updatedContext);
     }
     if (params.action.onSuccess) {
-      await handleAction(actions[params.action.onSuccess.type], {
+      return await handleAction(actions[params.action.onSuccess.type], {
         ...params,
         action: params.action.onSuccess,
         data,
@@ -59,4 +59,5 @@ export async function handleAction(
     throw error;
   }
   logger.info(`Successfully ran action: ${params.action.type}`);
+  return data;
 }
