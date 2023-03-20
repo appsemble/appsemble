@@ -372,6 +372,28 @@ export interface DateTimeField extends AbstractField {
    * All requirements that are applicable to this type of field.
    */
   requirements?: DateTimeRequirement[];
+
+  /**
+   * Whether typing input in date field is allowed
+   *
+   * @default false
+   */
+  allowInput?: boolean;
+
+  /**
+   * The accepted alternative format of the date field when typing in the input.
+   *
+   * @default Y-m-d
+   */
+  altFormat?: string;
+
+  /**
+   * Whether to use the alternative format as the allowed format that the user
+   * has to follow when typing in a date.
+   *
+   * @default false
+   */
+  altInput?: boolean;
 }
 
 /**
@@ -410,6 +432,28 @@ export interface DateField extends AbstractField, InlineField {
    * All requirements that are applicable to this type of field.
    */
   requirements?: DateTimeRequirement[];
+
+  /**
+   * Whether typing input in date field is allowed
+   *
+   * @default false
+   */
+  allowInput?: boolean;
+
+  /**
+   * The accepted alternative format of the date field when typing in the input.
+   *
+   * @default Y-m-d
+   */
+  altFormat?: string;
+
+  /**
+   * Whether to use the alternative format as the allowed format that the user
+   * has to follow when typing in a date.
+   *
+   * @default false
+   */
+  altInput?: boolean;
 }
 
 /**

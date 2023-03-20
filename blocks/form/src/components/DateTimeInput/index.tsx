@@ -61,6 +61,9 @@ export function DateTimeInput({
 
   return (
     <DateTimeComponent
+      allowInput={field.allowInput}
+      altFormat={field.altFormat}
+      altInput={field.altInput}
       className={classNames(className)}
       confirm={field.confirm}
       confirmLabel={confirmLabel}

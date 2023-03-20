@@ -54,6 +54,9 @@ export function DateInput({
 
   return (
     <DateTimeField
+      allowInput={field.allowInput}
+      altFormat={field.altFormat}
+      altInput={field.altInput}
       className={classNames(className)}
       confirm={field.confirm}
       confirmLabel={confirmLabel}
