@@ -17,7 +17,7 @@ beforeEach(() => {
   setArgv({ host: 'https://example.com' });
   mailer = new Mailer(argv);
   Organization.create({ id: 'testorg' });
-  import.meta.jest.useFakeTimers({ now: new Date('2022-02-02T22:22:22') });
+  import.meta.jest.useFakeTimers({ now: new Date('2022-02-02T22:22:22Z') });
 });
 
 describe('resource.query', () => {
@@ -73,14 +73,14 @@ describe('resource.query', () => {
 
     expect(result).toStrictEqual([
       {
-        $created: '2022-02-02T21:22:22.000Z',
-        $updated: '2022-02-02T21:22:22.000Z',
+        $created: '2022-02-02T22:22:22.000Z',
+        $updated: '2022-02-02T22:22:22.000Z',
         id: 1,
         name: 'Spongebob',
       },
       {
-        $created: '2022-02-02T21:22:22.000Z',
-        $updated: '2022-02-02T21:22:22.000Z',
+        $created: '2022-02-02T22:22:22.000Z',
+        $updated: '2022-02-02T22:22:22.000Z',
         id: 2,
         name: 'Patrick',
       },
