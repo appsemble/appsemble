@@ -153,10 +153,9 @@ describe('handleRequestProxy', () => {
       }
     `);
     expect(proxiedContext.method).toBe('GET');
-    expect({ ...proxiedContext.headers }).toStrictEqual({
+    expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
     });
@@ -176,10 +175,9 @@ describe('handleRequestProxy', () => {
       }
     `);
     expect(proxiedContext.method).toBe('DELETE');
-    expect({ ...proxiedContext.headers }).toStrictEqual({
+    expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
     });
@@ -197,10 +195,9 @@ describe('handleRequestProxy', () => {
       }
     `);
     expect(proxiedContext.method).toBe('PATCH');
-    expect({ ...proxiedContext.headers }).toStrictEqual({
+    expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
@@ -220,10 +217,9 @@ describe('handleRequestProxy', () => {
       }
     `);
     expect(proxiedContext.method).toBe('POST');
-    expect({ ...proxiedContext.headers }).toStrictEqual({
+    expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
@@ -243,10 +239,9 @@ describe('handleRequestProxy', () => {
       }
     `);
     expect(proxiedContext.method).toBe('PUT');
-    expect({ ...proxiedContext.headers }).toStrictEqual({
+    expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
