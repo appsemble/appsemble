@@ -1732,6 +1732,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether typing input in date field is allowed",
             "type": "boolean",
           },
+          "altFormat": {
+            "default": "Y-m-d",
+            "description": "The accepted alternative format of the date field when typing in the input.",
+            "type": "string",
+          },
+          "altInput": {
+            "default": false,
+            "description": "Whether to use the alternative format as the allowed format that the user has to follow when typing in a date.",
+            "type": "boolean",
+          },
           "confirm": {
             "default": false,
             "description": "Whether the confirm button should be shown",
@@ -1831,6 +1841,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "allowInput": {
             "default": false,
             "description": "Whether typing input in date field is allowed",
+            "type": "boolean",
+          },
+          "altFormat": {
+            "default": "Y-m-d",
+            "description": "The accepted alternative format of the date field when typing in the input.",
+            "type": "string",
+          },
+          "altInput": {
+            "default": false,
+            "description": "Whether to use the alternative format as the allowed format that the user has to follow when typing in a date.",
             "type": "boolean",
           },
           "confirm": {
