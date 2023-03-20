@@ -42,14 +42,11 @@
 
 .backdrop {
   background-color: rgb(0 0 0 / 50%);
-  bottom: 0;
-  left: 0;
+  inset: 3.25rem 0 0;
   opacity: 1;
   position: fixed;
-  right: 0;
 
   /* This matches the size of the navbar */
-  top: 3.25rem;
   transition: opacity 0.15s;
   z-index: 4000;
 
