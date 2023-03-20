@@ -4,7 +4,9 @@ import classNames from 'classnames';
 import { JSX, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, InputProps } from '../../../block.js';
+import { FileField, InputProps, Values } from '../../../block.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
+import { isRequired } from '../../utils/requirements.js';
 import { FileEntry } from '../FileEntry/index.js';
 import styles from './index.module.css';
 
@@ -16,13 +18,14 @@ export function FileInput({
   disabled,
   error,
   field,
+  formValues,
   name,
   onChange,
-  required,
-  value,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
   const { icon, inline, label, repeated, tag } = field;
+  const value = getValueByNameSequence(name, formValues);
+  const required = isRequired(field, utils, formValues);
   const remappedLabel = utils.remap(label, value);
 
   const handleInput = useCallback(
@@ -59,19 +62,19 @@ export function FileInput({
             disabled={disabled}
             error={dirty ? error : null}
             field={field}
+            formValues={null}
             name={`${name}.${(value as string[]).length}`}
             onChange={handleInput}
-            value={null}
           />
           {(value as string[]).map((val, index) => (
             <FileEntry
               error={dirty ? error : null}
               field={field}
+              formValues={val as unknown as Values}
               // eslint-disable-next-line react/no-array-index-key
               key={index}
               name={`${name}.${index}`}
               onChange={handleInput}
-              value={val}
             />
           ))}
         </div>
@@ -79,9 +82,9 @@ export function FileInput({
         <FileEntry
           error={dirty ? error : null}
           field={field}
+          formValues={value as Values}
           name={name}
           onChange={onChange}
-          value={value as string}
         />
       )}
       {dirty && error ? <p className="help is-danger">{error}</p> : null}

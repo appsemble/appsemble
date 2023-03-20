@@ -62,7 +62,8 @@ The starred items are the minimum required pieces for building a functional app.
 
 As you have seen, reading YAML code from the examples and existing apps is not that hard now that
 you understand the basics of Appsemble. To get to the next step and build an app yourself we
-recommend that you take a look at the existing apps in the app store. You can clone an app and try
-to make changes to the configuration of the App. See if the app behaves the way you want it to.
+recommend that you take a look at the existing apps in the [App Store](/apps). You can clone an app
+and try to make changes to the configuration of the app. This way you can see if the app behaves the
+way you want it to.
 
 - [Next: Account setup](01-account-setup.md)

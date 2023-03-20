@@ -1,7 +1,8 @@
 import { Remapper, Utils } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
-import { BaseRequirement, Field } from '../../../block.js';
+import { BaseRequirement, Field, Values } from '../../../block.js';
+import { getValueByNameSequence } from '../getNested.js';
 import { isRequired } from '../requirements.js';
 import { validateDateTime } from './validateDateTime.js';
 import { validateEnum, validateRadio } from './validateEnum.js';
@@ -26,6 +27,7 @@ type Validator = (
   field: Field,
   value: unknown,
   remap?: (remapper: Remapper, data: any, context?: Record<string, any>) => any,
+  values?: Values,
 ) => BaseRequirement;
 
 /**
@@ -37,6 +39,7 @@ type Validator = (
  * @param defaultError The default error message if a specific one
  * isn’t defined for a specific requirement.
  * @param defaultValue The default value of this field.
+ * @param prefix The sequence of field names that lead to the passed in field separated by a `"."`.
  * @returns - A string containing an error message
  * or a boolean value indicating that there is an error.
  */
@@ -46,8 +49,9 @@ export function validate(
   utils: Utils,
   defaultError: Remapper,
   defaultValue: any,
+  prefix = '',
 ): boolean | string {
-  const value = values[field.name];
+  const value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
 
   if (!has(validators, field.type)) {
     return;
@@ -58,7 +62,7 @@ export function validate(
     return;
   }
 
-  const requirement = validators[field.type](field, value, utils.remap);
+  const requirement = validators[field.type](field, value, utils.remap, values);
   if (requirement) {
     return (
       (utils.remap(requirement.errorMessage, value) as string) ||

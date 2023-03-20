@@ -15,7 +15,3 @@ helm install --name my-appsemble appsemble/appsemble
 
 For more detailed instructions, see Appsemble on
 [Artifact Hub](https://artifacthub.io/packages/helm/appsemble/appsemble).
-
-Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
-repository and continue to the
-[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/main/README.md#publishing-blocks).

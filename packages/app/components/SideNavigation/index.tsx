@@ -41,7 +41,7 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
             defaultMessage: page.name,
           }).format() as string;
           const navName = page.navTitle
-            ? remap(page.navTitle, null, {
+            ? (remap(page.navTitle, null, {
                 appId,
                 appUrl: window.location.origin,
                 url: window.location.href,
@@ -49,14 +49,14 @@ export function SideNavigation({ blockMenus, pages }: SideNavigationProps): Reac
                 userInfo,
                 context: { name },
                 locale: lang,
-              })
+              }) as string)
             : name;
 
           return (
             <MenuItem
               icon={page.icon}
               key={page.name}
-              title={navName as string}
+              title={navName}
               to={`${url}/${normalize(name)}`}
             >
               {navName}

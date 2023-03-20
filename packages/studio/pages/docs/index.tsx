@@ -1,4 +1,14 @@
+// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+import Cli from '@appsemble/cli/README.md';
+// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+import Preact from '@appsemble/preact/README.md';
 import { MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+import Sdk from '@appsemble/sdk/README.md';
+// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+import WebpackConfig from '@appsemble/webpack-config/README.md';
+// eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
+import CreateAppsemble from 'create-appsemble/README.md';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
@@ -72,6 +82,16 @@ export function DocsRoutes(): ReactElement {
           <FormattedMessage {...messages.remapper} />
         </MenuItem>
       </MenuSection>
+      <MenuItem exact icon="cubes" to={`${url}/packages`}>
+        <FormattedMessage {...messages.packages} />
+      </MenuItem>
+      <MenuSection>
+        <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
+        <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
+        <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
+        <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
+        <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
+      </MenuSection>
       <MenuItem exact icon="scroll" to={`${url}/changelog`}>
         <FormattedMessage {...messages.changelog} />
       </MenuItem>
@@ -81,6 +101,11 @@ export function DocsRoutes(): ReactElement {
   return (
     <MetaSwitch title={messages.title}>
       <Route element={<Changelog />} path="/changelog" />
+      <Route element={<Cli />} path="/packages/cli" />
+      <Route element={<Preact />} path="/packages/preact" />
+      <Route element={<Sdk />} path="/packages/sdk" />
+      <Route element={<WebpackConfig />} path="/packages/webpack-config" />
+      <Route element={<CreateAppsemble />} path="/packages/create-appsemble" />
       <Route element={<ReferenceRoutes />} path="/reference/*" />
       {docs.map(({ Component, p, title }) => (
         <Route element={<Doc component={Component} title={title} />} key={p} path={getUrl(p, '')} />

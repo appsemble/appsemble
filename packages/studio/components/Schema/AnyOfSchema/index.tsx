@@ -1,5 +1,5 @@
 import { Select } from '@appsemble/react-components';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Schema, SchemaProps } from '../index.js';
@@ -16,8 +16,8 @@ export function AnyOfSchema({ schema, type, ...props }: AnyOfSchemaProps): React
   const { formatMessage } = useIntl();
   const [selectedSchemaIndex, setSelectedSchemaIndex] = useState(0);
 
-  const onChange = useCallback((event, value) => {
-    setSelectedSchemaIndex(value);
+  const onChange = useCallback((event: ChangeEvent<HTMLSelectElement>, value: string) => {
+    setSelectedSchemaIndex(Number(value));
   }, []);
 
   const subSchemas = schema[type];

@@ -8,6 +8,7 @@ changelog/kitten
 cryptographical/potential
 decrypt/encrypt
 dialog/kitten
+Eindhoven
 enum/kitten
 Fontys
 ICT
@@ -20,6 +21,7 @@ readme/kitten
 relink/link
 ruleset/set
 runtime/kitten
+Spotify
 sexualize/equalize
 stylesheet/sheet
 subchart/kitten
@@ -57,6 +59,8 @@ dropdown
 EAA
 ESLint
 falsy
+fieldset
+fieldsets
 GDPR
 GitLab
 Gravatar
@@ -158,3 +162,4 @@ geocoordinates
 4d1
 GPL
 LGPL
+macOS

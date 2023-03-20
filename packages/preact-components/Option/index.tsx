@@ -7,6 +7,11 @@ export interface OptionProps {
   children?: string;
 
   /**
+   * Whether or not the option is disabled.
+   */
+  disabled?: boolean;
+
+  /**
    * Whether or not the option should be hidden if a value has been selected
    */
   hidden?: boolean;
@@ -22,10 +27,6 @@ export interface OptionProps {
  *
  * @see Select
  */
-export function Option({ children, hidden, value }: OptionProps): VNode {
-  return (
-    <option className={hidden ? 'is-hidden' : null} value={value}>
-      {children}
-    </option>
-  );
+export function Option({ hidden, ...props }: OptionProps): VNode {
+  return <option className={hidden ? 'is-hidden' : null} {...props} />;
 }

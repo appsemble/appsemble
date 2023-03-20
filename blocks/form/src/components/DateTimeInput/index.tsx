@@ -7,12 +7,14 @@ import { useCallback, useMemo } from 'preact/hooks';
 import { DateTimeField, InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
 import { extractDate } from '../../utils/extractDate.js';
+import { getValueByNameSequence } from '../../utils/getNested.js';
 import {
   getDisabledDays,
   getMaxDate,
   getMaxTime,
   getMinDate,
   getMinTime,
+  isRequired,
 } from '../../utils/requirements.js';
 
 type DateTimeInputProps = InputProps<string, DateTimeField>;
@@ -26,13 +28,14 @@ export function DateTimeInput({
   disabled,
   error,
   field,
+  formValues = null,
   onChange,
   readOnly,
-  required,
-  value = null,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
   const { label, name, placeholder, tag } = field;
+  const value = getValueByNameSequence(name, formValues);
+  const required = isRequired(field);
 
   const dateTimeLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
@@ -42,8 +45,14 @@ export function DateTimeInput({
     [onChange],
   );
 
-  const maxDate = useMemo(() => extractDate(getMaxDate(field, utils)), [field, utils]);
-  const minDate = useMemo(() => extractDate(getMinDate(field, utils)), [field, utils]);
+  const maxDate = useMemo(
+    () => extractDate(getMaxDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
+  const minDate = useMemo(
+    () => extractDate(getMinDate(field, utils, formValues)),
+    [field, utils, formValues],
+  );
   const minTime = useMemo(() => getMinTime(field), [field]);
   const maxTime = useMemo(() => getMaxTime(field), [field]);
   const disable = useMemo(() => getDisabledDays(field), [field]);
@@ -79,7 +88,7 @@ export function DateTimeInput({
       readOnly={readOnly}
       required={required}
       tag={utils.remap(tag, value) as string}
-      value={value}
+      value={value as string}
     />
   );
 }

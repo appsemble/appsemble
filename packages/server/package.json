@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.20.38",
+  "version": "0.20.40",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -34,9 +34,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.38",
-    "@appsemble/types": "0.20.38",
-    "@appsemble/utils": "0.20.38",
+    "@appsemble/node-utils": "0.20.40",
+    "@appsemble/types": "0.20.40",
+    "@appsemble/utils": "0.20.40",
     "@formatjs/fast-memoize": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
@@ -59,7 +59,6 @@
     "email-addresses": "^5.0.0",
     "form-data": "^4.0.0",
     "intl-messageformat": "^10.0.0",
-    "is-svg": "^4.0.0",
     "jsonschema": "^1.0.0",
     "jsonwebtoken": "^9.0.0",
     "koa": "^2.0.0",
@@ -126,7 +125,7 @@
     "@types/koa-mount": "^4.0.0",
     "@types/koa-range": "^0.3.0",
     "@types/koa-static": "^4.0.0",
-    "@types/koa__cors": "^3.0.0",
+    "@types/koa__cors": "^4.0.0",
     "@types/language-tags": "^1.0.0",
     "@types/lodash-es": "^4.0.0",
     "@types/mime-types": "^2.0.0",
@@ -134,7 +133,6 @@
     "@types/node": "*",
     "@types/node-forge": "^1.0.0",
     "@types/nodemailer": "^6.0.0",
-    "@types/sass": "^1.0.0",
     "@types/semver": "^7.0.0",
     "@types/sharp": "^0.31.0",
     "@types/validator": "^13.0.0",

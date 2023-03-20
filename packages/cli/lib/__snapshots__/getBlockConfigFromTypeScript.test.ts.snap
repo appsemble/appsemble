@@ -1699,6 +1699,11 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         "additionalProperties": false,
         "description": "An option that is displayed in a dropdown menu or radio button field.",
         "properties": {
+          "disabled": {
+            "default": false,
+            "description": "If true, the choice will be disabled.",
+            "type": "boolean",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed in the option.",
             "format": "fontawesome",
@@ -2088,6 +2093,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/EnumField",
           },
           {
+            "$ref": "#/definitions/Fieldset",
+          },
+          {
             "$ref": "#/definitions/FileField",
           },
           {
@@ -2100,9 +2108,6 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/NumberField",
           },
           {
-            "$ref": "#/definitions/ObjectField",
-          },
-          {
             "$ref": "#/definitions/RadioField",
           },
           {
@@ -2112,6 +2117,94 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/StringField",
           },
         ],
+      },
+      "Fieldset": {
+        "additionalProperties": false,
+        "properties": {
+          "addLabel": {
+            "default": "Remove",
+            "description": "The label to show on the button for adding a new entry for repeated fields.",
+            "format": "remapper",
+          },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "fields": {
+            "description": "The fields contained by this fieldset.",
+            "items": {
+              "$ref": "#/definitions/Field",
+            },
+            "minItems": 1,
+            "type": "array",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "removeLabel": {
+            "default": "Add",
+            "description": "The label to show on the button for removing an entry for repeated fields.",
+            "format": "remapper",
+          },
+          "repeated": {
+            "description": "If true, this fieldset represents an array of objects.",
+            "type": "boolean",
+          },
+          "requirements": {
+            "description": "Requirements that are applicable to a fieldset.",
+            "items": {
+              "$ref": "#/definitions/FieldsetRequirement",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "fieldset",
+            "description": "The type of the field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "fields",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "FieldsetRequirement": {
+        "$ref": "#/definitions/LengthRequirement",
+        "description": "All requirements applicable to fieldsets.",
       },
       "FileField": {
         "additionalProperties": false,
@@ -2574,94 +2667,6 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
         ],
         "description": "All requirements applicable to number fields.",
-      },
-      "ObjectField": {
-        "additionalProperties": false,
-        "properties": {
-          "addLabel": {
-            "default": "Remove",
-            "description": "The label to show on the button for adding a new entry for repeated fields.",
-            "format": "remapper",
-          },
-          "disabled": {
-            "default": false,
-            "description": "Whether the field should always be be disabled.",
-            "format": "remapper",
-          },
-          "fields": {
-            "description": "The fields contained by this object.",
-            "items": {
-              "$ref": "#/definitions/Field",
-            },
-            "minItems": 1,
-            "type": "array",
-          },
-          "icon": {
-            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
-            "format": "fontawesome",
-            "type": "string",
-          },
-          "label": {
-            "description": "The label displayed next to the field.",
-            "format": "remapper",
-          },
-          "name": {
-            "description": "The name used when storing this field.",
-            "type": "string",
-          },
-          "placeholder": {
-            "description": "The placeholder to display when the field is empty.",
-            "format": "remapper",
-          },
-          "readOnly": {
-            "default": false,
-            "description": "Whether the field should be read-only.",
-            "format": "remapper",
-          },
-          "removeLabel": {
-            "default": "Add",
-            "description": "The label to show on the button for removing an entry for repeated fields.",
-            "format": "remapper",
-          },
-          "repeated": {
-            "description": "If true, this field represents an array of objects.",
-            "type": "boolean",
-          },
-          "requirements": {
-            "description": "Requirements that are applicable to an object field.",
-            "items": {
-              "$ref": "#/definitions/ObjectRequirement",
-            },
-            "type": "array",
-          },
-          "show": {
-            "description": "Displays field only if condition is true.
-
-If not specified, the field will display.",
-            "format": "remapper",
-          },
-          "tag": {
-            "description": "The label that is shown to the right of the label.
-
-Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
-            "format": "remapper",
-          },
-          "type": {
-            "const": "object",
-            "description": "The type of the field.",
-            "type": "string",
-          },
-        },
-        "required": [
-          "fields",
-          "name",
-          "type",
-        ],
-        "type": "object",
-      },
-      "ObjectRequirement": {
-        "$ref": "#/definitions/LengthRequirement",
-        "description": "All requirements applicable to object fields.",
       },
       "RadioField": {
         "additionalProperties": false,

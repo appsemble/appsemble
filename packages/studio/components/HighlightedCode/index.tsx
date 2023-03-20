@@ -1,4 +1,3 @@
-import { has } from '@appsemble/utils';
 import { ReactElement, useEffect, useRef } from 'react';
 
 export interface HighlightedCodeProps {
@@ -15,15 +14,6 @@ export interface HighlightedCodeProps {
 
 const languageRegex = /\blanguage-(\w+)/;
 
-const languageMap: Record<string, string> = {
-  diff: null,
-  http: null,
-  js: 'javascript',
-  ts: 'typescript',
-  json: 'javascript',
-  sh: 'shell',
-};
-
 /**
  * Render code using syntax highlighting based on Monaco editor.
  *
@@ -35,13 +25,12 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
   const language = languageRegex.exec(className)?.[1];
 
   useEffect(() => {
-    const aliased = has(languageMap, language) ? languageMap[language] : language;
-    if (aliased) {
+    if (language) {
       Promise.all([
         import('monaco-editor/esm/vs/editor/editor.api.js'),
-        import(`monaco-editor/esm/vs/basic-languages/${aliased}/${aliased}.contribution`),
+        import('../MonacoEditor/languages.js'),
       ]).then(([{ editor }]) => {
-        editor.colorizeElement(ref.current, { mimeType: aliased, theme: 'vs' });
+        editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
       });
     }
   }, [language]);

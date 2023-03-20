@@ -49,7 +49,7 @@ export function SettingsPage({
   const { formatMessage } = useIntl();
 
   const onEditOrganization = useCallback(
-    async ({ description, email, icon, name, website, websiteProtocol }) => {
+    async ({ description, email, icon, name, website, websiteProtocol }: typeof defaultValues) => {
       const formData = new FormData();
       formData.set('name', name);
       formData.set('description', description);

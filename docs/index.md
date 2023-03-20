@@ -33,8 +33,8 @@ works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
 
-- [Deployment using Docker Compose](04-deployment/docker-compose.md)
-- [Deployment using Helm](04-deployment/helm.md)
+- [Deployment using Docker Compose](05-deployment/docker-compose.md)
+- [Deployment using Helm](05-deployment/helm.md)
 
 ## Block Developer
 
@@ -43,7 +43,7 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started.
 
-- [Tutorial on getting started with a new block](02-development/developing-blocks.md)
+- [Tutorial on getting started with a new block](02-development/02-developing-blocks.md)
 - [Documentation on existing blocks](/blocks)
 
 ## Core Developer

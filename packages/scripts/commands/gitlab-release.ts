@@ -44,13 +44,13 @@ export async function handler(): Promise<void> {
       name: `${name}@${version}`,
       url: `https://www.npmjs.com/package/${name}/v/${version}`,
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => b.name.localeCompare(a.name));
   const blocks = (await readPackages('blocks'))
     .map<AssetLink>(({ name, version }) => ({
       name: `${name}@${version}`,
       url: `https://appsemble.app/en/blocks/${name}/${version}`,
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => b.name.localeCompare(a.name));
   logger.info('Creating GitLab release');
   await gitlab.post('releases', {
     // eslint-disable-next-line @typescript-eslint/naming-convention

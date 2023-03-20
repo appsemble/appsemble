@@ -15,13 +15,18 @@ import {
 } from '@appsemble/react-components';
 import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
 
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
 import { messages } from './messages.js';
 import { MessagesLoader } from './MessagesLoader/index.js';
+
+interface LanguageFormValues {
+  language?: string;
+}
 
 /**
  * The page for translating app messages.
@@ -29,20 +34,29 @@ import { MessagesLoader } from './MessagesLoader/index.js';
 export function TranslationsPage(): ReactElement {
   useMeta(messages.title);
 
+  let { lang: pageLanguage } = useParams<{ lang: string }>();
+
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();
 
   const languageIds = useData<string[]>(`/api/apps/${app.id}/messages`);
-
   const [selectedLanguage, setSelectedLanguage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
   const modal = useToggle();
 
-  const languageId =
-    selectedLanguage || languageIds.data?.[0] || app.definition.defaultLanguage || 'en';
+  if (!languageIds?.data?.includes(pageLanguage)) {
+    pageLanguage = 'en';
+  }
 
-  const onSelectedLanguageChange = useCallback((event, lang: string) => {
+  const languageId =
+    selectedLanguage ||
+    pageLanguage ||
+    app.definition.defaultLanguage ||
+    languageIds.data?.[0] ||
+    'en';
+
+  const onSelectedLanguageChange = useCallback((event: ChangeEvent, lang: string) => {
     setSelectedLanguage(lang);
   }, []);
 
@@ -74,7 +88,7 @@ export function TranslationsPage(): ReactElement {
   });
 
   const onAddLanguage = useCallback(
-    async ({ language: lang }) => {
+    async ({ language: lang }: LanguageFormValues) => {
       // Add the language with empty messages to ensure deleting it works
       // as well as keeping it in the list of supported languages.
       await axios.post(`/api/apps/${app.id}/messages`, { language: lang, messages: {} });

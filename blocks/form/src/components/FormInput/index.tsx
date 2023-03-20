@@ -6,10 +6,10 @@ import { BooleanInput } from '../BooleanInput/index.js';
 import { DateInput } from '../DateInput/index.js';
 import { DateTimeInput } from '../DateTimeInput/index.js';
 import { EnumInput } from '../EnumInput/index.js';
+import { Fieldset } from '../Fieldset/index.js';
 import { FileInput } from '../FileInput/index.js';
 import { GeoCoordinatesInput } from '../GeoCoordinatesInput/index.js';
 import { NumberInput } from '../NumberInput/index.js';
-import { ObjectInput } from '../ObjectInput/index.js';
 import { RadioInput } from '../RadioInput/index.js';
 import { StaticField } from '../StaticField/index.js';
 import { StringInput } from '../StringInput/index.js';
@@ -50,8 +50,8 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       return <NumberInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'boolean':
       return <BooleanInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
-    case 'object':
-      return <ObjectInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'fieldset':
+      return <Fieldset dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'radio':
       return <RadioInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     default:
