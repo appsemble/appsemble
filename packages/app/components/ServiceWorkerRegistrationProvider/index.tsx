@@ -52,7 +52,7 @@ export function ServiceWorkerRegistrationProvider({
   const subscribe = useCallback(async () => {
     const registration = await serviceWorkerRegistrationPromise;
 
-    if (permission !== 'granted') {
+    if (window.Notification?.permission !== 'granted') {
       const newPermission = await requestPermission();
       if (newPermission !== 'granted') {
         return null;
@@ -75,7 +75,7 @@ export function ServiceWorkerRegistrationProvider({
     setSubscription(sub);
 
     return sub;
-  }, [permission, requestPermission, serviceWorkerRegistrationPromise]);
+  }, [requestPermission, serviceWorkerRegistrationPromise]);
 
   const unsubscribe = useCallback(async () => {
     if (!subscription) {
