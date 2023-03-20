@@ -7,4 +7,5 @@ export const messages = defineMessages({
   action: 'Action',
   changelog: 'Changelog',
   remapper: 'Remapper',
+  packages: 'Packages',
 });

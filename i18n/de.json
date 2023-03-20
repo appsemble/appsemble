@@ -799,6 +799,7 @@
   "studio.pages.docs.action": "Aktion",
   "studio.pages.docs.app": "App",
   "studio.pages.docs.changelog": "Änderungsprotokoll",
+  "studio.pages.docs.packages": "",
   "studio.pages.docs.reference": "Referenz",
   "studio.pages.docs.reference.action.description": "Referenzdokumentation für Appsemble-Aktionsdefinitionen",
   "studio.pages.docs.reference.action.showYaml": "YAML anzeigen",

@@ -799,6 +799,7 @@
   "studio.pages.docs.action": "Handling",
   "studio.pages.docs.app": "App",
   "studio.pages.docs.changelog": "",
+  "studio.pages.docs.packages": "",
   "studio.pages.docs.reference": "Reference",
   "studio.pages.docs.reference.action.description": "Reference dokumentation for definitioner af Appsemble handlinger",
   "studio.pages.docs.reference.action.showYaml": "Vis YAML",
