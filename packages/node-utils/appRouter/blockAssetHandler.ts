@@ -1,3 +1,4 @@
+import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
 import { AppRouterOptions } from '../types.js';
@@ -9,6 +10,10 @@ export function createBlockAssetHandler({ getBlockAsset }: AppRouterOptions): Mi
     } = ctx;
 
     const blockAsset = await getBlockAsset({ filename, name, version });
+
+    if (!blockAsset) {
+      throw notFound('Block asset not found');
+    }
 
     ctx.body = blockAsset.content;
     ctx.type = blockAsset.mime;

@@ -15,6 +15,7 @@ export const faURL = `/fa/${faPkg.version}/css/all.min.css`;
 export function createIndexHandler({
   createSettings,
   getApp,
+  getAppDetails,
   getAppLanguages,
   getAppUrl,
   getCsp,
@@ -26,9 +27,9 @@ export function createIndexHandler({
 
     const app = await getApp({ context: ctx });
 
-    const { OrganizationId: organizationId, path: appPath } = app;
-
     if (!app) {
+      const { appPath, organizationId } = await getAppDetails({ context: ctx });
+
       if (organizationId && !appPath) {
         return ctx.redirect(
           organizationBlocklist.includes(organizationId)

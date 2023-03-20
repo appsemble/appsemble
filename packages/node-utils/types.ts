@@ -63,6 +63,16 @@ export interface GetCspParams {
   nonce: string;
 }
 
+export interface AppDetails {
+  appPath: string;
+  organizationId: string;
+}
+
+export interface RawApp {
+  coreStyle: string | undefined;
+  sharedStyle: string | undefined;
+}
+
 export interface AppScreenshot {
   id: number;
   mime: string;
@@ -93,6 +103,8 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface AppRouterOptions {
   getApp: (params: GetAppParams) => Promise<App>;
+  getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
+  getAppRaw: (params: GetAppParams) => Promise<RawApp>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;

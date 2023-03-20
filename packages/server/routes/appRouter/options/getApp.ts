@@ -5,5 +5,5 @@ import { getApp as getServerApp } from '../../../utils/app.js';
 
 export const getApp = async ({ context, query }: GetAppParams): Promise<AppInterface> => {
   const { app } = await getServerApp(context, query);
-  return app.toJSON();
+  return app ? app.toJSON() : null;
 };

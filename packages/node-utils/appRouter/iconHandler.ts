@@ -16,8 +16,8 @@ export function createIconHandler({
     } = ctx;
 
     const app = await getApp({ context: ctx, query: { maskable, updated } });
-    const dbUpdated = await getDbUpdated({ app, maskable });
-    const appIcon = await getAppIcon({ app });
+    const dbUpdated = app ? await getDbUpdated({ app, maskable }) : false;
+    const appIcon = app ? await getAppIcon({ app }) : null;
 
     await serveIcon(ctx, {
       background: maskable ? app.iconBackground || '#ffffff' : undefined,

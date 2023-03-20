@@ -4,8 +4,10 @@ import { createSettings } from './createSettings.js';
 import { createTheme } from './createTheme.js';
 import { getApp } from './getApp.js';
 import { getAppBlockStyles } from './getAppBlockStyles.js';
+import { getAppDetails } from './getAppDetails.js';
 import { getAppIcon } from './getAppIcon.js';
 import { getAppLanguages } from './getAppLanguages.js';
+import { getAppRaw } from './getAppRaw.js';
 import { getAppScreenshots } from './getAppScreenshots.js';
 import { getAppUrl } from './getAppUrl.js';
 import { getBlockAsset } from './getBlockAsset.js';
@@ -17,6 +19,8 @@ import { getTheme } from './getTheme.js';
 
 export const options: AppRouterOptions = {
   getApp,
+  getAppDetails,
+  getAppRaw,
   getAppScreenshots,
   getAppBlockStyles,
   getAppIcon,

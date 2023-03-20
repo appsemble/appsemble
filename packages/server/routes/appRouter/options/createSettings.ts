@@ -39,7 +39,19 @@ export const createSettings = async ({
   });
 
   const persistedApp = await App.findOne({
-    attributes: ['icon'],
+    attributes: [
+      'id',
+      'icon',
+      'updated',
+      'OrganizationId',
+      'sentryDsn',
+      'sentryEnvironment',
+      'vapidPublicKey',
+      'definition',
+      'showAppsembleLogin',
+      'showAppsembleOAuth2Login',
+      'googleAnalyticsID',
+    ],
     where: { id: app.id },
     include: [
       {

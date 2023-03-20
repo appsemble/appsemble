@@ -5,10 +5,10 @@ import { AppRouterOptions } from '../types.js';
 
 export function createCssHandler(
   type: 'coreStyle' | 'sharedStyle',
-  { getApp }: AppRouterOptions,
+  { getAppRaw }: AppRouterOptions,
 ): Middleware {
   return async (ctx: Context) => {
-    const app = await getApp({ context: ctx, query: { attributes: [type] } });
+    const app = await getAppRaw({ context: ctx, query: { attributes: [type], raw: true } });
 
     if (!app) {
       throw notFound('App not found');
