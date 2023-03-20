@@ -372,6 +372,13 @@ export interface DateTimeField extends AbstractField {
    * All requirements that are applicable to this type of field.
    */
   requirements?: DateTimeRequirement[];
+
+  /**
+   * Whether typing input in date field is allowed
+   *
+   * @default false
+   */
+  allowInput?: boolean;
 }
 
 /**
@@ -410,6 +417,13 @@ export interface DateField extends AbstractField, InlineField {
    * All requirements that are applicable to this type of field.
    */
   requirements?: DateTimeRequirement[];
+
+  /**
+   * Whether typing input in date field is allowed
+   *
+   * @default false
+   */
+  allowInput?: boolean;
 }
 
 /**
