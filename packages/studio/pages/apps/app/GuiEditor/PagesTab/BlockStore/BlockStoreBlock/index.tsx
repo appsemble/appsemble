@@ -20,15 +20,22 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
   const [active, setActive] = useState(false);
 
+  const handleEvent = (event: Event): void => {
+    if (event.type === 'mousedown') {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  };
+
   return (
     <>
       {active === true && <MouseBlock block={block} />}
       <Button
         className={`card is-flex ${styles.root} ${styles.BlockStoreBlock}`}
         key={name}
-        onClick={() => {
-          setActive(true);
-        }}
+        onMouseDown={handleEvent}
+        onMouseUp={handleEvent}
         title={name}
       >
         <header className="px-2 py-2 is-flex">
@@ -60,5 +67,3 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
     </>
   );
 }
-
-export default BlockStoreBlock;
