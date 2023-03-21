@@ -12,8 +12,7 @@ parts of the app, this is where client storage comes into to play.
 - [Client storage](#client-storage): Allows you to store data in the browser or application often
   used for more private temporary storage.
 
-> Note: All client storage types can either be cleared by clearing your browser cache or by
-> refreshing your page.
+> Note: All client storage types can be cleared by clearing your browser cache.
 
 ## Server Storage
 
@@ -61,4 +60,4 @@ blocks when switching pages. Data can only be persisted to Page Storage by switc
 with flow actions. This is how flow pages keep track of the data filled into a form when switching
 to the next step.
 
-> Note: Both the `App Storage` and the `Page Storage` are effected by the `retainFlowData` prop.
+> Note: Both `App Storage` and `Page Storage` are effected by the `retainFlowData` prop.
