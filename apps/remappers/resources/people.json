@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Bob",
+    "city": "Amsterdam",
+    "email": "bob@example.com"
+  },
+  {
+    "name": "Henk",
+    "city": "New York",
+    "email": "henk@example.com"
+  },
+  {
+    "name": "Peter",
+    "city": "Eindhoven",
+    "email": "peter@example.com"
+  }
+]
