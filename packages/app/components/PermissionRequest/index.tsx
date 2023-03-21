@@ -18,23 +18,20 @@ export function PermissionRequest(): ReactElement {
       return;
     }
 
-    if (definition.notifications === 'login' && !userInfo?.sub) {
-      return;
-    }
-
     if (window.Notification?.permission === 'denied') {
       return;
     }
 
-    if (definition.notifications !== 'startup') {
-      return;
+    if (
+      definition.notifications === 'startup' ||
+      (definition.notifications === 'login' && userInfo?.sub)
+    ) {
+      requestPermission().then((p) => {
+        if (p === 'granted') {
+          subscribe();
+        }
+      });
     }
-
-    requestPermission().then((p) => {
-      if (p === 'granted') {
-        subscribe();
-      }
-    });
   }, [definition.notifications, requestPermission, subscribe, userInfo?.sub]);
 
   return permission === 'pending' ? <div className={`modal-background ${styles.overlay}`} /> : null;

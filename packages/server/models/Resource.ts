@@ -101,13 +101,26 @@ export class Resource extends Model {
     const result: ResourceType = {
       ...this.data,
       id: this.id,
-      $author: this.Author ? { id: this.Author.id, name: this.Author.name } : undefined,
-      $editor: this.Editor ? { id: this.Editor.id, name: this.Editor.name } : undefined,
-      $clonable: Boolean(this.clonable),
-      $created: this.created,
-      $expires: this.expires || undefined,
-      $updated: this.updated,
+      $created: this.created.toJSON(),
+      $updated: this.updated.toJSON(),
     };
+
+    if (this.Author) {
+      result.$author = { id: this.Author.id, name: this.Author.name };
+    }
+
+    if (this.Editor) {
+      result.$editor = { id: this.Editor.id, name: this.Editor.name };
+    }
+
+    if (this.clonable != null) {
+      result.$clonable = this.clonable;
+    }
+
+    if (this.expires) {
+      result.$expires = this.expires.toJSON();
+    }
+
     if (include) {
       for (const name of Object.keys(result)) {
         if (!include.includes(name)) {

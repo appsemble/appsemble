@@ -12,6 +12,9 @@ import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   Pick<
     flatpickr.Options.Options,
+    | 'allowInput'
+    | 'altFormat'
+    | 'altInput'
     | 'disable'
     | 'enableTime'
     | 'locale'
@@ -65,6 +68,9 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
 export function DateTimeField({
   dateFormat,
   className,
+  altInput,
+  allowInput,
+  altFormat,
   disable,
   disabled,
   confirm,
@@ -104,6 +110,8 @@ export function DateTimeField({
     (event: JSX.TargetedEvent<HTMLInputElement>) => {
       if (picker) {
         onChange(event, iso ? picker.selectedDates[0].toISOString() : picker.selectedDates[0]);
+      } else if (event.currentTarget.value) {
+        onChange(event, event.currentTarget.value);
       }
     },
     [onChange, picker, iso],
@@ -132,6 +140,9 @@ export function DateTimeField({
       locale,
       noCalendar,
       mode,
+      altInput,
+      allowInput,
+      altFormat,
       positionElement: positionElement.current,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       time_24hr: true,
@@ -166,6 +177,9 @@ export function DateTimeField({
   }, [
     dateFormat,
     confirm,
+    allowInput,
+    altFormat,
+    altInput,
     confirmLabel,
     disable,
     disabled,

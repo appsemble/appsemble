@@ -1,30 +1,37 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, remap, RemapperContext } from '@appsemble/utils';
+import { defaultLocale, has, IntlMessageFormat, remap, RemapperContext } from '@appsemble/utils';
 
+import { AppMessages } from '../models/AppMessages.js';
 import { actions, ServerActionParameters } from './actions/index.js';
 import { argv } from './argv.js';
 
 export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,
   params: ServerActionParameters,
-): Promise<void> {
+): Promise<unknown> {
   logger.info(`Running action: ${params.action.type}`);
   const url = new URL(argv.host);
   url.hostname =
     params.app.domain || `${params.app.path}.${params.app.OrganizationId}.${url.hostname}`;
   const appUrl = String(url);
+  const locale = params.app.definition.defaultLanguage ?? defaultLocale;
+  const messages = await AppMessages.findOne({
+    attributes: ['messages'],
+    where: { AppId: params.app.id, language: locale },
+  });
   const context: RemapperContext = params.internalContext ?? {
     appId: params.app.id,
     appUrl,
     url: String(url),
     context: {},
     history: [],
-    // XXX: Implement getMessage and default language selections
-    getMessage() {
-      return null;
+    getMessage({ defaultMessage, id }) {
+      const messageIds = messages?.messages?.messageIds;
+      const message = has(messageIds, id) ? messageIds[id] : defaultMessage;
+      return new IntlMessageFormat(message);
     },
     userInfo: undefined,
-    locale: params.app.definition.defaultLanguage ?? defaultLocale,
+    locale,
   };
   let data =
     'remapBefore' in params.action
@@ -39,7 +46,7 @@ export async function handleAction(
       data = remap(params.action.remapAfter, data, updatedContext);
     }
     if (params.action.onSuccess) {
-      await handleAction(actions[params.action.onSuccess.type], {
+      return await handleAction(actions[params.action.onSuccess.type], {
         ...params,
         action: params.action.onSuccess,
         data,
@@ -59,4 +66,5 @@ export async function handleAction(
     throw error;
   }
   logger.info(`Successfully ran action: ${params.action.type}`);
+  return data;
 }

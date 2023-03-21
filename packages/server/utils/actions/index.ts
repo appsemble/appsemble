@@ -10,6 +10,7 @@ import { log } from './log.js';
 import { noop } from './noop.js';
 import { notify } from './notify.js';
 import { request } from './request.js';
+import * as resource from './resource.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
 
@@ -46,13 +47,13 @@ export const actions = {
   noop,
   notify,
   request,
-  'resource.create': request,
-  'resource.delete': request,
-  'resource.get': request,
-  'resource.query': request,
-  'resource.update': request,
+  'resource.create': noop,
+  'resource.delete': noop,
+  'resource.get': noop,
+  'resource.query': resource.query,
+  'resource.update': noop,
   'resource.patch': noop,
-  'resource.count': request,
+  'resource.count': noop,
   'resource.subscription.status': noop,
   'resource.subscription.subscribe': noop,
   'resource.subscription.toggle': noop,

@@ -21,14 +21,13 @@ import {
 } from '../models/index.js';
 import { getRemapperContext } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
-import { odataFilterToSequelize, odataOrderbyToSequelize } from '../utils/odata.js';
 import {
   extractResourceBody,
   getResourceDefinition,
+  parseQuery,
   processHooks,
   processReferenceHooks,
   processResourceBody,
-  renameOData,
 } from '../utils/resource.js';
 
 const specialRoles = new Set([
@@ -45,31 +44,8 @@ const specialRoles = new Set([
  * @returns An object containing the generated order and query options.
  */
 function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
-  const {
-    query: { $filter, $orderby },
-  } = ctx;
-
   try {
-    const order =
-      $orderby &&
-      odataOrderbyToSequelize(
-        ($orderby as string)
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
-        renameOData,
-      );
-    const query =
-      $filter &&
-      odataFilterToSequelize(
-        ($filter as string)
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
-          .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
-        Resource,
-        renameOData,
-      );
-
-    return { order, query };
+    return parseQuery(ctx.queryParams);
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw badRequest('Unable to process this query', { syntaxError: error.message });
