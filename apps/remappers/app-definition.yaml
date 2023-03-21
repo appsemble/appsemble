@@ -33,7 +33,8 @@ pages:
         parameters:
           content: |
             # Welcome
-            This is a list of how to use all the existing remappers
+            This is a list of how to use all the existing remappers.
+            To see how these remappers work exactly, clone the app or check the app definition.
 
             Topics:
               - [Strings](/strings)
