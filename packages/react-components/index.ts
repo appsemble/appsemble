@@ -73,6 +73,7 @@ export * from './useCombinedRefs.js';
 export * from './useEventListener.js';
 export * from './useObjectURL.js';
 export * from './useData.js';
+export * from './useDeferredValue.js';
 export * from './useForceUpdate.js';
 export * from './useQuery.js';
 export * from './useScrollTo.js';

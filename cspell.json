@@ -31,6 +31,7 @@
   "ignoreWords": [
     "enableTime",
     "enab",
+    "estree",
     "proxyable",
     "foo",
     "fooo",
@@ -39,6 +40,7 @@
     "baar",
     "Foooo",
     "clientcredentials",
+    "mdxjs",
     "testbericht",
     "kleuren",
     "resourcehistory",

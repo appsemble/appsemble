@@ -9,6 +9,8 @@ declare module '*.md' {
    */
   export const icon: IconName | undefined;
 
+  export const searchIndex: [string, { title: string; haystack: string }][];
+
   /**
    * The level page header of the document as a string.
    */
@@ -25,6 +27,8 @@ declare module '*.mdx' {
    * An icon for the document.
    */
   export const icon: IconName | undefined;
+
+  export const searchIndex: [string, { title: string; haystack: string }][];
 
   /**
    * The level page header of the document as a string.
