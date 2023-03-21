@@ -7,8 +7,9 @@ import {
   objectCache,
   RemapperContext,
 } from '@appsemble/utils';
-import memoize from '@formatjs/fast-memoize';
+import { memoize } from '@formatjs/fast-memoize';
 import { badRequest } from '@hapi/boom';
+import { Formatters } from 'intl-messageformat';
 import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
@@ -17,12 +18,10 @@ import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
 import { mergeMessages } from './mergeMessages.js';
 
-// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
-const getNumberFormat = memoize.default(
+const getNumberFormat = memoize(
   (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
 );
-// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
-const getPluralRules = memoize.default(
+const getPluralRules = memoize(
   (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
 );
 
@@ -123,12 +122,11 @@ export async function getRemapperContext(
         formatters: {
           getNumberFormat,
           getPluralRules,
-          // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
-          getDateTimeFormat: memoize.default(
+          getDateTimeFormat: memoize(
             (locale: string, opts: Intl.DateTimeFormatOptions) =>
               new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
           ),
-        },
+        } as Formatters,
       }),
   );
   const appUrl = String(getAppUrl(app));
