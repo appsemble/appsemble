@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -97,8 +98,11 @@ export function ItemCell({
       role="gridcell"
     >
       <div
-        class={`is-flex is-justify-content-${alignment}`}
-        className={'string' in field ? styles.editable : ''}
+        className={
+          'string' in field
+            ? classNames(`is-flex is-justify-content-${alignment}`, styles.editable)
+            : `is-flex is-justify-content-${alignment}`
+        }
       >
         {content}
       </div>

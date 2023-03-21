@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Input, TextArea, useDebounce } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { String as StringFieldType } from '../../../block.js';
 
@@ -28,25 +28,32 @@ export function StringField({ field, index, item, repeatedIndex }: StringFieldPr
     actions,
     utils: { remap },
   } = useBlock();
-  const initialItemRef = useRef(item);
   const { multiline, name, onEdit } = field.string;
+  const [lastChanges, setLastChanges] = useState('');
   const [value, setValue] = useState(remap(field.value, item, { index, repeatedIndex }) as string);
   const debouncedValue = useDebounce(value);
 
   useEffect(() => {
-    const onEditAction = actions[onEdit];
-    const initialItem = initialItemRef.current;
+    setLastChanges(name + debouncedValue);
+  }, [debouncedValue, name]);
 
-    if (['string', 'boolean', 'number', 'bigint'].includes(typeof initialItem)) {
-      onEditAction(debouncedValue, { index, repeatedIndex });
-    } else if (typeof initialItem === 'object') {
-      onEditAction({ ...initialItem, [name]: debouncedValue }, { index, repeatedIndex });
+  useEffect(() => {
+    if (!lastChanges) {
+      return;
     }
-  }, [actions, debouncedValue, index, name, onEdit, repeatedIndex]);
+
+    const onEditAction = actions[onEdit];
+
+    onEditAction(typeof item === 'object' ? { ...item, [name]: debouncedValue } : debouncedValue, {
+      index,
+      repeatedIndex,
+    }).then(() => setLastChanges(''));
+  }, [actions, debouncedValue, item, index, name, onEdit, repeatedIndex, lastChanges]);
 
   const onChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setValue(event.currentTarget.value);
+      const { value: fieldValue } = event.currentTarget;
+      setValue(fieldValue);
     },
     [],
   );

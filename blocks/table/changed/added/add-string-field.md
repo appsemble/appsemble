@@ -1,1 +1,1 @@
-Add `StringField` to give users more control in editing table entry
+Add `StringField` to provide users direct write access to table entries.

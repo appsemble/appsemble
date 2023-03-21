@@ -46,7 +46,7 @@ export interface String extends Field {
      *
      * @format action
      */
-    onEdit?: string;
+    onEdit: string;
     /**
      * Whether the string field should be multiline or not.
      *

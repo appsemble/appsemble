@@ -3706,6 +3706,34 @@ foundQr event only holds the string of the QR.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks results-loader 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that is dispatched during the initial load.",
+    },
+  },
+  "events": {
+    "emit": {
+      "data": {
+        "description": "Event that gets emitted once the \`onLoad\` action has finished.",
+      },
+    },
+    "listen": {
+      "data": {
+        "description": "Event that listens to incoming data",
+      },
+    },
+  },
+  "messages": {
+    "loadErrorMessage": {
+      "description": "The error message that should be shown when data failed to load.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
 {
   "actions": undefined,
@@ -4104,6 +4132,7 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
             },
             "required": [
               "name",
+              "onEdit",
             ],
             "type": "object",
           },
