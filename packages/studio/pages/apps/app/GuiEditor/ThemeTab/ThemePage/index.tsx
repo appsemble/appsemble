@@ -50,7 +50,7 @@ export function ThemePage({
     page: number,
     subParent: number,
   ): { theme: Theme; inheritors: InheritedTheme } {
-    const theme = app.definition.theme ? { ...app.definition.theme } : { ...baseTheme };
+    const theme = app.definition.theme ? { ...app.definition.theme } : {};
     const inheritors: InheritedTheme = {
       themeInherited: formatMessage(messages.defaultTheme),
       primaryInherited: formatMessage(messages.defaultTheme),
