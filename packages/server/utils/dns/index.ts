@@ -12,7 +12,7 @@ import * as kubernetes from './kubernetes.js';
  *
  * @returns An implementation for the given `--app-domain-strategy` flag.
  */
-function getImplementation(): typeof import('.') {
+function getImplementation(): typeof import('./index.js') {
   const { appDomainStrategy } = argv;
   if (!appDomainStrategy) {
     return;
