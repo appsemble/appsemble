@@ -33,7 +33,7 @@ export function createAppRouter(options: AppRouterOptions): Middleware {
     },
     {
       route: '/robots.txt',
-      get: createRobotsHandler,
+      get: createRobotsHandler(),
     },
     {
       route: '/service-worker.js',
