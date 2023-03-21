@@ -32,6 +32,7 @@ import {
   AppRating,
   AppSamlSecret,
   AppScreenshot,
+  AppServiceSecret,
   AppSnapshot,
   AppSubscription,
   Asset,
@@ -202,6 +203,9 @@ export class App extends Model {
 
   @HasMany(() => Team)
   Teams: Team[];
+
+  @HasMany(() => AppServiceSecret)
+  AppServiceSecrets: AppServiceSecret[];
 
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   AppSnapshots: AppSnapshot[];

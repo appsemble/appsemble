@@ -19,6 +19,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { messages } from './messages.js';
 import { OAuth2Secrets } from './OAuth2Secrets/index.js';
 import { SamlSecrets } from './SamlSecrets/index.js';
+import { ServiceSecrets } from './ServiceSecrets/index.js';
 import { SSLSecrets } from './SSLSecrets/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { Collapsible } from '../../../../components/Collapsible/index.js';
@@ -168,6 +169,7 @@ export function SecretsPage(): ReactElement {
           )}
         </AsyncDataView>
       </Collapsible>
+      <ServiceSecrets />
       <OAuth2Secrets />
       <SamlSecrets />
       <Collapsible title={<FormattedMessage {...messages.ssl} />}>
