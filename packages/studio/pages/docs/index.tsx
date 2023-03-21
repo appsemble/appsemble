@@ -15,26 +15,10 @@ import { Navigate, Route, useParams } from 'react-router-dom';
 
 import Changelog from '../../../../CHANGELOG.md';
 import { Doc } from './Doc/index.js';
+import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
-
-const context = require.context('../../../../docs', true, /\.mdx?$/);
-
-const docs = context
-  .keys()
-  .map((key) => {
-    const { default: Component, icon, title } = context(key) as typeof import('*.md');
-    return {
-      Component,
-      icon,
-      p: key
-        .replace(/^\.\//, '')
-        .replace(/\.mdx?$/, '')
-        .replace(/(^|\/)index$/, '/'),
-      title,
-    };
-  })
-  .sort((a, b) => a.p.localeCompare(b.p));
+import { SearchPage } from './search/index.js';
 
 function getUrl(p: string, base: string): string {
   return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;
@@ -49,6 +33,9 @@ export function DocsRoutes(): ReactElement {
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
+      <MenuItem exact icon="search" to={`${url}/search`}>
+        <FormattedMessage {...messages.search} />
+      </MenuItem>
       {docs
         .filter(({ p }) => p.endsWith('/'))
         .map(({ icon, p, title }) => {
@@ -100,6 +87,7 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
       <Route element={<Cli />} path="/packages/cli" />
       <Route element={<Preact />} path="/packages/preact" />

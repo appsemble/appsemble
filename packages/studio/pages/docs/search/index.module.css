@@ -1,0 +1,7 @@
+.searchResult {
+  -webkit-box-orient: vertical;
+  /* stylelint-disable-next-line value-no-vendor-prefix */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}

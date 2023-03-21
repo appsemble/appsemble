@@ -22,6 +22,7 @@ import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
+import { rehypeSearchIndex } from './rehype/searchIndex.js';
 import { remarkRewriteLinks } from './remark/rewriteLinks.js';
 
 interface CliConfigOptions {
@@ -196,6 +197,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                       },
                     },
                   ],
+                  rehypeSearchIndex,
                 ],
               },
             },
