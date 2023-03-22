@@ -14,6 +14,11 @@ interface PagesTabProps {
   isOpenRight: boolean;
 }
 
+// Highlight the dropzone on hover
+const handleDragOver = (e: DragEvent): void => {
+  e.preventDefault();
+};
+
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
@@ -78,6 +83,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
+
   // The left sidebar will house the hierarchy and the block store
   return (
     <>
