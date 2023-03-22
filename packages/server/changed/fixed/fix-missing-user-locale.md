@@ -1,1 +1,1 @@
-Set missing userinfo fields (`locale` and `zoneinfo`) in the `userinfo` API
+Set missing `userinfo` fields (`locale` and `zoneinfo`) in the `userinfo` API
