@@ -4,7 +4,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { BlockStoreBlock } from './BlockStoreBlock/index.js';
+import { BlockStoreElement } from './BlockStoreElement/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
@@ -57,7 +57,7 @@ export function BlockStore(): ReactElement {
         </header>
       </div>
       {appsembleBlocks.map((block) => (
-        <BlockStoreBlock block={block} key={block.name} />
+        <BlockStoreElement block={block} key={block.name} />
       ))}
     </div>
   );
