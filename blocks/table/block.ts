@@ -32,7 +32,7 @@ export interface Field extends BaseField {
   onClick?: string;
 }
 
-export interface String extends Field {
+export interface StringField extends Field {
   /**
    * The definition of the contents and styling of the string field.
    */
@@ -53,6 +53,11 @@ export interface String extends Field {
      * @default false
      */
     multiline?: boolean;
+
+    /**
+     * The placeholder to display when the field is empty.
+     */
+    placeholder?: Remapper;
   };
 }
 
@@ -217,7 +222,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | RepeatedField | String)[];
+    fields: (Button | Dropdown | Field | RepeatedField | StringField)[];
   }
 
   interface Actions {

@@ -3,7 +3,7 @@ import { Input, TextArea, useDebounce } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { String as StringFieldType } from '../../../block.js';
+import { StringField as StringFieldType } from '../../../block.js';
 
 interface StringFieldProps {
   field: StringFieldType;
@@ -28,7 +28,7 @@ export function StringField({ field, index, item, repeatedIndex }: StringFieldPr
     actions,
     utils: { remap },
   } = useBlock();
-  const { multiline, name, onEdit } = field.string;
+  const { multiline, name, onEdit, placeholder } = field.string;
   const [lastChanges, setLastChanges] = useState('');
   const [value, setValue] = useState(remap(field.value, item, { index, repeatedIndex }) as string);
   const debouncedValue = useDebounce(value);
@@ -59,8 +59,16 @@ export function StringField({ field, index, item, repeatedIndex }: StringFieldPr
   );
 
   return multiline ? (
-    <TextArea onChange={onChange} value={value} />
+    <TextArea
+      onChange={onChange}
+      placeholder={remap(placeholder, item, { index, repeatedIndex }) as string}
+      value={value}
+    />
   ) : (
-    <Input onChange={onChange} value={value} />
+    <Input
+      onChange={onChange}
+      placeholder={remap(placeholder, item, { index, repeatedIndex }) as string}
+      value={value}
+    />
   );
 }

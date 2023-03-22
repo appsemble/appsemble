@@ -3,7 +3,12 @@ import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Button, Dropdown as DropdownType, Field, String } from '../../../block.js';
+import {
+  Button,
+  Dropdown as DropdownType,
+  Field,
+  StringField as StringFieldType,
+} from '../../../block.js';
 import { ButtonField } from '../ButtonField/index.js';
 import { DropdownField } from '../DropdownField/index.js';
 import { StringField } from '../StringField/index.js';
@@ -23,7 +28,7 @@ interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The field to render.
    */
-  field: Button | DropdownType | Field | String;
+  field: Button | DropdownType | Field | StringFieldType;
 
   /**
    * The index of the row that was clicked.
