@@ -3,20 +3,20 @@ import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { ReactElement, useState } from 'react';
 
-import { MouseBlock } from '../MouseBlock/index.js';
+import { DragElement } from '../DragElement/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
 /**
  * The draggable block shown as a box with the block name in it.
- * On mouse down a MouseBlock is attached to the mouse and folows it until mouse up.
+ * On mouse down a DragElement is attached to the mouse and folows it until mouse up.
  *
- * @returns BlockStoreBlock
+ * @returns BlockStoreElement
  */
-interface BlockStoreBlockProps {
+interface BlockStoreElementProps {
   block: BlockManifest;
 }
-export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
+export function BlockStoreElement({ block }: BlockStoreElementProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
   const [active, setActive] = useState(false);
 
@@ -30,7 +30,7 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
 
   return (
     <>
-      {active === true && <MouseBlock block={block} />}
+      {active === true && <DragElement block={block} />}
       <Button
         className={`card is-flex ${styles.root} ${styles.BlockStoreBlock}`}
         key={name}
