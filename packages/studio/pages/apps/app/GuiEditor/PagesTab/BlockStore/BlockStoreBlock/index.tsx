@@ -34,8 +34,7 @@ export function BlockStoreBlock({ block }: BlockStoreBlockProps): ReactElement {
       <Button
         className={`card is-flex ${styles.root} ${styles.BlockStoreBlock}`}
         key={name}
-        onMouseDown={handleEvent}
-        onMouseUp={handleEvent}
+        onMouseDown={() => handleEvent(window.event)}
         title={name}
       >
         <header className="px-2 py-2 is-flex">
