@@ -75,7 +75,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         />
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frame} onDragOver={handleDragOver} onDrop={handleDragEnd} />
+        <Preview app={app} iframeRef={frame} onDragOver={handleDragOver} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
