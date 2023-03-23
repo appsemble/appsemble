@@ -3,10 +3,10 @@ import { Input, TextArea, useDebounce } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { StringField as StringFieldType } from '../../../block.js';
+import { StringField } from '../../../block.js';
 
 interface StringFieldProps {
-  field: StringFieldType;
+  field: StringField;
   /**
    * The data to display.
    */
@@ -23,7 +23,7 @@ interface StringFieldProps {
   repeatedIndex: number;
 }
 
-export function StringField({ field, index, item, repeatedIndex }: StringFieldProps): VNode {
+export function StringInput({ field, index, item, repeatedIndex }: StringFieldProps): VNode {
   const {
     actions,
     utils: { remap },

@@ -3,15 +3,10 @@ import classNames from 'classnames';
 import { ComponentProps, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import {
-  Button,
-  Dropdown as DropdownType,
-  Field,
-  StringField as StringFieldType,
-} from '../../../block.js';
+import { Button, Dropdown as DropdownType, Field, StringField } from '../../../block.js';
 import { ButtonField } from '../ButtonField/index.js';
 import { DropdownField } from '../DropdownField/index.js';
-import { StringField } from '../StringField/index.js';
+import { StringInput } from '../StringInput/index.js';
 import styles from './index.module.css';
 
 interface ItemCellProps extends ComponentProps<'td'> {
@@ -28,7 +23,7 @@ interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The field to render.
    */
-  field: Button | DropdownType | Field | StringFieldType;
+  field: Button | DropdownType | Field | StringField;
 
   /**
    * The index of the row that was clicked.
@@ -90,7 +85,7 @@ export function ItemCell({
   } else if ('button' in field) {
     content = <ButtonField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else if ('string' in field) {
-    content = <StringField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
+    content = <StringInput field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else {
     content = renderValue(remap(field.value, item, { index, repeatedIndex }));
   }
