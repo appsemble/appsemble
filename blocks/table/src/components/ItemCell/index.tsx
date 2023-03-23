@@ -103,11 +103,10 @@ export function ItemCell({
       role="gridcell"
     >
       <div
-        className={
-          'string' in field
-            ? classNames(`is-flex is-justify-content-${alignment}`, styles.editable)
-            : `is-flex is-justify-content-${alignment}`
-        }
+        className={classNames(
+          `is-flex is-justify-content-${alignment}`,
+          'string' in field && styles.editable,
+        )}
       >
         {content}
       </div>

@@ -3706,34 +3706,6 @@ foundQr event only holds the string of the QR.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks results-loader 1`] = `
-{
-  "actions": {
-    "onLoad": {
-      "description": "Action that is dispatched during the initial load.",
-    },
-  },
-  "events": {
-    "emit": {
-      "data": {
-        "description": "Event that gets emitted once the \`onLoad\` action has finished.",
-      },
-    },
-    "listen": {
-      "data": {
-        "description": "Event that listens to incoming data",
-      },
-    },
-  },
-  "messages": {
-    "loadErrorMessage": {
-      "description": "The error message that should be shown when data failed to load.",
-    },
-  },
-  "parameters": undefined,
-}
-`;
-
 exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
 {
   "actions": undefined,
@@ -4106,11 +4078,6 @@ Should be an array of data.",
 If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
             "format": "remapper",
           },
-          "onClick": {
-            "description": "The name of the action to trigger when clicking on this field.",
-            "format": "action",
-            "type": "string",
-          },
           "string": {
             "additionalProperties": false,
             "description": "The definition of the contents and styling of the string field.",
@@ -4146,8 +4113,8 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
           },
         },
         "required": [
-          "string",
           "value",
+          "string",
         ],
         "type": "object",
       },

@@ -32,7 +32,12 @@ export interface Field extends BaseField {
   onClick?: string;
 }
 
-export interface StringField extends Field {
+export interface StringField extends BaseField {
+  /**
+   * The value of the field.
+   */
+  value: Remapper;
+
   /**
    * The definition of the contents and styling of the string field.
    */
