@@ -14,8 +14,12 @@ interface PagesTabProps {
   isOpenRight: boolean;
 }
 
-// Highlight the dropzone on hover
+// Highlight the preview on hover
 const handleDragOver = (e: DragEvent): void => {
+  e.preventDefault();
+};
+// Delete this component or append the block to the app definition depending on dropzone
+const handleDragEnd = (e: DragEvent): void => {
   e.preventDefault();
 };
 
@@ -74,8 +78,9 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           selectedSubParent={selectedSubParent}
         />
       </Sidebar>
-      <div className={styles.root}>
-        <Preview app={app} iframeRef={frame} onDragOver={handleDragOver} />
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      <div className={styles.root} onDragOver={handleDragOver} onDrop={handleDragEnd}>
+        <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>

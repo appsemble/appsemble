@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import styles from './index.module.css';
 
 interface SidebarProps {
-  children: ReactElement;
+  children: ReactElement[];
   type: 'left' | 'right';
   isOpen: boolean;
 }
