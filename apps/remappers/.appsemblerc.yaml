@@ -1,12 +1,11 @@
 context:
   development:
-    id: 49
     organization: appsemble
     remote: http://localhost:9999
     template: true
     visibility: public
   production:
-    id: 9
+    id: 746
     remote: https://appsemble.app
     template: true
     visibility: public
