@@ -28,7 +28,7 @@ export function BlockStoreElement({ block }: BlockStoreElementProps): ReactEleme
       className={`card is-flex ${styles.root}`}
       draggable
       key={name}
-      onDragStart={(e) => handleDragStart(e)}
+      onDragStart={handleDragStart}
       title={name}
     >
       <header className="px-2 py-2 is-flex">
