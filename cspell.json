@@ -1,14 +1,5 @@
 {
-  "dictionaries": [
-    "custom-words",
-    "typescript",
-    "node",
-    "css",
-    "html",
-    "fonts",
-    "companies",
-    "npm"
-  ],
+  "dictionaries": ["custom-words", "typescript", "node", "css", "html", "fonts", "companies"],
 
   "dictionaryDefinitions": [
     {
