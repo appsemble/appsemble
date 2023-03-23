@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Input, TextArea, useDebounce } from '@appsemble/preact-components';
 import { JSX, VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import { StringField as StringFieldType } from '../../../block.js';
 
@@ -28,12 +28,18 @@ export function StringField({ field, index, item, repeatedIndex }: StringFieldPr
     actions,
     utils: { remap },
   } = useBlock();
+  const initialRender = useRef(true);
   const { multiline, name, onEdit, placeholder } = field.string;
   const [lastChanges, setLastChanges] = useState('');
   const [value, setValue] = useState(remap(field.value, item, { index, repeatedIndex }) as string);
   const debouncedValue = useDebounce(value);
 
   useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+
     setLastChanges(name + debouncedValue);
   }, [debouncedValue, name]);
 
