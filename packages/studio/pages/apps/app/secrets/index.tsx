@@ -4,6 +4,7 @@ import {
   Content,
   PasswordField,
   SimpleForm,
+  SimpleFormError,
   SimpleFormField,
   SimpleSubmit,
   Title,
@@ -137,7 +138,10 @@ export function SecretsPage(): ReactElement {
                 label={<FormattedMessage {...messages.emailPassword} />}
                 name="emailPassword"
                 placeholder="●●●●●●●●●●●"
-                required={Boolean(emailSettings.emailHost || emailSettings.emailUser)}
+                required={
+                  !emailSettings.emailPassword &&
+                  Boolean(emailSettings.emailHost || emailSettings.emailUser)
+                }
               />
               <SimpleFormField
                 help={<FormattedMessage {...messages.emailPortDescription} />}
@@ -154,6 +158,9 @@ export function SecretsPage(): ReactElement {
                   emailSettings.emailHost || emailSettings.emailUser || emailSettings.emailPassword,
                 )}
               />
+              <SimpleFormError>
+                {() => <FormattedMessage {...messages.submitError} />}
+              </SimpleFormError>
               <SimpleSubmit>
                 <FormattedMessage {...messages.submit} />
               </SimpleSubmit>

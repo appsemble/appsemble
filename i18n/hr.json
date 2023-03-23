@@ -596,6 +596,7 @@
   "studio.pages.apps.app.secrets.emailUserDescription": "Korisničko ime korišteno za provjeru autentičnosti za prilagođeni SMTP poslužitelj.",
   "studio.pages.apps.app.secrets.ssl": "SSL",
   "studio.pages.apps.app.secrets.submit": "Pošalji",
+  "studio.pages.apps.app.secrets.submitError": "",
   "studio.pages.apps.app.secrets.title": "Tajne",
   "studio.pages.apps.app.settings": "Postavke",
   "studio.pages.apps.app.settings.IconTool.cancel": "Odustani",

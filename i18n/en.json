@@ -596,6 +596,7 @@
   "studio.pages.apps.app.secrets.emailUserDescription": "The username used for authentication for the custom SMTP server.",
   "studio.pages.apps.app.secrets.ssl": "SSL",
   "studio.pages.apps.app.secrets.submit": "Submit",
+  "studio.pages.apps.app.secrets.submitError": "Something went wrong when trying to update the email settings",
   "studio.pages.apps.app.secrets.title": "Secrets",
   "studio.pages.apps.app.settings": "Settings",
   "studio.pages.apps.app.settings.IconTool.cancel": "Cancel",
