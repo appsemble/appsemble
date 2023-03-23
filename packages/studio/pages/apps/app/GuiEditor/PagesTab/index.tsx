@@ -14,8 +14,12 @@ interface PagesTabProps {
   isOpenRight: boolean;
 }
 
-// Highlight the dropzone on hover
+// Highlight the preview on hover
 const handleDragOver = (e: DragEvent): void => {
+  e.preventDefault();
+};
+// Delete this component or append the block to the app definition depending on dropzone
+const handleDragEnd = (e: DragEvent): void => {
   e.preventDefault();
 };
 
