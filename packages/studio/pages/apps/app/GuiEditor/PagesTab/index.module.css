@@ -1,7 +1,12 @@
 .root {
   flex: 1;
   height: 80vh;
-  width: 100%;
+}
+
+.rootDragOver {
+  border: 4px solid hsl(115deg 76% 64%);
+  flex: 1;
+  height: 80vh;
 }
 
 .rightBar {

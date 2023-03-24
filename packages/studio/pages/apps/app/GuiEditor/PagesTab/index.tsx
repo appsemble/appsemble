@@ -1,7 +1,5 @@
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 
-import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -14,23 +12,22 @@ interface PagesTabProps {
   isOpenRight: boolean;
 }
 
-// Highlight the preview on hover
-const handleDragOver = (e: DragEvent): void => {
-  e.preventDefault();
-};
-// Delete this component or append the block to the app definition depending on dropzone
-const handleDragEnd = (e: DragEvent): void => {
-  e.preventDefault();
-};
-
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
-  const { app } = useApp();
-  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
+  const [dragOver, setDragOver] = useState<Boolean>(false);
+
+  // Highlight the preview on hover
+  const handleDragOver = (e: DragEvent): void => {
+    setDragOver(true);
+    e.preventDefault();
+  };
+  const handleDrop = (): void => {
+    setDragOver(false);
+  };
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
@@ -79,8 +76,12 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         />
       </Sidebar>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div className={styles.root} onDragOver={handleDragOver} onDrop={handleDragEnd}>
-        <Preview app={app} iframeRef={frame} />
+      <div
+        className={dragOver ? styles.rootDragOver : styles.root}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        {/* <Preview app={app} iframeRef={frame} /> */}
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
