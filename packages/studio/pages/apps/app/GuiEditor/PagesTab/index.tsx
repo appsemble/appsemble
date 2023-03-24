@@ -1,5 +1,7 @@
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 
+import { useApp } from '../../index.js';
+import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -13,6 +15,8 @@ interface PagesTabProps {
 }
 
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
+  const { app } = useApp();
+  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -20,12 +24,15 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
 
-  // Highlight the preview on hover
-  const handleDragOver = (e: DragEvent): void => {
+  // Highlight the preview on drag enter
+  const handleDragEnter = (): void => {
     setDragOver(true);
-    e.preventDefault();
   };
-  const handleDrop = (): void => {
+  const handleDragExit = (): void => {
+    setDragOver(false);
+  };
+  const handleDrop = (e: DragEvent): void => {
+    e.preventDefault();
     setDragOver(false);
   };
 
@@ -76,13 +83,16 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         />
       </Sidebar>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
+      <span
         className={dragOver ? styles.rootDragOver : styles.root}
-        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragExit={handleDragExit}
+        onDragLeave={handleDragExit}
+        onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
-        {/* <Preview app={app} iframeRef={frame} /> */}
-      </div>
+        <Preview app={app} iframeRef={frame} />
+      </span>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
