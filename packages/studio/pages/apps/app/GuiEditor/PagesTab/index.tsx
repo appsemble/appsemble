@@ -1,7 +1,9 @@
+<<<<<<< HEAD
 import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
+=======
+import { ReactElement, useCallback, useState } from 'react';
+>>>>>>> abe0c9bfd (Temporarily removed preview to test drop functionality)
 
-import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -14,18 +16,7 @@ interface PagesTabProps {
   isOpenRight: boolean;
 }
 
-// Highlight the preview on hover
-const handleDragOver = (e: DragEvent): void => {
-  e.preventDefault();
-};
-// Delete this component or append the block to the app definition depending on dropzone
-const handleDragEnd = (e: DragEvent): void => {
-  e.preventDefault();
-};
-
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
-  const { app } = useApp();
-  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -101,6 +92,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           selectedSubParent={selectedSubParent}
         />
       </Sidebar>
+<<<<<<< HEAD
       <div className={styles.root}>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
@@ -117,6 +109,15 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           {blockManifest}
         </div>
         <Preview app={app} iframeRef={frame} />
+=======
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      <div
+        className={dragOver ? styles.rootDragOver : styles.root}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        {/* <Preview app={app} iframeRef={frame} /> */}
+>>>>>>> abe0c9bfd (Temporarily removed preview to test drop functionality)
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
