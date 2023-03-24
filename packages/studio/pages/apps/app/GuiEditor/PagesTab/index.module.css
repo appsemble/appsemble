@@ -1,10 +1,11 @@
 .root {
+  border: 5px solid hsl(0deg 0% 0%);
   flex: 1;
   height: 80vh;
 }
 
 .rootDragOver {
-  border: 4px solid hsl(115deg 76% 64%);
+  border: 5px solid hsl(115deg 76% 64%);
   flex: 1;
   height: 80vh;
 }
