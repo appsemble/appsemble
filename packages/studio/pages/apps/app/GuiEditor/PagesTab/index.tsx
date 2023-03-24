@@ -1,9 +1,15 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
 =======
 import { ReactElement, useCallback, useState } from 'react';
 >>>>>>> abe0c9bfd (Temporarily removed preview to test drop functionality)
+=======
+import { ReactElement, useCallback, useRef, useState } from 'react';
+>>>>>>> 8d1a6c96b (Add border to preview to detect dragEnter and dragLeave events)
 
+import { useApp } from '../../index.js';
+import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -17,6 +23,8 @@ interface PagesTabProps {
 }
 
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
+  const { app } = useApp();
+  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -33,10 +41,15 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
+<<<<<<< HEAD
   // Append the dragged block to the app definition
   const handleDrop = (e: DragEvent): void => {
     setBlockManifest(e.dataTransfer.getData('block'));
     setDropzoneActive(false);
+=======
+  const handleDrop = (e: DragEvent): void => {
+    e.preventDefault();
+>>>>>>> 8d1a6c96b (Add border to preview to detect dragEnter and dragLeave events)
     setDragOver(false);
   };
 
@@ -111,14 +124,22 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         <Preview app={app} iframeRef={frame} />
 =======
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
+      <span
         className={dragOver ? styles.rootDragOver : styles.root}
-        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragExit={handleDragExit}
+        onDragLeave={handleDragExit}
+        onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
       >
+<<<<<<< HEAD
         {/* <Preview app={app} iframeRef={frame} /> */}
 >>>>>>> abe0c9bfd (Temporarily removed preview to test drop functionality)
       </div>
+=======
+        <Preview app={app} iframeRef={frame} />
+      </span>
+>>>>>>> 8d1a6c96b (Add border to preview to detect dragEnter and dragLeave events)
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
