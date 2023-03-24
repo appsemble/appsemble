@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.20.40",
+  "version": "0.20.41",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -31,7 +31,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.40",
+    "@appsemble/types": "0.20.41",
     "axios": "^1.0.0",
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",

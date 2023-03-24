@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.41](https://gitlab.com/appsemble/appsemble/-/releases/0.20.41)] - 2023-03-24
+
+### Added
+
+- Block(`form`): Add alt format option for date and date-time field.
+- Block(`form`): Support manual input in date and date-time fields.
+- Block(`table`): Add `StringField` to provide users direct write access to table entries.
+
+### Fixed
+
+- Server: Set missing `userinfo` fields (`locale` and `zoneinfo`) in the `userinfo` API.
+
 ## \[[0.20.40](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)] - 2023-03-06
 
 ### Added

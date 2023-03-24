@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.40
-appVersion: 0.20.40
+version: 0.20.41
+appVersion: 0.20.41
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,13 +25,15 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(form): Make block data accessible to from and to requirements."
+      description: "Block(form): Add alt format option for date and date-time field."
+    - kind: added
+      description: "Block(form): Support manual input in date and date-time fields."
+    - kind: added
+      description: "Block(table): Add StringField to provide users direct write access
+        to table entries."
     - kind: fixed
-      description: "App: Resolve issue related to startup notifications being enabled
-        by default for all apps."
-    - kind: fixed
-      description: "Server: Resolve issue where the app name and organization id are
-        undefined in the URL subdomain when using the app remapper URL option."
+      description: "Server: Set missing userinfo fields (locale and zoneinfo) in the
+        userinfo API."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
