@@ -4090,6 +4090,64 @@ Should be an array of data.",
         ],
         "type": "object",
       },
+      "StringField": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "label": {
+            "description": "An optional label used in the header of the table.
+
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
+            "format": "remapper",
+          },
+          "string": {
+            "additionalProperties": false,
+            "description": "The definition of the contents and styling of the string field.",
+            "properties": {
+              "multiline": {
+                "default": false,
+                "description": "Whether the string field should be multiline or not.",
+                "type": "boolean",
+              },
+              "name": {
+                "description": "The name of the field.",
+                "type": "string",
+              },
+              "onEdit": {
+                "description": "The name of the action to trigger when editing the field.",
+                "format": "action",
+                "type": "string",
+              },
+              "placeholder": {
+                "description": "The placeholder to display when the field is empty.",
+                "format": "remapper",
+              },
+            },
+            "required": [
+              "name",
+              "onEdit",
+            ],
+            "type": "object",
+          },
+          "value": {
+            "description": "The value of the field.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "value",
+          "string",
+        ],
+        "type": "object",
+      },
     },
     "properties": {
       "fields": {
@@ -4107,6 +4165,9 @@ Should be an array of data.",
             },
             {
               "$ref": "#/definitions/RepeatedField",
+            },
+            {
+              "$ref": "#/definitions/StringField",
             },
           ],
         },

@@ -32,6 +32,40 @@ export interface Field extends BaseField {
   onClick?: string;
 }
 
+export interface StringField extends BaseField {
+  /**
+   * The value of the field.
+   */
+  value: Remapper;
+
+  /**
+   * The definition of the contents and styling of the string field.
+   */
+  string: {
+    /**
+     * The name of the field.
+     */
+    name: string;
+    /**
+     * The name of the action to trigger when editing the field.
+     *
+     * @format action
+     */
+    onEdit: string;
+    /**
+     * Whether the string field should be multiline or not.
+     *
+     * @default false
+     */
+    multiline?: boolean;
+
+    /**
+     * The placeholder to display when the field is empty.
+     */
+    placeholder?: Remapper;
+  };
+}
+
 export interface Button extends BaseField {
   /**
    * The name of the action to trigger when clicking on this field.
@@ -193,7 +227,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | RepeatedField)[];
+    fields: (Button | Dropdown | Field | RepeatedField | StringField)[];
   }
 
   interface Actions {
