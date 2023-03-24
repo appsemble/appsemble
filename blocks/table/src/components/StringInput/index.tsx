@@ -30,7 +30,6 @@ export function StringInput({ field, index, item, repeatedIndex }: StringFieldPr
   } = useBlock();
   const initialRender = useRef(true);
   const { multiline, name, onEdit, placeholder } = field.string;
-  const [lastChanges, setLastChanges] = useState('');
   const [value, setValue] = useState(remap(field.value, item, { index, repeatedIndex }) as string);
   const debouncedValue = useDebounce(value);
 
@@ -40,21 +39,13 @@ export function StringInput({ field, index, item, repeatedIndex }: StringFieldPr
       return;
     }
 
-    setLastChanges(name + debouncedValue);
-  }, [debouncedValue, name]);
-
-  useEffect(() => {
-    if (!lastChanges) {
-      return;
-    }
-
     const onEditAction = actions[onEdit];
 
     onEditAction(typeof item === 'object' ? { ...item, [name]: debouncedValue } : debouncedValue, {
       index,
       repeatedIndex,
-    }).then(() => setLastChanges(''));
-  }, [actions, debouncedValue, item, index, name, onEdit, repeatedIndex, lastChanges]);
+    });
+  }, [actions, debouncedValue, item, index, name, onEdit, repeatedIndex]);
 
   const onChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement | HTMLTextAreaElement>) => {
