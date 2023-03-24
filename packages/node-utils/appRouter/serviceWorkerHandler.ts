@@ -23,7 +23,7 @@ export function createServiceWorkerHandler({
     ctx.assert(app, 404, 'App does not exist.');
 
     const identifiableBlocks = getAppBlocks(app.definition);
-    const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks });
+    const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });
 
     ctx.body = `const blockAssets=${JSON.stringify(blocksAssetsPaths)};${serviceWorker}`;
     ctx.type = 'application/javascript';

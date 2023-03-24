@@ -9,7 +9,7 @@ export function createBlockAssetHandler({ getBlockAsset }: AppRouterOptions): Mi
       params: { filename, name, version },
     } = ctx;
 
-    const blockAsset = await getBlockAsset({ filename, name, version });
+    const blockAsset = await getBlockAsset({ filename, name, version, context: ctx });
 
     if (!blockAsset) {
       throw notFound('Block asset not found');

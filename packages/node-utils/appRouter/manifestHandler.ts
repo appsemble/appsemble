@@ -18,7 +18,7 @@ export function createManifestHandler({ getApp, getAppScreenshots }: AppRouterOp
     const { defaultPage, description, name, theme = baseTheme } = app.definition;
     const { themeColor = '#ffffff', splashColor = themeColor } = theme;
 
-    const appScreenshots = await getAppScreenshots({ app });
+    const appScreenshots = await getAppScreenshots({ app, context: ctx });
 
     ctx.body = {
       background_color: splashColor,

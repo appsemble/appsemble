@@ -3,10 +3,10 @@ import { Context, Middleware } from 'koa';
 
 import { AppRouterOptions } from '../types.js';
 
-export function createBlockCssHandler({ getApp, getAppBlockStyles }: AppRouterOptions): Middleware {
+export function createMessagesHandler({ getApp, getAppMessages }: AppRouterOptions): Middleware {
   return async (ctx: Context) => {
     const {
-      params: { name },
+      params: { lang },
     } = ctx;
 
     const app = await getApp({ context: ctx });
@@ -15,10 +15,7 @@ export function createBlockCssHandler({ getApp, getAppBlockStyles }: AppRouterOp
       throw notFound('App not found');
     }
 
-    const appBlockStyles = await getAppBlockStyles({ app, name, context: ctx });
-
-    const [style] = appBlockStyles;
-    ctx.body = style ? style.style : '';
-    ctx.type = 'css';
+    ctx.body = await getAppMessages({ app, language: lang, context: ctx });
+    ctx.type = 'application/javascript';
   };
 }

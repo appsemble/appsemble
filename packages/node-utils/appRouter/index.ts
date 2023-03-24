@@ -16,6 +16,7 @@ import { createCssHandler } from './cssHandler.js';
 import { createIconHandler } from './iconHandler.js';
 import { createIndexHandler } from './indexHandler.js';
 import { createManifestHandler } from './manifestHandler.js';
+import { createMessagesHandler } from './messagesHandler.js';
 import { createRobotsHandler } from './robotsHandler.js';
 import { createScreenshotHandler } from './screenshotHandler.js';
 import { createServiceWorkerHandler } from './serviceWorkerHandler.js';
@@ -87,6 +88,10 @@ export function createAppRouter(options: AppRouterOptions): Middleware {
     {
       route: /\.[a-z]\w*$/i,
       any: createStaticHandler('app'),
+    },
+    {
+      route: /^\/api\/apps\/(?<appId>\d+)\/messages\/(?<lang>[a-z]+)$/,
+      get: createMessagesHandler(options),
     },
     {
       route: /.*/,

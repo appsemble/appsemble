@@ -1,19 +1,36 @@
+import { basename, join } from 'node:path';
+
+import { opendirSafe } from '@appsemble/node-utils';
 import {
   AppBlockStyle as AppBlockStyleInterface,
   GetAppBlockStylesParams,
 } from '@appsemble/node-utils/types';
 
-import { AppBlockStyle } from '../../../mocks/db/models/AppBlockStyle.js';
+import { processCss } from '../../../lib/processCss.js';
 
 export const getAppBlockStyles = async ({
-  app,
+  context,
   name,
 }: GetAppBlockStylesParams): Promise<AppBlockStyleInterface[]> => {
-  const appBlockStyles = await AppBlockStyle.findAll({
-    where: { AppId: app.id, block: name },
-  });
+  const { blockConfigs } = context;
+  const blockConfig = blockConfigs.find((config) => config.name === name);
 
-  return appBlockStyles.map((appBlockStyle) => ({
-    style: appBlockStyle.style,
-  }));
+  let stylePath = '';
+  await opendirSafe(
+    join(blockConfig.dir, blockConfig.output),
+    (fullPath, stat) => {
+      if (!stat.isFile()) {
+        return;
+      }
+      const filename = basename(fullPath);
+
+      if (filename.endsWith('.css')) {
+        stylePath = filename;
+      }
+    },
+    { recursive: true },
+  );
+
+  const style = await processCss(stylePath);
+  return [{ style }];
 };

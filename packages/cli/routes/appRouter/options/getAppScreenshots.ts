@@ -1,22 +1,29 @@
+import { readFile } from 'node:fs/promises';
+
 import {
   AppScreenshot as AppScreenShotInterface,
   GetAppSubEntityParams,
 } from '@appsemble/node-utils/types';
+import { lookup } from 'mime-types';
+import sharp from 'sharp';
 
-import { AppScreenshot } from '../../../mocks/db/models/AppScreenshot.js';
-
-export const getAppScreenshots = async ({
+export const getAppScreenshots = ({
   app,
 }: GetAppSubEntityParams): Promise<AppScreenShotInterface[]> => {
-  const appScreenshots = await AppScreenshot.findAll({
-    where: { AppId: app.id },
+  const appScreenshotsPromises = app.screenshotUrls.map(async (screenshotUrl, index) => {
+    const screenshot = await readFile(screenshotUrl);
+    const img = sharp(screenshot);
+    const { format, height, width } = await img.metadata();
+    const mime = lookup(format);
+
+    return {
+      id: index,
+      width,
+      height,
+      mime,
+      screenshot,
+    } as AppScreenShotInterface;
   });
 
-  return appScreenshots.map((appScreenshot) => ({
-    id: appScreenshot.id,
-    mime: appScreenshot.mime,
-    screenshot: appScreenshot.screenshot,
-    width: appScreenshot.width,
-    height: appScreenshot.height,
-  }));
+  return Promise.all(appScreenshotsPromises);
 };

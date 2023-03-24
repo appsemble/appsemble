@@ -1,3 +1,4 @@
+import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
 import { CreateSettingsParams } from '@appsemble/node-utils/types';
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
@@ -9,7 +10,7 @@ import {
   BlockAsset,
   BlockVersion,
 } from '../../../models/index.js';
-import { createGtagCode, createSettings as createServerSettings } from '../../../utils/render.js';
+import { createGtagCode } from '../../../utils/render.js';
 import { getSentryClientSettings } from '../../../utils/sentry.js';
 
 export const createSettings = async ({
@@ -71,7 +72,7 @@ export const createSettings = async ({
     persistedApp.sentryEnvironment,
   );
 
-  return createServerSettings(
+  return createUtilsSettings(
     {
       apiUrl: host,
       blockManifests: blockManifests.map(

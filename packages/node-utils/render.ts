@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
 import { compareStrings } from '@appsemble/utils';
@@ -5,6 +6,23 @@ import { Context } from 'koa';
 import mustache from 'mustache';
 
 import { ContentSecurityPolicy } from './types.js';
+
+/**
+ * Render settings as an HTML script tag.
+ *
+ * @param settings The settings to render. This must be a JSON serializable object.
+ * @param statements Custom JavaScript statements to append.
+ * @returns A tuple of the digest and the HTML script tag. The digest should be added to the CSP
+ * `script-src`.
+ */
+export function createSettings(
+  settings: unknown,
+  statements: string[] = [],
+): [digest: string, script: string] {
+  const script = [`window.settings=${JSON.stringify(settings)}`, ...statements].join(';');
+  const hash = createHash('sha256').update(script, 'utf8').digest('base64');
+  return [`'sha256-${hash}'`, `<script>${script}</script>`];
+}
 
 export async function render(
   ctx: Context,

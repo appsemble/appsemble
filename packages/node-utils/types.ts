@@ -1,6 +1,27 @@
-import { App, BlockDefinition, Theme as ThemeType } from '@appsemble/types';
+import {
+  App,
+  AppMessages,
+  BlockConfig,
+  BlockDefinition,
+  Theme as ThemeType,
+} from '@appsemble/types';
 import { IdentifiableBlock } from '@appsemble/utils';
 import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
+
+declare module 'koa' {
+  interface Request {
+    body: any;
+  }
+
+  interface DefaultContext {
+    apiUrl: string;
+    appsembleApp: App;
+    appBlocks: IdentifiableBlock[];
+    appMessages: AppMessages[];
+    blockConfigs: BlockConfig[];
+    params?: Record<string, string>;
+  }
+}
 
 export interface GetAppParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
@@ -8,11 +29,16 @@ export interface GetAppParams {
 }
 
 export interface GetAppSubEntityParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
   name: string;
+}
+
+export interface GetAppMessagesParams extends GetAppSubEntityParams {
+  language: string;
 }
 
 export interface GetDbUpdatedParams extends GetAppSubEntityParams {
@@ -24,12 +50,14 @@ export interface GetAppLanguagesParams extends GetAppSubEntityParams {
 }
 
 export interface GetBlockAssetParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
   filename: string;
   name: string;
   version: string;
 }
 
 export interface GetBlocksAssetsPathsParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
   identifiableBlocks: IdentifiableBlock[];
 }
 
@@ -48,6 +76,7 @@ export interface CreateThemeParams extends ExtendedTheme {
 }
 
 export interface CreateSettingsParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
   host: string;
   identifiableBlocks: IdentifiableBlock[];
@@ -68,7 +97,7 @@ export interface AppDetails {
   organizationId: string;
 }
 
-export interface RawApp {
+export interface AppStyles {
   coreStyle: string | undefined;
   sharedStyle: string | undefined;
 }
@@ -86,7 +115,6 @@ export interface AppBlockStyle {
 }
 
 export interface BlockAsset {
-  id: number;
   mime: string;
   content: Buffer;
 }
@@ -104,9 +132,10 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 export interface AppRouterOptions {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
-  getAppRaw: (params: GetAppParams) => Promise<RawApp>;
+  getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
+  getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;
   getAppLanguages: (params: GetAppLanguagesParams) => Promise<string[]>;

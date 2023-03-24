@@ -1,113 +1,39 @@
+import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
 import { CreateSettingsParams } from '@appsemble/node-utils/types';
-import { parseBlockName } from '@appsemble/utils';
-import { Op } from 'sequelize';
 
-import {
-  App,
-  AppOAuth2Secret,
-  AppSamlSecret,
-  BlockAsset,
-  BlockVersion,
-} from '../../../models/index.js';
-import { createGtagCode, createSettings as createServerSettings } from '../../../utils/render.js';
-import { getSentryClientSettings } from '../../../utils/sentry.js';
+import { makePayload } from '../../../lib/block.js';
 
 export const createSettings = async ({
-  app,
-  host,
-  hostname,
-  identifiableBlocks,
+  context,
   languages,
 }: CreateSettingsParams): Promise<[digest: string, script: string]> => {
-  const blockManifests = await BlockVersion.findAll({
-    attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
-    include: [
-      {
-        attributes: ['filename'],
-        model: BlockAsset,
-        where: {
-          BlockVersionId: { [Op.col]: 'BlockVersion.id' },
-        },
-      },
-    ],
-    where: {
-      [Op.or]: identifiableBlocks.map(({ type, version }) => {
-        const [OrganizationId, name] = parseBlockName(type);
-        return { name, OrganizationId, version };
-      }),
-    },
+  const { apiUrl, appBlocks, appsembleApp, blockConfigs } = context;
+
+  const blockPromises = appBlocks.map(async (appBlock) => {
+    const blockConfig = blockConfigs.find((config) => config.name === appBlock.type);
+    const [, blockData] = await makePayload(blockConfig);
+    return { ...blockData };
   });
 
-  const persistedApp = await App.findOne({
-    attributes: [
-      'id',
-      'icon',
-      'updated',
-      'OrganizationId',
-      'sentryDsn',
-      'sentryEnvironment',
-      'vapidPublicKey',
-      'definition',
-      'showAppsembleLogin',
-      'showAppsembleOAuth2Login',
-      'googleAnalyticsID',
-    ],
-    where: { id: app.id },
-    include: [
-      {
-        attributes: ['icon', 'id', 'name'],
-        model: AppOAuth2Secret,
-      },
-      {
-        attributes: ['icon', 'id', 'name'],
-        model: AppSamlSecret,
-      },
-    ],
+  const blocks = await Promise.all(blockPromises);
+
+  const blockManifestPromises = blocks.map((block) => ({
+    name: block.name,
+    version: block.version,
+    layout: block.layout,
+    actions: block.actions,
+    events: block.events,
+    files: block.files,
+  }));
+
+  const blockManifests = await Promise.all(blockManifestPromises);
+
+  return createUtilsSettings({
+    apiUrl,
+    blockManifests,
+    id: appsembleApp.id,
+    languages,
+    definition: appsembleApp.definition,
+    appUpdated: appsembleApp.$updated,
   });
-
-  const { sentryDsn, sentryEnvironment } = getSentryClientSettings(
-    hostname,
-    persistedApp.sentryDsn,
-    persistedApp.sentryEnvironment,
-  );
-
-  return createServerSettings(
-    {
-      apiUrl: host,
-      blockManifests: blockManifests.map(
-        ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
-          name: `@${OrganizationId}/${name}`,
-          version,
-          layout,
-          actions,
-          events,
-          files: BlockAssets.map(({ filename }) => filename),
-        }),
-      ),
-      id: persistedApp.id,
-      languages,
-      logins: [
-        ...persistedApp.AppOAuth2Secrets.map(({ icon, id, name }) => ({
-          icon,
-          id,
-          name,
-          type: 'oauth2',
-        })),
-        ...persistedApp.AppSamlSecrets.map(({ icon, id, name }) => ({
-          icon,
-          id,
-          name,
-          type: 'saml',
-        })),
-      ],
-      vapidPublicKey: persistedApp.vapidPublicKey,
-      definition: persistedApp.definition,
-      showAppsembleLogin: persistedApp.showAppsembleLogin ?? false,
-      showAppsembleOAuth2Login: persistedApp.showAppsembleOAuth2Login ?? true,
-      sentryDsn,
-      sentryEnvironment,
-      appUpdated: persistedApp.updated.toISOString(),
-    },
-    app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
-  );
 };

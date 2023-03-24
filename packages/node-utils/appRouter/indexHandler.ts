@@ -45,7 +45,7 @@ export function createIndexHandler({
       });
     }
 
-    const appUrl = await getAppUrl({ app });
+    const appUrl = await getAppUrl({ app, context: ctx });
 
     if (appUrl.hostname !== hostname) {
       appUrl.pathname = path;
@@ -56,11 +56,12 @@ export function createIndexHandler({
 
     const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
 
-    const languages = await getAppLanguages({ app, defaultLanguage });
+    const languages = await getAppLanguages({ app, defaultLanguage, context: ctx });
 
     const identifiableBlocks = getAppBlocks(app.definition);
 
     const [settingsHash, settings] = await createSettings({
+      context: ctx,
       app,
       host,
       hostname,
@@ -73,6 +74,8 @@ export function createIndexHandler({
     const csp = getCsp({ app, settingsHash, hostname, host, nonce });
     ctx.set('Content-Security-Policy', makeCSP(csp));
 
+    const updated = app.$updated ? new Date(app.$updated) : new Date();
+
     return render(ctx, 'app/index.html', {
       app,
       appUrl: String(appUrl),
@@ -84,7 +87,7 @@ export function createIndexHandler({
       nonce,
       settings,
       themeColor: app.definition.theme?.themeColor || '#ffffff',
-      appUpdated: new Date(app.$updated).toISOString(),
+      appUpdated: updated.toISOString(),
     });
   };
 }
