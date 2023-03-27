@@ -35,7 +35,7 @@ export function BlockStoreElement({ block }: BlockStoreElementProps): ReactEleme
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
           {block.iconUrl ? (
-            <img alt={`${name} ${messages.blockLogo}`} src={block.iconUrl} />
+            <img alt={`${name} ${messages.blockLogo}`} draggable={false} src={block.iconUrl} />
           ) : (
             <Icon className={styles.iconFallback} icon="cubes" />
           )}

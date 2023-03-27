@@ -31,8 +31,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
-  const handleDrop = (e: DragEvent): void => {
-    e.preventDefault();
+  const handleDrop = (): void => {
     setDragOver(false);
   };
 
@@ -83,7 +82,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         />
       </Sidebar>
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <span
+      <div
         className={dragOver ? styles.rootDragOver : styles.root}
         onDragEnter={handleDragEnter}
         onDragExit={handleDragExit}
@@ -92,7 +91,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         onDrop={handleDrop}
       >
         <Preview app={app} iframeRef={frame} />
-      </span>
+      </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
