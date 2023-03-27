@@ -1,13 +1,23 @@
 .root {
-  border: 5px solid hsl(0deg 0% 0%);
   flex: 1;
   height: 80vh;
+  position: relative;
 }
 
-.rootDragOver {
-  border: 5px solid hsl(115deg 76% 64%);
+.dropzone {
+  border: none;
   flex: 1;
   height: 80vh;
+  position: absolute;
+  width: 100%;
+}
+
+.dropzoneDragOver {
+  border: 3px solid hsl(115deg 76% 64%);
+  flex: 1;
+  height: 80vh;
+  position: absolute;
+  width: 100%;
 }
 
 .rightBar {
