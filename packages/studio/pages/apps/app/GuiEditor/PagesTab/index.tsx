@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -31,7 +31,9 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
-  const handleDrop = (): void => {
+  // Append the dragged block to the app definition
+  const handleDrop = (e: DragEvent): void => {
+    e.dataTransfer.getData('block');
     setDragOver(false);
   };
 
