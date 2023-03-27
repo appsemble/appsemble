@@ -1,7 +1,7 @@
 import { Button, Icon, Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { DragEvent, ReactElement } from 'react';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
