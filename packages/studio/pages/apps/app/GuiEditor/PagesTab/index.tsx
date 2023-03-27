@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { ReactElement, DragEvent, useCallback, useRef, useState } from 'react';
+=======
+import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
+>>>>>>> 3d84a987e (Get Dragged block data using DragEvent)
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -33,11 +37,17 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
+<<<<<<< HEAD
 
   // Append the dragged block to the app definition
   const handleDrop = (e: DragEvent): void => {
     setBlockManifest(e.dataTransfer.getData('block'));
     setDropzoneActive(false);
+=======
+  // Append the dragged block to the app definition
+  const handleDrop = (e: DragEvent): void => {
+    e.dataTransfer.getData('block');
+>>>>>>> 3d84a987e (Get Dragged block data using DragEvent)
     setDragOver(false);
   };
 
