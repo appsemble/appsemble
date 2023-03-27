@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { ReactElement, DragEvent, useCallback, useRef, useState } from 'react';
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -23,6 +23,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
+  const [blockManifest, setBlockManifest] = useState<string>('');
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
 
   // Highlight the preview on drag enter
@@ -34,7 +35,8 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   };
 
   // Append the dragged block to the app definition
-  const handleDrop = (): void => {
+  const handleDrop = (e: DragEvent): void => {
+    setBlockManifest(e.dataTransfer.getData('block'));
     setDropzoneActive(false);
     setDragOver(false);
   };
@@ -59,7 +61,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
 
   // On dropping block change dropzone activity to false
   // So it does not cover the app preview
-  const onDragEvent = (): void => {
+  const onDragEvent = () => {
     setDropzoneActive(true);
   };
 
