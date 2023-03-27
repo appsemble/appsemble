@@ -81,15 +81,16 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           selectedSubParent={selectedSubParent}
         />
       </Sidebar>
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        className={dragOver ? styles.rootDragOver : styles.root}
-        onDragEnter={handleDragEnter}
-        onDragExit={handleDragExit}
-        onDragLeave={handleDragExit}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
+      <div className={styles.root}>
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+        <div
+          className={`${dragOver ? styles.dropzoneDragOver : styles.dropzone} is-flex m-0 p-0`}
+          onDragEnter={handleDragEnter}
+          onDragExit={handleDragExit}
+          onDragLeave={handleDragExit}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        />
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
