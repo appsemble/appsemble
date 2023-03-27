@@ -1,5 +1,4 @@
 .root {
-  border: 5px solid hsl(0deg 0% 0%);
   flex: 1;
   height: 80vh;
   position: relative;

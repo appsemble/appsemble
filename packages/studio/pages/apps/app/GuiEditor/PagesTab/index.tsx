@@ -1,4 +1,3 @@
-
 import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -106,7 +105,8 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         >
           {blockManifest}
         </div>
-        <Preview app={app} iframeRef={frame} />
+      </div>
+      <Preview app={app} iframeRef={frame} />
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
         className={dragOver ? styles.rootDragOver : styles.root}
