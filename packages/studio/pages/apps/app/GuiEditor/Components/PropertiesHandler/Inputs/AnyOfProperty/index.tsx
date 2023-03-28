@@ -59,7 +59,7 @@ export function AnyOfProperty({
         }
       }
     }
-    // Check if all schemValue keys exist in schemaCheck
+    // Check if all schemaValue keys exist in schemaCheck
     if (schemaValue && schemaCheck?.properties) {
       for (const key of Object.keys(schemaValue)) {
         if (!schemaCheck.properties?.[key]) {
