@@ -1,16 +1,11 @@
-import { Input, Title, useDeferredValue, useMeta } from '@appsemble/react-components';
-import highlight from 'fuzzysearch-highlight';
-import { ChangeEvent, ReactElement, useMemo, useReducer } from 'react';
-import { useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Title, useDeferredValue, useMeta } from '@appsemble/react-components';
+import { ReactElement, ReactNode, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
+import { highlight } from '../../../utils/search.js';
 import { docs } from '../docs.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-
-function updateNeedle(state: string, event: ChangeEvent<HTMLInputElement>): string {
-  return event.target.value;
-}
 
 interface SearchEntry {
   url: string;
@@ -21,7 +16,7 @@ interface SearchEntry {
 interface SearchResult {
   url: string;
   title: string;
-  match: string;
+  match: ReactNode[];
 }
 
 const index: SearchEntry[] = [];
@@ -37,10 +32,9 @@ for (const doc of docs) {
 
 export function SearchPage(): ReactElement {
   useMeta(messages.title);
-  const [search, setSearch] = useReducer(updateNeedle, '');
-  const { formatMessage } = useIntl();
+  const location = useLocation();
 
-  const needle = useDeferredValue(search);
+  const needle = useDeferredValue(decodeURIComponent(location.hash.slice(1)));
 
   const results = useMemo(() => {
     const matches: SearchResult[] = [];
@@ -49,42 +43,32 @@ export function SearchPage(): ReactElement {
     }
 
     for (const { haystack, title, url } of index) {
-      const match = highlight(needle, haystack);
+      const match = highlight(haystack, needle);
       if (!match) {
         continue;
       }
 
-      matches.push({ url, match, title });
+      matches.push({ match, url, title });
     }
+    // Fewer matches means longer matches, which means a higher relevance.
+    matches.sort((a, b) => a.match.length - b.match.length);
     return matches;
   }, [needle]);
 
   return (
-    <>
-      <Input
-        name="search"
-        onChange={setSearch}
-        placeholder={formatMessage(messages.placeholder)}
-        type="search"
-      />
-      <hr />
-      <ul>
-        {results.map(({ match, title, url }) => (
-          <li key={url}>
-            <Link to={url}>
-              <div className="mb-5">
-                <Title className="my-0" size={5}>
-                  {title}
-                </Title>
-                <p
-                  className={`content has-text-grey-dark ${styles.searchResult}`}
-                  dangerouslySetInnerHTML={{ __html: match }}
-                />
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </>
+    <ul>
+      {results.map(({ match, title, url }) => (
+        <li key={url}>
+          <Link to={url}>
+            <div className="mb-5">
+              <Title className="my-0" size={5}>
+                {title}
+              </Title>
+              <p className={`content has-text-grey-dark ${styles.searchResult}`}>{match}</p>
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
