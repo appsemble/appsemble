@@ -13,7 +13,7 @@ import { messages } from './messages.js';
  * Each block is shown as a container with its name in it.
  * Each block has a on hover and on mouse down class.
  *
- * On mouse down a copy of the block is attached to the mouse and folows it until mouse up.
+ * On mouse down a copy of the block is attached to the mouse and follows it until mouse up.
  * If mouse up happens outside of the app preview the block is discarded.
  * If mouse up happens over the app preview the held block is appended to the app definition
  * at the end of the blocks list.
