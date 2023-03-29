@@ -1,7 +1,7 @@
 import {
   AppBlockStyle as AppBlockStyleInterface,
   GetAppBlockStylesParams,
-} from '@appsemble/node-utils/types';
+} from 'packages/node-utils/server/routes/types';
 
 import { AppBlockStyle } from '../../../models/index.js';
 

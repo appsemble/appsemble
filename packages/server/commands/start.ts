@@ -2,18 +2,23 @@ import http from 'node:http';
 import https from 'node:https';
 
 import { logger, readFileOrString } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { Context } from 'koa';
 import { Configuration } from 'webpack';
 import { Argv } from 'yargs';
 
+import * as controllers from '../controllers/index.js';
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
+import { appRouter } from '../routes/appRouter/index.js';
+import { studioRouter } from '../routes/index.js';
 import { argv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { authentication } from '../utils/authentication.js';
 import { configureDNS } from '../utils/dns/index.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
 import { databaseBuilder } from './builder/database.js';
@@ -151,7 +156,19 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   await configureDNS();
 
-  const app = await createServer({ webpackConfigs });
+  const serverContext = {
+    mailer: new Mailer(argv),
+  };
+
+  const app = await createServer({
+    argv,
+    authentication: authentication(),
+    appRouter,
+    studioRouter,
+    controllers,
+    context: serverContext,
+    webpackConfigs: webpackConfigs as any,
+  });
 
   app.on('error', (err, ctx: Context) => {
     if (err.expose) {

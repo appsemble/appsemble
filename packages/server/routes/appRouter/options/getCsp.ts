@@ -1,4 +1,4 @@
-import { ContentSecurityPolicy, GetCspParams } from '@appsemble/node-utils/types';
+import { ContentSecurityPolicy, GetCspParams } from 'packages/node-utils/server/routes/types';
 
 import { getSentryClientSettings } from '../../../utils/sentry.js';
 

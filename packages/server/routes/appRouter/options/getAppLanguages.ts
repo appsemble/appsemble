@@ -1,4 +1,4 @@
-import { GetAppLanguagesParams } from '@appsemble/node-utils/types';
+import { GetAppLanguagesParams } from 'packages/node-utils/server/routes/types';
 
 import { AppMessages } from '../../../models/index.js';
 

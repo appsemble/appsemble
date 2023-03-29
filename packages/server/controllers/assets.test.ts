@@ -1,13 +1,15 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { Asset as AssetType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, Asset, Member, Organization, Resource, User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
+import * as controllers from './index.js';
 
 let organization: Organization;
 let user: User;
@@ -17,7 +19,11 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+  });
   await setTestApp(server);
 });
 

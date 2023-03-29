@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 
 import { createFormData, readFixture } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import * as Koa from 'koa';
@@ -15,10 +16,11 @@ import {
   OrganizationInvite,
   User,
 } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
+import * as controllers from './index.js';
 
 let organization: Organization;
 let server: Koa;
@@ -28,7 +30,11 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer();
+  server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+  });
   await setTestApp(server);
 });
 

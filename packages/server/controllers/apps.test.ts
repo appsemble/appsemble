@@ -1,4 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { App as AppType, Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -18,11 +19,12 @@ import {
   Organization,
   User,
 } from '../models/index.js';
+import { appRouter } from '../routes/appRouter/index.ts';
 import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
+import * as controllers from './index.js';
 
 let organization: Organization;
 let user: User;
@@ -33,7 +35,11 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv(argv);
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+  });
   await setTestApp(server);
 });
 

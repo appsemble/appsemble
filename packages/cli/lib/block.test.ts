@@ -15,9 +15,10 @@ describe('makePayload', () => {
       actions: { onClick: {} },
       events: { listen: { test: {} } },
     });
-    const boundary = payload.getBoundary();
+    const [formData] = payload;
+    const boundary = formData.getBoundary();
     const buffer = await new Promise((resolve) => {
-      payload.pipe(concat(resolve));
+      formData.pipe(concat(resolve));
     });
     expect(String(buffer)).toBe(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r
@@ -60,9 +61,10 @@ export const string = 'no-icon';
       actions: {},
       events: {},
     });
-    const boundary = payload.getBoundary();
+    const [formData] = payload;
+    const boundary = formData.getBoundary();
     const buffer = await new Promise((resolve) => {
-      payload.pipe(concat(resolve));
+      formData.pipe(concat(resolve));
     });
     expect(String(buffer)).toBe(`--${boundary}\r
 Content-Disposition: form-data; name="actions"\r

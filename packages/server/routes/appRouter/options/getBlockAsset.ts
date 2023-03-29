@@ -1,7 +1,7 @@
 import {
   BlockAsset as BlockAssetInterface,
   GetBlockAssetParams,
-} from '@appsemble/node-utils/types';
+} from 'packages/node-utils/server/routes/types';
 
 import { BlockAsset, BlockVersion } from '../../../models/index.js';
 

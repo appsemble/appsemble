@@ -1,4 +1,4 @@
-import { GetDbUpdatedParams } from '@appsemble/node-utils/types';
+import { GetDbUpdatedParams } from 'packages/node-utils/server/routes/types';
 
 import { App, Organization } from '../../../models/index.js';
 

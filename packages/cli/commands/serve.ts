@@ -1,21 +1,25 @@
+import http from 'node:http';
 import { join, parse } from 'node:path';
 
 import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { AppMessages, AppsembleMessages } from '@appsemble/types';
-import { getAppBlocks, stripBlockName } from '@appsemble/utils';
+import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import FormData from 'form-data';
 import { Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
-import { getBlockConfig } from '../lib/block.js';
+import { getBlockConfig, makePayload } from '../lib/block.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
-import { serverImport } from '../lib/serverImport.js';
-import { appRouter } from '../routes/appRouter/index.js';
+import pkg from '../package.json' assert { type: 'json' };
+import * as controllers from '../server/controllers/index.js';
+import { appRouter } from '../server/routes/appRouter/index.js';
 import { BaseArguments } from '../types.js';
 
 interface ServeArguments extends BaseArguments {
   path: string;
   port: number;
+  host: string;
 }
 
 export const command = 'serve path';
@@ -26,31 +30,36 @@ export function builder(yargs: Argv): Argv<any> {
     .positional('path', {
       describe: 'The path to the app to publish.',
     })
-    .option('remote', {
-      desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
-      default: 'https://appsemble.app',
-    })
     .option('port', {
       desc: 'The HTTP server port to use.',
       type: 'number',
-      default: 8080,
+      default: 9999,
     });
 }
 
 export async function handler(argv: ServeArguments): Promise<void> {
-  const { serve, setArgv } = await serverImport('setArgv', 'serve');
-  const host = `http://localhost:${argv.port || 8080}`;
-  setArgv({ ...argv, host });
-
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
-  const appBlocks = getAppBlocks(appsembleApp.definition);
+  const identifiableBlocks = getAppBlocks(appsembleApp.definition);
+
   const blockConfigs = await Promise.all(
-    appBlocks
-      .map((block) => stripBlockName(block.type))
-      .map((path) => getBlockConfig(join(process.cwd(), 'blocks', path))),
+    identifiableBlocks.map(async (identifiableBlock) => {
+      const [organization, blockName] = parseBlockName(identifiableBlock.type);
+      const blockConfig = await getBlockConfig(join(process.cwd(), 'blocks', blockName));
+      return {
+        ...blockConfig,
+        OrganizationId: organization,
+      };
+    }),
   );
+
+  const blockPromises = blockConfigs.map(async (blockConfig) => {
+    const [, blockData] = await makePayload(blockConfig);
+    return blockData;
+  });
+
+  const appBlocks = await Promise.all(blockPromises);
 
   const webpackConfigs = await Promise.all(
     blockConfigs.map((blockConfig) =>
@@ -77,19 +86,42 @@ export async function handler(argv: ServeArguments): Promise<void> {
     { allowMissing: true },
   );
 
-  return serve({
-    webpackConfigs,
-    appsembleApp: {
-      ...appsembleApp,
-      id: 1,
-      coreStyle: appsembleApp.coreStyle || '',
-      sharedStyle: appsembleApp.sharedStyle || '',
-      $updated: new Date().toISOString(),
-    },
-    apiUrl: host,
-    appBlocks,
-    appMessages,
-    blockConfigs,
+  const server = createServer({
+    argv,
     appRouter,
+    controllers,
+    context: {
+      appHost: `http://${normalize(appsembleApp.definition.name)}.localhost:9090`,
+      appsembleApp: {
+        ...appsembleApp,
+        id: 1,
+        path: appPath,
+        coreStyle: appsembleApp.coreStyle || '',
+        sharedStyle: appsembleApp.sharedStyle || '',
+        $updated: new Date().toISOString(),
+      },
+      appBlocks,
+      appMessages,
+      blockConfigs,
+    },
+    webpackConfigs: webpackConfigs as any,
+  });
+
+  server.on('error', (err) => {
+    if (err.expose) {
+      return;
+    }
+    logger.error(err);
+  });
+
+  const callback = server.callback();
+  const httpServer = http.createServer(callback);
+
+  httpServer.listen(9090, '::', () => {
+    logger.info(asciiLogo);
+    logger.info(
+      `The app can be found on\n> http://${normalize(appsembleApp.definition.name)}.localhost:9090`,
+    );
+    logger.info(api(pkg.version, { port: 9090 }).info.description);
   });
 }

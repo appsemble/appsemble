@@ -1,7 +1,7 @@
 import {
   AppScreenshot as AppScreenShotInterface,
   GetAppSubEntityParams,
-} from '@appsemble/node-utils/types';
+} from 'packages/node-utils/server/routes/types';
 
 import { AppScreenshot } from '../../../models/index.js';
 

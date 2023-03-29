@@ -1,3 +1,4 @@
+import { getAppsembleMessages } from '@appsemble/node-utils/getAppsembleMessages';
 import { AppsembleMessages } from '@appsemble/types';
 import {
   compareStrings,
@@ -15,7 +16,6 @@ import { Op } from 'sequelize';
 import { App, AppMessages, BlockMessages, BlockVersion } from '../models/index.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
-import { getAppsembleMessages } from '../utils/getAppsembleMessages.js';
 import { mergeMessages } from '../utils/mergeMessages.js';
 
 export async function getMessages(ctx: Context): Promise<void> {

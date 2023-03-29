@@ -248,7 +248,7 @@ export async function traverseAppDirectory(
               throw new AppsembleError(`Expected ${screenshotPath} to be an image file`);
             }
             formData.append('screenshots', createReadStream(screenshotPath));
-            gatheredData.screenshotUrls.push(basename(screenshotPath, extname(screenshotPath)));
+            gatheredData.screenshotUrls.push(basename(screenshotPath));
           },
           { allowMissing: true },
         );

@@ -1,4 +1,4 @@
-import { GetBlocksAssetsPathsParams } from '@appsemble/node-utils/types';
+import { GetBlocksAssetsPathsParams } from '@appsemble/node-utils/server/routes/types.js';
 import { parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
