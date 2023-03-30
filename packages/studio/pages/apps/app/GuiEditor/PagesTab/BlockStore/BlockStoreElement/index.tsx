@@ -9,7 +9,7 @@ import { messages } from './messages.js';
 /**
  * The draggable block shown as a box with the block name in it.
  * On mouse down the handleDragStart method is called and the block is
- * attached to the mouse until mouse up.
+ * attached to the mouse until mouseW up.
  *
  * @returns BlockStoreElement
  */
