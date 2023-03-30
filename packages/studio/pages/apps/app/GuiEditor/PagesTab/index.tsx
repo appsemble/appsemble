@@ -23,7 +23,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
-  const [blockManifest, setBlockManifest] = useState<string>('');
+  const [blockManifest, setBlockManifest] = useState<string>('None');
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
 
   // Highlight the preview on drag enter
@@ -105,7 +105,9 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           onDragLeave={handleDragExit}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-        />
+        >
+          {blockManifest}
+        </div>
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
