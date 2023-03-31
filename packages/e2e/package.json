@@ -20,15 +20,16 @@
   },
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
-    "e2e": "cypress run",
+    "e2e": "playwright test",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.0.0",
+    "@playwright/test": "^1.0.0",
     "bulma": "0.9.3",
-    "cypress": "^11.0.0"
+    "playwright": "^1.0.0"
   },
   "engines": {
     "node": ">=18"

@@ -20,6 +20,8 @@
     "return[^;]*"
   ],
   "ignoreWords": [
+    "viewports",
+    "msedge",
     "enableTime",
     "enab",
     "estree",

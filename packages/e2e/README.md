@@ -13,10 +13,10 @@ To run end to end tests, run:
 yarn e2e
 ```
 
-The tests use [Cypress](https://www.cypress.io/).
+The tests use [Playwright](https://playwright.dev/).
 
-After each test a video will be saved in the `packages/e2e/cypress/videos` directory for further
-inspection.
+After each test a video will be saved in the `packages/e2e/test-results/{name-test}` directory for
+further inspection.
 
 The end to end tests use the following environment variables:
 

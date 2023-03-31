@@ -3,6 +3,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": ["dom"],
-    "types": ["cypress", "node"]
+    "types": ["node"]
   }
 }
