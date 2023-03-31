@@ -23,7 +23,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
-  const [blockManifest, setBlockManifest] = useState<string>('None');
+  const [blockManifest, setBlockManifest] = useState<string>('');
 
   // Highlight the preview on drag enter
   const handleDragEnter = (): void => {

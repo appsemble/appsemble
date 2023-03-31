@@ -18,10 +18,11 @@ interface BlockStoreElementProps {
 }
 export function BlockStoreElement({ block }: BlockStoreElementProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
+  const blockSchema = block.parameters.$schema;
 
   // Attach the DragElement to the mouse
   const handleDragStart = (e: DragEvent): void => {
-    e.dataTransfer.setData('block', JSON.stringify(block));
+    e.dataTransfer.setData('block', JSON.stringify(blockSchema));
   };
 
   return (
