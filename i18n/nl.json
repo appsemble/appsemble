@@ -596,7 +596,7 @@
   "studio.pages.apps.app.secrets.emailUserDescription": "De gebruikersnaam die wordt gebruikt voor verificatie voor de aangepaste SMTP-server.",
   "studio.pages.apps.app.secrets.ssl": "SSL",
   "studio.pages.apps.app.secrets.submit": "Opslaan",
-  "studio.pages.apps.app.secrets.submitError": "",
+  "studio.pages.apps.app.secrets.submitError": "Er is een fout opgetreden bij het opslaan van de e-mailinstellingen",
   "studio.pages.apps.app.secrets.title": "Geheimen",
   "studio.pages.apps.app.settings": "Instellingen",
   "studio.pages.apps.app.settings.IconTool.cancel": "Annuleren",
