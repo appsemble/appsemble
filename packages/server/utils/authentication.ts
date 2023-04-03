@@ -1,17 +1,10 @@
+import { AuthenticationCheckers } from '@appsemble/node-utils/createServer';
 import { compare } from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { GetApiKeyUser, GetHttpUser, GetOAuth2User } from 'koas-security';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
 import { argv } from './argv.js';
-
-interface AuthenticationCheckers {
-  basic: GetHttpUser<User>;
-  app: GetOAuth2User<User>;
-  cli: GetOAuth2User<User>;
-  studio: GetApiKeyUser<User>;
-}
 
 export function authentication(): AuthenticationCheckers {
   const { host, secret } = argv;

@@ -1,12 +1,14 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { request, setTestApp } from 'axios-test-instance';
 
+import * as controllers from '../../controllers/index.js';
 import { App, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
-import { setArgv } from '../../utils/argv.js';
-import { createServer } from '../../utils/createServer.js';
+import { argv, setArgv } from '../../utils/argv.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from './index.js';
 
 let requestURL: URL;
 
@@ -130,6 +132,9 @@ beforeEach(async () => {
   ]);
   setArgv({ host: 'http://host.example', secret: 'test' });
   const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
     middleware(ctx, next) {
       Object.defineProperty(ctx, 'origin', { get: () => requestURL.origin });
       Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });
@@ -181,6 +186,18 @@ it('should render the index page', async () => {
     vapidPrivateKey: '',
   });
   const response = await request.get('/');
+
+  const nonce = 'AAAAAAAAAAAAAAAAAAAAAA==';
+
+  response.data.data = {
+    ...response.data.data,
+    nonce,
+  };
+
+  const csp = response.headers['content-security-policy'] as string;
+  const responseNonce = csp.slice(csp.indexOf('nonce-') + 6, csp.indexOf('nonce-') + 30);
+  response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
+
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
     Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-ZIQmAQ5kLTM8kPLxm2ZIAGxGWL4fBbf21DH0NuLeuVw=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
@@ -189,6 +206,7 @@ it('should render the index page', async () => {
     {
       "data": {
         "app": {
+          "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "test",
           "definition": {
@@ -242,6 +260,7 @@ it('should render the index page', async () => {
             ],
           },
           "domain": null,
+          "emailName": null,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -249,11 +268,14 @@ it('should render the index page', async () => {
           "iconUrl": null,
           "id": 1,
           "locked": false,
+          "longDescription": null,
           "path": "app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
           "yaml": "name: Test App
     pages:
       - name: Test Page

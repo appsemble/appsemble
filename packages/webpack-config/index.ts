@@ -5,7 +5,7 @@ import { BlockConfig } from '@appsemble/types';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { Configuration } from 'webpack';
+import webpack, { Configuration } from 'webpack';
 
 const require = createRequire(import.meta.url);
 
@@ -93,6 +93,7 @@ export default function createWebpackConfig(
       ],
     },
     plugins: [
+      new webpack.HotModuleReplacementPlugin(),
       new CaseSensitivePathsPlugin(),
       new MiniCssExtractPlugin({ filename: `${blockName}.css` }),
     ],

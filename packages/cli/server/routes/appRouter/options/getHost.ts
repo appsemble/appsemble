@@ -1,0 +1,8 @@
+import { GetHostParams } from '@appsemble/node-utils/server/routes/types.js';
+import { normalize } from '@appsemble/utils';
+
+export const getHost = ({ context }: GetHostParams): string => {
+  const { appsembleApp } = context;
+  const prefix = `${normalize(appsembleApp.definition.name)}.`;
+  return context.appHost.replace(prefix, '');
+};

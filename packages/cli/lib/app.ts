@@ -1,6 +1,6 @@
 import { createReadStream, existsSync, ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
-import { join, parse, relative, resolve } from 'node:path';
+import { basename, extname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
@@ -184,12 +184,15 @@ export async function traverseAppDirectory(
   path: string,
   context: string,
   formData: FormData,
-): Promise<[AppsembleContext, AppsembleRC, string]> {
+): Promise<[AppsembleContext, AppsembleRC, string, App]> {
   let discoveredContext: AppsembleContext;
   let rc: AppsembleRC;
   let iconPath: string;
   let maskableIconPath: string;
   let yaml: string;
+  const gatheredData: App = {
+    screenshotUrls: [],
+  } as App;
 
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   await opendirSafe(path, async (filepath, filestat) => {
@@ -199,6 +202,7 @@ export async function traverseAppDirectory(
         [rc] = await readData<AppsembleRC>(filepath);
         if ('iconBackground' in rc) {
           formData.append('iconBackground', rc.iconBackground);
+          gatheredData.iconBackground = rc.iconBackground;
         }
         if (context && has(rc?.context, context)) {
           discoveredContext = rc.context[context];
@@ -212,15 +216,17 @@ export async function traverseAppDirectory(
           throw new AppsembleError('Found duplicate app definition');
         }
 
-        const [, data] = await readData(filepath);
-        yaml = data;
-        formData.append('yaml', data);
+        const [data, dataString] = await readData(filepath);
+        yaml = dataString;
+        formData.append('yaml', dataString);
+        gatheredData.definition = data as AppDefinition;
         return;
       }
 
       case 'icon.png':
       case 'icon.svg':
         iconPath = filepath;
+        gatheredData.iconUrl = basename(filepath, extname(filepath));
         return;
 
       case 'maskable-icon.png':
@@ -230,6 +236,7 @@ export async function traverseAppDirectory(
       case 'readme.md':
         logger.info(`Including longDescription from ${filepath}`);
         formData.append('longDescription', await readFile(filepath, 'utf8'));
+        gatheredData.longDescription = await readFile(filepath, 'utf8');
         return;
 
       case 'screenshots':
@@ -241,6 +248,7 @@ export async function traverseAppDirectory(
               throw new AppsembleError(`Expected ${screenshotPath} to be an image file`);
             }
             formData.append('screenshots', createReadStream(screenshotPath));
+            gatheredData.screenshotUrls.push(basename(screenshotPath));
           },
           { allowMissing: true },
         );
@@ -256,6 +264,7 @@ export async function traverseAppDirectory(
           }
           const css = await processCss(join(themeDir, 'index.css'));
           formData.append(`${name}Style`, css);
+          gatheredData[`${name}Style`] = await processCss(join(themeDir, 'index.css'));
         });
 
       default:
@@ -272,7 +281,7 @@ export async function traverseAppDirectory(
   discoveredContext.maskableIcon = discoveredContext.maskableIcon
     ? resolve(path, discoveredContext.maskableIcon)
     : maskableIconPath;
-  return [discoveredContext, rc, yaml];
+  return [discoveredContext, rc, yaml, gatheredData];
 }
 
 /**

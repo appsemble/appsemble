@@ -1,15 +1,17 @@
 import { basicAuth } from '@appsemble/node-utils';
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { TokenResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+import * as controllers from '../../controllers/index.js';
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models/index.js';
-import { setArgv } from '../../utils/argv.js';
+import { argv, setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
-import { createServer } from '../../utils/createServer.js';
 import { createTestUser } from '../../utils/test/authorization.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
+import { appRouter } from '../appRouter/index.js';
 
 let user: User;
 
@@ -17,7 +19,11 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+  });
   await setTestApp(server);
 });
 

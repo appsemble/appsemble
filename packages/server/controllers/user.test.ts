@@ -1,11 +1,13 @@
+import { createServer } from '@appsemble/node-utils/createServer.js';
 import { User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
+import * as controllers from './index.js';
 
 let user: User;
 
@@ -13,7 +15,11 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+  });
   await setTestApp(server);
 });
 

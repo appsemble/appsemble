@@ -1,4 +1,8 @@
 import { logger } from '@appsemble/node-utils';
+import {
+  getAppsembleMessages,
+  getSupportedLanguages,
+} from '@appsemble/node-utils/getAppsembleMessages.js';
 import { defaultLocale, has, IntlMessageFormat } from '@appsemble/utils';
 import addrs, { ParsedMailbox } from 'email-addresses';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
@@ -10,7 +14,6 @@ import { Op } from 'sequelize';
 import { App, AppMessages } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
-import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages.js';
 import { readAsset } from '../readAsset.js';
 import { renderEmail } from './renderEmail.js';
 

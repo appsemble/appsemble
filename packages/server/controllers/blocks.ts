@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { logger, serveIcon } from '@appsemble/node-utils';
 import { BlockDefinition, BlockManifest } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
@@ -22,7 +22,6 @@ import {
 import { blockVersionToJson } from '../utils/block.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
-import { serveIcon } from '../utils/icon.js';
 import { handleValidatorResult } from '../utils/jsonschema.js';
 
 export async function getBlock(ctx: Context): Promise<void> {

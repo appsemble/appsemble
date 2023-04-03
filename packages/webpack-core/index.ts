@@ -19,7 +19,7 @@ import remarkMdxImages from 'remark-mdx-images';
 import remarkMermaid from 'remark-mermaidjs';
 import { Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
-import { Configuration } from 'webpack';
+import webpack, { Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
 import { rehypeSearchIndex } from './rehype/searchIndex.js';
@@ -65,7 +65,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: { [env]: [join(projectDir, 'index.tsx')] },
+    entry: { [env]: ['webpack-hot-middleware/client', join(projectDir, 'index.tsx')] },
     output: {
       filename: production ? '[contenthash].js' : `${env}-[name].js`,
       publicPath,
@@ -84,6 +84,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       },
     },
     plugins: [
+      new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
         template: fileURLToPath(new URL('index.html', projectURL)),
         templateParameters: {
