@@ -3,7 +3,7 @@ import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 import { extension } from 'mime-types';
 
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 
 const iconSizes = [48, 144, 192, 512];
 

@@ -8,7 +8,7 @@ import sass from 'sass';
 import stripBom from 'strip-bom';
 
 import { logger } from '../../../logger.js';
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 
 const require = createRequire(import.meta.url);
 

@@ -2,7 +2,7 @@ import { isEqual, parseISO } from 'date-fns';
 import { Context, Middleware } from 'koa';
 
 import { serveIcon } from '../../../icon.js';
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 
 export function createIconHandler({
   getApp,

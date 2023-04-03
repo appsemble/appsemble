@@ -3,7 +3,7 @@ import {
   GetAppBlockStylesParams,
 } from 'packages/node-utils/server/routes/types';
 
-import { processCss } from '../../../../lib/processCss.js';
+import { processCss } from '../../lib/processCss';
 
 export const getAppBlockStyles = async ({
   context,

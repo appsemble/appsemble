@@ -7,7 +7,7 @@ import { Context, Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
 import { makeCSP, render } from '../../../render.js';
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 
 export const bulmaURL = `/bulma/${bulmaPkg.version}/bulma.min.css`;
 export const faURL = `/fa/${faPkg.version}/css/all.min.css`;

@@ -1,4 +1,4 @@
-import { GetBlocksAssetsPathsParams } from '@appsemble/node-utils/server/routes/types.js';
+import { GetBlocksAssetsPathsParams } from 'packages/node-utils/server/types';
 import { prefixBlockURL } from '@appsemble/utils';
 
 export const getBlocksAssetsPaths = ({

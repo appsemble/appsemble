@@ -1,5 +1,5 @@
 import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
-import { CreateSettingsParams } from '@appsemble/node-utils/server/routes/types.js';
+import { CreateSettingsParams } from 'packages/node-utils/server/types';
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 

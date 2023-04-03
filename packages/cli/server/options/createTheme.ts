@@ -1,9 +1,9 @@
 import {
   CreateThemeParams,
   Theme as ThemeInterface,
-} from '@appsemble/node-utils/server/routes/types.js';
+} from 'packages/node-utils/server/types';
 
-import { Theme } from '../../../models/Theme.js';
+import { Theme } from '../models/Theme';
 
 export const createTheme = ({ css, ...theme }: CreateThemeParams): Promise<ThemeInterface> =>
   Theme.create({ ...theme, css });

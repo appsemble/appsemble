@@ -8,7 +8,7 @@ import mount from 'koa-mount';
 import serve from 'koa-static';
 
 import { tinyRouter } from '../../../tinyRouter.js';
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 import { createBlockAssetHandler } from './blockAssetHandler.js';
 import { createBlockCssHandler } from './blockCssHandler.js';
 import { createBulmaHandler } from './bulmaHandler.js';

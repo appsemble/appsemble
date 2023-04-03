@@ -1,4 +1,4 @@
-import { GetHostParams } from '@appsemble/node-utils/server/routes/types.js';
+import { GetHostParams } from 'packages/node-utils/server/types';
 import { normalize } from '@appsemble/utils';
 
 export const getHost = ({ context }: GetHostParams): string => {

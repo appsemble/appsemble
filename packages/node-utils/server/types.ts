@@ -8,6 +8,7 @@ import {
 } from '@appsemble/types';
 import { IdentifiableBlock } from '@appsemble/utils';
 import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
+import { User } from '@appsemble/server/models';
 
 declare module 'koa' {
   interface Request {
@@ -21,6 +22,55 @@ declare module 'koa' {
     appMessages: AppMessages[];
     blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
+  }
+}
+
+declare module 'koas-security' {
+  interface Clients {
+    app: { scope: string; app: App };
+    basic: {};
+    cli: { scope: string };
+    studio: {};
+  }
+
+  interface Users {
+    app: User;
+    basic: User;
+    cli: User;
+    studio: User;
+  }
+}
+
+declare module 'koas-parameters' {
+  interface PathParams {
+    appId: number;
+    appOAuth2SecretId: number;
+    appSamlSecretId: number;
+    assetId: string;
+    blockId: string;
+    blockVersion: string;
+    clientId: string;
+    language: string;
+    memberId: string;
+    organizationId: string;
+    path: string;
+    resourceId: number;
+    resourceType: string;
+    screenshotId: number;
+    snapshotId: number;
+    teamId: string;
+    token: string;
+  }
+
+  interface QueryParams {
+    domains: string[];
+    $filter?: string;
+    $orderby?: string;
+    $select: string;
+    $top: number;
+    $skip: number;
+    code: string;
+    view: string;
   }
 }
 
@@ -138,9 +188,10 @@ export interface Theme {
 
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
-export interface AppRouterOptions {
+export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
+  getAppMessages: (params: GetAppSubEntityParams) => Promise<AppMessages[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;

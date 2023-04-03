@@ -1,7 +1,7 @@
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../types.js';
+import { AppRouterOptions } from '../../types';
 
 export function createScreenshotHandler({
   getApp,

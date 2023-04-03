@@ -1,4 +1,4 @@
-import { GetAppParams } from '@appsemble/node-utils/server/routes/types.js';
+import { GetAppParams } from 'packages/node-utils/server/types';
 import { App as AppInterface } from '@appsemble/types';
 
 import { getApp as getServerApp } from '../../../utils/app.js';
