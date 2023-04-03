@@ -2,8 +2,8 @@ import { useBlock } from '@appsemble/preact';
 import { Remapper } from '@appsemble/types';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
-import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
 import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
+import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate.js';
 import { ComponentProps, JSX, VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 

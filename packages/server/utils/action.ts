@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, has, IntlMessageFormat, remap, RemapperContext } from '@appsemble/utils';
+import { defaultLocale, has, remap, RemapperContext } from '@appsemble/utils';
+import { IntlMessageFormat } from 'intl-messageformat';
 
 import { AppMessages } from '../models/AppMessages.js';
 import { actions, ServerActionParameters } from './actions/index.js';

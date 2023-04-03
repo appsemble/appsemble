@@ -1,6 +1,6 @@
 import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import { IntlMessageFormat } from 'intl-messageformat';
 
-import { IntlMessageFormat } from './intl-messageformat.js';
 import { remap } from './remap.js';
 
 interface TestCase {
