@@ -34,6 +34,7 @@
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "flatpickr": "^4.0.0",
+    "intl-messageformat": "^10.0.0",
     "leaflet": "~1.5.0",
     "preact": "^10.0.0"
   }

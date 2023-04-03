@@ -3,13 +3,12 @@ import {
   defaultLocale,
   extractAppMessages,
   has,
-  IntlMessageFormat,
   objectCache,
   RemapperContext,
 } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import { badRequest } from '@hapi/boom';
-import { Formatters } from 'intl-messageformat';
+import { Formatters, IntlMessageFormat } from 'intl-messageformat';
 import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
