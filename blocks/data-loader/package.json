@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/data-loader",
-  "version": "0.20.41",
+  "version": "0.20.42",
   "private": true,
   "description": "A block that fetches data and emits it using the events API.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.41"
+    "@appsemble/sdk": "0.20.42"
   }
 }
