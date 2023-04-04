@@ -3,6 +3,7 @@ import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
 import { DragEvent, ReactElement } from 'react';
 
+import { generateData } from '../../GenerateData/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
@@ -27,8 +28,8 @@ export function BlockStoreElement({
   // Attach the DragElement to the mouse
   const handleDragStart = (e: DragEvent): void => {
     dragEventListener();
-
-    e.dataTransfer.setData('block', JSON.stringify(blockSchema));
+    const data = generateData(blockSchema);
+    e.dataTransfer.setData('block', JSON.stringify(data));
   };
 
   return (
