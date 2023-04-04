@@ -60,7 +60,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
 
   // On dropping block change dropzone activity to false
   // So it does not cover the app preview
-  const onDragEvent = () => {
+  const onDragEvent = (): void => {
     setDropzoneActive(true);
   };
 
