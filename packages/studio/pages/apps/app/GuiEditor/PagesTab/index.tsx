@@ -1,4 +1,4 @@
-import { ReactElement, DragEvent, useCallback, useRef, useState } from 'react';
+import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
@@ -61,7 +61,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
 
   // On dropping block change dropzone activity to false
   // So it does not cover the app preview
-  const onDragEvent = () => {
+  const onDragEvent = (): void => {
     setDropzoneActive(true);
   };
 
