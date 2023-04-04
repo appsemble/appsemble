@@ -15,13 +15,20 @@ import { messages } from './messages.js';
  */
 interface BlockStoreElementProps {
   block: BlockManifest;
+  dragEventListener: () => void;
 }
-export function BlockStoreElement({ block }: BlockStoreElementProps): ReactElement {
+export function BlockStoreElement({
+  block,
+  dragEventListener,
+}: BlockStoreElementProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
+  const blockSchema = block.parameters;
 
   // Attach the DragElement to the mouse
   const handleDragStart = (e: DragEvent): void => {
-    e.dataTransfer.setData('block', name);
+    dragEventListener();
+
+    e.dataTransfer.setData('block', JSON.stringify(blockSchema));
   };
 
   return (

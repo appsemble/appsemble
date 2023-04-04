@@ -21,7 +21,11 @@ import { messages } from './messages.js';
  * @returns A grid of available blocks that can be dragged and dropped into the app preview.
  */
 
-export function BlockStore(): ReactElement {
+interface BlockStoreProps {
+  dragEventListener: () => void;
+}
+
+export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {
@@ -57,7 +61,7 @@ export function BlockStore(): ReactElement {
         </header>
       </div>
       {appsembleBlocks.map((block) => (
-        <BlockStoreElement block={block} key={block.name} />
+        <BlockStoreElement block={block} dragEventListener={dragEventListener} key={block.name} />
       ))}
     </div>
   );
