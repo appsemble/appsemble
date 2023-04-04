@@ -23,6 +23,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
+  const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
 
   // Highlight the preview on drag enter
   const handleDragEnter = (): void => {
@@ -31,7 +32,10 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
+
+  // Append the dragged block to the app definition
   const handleDrop = (): void => {
+    setDropzoneActive(false);
     setDragOver(false);
   };
 
@@ -52,6 +56,12 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setSelectedPage, setSelectedBlock, setSelectedSubParent],
   );
+
+  // On dropping block change dropzone activity to false
+  // So it does not cover the app preview
+  const onDragEvent = (): void => {
+    setDropzoneActive(true);
+  };
 
   const onCreatePage = useCallback(() => {
     setEditPageView(true);
@@ -84,7 +94,10 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
       <div className={styles.root}>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          className={`${dragOver ? styles.dropzoneDragOver : styles.dropzone} is-flex m-0 p-0`}
+          className={`${dropzoneActive ? styles.dropzoneActive : styles.dropzoneInactive}  ${
+            dragOver ? styles.dropzoneDragOver : styles.dropzone
+          } is-flex m-0 p-0`}
+          draggable={false}
           onDragEnter={handleDragEnter}
           onDragExit={handleDragExit}
           onDragLeave={handleDragExit}
@@ -100,7 +113,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
             <BlockProperty selectedBlock={selectedBlock} selectedPage={selectedPage} />
           ) : null}
         </div>
-        <BlockStore />
+        <BlockStore dragEventListener={onDragEvent} />
       </Sidebar>
     </>
   );
