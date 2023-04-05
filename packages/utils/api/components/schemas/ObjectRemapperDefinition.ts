@@ -99,7 +99,7 @@ For example:
 \`\`\`yaml
   - static: 02/11/2014     # The date string to parse
   - date.parse: MM/dd/yyyy # The given format to parse the date with
-               # => Tue Feb 11 2014 00:00:00 
+               # => Tue Feb 11 2014 00:00:00
 \`\`\`
 
 See [date-fns](https://date-fns.org/v2.29.3/docs/parse) for the supported formats.
@@ -203,6 +203,29 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         else: {
           $ref: '#/components/schemas/RemapperDefinition',
           description: 'This remapper is used if the condition returns false.',
+        },
+      },
+    },
+    match: {
+      type: 'array',
+      description: `Check if any case results in a truthy value.
+
+Returns the value of the first case where the condition equals true, otherwise returns null.
+`,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['case', 'value'],
+        description: '',
+        properties: {
+          case: {
+            $ref: '#/components/schemas/RemapperDefinition',
+            description: 'The condition to check.',
+          },
+          value: {
+            $ref: '#/components/schemas/RemapperDefinition',
+            description: 'This remapper is used if the case is true',
+          },
         },
       },
     },

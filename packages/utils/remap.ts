@@ -269,6 +269,13 @@ const mapperImplementations: MapperImplementations = {
     return remap(condition ? mappers.then : mappers.else, input, context);
   },
 
+  match(mappers, input, context) {
+    return (
+      remap(mappers.find((mapper) => remap(mapper.case, input, context))?.value, input, context) ??
+      null
+    );
+  },
+
   'object.from': (mappers, input, context) =>
     mapValues(mappers, (mapper) => remap(mapper, input, context)),
 

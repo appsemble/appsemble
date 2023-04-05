@@ -369,6 +369,13 @@ export interface Remappers {
   if: { condition: Remapper; then: Remapper; else: Remapper };
 
   /**
+   * Check if any case results in a truthy value.
+   *
+   * Returns the value of the first case where the condition equals true, otherwise returns null.
+   */
+  match: { case: Remapper; value: Remapper }[];
+
+  /**
    * Get the current array.map’s index or length.
    *
    * Returns nothing if array.map’s context isn’t set.
