@@ -1,7 +1,7 @@
 import { Methods } from '../db/methods.js';
 import { FindOptions } from '../db/types.js';
 
-const dir = '/appBlockStyles';
+const dir = 'appBlockStyles';
 
 export class AppBlockStyle {
   AppId: string;

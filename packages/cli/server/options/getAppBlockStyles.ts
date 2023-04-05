@@ -1,9 +1,9 @@
 import {
   AppBlockStyle as AppBlockStyleInterface,
   GetAppBlockStylesParams,
-} from 'packages/node-utils/server/routes/types';
+} from '@appsemble/node-utils/server/types';
 
-import { processCss } from '../../lib/processCss';
+import { processCss } from '../../lib/processCss.js';
 
 export const getAppBlockStyles = async ({
   context,

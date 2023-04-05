@@ -1,5 +1,5 @@
 import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
-import { CreateSettingsParams } from 'packages/node-utils/server/routes/types';
+import { CreateSettingsParams } from '@appsemble/node-utils/server/types';
 
 export const createSettings = ({
   context,

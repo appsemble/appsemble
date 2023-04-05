@@ -1,10 +1,13 @@
+import { readFile } from 'node:fs/promises';
 import http from 'node:http';
 import { join, parse } from 'node:path';
+import { Readable } from 'node:stream';
 
 import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
 import { AppMessages, AppsembleMessages } from '@appsemble/types';
 import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
+import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
 import { Argv } from 'yargs';
 
@@ -13,6 +16,8 @@ import { getBlockConfig, makePayload } from '../lib/block.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
 import pkg from '../package.json' assert { type: 'json' };
 import * as controllers from '../server/controllers/index.js';
+import { setAppDir } from '../server/db/app.js';
+import { Resource } from '../server/models/Resource.js';
 import { appRouter } from '../server/routes/appRouter/index.js';
 import { BaseArguments } from '../types.js';
 
@@ -40,6 +45,8 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
+  const appName = normalize(appsembleApp.definition.name);
+  setAppDir(appName);
 
   const identifiableBlocks = getAppBlocks(appsembleApp.definition);
 
@@ -67,12 +74,13 @@ export async function handler(argv: ServeArguments): Promise<void> {
     ),
   );
 
+  // Get app messages
   const appMessages: AppMessages[] = [];
   await opendirSafe(
     join(appPath, 'i18n'),
-    async (messageFile) => {
-      logger.verbose(`Processing ${messageFile} ⚙️`);
-      const { name: language } = parse(messageFile);
+    async (path) => {
+      logger.verbose(`Processing ${path} ⚙️`);
+      const { name: language } = parse(path);
 
       if (appMessages.some((entry) => entry.language === language)) {
         throw new AppsembleError(
@@ -80,8 +88,44 @@ export async function handler(argv: ServeArguments): Promise<void> {
         );
       }
 
-      const [messages] = await readData<AppsembleMessages>(messageFile);
+      const [messages] = await readData<AppsembleMessages>(path);
       appMessages.push({ language, messages });
+    },
+    { allowMissing: true },
+  );
+
+  // Get app resources
+  await opendirSafe(
+    join(appPath, 'resources'),
+    async (path, stat) => {
+      logger.verbose(`Processing ${path} ⚙️`);
+
+      let resources: unknown[];
+      if (path.endsWith('.csv')) {
+        const data = await readFile(path);
+        const stream = Readable.from(data);
+        resources = await csvToJson({}).fromStream(stream);
+      } else {
+        const [resource] = await readData(path);
+        if (typeof resource !== 'object') {
+          throw new AppsembleError(
+            `File at ${path} does not contain an object or array of objects`,
+          );
+        }
+        resources = [].concat(resource);
+      }
+
+      logger.info(`Creating resource(s) from ${path}`);
+
+      const { name } = parse(stat.name);
+
+      await Resource.bulkCreate(
+        resources.map((resource: {}, index) => ({
+          id: index,
+          ...resource,
+        })),
+        name,
+      );
     },
     { allowMissing: true },
   );
@@ -91,7 +135,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
     appRouter,
     controllers,
     context: {
-      appHost: `http://${normalize(appsembleApp.definition.name)}.localhost:9090`,
+      appHost: `http://${appName}.localhost:9090`,
       appsembleApp: {
         ...appsembleApp,
         id: 1,

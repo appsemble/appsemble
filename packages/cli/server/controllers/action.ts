@@ -6,7 +6,7 @@ import {
   createProxyPut,
 } from '@appsemble/node-utils/server/controllers/action.js';
 
-import { options } from '../../options/options.js';
+import { options } from '../options/options.js';
 
 export const proxyDelete = createProxyDelete(options);
 export const proxyGet = createProxyGet(options);

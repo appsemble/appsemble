@@ -2,7 +2,7 @@ import { GetBlocksAssetsPathsParams } from 'packages/node-utils/server/types';
 import { parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../../../models/index.js';
+import { BlockAsset, BlockVersion } from '../models';
 
 export const getBlocksAssetsPaths = async ({
   identifiableBlocks,

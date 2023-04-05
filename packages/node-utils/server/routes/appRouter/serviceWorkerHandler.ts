@@ -3,12 +3,12 @@ import { readFile } from 'node:fs/promises';
 import { getAppBlocks } from '@appsemble/utils';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 export function createServiceWorkerHandler({
   getApp,
   getBlocksAssetsPaths,
-}: AppRouterOptions): Middleware {
+}: Options): Middleware {
   return async (ctx: Context) => {
     const production = process.env.NODE_ENV === 'production';
 

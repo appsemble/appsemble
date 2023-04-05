@@ -3,7 +3,7 @@ import {
   GetAppSubEntityParams,
 } from 'packages/node-utils/server/routes/types';
 
-import { AppScreenshot } from '../../../models/index.js';
+import { AppScreenshot } from '../models';
 
 export const getAppScreenshots = async ({
   app,

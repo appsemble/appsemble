@@ -8,7 +8,7 @@ import mount from 'koa-mount';
 import serve from 'koa-static';
 
 import { tinyRouter } from '../../../tinyRouter.js';
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 import { createBlockAssetHandler } from './blockAssetHandler.js';
 import { createBlockCssHandler } from './blockCssHandler.js';
 import { createBulmaHandler } from './bulmaHandler.js';
@@ -25,7 +25,7 @@ const require = createRequire(import.meta.url);
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
-export function createAppRouter(options: AppRouterOptions): Middleware {
+export function createAppRouter(options: Options): Middleware {
   return tinyRouter([
     {
       route: '/manifest.json',

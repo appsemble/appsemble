@@ -8,7 +8,7 @@ import sass from 'sass';
 import stripBom from 'strip-bom';
 
 import { logger } from '../../../logger.js';
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 const require = createRequire(import.meta.url);
 
@@ -86,7 +86,7 @@ function processStyle(theme: QueryParamTheme): string {
     }`;
 }
 
-export function createBulmaHandler({ createTheme, getTheme }: AppRouterOptions): Middleware {
+export function createBulmaHandler({ createTheme, getTheme }: Options): Middleware {
   return async (ctx: Context) => {
     const { query } = ctx;
 

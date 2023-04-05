@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import {
   AppScreenshot as AppScreenShotInterface,
   GetAppSubEntityParams,
-} from 'packages/node-utils/server/types';
+} from '@appsemble/node-utils/server/types';
 import { lookup } from 'mime-types';
 import sharp from 'sharp';
 

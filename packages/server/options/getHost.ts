@@ -1,4 +1,4 @@
-import { argv } from '../../../utils/argv.js';
+import { argv } from '../utils/argv';
 
 export const getHost = (): string => {
   const { host } = argv;

@@ -1,6 +1,6 @@
 import { ContentSecurityPolicy, GetCspParams } from 'packages/node-utils/server/routes/types';
 
-import { getSentryClientSettings } from '../../../utils/sentry.js';
+import { getSentryClientSettings } from '../utils/sentry';
 
 export const getCsp = ({
   app,

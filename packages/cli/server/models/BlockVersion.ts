@@ -3,7 +3,7 @@ import { ActionType, EventType } from '@appsemble/types';
 import { Methods } from '../db/methods.js';
 import { FindOptions } from '../db/types.js';
 
-const dir = '/blockVersions';
+const dir = 'blockVersions';
 
 export class BlockVersion {
   id: number;

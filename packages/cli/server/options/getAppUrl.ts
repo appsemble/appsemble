@@ -1,4 +1,4 @@
-import { GetAppSubEntityParams } from 'packages/node-utils/server/routes/types';
+import { GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
 
 export const getAppUrl = ({ context }: GetAppSubEntityParams): Promise<URL> => {
   const url = new URL(context.appHost);

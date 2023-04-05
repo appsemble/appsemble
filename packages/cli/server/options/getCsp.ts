@@ -1,4 +1,4 @@
-import { ContentSecurityPolicy, GetCspParams } from 'packages/node-utils/server/routes/types';
+import { ContentSecurityPolicy, GetCspParams } from '@appsemble/node-utils/server/types';
 
 export const getCsp = ({ host, nonce, settingsHash }: GetCspParams): ContentSecurityPolicy => ({
   'connect-src': ['*', 'blob:', 'data:'],

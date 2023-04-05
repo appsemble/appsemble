@@ -1,4 +1,4 @@
-import { Options } from '@appsemble/node-utils/server/types';
+import { Options } from '@appsemble/node-utils/server/types.js';
 
 import {
   createSettings,
@@ -8,7 +8,6 @@ import {
   getAppDetails,
   getAppIcon,
   getAppMessages,
-  getAppResource,
   getAppResources,
   getAppScreenshots,
   getAppStyles,
@@ -29,7 +28,6 @@ export const options: Options = {
   getAppDetails,
   getAppIcon,
   getAppMessages,
-  getAppResource,
   getAppResources,
   getAppScreenshots,
   getAppStyles,

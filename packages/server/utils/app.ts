@@ -1,15 +1,5 @@
-import { UserInfo } from '@appsemble/types';
-import {
-  defaultLocale,
-  extractAppMessages,
-  has,
-  IntlMessageFormat,
-  objectCache,
-  RemapperContext,
-} from '@appsemble/utils';
-import { memoize } from '@formatjs/fast-memoize';
+import { extractAppMessages } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
-import { Formatters } from 'intl-messageformat';
 import { Context } from 'koa';
 import tags from 'language-tags';
 import { FindOptions, IncludeOptions, Op } from 'sequelize';
@@ -17,13 +7,6 @@ import { FindOptions, IncludeOptions, Op } from 'sequelize';
 import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
 import { mergeMessages } from './mergeMessages.js';
-
-const getNumberFormat = memoize(
-  (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
-);
-const getPluralRules = memoize(
-  (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
-);
 
 interface GetAppValue {
   /**
@@ -90,60 +73,6 @@ export function getAppUrl(app: App): URL {
   const url = new URL(argv.host);
   url.hostname = app.domain || `${app.path}.${app.OrganizationId}.${url.hostname}`;
   return url;
-}
-
-/**
- * Get a context for remappers based on an app definition.
- *
- * This allows to use remappers with the context of an app on the server.
- *
- * @param app The app for which to get the remapper context.
- * @param language The preferred language for the context.
- * @param userInfo The OAuth2 compatible user information.
- * @returns A localized remapper context for the app.
- */
-export async function getRemapperContext(
-  app: App,
-  language: string,
-  userInfo: UserInfo,
-): Promise<RemapperContext> {
-  const languages = language.toLowerCase().split(/-/g);
-  const appMessages = await AppMessages.findAll({
-    order: [['language', 'desc']],
-    where: {
-      AppId: app.id,
-      language: { [Op.or]: languages.map((lang, i) => languages.slice(0, i + 1).join('-')) },
-    },
-  });
-
-  const cache = objectCache(
-    (message) =>
-      new IntlMessageFormat(message, language, undefined, {
-        formatters: {
-          getNumberFormat,
-          getPluralRules,
-          getDateTimeFormat: memoize(
-            (locale: string, opts: Intl.DateTimeFormatOptions) =>
-              new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
-          ),
-        } as Formatters,
-      }),
-  );
-  const appUrl = String(getAppUrl(app));
-
-  return {
-    appId: app.id,
-    appUrl,
-    url: appUrl,
-    getMessage({ defaultMessage, id }) {
-      const msg = appMessages.find(({ messages }) => has(messages.messageIds, id));
-      const message = msg ? msg.messages.messageIds[id] : defaultMessage;
-      return cache(message || `'{${id}}'`);
-    },
-    userInfo,
-    context: {},
-    locale: userInfo?.locale ?? app.definition.defaultLanguage ?? defaultLocale,
-  };
 }
 
 /**

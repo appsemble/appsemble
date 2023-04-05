@@ -1,17 +1,11 @@
 import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
-import { CreateSettingsParams } from 'packages/node-utils/server/types';
+import { CreateSettingsParams } from '@appsemble/node-utils/server/types.js';
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
-import {
-  App,
-  AppOAuth2Secret,
-  AppSamlSecret,
-  BlockAsset,
-  BlockVersion,
-} from '../../../models/index.js';
-import { createGtagCode } from '../../../utils/render.js';
-import { getSentryClientSettings } from '../../../utils/sentry.js';
+import { App, AppOAuth2Secret, AppSamlSecret, BlockAsset, BlockVersion } from '../models/index.js';
+import { createGtagCode } from '../utils/render.js';
+import { getSentryClientSettings } from '../utils/sentry.js';
 
 export const createSettings = async ({
   app,

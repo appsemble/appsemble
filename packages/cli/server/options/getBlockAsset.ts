@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import {
   BlockAsset as BlockAssetInterface,
   GetBlockAssetParams,
-} from 'packages/node-utils/server/types';
+} from '@appsemble/node-utils/server/types';
 import { lookup } from 'mime-types';
 
 export const getBlockAsset = async ({

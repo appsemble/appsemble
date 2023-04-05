@@ -1,4 +1,4 @@
-import { AppDetails, GetAppParams } from 'packages/node-utils/server/routes/types';
+import { AppDetails, GetAppParams } from '@appsemble/node-utils/server/types';
 
 export const getAppDetails = ({ context }: GetAppParams): Promise<AppDetails> => {
   const { appsembleApp } = context;

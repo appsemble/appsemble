@@ -93,7 +93,7 @@ export default function createWebpackConfig(
       ],
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
+      //new webpack.HotModuleReplacementPlugin(),
       new CaseSensitivePathsPlugin(),
       new MiniCssExtractPlugin({ filename: `${blockName}.css` }),
     ],

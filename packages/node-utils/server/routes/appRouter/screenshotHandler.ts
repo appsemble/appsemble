@@ -1,12 +1,12 @@
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 export function createScreenshotHandler({
   getApp,
   getAppScreenshots,
-}: AppRouterOptions): Middleware {
+}: Options): Middleware {
   return async (ctx: Context) => {
     const { id } = ctx.params;
 

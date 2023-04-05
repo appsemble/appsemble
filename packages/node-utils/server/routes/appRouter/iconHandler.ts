@@ -2,13 +2,9 @@ import { isEqual, parseISO } from 'date-fns';
 import { Context, Middleware } from 'koa';
 
 import { serveIcon } from '../../../icon.js';
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
-export function createIconHandler({
-  getApp,
-  getAppIcon,
-  getDbUpdated,
-}: AppRouterOptions): Middleware {
+export function createIconHandler({ getApp, getAppIcon, getDbUpdated }: Options): Middleware {
   return async (ctx: Context) => {
     const {
       params: { size = 128 },

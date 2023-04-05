@@ -1,7 +1,7 @@
 import { Methods } from '../db/methods.js';
 import { FindOptions } from '../db/types.js';
 
-const dir = '/appScreenshots';
+const dir = 'appScreenshots';
 
 export class AppScreenshot {
   AppId: string;

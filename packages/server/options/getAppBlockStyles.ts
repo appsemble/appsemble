@@ -3,7 +3,7 @@ import {
   GetAppBlockStylesParams,
 } from 'packages/node-utils/server/routes/types';
 
-import { AppBlockStyle } from '../../../models/index.js';
+import { AppBlockStyle } from '../models';
 
 export const getAppBlockStyles = async ({
   app,

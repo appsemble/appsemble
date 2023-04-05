@@ -1,6 +1,6 @@
 import { GetDbUpdatedParams } from 'packages/node-utils/server/routes/types';
 
-import { App, Organization } from '../../../models/index.js';
+import { App, Organization } from '../models';
 
 export const getDbUpdated = async ({
   app,

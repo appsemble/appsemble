@@ -5,7 +5,7 @@ import { compareStrings } from '@appsemble/utils';
 import { Context } from 'koa';
 import mustache from 'mustache';
 
-import { ContentSecurityPolicy } from './server/types';
+import { ContentSecurityPolicy } from './server/types.js';
 
 /**
  * Render settings as an HTML script tag.

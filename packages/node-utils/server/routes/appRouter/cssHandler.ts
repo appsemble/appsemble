@@ -1,11 +1,11 @@
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 export function createCssHandler(
   type: 'coreStyle' | 'sharedStyle',
-  { getAppStyles }: AppRouterOptions,
+  { getAppStyles }: Options,
 ): Middleware {
   return async (ctx: Context) => {
     const app = await getAppStyles({ context: ctx, query: { attributes: [type], raw: true } });

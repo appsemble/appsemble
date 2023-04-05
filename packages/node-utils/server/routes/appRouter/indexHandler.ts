@@ -7,7 +7,7 @@ import { Context, Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
 import { makeCSP, render } from '../../../render.js';
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 export const bulmaURL = `/bulma/${bulmaPkg.version}/bulma.min.css`;
 export const faURL = `/fa/${faPkg.version}/css/all.min.css`;
@@ -16,11 +16,11 @@ export function createIndexHandler({
   createSettings,
   getApp,
   getAppDetails,
-  getAppLanguages,
+  getAppMessages,
   getAppUrl,
   getCsp,
   getHost,
-}: AppRouterOptions): Middleware {
+}: Options): Middleware {
   return async (ctx: Context) => {
     const { hostname, path } = ctx;
     const host = getHost({ context: ctx });
@@ -54,9 +54,12 @@ export function createIndexHandler({
       return;
     }
 
-    const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+    const appMessages = await getAppMessages({ app, context: ctx });
 
-    const languages = await getAppLanguages({ app, defaultLanguage, context: ctx });
+    const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+    const languages = [
+      ...new Set([...appMessages.map(({ language }) => language), defaultLanguage]),
+    ].sort();
 
     const identifiableBlocks = getAppBlocks(app.definition);
 

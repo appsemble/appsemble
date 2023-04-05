@@ -30,8 +30,8 @@ export function frontend(
   const fs: import('memfs').IFs = devMiddleware.context.outputFileSystem;
   const koaDevMiddleware = expressToKoa(devMiddleware);
 
-  const hotMiddleware = webpackHotMiddleware(compiler as any);
-  const koaHotMiddleware = expressToKoa(hotMiddleware);
+  // const hotMiddleware = webpackHotMiddleware(compiler as any);
+  // const koaHotMiddleware = expressToKoa(hotMiddleware);
 
   return compose<Context>([
     (ctx, next) => {
@@ -49,6 +49,6 @@ export function frontend(
       }
       return koaDevMiddleware(ctx, next);
     },
-    koaHotMiddleware,
+    // koaHotMiddleware,
   ]);
 }

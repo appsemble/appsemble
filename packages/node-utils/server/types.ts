@@ -1,14 +1,15 @@
+import { FindOptions } from '@appsemble/cli/server/db/types';
+import { User } from '@appsemble/server/models';
 import {
   App,
   AppMessages,
   BlockConfig,
   BlockDefinition,
-  BlockManifest,
+  BlockManifest, Resource,
   Theme as ThemeType,
 } from '@appsemble/types';
 import { IdentifiableBlock } from '@appsemble/utils';
 import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
-import { User } from '@appsemble/server/models';
 
 declare module 'koa' {
   interface Request {
@@ -88,20 +89,22 @@ export interface GetAppSubEntityParams {
   app: App;
 }
 
+export interface GetAppResourceParams extends GetAppSubEntityParams {
+  id: number | string;
+  type: string;
+}
+
+export interface GetAppResourcesParams extends GetAppSubEntityParams {
+  query: FindOptions;
+  type: string;
+}
+
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
   name: string;
 }
 
-export interface GetAppMessagesParams extends GetAppSubEntityParams {
-  language: string;
-}
-
 export interface GetDbUpdatedParams extends GetAppSubEntityParams {
   maskable: string[] | string | false;
-}
-
-export interface GetAppLanguagesParams extends GetAppSubEntityParams {
-  defaultLanguage: string;
 }
 
 export interface GetBlockAssetParams {
@@ -194,10 +197,11 @@ export interface Options {
   getAppMessages: (params: GetAppSubEntityParams) => Promise<AppMessages[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
+  getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
+  getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;
-  getAppLanguages: (params: GetAppLanguagesParams) => Promise<string[]>;
   getDbUpdated: (params: GetDbUpdatedParams) => Promise<Date | number>;
   getBlockAsset: (params: GetBlockAssetParams) => Promise<BlockAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;

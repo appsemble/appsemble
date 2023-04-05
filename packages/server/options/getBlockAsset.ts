@@ -3,7 +3,7 @@ import {
   GetBlockAssetParams,
 } from 'packages/node-utils/server/routes/types';
 
-import { BlockAsset, BlockVersion } from '../../../models/index.js';
+import { BlockAsset, BlockVersion } from '../models';
 
 export const getBlockAsset = ({
   filename,

@@ -1,7 +1,7 @@
 import { Methods } from '../db/methods.js';
 import { FindOptions } from '../db/types.js';
 
-const dir = '/blockAssets';
+const dir = 'blockAssets';
 
 export class BlockAsset {
   id: number;

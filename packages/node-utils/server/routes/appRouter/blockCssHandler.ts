@@ -1,9 +1,9 @@
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
-export function createBlockCssHandler({ getApp, getAppBlockStyles }: AppRouterOptions): Middleware {
+export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): Middleware {
   return async (ctx: Context) => {
     const {
       params: { name },

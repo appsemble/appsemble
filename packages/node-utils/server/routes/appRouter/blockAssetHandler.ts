@@ -1,9 +1,9 @@
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
-export function createBlockAssetHandler({ getBlockAsset }: AppRouterOptions): Middleware {
+export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware {
   return async (ctx: Context) => {
     const {
       params: { filename, name, version },

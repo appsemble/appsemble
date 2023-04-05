@@ -1,4 +1,4 @@
-import { AppStyles, GetAppSubEntityParams } from 'packages/node-utils/server/routes/types';
+import { AppStyles, GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
 
 export const getAppStyles = ({ context }: GetAppSubEntityParams): Promise<AppStyles> =>
   Promise.resolve({

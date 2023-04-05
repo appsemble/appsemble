@@ -65,7 +65,8 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
     name: `@appsemble/${env}`,
     devtool: 'source-map',
     mode,
-    entry: { [env]: ['webpack-hot-middleware/client', join(projectDir, 'index.tsx')] },
+    //entry: { [env]: ['webpack-hot-middleware/client', join(projectDir, 'index.tsx')] },
+    entry: { [env]: [join(projectDir, 'index.tsx')] },
     output: {
       filename: production ? '[contenthash].js' : `${env}-[name].js`,
       publicPath,
@@ -84,7 +85,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       },
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
+      //new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
         template: fileURLToPath(new URL('index.html', projectURL)),
         templateParameters: {

@@ -3,11 +3,11 @@ import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 import { extension } from 'mime-types';
 
-import { AppRouterOptions } from '../../types';
+import { Options } from '../../types.js';
 
 const iconSizes = [48, 144, 192, 512];
 
-export function createManifestHandler({ getApp, getAppScreenshots }: AppRouterOptions): Middleware {
+export function createManifestHandler({ getApp, getAppScreenshots }: Options): Middleware {
   return async (ctx: Context) => {
     const app = await getApp({ context: ctx });
 
