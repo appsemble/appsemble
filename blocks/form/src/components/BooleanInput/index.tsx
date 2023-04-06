@@ -28,7 +28,7 @@ export function BooleanInput({
 
   const value = getValueByNameSequence(name, formValues);
   const checkboxLabel = utils.remap(label, value);
-  const required = isRequired(field);
+  const required = isRequired(field, utils, formValues);
 
   return (
     <CheckboxField

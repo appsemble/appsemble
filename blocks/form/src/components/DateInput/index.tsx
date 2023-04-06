@@ -32,7 +32,7 @@ export function DateInput({
   const dateLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
 
-  const required = isRequired(field);
+  const required = isRequired(field, utils, formValues);
 
   const handleOnChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void =>
