@@ -317,6 +317,15 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
+   * Compare all computed remapper values against the first.
+   *
+   * Returns `false` if all entries are equal to the first entry, otherwise `true`.
+   *
+   * If only 1 or less are passed to it `false` is returned.
+   */
+  not: Remapper[];
+
+  /**
    * Get data stored at the current flow page step
    */
   step: string;

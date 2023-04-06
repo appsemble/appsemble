@@ -203,6 +203,16 @@ const mapperImplementations: MapperImplementations = {
     return values.every((value) => equal(values[0], value));
   },
 
+  not(mappers, input, context) {
+    if (mappers.length <= 1) {
+      return false;
+    }
+
+    const [firstValue, ...otherValues] = mappers.map((mapper) => remap(mapper, input, context));
+
+    return !otherValues.some((value) => equal(firstValue, value));
+  },
+
   step(mapper, input, context) {
     return context.stepRef.current[mapper];
   },
