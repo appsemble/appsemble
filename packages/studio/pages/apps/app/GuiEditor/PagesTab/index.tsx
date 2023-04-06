@@ -87,7 +87,6 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     );
   }
 
-  // The left sidebar will house the hierarchy and the block store
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
