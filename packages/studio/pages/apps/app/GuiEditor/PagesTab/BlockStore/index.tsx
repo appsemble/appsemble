@@ -22,7 +22,7 @@ import { messages } from './messages.js';
  */
 
 interface BlockStoreProps {
-  dragEventListener: () => void;
+  dragEventListener: (data: BlockManifest) => void;
 }
 
 export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {
