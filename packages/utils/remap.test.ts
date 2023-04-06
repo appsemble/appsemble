@@ -498,6 +498,42 @@ describe('if', () => {
   });
 });
 
+describe('match', () => {
+  runTests({
+    'return the value of the first case if case is truthy': {
+      input: {},
+      mappers: {
+        match: [
+          { case: true, value: 'case 1' },
+          { case: true, value: 'case 2' },
+          { case: true, value: 'case 3' },
+        ],
+      },
+      expected: 'case 1',
+    },
+  });
+  runTests({
+    'return the value of the second case if case 1 is falsy and 2 is truthy': {
+      input: {},
+      mappers: {
+        match: [
+          { case: false, value: 'case 1' },
+          { case: true, value: 'case 2' },
+          { case: false, value: 'case 3' },
+        ],
+      },
+      expected: 'case 2',
+    },
+  });
+  runTests({
+    'return null if all cases are falsy': {
+      input: {},
+      mappers: { match: [{ case: false, value: 'case 1' }] },
+      expected: null,
+    },
+  });
+});
+
 describe('object.from', () => {
   runTests({
     'create a new object from remappers': {
