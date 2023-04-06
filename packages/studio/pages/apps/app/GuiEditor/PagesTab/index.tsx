@@ -1,13 +1,18 @@
-import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import { Message } from '@appsemble/react-components';
+import { BlockDefinition, BlockManifest } from '@appsemble/types';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
+import { generateData } from '../Utils/schemaGenerator.js';
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
-import PageProperty from './PageProperty/index.js';
+import { messages } from './messages.js';
+import { PageProperty } from './PageProperty/index.js';
 
 interface PagesTabProps {
   isOpenLeft: boolean;
@@ -23,9 +28,15 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
-  const [blockManifest, setBlockManifest] = useState<string>('None');
+  const [blockData, setBlockData] = useState<BlockManifest>(null);
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
+  let error = false;
 
+  // On any drop event the block manifest is transfered here and the dropzone is activated
+  const onDragEvent = (data: BlockManifest): void => {
+    setBlockData(data);
+    setDropzoneActive(true);
+  };
   // Highlight the preview on drag enter
   const handleDragEnter = (): void => {
     setDragOver(true);
@@ -33,11 +44,22 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
+
+  const createBlockDefinition = (bm: BlockManifest): BlockDefinition =>
+    ({
+      type: bm.name,
+      version: bm.version,
+      parameters: generateData(bm, bm.parameters.definitions),
+    } as BlockDefinition);
+
   // Append the dragged block to the app definition
-  const handleDrop = (e: DragEvent): void => {
-    setBlockManifest(e.dataTransfer.getData('block'));
-    setDropzoneActive(false);
-    setDragOver(false);
+  const handleDrop = (): void => {
+    if (blockData) {
+      const newBlock = createBlockDefinition(blockData);
+      app.definition.pages[0].blocks.push(newBlock);
+    } else {
+      error = true;
+    }
   };
 
   const onChangePagesBlocks = useCallback(
@@ -58,12 +80,6 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     [setSelectedPage, setSelectedBlock, setSelectedSubParent],
   );
 
-  // On dropping block change dropzone activity to false
-  // So it does not cover the app preview
-  const onDragEvent = (): void => {
-    setDropzoneActive(true);
-  };
-
   const onCreatePage = useCallback(() => {
     setEditPageView(true);
     setEditBlockView(false);
@@ -78,6 +94,14 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
+
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...messages.error} />
+      </Message>
+    );
+  }
 
   // The left sidebar will house the hierarchy and the block store
   return (
@@ -104,9 +128,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           onDragLeave={handleDragExit}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-        >
-          {blockManifest}
-        </div>
+        />
         <Preview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

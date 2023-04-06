@@ -1,9 +1,8 @@
 import { Button, Icon, Subtitle, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
-import { DragEvent, ReactElement } from 'react';
+import { ReactElement } from 'react';
 
-import { generateData } from '../../GenerateData/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
@@ -16,20 +15,17 @@ import { messages } from './messages.js';
  */
 interface BlockStoreElementProps {
   block: BlockManifest;
-  dragEventListener: () => void;
+  dragEventListener: (data: BlockManifest) => void;
 }
 export function BlockStoreElement({
   block,
   dragEventListener,
 }: BlockStoreElementProps): ReactElement {
   const [org, name] = parseBlockName(block.name);
-  const blockSchema = block.parameters;
 
-  // Attach the DragElement to the mouse
-  const handleDragStart = (e: DragEvent): void => {
-    dragEventListener();
-    const data = generateData(blockSchema);
-    e.dataTransfer.setData('block', JSON.stringify(data));
+  // Transfer the block manifest to the pages tab and activate dropzone
+  const handleDragStart = (): void => {
+    dragEventListener(block);
   };
 
   return (
