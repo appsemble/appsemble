@@ -9,16 +9,10 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 
 /**
- * The Block Store houses all available blocks as a grid.
- * Each block is shown as a container with its name in it.
- * Each block has a on hover and on mouse down class.
+ * The Block Store houses all available blocks as a list of thumbnails.
+ * Each block is shown as a thumbnail with the block name, icon and version in it.
  *
- * On mouse down a copy of the block is attached to the mouse and follows it until mouse up.
- * If mouse up happens outside of the app preview the block is discarded.
- * If mouse up happens over the app preview the held block is appended to the app definition
- * at the end of the blocks list.
- *
- * @returns A grid of available blocks that can be dragged and dropped into the app preview.
+ * @returns A list of available blocks that can be dragged and dropped into the app preview.
  */
 
 interface BlockStoreProps {
