@@ -1,5 +1,5 @@
 import { FindOptions } from '@appsemble/cli/server/db/types.js';
-import { getResourceDefinition } from '@appsemble/node-utils/resource.js';
+import { getResourceDefinition, processResourceBody } from '@appsemble/node-utils/resource.js';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
@@ -121,18 +121,35 @@ export function createGetResourceById({
   };
 }
 
-export function createCreateResource({ getApp }: Options): Middleware {
+export function createCreateResource(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { resourceType },
-      queryParams: { view },
-      user,
     } = ctx;
-
+    const { createResourcesWithAssets, getApp, verifyPermission } = options;
     const action = 'create';
 
     const app = await getApp({ context: ctx });
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, view);
-  }
+    const resourceDefinition = getResourceDefinition(app, resourceType);
+    await verifyPermission({ app, context: ctx, action, resourceType });
+
+    const [resource, preparedAssets] = processResourceBody(ctx, resourceDefinition);
+    if (Array.isArray(resource) && !resource.length) {
+      ctx.body = [];
+      return;
+    }
+
+    const resources = Array.isArray(resource) ? resource : [resource];
+    const createdResources = await createResourcesWithAssets({
+      app,
+      resources,
+      preparedAssets,
+      resourceType,
+    });
+
+    console.log(createdResources)
+
+    ctx.body = Array.isArray(resource) ? createdResources : createdResources[0];
+  };
 }

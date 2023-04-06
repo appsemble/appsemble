@@ -1,6 +1,7 @@
 import { Options } from '@appsemble/node-utils/server/types';
 
 import {
+  createResourcesWithAssets,
   createSettings,
   createTheme,
   getApp,
@@ -19,9 +20,11 @@ import {
   getDbUpdated,
   getHost,
   getTheme,
+  verifyPermission,
 } from './index.js';
 
 export const options: Options = {
+  createResourcesWithAssets,
   createSettings,
   createTheme,
   getApp,
@@ -40,4 +43,5 @@ export const options: Options = {
   getDbUpdated,
   getHost,
   getTheme,
+  verifyPermission,
 };

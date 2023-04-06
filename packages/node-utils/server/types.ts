@@ -3,9 +3,11 @@ import { User } from '@appsemble/server/models';
 import {
   App,
   AppMessages,
+  Asset,
   BlockConfig,
   BlockDefinition,
-  BlockManifest, Resource,
+  BlockManifest,
+  Resource,
   Theme as ThemeType,
 } from '@appsemble/types';
 import { IdentifiableBlock } from '@appsemble/utils';
@@ -154,6 +156,25 @@ export interface GetCspParams {
   nonce: string;
 }
 
+export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
+  data: Buffer;
+  resource?: Record<string, unknown>;
+}
+
+export interface CreateResourcesWithAssetsParams {
+  app: App;
+  resources: Record<string, unknown>[];
+  preparedAssets: PreparedAsset[];
+  resourceType: string;
+}
+
+export interface VerifyPermissionParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  app: App;
+  resourceType: string;
+  action: 'count' | 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update';
+}
+
 export interface AppDetails {
   appPath: string;
   organizationId: string;
@@ -210,4 +231,6 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
+  createResourcesWithAssets: (params: CreateResourcesWithAssetsParams) => Promise<Resource[]>;
+  verifyPermission: (params: VerifyPermissionParams) => Promise<Record<string, any>>;
 }

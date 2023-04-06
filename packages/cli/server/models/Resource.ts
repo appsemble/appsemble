@@ -15,8 +15,12 @@ export class Resource {
     return Methods.create(values, `${dir}/${type}[]`);
   }
 
-  static bulkCreate(values: Record<string, unknown>[], type: string): Promise<Resource | null> {
-    return Methods.bulkCreate(values, `${dir}/${type}`);
+  static bulkCreate(
+    values: Record<string, unknown>[],
+    type: string,
+    override = false,
+  ): Promise<Resource[] | []> {
+    return Methods.bulkCreate(values, `${dir}/${type}`, override);
   }
 
   static findById(id: number | string, type: string): Promise<Resource | null> {

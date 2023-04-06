@@ -16,3 +16,5 @@ export * from './getCsp.js';
 export * from './getDbUpdated.js';
 export * from './getHost.js';
 export * from './getTheme.js';
+export * from './verifyPermission.js';
+export * from './createResourcesWithAssets.js';

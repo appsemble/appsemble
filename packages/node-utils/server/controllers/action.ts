@@ -128,7 +128,7 @@ async function handleRequestProxy(
   app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,
-  { getAppMessages, getAppUrl }: Options,
+  { getAppMessages, getAppUrl, reloadUser }: Options,
 ): Promise<void> {
   const {
     method,

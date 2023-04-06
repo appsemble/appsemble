@@ -41,7 +41,7 @@ import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
-import { handleValidatorResult } from '../utils/jsonschema.js';
+import { handleValidatorResult } from '../../node-utils/jsonschema.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {

@@ -22,7 +22,7 @@ import {
 import { blockVersionToJson } from '../utils/block.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
-import { handleValidatorResult } from '../utils/jsonschema.js';
+import { handleValidatorResult } from '../../node-utils/jsonschema.js';
 
 export async function getBlock(ctx: Context): Promise<void> {
   const {

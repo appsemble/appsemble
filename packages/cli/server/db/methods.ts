@@ -9,10 +9,14 @@ export const Methods = {
     return this.findOne({ where: values }, dir);
   },
 
-  async bulkCreate<M>(values: Record<string, unknown>[], modelDir = '/'): Promise<M> {
+  async bulkCreate<M>(
+    values: Record<string, unknown>[],
+    modelDir = '/',
+    override = false,
+  ): Promise<M[] | []> {
     const dir = `${getAppDir()}/${modelDir}`;
-    await db.push(dir, values, true);
-    return this.findOne({ where: values }, dir);
+    await db.push(dir, values, override);
+    return this.findAll({}, modelDir);
   },
 
   async findById<M>(id: number | string, modelDir = '/'): Promise<M | null> {

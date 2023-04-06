@@ -46,6 +46,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
   const appName = normalize(appsembleApp.definition.name);
+  const appId = 1;
   setAppDir(appName);
 
   const identifiableBlocks = getAppBlocks(appsembleApp.definition);
@@ -122,9 +123,11 @@ export async function handler(argv: ServeArguments): Promise<void> {
       await Resource.bulkCreate(
         resources.map((resource: {}, index) => ({
           id: index,
+          AppId: appId,
           ...resource,
         })),
         name,
+        true,
       );
     },
     { allowMissing: true },
@@ -138,7 +141,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appHost: `http://${appName}.localhost:9090`,
       appsembleApp: {
         ...appsembleApp,
-        id: 1,
+        id: appId,
         path: appPath,
         coreStyle: appsembleApp.coreStyle || '',
         sharedStyle: appsembleApp.sharedStyle || '',
