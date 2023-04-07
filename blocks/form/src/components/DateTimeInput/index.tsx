@@ -35,7 +35,7 @@ export function DateTimeInput({
   const { utils } = useBlock();
   const { label, name, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
-  const required = isRequired(field);
+  const required = isRequired(field, utils, formValues);
 
   const dateTimeLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
