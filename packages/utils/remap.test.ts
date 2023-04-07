@@ -284,6 +284,36 @@ describe('equals', () => {
   });
 });
 
+describe('not', () => {
+  runTests({
+    'return false if any of the values are equal to the first': {
+      input: [1, 2, 1],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: false,
+    },
+    'use deep equality': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 3 } }],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }] },
+      expected: false,
+    },
+    'return true if all values are not equal to the first': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 2 } }, { foo: { bar: 2 } }],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }] },
+      expected: true,
+    },
+    'return false on empty arrays': {
+      input: { empty: [] },
+      mappers: { not: [] },
+      expected: false,
+    },
+    'return false on arrays with 1 entry': {
+      input: { empty: [] },
+      mappers: { not: [{ prop: 'empty' }] },
+      expected: false,
+    },
+  });
+});
+
 describe('ics', () => {
   runTests({
     'support string date': {
