@@ -32,7 +32,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
   let error = false;
 
-  // On any drop event the block manifest is transfered here and the dropzone is activated
+  // On any drop event the block manifest is transferred here and the dropzone is activated
   const onDragEvent = (data: BlockManifest): void => {
     setBlockData(data);
     setDropzoneActive(true);
