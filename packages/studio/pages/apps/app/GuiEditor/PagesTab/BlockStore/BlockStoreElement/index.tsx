@@ -9,7 +9,7 @@ import { messages } from './messages.js';
 /**
  * The draggable block shown as a thumbnail with the block name, icon and version.
  * On mouse down the handleDragStart method is called. In it the block is
- * attached to the mouse and the manifest is transfered to the pages tab until mouse up.
+ * attached to the mouse and the manifest is transferred to the pages tab until mouse up.
  *
  * @returns BlockStoreElement
  */
