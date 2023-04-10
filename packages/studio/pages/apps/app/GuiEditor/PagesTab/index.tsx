@@ -22,7 +22,7 @@ interface PagesTabProps {
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
-  const [selectedPage, setSelectedPage] = useState<number>(-1);
+  const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
   const [editPageView, setEditPageView] = useState<boolean>(false);
@@ -43,24 +43,6 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   };
   const handleDragExit = (): void => {
     setDragOver(false);
-  };
-
-  const createBlockDefinition = (bm: BlockManifest): BlockDefinition =>
-    ({
-      type: bm.name,
-      version: bm.version,
-      parameters: generateData(bm, bm.parameters.definitions),
-    } as BlockDefinition);
-
-  // Append the dragged block to the bottom of the current page definition
-  const handleDrop = (): void => {
-    setDropzoneActive(false);
-    if (blockData && 'blocks' in app.definition.pages[0]) {
-      const newBlock = createBlockDefinition(blockData);
-      app.definition.pages[0].blocks.push(newBlock);
-    } else {
-      error = true;
-    }
   };
 
   const onChangePagesBlocks = useCallback(
@@ -95,6 +77,25 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
+
+  const createBlockDefinition = (bm: BlockManifest): BlockDefinition =>
+    ({
+      type: bm.name,
+      version: bm.version,
+      parameters: generateData(bm, bm.parameters.definitions),
+    } as BlockDefinition);
+
+  // Append the dragged block to the bottom of the current page definition
+  const handleDrop = (): void => {
+    setDropzoneActive(false);
+    if (blockData && app.definition.pages[selectedPage].type !== 'flow') {
+      const newBlock = createBlockDefinition(blockData);
+      app.definition.pages[selectedPage].blocks.push(newBlock);
+      onChangePagesBlocks(selectedPage, 0, app.definition.pages[0].blocks.length - 1);
+    } else {
+      error = true;
+    }
+  };
 
   if (error) {
     return (
