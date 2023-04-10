@@ -55,7 +55,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   // Append the dragged block to the bottom of the current page definition
   const handleDrop = (): void => {
     setDropzoneActive(false);
-    if (blockData) {
+    if (blockData && 'blocks' in app.definition.pages[0]) {
       const newBlock = createBlockDefinition(blockData);
       app.definition.pages[0].blocks.push(newBlock);
     } else {
