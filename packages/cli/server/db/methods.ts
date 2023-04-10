@@ -86,7 +86,7 @@ export const Methods = {
           )
         : mapped;
     } catch {
-      return null;
+      return [];
     }
   },
 };

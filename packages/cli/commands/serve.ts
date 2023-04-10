@@ -5,7 +5,13 @@ import { Readable } from 'node:stream';
 
 import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { AppMessages, AppsembleMessages } from '@appsemble/types';
+import {
+  App,
+  AppDefinition,
+  AppMessages,
+  AppsembleMessages,
+  ResourceDefinition
+} from '@appsemble/types';
 import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
@@ -133,20 +139,39 @@ export async function handler(argv: ServeArguments): Promise<void> {
     { allowMissing: true },
   );
 
+  const publicResources = appsembleApp.definition.resources;
+  for (const entry of Object.entries(appsembleApp.definition.resources)) {
+    const [key, resource] = entry;
+    publicResources[key] = {
+      ...resource,
+      roles: ['$public'],
+    };
+  }
+
+  const publicAppDefinition: AppDefinition = {
+    ...appsembleApp.definition,
+    roles: ['$none'],
+    security: undefined,
+    resources: publicResources,
+  };
+
+  const stubbedApp = {
+    ...appsembleApp,
+    id: appId,
+    path: appPath,
+    definition: publicAppDefinition,
+    coreStyle: appsembleApp.coreStyle || '',
+    sharedStyle: appsembleApp.sharedStyle || '',
+    $updated: new Date().toISOString(),
+  } as App;
+
   const server = createServer({
     argv,
     appRouter,
     controllers,
     context: {
       appHost: `http://${appName}.localhost:9090`,
-      appsembleApp: {
-        ...appsembleApp,
-        id: appId,
-        path: appPath,
-        coreStyle: appsembleApp.coreStyle || '',
-        sharedStyle: appsembleApp.sharedStyle || '',
-        $updated: new Date().toISOString(),
-      },
+      appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
       blockConfigs,
