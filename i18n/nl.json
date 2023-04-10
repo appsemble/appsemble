@@ -334,6 +334,7 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.settingsLabel": "Settings",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.error": "Error",
+  "studio.pages.apps.app.GuiEditor.PagesTab.error": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "Erft rol",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.createRoleButton": "Rol aanmaken",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.defaultPageLabel": "Standaard pagina",
