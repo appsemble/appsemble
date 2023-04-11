@@ -1,5 +1,15 @@
 # Translating
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Appsemble Core and Blocks](#appsemble-core-and-blocks)
+- [Custom messages](#custom-messages)
+- [Using the translations page](#using-the-translations-page)
+- [Translating using the Appsemble CLI](#translating-using-the-appsemble-cli)
+
+## Introduction
+
 Just like how the Appsemble Studio is available in multiple languages, it is possible to do the same
 in individual apps. This page covers the different options that are available for translating and
 localizing apps.

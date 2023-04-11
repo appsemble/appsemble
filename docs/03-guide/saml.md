@@ -4,6 +4,16 @@ Appsemble supports login to apps using SAML2.0 identity providers (IDP). This al
 using Single Sign On (SSO), for example using Microsoft Azure AD. In this case Appsemble Studio
 serves as the SAML2.0 service provider (SP).
 
+## Table of Contents
+
+- [Flows](#flows)
+- [Limitations](#limitations)
+- [Configuration](#configuration)
+  - [1. Appsemble side](#1-appsemble-side)
+  - [2. IDP Side](#2-idp-side)
+  - [3. Appsemble side (again)](#3-appsemble-side-again)
+- [Login flow](#login-flow)
+
 ## Flows
 
 Users may try to access an application from one of the following flows:

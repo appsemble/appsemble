@@ -2,6 +2,22 @@
 
 > The app building platform
 
+## Table of Contents
+
+- [Usage](#usage)
+  - [Live Environments](#live-environments)
+  - [Requirements](#requirements)
+  - [Getting started](#getting-started)
+    - [CLI Login](#cli-login)
+    - [Registering an Organization](#registering-an-organization)
+    - [Publishing Blocks](#publishing-blocks)
+    - [Publishing App templates](#publishing-app-templates)
+  - [Tests](#tests)
+  - [Building](#building)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can

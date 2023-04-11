@@ -2,6 +2,14 @@
 
 This document will guide you through the creation of your first block.
 
+## Table of Contents
+
+- [Initialize the Project](#initialize-the-project)
+- [Create Your First Block](#create-your-first-block)
+- [Testing the Block](#testing-the-block)
+- [Modifying the Block](#modifying-the-block)
+- [Further Reading](#further-reading)
+
 ## Initialize the Project
 
 To start developing blocks, first the Appsemble repository needs to be cloned and installed as

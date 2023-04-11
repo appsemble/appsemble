@@ -1,5 +1,13 @@
 # Objects
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [Object remappers](#object-remappers)
+    - [object.from](#objectfrom)
+    - [object.assign](#objectassign)
+    - [object.omit](#objectomit)
+
 ## Introduction
 
 There are a lot of ways you can work with objects in remappers.

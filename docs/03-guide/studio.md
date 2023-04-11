@@ -1,5 +1,13 @@
 # Studio
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [App editor](#app-editor)
+- [Further reading](#further-reading)
+
+## Introduction
+
 Apps can be created and modified using the [Appsemble studio](/).
 
 After logging in a list of apps you can manage will appear, providing direct links to the app itself

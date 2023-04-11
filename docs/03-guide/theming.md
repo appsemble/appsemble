@@ -1,5 +1,20 @@
 # Theming
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Theme options](#theme-options)
+  - [Example](#example)
+  - [Bulma Extensions](#bulma-extensions)
+  - [Appsemble classes](#appsemble-classes)
+- [Custom Styling](#custom-styling)
+  - [Hierarchy](#hierarchy)
+  - [Applying themes for an application](#applying-themes-for-an-application)
+  - [Applying themes to specific pages or parts of pages](#applying-themes-to-specific-pages-or-parts-of-pages)
+- [Using the CLI](#using-the-cli)
+
+## Introduction
+
 By default Appsemble provides a default style based on the [Bulma CSS framework][bulma]. While this
 is completely functional for end users, developers may be interested in further spicing up their
 applications by applying their own style and branding.

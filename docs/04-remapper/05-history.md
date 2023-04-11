@@ -1,5 +1,13 @@
 # History
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [History remappers](#history-remappers)
+    - [from.history](#fromhistory)
+    - [assign.history](#assignhistory)
+    - [omit.history](#omithistory)
+
 ## Introduction
 
 The “history” concept is an important part of remapping advanced pieces of data within Appsemble.

@@ -6,6 +6,17 @@
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Authentication](#authentication)
+  - [Organizations](#organizations)
+  - [Apps](#apps)
+  - [Blocks](#blocks)
+  - [Assets](#assets)
+- [License](#license)
+
 ## Installation
 
 ```sh

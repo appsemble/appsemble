@@ -3,6 +3,15 @@
 Each app has a name, description, and a default page. Notice the name and description have the value
 that was entered in the _“Create new app”_ dialog.
 
+## Table of Contents
+
+- [Empty app](#empty-app)
+- [Adding a resource](#adding-a-resource)
+- [Displaying data](#displaying-data)
+- [Creating data](#creating-data)
+- [Detail view](#detail-view)
+- [Further reading](#further-reading)
+
 ## Empty app
 
 The newly created app has two pages. On each page, an
