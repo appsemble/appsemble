@@ -1,5 +1,12 @@
 # Events
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Event action](#event-action)
+
+## Introduction
+
 Events are a mechanism in Appsemble that can be used to make blocks on a page communicate with each
 other. Blocks can define which events they support, which then allows app developers to customize
 under what name the events will be emitted.

@@ -4,6 +4,13 @@ icon: sitemap
 
 # Remapper
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [How does this work in an app?](#how-does-this-work-in-an-app)
+  - [Advanced remapping](#advanced-remapping)
+  - [Conclusion](#conclusion)
+
 ## Introduction
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for

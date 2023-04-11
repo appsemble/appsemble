@@ -6,6 +6,18 @@
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Variables](#variables)
+- [Setting up Social Login](#setting-up-social-login)
+  - [GitHub](#github)
+  - [GitLab](#gitlab)
+  - [Google](#google)
+- [License](#license)
+
+## Installation
+
 The Appsemble server is distributed as a Docker image.
 
 To pull the latest version, run

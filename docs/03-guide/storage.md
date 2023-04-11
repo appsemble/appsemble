@@ -2,6 +2,14 @@
 
 Appsemble provides different types of storage options, both server and client side.
 
+## Table of Contents
+
+- [Storage Types](#storage-types)
+- [Server Storage](#server-storage)
+- [Client Storage](#client-storage)
+  - [Browser Storage](#browser-storage)
+  - [App Storage](#app-storage)
+
 ## Storage Types
 
 Most often, you want to use server storage over client storage to store your application data.

@@ -3,6 +3,11 @@
 Some organizations have their own ecosystem of blocks, packages and apps. If you want to edit these
 existing systems, or create your own, there is some setup to do.
 
+## Table of Contents
+
+- [Setting up your development environment](#setting-up-your-development-environment)
+- [Common problems](#common-problems)
+
 # Setting up your development environment
 
 **Note:** In this section it is assumed that you are already familiar with setting up the Appsemble

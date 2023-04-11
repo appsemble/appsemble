@@ -1,5 +1,15 @@
 # Teams
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Roles](#roles)
+  - [Resources](#resources)
+  - [Pages](#pages)
+- [Actions](#actions)
+
+## Introduction
+
 Teams can be used to organize groups of members in an app. Typically teams represent users that are
 linked together somehow. For example they belong to the same organizational unit or they are class
 mates. App managers can view and manage teams from the _Teams_ page in the app page in Appsemble

@@ -5,6 +5,12 @@ flow, which is the most commonly supported and most secure flow. Examples of sup
 are Facebook, Google, GitHub, GitLab, and Microsoft, but your organization may be a compliant OAuth2
 provider as well.
 
+## Table of Contents
+
+- [OpenID](#openid)
+- [Configuration](#configuration)
+- [Login flow](#login-flow)
+
 ## OpenID
 
 OpenID is an extension on the OAuth2 authorization code flow, which allows access to certain user

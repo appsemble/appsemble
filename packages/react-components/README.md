@@ -5,6 +5,11 @@
 [![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
+## Table of Contents
+
+- [Usage](#usage)
+- [License](#license)
+
 ## Usage
 
 This internal package contains React components that may be reused within the Appsemble core

@@ -1,5 +1,15 @@
 # Arrays
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [Array remappers](#array-remappers)
+    - [array.from](#arrayfrom)
+    - [array.map](#arraymap)
+    - [array.append](#arrayappend)
+    - [array.omit](#arrayomit)
+    - [array.unique](#arrayunique)
+
 ## Introduction
 
 While developing an app you will likely have to deal a lot with arrays. Luckily, there are a lot of
