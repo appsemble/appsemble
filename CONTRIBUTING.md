@@ -61,7 +61,7 @@ yarn test -u
 #### End 2 End Tests
 
 The end 2 end tests are run using
-[![](https://avatars.githubusercontent.com/u/8908513?s=16) Cypress](https://www.cypress.io). They
+[![](https://playwright.dev/img/playwright-logo.svg) Playwright](https://playwright.dev). They
 reside in [`packages/e2e`](packages/e2e).
 
 ### Changelog

@@ -7,6 +7,9 @@ dist/
 # Jest output
 coverage/
 
+# Playwright output
+playwright-report/
+
 # Use this prefix for GitLab reports
 /gl-*
 
