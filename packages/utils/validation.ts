@@ -13,6 +13,7 @@ import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtil
 import { has } from './has.js';
 import { partialNormalized } from './index.js';
 import { iterApp, Prefix } from './iterApp.js';
+import { serverActions } from './serverActions.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -440,6 +441,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (path[0] === 'cron' && !serverActions.has(action.type)) {
+        report(action.type, 'action type is not supported for cron jobs', [...path, 'type']);
+        return;
+      }
+
       if (action.type.startsWith('user.') && !definition.security) {
         report(
           action.type,
