@@ -13,7 +13,7 @@
   display: none !important;
   text-decoration: none !important;
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (width >= 1024px) {
     display: inline-flex !important;
   }
 }
@@ -21,7 +21,7 @@
 .logo {
   display: none;
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (width >= 1024px) {
     display: unset;
   }
 }

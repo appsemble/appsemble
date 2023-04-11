@@ -10,7 +10,7 @@
 .sideMenuWrapper {
   height: 100%;
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (width >= 1024px) {
     margin-left: menu-width;
   }
 }
@@ -31,7 +31,7 @@
   width: menu-width;
   z-index: 5000;
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (width >= 1024px) {
     left: 0;
   }
 
@@ -50,7 +50,7 @@
   transition: opacity 0.15s;
   z-index: 4000;
 
-  @media screen and (min-width: 1024px) {
+  @media screen and (width >= 1024px) {
     display: none;
   }
 

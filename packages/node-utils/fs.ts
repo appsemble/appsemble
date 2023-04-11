@@ -47,7 +47,7 @@ export async function readData<R>(path: URL | string): Promise<[R, string]> {
   }
   try {
     return [
-      ext === '.json' ? parseJson(content) : (parse(content, { maxAliasCount: 10_000 }) as R),
+      (ext === '.json' ? parseJson(content) : parse(content, { maxAliasCount: 10_000 })) as R,
       content,
     ];
   } catch (error: unknown) {
