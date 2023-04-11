@@ -3121,13 +3121,6 @@
   resolved "https://registry.yarnpkg.com/@types/service-worker-mock/-/service-worker-mock-2.0.1.tgz#4857b2024318c395294a02eda5050ac083f41e56"
   integrity sha512-LqaP0QmgppRF7YEaqx4amoazHNXaX5bIFDAu62LnWIc5ku0HbgqlPKroQstAu8WsdmWIqEfI9VGlP8Skkq+m5A==
 
-"@types/sharp@^0.31.0":
-  version "0.31.1"
-  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.31.1.tgz#db768461455dbcf9ff11d69277fd70564483c4df"
-  integrity sha512-5nWwamN9ZFHXaYEincMSuza8nNfOof8nmO+mcI+Agx1uMUk4/pQnNIcix+9rLPXzKrm1pS34+6WRDbDV0Jn7ag==
-  dependencies:
-    "@types/node" "*"
-
 "@types/sinonjs__fake-timers@8.1.1":
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/@types/sinonjs__fake-timers/-/sinonjs__fake-timers-8.1.1.tgz#b49c2c70150141a15e0fa7e79cf1f92a72934ce3"
@@ -9785,7 +9778,7 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-lines-and-columns@^2.0.2:
+lines-and-columns@^2.0.2, lines-and-columns@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-2.0.3.tgz#b2f0badedb556b747020ab8ea7f0373e22efac1b"
   integrity sha512-cNOjgCnLB+FnvWWtyRTzmB3POJ+cXxTA81LoW7u8JdmhfXzriropYwpjShnz1QLLWsQwY7nIxoDmcPTwphDK9w==
@@ -10999,10 +10992,10 @@ moment@^2.29.1, moment@^2.29.4:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
-monaco-editor@^0.36.0:
-  version "0.36.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.36.1.tgz#aad528c815605307473a1634612946921d8079b5"
-  integrity sha512-/CaclMHKQ3A6rnzBzOADfwdSJ25BFoFT0Emxsc4zYVyav5SkK9iA6lEtIeuN/oRYbwPgviJT+t3l+sjFa28jYg==
+monaco-editor@^0.37.0:
+  version "0.37.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.37.1.tgz#d6f5ffb593e019e74e19bf8a2bdef5a691876f4e"
+  integrity sha512-jLXEEYSbqMkT/FuJLBZAVWGuhIb4JNwHE9kPTorAVmsdZ4UzHAfgWxLsVtD7pLRFaOwYPhNG9nUCpmFL1t/dIg==
 
 monaco-marker-data-provider@^1.0.0:
   version "1.1.1"
@@ -11175,6 +11168,11 @@ node-addon-api@^5.0.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-5.1.0.tgz#49da1ca055e109a23d537e9de43c09cca21eb762"
   integrity sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==
+
+node-addon-api@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-6.0.0.tgz#cfb3574e6df708ff71a30db6c4762d9e06e11c27"
+  integrity sha512-GyHvgPvUXBvAkXa0YvYnhilSB1A+FRYMpIVggKzPZqdaZfevZOuzfWzyvgzOwRLHBeo/MMswmJFsrNF4Nw1pmA==
 
 node-fetch@2.6.7:
   version "2.6.7"
@@ -11664,6 +11662,17 @@ parse-json@^6.0.0:
     error-ex "^1.3.2"
     json-parse-even-better-errors "^2.3.1"
     lines-and-columns "^2.0.2"
+
+parse-json@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-7.0.0.tgz#51c0713f233b804eb5adee3ef1e75d3243e0ff06"
+  integrity sha512-kP+TQYAzAiVnzOlWOe0diD6L35s9bJh0SCn95PIbZFKrOYuIRQsQkeWEYxzVDuHTt9V9YqvYCJ2Qo4z9wdfZPw==
+  dependencies:
+    "@babel/code-frame" "^7.21.4"
+    error-ex "^1.3.2"
+    json-parse-even-better-errors "^3.0.0"
+    lines-and-columns "^2.0.3"
+    type-fest "^3.8.0"
 
 parse-latin@^5.0.0:
   version "5.0.1"
@@ -13907,14 +13916,14 @@ setprototypeof@1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-sharp@^0.31.0:
-  version "0.31.3"
-  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.31.3.tgz#60227edc5c2be90e7378a210466c99aefcf32688"
-  integrity sha512-XcR4+FCLBFKw1bdB+GEhnUNXNXvnt0tDo4WsBsraKymuo/IAuPuCBVAL2wIkUw2r/dwFW5Q5+g66Kwl2dgDFVg==
+sharp@^0.32.0:
+  version "0.32.0"
+  resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.32.0.tgz#146b3e1930d56518699908d9116d8a03be1f5cf6"
+  integrity sha512-yLAypVcqj1toSAqRSwbs86nEzfyZVDYqjuUX8grhFpeij0DDNagKJXELS/auegDBRDg1XBtELdOGfo2X1cCpeA==
   dependencies:
     color "^4.2.3"
     detect-libc "^2.0.1"
-    node-addon-api "^5.0.0"
+    node-addon-api "^6.0.0"
     prebuild-install "^7.1.1"
     semver "^7.3.8"
     simple-get "^4.0.1"
@@ -14458,10 +14467,10 @@ stylelint-config-recommended@^11.0.0:
   resolved "https://registry.yarnpkg.com/stylelint-config-recommended/-/stylelint-config-recommended-11.0.0.tgz#b1cb7d71bd92f9b8593f93c2ca6df16ed7d61522"
   integrity sha512-SoGIHNI748OCZn6BxFYT83ytWoYETCINVHV3LKScVAWQQauWdvmdDqJC5YXWjpBbxg2E761Tg5aUGKLFOVhEkA==
 
-stylelint-config-standard@^31.0.0:
-  version "31.0.0"
-  resolved "https://registry.yarnpkg.com/stylelint-config-standard/-/stylelint-config-standard-31.0.0.tgz#90d94e1b43df798412e129b4b1cb4c4e56ffe64f"
-  integrity sha512-CUGAmtROCvX0YgMY2+6P9tqSkHj5z/75XxrQ8bGxvkCa1xYdGDx4poM0pa7cXc3s74/PZLJH/okxZZouRfOSGw==
+stylelint-config-standard@^32.0.0:
+  version "32.0.0"
+  resolved "https://registry.yarnpkg.com/stylelint-config-standard/-/stylelint-config-standard-32.0.0.tgz#97179035e967f22a7b7e27f14a74f5d5fc0f0bd6"
+  integrity sha512-UnGJxYDyYFrIE9CjDMZRkrNh2o4lOtO+MVZ9qG5b8yARfsWho0GMx4YvhHfsv8zKKgHeWX2wfeyxmuoqcaYZ4w==
   dependencies:
     stylelint-config-recommended "^11.0.0"
 
@@ -15107,7 +15116,7 @@ type-fest@^2.0.0, type-fest@^2.5.0:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
   integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
 
-type-fest@^3.0.0:
+type-fest@^3.0.0, type-fest@^3.8.0:
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-3.8.0.tgz#ce80d1ca7c7d11c5540560999cbd410cb5b3a385"
   integrity sha512-FVNSzGQz9Th+/9R6Lvv7WIAkstylfHN2/JYxkyhhmKFYh9At2DST8t6L6Lref9eYO8PXFTfG9Sg1Agg0K3vq3Q==
