@@ -28,12 +28,10 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
   let error = false;
 
-  // On any drop event the block manifest is transferred here and the dropzone is activated
   const onDragEvent = (data: BlockManifest): void => {
     setBlockData(data);
     setDropzoneActive(true);
   };
-  // Highlight the preview on drag enter
   const handleDragEnter = (): void => {
     setDragOver(true);
   };
@@ -86,7 +84,6 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
       parameters: generateData(bm, bm.parameters.definitions),
     } as BlockDefinition);
 
-  // Append the dragged block to the bottom of the current page definition
   const handleDrop = (): void => {
     setDropzoneActive(false);
     if (blockData && app.definition.pages[selectedPage].type !== 'flow') {
