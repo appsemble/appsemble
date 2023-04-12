@@ -55,8 +55,7 @@ export async function getMessages(ctx: Context): Promise<void> {
   const languageMessages = override === 'true' && ctxAppMessages.find((m) => m.language === lang);
 
   for (const appBlock of ctxAppBlocks) {
-    const blockConfig = ctxBlockConfigs.find((config) => config.name === appBlock.name);
-    const name = `@${blockConfig.OrganizationId}/${appBlock.name}`;
+    const { name } = appBlock;
 
     const defaultMessages = appBlock.messages?.[defaultLocale];
     const blockBaseLanguageMessages = baseLang && appBlock.messages?.[baseLang];

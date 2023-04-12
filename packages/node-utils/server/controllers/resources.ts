@@ -1,11 +1,11 @@
-import { FindOptions } from '@appsemble/cli/server/db/types.js';
 import { getResourceDefinition, processResourceBody } from '@appsemble/node-utils/resource.js';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
+import { badRequest, internal, notFound } from '@hapi/boom';
 import { Context, Middleware } from 'koa';
 
 import { getRemapperContext } from '../../app.js';
-import { Options } from '../types.js';
+import { logger } from '../../logger.js';
+import { FindOptions, Options } from '../types.js';
 
 export function createQueryResources({
   getApp,
@@ -30,7 +30,7 @@ export function createQueryResources({
 
     const resources = await getAppResources({
       app,
-      query: findOptions,
+      findOptions,
       type: resourceType,
       context: ctx,
     });
@@ -63,6 +63,50 @@ export function createQueryResources({
     }
 
     ctx.body = resources;
+  };
+}
+
+function generateQuery(
+  ctx: Context,
+  { parseQuery }: Options,
+): { order: any; where: Pick<FindOptions, 'where'> } {
+  try {
+    return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
+  }
+}
+
+export function createCountResources(options: Options) {
+  return async (ctx: Context) => {
+    const {
+      pathParams: { resourceType },
+    } = ctx;
+
+    const action = 'count';
+
+    const { getApp, getAppResources, verifyPermission } = options;
+
+    const app = await getApp({ context: ctx });
+
+    await verifyPermission({ app, context: ctx, action, resourceType });
+
+    const { where } = generateQuery(ctx, options);
+
+    const resources = await getAppResources({
+      app,
+      findOptions: {
+        where,
+      },
+      type: resourceType,
+      context: ctx,
+    });
+
+    ctx.body = resources.length;
   };
 }
 
@@ -148,8 +192,76 @@ export function createCreateResource(options: Options): Middleware {
       resourceType,
     });
 
-    console.log(createdResources)
-
     ctx.body = Array.isArray(resource) ? createdResources : createdResources[0];
+  };
+}
+
+export function createUpdateResource(options: Options): Middleware {
+  return async (ctx: Context) => {
+    // const {
+    //   pathParams: { resourceId, resourceType },
+    // } = ctx;
+    //
+    // const { getApp, getAppResource, updateAppResource, verifyPermission } = options;
+    // const action = 'update';
+    //
+    // const app = await getApp({ context: ctx });
+    //
+    // const resourceDefinition = getResourceDefinition(app, resourceType);
+    // await verifyPermission({ app, context: ctx, action, resourceType });
+    //
+    // const resource = await getAppResource({
+    //   app,
+    //   id: resourceId,
+    //   type: resourceType,
+    //   context: ctx,
+    // });
+    //
+    // if (!resource) {
+    //   throw notFound('Resource not found');
+    // }
+    //
+    // const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
+    //   ctx,
+    //   resourceDefinition,
+    //   resource.Assets.map((asset) => asset.id),
+    //   resource.expires,
+    // );
+    //
+    // const [resource, preparedAssets] = processResourceBody(ctx, resourceDefinition);
+    //
+    // await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType });
+    //
+    // ctx.status = 204;
+  };
+}
+
+export function createDeleteResource(options: Options): Middleware {
+  return async (ctx: Context) => {
+    const {
+      pathParams: { resourceId, resourceType },
+    } = ctx;
+
+    const { deleteAppResource, getApp, getAppResource, verifyPermission } = options;
+    const action = 'delete';
+
+    const app = await getApp({ context: ctx });
+
+    await verifyPermission({ app, context: ctx, action, resourceType });
+
+    const resource = await getAppResource({
+      app,
+      id: resourceId,
+      type: resourceType,
+      context: ctx,
+    });
+
+    if (!resource) {
+      throw notFound('Resource not found');
+    }
+
+    await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType });
+
+    ctx.status = 204;
   };
 }

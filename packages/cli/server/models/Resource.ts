@@ -1,5 +1,6 @@
+import { FindOptions } from '@appsemble/node-utils/server/types.js';
+
 import { Methods } from '../db/methods.js';
-import { FindOptions } from '../db/types.js';
 
 const dir = 'resources';
 
@@ -29,5 +30,17 @@ export class Resource {
 
   static findAll(query: FindOptions, type: string): Promise<Resource[] | []> {
     return Methods.findAll(query, `${dir}/${type}`);
+  }
+
+  static updateOne(
+    id: number | string,
+    values: Record<string, unknown>,
+    type: string,
+  ): Promise<Resource | null> {
+    return Methods.updateOne(id, values, `${dir}/${type}`);
+  }
+
+  static deleteOne(id: number | string, type: string): Promise<void> {
+    return Methods.deleteOne(id, `${dir}/${type}`);
   }
 }

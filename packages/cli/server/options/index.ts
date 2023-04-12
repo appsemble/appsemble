@@ -18,3 +18,8 @@ export * from './getHost.js';
 export * from './getTheme.js';
 export * from './verifyPermission.js';
 export * from './createResourcesWithAssets.js';
+export * from './updateAppResource.js';
+export * from './deleteAppResource.js';
+export * from './parseQuery.js';
+export * from './checkRole.js';
+export * from './getAppAssets.js';

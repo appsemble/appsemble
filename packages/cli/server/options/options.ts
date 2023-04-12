@@ -1,10 +1,13 @@
 import { Options } from '@appsemble/node-utils/server/types';
 
 import {
+  checkRole,
   createResourcesWithAssets,
   createSettings,
   createTheme,
+  deleteAppResource,
   getApp,
+  getAppAssets,
   getAppBlockStyles,
   getAppDetails,
   getAppIcon,
@@ -20,14 +23,19 @@ import {
   getDbUpdated,
   getHost,
   getTheme,
+  parseQuery,
+  updateAppResource,
   verifyPermission,
 } from './index.js';
 
 export const options: Options = {
+  checkRole,
   createResourcesWithAssets,
   createSettings,
   createTheme,
+  deleteAppResource,
   getApp,
+  getAppAssets,
   getAppBlockStyles,
   getAppDetails,
   getAppIcon,
@@ -43,5 +51,7 @@ export const options: Options = {
   getDbUpdated,
   getHost,
   getTheme,
+  parseQuery,
+  updateAppResource,
   verifyPermission,
 };

@@ -4,6 +4,6 @@ import { Resource as ResourceInterface } from '@appsemble/types';
 import { Resource } from '../models/Resource.js';
 
 export const getAppResources = ({
-  query,
+  findOptions,
   type,
-}: GetAppResourcesParams): Promise<ResourceInterface[] | []> => Resource.findAll(query, type);
+}: GetAppResourcesParams): Promise<ResourceInterface[] | []> => Resource.findAll(findOptions, type);

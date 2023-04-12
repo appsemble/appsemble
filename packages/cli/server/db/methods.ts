@@ -1,6 +1,6 @@
+import { FindOptions } from '@appsemble/node-utils/server/types.js';
 import { getAppDir } from './app.js';
 import { db } from './index.js';
-import { FindOptions } from './types.js';
 
 export const Methods = {
   async create<M>(values: Record<string, unknown>, modelDir = '/'): Promise<M> {
@@ -87,6 +87,31 @@ export const Methods = {
         : mapped;
     } catch {
       return [];
+    }
+  },
+
+  async updateOne<M>(
+    id: number | string,
+    values: Record<string, unknown>,
+    modelDir = '/',
+  ): Promise<M> {
+    try {
+      const dir = `${getAppDir()}/${modelDir}`;
+      const entityIndex = await db.getIndex(dir, id);
+      await db.push(`${dir}[${entityIndex}]`, values, true);
+      return this.findOne({ where: values }, dir);
+    } catch {
+      return null;
+    }
+  },
+
+  async deleteOne(id: number | string, modelDir = '/'): Promise<void> {
+    try {
+      const dir = `${getAppDir()}/${modelDir}`;
+      const entityIndex = await db.getIndex(dir, id);
+      return await db.delete(`${dir}[${entityIndex}]`);
+    } catch {
+      return null;
     }
   },
 };

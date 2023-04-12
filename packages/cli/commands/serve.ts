@@ -1,17 +1,11 @@
 import { readFile } from 'node:fs/promises';
 import http from 'node:http';
-import { join, parse } from 'node:path';
+import { basename, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
 
 import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import {
-  App,
-  AppDefinition,
-  AppMessages,
-  AppsembleMessages,
-  ResourceDefinition
-} from '@appsemble/types';
+import { App, AppDefinition, AppMessages, AppsembleMessages, Asset } from '@appsemble/types';
 import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
@@ -101,6 +95,26 @@ export async function handler(argv: ServeArguments): Promise<void> {
     { allowMissing: true },
   );
 
+  // Get app assets
+  const appAssets: Asset[] = [];
+  await opendirSafe(
+    join(appPath, 'assets'),
+    (path) => {
+      logger.verbose(`Processing ${path} ⚙️`);
+
+      const extension = extname(path);
+      const name = basename(path, extension);
+
+      appAssets.push({
+        id: name,
+        mime: extension,
+        filename: path,
+        name,
+      });
+    },
+    { allowMissing: true },
+  );
+
   // Get app resources
   await opendirSafe(
     join(appPath, 'resources'),
@@ -140,7 +154,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   );
 
   const publicResources = appsembleApp.definition.resources;
-  for (const entry of Object.entries(appsembleApp.definition.resources)) {
+  for (const entry of Object.entries(appsembleApp.definition.resources || {})) {
     const [key, resource] = entry;
     publicResources[key] = {
       ...resource,
@@ -174,6 +188,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
+      appAssets,
       blockConfigs,
     },
     webpackConfigs: webpackConfigs as any,

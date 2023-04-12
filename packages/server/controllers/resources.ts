@@ -1,9 +1,9 @@
-import { logger } from '@appsemble/node-utils';
-import { Resource as ResourceType } from '@appsemble/types';
-import { checkAppRole, defaultLocale, Permission, remap, TeamRole } from '@appsemble/utils';
-import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
-import { Context } from 'koa';
-import { Op, Order, WhereOptions } from 'sequelize';
+import {logger} from '@appsemble/node-utils';
+import {Resource as ResourceType} from '@appsemble/types';
+import {checkAppRole, defaultLocale, Permission, remap, TeamRole} from '@appsemble/utils';
+import {badRequest, forbidden, internal, notFound, unauthorized} from '@hapi/boom';
+import {Context} from 'koa';
+import {Op, Order, WhereOptions} from 'sequelize';
 
 import {
   App,
@@ -19,8 +19,8 @@ import {
   transactional,
   User,
 } from '../models/index.js';
-import { getRemapperContext } from '../utils/app.js';
-import { checkRole } from '../utils/checkRole.js';
+import {getRemapperContext} from '../utils/app.js';
+import {checkRole} from '../utils/checkRole.js';
 import {
   extractResourceBody,
   getResourceDefinition,
@@ -316,7 +316,7 @@ export async function countResources(ctx: Context): Promise<void> {
   const userQuery = await verifyPermission(ctx, app, resourceType, 'count');
   const { query } = generateQuery(ctx);
 
-  const count = await Resource.count({
+  ctx.body = await Resource.count({
     where: {
       [Op.and]: [
         query,
@@ -324,13 +324,11 @@ export async function countResources(ctx: Context): Promise<void> {
           ...userQuery,
           type: resourceType,
           AppId: appId,
-          expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
+          expires: {[Op.or]: [{[Op.gt]: new Date()}, null]},
         },
       ],
     },
   });
-
-  ctx.body = count;
 }
 
 export async function getResourceById(ctx: Context): Promise<void> {

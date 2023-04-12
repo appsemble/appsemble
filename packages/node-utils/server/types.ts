@@ -1,5 +1,3 @@
-import { FindOptions } from '@appsemble/cli/server/db/types';
-import { User } from '@appsemble/server/models';
 import {
   App,
   AppMessages,
@@ -10,7 +8,7 @@ import {
   Resource,
   Theme as ThemeType,
 } from '@appsemble/types';
-import { IdentifiableBlock } from '@appsemble/utils';
+import { IdentifiableBlock, Permission } from '@appsemble/utils';
 import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
 
 declare module 'koa' {
@@ -23,6 +21,7 @@ declare module 'koa' {
     appsembleApp: App;
     appBlocks: BlockManifest[];
     appMessages: AppMessages[];
+    appAssets: AppAsset[];
     blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
   }
@@ -37,10 +36,10 @@ declare module 'koas-security' {
   }
 
   interface Users {
-    app: User;
-    basic: User;
-    cli: User;
-    studio: User;
+    app: any;
+    basic: any;
+    cli: any;
+    studio: any;
   }
 }
 
@@ -77,6 +76,13 @@ declare module 'koas-parameters' {
   }
 }
 
+export interface FindOptions {
+  where?: Record<string, any>;
+  limit?: number;
+  offset?: number;
+  attributes?: string[];
+}
+
 export interface ContextBlockConfig extends BlockConfig {
   OrganizationId: string;
 }
@@ -89,16 +95,6 @@ export interface GetAppParams {
 export interface GetAppSubEntityParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
-}
-
-export interface GetAppResourceParams extends GetAppSubEntityParams {
-  id: number | string;
-  type: string;
-}
-
-export interface GetAppResourcesParams extends GetAppSubEntityParams {
-  query: FindOptions;
-  type: string;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -156,6 +152,35 @@ export interface GetCspParams {
   nonce: string;
 }
 
+export interface VerifyPermissionParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  app: App;
+  resourceType: string;
+  action: 'count' | 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update';
+}
+
+export interface CheckRoleParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  app: App;
+  permissions: Permission | Permission[];
+  findOptions: FindOptions;
+}
+
+export interface ParseQueryParams {
+  $filter: string;
+  $orderby: string;
+}
+
+export interface GetAppResourceParams extends GetAppSubEntityParams {
+  id: number | string;
+  type: string;
+}
+
+export interface GetAppResourcesParams extends GetAppSubEntityParams {
+  findOptions: FindOptions;
+  type: string;
+}
+
 export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
   data: Buffer;
   resource?: Record<string, unknown>;
@@ -168,11 +193,15 @@ export interface CreateResourcesWithAssetsParams {
   resourceType: string;
 }
 
-export interface VerifyPermissionParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
-  app: App;
-  resourceType: string;
-  action: 'count' | 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update';
+export interface UpdateAppResourceParams extends GetAppSubEntityParams {
+  id: number | string;
+  resource: Record<string, unknown>;
+  type: string;
+}
+
+export interface DeleteAppResourceParams extends GetAppSubEntityParams {
+  id: number | string;
+  type: string;
 }
 
 export interface AppDetails {
@@ -197,6 +226,10 @@ export interface AppBlockStyle {
   style: string;
 }
 
+export interface AppAsset extends Asset {
+  content: Buffer;
+}
+
 export interface BlockAsset {
   mime: string;
   content: Buffer;
@@ -210,6 +243,11 @@ export interface Theme {
   css: string;
 }
 
+export interface ParsedQuery {
+  order: any;
+  where: Pick<FindOptions, 'where'>;
+}
+
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 
 export interface Options {
@@ -218,8 +256,6 @@ export interface Options {
   getAppMessages: (params: GetAppSubEntityParams) => Promise<AppMessages[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
-  getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
-  getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;
@@ -231,6 +267,13 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
-  createResourcesWithAssets: (params: CreateResourcesWithAssetsParams) => Promise<Resource[]>;
   verifyPermission: (params: VerifyPermissionParams) => Promise<Record<string, any>>;
+  checkRole: (params: CheckRoleParams) => Promise<Record<string, any>>;
+  parseQuery: (params: ParseQueryParams) => ParsedQuery;
+  getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
+  getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
+  createResourcesWithAssets: (params: CreateResourcesWithAssetsParams) => Promise<Resource[]>;
+  updateAppResource: (params: UpdateAppResourceParams) => Promise<Resource | null>;
+  deleteAppResource: (params: DeleteAppResourceParams) => Promise<void>;
+  getAppAssets: (params: GetAppSubEntityParams) => Promise<AppAsset[]>;
 }
