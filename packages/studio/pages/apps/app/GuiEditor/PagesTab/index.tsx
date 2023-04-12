@@ -7,7 +7,6 @@ import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
-import { messages } from './messages.js';
 import { PageProperty } from './PageProperty/index.js';
 
 interface PagesTabProps {
@@ -24,23 +23,17 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
-  const [blockData, setBlockData] = useState<BlockManifest>(null);
+  const [blockManifest, setBlockManifest] = useState<BlockManifest>(null);
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
-  let error = false;
 
   const onDragEvent = (data: BlockManifest): void => {
-    setBlockData(data);
+    setBlockManifest(data);
     setDropzoneActive(true);
   };
   const handleDragEnter = (): void => {
     setDragOver(true);
   };
   const handleDragExit = (): void => {
-    setDragOver(false);
-  };
-
-  const handleDrop = (e: DragEvent): void => {
-    e.preventDefault();
     setDragOver(false);
   };
 
@@ -77,31 +70,39 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     [setEditPageView, setEditBlockView, setSelectedPage],
   );
 
-  const createBlockDefinition = (bm: BlockManifest): BlockDefinition =>
-    ({
-      type: bm.name,
-      version: bm.version,
-      parameters: generateData(bm, bm.parameters.definitions),
-    } as BlockDefinition);
-
-  const handleDrop = (): void => {
-    setDropzoneActive(false);
-    if (blockData && app.definition.pages[selectedPage].type !== 'flow') {
-      const newBlock = createBlockDefinition(blockData);
-      app.definition.pages[selectedPage].blocks.push(newBlock);
-      onChangePagesBlocks(selectedPage, 0, app.definition.pages[0].blocks.length - 1);
-    } else {
-      error = true;
+  const addBlock = (nb: BlockDefinition): void => {
+    if (
+      !app.definition.pages[selectedPage].type ||
+      app.definition.pages[selectedPage].type === 'page'
+    ) {
+      const pageLength = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks.push(
+        nb,
+      );
+      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
+    }
+    if (app.definition.pages[selectedPage].type === 'flow') {
+      const pageLength = (app.definition.pages[selectedPage] as FlowPageDefinition).steps
+        .flatMap((subPage) => subPage.blocks)
+        .push(nb);
+      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
+    }
+    if (app.definition.pages[selectedPage].type === 'tabs') {
+      const pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
+        .flatMap((subPage) => subPage.blocks)
+        .push(nb);
+      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
     }
   };
 
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
+  const handleDrop = (): void => {
+    setDropzoneActive(false);
+    const newBlock = {
+      type: blockManifest.name,
+      version: blockManifest.version,
+      parameters: generateData(blockManifest, blockManifest.parameters.definitions),
+    } as BlockDefinition;
+    addBlock(newBlock);
+  };
 
   return (
     <>
