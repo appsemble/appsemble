@@ -1,5 +1,5 @@
-import { Title, useDeferredValue, useMeta } from '@appsemble/react-components';
-import { ReactElement, ReactNode, useMemo } from 'react';
+import { Title, useMeta } from '@appsemble/react-components';
+import { ReactElement, ReactNode, useDeferredValue, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { highlight } from '../../../utils/search.js';
