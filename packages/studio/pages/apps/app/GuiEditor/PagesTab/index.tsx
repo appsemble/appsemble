@@ -107,7 +107,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     const newBlock = {
       type: blockManifest.name,
       version: blockManifest.version,
-      parameters: generateData(blockManifest, blockManifest.parameters.definitions),
+      parameters: generateData(blockManifest.parameters, blockManifest.parameters.definitions),
     } as BlockDefinition;
     addBlock(newBlock);
   };
