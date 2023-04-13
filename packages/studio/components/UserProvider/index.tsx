@@ -63,16 +63,12 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     setUserInfo(data);
   }, []);
 
-  const login = useCallback(
-    (response: TokenResponse) => {
-      localStorage.access_token = response.access_token;
-      localStorage.refresh_token = response.refresh_token;
-      setAccessToken(response.access_token);
-      setTokenResponse(response);
-      refreshUserInfo();
-    },
-    [refreshUserInfo],
-  );
+  const login = useCallback((response: TokenResponse) => {
+    localStorage.access_token = response.access_token;
+    localStorage.refresh_token = response.refresh_token;
+    setAccessToken(response.access_token);
+    setTokenResponse(response);
+  }, []);
 
   const fetchOrganizations = useCallback(async () => {
     const { data } = await axios.get<UserOrganization[]>('/api/user/organizations');
