@@ -134,6 +134,25 @@ yarn appsemble app create --context development apps/*
 
 The published apps will be displayed on the `App store` page.
 
+### Development Server
+
+The development server can create an app from a specified folder containing an app-definition.yml.
+It will check what blocks are needed and will get them from the local workspaces if they are present
+(for now). Making a change to a block's code or styles will reflect in the browser immediately after
+refreshing the page, without the need of increasing the block's version. Running docker database
+containers, creating a user account and creating an organization are not needed.
+
+App resources will be stored locally in the data.json file in the root of the project. App assets
+and block assets will be served from the local filesystem.
+
+The development server can be started by running the following command:
+
+```sh
+yarn appsemble serve apps/path-to-app-definition
+```
+
+This will serve the app on http://<app-name>.localhost:9090
+
 ### Tests
 
 Tests can be run using the following command.
