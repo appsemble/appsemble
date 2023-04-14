@@ -44,10 +44,10 @@ export const generateData = (
     return schema.enum[0];
   }
   if (schema.format === 'remapper') {
-    return { propName: ownerKey };
+    return ownerKey;
   }
   if (schema.type === 'array') {
-    return Array.from({ length: schema.minItems }, (empty, index) =>
+    return Array.from({ length: 1 }, (empty, index) =>
       generateData(
         Array.isArray(schema.items)
           ? schema.items[index] ||
