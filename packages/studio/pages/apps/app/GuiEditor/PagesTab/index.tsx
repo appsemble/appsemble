@@ -15,7 +15,7 @@ interface PagesTabProps {
 }
 
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
-  const { app } = useApp();
+  const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
@@ -71,33 +71,31 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   );
 
   const addBlock = (nb: BlockDefinition): void => {
+    let pageLength = 0;
     if (
       !app.definition.pages[selectedPage].type ||
       app.definition.pages[selectedPage].type === 'page'
     ) {
-      const pageLength = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks.push(
-        nb,
-      );
-      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
+      pageLength = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks.push(nb);
     }
     if (app.definition.pages[selectedPage].type === 'flow') {
-      const pageLength = (app.definition.pages[selectedPage] as FlowPageDefinition).steps
+      pageLength = (app.definition.pages[selectedPage] as FlowPageDefinition).steps
         .flatMap((subPage) => subPage.blocks)
         .push(nb);
-      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
     }
     if (app.definition.pages[selectedPage].type === 'tabs') {
-      const pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
+      pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
         .flatMap((subPage) => subPage.blocks)
         .push(nb);
-      onChangePagesBlocks(selectedPage, 0, pageLength - 1);
     }
+    onChangePagesBlocks(selectedPage, 0, pageLength - 1);
+    setApp({ ...app });
   };
 
   const handleDrop = (): void => {
     setDropzoneActive(false);
     const newBlock = {
-      type: blockManifest.name,
+      type: normalizeBlockName(blockManifest.name),
       version: blockManifest.version,
       parameters: generateData(blockManifest.parameters, blockManifest.parameters.definitions),
     } as BlockDefinition;
