@@ -334,7 +334,6 @@
   "studio.pages.apps.app.GuiEditor.GeneralTab.schedule": "Schedule",
   "studio.pages.apps.app.GuiEditor.GeneralTab.settingsLabel": "Settings",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.error": "Something went wrong when fetching all blocks.",
-  "studio.pages.apps.app.GuiEditor.PagesTab.error": "Something went wrong when drag and dropping the block",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "Inherit Role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.createRoleButton": "Create role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.defaultPageLabel": "Default Page",
