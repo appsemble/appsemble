@@ -38,7 +38,7 @@
     "bulma": "0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
-    "css-minimizer-webpack-plugin": "^4.0.0",
+    "css-minimizer-webpack-plugin": "^5.0.0",
     "estree-util-value-to-estree": "^2.0.0",
     "hast-util-to-text": "^3.0.0",
     "html-webpack-plugin": "^5.0.0",
