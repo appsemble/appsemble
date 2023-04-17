@@ -1,5 +1,10 @@
 import { Button, Icon } from '@appsemble/react-components';
-import { BasicPageDefinition, FlowPageDefinition, TabsPageDefinition } from '@appsemble/types';
+import {
+  BasicPageDefinition,
+  BlockDefinition,
+  FlowPageDefinition,
+  TabsPageDefinition,
+} from '@appsemble/types';
 import { DragEvent, MouseEvent, ReactElement, useCallback, useState } from 'react';
 
 import { useApp } from '../../../index.js';
@@ -60,6 +65,25 @@ export function ElementsList({
       }
     });
 
+  const getBlocks = (): BlockDefinition[] => {
+    if (
+      !app.definition.pages[dragPageIndex].type ||
+      app.definition.pages[dragPageIndex].type === 'page'
+    ) {
+      return (app.definition.pages[dragPageIndex] as BasicPageDefinition).blocks;
+    }
+    if (app.definition.pages[dragPageIndex].type === 'flow') {
+      return (app.definition.pages[dragPageIndex] as FlowPageDefinition).steps.flatMap(
+        (subPage) => subPage.blocks,
+      );
+    }
+    if (app.definition.pages[dragPageIndex].type === 'tabs') {
+      return (app.definition.pages[dragPageIndex] as TabsPageDefinition).tabs.flatMap(
+        (subPage) => subPage.blocks,
+      );
+    }
+  };
+
   const handleDragStart = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
     setDragItem(blockIndex);
     setDragPageIndex(pageIndex);
@@ -67,7 +91,7 @@ export function ElementsList({
 
   const handleDrop = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
     if (pageIndex === dragPageIndex && dragItem !== -1) {
-      const blockList = app.definition.pages[pageIndex].blocks;
+      const blockList = getBlocks();
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       blockList.splice(blockIndex, 0, draggedBlock);
