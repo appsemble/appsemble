@@ -1,6 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import { BasicPageDefinition, FlowPageDefinition, TabsPageDefinition } from '@appsemble/types';
-import { MouseEvent, ReactElement, useCallback, useState } from 'react';
+import { DragEvent, MouseEvent, ReactElement, useCallback, useState } from 'react';
 
 import { useApp } from '../../../index.js';
 import styles from './index.module.css';
@@ -24,6 +24,8 @@ export function ElementsList({
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
+  const [dragItem, setDragItem] = useState<number>(-1);
+  const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
 
   const pages: string[] = app.definition.pages.map((page) => page.name);
   const blocks: { type: string; parent: number; subParent: number; block: number }[] =
@@ -57,6 +59,20 @@ export function ElementsList({
         );
       }
     });
+
+  const handleDragStart = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
+    setDragItem(blockIndex);
+    setDragPageIndex(pageIndex);
+  };
+
+  const handleDrop = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
+    if (pageIndex === dragPageIndex && dragItem !== -1) {
+      const blockList = app.definition.pages[pageIndex].blocks;
+      const draggedBlock = blockList[dragItem];
+      blockList.splice(dragItem, 1);
+      blockList.splice(blockIndex, 0, draggedBlock);
+    }
+  };
 
   const toggleDropdownPages = useCallback(
     (pageIndex: number) => {
@@ -136,8 +152,12 @@ export function ElementsList({
                     className={`${styles.childItem} ${
                       selectedBlock === block.block && selectedPage === pageIndex ? 'is-link' : ''
                     }`}
+                    draggable
                     key={block.block}
                     onClick={() => onselectBlock(block.parent, -1, block.block)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+                    onDrop={(e) => handleDrop(e, block.block, pageIndex)}
                   >
                     {
                       (app.definition.pages[block.parent] as BasicPageDefinition).blocks[
