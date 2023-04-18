@@ -1,10 +1,10 @@
-import { Loader, Message, Title, useData } from '@appsemble/react-components';
+import { InputField, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { useIntl } from 'react-intl';
 
-import { BlockStoreElement } from './BlockStoreElement/index.js';
+import { BlockList } from './BlockList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
@@ -20,23 +20,12 @@ interface BlockStoreProps {
 }
 
 export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
+  const [filter, setFilter] = useState('');
+  const { formatMessage } = useIntl();
 
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  const appsembleBlocks = blocks
-    .filter((b) => b.name.startsWith('@appsemble'))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.currentTarget.value);
+  }, []);
 
   return (
     <div className={styles.blockStore}>
@@ -54,11 +43,16 @@ export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement
           </div>
         </header>
       </div>
-      {appsembleBlocks.map((block) => (
-        <BlockStoreElement block={block} dragEventListener={dragEventListener} key={block.name} />
-      ))}
+      <div className={styles.blockStoreSearch}>
+        <InputField
+          icon="search"
+          name="search"
+          onChange={onFilterChange}
+          placeholder={formatMessage(messages.search)}
+          type="search"
+        />
+      </div>
+      <BlockList dragEventListener={dragEventListener} filter={filter} />
     </div>
   );
 }
-
-export default BlockStore;
