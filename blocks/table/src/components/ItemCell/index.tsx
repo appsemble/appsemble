@@ -8,10 +8,12 @@ import {
   type Button,
   type Dropdown as DropdownType,
   type Field,
+  type Image,
   type StringField,
 } from '../../../block.js';
 import { ButtonField } from '../ButtonField/index.js';
 import { DropdownField } from '../DropdownField/index.js';
+import { ImageField } from '../ImageField/index.js';
 import { StringInput } from '../StringInput/index.js';
 
 interface ItemCellProps extends ComponentProps<'td'> {
@@ -28,7 +30,7 @@ interface ItemCellProps extends ComponentProps<'td'> {
   /**
    * The field to render.
    */
-  field: Button | DropdownType | Field | StringField;
+  field: Button | DropdownType | Field | Image | StringField;
 
   /**
    * The index of the row that was clicked.
@@ -65,6 +67,7 @@ export function ItemCell({
     !('dropdown' in field) &&
     !('button' in field) &&
     !('string' in field) &&
+    !('image' in field) &&
     (actions[field.onClick] || actions.onClick);
 
   const onCellClick = useCallback(() => {
@@ -91,6 +94,8 @@ export function ItemCell({
     content = <ButtonField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else if ('string' in field) {
     content = <StringInput field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
+  } else if ('image' in field) {
+    content = <ImageField field={field} index={index} item={item} repeatedIndex={repeatedIndex} />;
   } else {
     content = renderValue(remap(field.value, item, { index, repeatedIndex }));
   }

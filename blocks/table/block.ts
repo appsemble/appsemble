@@ -194,6 +194,13 @@ export interface DropdownOption {
   onClick: string;
 }
 
+export interface Image extends BaseField {
+  /**
+   * The image to show in the cell.
+   */
+  image: Remapper;
+}
+
 /**
  * Repeated fields based on an input array.
  *
@@ -229,7 +236,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | RepeatedField | StringField)[];
+    fields: (Button | Dropdown | Field | Image | RepeatedField | StringField)[];
   }
 
   interface Actions {
