@@ -65,20 +65,17 @@ export function ElementsList({
       }
     });
 
-  const getBlocks = (): BlockDefinition[] => {
-    if (
-      !app.definition.pages[dragPageIndex].type ||
-      app.definition.pages[dragPageIndex].type === 'page'
-    ) {
-      return (app.definition.pages[dragPageIndex] as BasicPageDefinition).blocks;
+  const getBlocks = (pageIndex: number): BlockDefinition[] => {
+    if (!app.definition.pages[pageIndex].type || app.definition.pages[pageIndex].type === 'page') {
+      return (app.definition.pages[pageIndex] as BasicPageDefinition).blocks;
     }
-    if (app.definition.pages[dragPageIndex].type === 'flow') {
-      return (app.definition.pages[dragPageIndex] as FlowPageDefinition).steps.flatMap(
+    if (app.definition.pages[pageIndex].type === 'flow') {
+      return (app.definition.pages[pageIndex] as FlowPageDefinition).steps.flatMap(
         (subPage) => subPage.blocks,
       );
     }
-    if (app.definition.pages[dragPageIndex].type === 'tabs') {
-      return (app.definition.pages[dragPageIndex] as TabsPageDefinition).tabs.flatMap(
+    if (app.definition.pages[pageIndex].type === 'tabs') {
+      return (app.definition.pages[pageIndex] as TabsPageDefinition).tabs.flatMap(
         (subPage) => subPage.blocks,
       );
     }
@@ -89,12 +86,18 @@ export function ElementsList({
     setDragPageIndex(pageIndex);
   };
 
-  const handleDrop = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
-    if (pageIndex === dragPageIndex && dragItem !== -1) {
-      const blockList = getBlocks();
+  const handleDrop = (e: DragEvent, targetIndex: number, targetPageIndex: number): void => {
+    if (targetPageIndex === dragPageIndex && dragItem !== -1) {
+      const blockList = getBlocks(dragPageIndex);
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
-      blockList.splice(blockIndex, 0, draggedBlock);
+      blockList.splice(targetIndex, 0, draggedBlock);
+    } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
+      const blockList = getBlocks(dragPageIndex);
+      const targetBlockList = getBlocks(targetPageIndex);
+      const draggedBlock = blockList[dragItem];
+      blockList.splice(dragItem, 1);
+      targetBlockList.splice(targetIndex, 0, draggedBlock);
     }
   };
 
