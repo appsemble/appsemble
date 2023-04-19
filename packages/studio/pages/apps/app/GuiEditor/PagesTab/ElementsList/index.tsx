@@ -98,7 +98,13 @@ export function ElementsList({
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       targetBlockList.splice(targetIndex, 0, draggedBlock);
+    } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
+      const draggedPage = app.definition.pages[dragPageIndex];
+      app.definition.pages.splice(dragPageIndex, 1);
+      app.definition.pages.splice(targetPageIndex, 0, draggedPage);
     }
+    setDragItem(-1);
+    setDragPageIndex(-1);
   };
 
   const toggleDropdownPages = useCallback(
@@ -158,7 +164,11 @@ export function ElementsList({
                 ? 'is-info'
                 : ''
             }`}
+            draggable
             onClick={() => onSelectPage(pageIndex, -1)}
+            onDragOver={(e) => e.preventDefault()}
+            onDragStart={(e) => handleDragStart(e, -1, pageIndex)}
+            onDrop={(e) => handleDrop(e, -1, pageIndex)}
           >
             {page}
             {blocks.some((block) => block.parent === pageIndex) && (
