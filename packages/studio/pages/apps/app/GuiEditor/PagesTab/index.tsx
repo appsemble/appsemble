@@ -83,6 +83,11 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         .flatMap((subPage) => subPage.blocks)
         .push(nb);
     }
+    if (app.definition.pages[selectedPage].type === 'loop') {
+      pageLength = (app.definition.pages[selectedPage] as LoopPageDefinition).foreach.blocks.push(
+        nb,
+      );
+    }
     if (app.definition.pages[selectedPage].type === 'tabs') {
       pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
         .flatMap((subPage) => subPage.blocks)
