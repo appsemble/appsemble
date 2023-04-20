@@ -3,6 +3,7 @@ import {
   BlockDefinition,
   BlockManifest,
   FlowPageDefinition,
+  LoopPageDefinition,
   TabsPageDefinition,
 } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
@@ -91,6 +92,11 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
       pageLength = (app.definition.pages[selectedPage] as FlowPageDefinition).steps
         .flatMap((subPage) => subPage.blocks)
         .push(nb);
+    }
+    if (app.definition.pages[selectedPage].type === 'loop') {
+      pageLength = (app.definition.pages[selectedPage] as LoopPageDefinition).foreach.blocks.push(
+        nb,
+      );
     }
     if (app.definition.pages[selectedPage].type === 'tabs') {
       pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
