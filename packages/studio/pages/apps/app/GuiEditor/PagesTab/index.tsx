@@ -148,7 +148,11 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
         <div className={styles.rightBar}>
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
           {editBlockView ? (
-            <BlockProperty selectedBlock={selectedBlock} selectedPage={selectedPage} />
+            <BlockProperty
+              selectedBlock={selectedBlock}
+              selectedPage={selectedPage}
+              setSelected={setSelectedBlock}
+            />
           ) : null}
         </div>
         <BlockStore dragEventListener={onDragEvent} />

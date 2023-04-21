@@ -11,8 +11,13 @@ import styles from './index.module.css';
 interface BlockPropertyProps {
   selectedBlock: number;
   selectedPage: number;
+  setSelected: (selectedNew: number) => void;
 }
-export function BlockProperty({ selectedBlock, selectedPage }: BlockPropertyProps): ReactElement {
+export function BlockProperty({
+  selectedBlock,
+  selectedPage,
+  setSelected,
+}: BlockPropertyProps): ReactElement {
   const { app, setApp } = useApp();
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
@@ -49,9 +54,12 @@ export function BlockProperty({ selectedBlock, selectedPage }: BlockPropertyProp
   const deleteBlock = (): void => {
     const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
     blockList.splice(selectedBlock, 1);
-    // eslint-disable-next-line prefer-destructuring
-    currentBlock = blockList[0];
-
+    if (blockList.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
+      currentBlock = blockList[0];
+      setSelected(0);
+    }
+    // To do: fix the else for when there are no more blocks in the current page
     setApp({ ...app });
   };
 
