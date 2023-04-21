@@ -6,8 +6,8 @@ import { ChangeEvent, ReactElement, useCallback } from 'react';
 interface RemapperPropertyProps {
   value: any;
   schema: Schema;
-  property: string;
   onChange: (property: string, value: any) => void;
+  property: string;
 }
 export function RemapperProperty({
   onChange,
@@ -23,7 +23,6 @@ export function RemapperProperty({
     step: multipleOf,
     value,
   };
-
   const onValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, newValue: string) => {
       onChange(property, newValue);

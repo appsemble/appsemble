@@ -4,7 +4,7 @@ import { JsonValue } from 'type-fest';
 export const generateData = (
   schema: Schema,
   definitions: Record<string, Schema>,
-  ownerKey = 'remapper',
+  ownerKey = '',
 ): JsonValue => {
   if (schema.$ref) {
     const ref = decodeURIComponent(schema.$ref.split('/').pop());
