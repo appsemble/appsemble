@@ -6,6 +6,7 @@ import { ReactElement, useCallback } from 'react';
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
+import styles from './index.module.css';
 
 interface BlockPropertyProps {
   selectedBlock: number;
@@ -36,11 +37,23 @@ export function BlockProperty({ selectedBlock, selectedPage }: BlockPropertyProp
         version: blocks[index].version,
         type: blocks[index].name,
       };
-
       setApp({ ...app });
     },
     [app, blocks, selectedBlock, selectedPage, setApp],
   );
+
+  let currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
+    selectedBlock
+  ];
+
+  const deleteBlock = (): void => {
+    const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
+    blockList.splice(selectedBlock, 1);
+    // eslint-disable-next-line prefer-destructuring
+    currentBlock = blockList[0];
+
+    setApp({ ...app });
+  };
 
   if (error) {
     return null;
@@ -49,12 +62,16 @@ export function BlockProperty({ selectedBlock, selectedPage }: BlockPropertyProp
     return <Loader />;
   }
 
-  const currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-    selectedBlock
-  ];
-
   return (
     <div>
+      <Button
+        className={`is-danger ${styles.deleteButton}`}
+        component="a"
+        icon="trash"
+        onClick={() => deleteBlock()}
+      >
+        Delete Block
+      </Button>
       <InputList
         label="Type"
         onChange={onTypeChange}
