@@ -1,4 +1,4 @@
-import { ActionCreator } from './index.js';
+import { type ActionCreator } from './index.js';
 
 export const share: ActionCreator<'share'> = ({ definition, remap, showShareDialog }) => [
   async (data) => {

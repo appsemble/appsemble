@@ -1,4 +1,4 @@
-import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
+import { type AppMessages as AppMessagesType, type App as AppType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { parse } from 'yaml';
 

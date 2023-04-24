@@ -1,16 +1,16 @@
 import { Join, Title } from '@appsemble/react-components';
 import { camelToHyphen, combineSchemas, decodeJSONRef } from '@appsemble/utils';
 import classNames from 'classnames';
-import { Schema as SchemaType } from 'jsonschema';
-import { FC, ReactElement, useMemo } from 'react';
+import { type Schema as SchemaType } from 'jsonschema';
+import { type FC, type ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { MarkdownContent } from '../MarkdownContent/index.js';
 import { AnyOfSchema } from './AnyOfSchema/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { SchemaDescriptor } from './SchemaDescriptor/index.js';
+import { MarkdownContent } from '../MarkdownContent/index.js';
 
 export interface RenderRefProps {
   isArray: boolean;

@@ -1,4 +1,4 @@
-import { ComponentType, JSX } from 'preact';
+import { type ComponentType, type JSX } from 'preact';
 
 /**
  * A valid HTML or SVG element type or a functional or class component.

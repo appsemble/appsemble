@@ -1,6 +1,6 @@
 import { Checkbox } from '@appsemble/react-components';
-import { Schema, Validator } from 'jsonschema';
-import { ReactElement, ReactNode } from 'react';
+import { type Schema, Validator } from 'jsonschema';
+import { type ReactElement, type ReactNode } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';

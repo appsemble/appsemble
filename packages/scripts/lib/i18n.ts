@@ -5,7 +5,7 @@ import { readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { transformFileAsync } from '@babel/core';
 import FormatJsPlugin from 'babel-plugin-formatjs';
-import { Options as FormatJsPluginOptions } from 'babel-plugin-formatjs/types.js';
+import { type Options as FormatJsPluginOptions } from 'babel-plugin-formatjs/types.js';
 import ReactIntlAutoPlugin from 'babel-plugin-react-intl-auto';
 import { globby } from 'globby';
 

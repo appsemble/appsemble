@@ -1,4 +1,4 @@
-import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 
 export interface Button {
   /**

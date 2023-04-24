@@ -1,4 +1,4 @@
-import { FindOptions, Model, ModelStatic } from 'sequelize';
+import { type FindOptions, type Model, type ModelStatic } from 'sequelize';
 
 interface IterTableOptions<M extends Model> extends Omit<FindOptions<M>, 'limit' | 'offset'> {
   /**

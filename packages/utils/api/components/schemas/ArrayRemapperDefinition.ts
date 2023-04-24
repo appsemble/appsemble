@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const ArrayRemapperDefinition: OpenAPIV3.ArraySchemaObject = {
   type: 'array',

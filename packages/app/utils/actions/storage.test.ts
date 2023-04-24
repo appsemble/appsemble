@@ -1,8 +1,8 @@
-import { IDBPDatabase } from 'idb';
+import { type IDBPDatabase } from 'idb';
 
+import { getDB, readStorage, writeStorage } from './storage.js';
 import { createTestAction } from '../makeActions.js';
 import { AppStorage } from '../storage.js';
-import { getDB, readStorage, writeStorage } from './storage.js';
 
 let db: IDBPDatabase;
 let appStorage: AppStorage;

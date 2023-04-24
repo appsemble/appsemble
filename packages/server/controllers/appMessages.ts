@@ -1,14 +1,14 @@
-import { AppsembleMessages } from '@appsemble/types';
+import { type AppsembleMessages } from '@appsemble/types';
 import {
   compareStrings,
   defaultLocale,
   extractAppMessages,
   normalizeBlockName,
   Permission,
-  Prefix,
+  type Prefix,
 } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 

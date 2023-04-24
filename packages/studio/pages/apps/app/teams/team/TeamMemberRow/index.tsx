@@ -1,10 +1,10 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
 import { TeamRole } from '@appsemble/utils';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { TeamMember } from '../../../../../../types.js';
 import { messages } from './messages.js';
+import { type TeamMember } from '../../../../../../types.js';
 
 interface TeamMemberRowProps {
   member: TeamMember;

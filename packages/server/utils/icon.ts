@@ -1,5 +1,5 @@
-import { Context } from 'koa';
-import sharp, { RGBA } from 'sharp';
+import { type Context } from 'koa';
+import sharp, { type RGBA } from 'sharp';
 
 import { readAsset } from './readAsset.js';
 

@@ -3,7 +3,7 @@ import process from 'node:process';
 
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
-import yargs, { CommandModule } from 'yargs';
+import yargs, { type CommandModule } from 'yargs';
 
 import * as app from './commands/app/index.js';
 import * as asset from './commands/asset/index.js';

@@ -1,5 +1,5 @@
 import { notFound } from '@hapi/boom';
-import { Middleware } from 'koa';
+import { type Middleware } from 'koa';
 
 import { getApp } from '../../utils/app.js';
 

@@ -1,5 +1,5 @@
-import { BulmaColor } from '@appsemble/types';
-import { MouseEventHandler, ReactElement, ReactNode } from 'react';
+import { type BulmaColor } from '@appsemble/types';
+import { type MouseEventHandler, type ReactElement, type ReactNode } from 'react';
 
 import { CardFooterButton, useSimpleForm } from '../index.js';
 

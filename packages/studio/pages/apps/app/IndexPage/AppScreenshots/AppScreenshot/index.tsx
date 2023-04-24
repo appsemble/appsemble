@@ -1,11 +1,11 @@
 import { Button, Modal, useConfirmation, useToggle } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '../../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useApp } from '../../../index.js';
 
 interface AppScreenshotProps {
   url: string;

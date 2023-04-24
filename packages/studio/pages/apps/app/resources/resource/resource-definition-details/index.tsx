@@ -1,16 +1,16 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { ReactElement, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 import { stringify } from 'yaml';
 
+import { Endpoint } from './Endpoint/index.js';
+import { messages } from './messages.js';
 import { CodeBlock } from '../../../../../../components/CodeBlock/index.js';
 import { Collapsible } from '../../../../../../components/Collapsible/index.js';
 import { MarkdownContent } from '../../../../../../components/MarkdownContent/index.js';
 import { Schema } from '../../../../../../components/Schema/index.js';
 import { useApp } from '../../../index.js';
-import { Endpoint } from './Endpoint/index.js';
-import { messages } from './messages.js';
 
 /**
  * Render the page for resource definition details.

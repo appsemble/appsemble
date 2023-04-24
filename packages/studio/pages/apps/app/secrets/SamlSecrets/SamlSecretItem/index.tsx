@@ -1,13 +1,13 @@
 import { useToggle } from '@appsemble/react-components';
-import { AppSamlSecret } from '@appsemble/types';
+import { type AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { ListButton } from '../../../../../../components/ListButton/index.js';
 import { useApp } from '../../../index.js';
 import { SamlModal } from '../SamlModal/index.js';
-import { messages } from './messages.js';
 
 interface SamlSecretItemProps {
   /**

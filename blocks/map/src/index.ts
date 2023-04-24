@@ -2,7 +2,7 @@ import { bootstrap } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
 import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
-import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
+import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import './index.css';
@@ -50,18 +50,14 @@ bootstrap((params) => {
   addCleanup(() => map.remove());
 
   map
-    /**
-     * When the user has moved the map, fetch new relevant markers.
-     */
+    // When the user has moved the map, fetch new relevant markers.
     .on('moveend', () => {
       events.emit.move({
         $filter: makeFilter([filterLatitudeName, filterLongitudeName], map.getBounds()),
       });
     })
 
-    /**
-     * When a location error occurs because location is disabled, show a message to the user.
-     */
+    // When a location error occurs because location is disabled, show a message to the user.
     .once('locationerror', (error) => {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
       if (error?.code === 1) {
@@ -70,18 +66,14 @@ bootstrap((params) => {
       // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
     })
 
-    /**
-     * Center the map once if location is found.
-     */
+    // Center the map once if location is found.
     .once('locationfound', ({ latlng }: LocationEvent) => {
       if (!hasExplicitCenter) {
         map.setView(latlng, 18);
       }
     })
 
-    /**
-     * Update the location marker when the user has been updated.
-     */
+    // Update the location marker when the user has been updated.
     .on('locationfound', ({ latlng }: LocationEvent) => {
       locationMarker.setLatLng(latlng).addTo(map);
 

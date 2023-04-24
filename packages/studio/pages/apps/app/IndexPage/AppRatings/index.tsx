@@ -1,16 +1,16 @@
 import { useData, useMessages } from '@appsemble/react-components';
-import { Rating } from '@appsemble/types';
-import { ReactElement, useCallback } from 'react';
+import { type Rating } from '@appsemble/types';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { RateApp } from '../../../../../components/RateApp/index.js';
 import { StarRating } from '../../../../../components/StarRating/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export function AppRatings(): ReactElement {
   const { app, setApp } = useApp();

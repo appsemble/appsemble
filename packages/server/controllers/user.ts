@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Context } from 'koa';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { type Context } from 'koa';
 import { literal } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models/index.js';

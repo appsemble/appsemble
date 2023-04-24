@@ -1,11 +1,11 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type BlockManifest } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { BlockCard } from '../../../components/BlockCard/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { BlockCard } from '../../../components/BlockCard/index.js';
 
 /**
  * Display a list of cards representing the available blocks.

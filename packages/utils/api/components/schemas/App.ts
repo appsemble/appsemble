@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 import { googleAnalyticsIDPattern, normalized } from '../../../constants/index.js';
 

@@ -1,5 +1,5 @@
 import { badRequest, forbidden, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { literal, Op } from 'sequelize';
 
 import { App, AppMember, EmailAuthorization, Member, User } from '../models/index.js';

@@ -1,4 +1,4 @@
-import { ActionCreator } from './index.js';
+import { type ActionCreator } from './index.js';
 
 export const log: ActionCreator<'log'> = ({ definition: { level = 'info' } }) => [
   (data) => {

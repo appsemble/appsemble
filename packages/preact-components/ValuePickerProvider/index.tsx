@@ -1,4 +1,4 @@
-import { ComponentChildren, createContext, JSX, VNode } from 'preact';
+import { type ComponentChildren, createContext, type JSX, type VNode } from 'preact';
 import { useContext, useMemo } from 'preact/hooks';
 
 interface ValuePickerContext<T> {

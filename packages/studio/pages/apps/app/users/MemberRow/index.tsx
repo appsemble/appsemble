@@ -11,16 +11,16 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
-import { Member } from '../index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
+import { type Member } from '../index.js';
 
 interface MemberRowProperties {
   member: Member;

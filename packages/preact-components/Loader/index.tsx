@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentType, VNode } from 'preact';
+import { type ComponentType, type VNode } from 'preact';
 
 import styles from './index.module.css';
 

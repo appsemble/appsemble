@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentProps } from 'preact';
+import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { FormComponent, SharedFormComponentProps, TextArea } from '../index.js';
+import { FormComponent, type SharedFormComponentProps, TextArea } from '../index.js';
 
 type TextAreaFieldProps = Omit<ComponentProps<typeof TextArea>, keyof SharedFormComponentProps> &
   SharedFormComponentProps;

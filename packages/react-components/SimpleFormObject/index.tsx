@@ -1,4 +1,4 @@
-import { ReactChild, ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { type ReactChild, type ReactElement, type ReactNode, useCallback, useMemo } from 'react';
 
 import { SimpleFormProvider, useSimpleForm } from '../index.js';
 

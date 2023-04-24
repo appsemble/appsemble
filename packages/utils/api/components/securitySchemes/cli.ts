@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const cli: OpenAPIV3.OAuth2SecurityScheme = {
   type: 'oauth2',

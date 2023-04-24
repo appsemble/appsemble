@@ -1,8 +1,8 @@
 import { months, weekdays } from '@appsemble/utils';
-import flatpickr from 'flatpickr';
+import type flatpickr from 'flatpickr';
 import { useMemo } from 'preact/hooks';
 
-import { DateField, DateTimeField } from '../../block.js';
+import { type DateField, type DateTimeField } from '../../block.js';
 
 export function useLocale({ startOfWeek = 1 }: DateField | DateTimeField): flatpickr.CustomLocale {
   return useMemo(() => {

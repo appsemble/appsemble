@@ -1,6 +1,6 @@
 import { Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 

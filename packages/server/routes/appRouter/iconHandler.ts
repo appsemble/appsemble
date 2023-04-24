@@ -1,5 +1,5 @@
 import { isEqual, parseISO } from 'date-fns';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { Organization } from '../../models/index.js';
 import { getApp } from '../../utils/app.js';

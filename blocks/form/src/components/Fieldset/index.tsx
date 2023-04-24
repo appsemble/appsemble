@@ -1,9 +1,14 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, FormButtons } from '@appsemble/preact-components';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldError, Fieldset as FieldsetType, InputProps, Values } from '../../../block.js';
+import {
+  type FieldError,
+  type Fieldset as FieldsetType,
+  type InputProps,
+  type Values,
+} from '../../../block.js';
 import { generateDefaultValues } from '../../utils/generateDefaultValues.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength } from '../../utils/requirements.js';

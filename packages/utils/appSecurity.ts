@@ -1,4 +1,4 @@
-import { AppDefinition, RoleDefinition } from '@appsemble/types';
+import { type AppDefinition, type RoleDefinition } from '@appsemble/types';
 
 import { has } from './has.js';
 

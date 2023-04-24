@@ -1,13 +1,13 @@
 import { Title, useData } from '@appsemble/react-components';
-import { Snapshot } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type Snapshot } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useApp } from '../../index.js';
-import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const { app } = useApp();
@@ -32,7 +32,7 @@ export function IndexPage(): ReactElement {
               <ListButton
                 icon="file-code"
                 key={snapshot.id}
-                /* XXX: The Appsemble fallback should be removed after making user required */
+                // XXX: The Appsemble fallback should be removed after making user required
                 subtitle={snapshot.$author?.name ?? snapshot.$author?.id ?? 'Appsemble'}
                 title={
                   <FormattedDate

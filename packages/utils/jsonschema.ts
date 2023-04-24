@@ -1,6 +1,6 @@
-import { Schema } from 'jsonschema';
+import { type Schema } from 'jsonschema';
 import lcm from 'lcm';
-import { JsonArray, JsonValue } from 'type-fest';
+import { type JsonArray, type JsonValue } from 'type-fest';
 
 import { mapValues } from './mapValues.js';
 
@@ -8,6 +8,7 @@ declare module 'jsonschema' {
   /**
    * See https://github.com/tdegrunt/jsonschema/pull/335
    */
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   interface Schema {
     default?: JsonValue;
     examples?: JsonArray;

@@ -1,13 +1,13 @@
 import {
-  BlockContent,
-  Heading,
-  Link,
-  List,
-  ListItem,
-  PhrasingContent,
-  Root,
-  StaticPhrasingContent,
-  Text,
+  type BlockContent,
+  type Heading,
+  type Link,
+  type List,
+  type ListItem,
+  type PhrasingContent,
+  type Root,
+  type StaticPhrasingContent,
+  type Text,
 } from 'mdast';
 import { toMarkdown } from 'mdast-util-to-markdown';
 import prettier from 'prettier';

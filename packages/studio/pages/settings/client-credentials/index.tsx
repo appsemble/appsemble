@@ -19,10 +19,10 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { OAuth2ClientCredentials } from '@appsemble/types';
+import { type OAuth2ClientCredentials } from '@appsemble/types';
 import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 

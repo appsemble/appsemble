@@ -1,5 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { serverUnavailable } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { getDB } from '../models/index.js';
 import { getSSLStatus as getSSLStatusImplementation } from '../utils/dns/index.js';

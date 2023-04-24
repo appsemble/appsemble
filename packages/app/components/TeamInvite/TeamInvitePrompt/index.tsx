@@ -6,14 +6,14 @@ import {
   useData,
   useQuery,
 } from '@appsemble/react-components';
-import { TeamMember } from '@appsemble/types';
+import { type TeamMember } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useUser } from '../../UserProvider/index.js';
-import { messages } from './messages.js';
 
 export function TeamInvitePrompt(): ReactElement {
   const query = useQuery();

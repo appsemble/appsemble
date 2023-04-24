@@ -61,7 +61,7 @@ component rendered by [`bootstrap`](#bootstrap)
 
 ```tsx
 import { useBlock } from '@appsemble/preact';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 export function MyButton(): VNode {
   const { actions } = useBlock();
@@ -80,7 +80,7 @@ This helper component renders a translated message ID.
 
 ```tsx
 import { FormattedMessage } from '@appsemble/preact';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 interface MyButtonProps {
   name: string;

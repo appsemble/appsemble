@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
 import { conflict, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
 import { parseDocument } from 'yaml';

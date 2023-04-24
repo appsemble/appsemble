@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ElementType, ReactElement } from 'react';
+import { type ElementType, type ReactElement } from 'react';
 
 import styles from './index.module.css';
 

@@ -1,6 +1,6 @@
-import { EmailActionDefinition } from '@appsemble/types';
-import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
-import Koa, { ParameterizedContext } from 'koa';
+import { type EmailActionDefinition } from '@appsemble/types';
+import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
+import Koa, { type ParameterizedContext } from 'koa';
 
 import { App, Asset, Organization } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };

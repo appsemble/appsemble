@@ -1,5 +1,5 @@
+import { type ActionCreator } from './index.js';
 import { createAction } from '../makeActions.js';
-import { ActionCreator } from './index.js';
 
 export const condition: ActionCreator<'condition'> = ({
   definition,

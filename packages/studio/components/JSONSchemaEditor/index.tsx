@@ -1,8 +1,8 @@
-import { NamedEvent } from '@appsemble/web-utils';
-import { forwardRef, ReactElement, useCallback } from 'react';
+import { type NamedEvent } from '@appsemble/web-utils';
+import { forwardRef, type ReactElement, useCallback } from 'react';
 
 import { RecursiveJSONSchemaEditor } from './RecursiveJSONSchemaEditor/index.js';
-import { CommonJSONSchemaEditorProps } from './types.js';
+import { type CommonJSONSchemaEditorProps } from './types.js';
 
 /**
  * Render a component for editing objects based on a JSON schema.

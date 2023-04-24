@@ -1,14 +1,14 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, InputProps, Values } from '../../../block.js';
+import styles from './index.module.css';
+import { type FileField, type InputProps, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 import { FileEntry } from '../FileEntry/index.js';
-import styles from './index.module.css';
 
 type FileInputProps = InputProps<(Blob | string)[] | Blob | string, FileField>;
 

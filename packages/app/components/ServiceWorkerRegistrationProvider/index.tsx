@@ -2,8 +2,8 @@ import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
   createContext,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react';
 
-import { Permission, ServiceWorkerRegistrationContextType } from '../../types.js';
+import { type Permission, type ServiceWorkerRegistrationContextType } from '../../types.js';
 import { apiUrl, appId, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {

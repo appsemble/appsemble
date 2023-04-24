@@ -5,18 +5,18 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { AppDefinition, Snapshot } from '@appsemble/types';
+import { type AppDefinition, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
-import { lazy, ReactElement, Suspense, useCallback } from 'react';
+import { lazy, type ReactElement, Suspense, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { parse } from 'yaml';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { CodeBlock } from '../../../../../components/CodeBlock/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { useApp } from '../../index.js';
-import { messages } from './messages.js';
 
 const CodeDiffBlock = lazy(() =>
   import('../../../../../components/CodeDiffBlock/index.js').then((m) => ({

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-import { Text } from 'mdast';
+import { type Text } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toMarkdown } from 'mdast-util-to-markdown';
 import { visit } from 'unist-util-visit';

@@ -1,6 +1,6 @@
-import { OAuth2Provider, UserInfo } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils';
-import { OAuth2State } from '@appsemble/web-utils';
+import { type OAuth2Provider, type UserInfo } from '@appsemble/types';
+import { type TeamRole } from '@appsemble/utils';
+import { type OAuth2State } from '@appsemble/web-utils';
 
 export type Role = 'AppEditor' | 'Maintainer' | 'Member' | 'Owner';
 

@@ -1,8 +1,8 @@
-import { Remapper, Remappers, UserInfo } from '@appsemble/types';
+import { type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import { createEvent, EventAttributes } from 'ics';
-import { IntlMessageFormat } from 'intl-messageformat';
+import { createEvent, type EventAttributes } from 'ics';
+import { type IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
 import { has } from './has.js';

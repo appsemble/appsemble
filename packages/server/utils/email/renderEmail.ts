@@ -1,5 +1,5 @@
 import { has } from '@appsemble/utils';
-import { InlineCode, Link, Parent, YAML } from 'mdast';
+import { type InlineCode, type Link, type Parent, type YAML } from 'mdast';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';
 import frontmatter from 'remark-frontmatter';
@@ -30,7 +30,7 @@ interface Email {
  * @param template The body of the template to render.
  * @param values Values to pass to the template for rendering.
  * @param sub The subject of the email to send. If omitted, this is extracted from the markdown
- * email body.
+ *   email body.
  * @returns An email object that may be sent.
  */
 export async function renderEmail(

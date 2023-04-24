@@ -11,18 +11,18 @@ import {
   SimpleFormField,
   useLocationString,
 } from '@appsemble/react-components';
-import { App, Template } from '@appsemble/types';
+import { type App, type Template } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { checkRole } from '../../utils/checkRole.js';
 import { CreateOrganizationModal } from '../CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../ResendEmailButton/index.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 interface CloneButtonProps {
   /**

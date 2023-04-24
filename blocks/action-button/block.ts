@@ -1,4 +1,4 @@
-import { IconName, Remapper } from '@appsemble/sdk';
+import { type IconName, type Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Actions {

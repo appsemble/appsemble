@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect } from 'react';
+import { type MutableRefObject, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**

@@ -1,4 +1,4 @@
-import { Author } from './author.js';
+import { type Author } from './author.js';
 
 /**
  * A snapshot of an app.

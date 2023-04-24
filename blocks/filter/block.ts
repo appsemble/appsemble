@@ -1,5 +1,5 @@
-import { IconName, Remapper } from '@appsemble/sdk';
-import { JSX } from 'preact/jsx-runtime';
+import { type IconName, type Remapper } from '@appsemble/sdk';
+import { type JSX } from 'preact/jsx-runtime';
 
 export interface EnumOption {
   /**

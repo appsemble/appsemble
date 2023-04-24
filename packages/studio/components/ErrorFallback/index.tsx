@@ -1,12 +1,12 @@
 import { Button, Content, Message, SentryForm, Title, useMeta } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { sentryDsn } from '../../utils/settings.js';
 import { Toolbar } from '../Toolbar/index.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 interface ErrorFallbackProps {
   /**

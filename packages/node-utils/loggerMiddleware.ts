@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { ParameterizedContext } from 'koa';
-import * as compose from 'koa-compose';
+import { type ParameterizedContext } from 'koa';
+import type * as compose from 'koa-compose';
 
 import { logger } from './logger.js';
 

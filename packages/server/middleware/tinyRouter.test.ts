@@ -1,7 +1,7 @@
 import { noop } from '@appsemble/utils';
-import { Boom } from '@hapi/boom';
+import { type Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
-import Koa, { Context } from 'koa';
+import Koa, { type Context } from 'koa';
 
 import { tinyRouter } from './tinyRouter.js';
 

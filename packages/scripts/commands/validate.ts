@@ -7,7 +7,7 @@ import { defaultLocale } from '@appsemble/utils';
 import fsExtra from 'fs-extra';
 import normalizePath from 'normalize-path';
 import semver from 'semver';
-import { PackageJson } from 'type-fest';
+import { type PackageJson } from 'type-fest';
 
 import { extractMessages } from '../lib/i18n.js';
 

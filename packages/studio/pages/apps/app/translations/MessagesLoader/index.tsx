@@ -1,12 +1,12 @@
 import { useData } from '@appsemble/react-components';
-import { AppMessages } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type AppMessages } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { useApp } from '../../index.js';
 import { MessagesForm } from '../MessagesForm/index.js';
-import { messages } from './messages.js';
 
 interface MessagesLoaderProps {
   /**

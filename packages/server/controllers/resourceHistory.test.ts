@@ -1,7 +1,14 @@
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, Organization, Resource, ResourceVersion, User } from '../models/index.js';
+import {
+  App,
+  Member,
+  Organization,
+  Resource,
+  ResourceVersion,
+  type User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';

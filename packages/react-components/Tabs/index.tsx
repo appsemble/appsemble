@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
-import { ValuePickerProvider, ValuePickerProviderProps } from '../index.js';
 import styles from './index.module.css';
+import { ValuePickerProvider, type ValuePickerProviderProps } from '../index.js';
 
 interface TabsProps<T> extends ValuePickerProviderProps<T> {
   /**

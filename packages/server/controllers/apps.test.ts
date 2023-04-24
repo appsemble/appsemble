@@ -1,5 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { App as AppType, Snapshot } from '@appsemble/types';
+import { type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';

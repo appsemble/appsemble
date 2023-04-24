@@ -1,13 +1,13 @@
 import { Loader } from '@appsemble/react-components';
-import { AppMember, TeamMember, UserInfo } from '@appsemble/types';
+import { type AppMember, type TeamMember, type UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import {
   createContext,
-  Dispatch,
-  MutableRefObject,
-  ReactElement,
+  type Dispatch,
+  type MutableRefObject,
+  type ReactElement,
   useCallback,
   useContext,
   useEffect,
@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react';
 
-import { UpdateTeam } from '../../types.js';
+import { type UpdateTeam } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';

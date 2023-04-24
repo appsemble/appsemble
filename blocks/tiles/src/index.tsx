@@ -1,4 +1,4 @@
-import { bootstrap, IconName } from '@appsemble/sdk';
+import { bootstrap, type IconName } from '@appsemble/sdk';
 
 import styles from './index.module.css';
 

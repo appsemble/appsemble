@@ -1,4 +1,4 @@
-import { Remapper } from '@appsemble/sdk';
+import { type Remapper } from '@appsemble/sdk';
 
 /**
  * A hexadecimal color.
@@ -19,6 +19,7 @@ export interface LabelOptions {
    * Options for the font style for the labels on the horizontal axis.
    */
   font: Font;
+
   /**
    * The maximum length (words) of the labels on the horizontal axis.
    */

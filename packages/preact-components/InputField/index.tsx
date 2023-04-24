@@ -1,7 +1,7 @@
-import { ComponentProps } from 'preact';
+import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
+import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
 
 type InputFieldProps = Omit<ComponentProps<typeof Input>, keyof SharedFormComponentProps> &
   SharedFormComponentProps;

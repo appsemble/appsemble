@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type App } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';

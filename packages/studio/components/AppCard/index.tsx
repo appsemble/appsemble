@@ -1,12 +1,12 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
 import { AppIcon } from '../AppIcon/index.js';
 import { StarRating } from '../StarRating/index.js';
-import styles from './index.module.css';
 
 interface AppCardProps {
   /**

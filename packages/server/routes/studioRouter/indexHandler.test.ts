@@ -4,8 +4,8 @@ import crypto from 'node:crypto';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { setArgv } from '../../utils/argv.js';
 import { studioRouter } from './index.js';
+import { setArgv } from '../../utils/argv.js';
 
 beforeAll(async () => {
   setArgv({ host: 'https://app.example:9999' });

@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import {
   App,

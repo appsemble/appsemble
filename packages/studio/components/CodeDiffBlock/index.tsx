@@ -1,5 +1,5 @@
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { ReactElement, useEffect, useRef } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
 
 interface CodeBlockProps {
   /**

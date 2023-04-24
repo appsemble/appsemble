@@ -1,4 +1,8 @@
-import { AppDefinition, BasicPageDefinition, FlowPageDefinition } from '@appsemble/types';
+import {
+  type AppDefinition,
+  type BasicPageDefinition,
+  type FlowPageDefinition,
+} from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
 
 import { validateAppDefinition } from './validation.js';

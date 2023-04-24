@@ -4,7 +4,7 @@
  * @param organizationId The organization in which the app is to generate a URL for.
  * @param path The path of the app for which to generate a URL.
  * @param domain If specified, this value is used instead of the app path, organization ID, and
- * Studio URL
+ *   Studio URL
  * @returns A URL on which the app is hosted.
  */
 export function getAppUrl(organizationId: string, path: string, domain?: string): string {

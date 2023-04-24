@@ -2,12 +2,12 @@ import { months, weekdays } from '@appsemble/utils';
 import classNames from 'classnames';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
-import { ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
-import { useCombinedRefs } from '../useCombinedRefs.js';
 import styles from './index.module.css';
+import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
+import { useCombinedRefs } from '../useCombinedRefs.js';
 
 type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];
 type Months = flatpickr.CustomLocale['months']['shorthand'];
@@ -25,7 +25,7 @@ type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> 
      * The change handler.
      *
      * @param event An object with the properties `target` and `currentTarget` set to the input
-     * element, to emulate an event.
+     *   element, to emulate an event.
      * @param value The value that was selected.
      */
     onChange?: (

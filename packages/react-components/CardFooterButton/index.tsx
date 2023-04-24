@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
 
-import { Button } from '../index.js';
 import styles from './index.module.css';
+import { Button } from '../index.js';
 
 export function CardFooterButton({
   className,

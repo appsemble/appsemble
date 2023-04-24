@@ -1,4 +1,4 @@
-import { BulmaColor, IconName, Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type IconName, type Remapper } from '@appsemble/sdk';
 
 interface Reply {
   /**

@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { MouseEvent, ReactElement, useCallback, useEffect, useState } from 'react';
+import { type MouseEvent, type ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';

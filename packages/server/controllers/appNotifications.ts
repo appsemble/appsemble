@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
-import { SubscriptionResponse } from '@appsemble/types';
+import { type SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { App, AppSubscription, ResourceSubscription } from '../models/index.js';
 import { checkRole } from '../utils/checkRole.js';

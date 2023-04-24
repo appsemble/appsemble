@@ -1,5 +1,5 @@
-import { FileField } from '../../../block.js';
 import { validateFile } from './validateFile.js';
+import { type FileField } from '../../../block.js';
 
 describe('validateFile', () => {
   it('should should return undefined if it validates correctly', () => {

@@ -5,12 +5,12 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings.js';
 import { messages } from './messages.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 
 export function ResetPassword(): ReactElement {
   useMeta(messages.title);

@@ -1,9 +1,9 @@
 import { createFixtureStream, createFormData } from '@appsemble/node-utils';
-import { Asset as AssetType } from '@appsemble/types';
+import { type Asset as AssetType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Asset, Member, Organization, Resource, User } from '../models/index.js';
+import { App, Asset, Member, Organization, Resource, type User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';

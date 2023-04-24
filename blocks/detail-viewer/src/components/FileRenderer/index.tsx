@@ -1,11 +1,11 @@
 import { useBlock } from '@appsemble/preact';
 import { isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { FileField, RendererProps } from '../../../block.js';
-import { ImageField } from '../ImageField/index.js';
 import styles from './index.module.css';
+import { type FileField, type RendererProps } from '../../../block.js';
+import { ImageField } from '../ImageField/index.js';
 
 /**
  * Renders a file as an image.

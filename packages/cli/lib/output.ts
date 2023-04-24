@@ -1,4 +1,4 @@
-import { ValidationError } from 'jsonschema';
+import { type ValidationError } from 'jsonschema';
 import { isNode, LineCounter, parseDocument } from 'yaml';
 
 export function printAxiosError(filename: string, yaml: string, errors: ValidationError[]): string {

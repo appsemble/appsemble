@@ -1,7 +1,9 @@
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import {
   FormButtons,
   PasswordField,
@@ -11,8 +13,6 @@ import {
   SimpleSubmit,
   useToggle,
 } from '../index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export interface LoginFormValues {
   email: string;

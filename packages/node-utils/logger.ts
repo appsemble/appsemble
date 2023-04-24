@@ -1,10 +1,10 @@
 import { EOL } from 'node:os';
 import { inspect } from 'node:util';
 
-import axios, { AxiosError } from 'axios';
+import axios, { type AxiosError } from 'axios';
 import chalk from 'chalk';
 import { highlight } from 'cli-highlight';
-import { TransformableInfo } from 'logform';
+import { type TransformableInfo } from 'logform';
 import winston from 'winston';
 
 interface ConfigureLoggerParams {

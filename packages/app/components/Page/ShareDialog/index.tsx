@@ -1,10 +1,10 @@
 import { Button, ModalCard } from '@appsemble/react-components';
-import { Dispatch, ReactElement, SetStateAction, useCallback } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { ShowShareDialogParams } from '../../../types.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { type ShowShareDialogParams } from '../../../types.js';
 
 export interface ShareDialogParams {
   shareDialogParams: ShareDialogState;

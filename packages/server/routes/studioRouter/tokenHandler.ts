@@ -2,8 +2,8 @@ import querystring from 'node:querystring';
 
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Context } from 'koa';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
+import { type Context } from 'koa';
 import raw from 'raw-body';
 
 import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models/index.js';

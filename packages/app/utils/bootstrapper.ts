@@ -1,7 +1,11 @@
-import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
-import { BlockManifest } from '@appsemble/types';
+import {
+  type AppsembleBootstrapEvent,
+  type BootstrapFunction,
+  type BootstrapParams,
+} from '@appsemble/sdk';
+import { type BlockManifest } from '@appsemble/types';
 import { prefixBlockURL } from '@appsemble/utils';
-import { Promisable } from 'type-fest';
+import { type Promisable } from 'type-fest';
 
 const bootstrappers = new Map<string, BootstrapFunction>();
 const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
@@ -13,7 +17,7 @@ const loadedBlocks = new Set<string>();
  * @param scriptNode The script node on which to register the bootstrap function.
  * @param event the event that was used to register the bootstrap function.
  * @param blockDefId The id of the block definition for which a boostrap function is being
- * registered.
+ *   registered.
  */
 export function register(
   scriptNode: HTMLScriptElement,

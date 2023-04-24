@@ -1,8 +1,8 @@
 import { noop } from '@appsemble/utils';
 import {
   createContext,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { MessageDescriptor, useIntl } from 'react-intl';
+import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Routes, useLocation } from 'react-router-dom';
 
 type Text = MessageDescriptor | string;
@@ -119,9 +119,9 @@ export function useBreadcrumbs(): Breadcrumb[] {
  * Define a title and description for a page.
  *
  * @param title The page title to use. This will be used for both a breadcrumb and as part of the
- * page title.
+ *   page title.
  * @param description The page description to use. This is used for SEO purposes only. Therefor
- * it’s only needed for public pages.
+ *   it’s only needed for public pages.
  */
 export function useMeta(title: Text, description?: Text): void {
   const [depth, setMeta] = useContext(MetaContext);

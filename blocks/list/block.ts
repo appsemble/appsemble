@@ -1,4 +1,4 @@
-import { IconName, Remapper } from '@appsemble/sdk';
+import { type IconName, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object representing how a data field should be displayed.

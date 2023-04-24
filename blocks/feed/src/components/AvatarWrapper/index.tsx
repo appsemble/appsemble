@@ -1,5 +1,5 @@
-import { Action } from '@appsemble/sdk';
-import { ComponentChildren, VNode } from 'preact';
+import { type Action } from '@appsemble/sdk';
+import { type ComponentChildren, type VNode } from 'preact';
 
 import styles from './index.module.css';
 

@@ -1,5 +1,5 @@
 import { useMeta } from '@appsemble/react-components';
-import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
 
 import { BlockList } from '../../BlockList/index.js';
 

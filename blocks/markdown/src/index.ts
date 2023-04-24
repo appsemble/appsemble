@@ -1,4 +1,4 @@
-import { bootstrap, Parameters, Utils } from '@appsemble/sdk';
+import { bootstrap, type Parameters, type Utils } from '@appsemble/sdk';
 import rehypeDomStringify from 'rehype-dom-stringify';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';

@@ -1,13 +1,13 @@
 import { randomBytes } from 'node:crypto';
 
 import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
-import { Context } from 'koa';
-import { Transaction } from 'sequelize';
+import { type Context } from 'koa';
+import { type Transaction } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
-import { Mailer, Recipient } from '../utils/email/Mailer.js';
+import { type Mailer, type Recipient } from '../utils/email/Mailer.js';
 import { getAccessToken, getUserInfo } from '../utils/oauth2.js';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets.js';
 

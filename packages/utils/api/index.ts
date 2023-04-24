@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 import { components } from './components/index.js';
 import { paths } from './paths/index.js';

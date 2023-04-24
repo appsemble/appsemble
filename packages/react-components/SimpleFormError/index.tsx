@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentType, ReactElement } from 'react';
+import { type ComponentType, type ReactElement } from 'react';
 
-import { Message, useSimpleForm } from '../index.js';
 import styles from './index.module.css';
+import { Message, useSimpleForm } from '../index.js';
 
 interface SimpleFormErrorProps {
   children: ComponentType<{ error: Error }>;

@@ -1,7 +1,7 @@
 import { Input } from '@appsemble/preact-components';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { DateField, FieldComponentProps } from '../../../block.js';
+import { type DateField, type FieldComponentProps } from '../../../block.js';
 
 export function DateFieldComponent({
   className,

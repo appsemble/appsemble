@@ -1,9 +1,9 @@
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../../lib/app.js';
 import { authenticate } from '../../../lib/authentication.js';
 import { inviteMember } from '../../../lib/team.js';
-import { BaseArguments } from '../../../types.js';
+import { type BaseArguments } from '../../../types.js';
 
 interface InviteTeamArguments extends BaseArguments {
   appId: number;

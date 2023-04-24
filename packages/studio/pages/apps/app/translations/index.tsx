@@ -15,14 +15,14 @@ import {
 } from '@appsemble/react-components';
 import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
-import { useApp } from '../index.js';
 import { messages } from './messages.js';
 import { MessagesLoader } from './MessagesLoader/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useApp } from '../index.js';
 
 interface LanguageFormValues {
   language?: string;

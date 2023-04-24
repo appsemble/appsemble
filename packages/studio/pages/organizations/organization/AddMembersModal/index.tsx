@@ -5,18 +5,24 @@ import {
   Input,
   ModalCard,
   Select,
-  Toggle,
+  type Toggle,
   useMessages,
 } from '@appsemble/react-components';
-import { OrganizationInvite } from '@appsemble/types';
-import { Role, roles } from '@appsemble/utils';
+import { type OrganizationInvite } from '@appsemble/types';
+import { type Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ClipboardEvent, ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type ClipboardEvent,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../../components/UserProvider/index.js';
 import { messages } from './messages.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
 
 interface AddMembersModalProps {
   /**

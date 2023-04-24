@@ -1,8 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import { isPreactChild } from '@appsemble/preact-components';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { FieldGroup as FieldGroupType, RendererProps } from '../../../block.js';
+import { type FieldGroup as FieldGroupType, type RendererProps } from '../../../block.js';
 import { Field } from '../Field/index.js';
 
 /**

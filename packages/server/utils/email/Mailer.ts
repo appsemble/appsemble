@@ -1,18 +1,22 @@
 import { logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
-import addrs, { ParsedMailbox } from 'email-addresses';
-import { FormatXMLElementFn, IntlMessageFormat, PrimitiveType } from 'intl-messageformat';
+import addrs, { type ParsedMailbox } from 'email-addresses';
+import { type FormatXMLElementFn, IntlMessageFormat, type PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
-import { createTransport, SendMailOptions as MailerSendMailOptions, Transporter } from 'nodemailer';
-import { Options } from 'nodemailer/lib/smtp-transport';
+import {
+  createTransport,
+  type SendMailOptions as MailerSendMailOptions,
+  type Transporter,
+} from 'nodemailer';
+import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
-import { App, AppMessages } from '../../models/index.js';
+import { renderEmail } from './renderEmail.js';
+import { type App, AppMessages } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
 import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages.js';
 import { readAsset } from '../readAsset.js';
-import { renderEmail } from './renderEmail.js';
 
 const supportedLanguages = getSupportedLanguages();
 export interface Recipient {

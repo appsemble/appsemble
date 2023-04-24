@@ -1,12 +1,12 @@
-import { ResourceQueryActionDefinition } from '@appsemble/types';
+import { type ResourceQueryActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { QueryParams } from 'koas-parameters';
+import { type QueryParams } from 'koas-parameters';
 import { Op } from 'sequelize';
 
+import { type ServerActionParameters } from './index.js';
 import { AppMember, Resource } from '../../models/index.js';
 import { getRemapperContext } from '../app.js';
 import { getResourceDefinition, parseQuery } from '../resource.js';
-import { ServerActionParameters } from './index.js';
 
 export async function query({
   action,

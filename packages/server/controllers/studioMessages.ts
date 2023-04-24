@@ -1,6 +1,6 @@
 import { defaultLocale } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import tags from 'language-tags';
 
 import { getAppsembleMessages, getSupportedLanguages } from '../utils/getAppsembleMessages.js';

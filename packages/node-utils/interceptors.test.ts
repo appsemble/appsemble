@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';

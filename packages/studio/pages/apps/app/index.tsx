@@ -8,15 +8,15 @@ import {
   useData,
   useSideMenu,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import { compareStrings, Permission } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
-  Dispatch,
+  type Dispatch,
   lazy,
-  ReactElement,
-  SetStateAction,
+  type ReactElement,
+  type SetStateAction,
   Suspense,
   useContext,
   useMemo,
@@ -24,9 +24,6 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
-import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
-import { useUser } from '../../../components/UserProvider/index.js';
-import { checkRole } from '../../../utils/checkRole.js';
 import { AssetsPage } from './assets/index.js';
 import { DefinitionPage } from './definition/index.js';
 import { IndexPage } from './IndexPage/index.js';
@@ -39,6 +36,9 @@ import { SnapshotsRoutes } from './snapshots/index.js';
 import { TeamsRoutes } from './teams/index.js';
 import { TranslationsPage } from './translations/index.js';
 import { UsersPage } from './users/index.js';
+import { ProtectedRoute } from '../../../components/ProtectedRoute/index.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { checkRole } from '../../../utils/checkRole.js';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.

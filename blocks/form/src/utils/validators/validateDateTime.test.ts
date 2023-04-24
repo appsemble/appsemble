@@ -1,7 +1,7 @@
 import { remap } from '@appsemble/utils';
 
-import { DateTimeField } from '../../../block.js';
 import { validateDateTime } from './validateDateTime.js';
+import { type DateTimeField } from '../../../block.js';
 
 describe('validateDateTime', () => {
   it('should return the first requirement that does not validate', () => {

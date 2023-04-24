@@ -1,6 +1,6 @@
 import { Button, Title, useToggle } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 

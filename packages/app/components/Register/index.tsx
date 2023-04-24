@@ -1,17 +1,17 @@
 import {
   Content,
   Register as RegisterForm,
-  RegistrationFormValues,
+  type RegistrationFormValues,
   useMeta,
 } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 export function Register(): ReactElement {
   useMeta(messages.register);

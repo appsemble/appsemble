@@ -1,6 +1,6 @@
-import { AppVisibility } from '@appsemble/types';
-import { PackageJson } from 'read-pkg-up';
-import { JsonObject } from 'type-fest';
+import { type AppVisibility } from '@appsemble/types';
+import { type PackageJson } from 'read-pkg-up';
+import { type JsonObject } from 'type-fest';
 
 /**
  * The base arguments from the command line.

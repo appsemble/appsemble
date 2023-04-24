@@ -1,12 +1,17 @@
 import { MetaSwitch, Tab, Tabs } from '@appsemble/react-components';
-import { TabsPageDefinition } from '@appsemble/types';
+import { type TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  useCallback,
+} from 'react';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { useAppMessages } from '../AppMessagesProvider/index.js';
-import { BlockList } from '../BlockList/index.js';
 import { TabContent } from './TabContent/index.js';
+import { useAppMessages } from '../AppMessagesProvider/index.js';
+import { type BlockList } from '../BlockList/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   page: TabsPageDefinition;

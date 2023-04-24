@@ -1,5 +1,5 @@
 import { bootstrap } from '@appsemble/sdk';
-import Vimeo, { TimeEvent } from '@vimeo/player';
+import Vimeo, { type TimeEvent } from '@vimeo/player';
 
 import styles from './index.module.css';
 

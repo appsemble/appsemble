@@ -1,5 +1,5 @@
-import { AppDefinition } from '@appsemble/types';
-import axios, { AxiosRequestConfig } from 'axios';
+import { type AppDefinition } from '@appsemble/types';
+import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { createTestAction } from '../makeActions.js';

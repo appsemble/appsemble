@@ -1,7 +1,7 @@
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 
-import { Field, InputProps } from '../../../block.js';
+import { type Field, type InputProps } from '../../../block.js';
 import { BooleanInput } from '../BooleanInput/index.js';
 import { DateInput } from '../DateInput/index.js';
 import { DateTimeInput } from '../DateTimeInput/index.js';

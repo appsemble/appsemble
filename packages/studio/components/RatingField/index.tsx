@@ -1,5 +1,5 @@
 import { FormComponent } from '@appsemble/react-components';
-import { ComponentPropsWithoutRef, forwardRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef, type ReactElement } from 'react';
 
 import { StarRating } from '../StarRating/index.js';
 

@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
 import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
-import { Remapper } from '@appsemble/sdk';
-import { VNode } from 'preact';
+import { type Remapper } from '@appsemble/sdk';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 

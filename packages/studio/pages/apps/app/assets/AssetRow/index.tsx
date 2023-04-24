@@ -1,12 +1,12 @@
 import { Button, Checkbox, ModalCard, useToggle } from '@appsemble/react-components';
-import { Asset } from '@appsemble/types';
-import { ChangeEvent, ReactElement } from 'react';
+import { type Asset } from '@appsemble/types';
+import { type ChangeEvent, type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { useApp } from '../../index.js';
 import { AssetPreview } from '../AssetPreview/index.js';
-import { messages } from './messages.js';
 
 interface AssetRowProps {
   /**

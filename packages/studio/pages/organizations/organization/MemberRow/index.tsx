@@ -4,15 +4,15 @@ import {
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { Role, roles } from '@appsemble/utils';
+import { type Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../../components/UserProvider/index.js';
-import { Member } from '../../../../types.js';
 import { messages } from './messages.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { type Member } from '../../../../types.js';
 
 interface MemberRowProps {
   /**

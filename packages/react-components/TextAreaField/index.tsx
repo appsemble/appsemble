@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 
-import { FormComponent, SharedFormComponentProps, TextArea } from '../index.js';
+import { FormComponent, type SharedFormComponentProps, TextArea } from '../index.js';
 
 type TextAreaFieldProps = Omit<
   ComponentPropsWithoutRef<typeof TextArea>,

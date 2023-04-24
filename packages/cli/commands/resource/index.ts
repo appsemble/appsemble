@@ -1,4 +1,4 @@
-import { Argv, CommandModule } from 'yargs';
+import { type Argv, type CommandModule } from 'yargs';
 
 import * as create from './create.js';
 import * as update from './update.js';

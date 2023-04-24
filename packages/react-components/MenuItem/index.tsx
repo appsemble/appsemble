@@ -1,8 +1,8 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { ReactElement, ReactNode } from 'react';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type ReactElement, type ReactNode } from 'react';
 
-import { Icon, NavLink } from '../index.js';
 import styles from './index.module.css';
+import { Icon, NavLink } from '../index.js';
 
 interface SideNavLinkProps {
   /**

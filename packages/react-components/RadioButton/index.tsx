@@ -1,4 +1,10 @@
-import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, ReactNode, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+} from 'react';
 
 import { useValuePicker } from '../index.js';
 

@@ -1,6 +1,6 @@
 import { Icon, useObjectURL, useSimpleForm } from '@appsemble/react-components';
-import { Organization } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type Organization } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';

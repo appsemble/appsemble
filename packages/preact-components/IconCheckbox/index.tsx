@@ -1,12 +1,12 @@
-import { BulmaColor, BulmaSize } from '@appsemble/types';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentChild, ComponentProps, JSX } from 'preact';
+import { type ComponentChild, type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { Icon } from '../Icon/index.js';
 import styles from './index.module.css';
+import { Icon } from '../Icon/index.js';
 
 type CheckboxProps = Omit<
   ComponentProps<'input'>,

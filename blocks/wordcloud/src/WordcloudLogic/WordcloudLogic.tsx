@@ -1,7 +1,7 @@
 import { FormattedMessage } from '@appsemble/preact';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import WordCloud, { ListEntry } from 'wordcloud';
+import WordCloud, { type ListEntry } from 'wordcloud';
 
 import styles from './wordcloud.module.css';
 

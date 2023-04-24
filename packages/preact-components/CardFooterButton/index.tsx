@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentProps, VNode } from 'preact';
+import { type ComponentProps, type VNode } from 'preact';
 
-import { Button } from '../index.js';
 import styles from './index.module.css';
+import { Button } from '../index.js';
 
 export function CardFooterButton({
   className,

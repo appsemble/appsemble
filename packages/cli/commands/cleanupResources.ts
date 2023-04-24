@@ -1,7 +1,7 @@
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 import { serverImport } from '../lib/serverImport.js';
-import { BaseArguments } from '../types.js';
+import { type BaseArguments } from '../types.js';
 
 export const command = 'cleanup-resources';
 export const description = 'Deletes all expired resources from the database.';

@@ -1,4 +1,4 @@
-import { Action, bootstrap, IconName } from '@appsemble/sdk';
+import { type Action, bootstrap, type IconName } from '@appsemble/sdk';
 
 bootstrap(({ actions, data, parameters: { back, forward }, utils }) => {
   const createClickAction = (action: Action) => async (event: Event) => {

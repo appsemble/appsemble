@@ -1,5 +1,5 @@
-import { Remapper, RequestLikeActionDefinition } from '@appsemble/types';
-import { RawAxiosRequestConfig } from 'axios';
+import { type Remapper, type RequestLikeActionDefinition } from '@appsemble/types';
+import { type RawAxiosRequestConfig } from 'axios';
 
 export function formatRequestAction(
   { method = 'GET', query, ...action }: RequestLikeActionDefinition,

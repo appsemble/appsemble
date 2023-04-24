@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { DataTypes, Op, Sequelize } from 'sequelize';
+import { DataTypes, Op, type Sequelize } from 'sequelize';
 
 export const key = '0.17.6';
 

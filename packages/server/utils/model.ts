@@ -1,11 +1,11 @@
 import { randomBytes } from 'node:crypto';
 
-import * as types from '@appsemble/types';
+import type * as types from '@appsemble/types';
 import { forbidden } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
 
-import * as models from '../models/index.js';
 import { argv } from './argv.js';
+import * as models from '../models/index.js';
 
 /**
  * Resolves the icon url for an app based on whether it’s present and when it was updated.

@@ -1,5 +1,5 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash-es';

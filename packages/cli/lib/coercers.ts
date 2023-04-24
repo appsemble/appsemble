@@ -1,4 +1,4 @@
-import { createReadStream, ReadStream } from 'node:fs';
+import { createReadStream, type ReadStream } from 'node:fs';
 
 import normalizePath from 'normalize-path';
 

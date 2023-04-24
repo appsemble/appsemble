@@ -1,6 +1,6 @@
-import { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 
-import { FormComponent, Input, SharedFormComponentProps } from '../index.js';
+import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
 
 type InputFieldProps = Omit<
   ComponentPropsWithoutRef<typeof Input>,

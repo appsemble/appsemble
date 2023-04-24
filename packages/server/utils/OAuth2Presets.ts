@@ -1,5 +1,5 @@
-import { Remapper } from '@appsemble/types';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type Remapper } from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface OAuth2Preset {
   /**

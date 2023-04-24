@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const oauth2Consent: OpenAPIV3.RequestBodyObject = {
   description: 'The OAuth2 client credentials',

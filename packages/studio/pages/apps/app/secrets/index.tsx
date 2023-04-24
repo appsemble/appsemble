@@ -13,16 +13,16 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
-import { Collapsible } from '../../../../components/Collapsible/index.js';
-import { useApp } from '../index.js';
 import { messages } from './messages.js';
 import { OAuth2Secrets } from './OAuth2Secrets/index.js';
 import { SamlSecrets } from './SamlSecrets/index.js';
 import { SSLSecrets } from './SSLSecrets/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { Collapsible } from '../../../../components/Collapsible/index.js';
+import { useApp } from '../index.js';
 
 interface EmailFormParameters {
   emailName: string;

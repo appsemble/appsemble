@@ -1,5 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 

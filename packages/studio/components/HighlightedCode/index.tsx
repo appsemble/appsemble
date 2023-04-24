@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef } from 'react';
+import { type ReactElement, useEffect, useRef } from 'react';
 
 export interface HighlightedCodeProps {
   /**

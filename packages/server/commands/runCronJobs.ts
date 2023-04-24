@@ -1,8 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import cron from 'cron-parser';
 import { Op } from 'sequelize';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
+import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
 import { handleAction } from '../utils/action.js';
 import { actions } from '../utils/actions/index.js';
@@ -10,7 +11,6 @@ import { argv } from '../utils/argv.js';
 import { iterTable } from '../utils/database.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { databaseBuilder } from './builder/database.js';
 
 export const command = 'run-cronjobs';
 export const description = 'Runs all cronjobs associated with apps.';

@@ -14,19 +14,19 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, SSLStatus } from '@appsemble/types';
+import { type App, type SSLStatus } from '@appsemble/types';
 import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useMemo } from 'react';
-import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
+import { type ReactElement, useMemo } from 'react';
+import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { useSSLStatus } from '../../../../components/useSSLStatus.js';
-import { useApp } from '../index.js';
 import { IconTool } from './IconTool/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { FormValues } from './types.js';
+import { type FormValues } from './types.js';
+import { useSSLStatus } from '../../../../components/useSSLStatus.js';
+import { useApp } from '../index.js';
 
 function preprocessDomain(domain: string): string {
   return domain

@@ -1,5 +1,5 @@
 import { badRequest } from '@hapi/boom';
-import { ValidatorResult } from 'jsonschema';
+import { type ValidatorResult } from 'jsonschema';
 
 export function handleValidatorResult(
   result: ValidatorResult,

@@ -1,6 +1,6 @@
-import { BulmaColor } from '@appsemble/types';
+import { type BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
-import { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 
 interface MessageProps {
   /**

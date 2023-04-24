@@ -1,9 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type {
-  AppDefinition,
-  AppsembleMessages,
-  App as AppType,
-  AppVisibility,
+import {
+  type AppDefinition,
+  type AppsembleMessages,
+  type App as AppType,
+  type AppVisibility,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
 import {
@@ -25,7 +24,6 @@ import {
 } from 'sequelize-typescript';
 import { stringify } from 'yaml';
 
-import { resolveIconUrl } from '../utils/model.js';
 import {
   AppBlockStyle,
   AppMember,
@@ -41,6 +39,7 @@ import {
   Resource,
   Team,
 } from './index.js';
+import { resolveIconUrl } from '../utils/model.js';
 
 @Table({ tableName: 'App', paranoid: true })
 export class App extends Model {

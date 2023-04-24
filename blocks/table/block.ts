@@ -1,4 +1,4 @@
-import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 
 interface BaseField {
   /**
@@ -46,12 +46,14 @@ export interface StringField extends BaseField {
      * The name of the field.
      */
     name: string;
+
     /**
      * The name of the action to trigger when editing the field.
      *
      * @format action
      */
     onEdit: string;
+
     /**
      * Whether the string field should be multiline or not.
      *

@@ -9,17 +9,17 @@ import Sdk from '@appsemble/sdk/README.md';
 import WebpackConfig from '@appsemble/webpack-config/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import CreateAppsemble from 'create-appsemble/README.md';
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import Changelog from '../../../../CHANGELOG.md';
-import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
 import { SearchPage } from './search/index.js';
+import Changelog from '../../../../CHANGELOG.md';
+import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
 function getUrl(p: string, base: string): string {
   return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;

@@ -1,7 +1,7 @@
-import { User as APIUser } from '@appsemble/types';
+import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
+import { EmailAuthorization, Member, Organization, type User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';

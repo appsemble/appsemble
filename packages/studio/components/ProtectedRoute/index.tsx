@@ -1,9 +1,9 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type Permission } from '@appsemble/utils';
+import { type ReactElement } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
-import { Organization } from '../../types.js';
+import { type Organization } from '../../types.js';
 import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 

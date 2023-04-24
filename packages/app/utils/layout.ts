@@ -1,4 +1,4 @@
-import { AppDefinition, TeamMember } from '@appsemble/types';
+import { type AppDefinition, type TeamMember } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 
 export function shouldShowMenu(app: AppDefinition, userRole: string, teams: TeamMember[]): boolean {

@@ -1,10 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField as DateTimeComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { DateTimeField, InputProps } from '../../../block.js';
+import { type DateTimeField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
 import { extractDate } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
