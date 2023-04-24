@@ -195,10 +195,19 @@ export interface DropdownOption {
 }
 
 export interface Image extends BaseField {
-  /**
-   * The image to show in the cell.
-   */
-  image: Remapper;
+  image: {
+    /**
+     * The image to show in the cell.
+     *
+     * image can either be url or uploaded image
+     */
+    file: Remapper;
+
+    /**
+     * The image is scaled to the specified width in pixels.
+     */
+    width?: number;
+  };
 }
 
 /**

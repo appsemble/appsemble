@@ -1,9 +1,9 @@
 import { useBlock } from '@appsemble/preact';
 import { Modal, useToggle } from '@appsemble/preact-components';
-import { Fragment, VNode } from 'preact';
+import { Fragment, type VNode } from 'preact';
 
-import { Image } from '../../../block.js';
 import styles from './index.module.css';
+import { type Image } from '../../../block.js';
 
 interface ImageFieldProps {
   /**
@@ -32,9 +32,13 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
     utils: { asset, remap },
   } = useBlock();
 
-  const img = remap(field.image, item, { index, repeatedIndex }) as string;
+  const img = remap(field.image.file, item, { index, repeatedIndex }) as string;
 
   const modal = useToggle();
+
+  const {
+    image: { width },
+  } = field;
 
   return (
     <Fragment key={index}>
@@ -45,11 +49,12 @@ export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProp
             onClick={modal.enable}
             type="button"
           >
-            <figure className={`image mr-3 ${styles.root}`}>
+            <figure className={`mr-3 ${styles.root}`}>
               <img
                 alt="list icon"
                 className={styles.img}
                 src={/^(https?:)?\/\//.test(img) ? img : asset(img)}
+                width={width}
               />
             </figure>
           </button>

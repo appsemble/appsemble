@@ -4067,8 +4067,23 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
             "type": "string",
           },
           "image": {
-            "description": "The image to show in the cell.",
-            "format": "remapper",
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "description": "The image to show in the cell.
+
+image can either be url or uploaded image",
+                "format": "remapper",
+              },
+              "width": {
+                "description": "The image is scaled to the specified width in pixels.",
+                "type": "number",
+              },
+            },
+            "required": [
+              "file",
+            ],
+            "type": "object",
           },
           "label": {
             "description": "An optional label used in the header of the table.
