@@ -345,6 +345,13 @@ export interface Remappers {
   lt: [Remapper, Remapper];
 
   /**
+   * Logs its input data (returns it) and its context.
+   *
+   * The value to set is the log level.
+   */
+  log: 'error' | 'info' | 'warn';
+
+  /**
    * Builds an array based on the given data and remappers.
    *
    * The remappers gets applied to each item in the array.

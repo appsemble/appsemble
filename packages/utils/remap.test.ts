@@ -3,6 +3,32 @@ import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap.js';
 
+/**
+ * Stub the console types, since we don’t want to use dom or node types here.
+ */
+declare const console: {
+  /**
+   * Log an info message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  info: (...args: unknown[]) => void;
+
+  /**
+   * Log a warning message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  warn: (...args: unknown[]) => void;
+
+  /**
+   * Log an error message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  error: (...args: unknown[]) => void;
+};
+
 interface TestCase {
   input: any;
   mappers: Remapper;
@@ -210,6 +236,81 @@ describe('date.format', () => {
       input: 0,
       mappers: { 'date.format': null },
       expected: '1970-01-01T00:00:00.000Z',
+    },
+  });
+});
+
+describe('log', () => {
+  beforeEach(() => {
+    import.meta.jest.spyOn(console, 'error').mockImplementation();
+    import.meta.jest.spyOn(console, 'info').mockImplementation();
+    import.meta.jest.spyOn(console, 'warn').mockImplementation();
+  });
+
+  function runLogTests(tests: Record<string, TestCase>): void {
+    it.each(Object.entries(tests))(
+      'should %s',
+      (name, { context, expected: expectedInput, history, input, mappers, messages, userInfo }) => {
+        const expected = JSON.stringify(
+          {
+            input: expectedInput,
+            context: {
+              root: {
+                message: 'hi mom!',
+              },
+              url: 'https://example.com/en/example',
+              appUrl: 'https://example.com',
+              appId: 6789,
+              locale: 'en',
+              pageData: {
+                hello: 'Page data',
+              },
+            },
+          },
+          null,
+          2,
+        );
+        remap(mappers, input, {
+          getMessage: ({ defaultMessage, id }) =>
+            new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
+          url: 'https://example.com/en/example',
+          appUrl: 'https://example.com',
+          userInfo,
+          context,
+          history,
+          appId: 6789,
+          locale: 'en',
+          pageData: { hello: 'Page data' },
+        });
+        expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
+          expected,
+        );
+      },
+    );
+  }
+
+  runLogTests({
+    'log `hi mom!` with log level `info`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'info' },
+      expected: { message: 'hi mom!' },
+    },
+    'log `hi mom!` with log level `warn`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'warn' },
+      expected: { message: 'hi mom!' },
+    },
+    'log `hi mom!` with log level `error`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'error' },
+      expected: { message: 'hi mom!' },
+    },
+  });
+  runTests({
+    'return input': {
+      input: 'input',
+      mappers: { log: 'info' },
+      expected: 'input',
     },
   });
 });

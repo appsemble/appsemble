@@ -15,6 +15,20 @@ import { stripNullValues } from './miscellaneous.js';
  */
 declare const console: {
   /**
+   * Log an info message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  info: (...args: unknown[]) => void;
+
+  /**
+   * Log a warning message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  warn: (...args: unknown[]) => void;
+
+  /**
    * Log an error message to the console.
    *
    * @param args The message to render to the console.
@@ -465,6 +479,11 @@ const mapperImplementations: MapperImplementations = {
     if (stringCase === 'upper') {
       return String(input).toUpperCase();
     }
+    return input;
+  },
+
+  log(level, input, context) {
+    console[level ?? 'info'](JSON.stringify({ input, context }, null, 2));
     return input;
   },
 
