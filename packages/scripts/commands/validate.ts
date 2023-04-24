@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { basename, dirname, join, relative } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 
@@ -18,6 +19,11 @@ export const description = 'Validate all workspaces have a proper configuration'
  * A list of packages that are released without a scoped package name.
  */
 const unscopedPackageNames = new Set(['appsemble', 'create-appsemble']);
+
+/**
+ * The license in the project root.
+ */
+const projectLicense = await readFile('LICENSE.md', 'utf8');
 
 /**
  * A representation of a yarn workspace.
@@ -233,6 +239,17 @@ async function validate(
     existsSync(join(dir, 'jest.config.js')),
     'jest.config.js',
     'Projects should have a Jest configuration',
+  );
+
+  /**
+   * Validate the license matches the Appsemble license.
+   */
+  const license = await readFile(join(dir, 'LICENSE.md'), 'utf8').catch(() => null);
+  assert(license, 'LICENSE.md', 'The workspace should have a license');
+  assert(
+    license === projectLicense,
+    'LICENSE.md',
+    'The workspace license should match the project license',
   );
 }
 
