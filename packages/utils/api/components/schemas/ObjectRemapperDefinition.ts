@@ -252,6 +252,12 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
         $ref: '#/components/schemas/RemapperDefinition',
       },
     },
+    log: {
+      enum: ['info', 'warn', 'error'],
+      description: `Logs its input data (returns it) and its context.
+
+The value to set is the log level.`,
+    },
     'null.strip': {
       description: 'Strip all null, undefined, and empty array values from an object.',
       anyOf: [
