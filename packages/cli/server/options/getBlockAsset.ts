@@ -14,7 +14,7 @@ export const getBlockAsset = async ({
   const { blockConfigs } = context;
   const blockConfig = blockConfigs.find((block) => block.name === name);
 
-  const asset = await readFile(`${blockConfig.dir}/${filename}`);
+  const asset = await readFile(`${blockConfig.dir}/${blockConfig.output}/${filename}`);
   const mime = lookup(filename) || '';
 
   return {

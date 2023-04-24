@@ -161,12 +161,10 @@ New remote repositories can be added to the config file by running:
 git remote add <remote-name> <remote-url>
 ```
 
-To fetch all remote repositories run the following script:
+To fetch all remote repositories run the following command:
 
 ```sh
-for remote in `git remote`; do
-  git fetch $remote
-done
+git fetch --all
 ```
 
 Apps can also be fetched from a remote repository manually by running the following command in the
