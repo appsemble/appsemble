@@ -1,6 +1,10 @@
-import { ParsedQuery } from '@appsemble/node-utils/server/types.js';
+import {ParsedQuery, ParseQueryParams} from '@appsemble/node-utils/server/types.js';
 
-export const parseQuery = (): ParsedQuery => ({
-  where: {},
-  order: null,
-});
+export const parseQuery = ({ $filter, $orderby }: ParseQueryParams): ParsedQuery => {
+  console.log('FILTER', $filter)
+  console.log('ORDERBY', $orderby)
+  return {
+    where: {},
+    order: null,
+  };
+};

@@ -1,7 +1,4 @@
-import {
-  CreateThemeParams,
-  Theme as ThemeInterface,
-} from '@appsemble/node-utils/server/types';
+import { CreateThemeParams, Theme as ThemeInterface } from '@appsemble/node-utils/server/types';
 
 import { Theme } from '../models/Theme.js';
 

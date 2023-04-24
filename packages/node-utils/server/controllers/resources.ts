@@ -7,12 +7,22 @@ import { getRemapperContext } from '../../app.js';
 import { logger } from '../../logger.js';
 import { FindOptions, Options } from '../types.js';
 
-export function createQueryResources({
-  getApp,
-  getAppMessages,
-  getAppResources,
-  getAppUrl,
-}: Options): Middleware {
+function generateQuery(
+  ctx: Context,
+  { parseQuery }: Options,
+): { order: Pick<FindOptions, 'order'>; where: Pick<FindOptions, 'where'> } {
+  try {
+    return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw badRequest('Unable to process this query', { syntaxError: error.message });
+    }
+    logger.error(error);
+    throw internal('Unable to process this query');
+  }
+}
+
+export function createQueryResources(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { resourceType },
@@ -20,12 +30,36 @@ export function createQueryResources({
       user,
     } = ctx;
 
-    const app = await getApp({ context: ctx });
+    const { getApp, getAppMessages, getAppResources, getAppUrl, verifyPermission } = options;
+
+    const app = await getApp({ context: ctx, user });
+
+    const { order, where } = generateQuery(ctx, options);
+
+    const userQuery = await verifyPermission({
+      context: ctx,
+      app,
+      resourceType,
+      action: 'query',
+      options,
+    });
 
     const findOptions: FindOptions = {
       limit: $top,
       offset: $skip,
       attributes: $select?.split(',').map((s) => s.trim()),
+      where: {
+        and: [
+          where,
+          {
+            ...userQuery,
+            type: resourceType,
+            AppId: app.id,
+            expires: { or: [{ gt: new Date() }, null] },
+          },
+        ],
+      },
+      order,
     };
 
     const resources = await getAppResources({
@@ -39,8 +73,13 @@ export function createQueryResources({
 
     if (view) {
       const appUrl = String(await getAppUrl({ app, context: ctx }));
-      const appMessages = await getAppMessages({ app, context: ctx });
+
       const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+      const appMessages = await getAppMessages({
+        app,
+        context: ctx,
+        baseLang: defaultLanguage,
+      });
 
       const context = getRemapperContext(
         app,
@@ -66,21 +105,6 @@ export function createQueryResources({
   };
 }
 
-function generateQuery(
-  ctx: Context,
-  { parseQuery }: Options,
-): { order: any; where: Pick<FindOptions, 'where'> } {
-  try {
-    return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw badRequest('Unable to process this query', { syntaxError: error.message });
-    }
-    logger.error(error);
-    throw internal('Unable to process this query');
-  }
-}
-
 export function createCountResources(options: Options) {
   return async (ctx: Context) => {
     const {
@@ -93,7 +117,7 @@ export function createCountResources(options: Options) {
 
     const app = await getApp({ context: ctx });
 
-    await verifyPermission({ app, context: ctx, action, resourceType });
+    await verifyPermission({ app, context: ctx, action, resourceType, options });
 
     const { where } = generateQuery(ctx, options);
 
@@ -140,8 +164,13 @@ export function createGetResourceById({
 
     if (view) {
       const appUrl = String(await getAppUrl({ app, context: ctx }));
-      const appMessages = await getAppMessages({ app, context: ctx });
+
       const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+      const appMessages = await getAppMessages({
+        app,
+        context: ctx,
+        baseLang: defaultLanguage,
+      });
 
       const context = getRemapperContext(
         app,
@@ -170,69 +199,106 @@ export function createCreateResource(options: Options): Middleware {
     const {
       pathParams: { resourceType },
     } = ctx;
-    const { createResourcesWithAssets, getApp, verifyPermission } = options;
+    const { createAppResourcesWithAssets, getApp, verifyPermission } = options;
     const action = 'create';
 
     const app = await getApp({ context: ctx });
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
-    await verifyPermission({ app, context: ctx, action, resourceType });
+    await verifyPermission({ app, context: ctx, action, resourceType, options });
 
-    const [resource, preparedAssets] = processResourceBody(ctx, resourceDefinition);
-    if (Array.isArray(resource) && !resource.length) {
+    const [processedBody, preparedAssets] = processResourceBody(ctx, resourceDefinition);
+    if (Array.isArray(processedBody) && !processedBody.length) {
       ctx.body = [];
       return;
     }
 
-    const resources = Array.isArray(resource) ? resource : [resource];
-    const createdResources = await createResourcesWithAssets({
+    const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
+    const createdResources = await createAppResourcesWithAssets({
       app,
+      context: ctx,
       resources,
       preparedAssets,
       resourceType,
+      action,
     });
 
-    ctx.body = Array.isArray(resource) ? createdResources : createdResources[0];
+    ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];
   };
 }
 
 export function createUpdateResource(options: Options): Middleware {
   return async (ctx: Context) => {
-    // const {
-    //   pathParams: { resourceId, resourceType },
-    // } = ctx;
-    //
-    // const { getApp, getAppResource, updateAppResource, verifyPermission } = options;
-    // const action = 'update';
-    //
-    // const app = await getApp({ context: ctx });
-    //
-    // const resourceDefinition = getResourceDefinition(app, resourceType);
-    // await verifyPermission({ app, context: ctx, action, resourceType });
-    //
-    // const resource = await getAppResource({
-    //   app,
-    //   id: resourceId,
-    //   type: resourceType,
-    //   context: ctx,
-    // });
-    //
-    // if (!resource) {
-    //   throw notFound('Resource not found');
-    // }
-    //
-    // const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
-    //   ctx,
-    //   resourceDefinition,
-    //   resource.Assets.map((asset) => asset.id),
-    //   resource.expires,
-    // );
-    //
-    // const [resource, preparedAssets] = processResourceBody(ctx, resourceDefinition);
-    //
-    // await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType });
-    //
-    // ctx.status = 204;
+    const {
+      pathParams: { resourceId, resourceType },
+    } = ctx;
+
+    const {
+      deleteAppResource,
+      getApp,
+      getAppAssets,
+      getAppResource,
+      updateAppResource,
+      verifyPermission,
+    } = options;
+    const action = 'update';
+
+    const app = await getApp({ context: ctx });
+
+    const resourceDefinition = getResourceDefinition(app, resourceType);
+    const whereOptions = await verifyPermission({
+      app,
+      context: ctx,
+      action,
+      resourceType,
+      options,
+    });
+
+    const oldResource = await getAppResource({
+      app,
+      id: resourceId,
+      type: resourceType,
+      context: ctx,
+      whereOptions,
+    });
+
+    if (!oldResource) {
+      throw notFound('Resource not found');
+    }
+
+    const appAssets = await getAppAssets({ context: ctx, app });
+
+    const [processedBody, preparedAssets, deletedAssetIds] = processResourceBody(
+      ctx,
+      resourceDefinition,
+      appAssets.filter((asset) => asset.resourceId === resourceId).map((asset) => asset.id),
+      oldResource.expires as Date,
+    );
+
+    const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
+
+    await updateAppResource({
+      app,
+      context: ctx,
+      id: resourceId,
+      type: resourceType,
+      resource: resources[0],
+      preparedAssets,
+      deletedAssetIds,
+      resourceDefinition,
+      action,
+      options,
+    });
+
+    await deleteAppResource({
+      app,
+      context: ctx,
+      id: resourceId,
+      type: resourceType,
+      action: 'delete',
+    });
+
+    ctx.status = 204;
   };
 }
 
@@ -247,20 +313,27 @@ export function createDeleteResource(options: Options): Middleware {
 
     const app = await getApp({ context: ctx });
 
-    await verifyPermission({ app, context: ctx, action, resourceType });
+    const whereOptions = await verifyPermission({
+      app,
+      context: ctx,
+      action,
+      resourceType,
+      options,
+    });
 
     const resource = await getAppResource({
       app,
       id: resourceId,
       type: resourceType,
       context: ctx,
+      whereOptions,
     });
 
     if (!resource) {
       throw notFound('Resource not found');
     }
 
-    await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType });
+    await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType, action });
 
     ctx.status = 204;
   };

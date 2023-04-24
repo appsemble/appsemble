@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import http from 'node:http';
 import { basename, extname, join, parse } from 'node:path';
@@ -7,12 +8,13 @@ import { AppsembleError, logger, opendirSafe, readData } from '@appsemble/node-u
 import { createServer } from '@appsemble/node-utils/createServer.js';
 import { App, AppDefinition, AppMessages, AppsembleMessages, Asset } from '@appsemble/types';
 import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
+import chalk from 'chalk';
 import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
 import { Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
-import { getBlockConfig, makePayload } from '../lib/block.js';
+import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
 import pkg from '../package.json' assert { type: 'json' };
 import * as controllers from '../server/controllers/index.js';
@@ -51,9 +53,64 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const identifiableBlocks = getAppBlocks(appsembleApp.definition);
 
+  const remotesResult = spawnSync('git', ['remote'], { encoding: 'utf8' });
+
+  if (remotesResult.status !== 0) {
+    logger.error('There was an error listing remote repositories');
+  }
+
+  const remotes = remotesResult.stdout
+    .trim()
+    .split('\n')
+    .map((line) => line);
+
+  for (const remote of remotes) {
+    const remoteFetchResult = spawnSync('git', ['fetch', remote], { encoding: 'utf8' });
+    if (remoteFetchResult.status !== 0) {
+      const errors = remoteFetchResult.stderr.trim().split('\n');
+      logger.error(`There was an error fetching from remote ${chalk.red(remote)}`);
+      for (const error of errors) {
+        logger.error(error);
+      }
+    }
+  }
+
   const blockConfigs = await Promise.all(
     identifiableBlocks.map(async (identifiableBlock) => {
       const [organization, blockName] = parseBlockName(identifiableBlock.type);
+
+      if (organization !== 'appsemble') {
+        logger.info(`Checking out ${blockName} from ${organization}/master`);
+        const masterCheckoutResult = spawnSync(
+          'git',
+          ['checkout', `${organization}/master`, '--', `blocks/${blockName}`],
+          { encoding: 'utf8' },
+        );
+
+        if (masterCheckoutResult.status !== 0) {
+          const masterErrors = masterCheckoutResult.stderr.trim().split('\n');
+          logger.error(`There was an error checking out ${blockName} from ${organization}/master`);
+          for (const error of masterErrors) {
+            logger.error(error);
+          }
+
+          // logger.info(`Checking out ${blockName} from ${organization}/main`);
+          // const mainCheckoutResult = spawnSync(
+          //   'git',
+          //   ['checkout', `${organization}/main`, '--', `blocks/${blockName}`],
+          //   { encoding: 'utf8' },
+          // );
+          //
+          // if (mainCheckoutResult.status !== 0) {
+          //   const mainErrors = mainCheckoutResult.stderr.trim().split('\n');
+          //   logger.error(`There was an error checking out ${blockName} from ${organization}/main`);
+          //   for (const error of mainErrors) {
+          //     logger.error(error);
+          //   }
+          // }
+        }
+      }
+
       const blockConfig = await getBlockConfig(join(process.cwd(), 'blocks', blockName));
       return {
         ...blockConfig,
@@ -63,6 +120,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   );
 
   const blockPromises = blockConfigs.map(async (blockConfig) => {
+    await buildBlock(blockConfig);
     const [, blockData] = await makePayload(blockConfig);
     return blockData;
   });

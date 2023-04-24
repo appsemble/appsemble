@@ -6,7 +6,7 @@ import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
-import { mergeMessages } from './mergeMessages.js';
+import { mergeMessages } from '../../node-utils/mergeMessages.js';
 
 interface GetAppValue {
   /**

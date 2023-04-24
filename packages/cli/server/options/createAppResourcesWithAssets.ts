@@ -1,14 +1,17 @@
-import { CreateResourcesWithAssetsParams } from '@appsemble/node-utils/server/types.js';
+import { writeFile } from 'node:fs/promises';
+
+import { CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils/server/types.js';
 import { Resource as ResourceInterface } from '@appsemble/types';
 
 import { Resource } from '../models/Resource.js';
 
-export const createResourcesWithAssets = async ({
+export const createAppResourcesWithAssets = async ({
   app,
+  context,
   preparedAssets,
   resourceType,
   resources,
-}: CreateResourcesWithAssetsParams): Promise<ResourceInterface[]> => {
+}: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> => {
   const existingResources = await Resource.findAll({}, resourceType);
   const firstIndex = existingResources.length;
 
@@ -21,7 +24,14 @@ export const createResourcesWithAssets = async ({
     resourceType,
   );
 
-  console.log('PREPARED ASSETS', preparedAssets)
+  console.log('PREPARED ASSETS', preparedAssets);
+
+  const assetPromises = preparedAssets.map(async (asset) => {
+    context.appAssets.push(asset);
+    await writeFile(asset.filename, asset.data);
+  });
+
+  await Promise.all(assetPromises);
 
   return createdResources;
 };

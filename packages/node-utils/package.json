@@ -63,6 +63,7 @@
     "koas-spec-handler": "^0.7.0",
     "koas-status-code": "^0.7.0",
     "koas-swagger-ui": "^0.7.0",
+    "language-tags": "^1.0.8",
     "lodash-es": "^4.17.21",
     "logform": "^2.0.0",
     "mime-types": "^2.0.0",

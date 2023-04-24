@@ -1,9 +1,9 @@
 import {
   BlockAsset as BlockAssetInterface,
   GetBlockAssetParams,
-} from 'packages/node-utils/server/routes/types';
+} from '@appsemble/node-utils/server/types';
 
-import { BlockAsset, BlockVersion } from '../models';
+import { BlockAsset, BlockVersion } from '../models/index.js';
 
 export const getBlockAsset = ({
   filename,

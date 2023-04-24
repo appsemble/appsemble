@@ -1,4 +1,5 @@
-import { FindOptions } from '@appsemble/node-utils/server/types.js';
+import { FindOptions, operators } from '@appsemble/node-utils/server/types.js';
+
 import { getAppDir } from './app.js';
 import { db } from './index.js';
 
@@ -47,9 +48,21 @@ export const Methods = {
             })
           : entities;
 
+      if (query.where.and) {
+      }
+
+      if (query.where.or) {
+      }
+
+      const cleanWhere = query.where as Record<string, any>;
+
+      for (const operator of operators) {
+        delete cleanWhere[operator];
+      }
+
       return query.where
-        ? mapped.find((app: M) =>
-            Object.keys(query.where).every((key) => app[key as keyof M] === query.where[key]),
+        ? mapped.find((entity: M) =>
+            Object.keys(cleanWhere).every((key) => entity[key as keyof M] === cleanWhere[key]),
           )
         : mapped[0];
     } catch {
@@ -80,9 +93,23 @@ export const Methods = {
             })
           : sliced;
 
+      console.log(mapped, query)
+
+      if (query.where.and) {
+      }
+
+      if (query.where.or) {
+      }
+
+      const cleanWhere = query.where as Record<string, any>;
+
+      for (const operator of operators) {
+        delete cleanWhere[operator];
+      }
+
       return query.where
         ? mapped.filter((entity) =>
-            Object.keys(query.where).every((key) => entity[key as keyof M] === query.where[key]),
+            Object.keys(query.where).every((key) => entity[key as keyof M] === cleanWhere[key]),
           )
         : mapped;
     } catch {

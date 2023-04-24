@@ -2,9 +2,11 @@ import { Options } from '@appsemble/node-utils/server/types';
 
 import {
   checkRole,
-  createResourcesWithAssets,
+  createAppAsset,
+  createAppResourcesWithAssets,
   createSettings,
   createTheme,
+  deleteAppAsset,
   deleteAppResource,
   getApp,
   getAppAssets,
@@ -18,6 +20,7 @@ import {
   getAppStyles,
   getAppUrl,
   getBlockAsset,
+  getBlockMessages,
   getBlocksAssetsPaths,
   getCsp,
   getDbUpdated,
@@ -30,12 +33,15 @@ import {
 
 export const options: Options = {
   checkRole,
-  createResourcesWithAssets,
+  createAppAsset,
+  createAppResourcesWithAssets,
   createSettings,
   createTheme,
+  deleteAppAsset,
   deleteAppResource,
   getApp,
   getAppAssets,
+  getBlockMessages,
   getAppBlockStyles,
   getAppDetails,
   getAppIcon,

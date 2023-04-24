@@ -76,6 +76,34 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
     }
 
     ctx.set('Cache-Control', 'max-age=31536000,immutable');
-    ctx.body = asset.content;
+    ctx.body = asset.data;
+  };
+}
+
+export function createCreateAsset({ createAppAsset, getApp }: Options): Middleware {
+  return async (ctx: Context) => {
+    const {
+      request: {
+        body: {
+          file: { contents, filename, mime },
+          name,
+        },
+      },
+    } = ctx;
+
+    const app = await getApp({ context: ctx });
+
+    if (!app) {
+      throw notFound('App not found');
+    }
+
+    const asset = await createAppAsset({
+      app,
+      context: ctx,
+      payload: { filename, mime, name, data: contents },
+    });
+
+    ctx.status = 201;
+    ctx.body = { id: asset.id, mime, filename, name };
   };
 }

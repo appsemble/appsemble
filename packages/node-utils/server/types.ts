@@ -6,6 +6,7 @@ import {
   BlockDefinition,
   BlockManifest,
   Resource,
+  ResourceDefinition,
   Theme as ThemeType,
 } from '@appsemble/types';
 import { IdentifiableBlock, Permission } from '@appsemble/utils';
@@ -76,11 +77,18 @@ declare module 'koas-parameters' {
   }
 }
 
+export const operators = ['and', 'gt', 'or'] as const;
+
+export type Operator = (typeof operators)[number];
+
+export type WhereOptions = Record<Operator, Record<string, any>[]> | Record<string, any>;
+
 export interface FindOptions {
-  where?: Record<string, any>;
+  where?: WhereOptions;
   limit?: number;
   offset?: number;
   attributes?: string[];
+  order?: any;
 }
 
 export interface ContextBlockConfig extends BlockConfig {
@@ -90,11 +98,18 @@ export interface ContextBlockConfig extends BlockConfig {
 export interface GetAppParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
   query?: Record<string, any>;
+  user?: any;
 }
 
 export interface GetAppSubEntityParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
+}
+
+export interface GetAppMessagesParams extends GetAppSubEntityParams {
+  merge?: string[] | string;
+  lang?: string;
+  baseLang: string;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -105,10 +120,21 @@ export interface GetDbUpdatedParams extends GetAppSubEntityParams {
   maskable: string[] | string | false;
 }
 
+export type BlockMessages = Pick<BlockManifest, 'messages' | 'name' | 'version'>;
+
+export type BlockQueryItem = Pick<ContextBlockConfig, 'name' | 'OrganizationId' | 'version'>;
+
+export interface GetBlockMessagesParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  blockQuery: BlockQueryItem[];
+  baseLang: string;
+  lang: string;
+}
+
 export interface GetBlockAssetParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
-  filename: string;
   name: string;
+  filename: string;
   version: string;
 }
 
@@ -152,18 +178,22 @@ export interface GetCspParams {
   nonce: string;
 }
 
+export type HookAction = 'create' | 'delete' | 'update';
+export type Action = HookAction | 'count' | 'get' | 'patch' | 'query';
+
 export interface VerifyPermissionParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
   resourceType: string;
-  action: 'count' | 'create' | 'delete' | 'get' | 'patch' | 'query' | 'update';
+  action: Action;
+  options: Options;
 }
 
 export interface CheckRoleParams {
   context: ParameterizedContext<DefaultState, DefaultContext, any>;
   app: App;
   permissions: Permission | Permission[];
-  findOptions: FindOptions;
+  findOptions?: FindOptions;
 }
 
 export interface ParseQueryParams {
@@ -174,6 +204,7 @@ export interface ParseQueryParams {
 export interface GetAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
   type: string;
+  whereOptions?: WhereOptions;
 }
 
 export interface GetAppResourcesParams extends GetAppSubEntityParams {
@@ -186,22 +217,43 @@ export interface PreparedAsset extends Pick<Asset, 'filename' | 'id' | 'mime'> {
   resource?: Record<string, unknown>;
 }
 
-export interface CreateResourcesWithAssetsParams {
-  app: App;
+export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParams {
   resources: Record<string, unknown>[];
   preparedAssets: PreparedAsset[];
   resourceType: string;
+  action: HookAction;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
   resource: Record<string, unknown>;
+  preparedAssets: PreparedAsset[];
+  resourceDefinition: ResourceDefinition;
+  deletedAssetIds: string[];
   type: string;
+  options: Options;
+  action: HookAction;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
   type: string;
+  whereOptions?: WhereOptions;
+  action: HookAction;
+}
+
+export interface CreateAppAssetParams extends GetAppSubEntityParams {
+  payload: {
+    filename: string;
+    mime: string;
+    name: string;
+    data: Buffer;
+  };
+}
+
+export interface DeleteAppAssetParams extends GetAppSubEntityParams {
+  id: string;
+  transaction?: any;
 }
 
 export interface AppDetails {
@@ -227,7 +279,7 @@ export interface AppBlockStyle {
 }
 
 export interface AppAsset extends Asset {
-  content: Buffer;
+  data: Buffer;
 }
 
 export interface BlockAsset {
@@ -253,13 +305,14 @@ export type ContentSecurityPolicy = Record<string, (string | false)[]>;
 export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
-  getAppMessages: (params: GetAppSubEntityParams) => Promise<AppMessages[]>;
+  getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;
   getAppIcon: (params: GetAppSubEntityParams) => Promise<Buffer>;
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;
   getDbUpdated: (params: GetDbUpdatedParams) => Promise<Date | number>;
+  getBlockMessages: (params: GetBlockMessagesParams) => Promise<BlockMessages[]>;
   getBlockAsset: (params: GetBlockAssetParams) => Promise<BlockAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;
   getTheme: (params: GetThemeParams) => Promise<Theme>;
@@ -272,8 +325,10 @@ export interface Options {
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
   getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
-  createResourcesWithAssets: (params: CreateResourcesWithAssetsParams) => Promise<Resource[]>;
+  createAppResourcesWithAssets: (params: CreateAppResourcesWithAssetsParams) => Promise<Resource[]>;
   updateAppResource: (params: UpdateAppResourceParams) => Promise<Resource | null>;
   deleteAppResource: (params: DeleteAppResourceParams) => Promise<void>;
   getAppAssets: (params: GetAppSubEntityParams) => Promise<AppAsset[]>;
+  createAppAsset: (params: CreateAppAssetParams) => Promise<AppAsset>;
+  deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
 }

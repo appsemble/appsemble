@@ -1,3 +1,4 @@
+import { getRemapperContext } from '@appsemble/node-utils/app';
 import { NotificationDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { QueryParams } from 'koas-parameters';
@@ -11,7 +12,6 @@ import {
   ResourceSubscription,
   User,
 } from '../models/index.js';
-import { getRemapperContext } from './app.js';
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 import { sendNotification, SendNotificationOptions } from './sendNotification.js';
 
