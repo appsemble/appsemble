@@ -1,5 +1,5 @@
 import { notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { App, Resource, ResourceVersion, User } from '../models/index.js';
 import { getResourceDefinition } from '../utils/resource.js';

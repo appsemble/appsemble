@@ -1,7 +1,6 @@
-import { Options, Transaction } from 'sequelize';
+import { type Options, type Transaction } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 
-import { logSQL } from '../utils/sqlUtils.js';
 import { App } from './App.js';
 import { AppBlockStyle } from './AppBlockStyle.js';
 import { AppMember } from './AppMember.js';
@@ -36,6 +35,7 @@ import { TeamInvite } from './TeamInvite.js';
 import { TeamMember } from './TeamMember.js';
 import { Theme } from './Theme.js';
 import { User } from './User.js';
+import { logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
 

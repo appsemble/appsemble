@@ -17,18 +17,18 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
-import { Asset } from '@appsemble/types';
+import { type Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSearchParams } from 'react-router-dom';
 
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
-import { useApp } from '../index.js';
 import { AssetRow } from './AssetRow/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
+import { useApp } from '../index.js';
 
 interface FormValues {
   file: File;

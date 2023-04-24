@@ -1,14 +1,14 @@
 import { Content, InputField, SelectField } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type App } from '@appsemble/types';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../../components/UserProvider/index.js';
 import { CollapsibleAppList } from './CollapsibleAppList/index.js';
 import { CreateAppButton } from './CreateAppButton/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useUser } from '../../../components/UserProvider/index.js';
 
 const sortFunctions = {
   organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),

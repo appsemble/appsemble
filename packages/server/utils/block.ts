@@ -1,10 +1,10 @@
 import { logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 
-import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 import { argv } from './argv.js';
+import { BlockAsset, BlockMessages, BlockVersion, transactional } from '../models/index.js';
 
 export function blockVersionToJson(blockVersion: BlockVersion): BlockManifest {
   const {

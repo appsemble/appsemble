@@ -5,14 +5,14 @@ import {
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
-import { sentryDsn } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { sentryDsn } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface LanguageDropdownProps {
   /**

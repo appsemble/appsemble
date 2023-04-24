@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
-import { Resource as ResourceType } from '@appsemble/types';
+import { type Resource as ResourceType } from '@appsemble/types';
 import { checkAppRole, defaultLocale, Permission, remap, TeamRole } from '@appsemble/utils';
 import { badRequest, forbidden, internal, notFound, unauthorized } from '@hapi/boom';
-import { Context } from 'koa';
-import { Op, Order, WhereOptions } from 'sequelize';
+import { type Context } from 'koa';
+import { Op, type Order, type WhereOptions } from 'sequelize';
 
 import {
   App,
@@ -61,7 +61,7 @@ function generateQuery(ctx: Context): { order: Order; query: WhereOptions } {
  *
  * @param ctx Koa context of the request
  * @param app App as fetched from the database.
- * This must include the app member and organization relationships.
+ *   This must include the app member and organization relationships.
  * @param resourceType The resource type to check the role for.
  * @param action The resource action to check the role for.
  * @returns Query options to filter the resource for the user context.

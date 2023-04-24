@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 import { logger, readData, writeData } from '@appsemble/node-utils';
 import inquirer from 'inquirer';
-import { PackageJson } from 'type-fest';
-import { Argv } from 'yargs';
+import { type PackageJson } from 'type-fest';
+import { type Argv } from 'yargs';
 
 import pkg from '../package.json' assert { type: 'json' };
 

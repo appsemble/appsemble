@@ -1,10 +1,10 @@
-import { Remapper } from '@appsemble/types';
+import { type Remapper } from '@appsemble/types';
 import axios from 'axios';
 
-import { ServiceWorkerRegistrationContextType } from '../../types.js';
-import { apiUrl, appId } from '../settings.js';
-import { ActionCreator } from './index.js';
+import { type ActionCreator } from './index.js';
 import { request } from './request.js';
+import { type ServiceWorkerRegistrationContextType } from '../../types.js';
+import { apiUrl, appId } from '../settings.js';
 
 export const get: ActionCreator<'resource.get'> = (args) => {
   const { app, definition } = args;

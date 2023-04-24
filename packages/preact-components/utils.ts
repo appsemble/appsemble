@@ -1,4 +1,4 @@
-import { isValidElement, VNode } from 'preact';
+import { isValidElement, type VNode } from 'preact';
 
 /**
  * Check whether a value is a valid Preact child.

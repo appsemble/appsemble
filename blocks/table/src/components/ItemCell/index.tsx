@@ -1,13 +1,18 @@
 import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
-import { ComponentProps, VNode } from 'preact';
+import { type ComponentProps, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Button, Dropdown as DropdownType, Field, StringField } from '../../../block.js';
+import styles from './index.module.css';
+import {
+  type Button,
+  type Dropdown as DropdownType,
+  type Field,
+  type StringField,
+} from '../../../block.js';
 import { ButtonField } from '../ButtonField/index.js';
 import { DropdownField } from '../DropdownField/index.js';
 import { StringInput } from '../StringInput/index.js';
-import styles from './index.module.css';
 
 interface ItemCellProps extends ComponentProps<'td'> {
   /**

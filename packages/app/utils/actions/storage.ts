@@ -1,9 +1,9 @@
-import { StorageType } from '@appsemble/types';
-import { IDBPDatabase, openDB } from 'idb';
+import { type StorageType } from '@appsemble/types';
+import { type IDBPDatabase, openDB } from 'idb';
 
+import { type ActionCreator } from './index.js';
 import { appId } from '../settings.js';
-import { AppStorage } from '../storage.js';
-import { ActionCreator } from './index.js';
+import { type AppStorage } from '../storage.js';
 
 let dbPromise: Promise<IDBPDatabase>;
 

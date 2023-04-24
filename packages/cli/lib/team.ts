@@ -1,6 +1,6 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { Team } from '@appsemble/types';
-import { TeamRole } from '@appsemble/utils';
+import { type Team } from '@appsemble/types';
+import { type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
 
 interface SharedTeamParams {

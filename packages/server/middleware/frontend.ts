@@ -1,8 +1,8 @@
 import { isIP } from 'node:net';
 
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
-import { Configuration } from 'webpack';
+import { type Configuration } from 'webpack';
 
 import { argv } from '../utils/argv.js';
 

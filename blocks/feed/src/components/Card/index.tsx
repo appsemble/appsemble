@@ -1,14 +1,14 @@
 import { useBlock } from '@appsemble/preact';
 import { Button, Input, isPreactChild, Location } from '@appsemble/preact-components';
-import { IconName } from '@appsemble/sdk';
-import { DivIcon, Icon } from 'leaflet';
-import { JSX, VNode } from 'preact';
+import { type IconName } from '@appsemble/sdk';
+import { type DivIcon, type Icon } from 'leaflet';
+import { type JSX, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { AvatarWrapper } from '../AvatarWrapper/index.js';
 import { CardImage } from '../CardImage/index.js';
 import { createIcon } from '../utils/createIcon.js';
-import styles from './index.module.css';
 
 export interface CardProps {
   /**

@@ -1,10 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { Button } from '@appsemble/preact-components';
-import { ComponentProps, VNode } from 'preact';
+import { type ComponentProps, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { DropdownOption as DropdownOptionType } from '../../../block.js';
 import styles from './index.module.css';
+import { type DropdownOption as DropdownOptionType } from '../../../block.js';
 
 interface DropdownItemProps extends ComponentProps<'td'> {
   /**

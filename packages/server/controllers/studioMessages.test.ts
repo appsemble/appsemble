@@ -1,7 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { setArgv } from '../index.js';
-import { AppMessages } from '../models/index.js';
+import { type AppMessages } from '../models/index.js';
 import { createServer } from '../utils/createServer.js';
 
 beforeAll(async () => {

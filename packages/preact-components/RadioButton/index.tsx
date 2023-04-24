@@ -1,9 +1,9 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { ComponentChild, JSX, VNode } from 'preact';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type ComponentChild, type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Icon, useValuePicker } from '../index.js';
 import styles from './index.module.css';
+import { Icon, useValuePicker } from '../index.js';
 
 interface RadioButtonProps<T>
   extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'name' | 'onChange' | 'value'> {

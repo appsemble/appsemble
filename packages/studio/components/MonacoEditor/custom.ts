@@ -1,5 +1,5 @@
 import { mapValues, schemas } from '@appsemble/utils';
-import { Schema } from 'jsonschema';
+import { type Schema } from 'jsonschema';
 import 'monaco-editor/esm/vs/editor/contrib/colorPicker/browser/colorContributions.js';
 import 'monaco-editor/esm/vs/editor/contrib/comment/browser/comment.js';
 import 'monaco-editor/esm/vs/editor/contrib/contextmenu/browser/contextmenu.js';

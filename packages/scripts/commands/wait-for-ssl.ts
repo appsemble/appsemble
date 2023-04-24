@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { SSLStatusMap } from '@appsemble/types';
+import { type SSLStatusMap } from '@appsemble/types';
 import axios from 'axios';
 
 const { CI_MERGE_REQUEST_IID } = process.env;

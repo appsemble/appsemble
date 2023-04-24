@@ -1,12 +1,13 @@
 import { useBlock } from '@appsemble/preact';
 import { Input, TextArea, useDebounce } from '@appsemble/preact-components';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { StringField } from '../../../block.js';
+import { type StringField } from '../../../block.js';
 
 interface StringFieldProps {
   field: StringField;
+
   /**
    * The data to display.
    */

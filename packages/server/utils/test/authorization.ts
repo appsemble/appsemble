@@ -1,12 +1,12 @@
 import { randomBytes } from 'node:crypto';
 
-import { TokenResponse } from '@appsemble/types';
+import { type TokenResponse } from '@appsemble/types';
 import { api } from '@appsemble/utils';
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
-import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
+import { type App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
 import { createJWTResponse } from '../createJWTResponse.js';
 
 let testUser: User;

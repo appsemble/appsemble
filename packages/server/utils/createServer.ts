@@ -5,21 +5,24 @@ import { api, convertToCsv } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import { parse as parseCSV } from 'csv-parse';
-import Koa, { Middleware } from 'koa';
+import Koa, { type Middleware } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import range from 'koa-range';
-import { bodyParser, bufferParser, Parser } from 'koas-body-parser';
+import { bodyParser, bufferParser, type Parser } from 'koas-body-parser';
 import { koas } from 'koas-core';
 import { operations } from 'koas-operations';
 import { parameters } from 'koas-parameters';
-import { security, SecurityOptions } from 'koas-security';
+import { security, type SecurityOptions } from 'koas-security';
 import { serializer } from 'koas-serializer';
 import { specHandler } from 'koas-spec-handler';
 import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
-import { Configuration } from 'webpack';
+import { type Configuration } from 'webpack';
 
+import { argv } from './argv.js';
+import { authentication } from './authentication.js';
+import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
 import { appMapper } from '../middleware/appMapper.js';
 import { boomMiddleware } from '../middleware/boom.js';
@@ -27,9 +30,6 @@ import { conditional } from '../middleware/conditional.js';
 import { frontend } from '../middleware/frontend.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { appRouter, studioRouter } from '../routes/index.js';
-import { argv } from './argv.js';
-import { authentication } from './authentication.js';
-import { Mailer } from './email/Mailer.js';
 
 const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, options, ctx) => {
   const buffer = await bufferParser(body, mediaTypeObject, options, ctx);

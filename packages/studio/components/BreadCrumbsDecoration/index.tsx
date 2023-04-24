@@ -1,14 +1,14 @@
 import { noop } from '@appsemble/utils';
 import {
   createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
   useContext,
   useMemo,
   useState,
 } from 'react';
-import { ReactElement } from 'rehype-react/lib';
+import { type ReactElement } from 'rehype-react/lib';
 
 type BreadCrumbsDecorationContext = [ReactNode, Dispatch<SetStateAction<ReactNode>>];
 

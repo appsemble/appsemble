@@ -1,16 +1,16 @@
 import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
-import { NamedEvent } from '@appsemble/web-utils';
-import { OpenAPIV3 } from 'openapi-types';
-import { MouseEvent, ReactElement, useCallback, useState } from 'react';
+import { type NamedEvent } from '@appsemble/web-utils';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type MouseEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { Collapsible } from '../../Collapsible/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
-import { CommonJSONSchemaEditorProps } from '../types.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
+import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaArrayEditor({
   disabled,

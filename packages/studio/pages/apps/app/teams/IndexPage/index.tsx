@@ -8,20 +8,20 @@ import {
   useData,
   useToggle,
 } from '@appsemble/react-components';
-import { Team } from '@appsemble/types';
-import { Permission, TeamRole } from '@appsemble/utils';
+import { type Team } from '@appsemble/types';
+import { Permission, type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
 import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
-import { messages } from './messages.js';
 
 /**
  * The representation of a team that the user is a member of.

@@ -1,11 +1,11 @@
-import { Dirent, Stats } from 'node:fs';
+import { type Dirent, type Stats } from 'node:fs';
 import { mkdir, opendir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join } from 'node:path';
 
 import { compareStrings } from '@appsemble/utils';
 import parseJson from 'parse-json';
 import sortKeys from 'sort-keys';
-import { Promisable } from 'type-fest';
+import { type Promisable } from 'type-fest';
 import { parse, stringify } from 'yaml';
 
 import { AppsembleError } from './index.js';
@@ -116,7 +116,7 @@ interface OpenDirSafeOptions {
  *
  * @param directory The path of the directory to open.
  * @param onFile A callback which will get called for every file. This will be called with the full
- * file path as its first argument and its `Dirent` object as the second argument.
+ *   file path as its first argument and its `Dirent` object as the second argument.
  * @param options Additional options.
  */
 export async function opendirSafe(

@@ -1,5 +1,5 @@
 import { Modal, useToggle } from '@appsemble/preact-components';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 import styles from './index.module.css';
 

@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
-import { editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { ReactElement, useCallback } from 'react';
+import { type editor, MarkerSeverity } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
 
@@ -30,6 +30,7 @@ export function Diagnostic({ marker, monaco }: DiagnosticProps): ReactElement {
   }, [marker, monaco]);
 
   return (
+    // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
     <div
       className={styles.root}
       onClick={activate}

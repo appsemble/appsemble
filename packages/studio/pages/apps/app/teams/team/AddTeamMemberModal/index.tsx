@@ -4,16 +4,16 @@ import {
   SimpleForm,
   SimpleFormField,
   SimpleModalFooter,
-  Toggle,
+  type Toggle,
   useData,
 } from '@appsemble/react-components';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
-import { Member, TeamMember } from '../../../../../../types.js';
-import { useApp } from '../../../index.js';
 import { messages } from './messages.js';
+import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
+import { type Member, type TeamMember } from '../../../../../../types.js';
+import { useApp } from '../../../index.js';
 
 interface AddTeamMemberModalProps {
   teamMembers: TeamMember[];

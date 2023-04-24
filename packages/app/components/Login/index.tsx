@@ -1,6 +1,6 @@
 import {
   Content,
-  LoginFormValues,
+  type LoginFormValues,
   Message,
   Login as PasswordLogin,
   useMeta,
@@ -8,10 +8,12 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import {
   apiUrl,
@@ -26,8 +28,6 @@ import { Main } from '../Main/index.js';
 import { OpenIDLogin } from '../OpenIDLogin/index.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export function Login(): ReactElement {
   useMeta(messages.login);

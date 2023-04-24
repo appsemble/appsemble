@@ -1,8 +1,8 @@
-import { ComponentChild, ComponentProps } from 'preact';
+import { type ComponentChild, type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
 import { IconCheckbox } from '../IconCheckbox/index.js';
-import { Checkbox, FormComponent, SharedFormComponentProps } from '../index.js';
+import { Checkbox, FormComponent, type SharedFormComponentProps } from '../index.js';
 
 type CheckboxFieldProps = Omit<ComponentProps<typeof Checkbox>, 'error'> &
   SharedFormComponentProps & {

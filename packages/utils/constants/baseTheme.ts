@@ -1,4 +1,4 @@
-import { Theme } from '@appsemble/types';
+import { type Theme } from '@appsemble/types';
 
 export const baseTheme: Theme = {
   primaryColor: '#5393ff',

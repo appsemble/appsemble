@@ -1,20 +1,20 @@
 import { Button, Content, Icon, useData } from '@appsemble/react-components';
-import { App, BlockManifest } from '@appsemble/types';
+import { type App, type BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { BlockCard } from '../../../../components/BlockCard/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { Collapsible } from '../../../../components/Collapsible/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { Organization } from '../../../../types.js';
+import { type Organization } from '../../../../types.js';
 import { checkRole } from '../../../../utils/checkRole.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface IndexPageProps {
   organization: Organization;

@@ -1,5 +1,5 @@
-import { SAMLStatus } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type SAMLStatus } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ConfigurationError } from './ConfigurationError/index.js';

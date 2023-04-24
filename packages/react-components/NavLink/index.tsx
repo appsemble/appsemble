@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {

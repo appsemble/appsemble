@@ -1,5 +1,5 @@
 import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants.js';

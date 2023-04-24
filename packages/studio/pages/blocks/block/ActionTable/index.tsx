@@ -1,7 +1,7 @@
 import { Icon, Table } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import { messages } from './messages.js';
 

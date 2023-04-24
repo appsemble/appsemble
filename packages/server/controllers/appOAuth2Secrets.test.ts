@@ -1,4 +1,4 @@
-import { LoginCodeResponse, OAuth2ClientCredentials } from '@appsemble/types';
+import { type LoginCodeResponse, type OAuth2ClientCredentials } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';

@@ -1,4 +1,4 @@
-import { LoginCodeResponse, UserInfo } from '@appsemble/types';
+import { type LoginCodeResponse, type UserInfo } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
@@ -8,7 +8,7 @@ import {
   Member,
   OAuth2AuthorizationCode,
   Organization,
-  User,
+  type User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';

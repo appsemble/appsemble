@@ -7,13 +7,13 @@ import {
   TextAreaField,
   useToggle,
 } from '@appsemble/react-components';
-import { App, Rating } from '@appsemble/types';
+import { type App, type Rating } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { RatingField } from '../RatingField/index.js';
 import { messages } from './messages.js';
+import { RatingField } from '../RatingField/index.js';
 
 interface RateAppProps {
   app: App;

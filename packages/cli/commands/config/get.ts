@@ -1,8 +1,8 @@
 import { has } from '@appsemble/utils';
 import { readPackageUp } from 'read-pkg-up';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
-import { BaseArguments, MonoRepoPackageJson } from '../../types.js';
+import { type BaseArguments, type MonoRepoPackageJson } from '../../types.js';
 
 interface ConfigGetArguments extends BaseArguments {
   key: string;

@@ -2,9 +2,9 @@ import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { App as AppType, BlockManifest } from '@appsemble/types';
+import { type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
-  IdentifiableBlock,
+  type IdentifiableBlock,
   normalize,
   parseBlockName,
   Permission,
@@ -14,8 +14,8 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import { Context } from 'koa';
-import { File } from 'koas-body-parser';
+import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';

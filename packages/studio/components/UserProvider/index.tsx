@@ -1,14 +1,19 @@
 import { Loader } from '@appsemble/react-components';
-import { JwtPayload, Organization, TokenResponse, UserInfo } from '@appsemble/types';
+import {
+  type JwtPayload,
+  type Organization,
+  type TokenResponse,
+  type UserInfo,
+} from '@appsemble/types';
 import { setUser } from '@sentry/browser';
-import axios, { AxiosHeaders } from 'axios';
+import axios, { type AxiosHeaders } from 'axios';
 import jwtDecode from 'jwt-decode';
 import {
   createContext,
-  Dispatch,
-  ReactElement,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactElement,
+  type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -16,7 +21,7 @@ import {
   useState,
 } from 'react';
 
-import { Role } from '../../types.js';
+import { type Role } from '../../types.js';
 
 interface UserProviderProps {
   children: ReactNode;

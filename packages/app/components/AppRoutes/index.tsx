@@ -1,6 +1,6 @@
 import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';

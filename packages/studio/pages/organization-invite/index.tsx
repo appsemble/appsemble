@@ -12,14 +12,14 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useUser } from '../../components/UserProvider/index.js';
-import { Organization } from '../../types.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useUser } from '../../components/UserProvider/index.js';
+import { type Organization } from '../../types.js';
 
 export function OrganizationInvitePage(): ReactElement {
   const { formatMessage } = useIntl();

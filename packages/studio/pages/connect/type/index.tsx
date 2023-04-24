@@ -1,8 +1,8 @@
 import { Content, Loader, Message, useLocationString, useQuery } from '@appsemble/react-components';
-import { AppOAuth2Secret } from '@appsemble/types';
+import { type AppOAuth2Secret } from '@appsemble/types';
 import { startOAuth2Login, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 

@@ -2,7 +2,7 @@
 // by augmenting the @appsemble/sdk module. Typically this happens in a file named block.ts. When a
 // block is published, the CLI will process the augmented interfaces and validate the app definition
 // complies with them. The JSDoc will be used to render documentation.
-import { IconName, Remapper } from '@appsemble/sdk';
+import { type IconName, type Remapper } from '@appsemble/sdk';
 
 /**
  * A field to display.

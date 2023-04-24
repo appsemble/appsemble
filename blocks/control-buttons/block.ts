@@ -1,4 +1,4 @@
-import { IconName } from '@appsemble/sdk';
+import { type IconName } from '@appsemble/sdk';
 
 export interface Button {
   /**

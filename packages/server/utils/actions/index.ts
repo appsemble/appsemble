@@ -1,8 +1,6 @@
-import { ActionDefinition } from '@appsemble/types';
-import { RemapperContext } from '@appsemble/utils';
+import { type ActionDefinition } from '@appsemble/types';
+import { type RemapperContext } from '@appsemble/utils';
 
-import { App, User } from '../../models/index.js';
-import { Mailer } from '../email/Mailer.js';
 import { condition } from './condition.js';
 import { each } from './each.js';
 import { email } from './email.js';
@@ -13,6 +11,8 @@ import { request } from './request.js';
 import * as resource from './resource.js';
 import { staticAction } from './static.js';
 import { throwAction } from './throw.js';
+import { type App, type User } from '../../models/index.js';
+import { type Mailer } from '../email/Mailer.js';
 
 export interface ServerActionParameters<T extends ActionDefinition = ActionDefinition> {
   app: App;

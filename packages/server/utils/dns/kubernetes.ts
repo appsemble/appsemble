@@ -3,9 +3,9 @@ import { Agent } from 'node:https';
 import { join } from 'node:path';
 
 import { logger } from '@appsemble/node-utils';
-import { SSLStatusMap } from '@appsemble/types';
+import { type SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import axios, { RawAxiosRequestConfig } from 'axios';
+import axios, { type RawAxiosRequestConfig } from 'axios';
 import { escapeJsonPointer } from 'koas-core/lib/jsonRefs.js';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
@@ -223,8 +223,8 @@ function generateSSLSecretName(domain: string): string {
  *
  * @returns A function for creating an ingress.
  *
- * The ingress function takes a domain name to create an ingress for. The rest is determined from
- * the command line arguments and the environment.
+ *   The ingress function takes a domain name to create an ingress for. The rest is determined from
+ *   the command line arguments and the environment.
  */
 async function createIngressFunction(): Promise<
   (domain: string, customSSL?: boolean) => Promise<void>

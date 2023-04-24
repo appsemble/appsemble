@@ -1,9 +1,9 @@
-import { AppAccount } from '@appsemble/types';
+import { type AppAccount } from '@appsemble/types';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 
+import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
-import { ActionCreator } from './index.js';
 
 export const register: ActionCreator<'user.register'> = ({
   definition,

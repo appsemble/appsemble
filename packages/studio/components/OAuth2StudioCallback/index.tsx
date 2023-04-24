@@ -6,19 +6,19 @@ import {
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
-import { TokenResponse, UserInfo } from '@appsemble/types';
+import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { FormattedMessage, MessageDescriptor } from 'react-intl';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { ExtendedOAuth2State } from '../../types.js';
-import { logins } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { type ExtendedOAuth2State } from '../../types.js';
+import { logins } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
 
 interface OAuth2StudioCallbackProps {
   session: ExtendedOAuth2State;

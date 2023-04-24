@@ -1,4 +1,4 @@
-import { Theme as ThemeType } from '@appsemble/types';
+import { type Theme as ThemeType } from '@appsemble/types';
 import { AllowNull, Column, CreatedAt, DataType, Model, Table } from 'sequelize-typescript';
 
 @Table({ tableName: 'Theme', paranoid: false, updatedAt: false })

@@ -1,13 +1,13 @@
 import { useData } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type App } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { Collapsible } from '../../../../components/Collapsible/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface CollapsibleAppListProps {
   /**

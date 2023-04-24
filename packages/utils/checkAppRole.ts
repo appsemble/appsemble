@@ -1,4 +1,4 @@
-import { Security, TeamMember } from '@appsemble/types';
+import { type Security, type TeamMember } from '@appsemble/types';
 
 /**
  * Check if the given user has access to any of the given scopes.

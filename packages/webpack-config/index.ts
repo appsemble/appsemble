@@ -1,11 +1,11 @@
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
-import { BlockConfig } from '@appsemble/types';
+import { type BlockConfig } from '@appsemble/types';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { Configuration } from 'webpack';
+import { type Configuration } from 'webpack';
 
 const require = createRequire(import.meta.url);
 

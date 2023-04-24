@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { ChangeEvent, ReactElement, ReactNode, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 

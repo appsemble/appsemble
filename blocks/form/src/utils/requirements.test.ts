@@ -1,7 +1,6 @@
-import { Utils } from '@appsemble/sdk';
+import { type Utils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 
-import { Field, Values } from '../../block.js';
 import {
   getDisabledDays,
   getMaxDate,
@@ -9,6 +8,7 @@ import {
   isRequired,
   isValidDate,
 } from './requirements.js';
+import { type Field, type Values } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 

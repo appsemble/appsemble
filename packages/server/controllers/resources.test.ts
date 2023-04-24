@@ -1,5 +1,5 @@
 import { createFormData } from '@appsemble/node-utils';
-import { Resource as ResourceType } from '@appsemble/types';
+import { type Resource as ResourceType } from '@appsemble/types';
 import { TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';

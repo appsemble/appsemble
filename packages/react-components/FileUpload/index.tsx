@@ -1,6 +1,12 @@
-import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, ReactNode, useCallback } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  type ReactNode,
+  useCallback,
+} from 'react';
 
-import { FormComponent, Icon, Input, SharedFormComponentProps } from '../index.js';
+import { FormComponent, Icon, type Input, type SharedFormComponentProps } from '../index.js';
 
 type FileUploadProps = Omit<
   ComponentPropsWithoutRef<typeof Input>,

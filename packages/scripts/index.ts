@@ -1,5 +1,5 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs, { CommandModule } from 'yargs';
+import yargs, { type CommandModule } from 'yargs';
 
 import * as build from './commands/build.js';
 import * as cleanupEnvironments from './commands/cleanup-environments.js';

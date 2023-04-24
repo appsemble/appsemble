@@ -1,23 +1,23 @@
-import { EventEmitter } from 'events';
+import { type EventEmitter } from 'events';
 
-import { ShowMessage } from '@appsemble/react-components';
+import { type ShowMessage } from '@appsemble/react-components';
 import {
-  ActionDefinition,
-  AppDefinition,
-  BlockDefinition,
-  BlockManifest,
-  Remapper,
-  TeamMember,
-  UserInfo,
+  type ActionDefinition,
+  type AppDefinition,
+  type BlockDefinition,
+  type BlockManifest,
+  type Remapper,
+  type TeamMember,
+  type UserInfo,
 } from '@appsemble/types';
-import { MessageGetter } from '@appsemble/utils';
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { Dispatch } from 'react';
-import { NavigateFunction, Params } from 'react-router-dom';
-import { JsonValue } from 'type-fest';
+import { type MessageGetter } from '@appsemble/utils';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type Dispatch } from 'react';
+import { type NavigateFunction, type Params } from 'react-router-dom';
+import { type JsonValue } from 'type-fest';
 
-import { ActionCreators } from './utils/actions/index.js';
-import { AppStorage } from './utils/storage.js';
+import { type ActionCreators } from './utils/actions/index.js';
+import { type AppStorage } from './utils/storage.js';
 
 declare module '@appsemble/sdk' {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style

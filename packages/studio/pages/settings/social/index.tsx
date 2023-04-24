@@ -11,14 +11,14 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { OAuth2Provider } from '@appsemble/types';
+import { type OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { logins } from '../../../utils/settings.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { logins } from '../../../utils/settings.js';
 
 interface ConnectedAccount {
   authorizationUrl: string;

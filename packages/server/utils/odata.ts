@@ -1,7 +1,17 @@
 import { has } from '@appsemble/utils';
-import { defaultParser, Token, TokenType } from '@odata/parser';
-import { col, fn, json, Model, Op, Order, where, WhereOptions, WhereValue } from 'sequelize';
-import { Col, Fn, Json, Where } from 'sequelize/types/utils';
+import { defaultParser, type Token, TokenType } from '@odata/parser';
+import {
+  col,
+  fn,
+  json,
+  type Model,
+  Op,
+  type Order,
+  where,
+  type WhereOptions,
+  type WhereValue,
+} from 'sequelize';
+import { type Col, type Fn, type Json, type Where } from 'sequelize/types/utils';
 
 type PartialModel = Pick<typeof Model, 'tableName'>;
 

@@ -1,10 +1,10 @@
 import { useBreadcrumbs } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
 import { messages } from './messages.js';
+import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
 
 /**
  * Render breadcrumbs based on the `<MetaProvider />`.

@@ -1,8 +1,8 @@
 import {
-  ComponentPropsWithoutRef,
-  FormEvent,
-  FormEventHandler,
-  ReactElement,
+  type ComponentPropsWithoutRef,
+  type FormEvent,
+  type FormEventHandler,
+  type ReactElement,
   useCallback,
 } from 'react';
 

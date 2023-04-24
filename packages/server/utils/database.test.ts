@@ -1,6 +1,6 @@
-import { User } from '../models/index.js';
 import { iterTable } from './database.js';
 import { useTestDatabase } from './test/testSchema.js';
+import { User } from '../models/index.js';
 
 useTestDatabase(import.meta);
 

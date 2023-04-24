@@ -1,5 +1,5 @@
 import { AppsembleError, basicAuth } from '@appsemble/node-utils';
-import { Remapper, TokenResponse, UserEmail, UserInfo } from '@appsemble/types';
+import { type Remapper, type TokenResponse, type UserEmail, type UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -65,7 +65,7 @@ export async function getAccessToken(
  * 3. If the information is still lacking, fetch information from the userinfo endpoint.
  *
  * @param accessToken The access token from which to extract user data. or to request user info
- * with.
+ *   with.
  * @param idToken The ID token from which to extract user data.
  * @param userInfoUrl The URL from which to request userinfo, if needed.
  * @param remapper An optional remapper to apply onto the response from the user info endpoint.

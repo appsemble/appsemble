@@ -1,21 +1,21 @@
-import { UserInfo } from '@appsemble/types';
+import { type UserInfo } from '@appsemble/types';
 import {
   defaultLocale,
   extractAppMessages,
   has,
   objectCache,
-  RemapperContext,
+  type RemapperContext,
 } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import { badRequest } from '@hapi/boom';
-import { Formatters, IntlMessageFormat } from 'intl-messageformat';
-import { Context } from 'koa';
+import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
+import { type Context } from 'koa';
 import tags from 'language-tags';
-import { FindOptions, IncludeOptions, Op } from 'sequelize';
+import { type FindOptions, type IncludeOptions, Op } from 'sequelize';
 
-import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
 import { mergeMessages } from './mergeMessages.js';
+import { App, AppMessages } from '../models/index.js';
 
 const getNumberFormat = memoize(
   (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
@@ -169,7 +169,7 @@ export function compareApps(a: App, b: App): number {
  *
  * @param input The language string to parse.
  * @returns An object containing the language, base language, and Sequelize filter
- * to filter AppMessages by these languages.
+ *   to filter AppMessages by these languages.
  */
 export function parseLanguage(input: string[] | string): {
   language: string;

@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
   forwardRef,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useRef,

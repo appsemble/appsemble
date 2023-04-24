@@ -4,10 +4,11 @@ import https from 'node:https';
 import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
-import { Context } from 'koa';
-import { Configuration } from 'webpack';
-import { Argv } from 'yargs';
+import { type Context } from 'koa';
+import { type Configuration } from 'webpack';
+import { type Argv } from 'yargs';
 
+import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
@@ -16,7 +17,6 @@ import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
 import { migrate } from '../utils/migrate.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { databaseBuilder } from './builder/database.js';
 
 interface AdditionalArguments {
   webpackConfigs?: Configuration[];

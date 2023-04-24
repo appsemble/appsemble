@@ -1,7 +1,7 @@
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { addYears } from 'date-fns';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import forge from 'node-forge';
 
 import { App, AppSamlSecret } from '../models/index.js';

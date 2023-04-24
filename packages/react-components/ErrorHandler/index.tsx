@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/browser';
-import { Component, ElementType, ErrorInfo, ReactNode } from 'react';
+import { Component, type ElementType, type ErrorInfo, type ReactNode } from 'react';
 
 interface ErrorHandlerProps {
   /**

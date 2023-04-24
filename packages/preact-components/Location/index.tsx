@@ -1,17 +1,17 @@
-import { BlockProps, withBlock } from '@appsemble/preact';
-import { Theme } from '@appsemble/types';
+import { type BlockProps, withBlock } from '@appsemble/preact';
+import { type Theme } from '@appsemble/types';
 import {
   CircleMarker,
-  DivIcon,
-  Icon,
-  LocationEvent,
+  type DivIcon,
+  type Icon,
+  type LocationEvent,
   Map,
-  MapOptions,
+  type MapOptions,
   Marker,
   TileLayer,
 } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Component, createRef, VNode } from 'preact';
+import { Component, createRef, type VNode } from 'preact';
 
 export interface LocationProps {
   className?: string;

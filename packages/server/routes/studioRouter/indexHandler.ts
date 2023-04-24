@@ -1,7 +1,7 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { argv } from '../../utils/argv.js';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets.js';

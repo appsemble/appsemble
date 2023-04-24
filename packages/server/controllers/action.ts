@@ -1,14 +1,14 @@
 import { logger } from '@appsemble/node-utils';
 import {
-  ActionDefinition,
-  EmailActionDefinition,
-  NotifyActionDefinition,
-  RequestLikeActionDefinition,
+  type ActionDefinition,
+  type EmailActionDefinition,
+  type NotifyActionDefinition,
+  type RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 import { Op } from 'sequelize';
 

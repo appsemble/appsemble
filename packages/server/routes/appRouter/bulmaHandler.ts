@@ -1,10 +1,10 @@
 import { createRequire } from 'node:module';
 
 import { logger } from '@appsemble/node-utils';
-import { Theme as ThemeType } from '@appsemble/types';
+import { type Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json' assert { type: 'json' };
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import sass from 'sass';
 import stripBom from 'strip-bom';
 

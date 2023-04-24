@@ -1,9 +1,9 @@
 import { Loader, useQuery } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 
-import { ExtendedOAuth2State } from '../../types.js';
+import { type ExtendedOAuth2State } from '../../types.js';
 import { oauth2Redirect } from '../../utils/oauth2Utils.js';
 
 interface OAuth2AppCallbackProps {

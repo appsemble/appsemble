@@ -1,4 +1,4 @@
-import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 
 type JsonValue = JsonValue[] | boolean | number | string | { [key: string]: JsonValue } | null;
 
@@ -235,6 +235,7 @@ export type DateTimeRequirement =
   | RangeRequirement
   | RequiredRequirement
   | TimeRangeRequirement;
+
 /**
  * All requirements applicable to fieldsets.
  */
@@ -807,6 +808,7 @@ export interface StringField extends AbstractField, InlineField {
    * @default false
    */
   multiline?: boolean;
+
   /**
    * The type of the field.
    */
@@ -1032,14 +1034,17 @@ declare module '@appsemble/sdk' {
        * The api route (url) to request data from.
        */
       route: string;
+
       /**
        * Set the search parameters given some predefined mapper keys.
        */
       params?: Record<string, Remapper>;
+
       /**
        * Set the field values given some predefined mapper keys.
        */
       response: Record<string, Remapper>;
+
       /**
        * Set how many `milliseconds` it must take between keystrokes to be able to send a request.
        *

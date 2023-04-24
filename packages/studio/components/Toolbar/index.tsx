@@ -1,13 +1,13 @@
 import { SideMenuButton } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import pkg from '../../package.json' assert { type: 'json' };
-import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import styles from './index.module.css';
 import { LanguageDropdown } from './LanguageDropdown/index.js';
 import { messages } from './messages.js';
+import pkg from '../../package.json' assert { type: 'json' };
+import { ProfileDropdown } from '../ProfileDropdown/index.js';
 
 export function Toolbar(): ReactElement {
   const { formatMessage } = useIntl();

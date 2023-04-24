@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';

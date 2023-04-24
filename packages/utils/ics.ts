@@ -1,4 +1,4 @@
-import { DurationObject, GeoCoordinates } from 'ics';
+import { type DurationObject, type GeoCoordinates } from 'ics';
 import parseDuration from 'parse-duration';
 
 const secondLength = 1000;

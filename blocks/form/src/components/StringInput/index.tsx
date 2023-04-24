@@ -1,9 +1,9 @@
 import { useBlock } from '@appsemble/preact';
 import { InputField, TextAreaField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { InputProps, StringField } from '../../../block.js';
+import { type InputProps, type StringField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMaxLength, getMinLength, isRequired } from '../../utils/requirements.js';
 

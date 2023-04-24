@@ -1,4 +1,4 @@
-import { AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
+import { type AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, AppSamlSecret, Member, Organization } from '../models/index.js';

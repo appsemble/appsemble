@@ -1,9 +1,9 @@
 import { relative } from 'node:path';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { BlockConfig, BlockManifest } from '@appsemble/types';
+import { type BlockConfig, type BlockManifest } from '@appsemble/types';
 import { parse } from 'comment-parser';
-import { Schema } from 'jsonschema';
+import { type Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import { createFormatter, createParser, SchemaGenerator, ts } from 'ts-json-schema-generator';
 
@@ -38,8 +38,8 @@ function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string 
  * @param iface The TypeScript interface to check.
  * @param checker The TypeScript type checker.
  * @param convert A function for converting extracted data to a value. It will be called with the
- * name and JSDoc description. The name is `undefined` for index signatures. The function should
- * return a tuple of key and value.
+ *   name and JSDoc description. The name is `undefined` for index signatures. The function should
+ *   return a tuple of key and value.
  * @returns A record created from the returned key/value pairs.
  */
 function processInterface<T>(

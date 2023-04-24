@@ -1,6 +1,6 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 
-import { App } from './index.js';
+import { type App } from './index.js';
 
 export interface SSOConfiguration {
   type: 'oauth2' | 'saml';

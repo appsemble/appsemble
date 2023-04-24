@@ -1,34 +1,34 @@
 import { randomUUID } from 'node:crypto';
 
 import {
-  NotificationDefinition,
-  ResourceDefinition,
-  Resource as ResourceType,
+  type NotificationDefinition,
+  type ResourceDefinition,
+  type Resource as ResourceType,
 } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
-import { PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
-import { Context } from 'koa';
-import { File } from 'koas-body-parser';
-import { QueryParams } from 'koas-parameters';
+import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
+import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
+import { type QueryParams } from 'koas-parameters';
 import parseDuration from 'parse-duration';
-import { Op, Order, WhereOptions } from 'sequelize';
+import { Op, type Order, type WhereOptions } from 'sequelize';
 
+import { getRemapperContext } from './app.js';
+import { preProcessCSV } from './csv.js';
+import { handleValidatorResult } from './jsonschema.js';
+import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
+import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
 import {
   App,
   AppSubscription,
-  Asset,
+  type Asset,
   EmailAuthorization,
   Resource,
   ResourceSubscription,
   User,
 } from '../models/index.js';
-import { getRemapperContext } from './app.js';
-import { preProcessCSV } from './csv.js';
-import { handleValidatorResult } from './jsonschema.js';
-import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
-import { sendNotification, SendNotificationOptions } from './sendNotification.js';
 
 /**
  * Get the resource definition of an app by name.
@@ -274,9 +274,9 @@ interface PreparedAsset extends Pick<Asset, 'data' | 'data' | 'filename' | 'id' 
  * @param ctx The Koa context to extract the body from.
  * @returns A tuple which consists of:
  *
- * 1. One or more resources processed from the request body.
- * 2. A list of newly uploaded assets which should be linked to the resources.
- * 3. preValidateProperty function used for reconstructing resources from a CSV file.
+ *   1. One or more resources processed from the request body.
+ *   2. A list of newly uploaded assets which should be linked to the resources.
+ *   3. preValidateProperty function used for reconstructing resources from a CSV file.
  */
 export function extractResourceBody(
   ctx: Context,
@@ -316,9 +316,9 @@ export function extractResourceBody(
  * @param knownExpires A previously known expires value.
  * @returns A tuple which consists of:
  *
- * 1. One or more resources processed from the request body.
- * 2. A list of newly uploaded assets which should be linked to the resources.
- * 3. Asset IDs from the `knownAssetIds` array which are no longer used.
+ *   1. One or more resources processed from the request body.
+ *   2. A list of newly uploaded assets which should be linked to the resources.
+ *   3. Asset IDs from the `knownAssetIds` array which are no longer used.
  */
 export function processResourceBody(
   ctx: Context,

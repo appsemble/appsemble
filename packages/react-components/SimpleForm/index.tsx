@@ -1,8 +1,8 @@
 import {
-  ComponentPropsWithoutRef,
+  type ComponentPropsWithoutRef,
   createContext,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useMemo,

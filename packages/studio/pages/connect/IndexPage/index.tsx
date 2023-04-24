@@ -1,13 +1,13 @@
 import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
-import { LoginCodeResponse } from '@appsemble/types';
+import { type LoginCodeResponse } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, MessageDescriptor, useIntl } from 'react-intl';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2Utils.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2Utils.js';
 
 /**
  * Handle login to apps using OAuth2.

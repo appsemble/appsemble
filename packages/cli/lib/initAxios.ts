@@ -2,7 +2,7 @@ import { configureAxios, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
 import pkg from '../package.json' assert { type: 'json' };
-import { BaseArguments } from '../types.js';
+import { type BaseArguments } from '../types.js';
 
 /**
  * Configure the default axios URL.

@@ -1,5 +1,5 @@
 import { notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { AppBlockStyle } from '../../models/index.js';
 import { getApp } from '../../utils/app.js';

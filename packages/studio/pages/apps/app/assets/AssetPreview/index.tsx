@@ -1,11 +1,11 @@
 import { Button, Content } from '@appsemble/react-components';
-import { Asset } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type Asset } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useApp } from '../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useApp } from '../../index.js';
 
 export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
   const { app } = useApp();

@@ -9,15 +9,22 @@ import {
   useSimpleForm,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import {
+  type ChangeEvent,
+  type ReactElement,
+  type SyntheticEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
 import { IconPicker } from '../IconPicker/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 const shapes = {
   minimal: 'inset(10% round 40%)',

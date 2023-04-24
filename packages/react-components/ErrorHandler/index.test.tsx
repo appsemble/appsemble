@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { ErrorHandler } from './index.js';

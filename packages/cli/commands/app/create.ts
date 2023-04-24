@@ -1,14 +1,14 @@
-import { ReadStream } from 'node:fs';
+import { type ReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
-import { AppVisibility } from '@appsemble/types';
+import { type AppVisibility } from '@appsemble/types';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 import { createApp } from '../../lib/app.js';
 import { coerceFile } from '../../lib/coercers.js';
-import { BaseArguments } from '../../types.js';
+import { type BaseArguments } from '../../types.js';
 
 interface CreateAppArguments extends BaseArguments {
   context: string;

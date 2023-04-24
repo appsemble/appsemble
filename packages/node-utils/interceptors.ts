@@ -1,6 +1,6 @@
 import { arch, type } from 'node:os';
 
-import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
 

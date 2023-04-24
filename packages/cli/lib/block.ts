@@ -11,14 +11,14 @@ import {
   readData,
   writeData,
 } from '@appsemble/node-utils';
-import { BlockConfig } from '@appsemble/types';
+import { type BlockConfig } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import FormData from 'form-data';
-import { PackageJson } from 'type-fest';
-import webpack, { Stats } from 'webpack';
+import { type PackageJson } from 'type-fest';
+import webpack, { type Stats } from 'webpack';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 import { loadWebpackConfig } from './loadWebpackConfig.js';

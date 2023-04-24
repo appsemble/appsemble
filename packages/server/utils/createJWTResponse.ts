@@ -1,4 +1,4 @@
-import { TokenResponse } from '@appsemble/types';
+import { type TokenResponse } from '@appsemble/types';
 import jwt from 'jsonwebtoken';
 
 import { argv } from './argv.js';

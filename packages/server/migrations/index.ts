@@ -1,4 +1,3 @@
-import { Migration } from '../utils/migrate.js';
 import * as m0_10_0 from './0.10.0.js';
 import * as m0_11_0 from './0.11.0.js';
 import * as m0_11_3 from './0.11.3.js';
@@ -53,6 +52,7 @@ import * as m0_20_3 from './0.20.3.js';
 import * as m0_9_0 from './0.9.0.js';
 import * as m0_9_3 from './0.9.3.js';
 import * as m0_9_4 from './0.9.4.js';
+import { type Migration } from '../utils/migrate.js';
 
 export const migrations: Migration[] = [
   m0_9_0,

@@ -1,5 +1,5 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { AppAccount, AppMember as AppMemberType } from '@appsemble/types';
+import { type AppAccount, type AppMember as AppMemberType } from '@appsemble/types';
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';

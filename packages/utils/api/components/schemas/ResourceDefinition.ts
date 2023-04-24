@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 const roles: OpenAPIV3.ArraySchemaObject = {
   type: 'array',

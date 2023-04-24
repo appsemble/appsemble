@@ -21,6 +21,7 @@ declare module '@appsemble/sdk' {
       | 'star'
       | 'triangle-forward'
       | 'triangle';
+
     /**
      * A list of fields to render out in a table.
      */
@@ -111,6 +112,7 @@ declare module '@appsemble/sdk' {
      * This message is displayed if no data has been loaded yet.
      */
     loading: never;
+
     /**
      * This message is displayed if the browser does not support the block
      */

@@ -1,6 +1,6 @@
-import { BulmaColor } from '@appsemble/types';
+import { type BulmaColor } from '@appsemble/types';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 interface MessageProps {
   /**

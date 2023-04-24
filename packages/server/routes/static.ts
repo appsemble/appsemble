@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { Middleware } from 'koa';
+import { type Middleware } from 'koa';
 import serve from 'koa-static';
 
 /**

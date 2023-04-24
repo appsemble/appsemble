@@ -2,7 +2,7 @@ import { applyRefs } from '@appsemble/react-components';
 import classNames from 'classnames';
 import {
   editor,
-  IDisposable,
+  type IDisposable,
   KeyCode,
   KeyMod,
   MarkerSeverity,

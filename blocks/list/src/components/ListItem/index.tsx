@@ -1,12 +1,12 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon, isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Item } from '../../../block.js';
-import { ListItemWrapper } from '../ListItemWrapper/index.js';
 import styles from './index.module.css';
+import { type Item } from '../../../block.js';
+import { ListItemWrapper } from '../ListItemWrapper/index.js';
 
 interface ListItemProps {
   item: Item;

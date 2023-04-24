@@ -1,13 +1,14 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { Fragment, VNode } from 'preact';
+import { Fragment, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { Button as ButtonFieldType } from '../../../block.js';
+import { type Button as ButtonFieldType } from '../../../block.js';
 
 interface ButtonFieldProps {
   field: ButtonFieldType;
+
   /**
    * The data to display.
    */

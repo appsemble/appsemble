@@ -5,7 +5,7 @@ import {
   MetaSwitch,
   useSideMenu,
 } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 

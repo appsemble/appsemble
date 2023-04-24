@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const studio: OpenAPIV3.HttpSecurityScheme = {
   type: 'http',

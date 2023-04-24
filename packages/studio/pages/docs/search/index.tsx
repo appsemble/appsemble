@@ -1,11 +1,11 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { ReactElement, ReactNode, useDeferredValue, useMemo } from 'react';
+import { type ReactElement, type ReactNode, useDeferredValue, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { highlight } from '../../../utils/search.js';
-import { docs } from '../docs.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { highlight } from '../../../utils/search.js';
+import { docs } from '../docs.js';
 
 interface SearchEntry {
   url: string;

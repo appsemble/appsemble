@@ -1,29 +1,29 @@
-import { EventEmitter } from 'events';
+import { type EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
-import { Utils } from '@appsemble/sdk';
-import { BlockDefinition, PageDefinition, Remapper } from '@appsemble/types';
+import { type Utils } from '@appsemble/sdk';
+import { type BlockDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types.js';
-import { ActionCreators } from '../../utils/actions/index.js';
+import styles from './index.module.css';
+import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
+import { type ActionCreators } from '../../utils/actions/index.js';
 import { callBootstrap } from '../../utils/bootstrapper.js';
 import { createEvents } from '../../utils/events.js';
 import { injectCSS } from '../../utils/injectCSS.js';
 import { makeActions } from '../../utils/makeActions.js';
 import { apiUrl, appId } from '../../utils/settings.js';
-import { AppStorage } from '../../utils/storage.js';
+import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { usePage } from '../MenuProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
 
 const FA_URL = [...document.styleSheets]
   .map((sheet) => sheet.href)

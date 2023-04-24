@@ -1,9 +1,9 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { ProtectedRoute } from '../../components/ProtectedRoute/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { TypePage } from './type/index.js';
+import { ProtectedRoute } from '../../components/ProtectedRoute/index.js';
 
 export function ConnectRoutes(): ReactElement {
   return (

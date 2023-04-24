@@ -1,13 +1,13 @@
 import { Icon, NavbarDropdown, NavbarItem } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export function ProfileDropdown(): ReactElement {
   const { formatMessage } = useIntl();

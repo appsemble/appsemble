@@ -1,6 +1,6 @@
-import { BulmaColor, BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ElementType, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ElementType, type ReactElement } from 'react';
 
 import { ButtonChildren } from '../index.js';
 

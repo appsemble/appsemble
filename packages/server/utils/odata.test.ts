@@ -1,4 +1,4 @@
-import { and, col, fn, json, Op, or, Order, where, WhereOptions } from 'sequelize';
+import { and, col, fn, json, Op, or, type Order, where, type WhereOptions } from 'sequelize';
 
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 

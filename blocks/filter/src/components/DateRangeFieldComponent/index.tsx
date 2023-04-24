@@ -1,11 +1,11 @@
 import { useBlock } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { DateRangeField, FieldComponentProps } from '../../../block.js';
 import styles from './index.module.css';
+import { type DateRangeField, type FieldComponentProps } from '../../../block.js';
 
 export function DateRangeFieldComponent({
   className,

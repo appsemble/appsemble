@@ -1,5 +1,5 @@
 import { useScrollTo } from '@appsemble/react-components';
-import { ComponentPropsWithoutRef, FC, useRef } from 'react';
+import { type ComponentPropsWithoutRef, type FC, useRef } from 'react';
 
 type Header = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
@@ -8,7 +8,7 @@ type Header = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
  *
  * @param Component The header component to create.
  * @returns A header component which is automatically scrolled into view if the location hash
- * matches the element id.
+ *   matches the element id.
  */
 export function createHeader(Component: Header): FC<ComponentPropsWithoutRef<Header>> {
   return (props) => {

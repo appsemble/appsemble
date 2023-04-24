@@ -6,9 +6,11 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { TopLevelRoutes } from '../../pages/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
 import { BreadCrumbsDecorationProvider } from '../BreadCrumbsDecoration/index.js';
@@ -23,8 +25,6 @@ import { StudioMessagesProvider } from '../StudioMessagesProvider/index.js';
 import { Toolbar } from '../Toolbar/index.js';
 import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 const studioContent = (
   <StudioMessagesProvider>

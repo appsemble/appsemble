@@ -1,4 +1,11 @@
-import { createContext, ReactElement, ReactNode, SyntheticEvent, useContext, useMemo } from 'react';
+import {
+  createContext,
+  type ReactElement,
+  type ReactNode,
+  type SyntheticEvent,
+  useContext,
+  useMemo,
+} from 'react';
 
 interface ValuePickerContext<T> {
   /**

@@ -1,4 +1,4 @@
-import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import { type AppMessages, type Remapper, type UserInfo } from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
 
 import { remap } from './remap.js';

@@ -1,7 +1,7 @@
 import { relative, resolve } from 'node:path';
 
-import { Link, Root } from 'mdast';
-import { Plugin, Transformer } from 'unified';
+import { type Link, type Root } from 'mdast';
+import { type Plugin, type Transformer } from 'unified';
 import { visit } from 'unist-util-visit';
 
 const transformer: Transformer<Root> = (ast, vfile) => {

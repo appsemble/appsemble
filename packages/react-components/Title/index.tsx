@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement, useRef } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement, useRef } from 'react';
 
-import { useScrollTo } from '../useScrollTo.js';
 import styles from './index.module.css';
+import { useScrollTo } from '../useScrollTo.js';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 

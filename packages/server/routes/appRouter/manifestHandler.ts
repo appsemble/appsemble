@@ -1,6 +1,6 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { extension } from 'mime-types';
 
 import { AppScreenshot } from '../../models/index.js';

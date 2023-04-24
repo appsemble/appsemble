@@ -1,9 +1,6 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
-import { ProtectedRoute } from '../components/ProtectedRoute/index.js';
-import { enableRegistration } from '../utils/settings.js';
 import { AppsRoutes } from './apps/index.js';
 import { BlockRoutes } from './blocks/index.js';
 import { CallbackPage } from './callback/index.js';
@@ -20,6 +17,9 @@ import { ResetPasswordPage } from './reset-password/index.js';
 import { SAMLResponsePage } from './saml/index.js';
 import { SettingsRoutes } from './settings/index.js';
 import { VerifyPage } from './verify/index.js';
+import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
+import { ProtectedRoute } from '../components/ProtectedRoute/index.js';
+import { enableRegistration } from '../utils/settings.js';
 
 /**
  * Render all top level routes.

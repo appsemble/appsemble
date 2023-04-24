@@ -1,10 +1,10 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { Option, SelectField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Choice, EnumField, InputProps } from '../../../block.js';
+import { type Choice, type EnumField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 

@@ -1,5 +1,5 @@
 import { mapValues } from '@appsemble/utils';
-import { JsonObject, JsonValue } from 'type-fest';
+import { type JsonObject, type JsonValue } from 'type-fest';
 
 export function serializeResource(data: any): FormData | JsonValue {
   const assets: Blob[] = [];

@@ -1,4 +1,4 @@
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { readAsset } from '../../utils/readAsset.js';
 

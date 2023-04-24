@@ -6,7 +6,7 @@ import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'j
 import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import HtmlWebpackPlugin, { MinifyOptions } from 'html-webpack-plugin';
+import HtmlWebpackPlugin, { type MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxTitle from 'rehype-mdx-title';
@@ -17,9 +17,9 @@ import remarkMdxCodeMeta from 'remark-mdx-code-meta';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkMdxImages from 'remark-mdx-images';
 import remarkMermaid from 'remark-mermaidjs';
-import { Options } from 'sass';
+import { type Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
-import { Configuration } from 'webpack';
+import { type Configuration } from 'webpack';
 import { GenerateSW, InjectManifest } from 'workbox-webpack-plugin';
 
 import { rehypeSearchIndex } from './rehype/searchIndex.js';

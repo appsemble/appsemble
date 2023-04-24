@@ -1,9 +1,9 @@
 import { useBlock } from '@appsemble/preact';
 import { Dropdown } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { Fragment, VNode } from 'preact';
+import { Fragment, type VNode } from 'preact';
 
-import { Dropdown as Field } from '../../../block.js';
+import { type Dropdown as Field } from '../../../block.js';
 import { DropdownOption } from '../DropdownOption/index.js';
 
 interface DropdownFieldProps {

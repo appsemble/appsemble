@@ -2,10 +2,10 @@ import { readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { logger, readData } from '@appsemble/node-utils';
-import { PackageJson } from 'type-fest';
+import { type PackageJson } from 'type-fest';
 
 import { getReleaseNotes } from '../lib/changelog.js';
-import { AssetLink, gitlab, Release } from '../lib/gitlab.js';
+import { type AssetLink, gitlab, type Release } from '../lib/gitlab.js';
 
 export const command = 'gitlab-release';
 export const description = 'Create a GitLab release.';

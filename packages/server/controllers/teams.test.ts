@@ -1,6 +1,6 @@
 import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import Koa from 'koa';
+import type Koa from 'koa';
 
 import {
   App,

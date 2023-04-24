@@ -1,4 +1,4 @@
-import { BootstrapParams } from '@appsemble/sdk';
+import { type BootstrapParams } from '@appsemble/sdk';
 import { DivIcon, Icon } from 'leaflet';
 
 import styles from './createIcon.module.css';

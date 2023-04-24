@@ -1,4 +1,4 @@
-import { AppDefinition, BlockDefinition } from '@appsemble/types';
+import { type AppDefinition, type BlockDefinition } from '@appsemble/types';
 
 import { blockNamePattern } from './constants/index.js';
 import { iterApp } from './iterApp.js';

@@ -10,21 +10,21 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { Resource } from '@appsemble/types';
+import { type Resource } from '@appsemble/types';
 import { has } from '@appsemble/utils';
-import { NamedEvent, serializeResource } from '@appsemble/web-utils';
+import { type NamedEvent, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { OpenAPIV3 } from 'openapi-types';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { JSONSchemaEditor } from '../../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../../index.js';
 import { ResourceCell } from '../ResourceCell/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface ResourceRowProps {
   /**

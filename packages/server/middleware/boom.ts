@@ -1,5 +1,5 @@
-import { Boom } from '@hapi/boom';
-import { Middleware } from 'koa';
+import { type Boom } from '@hapi/boom';
+import { type Middleware } from 'koa';
 
 /**
  * Koa middleware for handling Boom errors.

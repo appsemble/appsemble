@@ -7,16 +7,16 @@ import {
   SimpleSubmit,
   useMessages,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings.js';
-import { useUser } from '../UserProvider/index.js';
 import { messages } from './messages.js';
 import { PicturePreview } from './PicturePreview/index.js';
+import { apiUrl, appId } from '../../utils/settings.js';
+import { useUser } from '../UserProvider/index.js';
 
 export function ProfileSettings(): ReactElement {
   const { formatMessage } = useIntl();

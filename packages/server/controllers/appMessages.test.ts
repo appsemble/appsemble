@@ -9,7 +9,7 @@ import {
   BlockVersion,
   Member,
   Organization,
-  User,
+  type User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';

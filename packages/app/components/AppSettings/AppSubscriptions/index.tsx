@@ -1,15 +1,15 @@
 import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
+import { type ResourceHooks, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
-import { ChangeEvent, ReactElement, useEffect, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { apiUrl, appId } from '../../../utils/settings.js';
 import { useAppDefinition } from '../../AppDefinitionProvider/index.js';
 import { useServiceWorkerRegistration } from '../../ServiceWorkerRegistrationProvider/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 type ResourceState = Record<string, SubscriptionState>;
 

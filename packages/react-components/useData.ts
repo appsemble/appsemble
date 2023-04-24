@@ -1,5 +1,12 @@
-import axios, { AxiosError } from 'axios';
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import axios, { type AxiosError } from 'axios';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export interface UseAxiosResult<T> {
   /**

@@ -1,5 +1,11 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, createElement, Fragment, ReactElement, useMemo } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  createElement,
+  Fragment,
+  type ReactElement,
+  useMemo,
+} from 'react';
 import rehypeReact from 'rehype-react';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';

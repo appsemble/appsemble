@@ -1,13 +1,13 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, CardFooterButton, Form, ModalCard, useToggle } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { JSX } from 'preact';
+import { type JSX } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import { FilterValue, FilterValues } from '../block.js';
 import { FieldComponent } from './components/FieldComponent/index.js';
 import styles from './index.module.css';
 import { toOData } from './utils/toOData.js';
+import { type FilterValue, type FilterValues } from '../block.js';
 
 bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils }) => {
   const modal = useToggle();

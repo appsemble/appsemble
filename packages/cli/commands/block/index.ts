@@ -1,4 +1,4 @@
-import { Argv, CommandModule } from 'yargs';
+import { type Argv, type CommandModule } from 'yargs';
 
 import * as build from './build.js';
 import * as extractMessages from './extract-messages.js';

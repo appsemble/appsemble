@@ -1,12 +1,12 @@
 import { logger } from '@appsemble/node-utils';
-import { BlockDefinition, BlockManifest } from '@appsemble/types';
+import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
-import { Context } from 'koa';
-import { File } from 'koas-body-parser';
-import { OpenAPIV3 } from 'openapi-types';
+import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
+import { type OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
 import { parse } from 'yaml';

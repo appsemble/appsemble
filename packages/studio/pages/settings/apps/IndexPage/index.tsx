@@ -1,13 +1,13 @@
 import { Title, useData } from '@appsemble/react-components';
-import { AppAccount } from '@appsemble/types';
-import { ReactElement } from 'react';
+import { type AppAccount } from '@appsemble/types';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { AppCard } from '../../../../components/AppCard/index.js';
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AppCard } from '../../../../components/AppCard/index.js';
+import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 
 export function IndexPage(): ReactElement {
   const result = useData<AppAccount[]>('/api/user/apps/accounts');

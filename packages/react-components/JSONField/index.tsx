@@ -1,17 +1,17 @@
 import equal from 'fast-deep-equal';
 import {
-  ChangeEvent,
-  ComponentPropsWithoutRef,
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
   forwardRef,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { TextAreaField } from '../index.js';
 import { messages } from './messages.js';
+import { TextAreaField } from '../index.js';
 
 interface JSONFieldProps
   extends Omit<ComponentPropsWithoutRef<typeof TextAreaField>, 'onChange' | 'value'> {

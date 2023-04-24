@@ -1,4 +1,4 @@
-import { bootstrap, Messages } from '@appsemble/sdk';
+import { bootstrap, type Messages } from '@appsemble/sdk';
 import equal from 'fast-deep-equal';
 
 import styles from './index.module.css';

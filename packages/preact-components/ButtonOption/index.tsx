@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, JSX, VNode } from 'preact';
+import { type ComponentProps, type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { Button, useValuePicker } from '../index.js';

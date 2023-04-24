@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const invite: OpenAPIV3.ResponseObject = {
   description: 'An invite response',

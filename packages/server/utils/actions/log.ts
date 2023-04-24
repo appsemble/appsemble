@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
-import { LogActionDefinition } from '@appsemble/types';
+import { type LogActionDefinition } from '@appsemble/types';
 
-import { ServerActionParameters } from './index.js';
+import { type ServerActionParameters } from './index.js';
 
 export function log({ action, data }: ServerActionParameters<LogActionDefinition>): any {
   if (process.env.NODE_ENV !== 'production') {

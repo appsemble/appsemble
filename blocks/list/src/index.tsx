@@ -2,8 +2,8 @@ import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader, Message } from '@appsemble/preact-components';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Item } from '../block.js';
 import { ListItem } from './components/ListItem/index.js';
+import { type Item } from '../block.js';
 
 bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);

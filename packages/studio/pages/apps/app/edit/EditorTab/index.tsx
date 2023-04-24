@@ -1,6 +1,6 @@
 import { Icon, Tab } from '@appsemble/react-components';
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { ReactChild, ReactElement } from 'react';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type ReactChild, type ReactElement } from 'react';
 
 interface EditorTabProps {
   children: ReactChild;

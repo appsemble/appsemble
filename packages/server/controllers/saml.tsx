@@ -3,12 +3,12 @@ import { promisify } from 'node:util';
 import { deflateRaw } from 'node:zlib';
 
 import { logger } from '@appsemble/node-utils';
-import { SAMLStatus } from '@appsemble/types';
+import { type SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import forge from 'node-forge';
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';

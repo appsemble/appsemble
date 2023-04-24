@@ -1,18 +1,18 @@
 import { Button, Icon } from '@appsemble/react-components';
-import { PageDefinition } from '@appsemble/types';
+import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { ReactElement, ReactNode, useMemo } from 'react';
+import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
 
+import './index.css';
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import './index.css';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface BottomNavigationProps {
   pages: PageDefinition[];

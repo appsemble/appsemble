@@ -1,12 +1,12 @@
 import { Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { apiUrl, appId } from '../../utils/settings.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { apiUrl, appId } from '../../utils/settings.js';
 
 export function Verify(): ReactElement {
   useMeta(messages.title);

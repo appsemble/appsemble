@@ -1,13 +1,13 @@
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 import {
-  ButtonsField,
-  DateField,
-  DateRangeField,
-  EnumField,
-  Field,
-  FieldComponentProps,
-  StringField,
+  type ButtonsField,
+  type DateField,
+  type DateRangeField,
+  type EnumField,
+  type Field,
+  type FieldComponentProps,
+  type StringField,
 } from '../../../block.js';
 import { ButtonsFieldComponent } from '../ButtonsFieldComponent/index.js';
 import { DateFieldComponent } from '../DateFieldComponent/index.js';

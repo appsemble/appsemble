@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ChangeEvent, ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
+import { type ChangeEvent, type ComponentPropsWithoutRef, forwardRef, useCallback } from 'react';
 
 export interface TextAreaProps
   extends Omit<ComponentPropsWithoutRef<'textarea'>, 'label' | 'onChange'> {

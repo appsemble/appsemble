@@ -8,24 +8,31 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { App, AppDefinition } from '@appsemble/types';
+import { type App, type AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
 import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { ReactElement, SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  type SyntheticEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { parse } from 'yaml';
 
+import { EditorTab } from './EditorTab/index.js';
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AppPreview } from '../../../../components/AppPreview/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
-import { EditorTab } from './EditorTab/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export default function EditPage(): ReactElement {
   useMeta(messages.title);

@@ -1,7 +1,7 @@
 import { useBlock } from '@appsemble/preact';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
 interface IconProps {
   /**

@@ -1,4 +1,4 @@
-import { RefObject } from 'preact';
+import { type RefObject } from 'preact';
 import { useCallback } from 'preact/hooks';
 
 import { useEventListener } from './index.js';

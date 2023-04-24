@@ -1,6 +1,11 @@
-import { Remapper } from '@appsemble/sdk';
+import { type Remapper } from '@appsemble/sdk';
 
-import { DateField, DateTimeField, DateTimeRequirement, Values } from '../../../block.js';
+import {
+  type DateField,
+  type DateTimeField,
+  type DateTimeRequirement,
+  type Values,
+} from '../../../block.js';
 import { isValidDate } from '../requirements.js';
 
 /**

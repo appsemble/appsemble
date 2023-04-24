@@ -1,19 +1,19 @@
 import { Button, Loader, Message, Table, useData, useToggle } from '@appsemble/react-components';
-import { OrganizationInvite } from '@appsemble/types';
+import { type OrganizationInvite } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { Member } from '../../../../types.js';
+import { type Member } from '../../../../types.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 import { AddMembersModal } from '../AddMembersModal/index.js';
 import { InviteRow } from '../InviteRow/index.js';
 import { MemberRow } from '../MemberRow/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export function MemberTable(): ReactElement {
   const { organizationId } = useParams<{ organizationId: string }>();

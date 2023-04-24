@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 /**
  * The minimum required length of a character range to highlight

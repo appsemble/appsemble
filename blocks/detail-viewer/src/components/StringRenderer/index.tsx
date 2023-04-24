@@ -1,8 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import { isPreactChild } from '@appsemble/preact-components';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { RendererProps, StringField } from '../../../block.js';
+import { type RendererProps, type StringField } from '../../../block.js';
 
 /**
  * An element for a text type schema.

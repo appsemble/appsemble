@@ -1,10 +1,10 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { cloneElement, ComponentChild, isValidElement, VNode } from 'preact';
+import { cloneElement, type ComponentChild, isValidElement, type VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { Icon } from '../index.js';
 import styles from './index.module.css';
+import { Icon } from '../index.js';
 
 /**
  * These props are typically inherited by a component that implements `FormComponent`.

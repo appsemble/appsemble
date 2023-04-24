@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
-import { AppDefinition, TeamsDefinition } from '@appsemble/types';
+import { type AppDefinition, type TeamsDefinition } from '@appsemble/types';
 import { normalize, partialNormalized } from '@appsemble/utils';
-import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
+import { DataTypes, QueryTypes, type Sequelize } from 'sequelize';
 import { parseDocument } from 'yaml';
 
 export const key = '0.20.3';

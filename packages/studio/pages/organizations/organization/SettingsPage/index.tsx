@@ -8,13 +8,13 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { Organization } from '../../../../types.js';
-import { messages } from './messages.js';
+import { type Organization } from '../../../../types.js';
 
 interface SettingsPageProps {
   /**
