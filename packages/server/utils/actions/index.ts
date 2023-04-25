@@ -1,5 +1,7 @@
+import { Options } from '@appsemble/node-utils/server/types';
 import { ActionDefinition } from '@appsemble/types';
 import { RemapperContext } from '@appsemble/utils';
+import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
 
 import { App, User } from '../../models/index.js';
 import { Mailer } from '../email/Mailer.js';
@@ -21,6 +23,8 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
   mailer: Mailer;
   data: unknown;
   internalContext?: RemapperContext;
+  options: Options;
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
 }
 
 export const actions = {

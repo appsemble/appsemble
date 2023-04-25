@@ -8,6 +8,7 @@ import { argv, setArgv } from '../argv.js';
 import { Mailer } from '../email/Mailer.js';
 import { useTestDatabase } from '../test/testSchema.js';
 import { query } from './resource.js';
+import { options } from '../../options/options.js';
 
 useTestDatabase(import.meta);
 
@@ -69,6 +70,8 @@ describe('resource.query', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {},
     });
 
     expect(result).toStrictEqual([

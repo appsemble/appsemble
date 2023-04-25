@@ -1,7 +1,7 @@
 import {
   extractResourceBody,
   getResourceDefinition,
-  processResourceBody
+  processResourceBody,
 } from '@appsemble/node-utils/resource';
 import {
   createCountResources,
@@ -28,7 +28,6 @@ import {
 } from '../models/index.js';
 import { options } from '../options/options.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
-import {verifyPermission} from "../options";
 
 export const queryResources = createQueryResources(options);
 
@@ -216,7 +215,6 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     query: { endpoint },
   } = ctx;
-
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
     include: [
@@ -241,7 +239,7 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  getResourceDefinition(app, resourceType);
+  getResourceDefinition(app.toJSON(), resourceType);
 
   if (!app.Resources.length) {
     throw notFound('Resource not found.');
@@ -399,6 +397,8 @@ export async function updateResources(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     user,
   } = ctx;
+  const { verifyPermission } = options;
+
   const action = 'update';
 
   const app = await App.findByPk(appId, {
@@ -416,8 +416,14 @@ export async function updateResources(ctx: Context): Promise<void> {
       : [],
   });
 
-  const definition = getResourceDefinition(app, resourceType);
-  const userQuery = await verifyPermission({ ctx, app, resourceType, action });
+  const definition = getResourceDefinition(app.toJSON(), resourceType);
+  const userQuery = await verifyPermission({
+    context: ctx,
+    app: app.toJSON(),
+    resourceType,
+    action,
+    options,
+  });
   const resourceList = extractResourceBody(ctx)[0] as ResourceType[];
 
   if (!resourceList.length) {
@@ -514,8 +520,8 @@ export async function updateResources(ctx: Context): Promise<void> {
   ctx.body = updatedResources;
 
   for (const resource of updatedResources) {
-    processReferenceHooks(user, app, resource, action);
-    processHooks(user, app, resource, action);
+    processReferenceHooks(user, app, resource, action, options, ctx);
+    processHooks(user, app, resource, action, options, ctx);
   }
 }
 
@@ -616,6 +622,8 @@ export async function patchResource(ctx: Context): Promise<void> {
     pathParams: { appId, resourceId, resourceType },
     user,
   } = ctx;
+  const { verifyPermission } = options;
+
   const action = 'patch';
 
   const app = await App.findByPk(appId, {
@@ -633,8 +641,14 @@ export async function patchResource(ctx: Context): Promise<void> {
       : [],
   });
 
-  const definition = getResourceDefinition(app, resourceType);
-  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+  const definition = getResourceDefinition(app.toJSON(), resourceType);
+  const userQuery = await verifyPermission({
+    context: ctx,
+    app: app.toJSON(),
+    resourceType,
+    action,
+    options,
+  });
 
   const resource = await Resource.findOne({
     where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
@@ -752,8 +766,10 @@ export async function deleteResources(ctx: Context): Promise<void> {
     request: { body },
     user,
   } = ctx;
+  const { verifyPermission } = options;
 
   const action = 'delete';
+
   const app = await App.findByPk(appId, {
     attributes: ['id', 'definition', 'OrganizationId', 'vapidPrivateKey', 'vapidPublicKey'],
     include: user
@@ -769,8 +785,14 @@ export async function deleteResources(ctx: Context): Promise<void> {
       : [],
   });
 
-  getResourceDefinition(app, resourceType);
-  const userQuery = await verifyPermission(ctx, app, resourceType, action);
+  getResourceDefinition(app.toJSON(), resourceType);
+  const userQuery = await verifyPermission({
+    context: ctx,
+    app: app.toJSON(),
+    resourceType,
+    action,
+    options,
+  });
 
   let deletedAmount = 0;
   while (deletedAmount < body.length) {
@@ -784,8 +806,8 @@ export async function deleteResources(ctx: Context): Promise<void> {
       limit: 100,
     })) {
       await resource.destroy();
-      processReferenceHooks(user, app, resource, action);
-      processHooks(user, app, resource, action);
+      processReferenceHooks(user, app, resource, action, options, ctx);
+      processHooks(user, app, resource, action, options, ctx);
     }
     deletedAmount += 100;
   }

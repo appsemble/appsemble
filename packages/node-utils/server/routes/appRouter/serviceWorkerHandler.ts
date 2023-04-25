@@ -5,10 +5,7 @@ import { Context, Middleware } from 'koa';
 
 import { Options } from '../../types.js';
 
-export function createServiceWorkerHandler({
-  getApp,
-  getBlocksAssetsPaths,
-}: Options): Middleware {
+export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Options): Middleware {
   return async (ctx: Context) => {
     const production = process.env.NODE_ENV === 'production';
 

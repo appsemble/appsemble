@@ -3,10 +3,7 @@ import { Context, Middleware } from 'koa';
 
 import { Options } from '../../types.js';
 
-export function createScreenshotHandler({
-  getApp,
-  getAppScreenshots,
-}: Options): Middleware {
+export function createScreenshotHandler({ getApp, getAppScreenshots }: Options): Middleware {
   return async (ctx: Context) => {
     const { id } = ctx.params;
 

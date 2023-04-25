@@ -39,6 +39,7 @@
     "@appsemble/utils": "0.20.41",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@hapi/boom": "^10.0.1",
+    "@odata/parser": "^0.2.14",
     "axios": "^1.0.0",
     "chalk": "^4.0.0",
     "comment-parser": "^1.0.0",

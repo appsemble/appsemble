@@ -1,9 +1,9 @@
 import {
   AppScreenshot as AppScreenShotInterface,
   GetAppSubEntityParams,
-} from 'packages/node-utils/server/routes/types';
+} from '@appsemble/node-utils/server/types';
 
-import { AppScreenshot } from '../models';
+import { AppScreenshot } from '../models/index.js';
 
 export const getAppScreenshots = async ({
   app,

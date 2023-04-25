@@ -1,6 +1,3 @@
-import { AppSubscription, EmailAuthorization } from '@appsemble/server/models';
-import { email } from '@appsemble/server/utils/actions/email';
-import { sendNotification } from '@appsemble/server/utils/sendNotification';
 import {
   ActionDefinition,
   App,
@@ -31,104 +28,72 @@ const allowResponseHeaders = [
 
 const supportedActions = ['email', 'notify', 'request'];
 
-// async function handleEmail(ctx: Context, app: App, action: EmailActionDefinition, options: Options): Promise<void> {
-//   const {
-//     mailer,
-//     method,
-//     request: { body: data },
-//     user,
-//   } = ctx;
-//   if (method !== 'POST') {
-//     throw methodNotAllowed('Method must be POST for email actions');
-//   }
-//
-//   await user?.reload({
-//     attributes: ['primaryEmail', 'name', 'timezone'],
-//     include: [
-//       {
-//         required: false,
-//         model: EmailAuthorization,
-//         attributes: ['verified'],
-//         where: {
-//           email: { [Op.col]: 'User.primaryEmail' },
-//         },
-//       },
-//     ],
-//   });
-//
-//   await email({ action, app, data, mailer, user });
-//   ctx.status = 204;
-// }
-//
-// async function handleNotify(ctx: Context, app: App, action: NotifyActionDefinition, options: Options): Promise<void> {
-//   const {
-//     request: { body: data },
-//     user,
-//   } = ctx;
-//
-//   await user?.reload({
-//     attributes: ['primaryEmail', 'name', 'timezone'],
-//     include: [
-//       {
-//         required: false,
-//         model: EmailAuthorization,
-//         attributes: ['verified'],
-//         where: {
-//           email: { [Op.col]: 'User.primaryEmail' },
-//         },
-//       },
-//     ],
-//   });
-//
-//   const context = await getRemapperContext(
-//     app,
-//     app.definition.defaultLanguage || defaultLocale,
-//     user && {
-//       sub: user.id,
-//       name: user.name,
-//       email: user.primaryEmail,
-//       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
-//       zoneinfo: user.timezone,
-//     },
-//   );
-//
-//   const to = remap(action.to, data, context) as string;
-//
-//   await app?.reload({
-//     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
-//     include: [
-//       to === 'all'
-//         ? {
-//           model: AppSubscription,
-//           attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-//         }
-//         : {
-//           model: AppSubscription,
-//           attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-//           required: false,
-//           where: {
-//             UserId: to,
-//           },
-//         },
-//     ],
-//   });
-//
-//   const title = remap(action.title, data, context) as string;
-//   const body = remap(action.body, data, context) as string;
-//
-//   for (const subscription of app.AppSubscriptions) {
-//     sendNotification(app, subscription, { title, body });
-//   }
-//
-//   ctx.status = 204;
-// }
+async function handleEmail(
+  ctx: Context,
+  app: App,
+  action: EmailActionDefinition,
+  options: Options,
+): Promise<void> {
+  const {
+    mailer,
+    method,
+    request: { body: data },
+    user,
+  } = ctx;
+  if (method !== 'POST') {
+    throw methodNotAllowed('Method must be POST for email actions');
+  }
+
+  const { email, reloadUser } = options;
+  await reloadUser({ context: ctx });
+
+  await email({ action, data, mailer, user, options, context: ctx });
+  ctx.status = 204;
+}
+
+async function handleNotify(
+  ctx: Context,
+  app: App,
+  action: NotifyActionDefinition,
+  options: Options,
+): Promise<void> {
+  const {
+    request: { body: data },
+    user,
+  } = ctx;
+
+  const { reloadUser, sendNotifications } = options;
+  await reloadUser({ context: ctx });
+
+  const remapperContext = await getRemapperContext(
+    app,
+    app.definition.defaultLanguage || defaultLocale,
+    user && {
+      sub: user.id,
+      name: user.name,
+      email: user.primaryEmail,
+      email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
+      zoneinfo: user.timezone,
+    },
+    options,
+    ctx,
+  );
+
+  const to = remap(action.to, data, remapperContext) as string;
+  const title = remap(action.title, data, remapperContext) as string;
+  const body = remap(action.body, data, remapperContext) as string;
+
+  await sendNotifications({ app, to, title, body });
+
+  ctx.status = 204;
+}
 
 async function handleRequestProxy(
   ctx: Context,
   app: App,
   action: RequestLikeActionDefinition,
   useBody: boolean,
-  { getAppMessages, getAppUrl, reloadUser }: Options,
+  options: Options,
 ): Promise<void> {
   const {
     method,
@@ -148,29 +113,12 @@ async function handleRequestProxy(
     }
   }
 
-  // Await user?.reload({
-  //   attributes: ['primaryEmail', 'name', 'timezone'],
-  //   include: [
-  //     {
-  //       required: false,
-  //       model: EmailAuthorization,
-  //       attributes: ['verified'],
-  //       where: {
-  //         email: { [Op.col]: 'User.primaryEmail' },
-  //       },
-  //     },
-  //   ],
-  // });
+  const { reloadUser } = options;
+  await reloadUser({ context: ctx });
 
-  const appUrl = String(await getAppUrl({ app, context: ctx }));
-  const appMessages = await getAppMessages({ app, context: ctx });
-  const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
-
-  const context = getRemapperContext(
+  const remapperContext = await getRemapperContext(
     app,
-    appUrl,
-    appMessages,
-    defaultLanguage,
+    app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
       name: user.name,
@@ -178,13 +126,15 @@ async function handleRequestProxy(
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
       zoneinfo: user.timezone,
     },
+    options,
+    ctx,
   );
 
   const axiosConfig = formatRequestAction(
     action,
     data,
-    (remapper, d) => remap(remapper, d, context),
-    context.context,
+    (remapper, d) => remap(remapper, d, remapperContext),
+    remapperContext.context,
   );
 
   if (axiosConfig.method.toUpperCase() !== method) {
@@ -229,10 +179,10 @@ function createProxyHandler(useBody: boolean, options: Options): Middleware {
     const action = supportedActions.find((act) => act === appAction?.type);
 
     switch (action) {
-      // case 'email':
-      //   return handleEmail(ctx, app, appAction as EmailActionDefinition, options);
-      // case 'notify':
-      //   return handleNotify(ctx, app, appAction as NotifyActionDefinition, options);
+      case 'email':
+        return handleEmail(ctx, app, appAction as EmailActionDefinition, options);
+      case 'notify':
+        return handleNotify(ctx, app, appAction as NotifyActionDefinition, options);
       case 'request':
         return handleRequestProxy(
           ctx,

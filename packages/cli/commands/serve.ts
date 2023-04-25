@@ -199,15 +199,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
       const { name } = parse(stat.name);
 
-      await Resource.bulkCreate(
-        resources.map((resource: {}, index) => ({
-          id: index,
-          AppId: appId,
-          ...resource,
-        })),
-        name,
-        true,
-      );
+      await Resource.bulkCreate(resources as Record<string, any>[], name, true);
     },
     { allowMissing: true },
   );

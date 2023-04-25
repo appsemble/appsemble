@@ -1,6 +1,6 @@
-import { GetAppSubEntityParams } from 'packages/node-utils/server/routes/types';
+import { GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
 
-import { App } from '../models';
+import { App } from '../models/index.js';
 
 export const getAppIcon = async ({ app }: GetAppSubEntityParams): Promise<Buffer> => {
   const persistedApp = await App.findOne({

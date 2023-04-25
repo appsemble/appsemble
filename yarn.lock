@@ -33,6 +33,14 @@
     "@fortawesome/fontawesome-common-types" "^6.0.0"
     type-fest "^3.0.0"
 
+"@appsemble/sdk@^0.18.28":
+  version "0.18.31"
+  resolved "https://registry.yarnpkg.com/@appsemble/sdk/-/sdk-0.18.31.tgz#b5077f73fbd6237b027a6d62754f611d0e080406"
+  integrity sha512-2vkk64+Y8OdNlkqJw8/XfvCXCuc7jxyK77+Dtzxx4poq2EN9SGcbfArutd5Q6NE1uJebTcc5lA7CC3fvkPGYmw==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.35"
+    type-fest "^1.2.2"
+
 "@appsemble/types@0.20.38":
   version "0.20.38"
   resolved "https://registry.yarnpkg.com/@appsemble/types/-/types-0.20.38.tgz#a2267467579cd62c9daa0e3519ca73cf6e437fce"
@@ -1676,6 +1684,11 @@
     tslib "^2.4.0"
     typescript "^4.7"
 
+"@fortawesome/fontawesome-common-types@^0.2.35", "@fortawesome/fontawesome-common-types@^0.2.36":
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.36.tgz#b44e52db3b6b20523e0c57ef8c42d315532cb903"
+  integrity sha512-a/7BiSgobHAgBWeN7N0w+lAhInrGxksn13uK7231n2m8EDPE3BMCl9NZLTGrj9ZXfCmC6LM0QLqXidIizVQ6yg==
+
 "@fortawesome/fontawesome-common-types@^6.0.0":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-6.3.0.tgz#51f734e64511dbc3674cd347044d02f4dd26e86b"
@@ -2158,6 +2171,14 @@
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@odata/parser/-/parser-0.2.12.tgz#32f8c824a65c509870f0f95dce50ce1872598e81"
   integrity sha512-iOhUmFPmPTXPSQWvckY1AtgOZ3MAAhlwRQwAdjHf0x6XdBFU1eTYaJDRI3rdvBkfMvkui23HUExTr/IMGcmsZQ==
+  dependencies:
+    "@newdash/newdash" "^5.21.4"
+    "@odata/metadata" "^0.2.8"
+
+"@odata/parser@^0.2.14":
+  version "0.2.14"
+  resolved "https://registry.yarnpkg.com/@odata/parser/-/parser-0.2.14.tgz#58e5987c70661866881cd25687fcb2821752ac2a"
+  integrity sha512-aio+Ok2WbEY+foVe9YL+ondDsXqbk8UEFYCJSmDvbELLDv1WDjY8tx96wm1ASZXIbD3PIMDw+KYbjiLn2aYdxg==
   dependencies:
     "@newdash/newdash" "^5.21.4"
     "@odata/metadata" "^0.2.8"
@@ -10880,7 +10901,7 @@ mini-css-extract-plugin@^2.0.0:
   dependencies:
     schema-utils "^4.0.0"
 
-mini-jsx@^3.0.0:
+mini-jsx@^3.0.0, mini-jsx@^3.0.1:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-3.0.4.tgz#6952f3626db4f9a932f0732a486cc5bfc6ce6ab9"
   integrity sha512-pf0ug6uL/HLIZ7T11Tm2wJr1WZQ/wFPxEKRam43WO9alk1uOYbL+5CdsJQQo+H7knfYm8sqWHA5KzSfW9/KT6g==
@@ -15115,6 +15136,11 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+type-fest@^1.2.2:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-1.4.0.tgz#e9fb813fe3bf1744ec359d55d1affefa76f14be1"
+  integrity sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==
 
 type-fest@^2.0.0, type-fest@^2.5.0:
   version "2.19.0"

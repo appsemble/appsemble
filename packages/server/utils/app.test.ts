@@ -1,7 +1,9 @@
+import { getRemapperContext } from '@appsemble/node-utils/app';
 import { UserInfo } from '@appsemble/types';
 
 import { App, AppMessages, Organization } from '../models/index.js';
-import { compareApps, getApp, getRemapperContext } from './app.js';
+import { options } from '../options/options.js';
+import { compareApps, getApp } from './app.js';
 import { setArgv } from './argv.js';
 import { useTestDatabase } from './test/testSchema.js';
 
@@ -169,6 +171,7 @@ describe('getApp', () => {
 
 describe('getRemapperContext', () => {
   it('should return a message getter with the app context', async () => {
+    const context = {};
     await Organization.create({ id: 'test' });
     const app = await App.create({
       definition: '',
@@ -200,13 +203,19 @@ describe('getRemapperContext', () => {
       sub: '',
     };
 
-    const context = await getRemapperContext(app, 'nl-nl-brabants', userInfo);
-    const word = context.getMessage({ id: 'word' });
-    const hello = context.getMessage({ id: 'hello' });
-    const bye = context.getMessage({ id: 'bye' });
-    const nothing = context.getMessage({ id: 'nothing' });
+    const remapperContext = await getRemapperContext(
+      app.toJSON(),
+      'nl-nl-brabants',
+      userInfo,
+      options,
+      context: {},
+    );
+    const word = remapperContext.getMessage({ id: 'word' });
+    const hello = remapperContext.getMessage({ id: 'hello' });
+    const bye = remapperContext.getMessage({ id: 'bye' });
+    const nothing = remapperContext.getMessage({ id: 'nothing' });
 
-    expect(context.userInfo).toBe(userInfo);
+    expect(remapperContext.userInfo).toBe(userInfo);
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');
     expect(bye.format()).toBe('Houdoe');

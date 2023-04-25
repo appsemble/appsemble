@@ -1,18 +1,21 @@
+import { getRemapperContext } from '@appsemble/node-utils/app';
+import { getResourceDefinition } from '@appsemble/node-utils/resource';
 import { ResourceQueryActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { QueryParams } from 'koas-parameters';
 import { Op } from 'sequelize';
 
 import { AppMember, Resource } from '../../models/index.js';
-import { getRemapperContext } from '../app.js';
-import { getResourceDefinition, parseQuery } from '../resource.js';
+import { parseQuery } from '../resource.js';
 import { ServerActionParameters } from './index.js';
 
 export async function query({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceQueryActionDefinition>): Promise<unknown> {
   const { view } = action;
@@ -22,7 +25,7 @@ export async function query({
 
   const parsed = parseQuery(queryParams || {});
   const include = queryParams?.$select?.split(',').map((s) => s.trim());
-  const resourceDefinition = getResourceDefinition(app, action.resource, view);
+  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, view);
 
   const resources = await Resource.findAll({
     include: [
@@ -51,8 +54,8 @@ export async function query({
   const appMember =
     user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     appMember && {
       sub: user.id,
@@ -61,8 +64,10 @@ export async function query({
       email_verified: appMember.emailVerified,
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
   return mappedResources.map((resource) =>
-    remap(resourceDefinition.views[view].remap, resource, context),
+    remap(resourceDefinition.views[view].remap, resource, remapperContext),
   );
 }

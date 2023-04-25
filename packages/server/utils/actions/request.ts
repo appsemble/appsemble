@@ -1,3 +1,4 @@
+import { getRemapperContext } from '@appsemble/node-utils/app';
 import {
   Remapper,
   RequestLikeActionDefinition,
@@ -6,10 +7,16 @@ import {
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
-import { getRemapperContext } from '../app.js';
 import { ServerActionParameters } from './index.js';
 
-export async function request({ action, app, data, user }: ServerActionParameters): Promise<any> {
+export async function request({
+  action,
+  app,
+  context,
+  data,
+  options,
+  user,
+}: ServerActionParameters): Promise<any> {
   let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
   const definition = action as RequestLikeActionDefinition;
   const query: Remapper = []
@@ -40,8 +47,8 @@ export async function request({ action, app, data, user }: ServerActionParameter
     }
   }
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
@@ -50,11 +57,13 @@ export async function request({ action, app, data, user }: ServerActionParameter
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
   const axiosConfig = formatRequestAction(
     { ...action, query: query.length ? query : undefined, method },
     data,
-    (remapper, d) => remap(remapper, d, context),
+    (remapper, d) => remap(remapper, d, remapperContext),
     context.context,
   );
   const response = await axios(axiosConfig);

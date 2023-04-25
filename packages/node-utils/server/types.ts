@@ -5,6 +5,7 @@ import {
   BlockConfig,
   BlockDefinition,
   BlockManifest,
+  EmailActionDefinition,
   Resource,
   ResourceDefinition,
   Theme as ThemeType,
@@ -77,18 +78,23 @@ declare module 'koas-parameters' {
   }
 }
 
-export const operators = ['and', 'gt', 'or'] as const;
+export const operators = ['and', 'gt', 'or', 'not'] as const;
 
 export type Operator = (typeof operators)[number];
 
 export type WhereOptions = Record<Operator, Record<string, any>[]> | Record<string, any>;
+
+export interface OrderItem {
+  property: string;
+  direction: -1 | 1;
+}
 
 export interface FindOptions {
   where?: WhereOptions;
   limit?: number;
   offset?: number;
   attributes?: string[];
-  order?: any;
+  order?: OrderItem[];
 }
 
 export interface ContextBlockConfig extends BlockConfig {
@@ -196,6 +202,10 @@ export interface CheckRoleParams {
   findOptions?: FindOptions;
 }
 
+export interface ReloadUserParams {
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+}
+
 export interface ParseQueryParams {
   $filter: string;
   $orderby: string;
@@ -222,6 +232,7 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   preparedAssets: PreparedAsset[];
   resourceType: string;
   action: HookAction;
+  options: Options;
 }
 
 export interface UpdateAppResourceParams extends GetAppSubEntityParams {
@@ -254,6 +265,22 @@ export interface CreateAppAssetParams extends GetAppSubEntityParams {
 export interface DeleteAppAssetParams extends GetAppSubEntityParams {
   id: string;
   transaction?: any;
+}
+
+export interface EmailParams {
+  action: EmailActionDefinition;
+  data: any;
+  mailer: any;
+  user: any;
+  options: Options;
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+}
+
+export interface SendNotificationsParams {
+  app: App;
+  to: string;
+  title: string;
+  body: string;
 }
 
 export interface AppDetails {
@@ -322,6 +349,7 @@ export interface Options {
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
   verifyPermission: (params: VerifyPermissionParams) => Promise<Record<string, any>>;
   checkRole: (params: CheckRoleParams) => Promise<Record<string, any>>;
+  reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;
   getAppResource: (params: GetAppResourceParams) => Promise<Resource>;
   getAppResources: (params: GetAppResourcesParams) => Promise<Resource[]>;
@@ -331,4 +359,6 @@ export interface Options {
   getAppAssets: (params: GetAppSubEntityParams) => Promise<AppAsset[]>;
   createAppAsset: (params: CreateAppAssetParams) => Promise<AppAsset>;
   deleteAppAsset: (params: DeleteAppAssetParams) => Promise<number>;
+  email: (params: EmailParams) => Promise<void>;
+  sendNotifications: (params: SendNotificationsParams) => Promise<void>;
 }

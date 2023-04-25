@@ -7,6 +7,8 @@ import {
   RemapperContext,
 } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
+import {Options} from "./server/types";
+import {DefaultContext, DefaultState, ParameterizedContext} from "koa";
 
 // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
 const getNumberFormat = memoize.default(
@@ -24,19 +26,29 @@ const getPluralRules = memoize.default(
  * This allows to use remappers with the context of an app on the server.
  *
  * @param app The app for which to get the remapper context.
- * @param appUrl The base URL of the app.
- * @param appMessages The messages for the app.
  * @param language The preferred language for the context.
  * @param userInfo The OAuth2 compatible user information.
+ * @param options The utility options.
+ * @param context The koa context.
  * @returns A localized remapper context for the app.
  */
-export function getRemapperContext(
+export async function getRemapperContext(
   app: App,
-  appUrl: string,
-  appMessages: AppMessages[],
   language: string,
   userInfo: UserInfo,
-): RemapperContext {
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<RemapperContext> {
+  const { getAppMessages, getAppUrl } = options;
+
+  const appUrl = String(await getAppUrl({ context, app }));
+  const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
+  const appMessages = await getAppMessages({
+    context,
+    app,
+    baseLang: defaultLanguage,
+  });
+
   const cache = objectCache(
     (message) =>
       new IntlMessageFormat(message, language, undefined, {

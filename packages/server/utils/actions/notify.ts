@@ -1,19 +1,21 @@
+import { getRemapperContext } from '@appsemble/node-utils/app';
 import { NotifyActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 
 import { AppSubscription } from '../../models/index.js';
-import { getRemapperContext } from '../app.js';
 import { sendNotification } from '../sendNotification.js';
 import { ServerActionParameters } from './index.js';
 
 export async function notify({
   action,
   app,
+  context,
   data,
+  options,
   user,
 }: ServerActionParameters<NotifyActionDefinition>): Promise<any> {
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
@@ -22,9 +24,11 @@ export async function notify({
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
 
-  const to = remap(action.to, data, context) as string;
+  const to = remap(action.to, data, remapperContext) as string;
 
   await app?.reload({
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
@@ -45,8 +49,8 @@ export async function notify({
     ],
   });
 
-  const title = remap(action.title, data, context) as string;
-  const body = remap(action.body, data, context) as string;
+  const title = remap(action.title, data, remapperContext) as string;
+  const body = remap(action.body, data, remapperContext) as string;
 
   for (const subscription of app.AppSubscriptions) {
     sendNotification(app, subscription, { title, body });

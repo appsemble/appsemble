@@ -1,6 +1,8 @@
 import { getRemapperContext } from '@appsemble/node-utils/app';
+import { Options } from '@appsemble/node-utils/server/types';
 import { NotificationDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
+import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
 import { QueryParams } from 'koas-parameters';
 import { Op, Order, WhereOptions } from 'sequelize';
 
@@ -114,6 +116,8 @@ export async function processHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
   const resourceDefinition = app.definition.resources[resource.type];
 
@@ -143,7 +147,7 @@ export async function processHooks(
     };
 
     const remapperContext = await getRemapperContext(
-      app,
+      app.toJSON(),
       app.definition.defaultLanguage || defaultLocale,
       user && {
         sub: user.id,
@@ -152,6 +156,8 @@ export async function processHooks(
         email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
         zoneinfo: user.timezone,
       },
+      options,
+      context,
     );
 
     const title = (data?.title ? remap(data.title, r, remapperContext) : resource.type) as string;
@@ -182,6 +188,8 @@ export async function processReferenceHooks(
   app: App,
   resource: Resource,
   action: 'create' | 'delete' | 'update',
+  options: Options,
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
 ): Promise<void> {
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
@@ -199,7 +207,7 @@ export async function processReferenceHooks(
 
         await Promise.all(
           parents.map((parent) =>
-            Promise.all(trigger.map((t) => processHooks(user, app, parent, t))),
+            Promise.all(trigger.map((t) => processHooks(user, app, parent, t, options, context))),
           ),
         );
       },

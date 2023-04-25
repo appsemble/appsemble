@@ -5,8 +5,13 @@ import { db } from './index.js';
 
 export const Methods = {
   async create<M>(values: Record<string, unknown>, modelDir = '/'): Promise<M> {
+    const existing = await this.findAll({}, modelDir);
     const dir = `${getAppDir()}/${modelDir}`;
-    await db.push(dir, values, true);
+    await db.push(
+      dir,
+      { ...values, id: existing.length + 1, AppId: 1, $created: new Date(), $updated: new Date() },
+      true,
+    );
     return this.findOne({ where: values }, dir);
   },
 
@@ -15,8 +20,19 @@ export const Methods = {
     modelDir = '/',
     override = false,
   ): Promise<M[] | []> {
+    const existing = await this.findAll({}, modelDir);
     const dir = `${getAppDir()}/${modelDir}`;
-    await db.push(dir, values, override);
+    await db.push(
+      dir,
+      values.map((value) => ({
+        ...value,
+        id: existing.length + 1,
+        AppId: 1,
+        $created: new Date(),
+        $updated: new Date(),
+      })),
+      override,
+    );
     return this.findAll({}, modelDir);
   },
 
@@ -107,11 +123,33 @@ export const Methods = {
         delete cleanWhere[operator];
       }
 
-      return query.where
+      console.log('MAPPED', mapped)
+
+      const filtered = query.where
         ? mapped.filter((entity) =>
             Object.keys(query.where).every((key) => entity[key as keyof M] === cleanWhere[key]),
           )
         : mapped;
+
+      const sorted = filtered;
+      if (query.order) {
+        for (const orderItem of query.order) {
+          sorted.sort((a, b) => {
+            const { direction, property } = orderItem;
+            if (a[property as keyof typeof a] > b[property as keyof typeof b]) {
+              return Number(direction);
+            }
+
+            if (a[property as keyof typeof a] < b[property as keyof typeof b]) {
+              return direction * -1;
+            }
+
+            return 0;
+          });
+        }
+      }
+
+      return sorted;
     } catch {
       return [];
     }

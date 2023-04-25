@@ -8,6 +8,7 @@ import {
   createTheme,
   deleteAppAsset,
   deleteAppResource,
+  email,
   getApp,
   getAppAssets,
   getAppBlockStyles,
@@ -27,6 +28,8 @@ import {
   getHost,
   getTheme,
   parseQuery,
+  reloadUser,
+  sendNotifications,
   updateAppResource,
   verifyPermission,
 } from './index.js';
@@ -39,6 +42,7 @@ export const options: Options = {
   createTheme,
   deleteAppAsset,
   deleteAppResource,
+  email,
   getApp,
   getAppAssets,
   getAppBlockStyles,
@@ -58,6 +62,8 @@ export const options: Options = {
   getHost,
   getTheme,
   parseQuery,
+  reloadUser,
+  sendNotifications,
   updateAppResource,
   verifyPermission,
 };
