@@ -39,7 +39,7 @@
     "@types/react-router-dom": "^5.0.0",
     "@types/react-transition-group": "^4.0.0",
     "@types/webpack-env": "^1.0.0",
-    "@zxcvbn-ts/core": "^2.0.0",
+    "@zxcvbn-ts/core": "^3.0.0",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
