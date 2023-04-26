@@ -5,12 +5,12 @@ import { Context, Middleware } from 'koa';
 
 import { getRemapperContext } from '../../app.js';
 import { logger } from '../../logger.js';
-import { FindOptions, Options } from '../types.js';
+import { FindOptions, Options, OrderItem, WhereOptions} from '../types.js';
 
 function generateQuery(
   ctx: Context,
   { parseQuery }: Options,
-): { order: Pick<FindOptions, 'order'>; where: Pick<FindOptions, 'where'> } {
+): { order: OrderItem[]; where: WhereOptions } {
   try {
     return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
   } catch (error: unknown) {
@@ -30,7 +30,7 @@ export function createQueryResources(options: Options): Middleware {
       user,
     } = ctx;
 
-    const { getApp, getAppMessages, getAppResources, getAppUrl, verifyPermission } = options;
+    const { getApp, getAppResources, verifyPermission } = options;
 
     const app = await getApp({ context: ctx, user });
 
@@ -72,20 +72,9 @@ export function createQueryResources(options: Options): Middleware {
     const resourceDefinition = getResourceDefinition(app, resourceType, view);
 
     if (view) {
-      const appUrl = String(await getAppUrl({ app, context: ctx }));
-
-      const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
-      const appMessages = await getAppMessages({
+      const context = await getRemapperContext(
         app,
-        context: ctx,
-        baseLang: defaultLanguage,
-      });
-
-      const context = getRemapperContext(
-        app,
-        appUrl,
-        appMessages,
-        defaultLanguage,
+        app.definition.defaultLanguage || defaultLocale,
         user && {
           sub: user.id,
           name: user.name,
@@ -93,6 +82,8 @@ export function createQueryResources(options: Options): Middleware {
           email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
           zoneinfo: user.timezone,
         },
+        options,
+        ctx,
       );
 
       ctx.body = resources.map((resource) =>
@@ -134,18 +125,15 @@ export function createCountResources(options: Options) {
   };
 }
 
-export function createGetResourceById({
-  getApp,
-  getAppMessages,
-  getAppResource,
-  getAppUrl,
-}: Options): Middleware {
+export function createGetResourceById(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { resourceId, resourceType },
       queryParams: { view },
       user,
     } = ctx;
+
+    const { getApp, getAppResource } = options;
 
     const app = await getApp({ context: ctx });
 
@@ -163,20 +151,9 @@ export function createGetResourceById({
     }
 
     if (view) {
-      const appUrl = String(await getAppUrl({ app, context: ctx }));
-
-      const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
-      const appMessages = await getAppMessages({
+      const context = await getRemapperContext(
         app,
-        context: ctx,
-        baseLang: defaultLanguage,
-      });
-
-      const context = getRemapperContext(
-        app,
-        appUrl,
-        appMessages,
-        defaultLanguage,
+        app.definition.defaultLanguage || defaultLocale,
         user && {
           sub: user.id,
           name: user.name,
@@ -184,6 +161,8 @@ export function createGetResourceById({
           email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
           zoneinfo: user.timezone,
         },
+        options,
+        ctx,
       );
 
       ctx.body = remap(resourceDefinition.views[view].remap, resource, context);
@@ -221,6 +200,7 @@ export function createCreateResource(options: Options): Middleware {
       preparedAssets,
       resourceType,
       action,
+      options,
     });
 
     ctx.body = Array.isArray(processedBody) ? createdResources : createdResources[0];

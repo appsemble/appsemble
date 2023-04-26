@@ -1,11 +1,20 @@
+import { processLiteral } from '@appsemble/node-utils';
 import {
-  FindOptions,
   OrderItem,
   ParsedQuery,
   ParseQueryParams,
   WhereOptions,
 } from '@appsemble/node-utils/server/types.js';
 import { defaultParser, Token, TokenType } from '@odata/parser';
+
+const operators = new Map([
+  [TokenType.EqualsExpression, 'eq'],
+  [TokenType.LesserOrEqualsExpression, 'lte'],
+  [TokenType.LesserThanExpression, 'lt'],
+  [TokenType.GreaterOrEqualsExpression, 'gte'],
+  [TokenType.GreaterThanExpression, 'gt'],
+  [TokenType.NotEqualsExpression, 'ne'],
+]);
 
 function renameOData(name: string): string {
   switch (name) {
@@ -18,29 +27,29 @@ function renameOData(name: string): string {
   }
 }
 
-// function processToken(token: Token): WhereOptions | WhereValue {
-//   if (token.type === 'FirstMemberExpression') {
-//     return processName(token, model, rename) as WhereValue;
-//   }
-//   if (token.type === TokenType.MethodCallExpression) {
-//     return processMethod(token, model, rename);
-//   }
-//   if (token.type === TokenType.ParenExpression) {
-//     return processToken(token.value, model, rename);
-//   }
-//   if (operators.has(token.type)) {
-//     return where(
-//       processToken(token.value.left, model, rename),
-//       operators.get(token.type),
-//       processToken(token.value.right, model, rename),
-//     );
-//   }
-//
-//   if (token.type === TokenType.Literal) {
-//     return processLiteral(token);
-//   }
-//   throw new TypeError(`${token.position}: Unhandled OData type: ${token.type}`);
-// }
+function processToken(token: Token): any {
+  if (token.type === TokenType.ParenExpression) {
+    return processToken(token.value);
+  }
+
+  if (token.type === TokenType.FirstMemberExpression) {
+    return token.raw;
+  }
+
+  if (operators.has(token.type)) {
+    return {
+      [processToken(token.value.left)]: {
+        [operators.get(token.type)]: processToken(token.value.right),
+      },
+    };
+  }
+
+  if (token.type === TokenType.Literal) {
+    return processLiteral(token);
+  }
+
+  throw new TypeError(`${token.position}: Unhandled OData type: ${token.type}`);
+}
 
 function processLogicalExpression(token: Token): WhereOptions {
   if (token.type === TokenType.BoolParenExpression || token.type === TokenType.CommonExpression) {
@@ -58,13 +67,15 @@ function processLogicalExpression(token: Token): WhereOptions {
       ? 'or'
       : undefined;
 
-  // if (!op) {
-  //   return processToken(token) as WhereOptions;
-  // }
+  if (!op) {
+    return processToken(token) as WhereOptions;
+  }
 
   const flatten = (expr: any): WhereOptions => (op in expr ? expr[op] : expr);
+
   const left = flatten(processLogicalExpression(token.value.left));
   const right = flatten(processLogicalExpression(token.value.right));
+
   return { [op]: [].concat(left).concat(right) };
 }
 
@@ -91,15 +102,8 @@ const parseOdataOrder = (query: string): OrderItem[] => {
 };
 
 export const parseQuery = ({ $filter, $orderby }: ParseQueryParams): ParsedQuery => {
-  console.log('FILTER', $filter, parseOdataFilter($filter));
-  console.log(
-    'ORDERBY',
-    $orderby,
-    parseOdataOrder($orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author')),
-  );
-
   return {
-    where: { where: parseOdataFilter($filter) },
+    where: parseOdataFilter($filter),
     order: parseOdataOrder($orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author')),
   };
 };

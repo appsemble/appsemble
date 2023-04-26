@@ -78,11 +78,13 @@ declare module 'koas-parameters' {
   }
 }
 
-export const operators = ['and', 'gt', 'or', 'not'] as const;
+export type Operator = 'and' | 'not' | 'or';
+export type Function = 'gt';
+type Reserved = Function | Operator;
 
-export type Operator = (typeof operators)[number];
+export type NonReserved<T extends string> = T extends Reserved ? never : T;
 
-export type WhereOptions = Record<Operator, Record<string, any>[]> | Record<string, any>;
+export type WhereOptions = Record<string, any>;
 
 export interface OrderItem {
   property: string;
@@ -323,8 +325,8 @@ export interface Theme {
 }
 
 export interface ParsedQuery {
-  order: any;
-  where: Pick<FindOptions, 'where'>;
+  order: OrderItem[];
+  where: WhereOptions;
 }
 
 export type ContentSecurityPolicy = Record<string, (string | false)[]>;

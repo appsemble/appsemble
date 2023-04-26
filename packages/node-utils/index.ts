@@ -14,3 +14,4 @@ export * from './icon.js';
 export * from './readAsset.js';
 export * from './render.js';
 export * from './getAppsembleMessages.js';
+export * from './odata.js';
