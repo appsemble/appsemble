@@ -194,6 +194,22 @@ export interface DropdownOption {
   onClick: string;
 }
 
+export interface Image extends BaseField {
+  image: {
+    /**
+     * The image to show in the cell.
+     *
+     * image can either be url or uploaded image
+     */
+    file: Remapper;
+
+    /**
+     * The image is scaled to the specified width in pixels.
+     */
+    width?: number;
+  };
+}
+
 /**
  * Repeated fields based on an input array.
  *
@@ -229,7 +245,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | RepeatedField | StringField)[];
+    fields: (Button | Dropdown | Field | Image | RepeatedField | StringField)[];
   }
 
   interface Actions {

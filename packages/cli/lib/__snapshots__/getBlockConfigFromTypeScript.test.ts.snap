@@ -4054,6 +4054,49 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
         ],
         "type": "object",
       },
+      "Image": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "image": {
+            "additionalProperties": false,
+            "properties": {
+              "file": {
+                "description": "The image to show in the cell.
+
+image can either be url or uploaded image",
+                "format": "remapper",
+              },
+              "width": {
+                "description": "The image is scaled to the specified width in pixels.",
+                "type": "number",
+              },
+            },
+            "required": [
+              "file",
+            ],
+            "type": "object",
+          },
+          "label": {
+            "description": "An optional label used in the header of the table.
+
+If this isn’t specified, no label will be shown. If no fields have a label, the table header row won’t be shown.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "image",
+        ],
+        "type": "object",
+      },
       "RepeatedField": {
         "additionalProperties": false,
         "description": "Repeated fields based on an input array.
@@ -4162,6 +4205,9 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
             },
             {
               "$ref": "#/definitions/Field",
+            },
+            {
+              "$ref": "#/definitions/Image",
             },
             {
               "$ref": "#/definitions/RepeatedField",
