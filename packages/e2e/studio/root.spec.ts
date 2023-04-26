@@ -4,7 +4,7 @@ test('should allow to switch languages', async ({ page }) => {
   await page.goto('/en/apps');
   await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
   await page.getByRole('button', { name: 'EN' }).click();
-  await page.click('a:has-text("Dutch (Nederlands)")');
+  await page.getByRole('link', { name: 'Dutch (Nederlands)' }).click({ delay: 1000 });
   // Expect should be always awaited
   await expect(page.getByRole('button', { name: 'Inloggen' })).toBeVisible();
 });
