@@ -19,11 +19,7 @@ export function LanguageDropdown({ className }: LanguageDropdownProps): ReactEle
   function handleLanguageChange(language: string): void {
     setSelectedLanguage(language);
     localStorage.setItem('preferredLanguage', language);
-    const newUrl = `${pathname.replace(lang, language)}${search}${hash}`;
-    window.history.pushState(null, '', newUrl);
-    window.dispatchEvent(new Event('popstate'));
   }
-
   return (
     <NavbarDropdown className={className} color="dark" label={lang.split('-')[0].toUpperCase()}>
       {Object.entries(supportedLanguages).map(([language, name]) => (
