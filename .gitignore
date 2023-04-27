@@ -17,8 +17,6 @@ junit.xml
 /packages/e2e/playwright-report/
 /packages/e2e/playwright/.cache/
 /packages/e2e/results.xml
-# can be removed after playwright has been updated to v1.33, see https://github.com/microsoft/playwright/issues/22048
-salt
 
 # Use this prefix for GitLab reports
 /gl-*
