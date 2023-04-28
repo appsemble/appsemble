@@ -1,16 +1,8 @@
 parameters:
   autofill:
-    route: https://api.pro6pp.nl/v2/autocomplete/nl
-    params:
-      authToken: exampleToken # You need your own API token here.
-      postalCode: { prop: postalCode }
-      streetNumberAndPremise: { prop: houseNumber }
-    response:
-      streetname:
-        - prop: street
-        - string.case: upper
-      residenceArea: { prop: settlement }
-      neighbourhood: { prop: neighbourhood }
+    action: pro6pp
+    names: [postalCode, houseNumber]
+    delay: 500
   fields:
     - name: postalCode
       type: string
@@ -24,3 +16,17 @@ parameters:
       type: string
     - name: neighbourhood
       type: string
+actions:
+  # You need your own API key here (if you want to use pro6pp). See #autofill
+  pro6pp:
+    type: request
+    url: https://api.pro6pp.nl/v2/autocomplete/nl
+    query:
+      object.from:
+        postalCode: { prop: postalCode }
+        streetNumberAndPremise: { prop: houseNumber }
+    remapAfter:
+      object.from:
+        streetname: { prop: street }
+        residenceArea: { prop: settlement }
+        neighbourhood: { prop: neighbourhood }

@@ -2791,12 +2791,6 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
-      "Record<string,Remapper>": {
-        "additionalProperties": {
-          "format": "remapper",
-        },
-        "type": "object",
-      },
       "Record<string,number>": {
         "additionalProperties": {
           "type": "number",
@@ -3167,29 +3161,33 @@ Replaces the optional label if the field is optional. Won’t display if the fie
     "properties": {
       "autofill": {
         "additionalProperties": false,
-        "description": "This allows you to add automatic form completion through external API's.",
+        "description": "This allows you to update fields automatically with actions by typing in a selected field.
+
+To authenticate with an external API see [Services](../../../docs/03-guide/service)",
         "properties": {
+          "action": {
+            "description": "The name of the action to trigger when the selected field values are changed.
+
+The final output of the action(s) will get applied to the form fields.",
+            "format": "action",
+            "type": "string",
+          },
           "delay": {
             "default": 1000,
-            "description": "Set how many \`milliseconds\` it must take between keystrokes to be able to send a request.",
+            "description": "Set how many \`milliseconds\` it must take between input changes to call the action.",
             "type": "number",
           },
-          "params": {
-            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
-            "description": "Set the search parameters given some predefined mapper keys.",
-          },
-          "response": {
-            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
-            "description": "Set the field values given some predefined mapper keys.",
-          },
-          "route": {
-            "description": "The api route (url) to request data from.",
-            "type": "string",
+          "names": {
+            "description": "The names of the fields for which to detect changes.",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
           },
         },
         "required": [
-          "route",
-          "response",
+          "action",
+          "names",
         ],
         "type": "object",
       },
