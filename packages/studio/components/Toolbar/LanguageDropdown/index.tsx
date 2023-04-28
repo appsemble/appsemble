@@ -1,8 +1,10 @@
 import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
-import { type ReactElement, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import axios from 'axios';
+import { type ReactElement } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants.js';
+import { useUser } from '../../UserProvider/index.js';
 
 interface LanguageDropdownProps {
   /**
@@ -13,21 +15,26 @@ interface LanguageDropdownProps {
 
 export function LanguageDropdown({ className }: LanguageDropdownProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
-  const { hash, pathname, search } = useLocation();
-  const [selectedLanguage, setSelectedLanguage] = useState(lang);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { userInfo } = useUser();
 
-  function handleLanguageChange(language: string): void {
-    setSelectedLanguage(language);
+  async function handleLanguageChange(language: string): Promise<void> {
     localStorage.setItem('preferredLanguage', language);
+    if (userInfo) {
+      userInfo.locale = language;
+      await axios.put('/api/user', {
+        name: userInfo.name,
+        locale: language,
+        timezone: userInfo.zoneinfo,
+      });
+    }
+    navigate(pathname.replace(lang, language), { replace: true });
   }
   return (
     <NavbarDropdown className={className} color="dark" label={lang.split('-')[0].toUpperCase()}>
       {Object.entries(supportedLanguages).map(([language, name]) => (
-        <NavbarItem
-          key={language}
-          onClick={() => handleLanguageChange(language)}
-          to={{ pathname: pathname.replace(selectedLanguage, language), hash, search }}
-        >
+        <NavbarItem key={language} onClick={() => handleLanguageChange(language)}>
           {name}
         </NavbarItem>
       ))}
