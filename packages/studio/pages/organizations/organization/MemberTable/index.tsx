@@ -66,7 +66,7 @@ export function MemberTable(): ReactElement {
           <Button
             disabled={!mayInvite}
             onClick={addMembersModal.enable}
-            title={!mayInvite && formatMessage(messages.notAllowed)}
+            title={mayInvite ? undefined : formatMessage(messages.notAllowed)}
           >
             <FormattedMessage {...messages.addMembers} />
           </Button>
