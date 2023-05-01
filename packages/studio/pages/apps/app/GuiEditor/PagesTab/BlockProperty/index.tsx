@@ -74,16 +74,17 @@ export function BlockProperty({
 
   return (
     <div>
-      <Button
-        className={`is-danger ${styles.deleteButton}`}
-        component="a"
-        icon="trash"
-        onClick={() => deleteBlock()}
-      >
-        Delete Block
-      </Button>
       {Boolean(currentBlock) && (
         <div>
+          <Button
+            className={`is-danger ${styles.deleteButton}`}
+            component="a"
+            icon="trash"
+            onClick={() => deleteBlock()}
+          >
+            Delete Block
+          </Button>
+
           <InputList
             label="Type"
             onChange={onTypeChange}
