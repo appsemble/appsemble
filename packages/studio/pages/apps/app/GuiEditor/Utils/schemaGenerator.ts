@@ -43,7 +43,7 @@ export const generateData = (
   if (schema.enum) {
     return schema.enum[0];
   }
-  if (schema.format === 'remapper') {
+  if (schema.format === 'remapper' && schema.required) {
     return ownerKey;
   }
   if (schema.type === 'array') {
