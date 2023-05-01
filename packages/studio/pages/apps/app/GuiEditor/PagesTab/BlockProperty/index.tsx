@@ -58,8 +58,10 @@ export function BlockProperty({
       // eslint-disable-next-line prefer-destructuring
       currentBlock = blockList[0];
       setSelected(0);
+    } else {
+      setSelected(-1);
     }
-    // To do: fix the else for when there are no more blocks in the current page
+
     setApp({ ...app });
   };
 
@@ -80,23 +82,27 @@ export function BlockProperty({
       >
         Delete Block
       </Button>
-      <InputList
-        label="Type"
-        onChange={onTypeChange}
-        options={blocks.map((block) => block.name)}
-        value={normalizeBlockName(currentBlock.type)}
-      />
-      <PropertiesHandler
-        onChange={onChangeProperties}
-        parameters={currentBlock.parameters}
-        schema={
-          blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.type))
-            .parameters
-        }
-      />
-      <Button className="is-primary" component="a" icon="add">
-        Save Block
-      </Button>
+      {Boolean(currentBlock) && (
+        <div>
+          <InputList
+            label="Type"
+            onChange={onTypeChange}
+            options={blocks.map((block) => block.name)}
+            value={normalizeBlockName(currentBlock.type)}
+          />
+          <PropertiesHandler
+            onChange={onChangeProperties}
+            parameters={currentBlock.parameters}
+            schema={
+              blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.type))
+                .parameters
+            }
+          />
+          <Button className="is-primary" component="a" icon="add">
+            Save Block
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
