@@ -61,7 +61,6 @@ export function BlockProperty({
     } else {
       setSelected(-1);
     }
-
     setApp({ ...app });
   };
 

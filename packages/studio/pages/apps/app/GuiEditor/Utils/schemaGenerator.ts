@@ -2,13 +2,16 @@ import { Schema } from 'jsonschema';
 import { JsonValue } from 'type-fest';
 
 export const generateData = (
-  schema: Schema,
   definitions: Record<string, Schema>,
+  schema?: Schema,
   ownerKey = '',
 ): JsonValue => {
+  if (!schema) {
+    return;
+  }
   if (schema.$ref) {
     const ref = decodeURIComponent(schema.$ref.split('/').pop());
-    return generateData(definitions[ref!] as Schema, definitions);
+    return generateData(definitions, definitions[ref!] as Schema);
   }
   if (schema.default) {
     return schema.default;
@@ -17,7 +20,7 @@ export const generateData = (
     const data: Record<string, JsonValue> = {};
     if (schema.properties) {
       for (const key of Object.keys(schema.properties)) {
-        data[key] = generateData(schema.properties[key], definitions, key);
+        data[key] = generateData(definitions, schema.properties[key], key);
       }
     }
     /* If (typeof schema.required !== 'boolean' && schema.required?.length) {
@@ -28,15 +31,15 @@ export const generateData = (
     return data;
   }
   if (schema.anyOf) {
-    return [generateData(schema.anyOf[0], definitions)];
+    return [generateData(definitions, schema.anyOf[0])];
   }
   if (schema.oneOf) {
-    return generateData(schema.oneOf[0], definitions);
+    return generateData(definitions, schema.oneOf[0]);
   }
   if (schema.allOf) {
     const allOf = [];
     for (const allOfSchema of schema.allOf) {
-      allOf.push(generateData(allOfSchema, definitions));
+      allOf.push(generateData(definitions, allOfSchema));
     }
     return allOf;
   }
@@ -49,11 +52,11 @@ export const generateData = (
   if (schema.type === 'array') {
     return Array.from({ length: 1 }, (empty, index) =>
       generateData(
+        definitions,
         Array.isArray(schema.items)
           ? schema.items[index] ||
               (typeof schema.additionalItems === 'object' && schema.additionalItems)
           : schema.items,
-        definitions,
       ),
     );
   }
