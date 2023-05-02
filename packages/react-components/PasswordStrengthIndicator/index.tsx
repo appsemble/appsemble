@@ -1,11 +1,11 @@
-import { zxcvbn, ZxcvbnResult } from '@zxcvbn-ts/core';
+import { zxcvbn, type ZxcvbnResult } from '@zxcvbn-ts/core';
 import classNames from 'classnames';
-import { ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { useSimpleForm } from '../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useSimpleForm } from '../index.js';
 
 interface PartialResult {
   score?: ZxcvbnResult['score'] | -1;

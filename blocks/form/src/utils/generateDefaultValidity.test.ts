@@ -1,8 +1,8 @@
-import { Utils } from '@appsemble/sdk';
+import { type Utils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 
-import { Field, Values } from '../../block.js';
 import { generateDefaultValidity } from './generateDefaultValidity.js';
+import { type Field, type Values } from '../../block.js';
 
 describe('generate default validity', () => {
   it('should return an empty error map', () => {

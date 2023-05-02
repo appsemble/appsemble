@@ -1,11 +1,18 @@
-import { BaseMessage } from '@appsemble/types';
-import { createContext, ReactElement, ReactNode, useCallback, useContext, useRef } from 'react';
+import { type BaseMessage } from '@appsemble/types';
+import {
+  createContext,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import { Message, useForceUpdate } from '../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { Message, useForceUpdate } from '../index.js';
 
 export interface Msg extends BaseMessage {
   /**

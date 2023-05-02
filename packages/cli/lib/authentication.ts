@@ -1,15 +1,15 @@
-import { AddressInfo, Server } from 'node:net';
+import { type AddressInfo, type Server } from 'node:net';
 import { hostname } from 'node:os';
 
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { TokenResponse } from '@appsemble/types';
-import axios, { AxiosHeaders } from 'axios';
+import { type TokenResponse } from '@appsemble/types';
+import axios, { type AxiosHeaders } from 'axios';
 import inquirer from 'inquirer';
-import Koa, { Context } from 'koa';
+import Koa, { type Context } from 'koa';
 import open from 'open';
 import raw from 'raw-body';
 
-import { BaseArguments } from '../types.js';
+import { type BaseArguments } from '../types.js';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
@@ -157,7 +157,7 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
  *
  * @param remote Host to fetch token from.
  * @param scope The OAuth2 scope to request. This may be space separated to request
- * multiple scopes.
+ *   multiple scopes.
  * @param inputCredentials Client credentials passed from the command line.
  */
 export async function authenticate(

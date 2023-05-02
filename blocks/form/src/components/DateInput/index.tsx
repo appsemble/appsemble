@@ -1,10 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { DateTimeField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback, useMemo } from 'preact/hooks';
 
-import { DateField, InputProps } from '../../../block.js';
+import { type DateField, type InputProps } from '../../../block.js';
 import { useLocale } from '../../hooks/useLocale.js';
 import { extractDate } from '../../utils/extractDate.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
@@ -32,7 +32,7 @@ export function DateInput({
   const dateLabel = utils.remap(label, value) as string;
   const confirmLabel = utils.formatMessage('confirmLabel');
 
-  const required = isRequired(field);
+  const required = isRequired(field, utils, formValues);
 
   const handleOnChange = useCallback(
     (event: JSX.TargetedEvent<HTMLInputElement>, v: string): void =>

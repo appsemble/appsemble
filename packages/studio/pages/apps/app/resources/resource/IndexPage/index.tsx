@@ -13,15 +13,15 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
-import { Resource } from '@appsemble/types';
+import { type Resource } from '@appsemble/types';
 import { generateDataFromSchema, has } from '@appsemble/utils';
 import { download, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 import {
-  ChangeEvent,
-  ReactElement,
-  SyntheticEvent,
+  type ChangeEvent,
+  type ReactElement,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -30,13 +30,13 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { ResourceRow } from './ResourceRow/index.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
-import { ResourceRow } from './ResourceRow/index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
@@ -511,12 +511,7 @@ export function IndexPage(): ReactElement {
         onSubmit={submitCreate}
         title={<FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />}
       >
-        <SimpleFormField
-          // @ts-expect-error This is working as expected.
-          component={JSONSchemaEditor}
-          name={resourceName}
-          schema={schema}
-        />
+        <SimpleFormField component={JSONSchemaEditor} name={resourceName} schema={schema} />
       </ModalCard>
       <ModalCard
         component={SimpleForm}

@@ -1,5 +1,5 @@
 import { readAsset } from '@appsemble/node-utils';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 export async function faviconHandler(ctx: Context): Promise<void> {
   ctx.body = await readAsset('favicon.ico');

@@ -1,8 +1,9 @@
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { AppMessages as AppMessagesType, App as AppType } from '@appsemble/types';
+import { type AppMessages as AppMessagesType, type App as AppType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { parse } from 'yaml';
 
+import * as controllers from './index.js';
 import {
   App,
   AppBlockStyle,
@@ -17,7 +18,6 @@ import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let templates: App[];
 

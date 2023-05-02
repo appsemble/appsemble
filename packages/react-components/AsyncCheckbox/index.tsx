@@ -1,4 +1,10 @@
-import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 
 import { Checkbox } from '../index.js';
 

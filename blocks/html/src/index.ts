@@ -1,4 +1,4 @@
-import { bootstrap, Remapper } from '@appsemble/sdk';
+import { bootstrap, type Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
 const parser = new DOMParser();

@@ -3,18 +3,18 @@ import { inflateRaw } from 'node:zlib';
 
 import { readFixture } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { SAMLRedirectResponse } from '@appsemble/types';
+import { type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';
 
-import { App, AppSamlSecret, Organization, SamlLoginRequest, User } from '../models/index.js';
+import * as controllers from './index.js';
+import { App, AppSamlSecret, Organization, SamlLoginRequest, type User } from '../models/index.js';
 import { appRouter } from '../routes/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let app: App;
 let secret: AppSamlSecret;

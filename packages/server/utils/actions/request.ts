@@ -1,13 +1,13 @@
 import { getRemapperContext } from '@appsemble/node-utils';
 import {
-  Remapper,
-  RequestLikeActionDefinition,
-  ResourceQueryActionDefinition,
+  type Remapper,
+  type RequestLikeActionDefinition,
+  type ResourceQueryActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import axios from 'axios';
 
-import { ServerActionParameters } from './index.js';
+import { type ServerActionParameters } from './index.js';
 
 export async function request({
   action,

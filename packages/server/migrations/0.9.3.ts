@@ -1,4 +1,4 @@
-import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
+import { DataTypes, QueryTypes, type Sequelize } from 'sequelize';
 import webpush from 'web-push';
 
 export const key = '0.9.3';

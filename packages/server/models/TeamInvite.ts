@@ -1,4 +1,4 @@
-import { TeamMember } from '@appsemble/types';
+import { type TeamMember } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,

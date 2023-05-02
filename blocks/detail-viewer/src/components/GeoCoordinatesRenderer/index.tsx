@@ -1,13 +1,13 @@
 import { useBlock } from '@appsemble/preact';
 import { isPreactChild, Location } from '@appsemble/preact-components';
-import { DivIcon, Icon } from 'leaflet';
-import { VNode } from 'preact';
+import { type DivIcon, type Icon } from 'leaflet';
+import { type VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { GeoCoordinatesField, RendererProps } from '../../../block.js';
-import { createIcon } from '../utils/createIcon.js';
 import './index.css';
 import styles from './index.module.css';
+import { type GeoCoordinatesField, type RendererProps } from '../../../block.js';
+import { createIcon } from '../utils/createIcon.js';
 
 /**
  * An map for an object type schema which implements GeoCoordinates.

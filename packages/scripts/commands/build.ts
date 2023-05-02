@@ -2,8 +2,8 @@ import { rm } from 'node:fs/promises';
 
 import { logger, writeData } from '@appsemble/node-utils';
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
-import webpack, { Configuration, MultiStats } from 'webpack';
-import { Argv } from 'yargs';
+import webpack, { type Configuration, type MultiStats } from 'webpack';
+import { type Argv } from 'yargs';
 
 export const command = 'build';
 export const description = 'Build the Appsemble core using Webpack';

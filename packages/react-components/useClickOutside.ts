@@ -1,4 +1,4 @@
-import { RefObject, useCallback } from 'react';
+import { type RefObject, useCallback } from 'react';
 
 import { useEventListener } from './index.js';
 

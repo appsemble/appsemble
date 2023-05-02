@@ -1,11 +1,11 @@
 import { getRemapperContext } from '@appsemble/node-utils/app';
-import { UserInfo } from '@appsemble/types';
+import { type UserInfo } from '@appsemble/types';
 
-import { App, AppMessages, Organization } from '../models/index.js';
-import { options } from '../options/options.js';
 import { compareApps, getApp } from './app.js';
 import { setArgv } from './argv.js';
 import { useTestDatabase } from './test/testSchema.js';
+import { App, AppMessages, Organization } from '../models/index.js';
+import { options } from '../options/options.js';
 
 useTestDatabase(import.meta);
 

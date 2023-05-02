@@ -1,11 +1,12 @@
-import { Action, ActionDefinition, ActionType } from '@appsemble/types';
-import { defaultLocale, has, IntlMessageFormat, remap } from '@appsemble/utils';
+import { type Action, type ActionDefinition, type ActionType } from '@appsemble/types';
+import { defaultLocale, has, remap } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
-import { SetRequired } from 'type-fest';
+import { IntlMessageFormat } from 'intl-messageformat';
+import { type SetRequired } from 'type-fest';
 
-import { MakeActionParameters } from '../types.js';
 import { actionCreators } from './actions/index.js';
 import { appId } from './settings.js';
+import { type MakeActionParameters } from '../types.js';
 
 /**
  * Parameters to pass to `makeActions`.

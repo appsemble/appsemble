@@ -1,5 +1,5 @@
 import { setupSentry } from '@appsemble/web-utils';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { App } from './components/App/index.js';
 import './index.css';
@@ -11,9 +11,8 @@ const serviceWorkerRegistrationPromise =
   navigator.serviceWorker?.register('/service-worker.js') ||
   Promise.reject(new Error('Service worker not available'));
 
-render(
+createRoot(document.getElementById('app')).render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
-  document.getElementById('app'),
 );
 
 window.appsembleHasLoaded = true;

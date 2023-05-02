@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const ObjectRemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
@@ -99,7 +99,7 @@ For example:
 \`\`\`yaml
   - static: 02/11/2014     # The date string to parse
   - date.parse: MM/dd/yyyy # The given format to parse the date with
-               # => Tue Feb 11 2014 00:00:00 
+               # => Tue Feb 11 2014 00:00:00
 \`\`\`
 
 See [date-fns](https://date-fns.org/v2.29.3/docs/parse) for the supported formats.
@@ -123,6 +123,18 @@ date.parse:
       description: `Compare all computed remapper values against each other.
 
 Returns \`true\` if all entries are equal, otherwise \`false\`.
+`,
+    },
+    not: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/RemapperDefinition',
+      },
+      description: `Compare all computed remapper values against the first.
+
+Returns \`false\` if all entries are equal to the first entry, otherwise \`true\`.
+
+If only 1 or less are passed to it \`false\` is returned.
 `,
     },
     step: {
@@ -206,6 +218,29 @@ Returns value of then if condition is truthy, otherwise it returns the value of 
         },
       },
     },
+    match: {
+      type: 'array',
+      description: `Check if any case results in a truthy value.
+
+Returns the value of the first case where the condition equals true, otherwise returns null.
+`,
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['case', 'value'],
+        description: '',
+        properties: {
+          case: {
+            $ref: '#/components/schemas/RemapperDefinition',
+            description: 'The condition to check.',
+          },
+          value: {
+            $ref: '#/components/schemas/RemapperDefinition',
+            description: 'This remapper is used if the case is true',
+          },
+        },
+      },
+    },
     lt: {
       type: 'array',
       description: `Compare the first computed remapper value with the second computed remapper value.
@@ -216,6 +251,12 @@ Returns \`true\` if the first entry is lesser than the second entry.`,
       items: {
         $ref: '#/components/schemas/RemapperDefinition',
       },
+    },
+    log: {
+      enum: ['info', 'warn', 'error'],
+      description: `Logs its input data (returns it) and its context.
+
+The value to set is the log level.`,
     },
     'null.strip': {
       description: 'Strip all null, undefined, and empty array values from an object.',

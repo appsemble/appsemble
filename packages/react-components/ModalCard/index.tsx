@@ -1,16 +1,16 @@
 import classNames from 'classnames';
 import {
-  ComponentPropsWithoutRef,
-  ElementType,
-  KeyboardEvent,
-  MouseEvent,
-  ReactElement,
-  ReactNode,
+  type ComponentPropsWithoutRef,
+  type ElementType,
+  type KeyboardEvent,
+  type MouseEvent,
+  type ReactElement,
+  type ReactNode,
   useCallback,
 } from 'react';
 
-import { useAnimation } from '../index.js';
 import styles from './index.module.css';
+import { useAnimation } from '../index.js';
 
 interface ModalCardProps<T extends ElementType> {
   /**

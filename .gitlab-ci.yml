@@ -678,11 +678,10 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
-
-cypress:
+playwright:
   stage: end 2 end
   extends: .yarn
-  image: $CI_REGISTRY/appsemble/docker-node-chrome
+  image: mcr.microsoft.com/playwright
   needs:
     - job: provision review
       optional: true
@@ -692,15 +691,13 @@ cypress:
     - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
-    - yarn cypress install
+    - yarn playwright install
     - yarn scripts wait-for-ssl
     - yarn workspace @appsemble/e2e run e2e
   artifacts:
-    expose_as: Cypress videos and screenshots
+    expose_as: Playwright videos
     when: always
     paths:
-      - packages/e2e/cypress/videos
-      - packages/e2e/cypress/screenshots
-      - packages/e2e/cypress/snapshots
+      - packages/e2e/test-results/
     reports:
-      junit: packages/e2e/junit.xml
+      junit: packages/e2e/results.xml

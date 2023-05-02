@@ -1,4 +1,4 @@
-import { BulmaColor, BulmaSize, IconName, Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 
 interface BaseField {
   /**
@@ -46,12 +46,14 @@ export interface StringField extends BaseField {
      * The name of the field.
      */
     name: string;
+
     /**
      * The name of the action to trigger when editing the field.
      *
      * @format action
      */
     onEdit: string;
+
     /**
      * Whether the string field should be multiline or not.
      *
@@ -192,6 +194,22 @@ export interface DropdownOption {
   onClick: string;
 }
 
+export interface Image extends BaseField {
+  image: {
+    /**
+     * The image to show in the cell.
+     *
+     * image can either be url or uploaded image
+     */
+    file: Remapper;
+
+    /**
+     * The image is scaled to the specified width in pixels.
+     */
+    width?: number;
+  };
+}
+
 /**
  * Repeated fields based on an input array.
  *
@@ -227,7 +245,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display.
      */
-    fields: (Button | Dropdown | Field | RepeatedField | StringField)[];
+    fields: (Button | Dropdown | Field | Image | RepeatedField | StringField)[];
   }
 
   interface Actions {

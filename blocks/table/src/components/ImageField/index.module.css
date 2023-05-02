@@ -1,0 +1,15 @@
+.root {
+  border-radius: 12px !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.img {
+  object-fit: cover;
+}
+
+.button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}

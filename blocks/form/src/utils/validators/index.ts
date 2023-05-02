@@ -1,14 +1,14 @@
-import { Remapper, Utils } from '@appsemble/sdk';
+import { type Remapper, type Utils } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
-import { BaseRequirement, Field, Values } from '../../../block.js';
-import { getValueByNameSequence } from '../getNested.js';
-import { isRequired } from '../requirements.js';
 import { validateDateTime } from './validateDateTime.js';
 import { validateEnum, validateRadio } from './validateEnum.js';
 import { validateFile } from './validateFile.js';
 import { validateNumber } from './validateNumber.js';
 import { validateString } from './validateString.js';
+import { type BaseRequirement, type Field, type Values } from '../../../block.js';
+import { getValueByNameSequence } from '../getNested.js';
+import { isRequired } from '../requirements.js';
 
 export const validators: Record<string, Validator> = {
   date: validateDateTime,
@@ -37,11 +37,11 @@ type Validator = (
  * @param values The values of all form fields.
  * @param utils Utility functions used in the validation process.
  * @param defaultError The default error message if a specific one
- * isn’t defined for a specific requirement.
+ *   isn’t defined for a specific requirement.
  * @param defaultValue The default value of this field.
  * @param prefix The sequence of field names that lead to the passed in field separated by a `"."`.
  * @returns - A string containing an error message
- * or a boolean value indicating that there is an error.
+ *   or a boolean value indicating that there is an error.
  */
 export function validate(
   field: Field,

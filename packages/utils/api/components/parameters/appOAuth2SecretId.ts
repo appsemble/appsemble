@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const appOAuth2SecretId: OpenAPIV3.ParameterObject = {
   name: 'appOAuth2SecretId',

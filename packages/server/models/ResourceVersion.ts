@@ -1,4 +1,4 @@
-import { ResourceVersion as ResourceVersionType } from '@appsemble/types';
+import { type ResourceVersion as ResourceVersionType } from '@appsemble/types';
 import {
   AllowNull,
   BelongsTo,

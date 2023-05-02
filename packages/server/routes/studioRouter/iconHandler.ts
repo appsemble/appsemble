@@ -1,5 +1,5 @@
 import { serveIcon } from '@appsemble/node-utils';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 export async function iconHandler(ctx: Context): Promise<void> {
   const { params, request } = ctx;

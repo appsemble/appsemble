@@ -1,8 +1,8 @@
-import { Remapper, Remappers, UserInfo } from '@appsemble/types';
+import { type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
 import { addMilliseconds, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
-import { createEvent, EventAttributes } from 'ics';
-import { IntlMessageFormat } from 'intl-messageformat';
+import { createEvent, type EventAttributes } from 'ics';
+import { type IntlMessageFormat } from 'intl-messageformat';
 import parseDuration from 'parse-duration';
 
 import { has } from './has.js';
@@ -14,6 +14,20 @@ import { stripNullValues } from './miscellaneous.js';
  * Stub the console types, since we don’t want to use dom or node types here.
  */
 declare const console: {
+  /**
+   * Log an info message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  info: (...args: unknown[]) => void;
+
+  /**
+   * Log a warning message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  warn: (...args: unknown[]) => void;
+
   /**
    * Log an error message to the console.
    *
@@ -203,6 +217,16 @@ const mapperImplementations: MapperImplementations = {
     return values.every((value) => equal(values[0], value));
   },
 
+  not(mappers, input, context) {
+    if (mappers.length <= 1) {
+      return false;
+    }
+
+    const [firstValue, ...otherValues] = mappers.map((mapper) => remap(mapper, input, context));
+
+    return !otherValues.some((value) => equal(firstValue, value));
+  },
+
   step(mapper, input, context) {
     return context.stepRef.current[mapper];
   },
@@ -267,6 +291,13 @@ const mapperImplementations: MapperImplementations = {
   if(mappers, input, context) {
     const condition = remap(mappers.condition, input, context);
     return remap(condition ? mappers.then : mappers.else, input, context);
+  },
+
+  match(mappers, input, context) {
+    return (
+      remap(mappers.find((mapper) => remap(mapper.case, input, context))?.value, input, context) ??
+      null
+    );
   },
 
   'object.from': (mappers, input, context) =>
@@ -448,6 +479,11 @@ const mapperImplementations: MapperImplementations = {
     if (stringCase === 'upper') {
       return String(input).toUpperCase();
     }
+    return input;
+  },
+
+  log(level, input, context) {
+    console[level ?? 'info'](JSON.stringify({ input, context }, null, 2));
     return input;
   },
 

@@ -1,15 +1,15 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
-import { AppSamlSecret } from '@appsemble/types';
+import { type AppSamlSecret } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
-import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
-import { useApp } from '../../index.js';
 import { messages } from './messages.js';
 import { SamlModal } from './SamlModal/index.js';
 import { SamlSecretItem } from './SamlSecretItem/index.js';
+import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useApp } from '../../index.js';
 
 const initialSecret: AppSamlSecret = {
   name: '',

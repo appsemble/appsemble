@@ -1,12 +1,12 @@
 import {
   Content,
   EditPassword,
-  EditPasswordValues,
+  type EditPasswordValues,
   useMeta,
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';

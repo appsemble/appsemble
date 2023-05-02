@@ -1,5 +1,11 @@
-import { OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
-import { ComponentPropsWithoutRef, MouseEvent, ReactElement, useCallback, useState } from 'react';
+import { type OAuth2LoginOptions, startOAuth2Login } from '@appsemble/web-utils';
+import {
+  type ComponentPropsWithoutRef,
+  type MouseEvent,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 
 import { Button } from '../index.js';
 

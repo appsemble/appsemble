@@ -2,10 +2,10 @@ import { noop } from '@appsemble/utils';
 import classNames from 'classnames';
 import {
   createContext,
-  Dispatch,
-  ReactElement,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactElement,
+  type ReactNode,
+  type SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -15,10 +15,10 @@ import {
 import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
-import { useToggle } from '../index.js';
-import { useEventListener } from '../useEventListener.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useToggle } from '../index.js';
+import { useEventListener } from '../useEventListener.js';
 
 interface SideMenuContext {
   isOpen: boolean;

@@ -1,5 +1,5 @@
-import { Field, Values } from '../../block.js';
 import { getMin, getMinLength } from './requirements.js';
+import { type Field, type Values } from '../../block.js';
 
 function generateDefaultValue(field: Field): unknown {
   if ('defaultValue' in field) {

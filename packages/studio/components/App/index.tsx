@@ -6,11 +6,14 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { TopLevelRoutes } from '../../pages/index.js';
 import { Breadcrumbs } from '../Breadcrumbs/index.js';
+import { BreadCrumbsDecorationProvider } from '../BreadCrumbsDecoration/index.js';
 import { CodeBlock } from '../CodeBlock/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
 import { HighlightedCode } from '../HighlightedCode/index.js';
@@ -22,8 +25,6 @@ import { StudioMessagesProvider } from '../StudioMessagesProvider/index.js';
 import { Toolbar } from '../Toolbar/index.js';
 import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 const studioContent = (
   <StudioMessagesProvider>
@@ -50,8 +51,10 @@ const studioContent = (
                   <Toolbar />
                   <div className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}>
                     <VerifyBanner />
-                    <Breadcrumbs />
-                    <TopLevelRoutes />
+                    <BreadCrumbsDecorationProvider>
+                      <Breadcrumbs />
+                      <TopLevelRoutes />
+                    </BreadCrumbsDecorationProvider>
                   </div>
                 </SideMenuProvider>
               </MessagesProvider>

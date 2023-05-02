@@ -4,26 +4,31 @@ import { api, convertToCsv } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import { parse as parseCSV } from 'csv-parse';
-import Koa, { DefaultContext, DefaultState, Middleware, ParameterizedContext } from 'koa';
+import Koa, {
+  type DefaultContext,
+  type DefaultState,
+  type Middleware,
+  type ParameterizedContext,
+} from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import range from 'koa-range';
-import { bodyParser, bufferParser, Parser } from 'koas-body-parser';
+import { bodyParser, bufferParser, type Parser } from 'koas-body-parser';
 import { koas } from 'koas-core';
 import { operations } from 'koas-operations';
 import { parameters } from 'koas-parameters';
 import {
-  GetApiKeyUser,
-  GetHttpUser,
-  GetOAuth2User,
+  type GetApiKeyUser,
+  type GetHttpUser,
+  type GetOAuth2User,
   security,
-  SecurityOptions,
+  type SecurityOptions,
 } from 'koas-security';
 import { serializer } from 'koas-serializer';
 import { specHandler } from 'koas-spec-handler';
 import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
-import { Configuration } from 'webpack';
+import { type Configuration } from 'webpack';
 
 import { appMapper } from './middleware/appMapper.js';
 import { boomMiddleware } from './middleware/boom.js';

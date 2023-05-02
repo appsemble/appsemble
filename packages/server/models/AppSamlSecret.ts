@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import {
   AllowNull,
   AutoIncrement,

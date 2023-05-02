@@ -1,6 +1,6 @@
 import { isIP } from 'node:net';
 
-import { Middleware } from 'koa';
+import { type Middleware } from 'koa';
 
 export function appMapper(
   platformMiddleware: Middleware,

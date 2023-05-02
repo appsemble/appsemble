@@ -1,5 +1,5 @@
 import { useMeta } from '@appsemble/react-components';
-import { ComponentType, ReactElement } from 'react';
+import { type ComponentType, type ReactElement } from 'react';
 
 interface DocProps {
   /**

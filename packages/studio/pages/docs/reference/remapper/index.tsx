@@ -1,12 +1,12 @@
 import { Title, useMeta } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Schema } from '../../../../components/Schema/index.js';
 import Introduction from './introduction.md';
 import { messages } from './messages.js';
 import { Ref } from './Ref/index.js';
+import { Schema } from '../../../../components/Schema/index.js';
 
 const entries = Object.entries(schemas.ObjectRemapperDefinition.properties);
 

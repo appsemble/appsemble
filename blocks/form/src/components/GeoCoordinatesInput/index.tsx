@@ -1,11 +1,11 @@
 import { useBlock } from '@appsemble/preact';
-import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
+import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
-import { GeoCoordinatesField, InputProps } from '../../../block.js';
 import styles from './index.module.css';
+import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
 
 type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
 

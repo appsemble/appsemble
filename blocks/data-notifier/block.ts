@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/sdk';
+import { type BulmaColor } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
   interface Messages {

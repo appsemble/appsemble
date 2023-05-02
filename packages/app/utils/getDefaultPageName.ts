@@ -1,4 +1,4 @@
-import { AppDefinition } from '@appsemble/types';
+import { type AppDefinition } from '@appsemble/types';
 import { resolveRoleInheritance } from '@appsemble/utils';
 
 export function getDefaultPageName(

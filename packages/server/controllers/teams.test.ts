@@ -1,8 +1,9 @@
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
-import Koa from 'koa';
+import type Koa from 'koa';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -19,7 +20,6 @@ import { authentication } from '../utils/authentication.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let organization: Organization;
 let app: App;

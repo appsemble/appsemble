@@ -1,9 +1,14 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.41/config/assets/logo.svg) Appsemble End 2 End Tests
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.42/config/assets/logo.svg) Appsemble End 2 End Tests
 
 > Run end 2 end tests on an Appsemble environment
 
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.41/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.41)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
+
+## Table of Contents
+
+- [Usage](#usage)
+- [License](#license)
 
 ## Usage
 
@@ -13,10 +18,10 @@ To run end to end tests, run:
 yarn e2e
 ```
 
-The tests use [Cypress](https://www.cypress.io/).
+The tests use [Playwright](https://playwright.dev/).
 
-After each test a video will be saved in the `packages/e2e/cypress/videos` directory for further
-inspection.
+After each test a video will be saved in the `packages/e2e/test-results/{name-test}` directory for
+further inspection.
 
 The end to end tests use the following environment variables:
 
@@ -28,5 +33,5 @@ The end to end tests use the following environment variables:
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.41/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.42/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

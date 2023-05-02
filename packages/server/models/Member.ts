@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { type Role, roles } from '@appsemble/utils';
 import {
   AllowNull,

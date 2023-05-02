@@ -1,5 +1,5 @@
 import { useData } from '@appsemble/react-components';
-import { SSLStatusMap } from '@appsemble/types';
+import { type SSLStatusMap } from '@appsemble/types';
 import { useEffect } from 'react';
 
 /**

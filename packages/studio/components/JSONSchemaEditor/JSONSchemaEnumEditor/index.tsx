@@ -1,11 +1,11 @@
 import { SelectField } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
-import { CommonJSONSchemaEditorProps } from '../types.js';
-import { messages } from './messages.js';
+import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaEnumEditor({
   disabled,

@@ -2,13 +2,20 @@ import { createServer } from '@appsemble/node-utils/createServer.js';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Member, Organization, Resource, ResourceVersion, User } from '../models/index.js';
+import * as controllers from './index.js';
+import {
+  App,
+  Member,
+  Organization,
+  Resource,
+  ResourceVersion,
+  type User,
+} from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let user: User;
 

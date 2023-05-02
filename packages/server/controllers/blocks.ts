@@ -1,12 +1,13 @@
 import { logger, serveIcon } from '@appsemble/node-utils';
-import { BlockDefinition, BlockManifest } from '@appsemble/types';
+import { handleValidatorResult } from '@appsemble/node-utils/jsonschema.js';
+import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
-import { Context } from 'koa';
-import { File } from 'koas-body-parser';
-import { OpenAPIV3 } from 'openapi-types';
+import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
+import { type OpenAPIV3 } from 'openapi-types';
 import semver from 'semver';
 import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'sequelize';
 import { parse } from 'yaml';
@@ -22,7 +23,6 @@ import {
 import { blockVersionToJson } from '../utils/block.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createBlockVersionResponse } from '../utils/createBlockVersionResponse.js';
-import { handleValidatorResult } from '../../node-utils/jsonschema.js';
 
 export async function getBlock(ctx: Context): Promise<void> {
   const {

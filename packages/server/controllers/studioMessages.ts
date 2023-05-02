@@ -4,7 +4,7 @@ import {
 } from '@appsemble/node-utils/getAppsembleMessages.js';
 import { defaultLocale } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import tags from 'language-tags';
 
 export async function getStudioMessages(ctx: Context): Promise<void> {

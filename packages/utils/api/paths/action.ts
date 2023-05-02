@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
   const operation: OpenAPIV3.OperationObject = {

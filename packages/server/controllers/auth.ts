@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { logger } from '@appsemble/node-utils';
 import { conflict, forbidden, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models/index.js';

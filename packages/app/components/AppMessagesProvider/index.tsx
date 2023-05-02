@@ -1,22 +1,21 @@
 import { Content, Loader, Message, useLocationString } from '@appsemble/react-components';
-import { AppMessages } from '@appsemble/types';
+import { type AppMessages } from '@appsemble/types';
 import {
   defaultLocale,
   detectLocale,
   has,
-  IntlMessage,
-  IntlMessageFormat,
-  MessageGetter,
+  type IntlMessage,
+  type MessageGetter,
   normalize,
   objectCache,
 } from '@appsemble/utils';
 import { memoize } from '@formatjs/fast-memoize';
 import axios from 'axios';
-import { Formatters } from 'intl-messageformat';
+import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
 import {
   createContext,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,

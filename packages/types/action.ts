@@ -1,5 +1,5 @@
-import { HTTPMethods } from './http.js';
-import { Remapper } from './index.js';
+import { type HTTPMethods } from './http.js';
+import { type Remapper } from './index.js';
 
 interface BaseAction<T extends string> {
   /**
@@ -32,6 +32,7 @@ interface RequestLikeAction<T extends Action['type']> extends BaseAction<T> {
    * The HTTP method used to make the request.
    */
   method: HTTPMethods;
+
   /**
    * The URL to which the request will be made.
    */

@@ -1,5 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
-import { QueryTypes, Sequelize } from 'sequelize';
+import { QueryTypes, type Sequelize } from 'sequelize';
 
 export const key = '0.19.4';
 

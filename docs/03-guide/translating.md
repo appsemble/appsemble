@@ -1,5 +1,15 @@
 # Translating
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Appsemble Core and Blocks](#appsemble-core-and-blocks)
+- [Custom messages](#custom-messages)
+- [Using the translations page](#using-the-translations-page)
+- [Translating using the Appsemble CLI](#translating-using-the-appsemble-cli)
+
+## Introduction
+
 Just like how the Appsemble Studio is available in multiple languages, it is possible to do the same
 in individual apps. This page covers the different options that are available for translating and
 localizing apps.
@@ -42,7 +52,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.41
+    version: 0.20.42
     parameters:
       content:
         translate: myMessage
@@ -59,7 +69,7 @@ Alternatively using `string.format`:
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.41
+    version: 0.20.42
     parameters:
       content:
         string.format:
@@ -150,7 +160,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.41": {
+      "0.20.42": {
         "submit": "An example override of the submit message in the form block."
       }
     }

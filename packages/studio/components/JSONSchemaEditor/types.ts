@@ -1,5 +1,5 @@
-import { NamedEvent } from '@appsemble/web-utils';
-import { Schema } from 'jsonschema';
+import { type NamedEvent } from '@appsemble/web-utils';
+import { type Schema } from 'jsonschema';
 
 export interface CommonJSONSchemaEditorProps<T = never> {
   /**

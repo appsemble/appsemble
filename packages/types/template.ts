@@ -1,4 +1,4 @@
-import { AppVisibility } from './app.js';
+import { type AppVisibility } from './app.js';
 
 export interface Template {
   /**

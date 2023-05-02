@@ -1,14 +1,14 @@
 import { getRemapperContext } from '@appsemble/node-utils';
-import { EmailActionDefinition } from '@appsemble/types';
+import { type EmailActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
-import { SendMailOptions } from 'nodemailer';
+import { type SendMailOptions } from 'nodemailer';
 
+import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset } from '../../models/index.js';
 import { iterTable } from '../database.js';
 import { renderEmail } from '../email/renderEmail.js';
-import { ServerActionParameters } from './index.js';
 
 interface ContentAttachment {
   filename?: string;

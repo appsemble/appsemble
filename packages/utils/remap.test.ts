@@ -1,7 +1,33 @@
-import { AppMessages, Remapper, UserInfo } from '@appsemble/types';
+import { type AppMessages, type Remapper, type UserInfo } from '@appsemble/types';
+import { IntlMessageFormat } from 'intl-messageformat';
 
-import { IntlMessageFormat } from './intl-messageformat.js';
 import { remap } from './remap.js';
+
+/**
+ * Stub the console types, since we don’t want to use dom or node types here.
+ */
+declare const console: {
+  /**
+   * Log an info message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  info: (...args: unknown[]) => void;
+
+  /**
+   * Log a warning message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  warn: (...args: unknown[]) => void;
+
+  /**
+   * Log an error message to the console.
+   *
+   * @param args The message to render to the console.
+   */
+  error: (...args: unknown[]) => void;
+};
 
 interface TestCase {
   input: any;
@@ -214,6 +240,81 @@ describe('date.format', () => {
   });
 });
 
+describe('log', () => {
+  beforeEach(() => {
+    import.meta.jest.spyOn(console, 'error').mockImplementation();
+    import.meta.jest.spyOn(console, 'info').mockImplementation();
+    import.meta.jest.spyOn(console, 'warn').mockImplementation();
+  });
+
+  function runLogTests(tests: Record<string, TestCase>): void {
+    it.each(Object.entries(tests))(
+      'should %s',
+      (name, { context, expected: expectedInput, history, input, mappers, messages, userInfo }) => {
+        const expected = JSON.stringify(
+          {
+            input: expectedInput,
+            context: {
+              root: {
+                message: 'hi mom!',
+              },
+              url: 'https://example.com/en/example',
+              appUrl: 'https://example.com',
+              appId: 6789,
+              locale: 'en',
+              pageData: {
+                hello: 'Page data',
+              },
+            },
+          },
+          null,
+          2,
+        );
+        remap(mappers, input, {
+          getMessage: ({ defaultMessage, id }) =>
+            new IntlMessageFormat(messages?.messageIds?.[id] ?? defaultMessage),
+          url: 'https://example.com/en/example',
+          appUrl: 'https://example.com',
+          userInfo,
+          context,
+          history,
+          appId: 6789,
+          locale: 'en',
+          pageData: { hello: 'Page data' },
+        });
+        expect(console[(mappers as { log: 'error' | 'info' | 'warn' }).log]).toHaveBeenCalledWith(
+          expected,
+        );
+      },
+    );
+  }
+
+  runLogTests({
+    'log `hi mom!` with log level `info`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'info' },
+      expected: { message: 'hi mom!' },
+    },
+    'log `hi mom!` with log level `warn`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'warn' },
+      expected: { message: 'hi mom!' },
+    },
+    'log `hi mom!` with log level `error`': {
+      input: { message: 'hi mom!' },
+      mappers: { log: 'error' },
+      expected: { message: 'hi mom!' },
+    },
+  });
+  runTests({
+    'return input': {
+      input: 'input',
+      mappers: { log: 'info' },
+      expected: 'input',
+    },
+  });
+});
+
 describe('le', () => {
   runTests({
     'return true if the left value is less than the right value': {
@@ -280,6 +381,36 @@ describe('equals', () => {
       input: { empty: [] },
       mappers: { equals: [{ prop: 'empty' }] },
       expected: true,
+    },
+  });
+});
+
+describe('not', () => {
+  runTests({
+    'return false if any of the values are equal to the first': {
+      input: [1, 2, 1],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }, { prop: '2' }] },
+      expected: false,
+    },
+    'use deep equality': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 3 } }],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }] },
+      expected: false,
+    },
+    'return true if all values are not equal to the first': {
+      input: [{ foo: { bar: 3 } }, { foo: { bar: 2 } }, { foo: { bar: 2 } }],
+      mappers: { not: [{ prop: '0' }, { prop: '1' }] },
+      expected: true,
+    },
+    'return false on empty arrays': {
+      input: { empty: [] },
+      mappers: { not: [] },
+      expected: false,
+    },
+    'return false on arrays with 1 entry': {
+      input: { empty: [] },
+      mappers: { not: [{ prop: 'empty' }] },
+      expected: false,
     },
   });
 });
@@ -494,6 +625,42 @@ describe('if', () => {
       input: { really: true },
       mappers: { if: { condition: { prop: 'really' }, else: 'no really', then: [] } },
       expected: { really: true },
+    },
+  });
+});
+
+describe('match', () => {
+  runTests({
+    'return the value of the first case if case is truthy': {
+      input: {},
+      mappers: {
+        match: [
+          { case: true, value: 'case 1' },
+          { case: true, value: 'case 2' },
+          { case: true, value: 'case 3' },
+        ],
+      },
+      expected: 'case 1',
+    },
+  });
+  runTests({
+    'return the value of the second case if case 1 is falsy and 2 is truthy': {
+      input: {},
+      mappers: {
+        match: [
+          { case: false, value: 'case 1' },
+          { case: true, value: 'case 2' },
+          { case: false, value: 'case 3' },
+        ],
+      },
+      expected: 'case 2',
+    },
+  });
+  runTests({
+    'return null if all cases are falsy': {
+      input: {},
+      mappers: { match: [{ case: false, value: 'case 1' }] },
+      expected: null,
     },
   });
 });

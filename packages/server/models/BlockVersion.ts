@@ -1,5 +1,4 @@
-import { ActionType, EventType } from '@appsemble/types';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { type ActionType, type EventType } from '@appsemble/types';
 import { type Schema } from 'jsonschema';
 import {
   AllowNull,

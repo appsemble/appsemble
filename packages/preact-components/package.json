@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.20.41",
+  "version": "0.20.42",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -26,14 +26,15 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.41",
-    "@appsemble/types": "0.20.41",
-    "@appsemble/web-utils": "0.20.41",
+    "@appsemble/preact": "0.20.42",
+    "@appsemble/types": "0.20.42",
+    "@appsemble/web-utils": "0.20.42",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/leaflet": "^1.0.0",
     "classnames": "^2.0.0",
     "flatpickr": "^4.0.0",
+    "intl-messageformat": "^10.0.0",
     "leaflet": "~1.5.0",
     "preact": "^10.0.0"
   }

@@ -1,4 +1,4 @@
-import { ReadStream } from 'node:fs';
+import { type ReadStream } from 'node:fs';
 
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';

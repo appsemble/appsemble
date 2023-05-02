@@ -1,9 +1,9 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { CheckboxField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { BooleanField, InputProps } from '../../../block.js';
+import { type BooleanField, type InputProps } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
 
@@ -28,7 +28,7 @@ export function BooleanInput({
 
   const value = getValueByNameSequence(name, formValues);
   const checkboxLabel = utils.remap(label, value);
-  const required = isRequired(field);
+  const required = isRequired(field, utils, formValues);
 
   return (
     <CheckboxField

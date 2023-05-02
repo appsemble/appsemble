@@ -1,5 +1,13 @@
 # Account management
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Social login](#social-login)
+- [Connected apps](#connected-apps)
+
+## Introduction
+
 To manage your Appsemble Studio account, visit the [settings page](/settings/user). From here you
 can manage various details of your account such as your display name, preferred language, and your
 account’s associated email addresses.

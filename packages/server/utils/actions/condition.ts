@@ -1,11 +1,11 @@
 import { getRemapperContext } from '@appsemble/node-utils';
-import { ConditionActionDefinition } from '@appsemble/types';
+import { type ConditionActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
+import { actions, type ServerActionParameters } from './index.js';
 import { EmailAuthorization } from '../../models/index.js';
 import { handleAction } from '../action.js';
-import { actions, ServerActionParameters } from './index.js';
 
 export async function condition({
   action,

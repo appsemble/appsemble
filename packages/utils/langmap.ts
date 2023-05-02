@@ -1,4 +1,4 @@
-import langs, { LanguageMappingList } from 'langmap';
+import langs, { type LanguageMappingList } from 'langmap';
 
 // Exclude languages that aren’t accepted by our server and store language codes in lowercase.
 const bannedLanguages = new Set([

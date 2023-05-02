@@ -1,5 +1,19 @@
 # Security
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [App Privacy](#app-privacy)
+- [App account management](#app-account-management)
+- [Security Definition](#security-definition)
+  - [Teams](#teams)
+- [Root app roles](#root-app-roles)
+- [Page app roles](#page-app-roles)
+- [Block roles](#block-roles)
+- [Resource roles](#resource-roles)
+
+## Introduction
+
 While some apps may be intended for use by anyone, some apps may be intended for a select few
 people. In order to facilitate this, apps can be secured in various ways in order to protect the app
 or parts of the app from unauthorized users.

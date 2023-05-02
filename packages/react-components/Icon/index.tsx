@@ -1,8 +1,8 @@
-import { BulmaColor, BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import { fa } from '@appsemble/web-utils';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { ComponentProps, ReactElement } from 'react';
+import { type ComponentProps, type ReactElement } from 'react';
 
 interface IconProps extends ComponentProps<'span'> {
   color?: BulmaColor;

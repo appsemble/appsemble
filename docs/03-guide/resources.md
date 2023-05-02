@@ -4,6 +4,30 @@ Appsemble out of the box provides its own method of storing and retrieving data 
 can also retrieve en store an external data source outside Appsemble. Data that is created via an
 app is called a ´resource´.
 
+## Table of Contents
+
+- [Defining resources](#defining-resources)
+- [type](#type)
+- [Resource actions](#resource-actions)
+- [External resources](#external-resources)
+- [Query object](#query-object)
+- [Views](#views)
+- [Expiring resources](#expiring-resources)
+- [Filtering resources from the Appsemble API](#filtering-resources-from-the-appsemble-api)
+  - [Logical Operators](#logical-operators)
+  - [Arithmetic Operators](#arithmetic-operators)
+  - [Functions](#functions)
+    - [String and Collection Functions](#string-and-collection-functions)
+    - [Collection Functions](#collection-functions)
+    - [String Functions](#string-functions)
+    - [Date and Time Functions](#date-and-time-functions)
+    - [Arithmetic Functions](#arithmetic-functions)
+    - [Type Functions](#type-functions)
+    - [Geo Functions](#geo-functions)
+    - [Conditional Functions](#conditional-functions)
+- [Securing resources](#securing-resources)
+- [Assets](#assets)
+
 ## Defining resources
 
 Resources can be defined within an [app definition](/docs/reference/app#app-definition) within the
@@ -152,7 +176,7 @@ pages:
   - name: Example Page
     blocks:
       - type: data-loader
-        version: 0.20.41
+        version: 0.20.42
         actions:
           onLoad:
             type: resource.query

@@ -1,9 +1,9 @@
 import { Select } from '@appsemble/react-components';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Schema, SchemaProps } from '../index.js';
 import { messages } from './messages.js';
+import { Schema, type SchemaProps } from '../index.js';
 
 interface AnyOfSchemaProps extends SchemaProps {
   /**

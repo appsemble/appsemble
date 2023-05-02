@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
-import yargs, { CommandModule } from 'yargs';
+import yargs, { type CommandModule } from 'yargs';
 
 import * as cleanup from './commands/cleanup.js';
 import * as cleanupResources from './commands/cleanupResources.js';

@@ -1,15 +1,34 @@
-import { ActionType, AppDefinition, BlockManifest, EventType, Theme } from '@appsemble/types';
 import {
-  IdentifiableBlock,
+  type ActionType,
+  type AppDefinition,
+  type BlockManifest,
+  type EventType,
+  type Theme,
+} from '@appsemble/types';
+import {
+  type IdentifiableBlock,
   iterApp,
   normalizeBlockName,
-  Prefix,
+  type Prefix,
   stripBlockName,
   validateAppDefinition,
 } from '@appsemble/utils';
-import { editor, IRange, languages, worker } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import {
+  type editor,
+  type IRange,
+  type languages,
+  type worker,
+} from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { initialize } from 'monaco-worker-manager/worker';
-import { Document, isMap, isNode, isScalar, LineCounter, Node, parseDocument } from 'yaml';
+import {
+  type Document,
+  isMap,
+  isNode,
+  isScalar,
+  LineCounter,
+  type Node,
+  parseDocument,
+} from 'yaml';
 
 const blockMap = new Map<string, Promise<BlockManifest>>();
 
@@ -75,7 +94,7 @@ export interface AppValidationWorker {
    *
    * @param blocks Identifiable blocks to get the manifest for.
    * @returns A list of block manifest that match the block manifests. If not matching manifest is
-   * found, it’s ignored.
+   *   found, it’s ignored.
    */
 
   getCachedBlockVersions: (blockMap: IdentifiableBlock[]) => BlockManifest[];

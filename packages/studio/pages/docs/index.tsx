@@ -2,23 +2,24 @@
 import Cli from '@appsemble/cli/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Preact from '@appsemble/preact/README.md';
-import { MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+import { Input, MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Sdk from '@appsemble/sdk/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import WebpackConfig from '@appsemble/webpack-config/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import CreateAppsemble from 'create-appsemble/README.md';
-import { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Navigate, Route, useParams } from 'react-router-dom';
+import { type ReactElement, useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import Changelog from '../../../../CHANGELOG.md';
 import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
 import { SearchPage } from './search/index.js';
+import Changelog from '../../../../CHANGELOG.md';
+import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
 function getUrl(p: string, base: string): string {
   return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;
@@ -30,6 +31,11 @@ function getUrl(p: string, base: string): string {
 export function DocsRoutes(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/docs`;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { formatMessage } = useIntl();
+
+  const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
 
   useSideMenu(
     <MenuSection label={<FormattedMessage {...messages.title} />}>
@@ -84,6 +90,23 @@ export function DocsRoutes(): ReactElement {
       </MenuItem>
     </MenuSection>,
   );
+
+  useEffect(() => {
+    setBreadCrumbsDecoration(
+      <Input
+        defaultValue={decodeURIComponent(location.hash.slice(1))}
+        onChange={(event) => {
+          navigate({ hash: event.target.value, pathname: `${url}/search` });
+        }}
+        placeholder={formatMessage(messages.search)}
+        type="search"
+      />,
+    );
+
+    return () => {
+      setBreadCrumbsDecoration(null);
+    };
+  }, [formatMessage, location, navigate, setBreadCrumbsDecoration, url]);
 
   return (
     <MetaSwitch title={messages.title}>

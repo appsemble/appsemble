@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 export function databaseBuilder(yargs: Argv): Argv {
   const production = process.env.NODE_ENV === 'production';

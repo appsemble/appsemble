@@ -7,7 +7,6 @@ export * from './blockUtils.js';
 export * from './compare.js';
 export * from './constants/index.js';
 export * from './has.js';
-export * from './intl-messageformat.js';
 export * from './miscellaneous.js';
 export * from './noop.js';
 export * from './normalize.js';

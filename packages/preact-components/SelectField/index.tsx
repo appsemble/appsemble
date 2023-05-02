@@ -1,7 +1,7 @@
-import { ComponentProps } from 'preact';
+import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { FormComponent, Select, SharedFormComponentProps } from '../index.js';
+import { FormComponent, Select, type SharedFormComponentProps } from '../index.js';
 
 type SelectFieldProps = Omit<ComponentProps<typeof Select>, keyof SharedFormComponentProps> &
   SharedFormComponentProps;

@@ -1,5 +1,5 @@
 import { useQuery } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 
 import { useUser } from '../UserProvider/index.js';

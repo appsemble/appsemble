@@ -1,7 +1,7 @@
 import {
   Children,
   createContext,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useContext,
   useMemo,
@@ -9,8 +9,8 @@ import {
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Button, Form, FormButtons } from '../index.js';
 import { messages } from './messages.js';
+import { Button, Form, FormButtons } from '../index.js';
 
 const Context = createContext<StepperProps>(null);
 

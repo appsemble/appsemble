@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { ComponentChildren, ComponentProps, VNode } from 'preact';
+import { type ComponentChildren, type ComponentProps, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { ElementType, useAnimation } from '../index.js';
 import styles from './index.module.css';
+import { type ElementType, useAnimation } from '../index.js';
 
 interface ModalCardProps<T extends ElementType> {
   /**

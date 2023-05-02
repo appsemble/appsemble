@@ -1,14 +1,20 @@
-import { EventEmitter } from 'events';
+import { type EventEmitter } from 'events';
 
 import { Loader, useLocationString } from '@appsemble/react-components';
-import { BlockDefinition, PageDefinition, Remapper, Security, TeamMember } from '@appsemble/types';
+import {
+  type BlockDefinition,
+  type PageDefinition,
+  type Remapper,
+  type Security,
+  type TeamMember,
+} from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types.js';
-import { ActionCreators } from '../../utils/actions/index.js';
-import { AppStorage } from '../../utils/storage.js';
+import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
+import { type ActionCreators } from '../../utils/actions/index.js';
+import { type AppStorage } from '../../utils/storage.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { Block } from '../Block/index.js';
 import { useUser } from '../UserProvider/index.js';

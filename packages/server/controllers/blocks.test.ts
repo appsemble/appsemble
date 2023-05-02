@@ -1,18 +1,18 @@
 import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash-es';
 import stripIndent from 'strip-indent';
 
+import * as controllers from './index.js';
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 useTestDatabase(import.meta);
 

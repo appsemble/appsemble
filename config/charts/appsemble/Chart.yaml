@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.41
-appVersion: 0.20.41
+version: 0.20.42
+appVersion: 0.20.42
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,17 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(form): Add alt format option for date and date-time field."
-    - kind: added
-      description: "Block(form): Support manual input in date and date-time fields."
-    - kind: added
-      description: "Block(table): Add StringField to provide users direct write access
-        to table entries."
-    - kind: fixed
-      description: "Server: Set missing userinfo fields (locale and zoneinfo) in the
-        userinfo API."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

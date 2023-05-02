@@ -1,13 +1,13 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { Schema } from 'jsonschema';
-import { OpenAPIV3 } from 'openapi-types';
-import { JsonObject, RequireExactlyOne } from 'type-fest';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type Schema } from 'jsonschema';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type JsonObject, type RequireExactlyOne } from 'type-fest';
 
-import { Action, LogAction } from './action.js';
-import { AppVisibility, TeamsDefinition } from './app.js';
-import { BulmaColor } from './bulma.js';
-import { HTTPMethods } from './http.js';
-import { Theme } from './theme.js';
+import { type Action, type LogAction } from './action.js';
+import { type AppVisibility, type TeamsDefinition } from './app.js';
+import { type BulmaColor } from './bulma.js';
+import { type HTTPMethods } from './http.js';
+import { type Theme } from './theme.js';
 
 export * from './action.js';
 export * from './app.js';
@@ -317,6 +317,15 @@ export interface Remappers {
   equals: Remapper[];
 
   /**
+   * Compare all computed remapper values against the first.
+   *
+   * Returns `false` if all entries are equal to the first entry, otherwise `true`.
+   *
+   * If only 1 or less are passed to it `false` is returned.
+   */
+  not: Remapper[];
+
+  /**
    * Get data stored at the current flow page step
    */
   step: string;
@@ -334,6 +343,13 @@ export interface Remappers {
    * Returns `true` of the first entry is less than the second entry.
    */
   lt: [Remapper, Remapper];
+
+  /**
+   * Logs its input data (returns it) and its context.
+   *
+   * The value to set is the log level.
+   */
+  log: 'error' | 'info' | 'warn';
 
   /**
    * Builds an array based on the given data and remappers.
@@ -367,6 +383,13 @@ export interface Remappers {
    * Returns value of then if condition is truthy, otherwise it returns the value of else.
    */
   if: { condition: Remapper; then: Remapper; else: Remapper };
+
+  /**
+   * Check if any case results in a truthy value.
+   *
+   * Returns the value of the first case where the condition equals true, otherwise returns null.
+   */
+  match: { case: Remapper; value: Remapper }[];
 
   /**
    * Get the current array.map’s index or length.
@@ -446,6 +469,7 @@ export interface Remappers {
    * If the input is not an array, the input is returned as-is.
    */
   'random.choice': null;
+
   /**
    * Pick and return a random entry from an array.
    *
@@ -864,6 +888,7 @@ export interface MatchActionDefinition extends BaseActionDefinition<'match'> {
      * The case to be matched.
      */
     case: Remapper;
+
     /**
      * Action to be called if the case equals true.
      */
@@ -905,6 +930,7 @@ export interface EachActionDefinition extends BaseActionDefinition<'each'> {
    * Run the actions in series instead of parallel.
    */
   serial?: boolean;
+
   /**
    * Run an action for each entry in an array.
    *

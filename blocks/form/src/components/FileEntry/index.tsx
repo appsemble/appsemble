@@ -1,12 +1,12 @@
 import { useBlock } from '@appsemble/preact';
 import { Modal, useObjectURL, useToggle } from '@appsemble/preact-components';
-import { JSX, VNode } from 'preact';
+import { type JSX, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, InputProps } from '../../../block.js';
+import styles from './index.module.css';
+import { type FileField, type InputProps } from '../../../block.js';
 import { getAccept } from '../../utils/requirements.js';
 import { resize } from '../../utils/resize.js';
-import styles from './index.module.css';
 
 type FileEntryProps = InputProps<Blob | string, FileField>;
 

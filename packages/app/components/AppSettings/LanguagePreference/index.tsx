@@ -1,11 +1,11 @@
 import { SelectField } from '@appsemble/react-components';
 import { getLanguageDisplayName } from '@appsemble/utils';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { languages } from '../../../utils/settings.js';
 import { messages } from './messages.js';
+import { languages } from '../../../utils/settings.js';
 
 export function LanguagePreference(): ReactElement {
   const navigate = useNavigate();

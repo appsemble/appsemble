@@ -1,5 +1,5 @@
-import { BootstrapParams } from '@appsemble/sdk';
-import { LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
+import { type BootstrapParams } from '@appsemble/sdk';
+import { type LatLngBounds, type LayerGroup, type Map, Marker } from 'leaflet';
 
 import { createIcon } from './createIcon.js';
 

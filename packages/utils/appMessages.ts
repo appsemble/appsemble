@@ -1,6 +1,6 @@
-import { AppDefinition, AppsembleMessages, BlockDefinition } from '@appsemble/types';
+import { type AppDefinition, type AppsembleMessages, type BlockDefinition } from '@appsemble/types';
 
-import { iterApp, Prefix } from './index.js';
+import { iterApp, type Prefix } from './index.js';
 import { normalize } from './normalize.js';
 
 /**
@@ -35,7 +35,7 @@ export function findMessageIds(obj: unknown): Record<string, string> {
  *
  * @param app The app definition to extract message IDs from
  * @param onBlock A function to extract block messages. This is needed, because block messages may
- * be extracted based on different contexts.
+ *   be extracted based on different contexts.
  * @returns A list of message IDs
  */
 export function extractAppMessages(

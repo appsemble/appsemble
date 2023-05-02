@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { MouseEvent, ReactElement, ReactNode, useCallback } from 'react';
+import { type MouseEvent, type ReactElement, type ReactNode, useCallback } from 'react';
 
 import { useValuePicker } from '../index.js';
 

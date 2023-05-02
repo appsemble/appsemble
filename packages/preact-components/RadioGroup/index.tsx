@@ -1,6 +1,6 @@
-import { ComponentChild, JSX, VNode } from 'preact';
+import { type ComponentChild, type JSX, type VNode } from 'preact';
 
-import { FormComponent, SharedFormComponentProps, ValuePickerProvider } from '../index.js';
+import { FormComponent, type SharedFormComponentProps, ValuePickerProvider } from '../index.js';
 
 type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> &
   SharedFormComponentProps & {

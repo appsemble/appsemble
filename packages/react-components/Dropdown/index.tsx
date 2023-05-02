@@ -1,6 +1,6 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { KeyboardEvent, ReactElement, ReactNode, useCallback, useRef } from 'react';
+import { type KeyboardEvent, type ReactElement, type ReactNode, useCallback, useRef } from 'react';
 
 import { Button, Icon, useClickOutside, useToggle } from '../index.js';
 

@@ -1,11 +1,11 @@
 import { Title } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useApp } from '../../../../index.js';
 import { messages } from './messages.js';
+import { useApp } from '../../../../index.js';
 
 interface EndpointProps {
   hasBody?: boolean;

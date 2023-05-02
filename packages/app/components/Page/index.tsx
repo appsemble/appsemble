@@ -7,14 +7,17 @@ import {
   MetaSwitch,
   useLocationString,
 } from '@appsemble/react-components';
-import { PageDefinition, Remapper } from '@appsemble/types';
+import { type PageDefinition, type Remapper } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
-import { ShowDialogParams, ShowShareDialog } from '../../types.js';
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { ShareDialog, type ShareDialogState } from './ShareDialog/index.js';
+import { type ShowDialogParams, type ShowShareDialog } from '../../types.js';
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { AppStorage } from '../../utils/storage.js';
@@ -27,9 +30,6 @@ import { PageDialog } from '../PageDialog/index.js';
 import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
-import { ShareDialog, ShareDialogState } from './ShareDialog/index.js';
 
 export function Page(): ReactElement {
   const { definition } = useAppDefinition();

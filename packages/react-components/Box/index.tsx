@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
 
 /**
  * Render a simple Bulma box component.

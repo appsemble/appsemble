@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { type OpenAPIV3 } from 'openapi-types';
 
 export const RemapperDefinition: OpenAPIV3.NonArraySchemaObject = {
   anyOf: [

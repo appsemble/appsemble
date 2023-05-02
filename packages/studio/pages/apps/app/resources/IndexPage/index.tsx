@@ -1,11 +1,11 @@
 import { compareStrings } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
-import { useApp } from '../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useApp } from '../../index.js';
 
 export function IndexPage(): ReactElement {
   const { id, lang } = useParams<{ lang: string; id: string }>();

@@ -1,25 +1,25 @@
 import { SideMenuProvider } from '@appsemble/react-components';
-import { MenuItem } from '@appsemble/sdk';
-import { PageDefinition } from '@appsemble/types';
+import { type MenuItem } from '@appsemble/sdk';
+import { type PageDefinition } from '@appsemble/types';
 import { checkAppRole, noop } from '@appsemble/utils';
 import {
   createContext,
-  Dispatch,
-  ReactElement,
-  ReactNode,
-  SetStateAction,
+  type Dispatch,
+  type ReactElement,
+  type ReactNode,
+  type SetStateAction,
   useContext,
   useMemo,
   useState,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { BottomNavigation } from '../BottomNavigation/index.js';
 import { SideNavigation } from '../SideNavigation/index.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 export interface BlockMenuItem {
   path: string;

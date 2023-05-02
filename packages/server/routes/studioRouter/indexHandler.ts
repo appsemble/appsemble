@@ -2,7 +2,7 @@
 import crypto from 'node:crypto';
 
 import { createSettings, makeCSP, render } from '@appsemble/node-utils/render.js';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { argv } from '../../utils/argv.js';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets.js';

@@ -1,6 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 
 import { ItemRow } from './components/ItemRow/index.js';

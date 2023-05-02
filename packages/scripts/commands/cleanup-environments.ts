@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 
-import { Environment, gitlab } from '../lib/gitlab.js';
+import { type Environment, gitlab } from '../lib/gitlab.js';
 
 export const command = 'cleanup-environments';
 export const description = 'Delete all stopped GitLab review environments';

@@ -1,5 +1,5 @@
 import { Portal, SideMenuButton } from '@appsemble/react-components';
-import { ReactChild, ReactElement } from 'react';
+import { type ReactChild, type ReactElement } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';

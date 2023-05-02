@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { ComponentProps, JSX, toChildArray, VNode } from 'preact';
+import { type ComponentProps, type JSX, toChildArray, type VNode } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 
-import { Option, OptionProps } from '../Option/index.js';
+import { Option, type OptionProps } from '../Option/index.js';
 
 export interface SelectProps
   extends Omit<ComponentProps<'select'>, 'loading' | 'onChange' | 'onInput'> {

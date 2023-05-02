@@ -1,9 +1,9 @@
-import { ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect } from 'react';
 
+import styles from './index.module.css';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
 
 /**
  * Render all different authentication methods for an app.

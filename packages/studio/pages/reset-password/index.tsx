@@ -1,6 +1,6 @@
 import { Content, ResetPassword, useMeta } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 
 import { messages } from './messages.js';
 

@@ -1,10 +1,10 @@
 import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
 
-import { ShowDialogParams } from '../../types.js';
-import { BlockList } from '../BlockList/index.js';
 import styles from './index.module.css';
+import { type ShowDialogParams } from '../../types.js';
+import { BlockList } from '../BlockList/index.js';
 
 interface PageDialogProps
   extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix' | 'prefixIndex'> {

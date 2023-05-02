@@ -1,15 +1,15 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
-import { Schema as JSONSchema } from 'jsonschema';
-import { Fragment, ReactElement } from 'react';
+import { type Schema as JSONSchema } from 'jsonschema';
+import { Fragment, type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { stringify } from 'yaml';
 
+import { messages } from './messages.js';
+import { Ref } from './Ref/index.js';
 import { CodeBlock } from '../../../../components/CodeBlock/index.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { Schema } from '../../../../components/Schema/index.js';
-import { messages } from './messages.js';
-import { Ref } from './Ref/index.js';
 
 const allSchemas = new Map<string, JSONSchema>();
 

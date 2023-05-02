@@ -1,12 +1,16 @@
-import { basicAuth } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
-import { TokenResponse } from '@appsemble/types';
+import { basicAuth, createServer } from '@appsemble/node-utils';
+import { type TokenResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import * as controllers from '../../controllers/index.js';
-import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models/index.js';
+import {
+  App,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  type User,
+} from '../../models/index.js';
 import { argv, setArgv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createTestUser } from '../../utils/test/authorization.js';

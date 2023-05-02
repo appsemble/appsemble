@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { badRequest, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { isPast, parseISO } from 'date-fns';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
 import { OAuth2ClientCredentials } from '../models/index.js';

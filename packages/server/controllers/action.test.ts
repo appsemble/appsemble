@@ -1,15 +1,15 @@
-import { createServer } from '@appsemble/node-utils/createServer.js';
-import { EmailActionDefinition } from '@appsemble/types';
-import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
-import Koa, { ParameterizedContext } from 'koa';
+import { createServer } from '@appsemble/node-utils';
+import { type EmailActionDefinition } from '@appsemble/types';
+import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
+import Koa, { type ParameterizedContext } from 'koa';
 
+import * as controllers from './index.js';
 import { App, Asset, Organization } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let server: Koa;
 

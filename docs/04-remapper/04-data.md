@@ -1,5 +1,19 @@
 # Data
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [Data remappers](#data-remappers)
+    - [prop](#prop)
+    - [root](#root)
+    - [history](#history)
+    - [app](#app)
+    - [page](#page)
+    - [user](#user)
+    - [context](#context)
+    - [translate](#translate)
+    - [step](#step)
+
 ## Introduction
 
 There are a lot of points to get data from in Appsemble. There are a number of different remappers

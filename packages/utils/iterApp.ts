@@ -1,4 +1,9 @@
-import { ActionDefinition, AppDefinition, BlockDefinition, PageDefinition } from '@appsemble/types';
+import {
+  type ActionDefinition,
+  type AppDefinition,
+  type BlockDefinition,
+  type PageDefinition,
+} from '@appsemble/types';
 
 export type Prefix = (number | string)[];
 

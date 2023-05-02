@@ -6,19 +6,19 @@ import {
   SimpleFormField,
   SimpleModalFooter,
   TextAreaField,
-  Toggle,
+  type Toggle,
   useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
-import { AppSamlSecret } from '@appsemble/types';
+import { type AppSamlSecret } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useApp } from '../../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useApp } from '../../../index.js';
 
 interface AppSecretCardProps {
   /**

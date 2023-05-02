@@ -1,6 +1,6 @@
 import { has } from '@appsemble/utils';
 import { methodNotAllowed } from '@hapi/boom';
-import { Middleware } from 'koa';
+import { type Middleware } from 'koa';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 

@@ -1,20 +1,20 @@
 import {
-  ActionDefinition,
-  App,
-  EmailActionDefinition,
-  NotifyActionDefinition,
-  RequestLikeActionDefinition,
+  type ActionDefinition,
+  type App,
+  type EmailActionDefinition,
+  type NotifyActionDefinition,
+  type RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
 import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
 import axios from 'axios';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
 import { getRemapperContext } from '../../app.js';
 import { logger } from '../../logger.js';
 import pkg from '../../package.json' assert { type: 'json' };
-import { Options } from '../types.js';
+import { type Options } from '../types.js';
 
 /**
  * These response headers are forwarded when proxying requests.

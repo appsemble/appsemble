@@ -1,10 +1,10 @@
 import { getRemapperContext } from '@appsemble/node-utils';
-import { NotifyActionDefinition } from '@appsemble/types';
+import { type NotifyActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 
+import { type ServerActionParameters } from './index.js';
 import { AppSubscription } from '../../models/index.js';
 import { sendNotification } from '../sendNotification.js';
-import { ServerActionParameters } from './index.js';
 
 export async function notify({
   action,

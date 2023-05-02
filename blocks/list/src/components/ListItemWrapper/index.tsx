@@ -1,7 +1,7 @@
-import { BootstrapParams } from '@appsemble/sdk';
-import { JSX, VNode } from 'preact';
+import { type BootstrapParams } from '@appsemble/sdk';
+import { type JSX, type VNode } from 'preact';
 
-import { Item } from '../../../block.js';
+import { type Item } from '../../../block.js';
 
 type ListItemWrapperProps = {
   actions: BootstrapParams['actions'];

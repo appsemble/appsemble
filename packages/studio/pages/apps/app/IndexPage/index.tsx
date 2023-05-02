@@ -1,10 +1,14 @@
 import { Button, Title, useToggle } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
 import classNames from 'classnames';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
+import { AppRatings } from './AppRatings/index.js';
+import { AppScreenshots } from './AppScreenshots/index.js';
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
@@ -12,10 +16,6 @@ import { MarkdownContent } from '../../../../components/MarkdownContent/index.js
 import { StarRating } from '../../../../components/StarRating/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
-import { AppRatings } from './AppRatings/index.js';
-import { AppScreenshots } from './AppScreenshots/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 /**
  * Display a more detailed overview of an individual app.

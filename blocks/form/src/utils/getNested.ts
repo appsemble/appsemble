@@ -1,4 +1,4 @@
-import { Values } from '../../block.js';
+import { type Values } from '../../block.js';
 
 export function getNestedByKey(obj: Object, keyToFind: string): string[] {
   let result: string[] = [];

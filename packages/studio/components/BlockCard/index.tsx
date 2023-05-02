@@ -1,7 +1,7 @@
 import { Icon, Subtitle, Title } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -53,7 +53,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
         {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
       </div>
       <footer className="card-footer">
-        <Link className="card-footer-item" to={`/${lang}/blocks/${block.name}`}>
+        <Link className="card-footer-item" to={`/${lang}/blocks/${block.name}/${block.version}`}>
           {messages.buttonDetails}
         </Link>
       </footer>

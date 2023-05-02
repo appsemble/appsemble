@@ -1,4 +1,4 @@
-import { Children, Fragment, ReactElement, ReactNode } from 'react';
+import { Children, Fragment, type ReactElement, type ReactNode } from 'react';
 
 interface JoinProps {
   children: ReactNode;

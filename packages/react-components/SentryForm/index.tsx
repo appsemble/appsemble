@@ -1,8 +1,9 @@
 import { captureMessage } from '@sentry/browser';
 import axios from 'axios';
-import { ReactElement, ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactElement, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import {
   FormButtons,
   Message,
@@ -12,7 +13,6 @@ import {
   SimpleSubmit,
   TextAreaField,
 } from '../index.js';
-import { messages } from './messages.js';
 
 interface SentryFormProps {
   /**

@@ -2,8 +2,9 @@ import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { logger } from '@appsemble/node-utils';
-import { BlockConfig } from '@appsemble/types';
-import { Configuration } from 'webpack';
+import { type BlockConfig } from '@appsemble/types';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { type Configuration } from 'webpack';
 
 /**
  * Load a webpack configuration file.

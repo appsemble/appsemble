@@ -1,6 +1,6 @@
 import { argv, setArgv } from '@appsemble/server/utils/argv';
 import { request, setTestApp } from 'axios-test-instance';
-import Koa, { Context, Middleware } from 'koa';
+import Koa, { type Context, type Middleware } from 'koa';
 
 import { appMapper } from './appMapper.js';
 

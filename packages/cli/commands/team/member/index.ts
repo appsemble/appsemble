@@ -1,4 +1,4 @@
-import { Argv, CommandModule } from 'yargs';
+import { type Argv, type CommandModule } from 'yargs';
 
 import * as deleteMember from './delete.js';
 import * as invite from './invite.js';

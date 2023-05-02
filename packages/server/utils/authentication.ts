@@ -1,10 +1,10 @@
-import { AuthenticationCheckers } from '@appsemble/node-utils/createServer';
+import { type AuthenticationCheckers } from '@appsemble/node-utils/createServer';
 import { compare } from 'bcrypt';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
-import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
 import { argv } from './argv.js';
+import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
 
 export function authentication(): AuthenticationCheckers {
   const { host, secret } = argv;

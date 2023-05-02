@@ -25,7 +25,8 @@ export default {
     'remark-lint-no-unneeded-full-reference-image',
     'remark-lint-no-unneeded-full-reference-link',
     'remark-lint-no-unused-definitions',
-    'remark-prettier',
+    ['remark-toc', { tight: true }],
+    ['remark-prettier', { report: false }],
     ['remark-validate-links', { repository: 'https://gitlab.com/appsemble/appsemble.git' }],
     [
       'remark-retext',
@@ -39,5 +40,6 @@ export default {
         .use(retextRepeatedWords)
         .use(retextQuotes),
     ],
+    'unified-consistency',
   ],
 };

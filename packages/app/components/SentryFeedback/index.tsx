@@ -1,11 +1,11 @@
 import { Content, SentryForm, useMeta } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { sentryDsn } from '../../utils/settings.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 export function SentryFeedback(): ReactElement {
   useMeta(messages.feedback);

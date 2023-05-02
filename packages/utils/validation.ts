@@ -1,18 +1,19 @@
 import {
-  AppDefinition,
-  BlockManifest,
-  ResourceGetActionDefinition,
-  RoleDefinition,
+  type AppDefinition,
+  type BlockManifest,
+  type ResourceGetActionDefinition,
+  type RoleDefinition,
 } from '@appsemble/types';
 import cronParser from 'cron-parser';
-import { Schema, ValidationError, Validator, ValidatorResult } from 'jsonschema';
+import { type Schema, ValidationError, Validator, type ValidatorResult } from 'jsonschema';
 import languageTags from 'language-tags';
-import { Promisable } from 'type-fest';
+import { type Promisable } from 'type-fest';
 
-import { getAppBlocks, IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
+import { getAppBlocks, type IdentifiableBlock, normalizeBlockName } from './blockUtils.js';
 import { has } from './has.js';
 import { partialNormalized } from './index.js';
-import { iterApp, Prefix } from './iterApp.js';
+import { iterApp, type Prefix } from './iterApp.js';
+import { serverActions } from './serverActions.js';
 
 type Report = (instance: unknown, message: string, path: (number | string)[]) => void;
 
@@ -440,6 +441,11 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
   iterApp(definition, {
     onAction(action, path) {
+      if (path[0] === 'cron' && !serverActions.has(action.type)) {
+        report(action.type, 'action type is not supported for cron jobs', [...path, 'type']);
+        return;
+      }
+
       if (action.type.startsWith('user.') && !definition.security) {
         report(
           action.type,
@@ -727,7 +733,7 @@ export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<
  * @param definition The app validation to check.
  * @param getBlockVersions A function for getting block manifests from block versions.
  * @param validatorResult If specified, error messages will be applied to this existing validator
- * result.
+ *   result.
  * @returns A validator result which contains all app validation violations.
  */
 export async function validateAppDefinition(

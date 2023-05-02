@@ -1,12 +1,12 @@
 import { Title } from '@appsemble/react-components';
-import { NamedEvent } from '@appsemble/web-utils';
-import { ReactElement, useCallback } from 'react';
+import { type NamedEvent } from '@appsemble/web-utils';
+import { type ReactElement, useCallback } from 'react';
 
+import styles from './index.module.css';
 import { Collapsible } from '../../Collapsible/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
 import { RecursiveJSONSchemaEditor } from '../RecursiveJSONSchemaEditor/index.js';
-import { CommonJSONSchemaEditorProps } from '../types.js';
-import styles from './index.module.css';
+import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaObjectEditor({
   disabled,

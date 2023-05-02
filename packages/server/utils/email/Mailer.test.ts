@@ -1,14 +1,14 @@
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
-import { Transporter } from 'nodemailer';
+import { type Transporter } from 'nodemailer';
 
+import { Mailer } from './Mailer.js';
 import * as controllers from '../../controllers/index.js';
 import { App, AppMessages, Organization } from '../../models/index.js';
 import { appRouter } from '../../routes/appRouter/index.js';
 import { argv, setArgv } from '../argv.js';
 import { useTestDatabase } from '../test/testSchema.js';
-import { Mailer } from './Mailer.js';
 
 let mailer: Mailer;
 

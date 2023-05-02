@@ -1,9 +1,8 @@
-import { createFixtureStream } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
-import { getAppsembleMessages } from '@appsemble/node-utils/getAppsembleMessages.js';
+import { createFixtureStream, createServer, getAppsembleMessages } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMessages,
@@ -11,7 +10,7 @@ import {
   BlockVersion,
   Member,
   Organization,
-  User,
+  type User,
 } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
@@ -22,7 +21,6 @@ import {
   createTestUser,
 } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let app: App;
 let user: User;

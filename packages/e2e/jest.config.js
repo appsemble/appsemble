@@ -1,2 +1,5 @@
 /** @type {import('jest').Config} */
-module.exports = {};
+export default {
+  modulePathIgnorePatterns: ['./studio', './app'],
+  passWithNoTests: true,
+};

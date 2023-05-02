@@ -9,15 +9,15 @@ import {
   TextAreaField,
   useMessages,
 } from '@appsemble/react-components';
-import { AppMessages, AppsembleMessages } from '@appsemble/types';
+import { type AppMessages, type AppsembleMessages } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Collapsible } from '../../../../../components/Collapsible/index.js';
-import { useApp } from '../../index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { Collapsible } from '../../../../../components/Collapsible/index.js';
+import { useApp } from '../../index.js';
 
 interface MessagesFormProps {
   /**

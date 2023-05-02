@@ -1,4 +1,4 @@
-import { ShowDialogParams } from '../../types.js';
+import { type ShowDialogParams } from '../../types.js';
 import { createTestAction } from '../makeActions.js';
 
 describe('dialog', () => {

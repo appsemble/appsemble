@@ -1,8 +1,8 @@
 import { valueToEstree } from 'estree-util-value-to-estree';
-import { Element, Root, RootContent } from 'hast';
+import { type Element, type Root, type RootContent } from 'hast';
 import { toText } from 'hast-util-to-text';
 import 'mdast-util-mdx';
-import { Plugin, Transformer } from 'unified';
+import { type Plugin, type Transformer } from 'unified';
 
 const transformer: Transformer<Root> = (ast) => {
   const sections: [string, { title: string; haystack: string }][] = [];

@@ -1,4 +1,4 @@
-import { Theme } from '@appsemble/types';
+import { type Theme } from '@appsemble/types';
 
 import { baseTheme } from './constants/index.js';
 

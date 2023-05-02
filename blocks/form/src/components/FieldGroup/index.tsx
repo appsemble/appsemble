@@ -1,7 +1,7 @@
-import { ComponentChildren, VNode } from 'preact';
+import { type ComponentChildren, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Field, FieldErrorMap, Values } from '../../../block.js';
+import { type Field, type FieldErrorMap, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { FormInput } from '../FormInput/index.js';
 

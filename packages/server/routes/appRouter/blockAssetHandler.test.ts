@@ -1,11 +1,11 @@
 import { readFixture } from '@appsemble/node-utils';
+import { boomMiddleware } from '@appsemble/node-utils/middleware/boom.js';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { boomMiddleware } from '../../../node-utils/middleware/boom.js';
+import { appRouter } from './index.js';
 import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
-import { appRouter } from './index.js';
 
 useTestDatabase(import.meta);
 

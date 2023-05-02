@@ -2,6 +2,14 @@
 
 This document will guide you through the creation of your first block.
 
+## Table of Contents
+
+- [Initialize the Project](#initialize-the-project)
+- [Create Your First Block](#create-your-first-block)
+- [Testing the Block](#testing-the-block)
+- [Modifying the Block](#modifying-the-block)
+- [Further Reading](#further-reading)
+
 ## Initialize the Project
 
 To start developing blocks, first the Appsemble repository needs to be cloned and installed as
@@ -284,7 +292,7 @@ the page to see the event is received by both blocks.
 
 To get a better idea of how blocks work, or for inspiration of what blocks can be created, please
 have a look at the
-[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.41/blocks).
+[officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.42/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
 the `detail-viewer` or `stats` block. If would like to create a block to process data based on

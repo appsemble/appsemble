@@ -1,7 +1,7 @@
-import { EachActionDefinition } from '@appsemble/types';
+import { type EachActionDefinition } from '@appsemble/types';
 
+import { actions, type ServerActionParameters } from './index.js';
 import { handleAction } from '../action.js';
-import { actions, ServerActionParameters } from './index.js';
 
 export function each({
   action,

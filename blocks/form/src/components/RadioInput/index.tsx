@@ -1,12 +1,12 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { InputProps, RadioField } from '../../../block.js';
+import styles from './index.module.css';
+import { type InputProps, type RadioField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { isRequired } from '../../utils/requirements.js';
-import styles from './index.module.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
 

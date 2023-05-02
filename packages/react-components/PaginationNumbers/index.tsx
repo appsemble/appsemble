@@ -1,15 +1,17 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 interface PaginationNumbersProps {
   /**
    * The maximum number of pages.
    */
   maxPages: number;
+
   /**
    * The current page.
    */
   page: number;
+
   /**
    * The callback to invoke when a page is selected.
    *

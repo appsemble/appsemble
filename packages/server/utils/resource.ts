@@ -1,11 +1,13 @@
 import { getRemapperContext } from '@appsemble/node-utils';
-import { Options } from '@appsemble/node-utils/server/types';
-import { NotificationDefinition } from '@appsemble/types';
+import { type Options } from '@appsemble/node-utils/server/types';
+import { type NotificationDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
-import { QueryParams } from 'koas-parameters';
-import { Op, Order, WhereOptions } from 'sequelize';
+import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
+import { type QueryParams } from 'koas-parameters';
+import { Op, type Order, type WhereOptions } from 'sequelize';
 
+import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
+import { sendNotification, type SendNotificationOptions } from './sendNotification.js';
 import {
   App,
   AppSubscription,
@@ -14,8 +16,6 @@ import {
   ResourceSubscription,
   User,
 } from '../models/index.js';
-import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
-import { sendNotification, SendNotificationOptions } from './sendNotification.js';
 
 export function renameOData(name: string): string {
   switch (name) {

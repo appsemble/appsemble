@@ -1,8 +1,8 @@
-import { Utils } from '@appsemble/sdk';
+import { type Utils } from '@appsemble/sdk';
 import { compareStrings } from '@appsemble/utils';
 import { compareAsc, compareDesc } from 'date-fns';
 
-import { Field, Values } from '../../block.js';
+import { type Field, type Values } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 

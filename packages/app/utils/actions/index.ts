@@ -1,6 +1,5 @@
-import { Action, ActionDefinition } from '@appsemble/types';
+import { type Action, type ActionDefinition } from '@appsemble/types';
 
-import { MakeActionParameters } from '../../types.js';
 import { analytics } from './analytics.js';
 import { condition } from './condition.js';
 import { dialog } from './dialog.js';
@@ -23,6 +22,7 @@ import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList } from './team.js';
 import { throwAction } from './throw.js';
 import { login, register, update } from './user.js';
+import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
   Extract<Action, { type: T }>,

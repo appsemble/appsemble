@@ -1,4 +1,4 @@
-import { OAuth2Provider } from '@appsemble/types';
+import { type OAuth2Provider } from '@appsemble/types';
 
 import { randomString } from './randomString.js';
 
@@ -47,7 +47,7 @@ export interface OAuth2LoginOptions
  *
  * @param options OAuth2 login options.
  * @param data Additional data to store in `sessionStorage`. This data will be available after the
- * user has been redirected back.
+ *   user has been redirected back.
  */
 export function startOAuth2Login(
   { authorizationUrl, clientId, redirect, redirectUrl, scope }: OAuth2LoginOptions,

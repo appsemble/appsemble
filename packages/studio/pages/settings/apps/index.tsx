@@ -1,5 +1,5 @@
 import { MetaSwitch, useMeta } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { Navigate, Route } from 'react-router-dom';
 
 import { DetailsPage } from './details/index.js';

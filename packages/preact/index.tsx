@@ -1,5 +1,5 @@
-import { BootstrapParams, Messages, bootstrap as sdkBootstrap } from '@appsemble/sdk';
-import { ComponentChild, ComponentType, createContext, render, VNode } from 'preact';
+import { type BootstrapParams, type Messages, bootstrap as sdkBootstrap } from '@appsemble/sdk';
+import { type ComponentChild, type ComponentType, createContext, render, type VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
 export interface BlockProps extends BootstrapParams {

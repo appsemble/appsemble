@@ -1,7 +1,7 @@
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FieldErrorMap, Fieldset, InputProps, Values } from '../../../block.js';
+import { type FieldErrorMap, type Fieldset, type InputProps, type Values } from '../../../block.js';
 import { FieldGroup } from '../FieldGroup/index.js';
 
 interface FieldsetEntryProps extends InputProps<Values, Fieldset> {

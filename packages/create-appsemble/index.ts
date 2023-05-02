@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs, { CommandModule } from 'yargs';
+import yargs, { type CommandModule } from 'yargs';
 
 import * as block from './commands/block.js';
 import pkg from './package.json' assert { type: 'json' };

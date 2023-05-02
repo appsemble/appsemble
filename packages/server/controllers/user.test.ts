@@ -1,15 +1,15 @@
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { User as APIUser } from '@appsemble/types';
+import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
+import * as controllers from './index.js';
+import { EmailAuthorization, Member, Organization, type User } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let user: User;
 

@@ -1,4 +1,9 @@
-import { ChangeEvent, ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
+import {
+  type ChangeEvent,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 
 import { FormComponent, ValuePickerProvider } from '../index.js';
 

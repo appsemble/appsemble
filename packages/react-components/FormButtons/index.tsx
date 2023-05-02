@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Children, ReactElement, ReactNode } from 'react';
+import { Children, type ReactElement, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 

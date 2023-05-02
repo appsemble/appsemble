@@ -1,4 +1,5 @@
-import { IntlMessageFormat } from '../../../utils/intl-messageformat.js';
+import { IntlMessageFormat } from 'intl-messageformat';
+
 import { createTestAction } from '../makeActions.js';
 
 const navigate = import.meta.jest.fn();

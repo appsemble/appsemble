@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import {
   FormButtons,
   PasswordField,
@@ -11,7 +12,6 @@ import {
   SimpleSubmit,
 } from '../index.js';
 import { PasswordStrengthIndicator } from '../PasswordStrengthIndicator/index.js';
-import { messages } from './messages.js';
 
 export interface RegistrationFormValues {
   email: string;

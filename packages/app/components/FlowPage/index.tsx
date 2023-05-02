@@ -1,20 +1,27 @@
-import { EventEmitter } from 'events';
+import { type EventEmitter } from 'events';
 
 import { applyRefs, Loader, useMessages, useMeta } from '@appsemble/react-components';
-import { BootstrapParams } from '@appsemble/sdk';
+import { type BootstrapParams } from '@appsemble/sdk';
 import {
-  AppDefinition,
-  FlowPageDefinition,
-  LoopPageDefinition,
-  Remapper,
-  SubPage,
+  type AppDefinition,
+  type FlowPageDefinition,
+  type LoopPageDefinition,
+  type Remapper,
+  type SubPage,
 } from '@appsemble/types';
-import { MutableRefObject, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { ShowDialogAction, ShowShareDialog } from '../../types.js';
+import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
 import { makeActions } from '../../utils/makeActions.js';
-import { AppStorage } from '../../utils/storage.js';
+import { type AppStorage } from '../../utils/storage.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { BlockList } from '../BlockList/index.js';
 import { DotProgressBar } from '../DotProgressBar/index.js';

@@ -1,6 +1,6 @@
 import { Agent } from 'node:https';
 
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
 

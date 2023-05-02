@@ -1,10 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
-import { AppsembleError, logger, serveIcon } from '@appsemble/node-utils';
-import { App as AppType, BlockManifest } from '@appsemble/types';
+import { AppsembleError, handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
+import { type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
-  IdentifiableBlock,
+  type IdentifiableBlock,
   normalize,
   parseBlockName,
   Permission,
@@ -14,8 +14,8 @@ import {
 } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { parseISO } from 'date-fns';
-import { Context } from 'koa';
-import { File } from 'koas-body-parser';
+import { type Context } from 'koa';
+import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -41,7 +41,6 @@ import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
-import { handleValidatorResult } from '../../node-utils/jsonschema.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {

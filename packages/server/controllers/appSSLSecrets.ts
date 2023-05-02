@@ -1,6 +1,6 @@
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 
 import { App } from '../models/index.js';
 import { checkRole } from '../utils/checkRole.js';

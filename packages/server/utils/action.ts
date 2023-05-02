@@ -1,9 +1,10 @@
 import { logger } from '@appsemble/node-utils';
-import { defaultLocale, has, IntlMessageFormat, remap, RemapperContext } from '@appsemble/utils';
+import { defaultLocale, has, remap, type RemapperContext } from '@appsemble/utils';
+import { IntlMessageFormat } from 'intl-messageformat';
 
-import { AppMessages } from '../models/AppMessages.js';
-import { actions, ServerActionParameters } from './actions/index.js';
+import { actions, type ServerActionParameters } from './actions/index.js';
 import { argv } from './argv.js';
+import { AppMessages } from '../models/AppMessages.js';
 
 export async function handleAction(
   action: (params: ServerActionParameters) => Promise<unknown>,

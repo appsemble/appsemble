@@ -1,13 +1,13 @@
 import { Button, Tab, Tabs, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { Resource } from '@appsemble/types';
-import { download, NamedEvent, serializeResource } from '@appsemble/web-utils';
+import { type Resource } from '@appsemble/types';
+import { download, type NamedEvent, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { type editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
   lazy,
-  ReactElement,
+  type ReactElement,
   Suspense,
-  SyntheticEvent,
+  type SyntheticEvent,
   useCallback,
   useEffect,
   useState,
@@ -15,13 +15,13 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { ResourceHistory } from './ResourceHistory/index.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
 import { HeaderControl } from '../../../../../../components/HeaderControl/index.js';
 import { JSONSchemaEditor } from '../../../../../../components/JSONSchemaEditor/index.js';
 import { useApp } from '../../../index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
-import { ResourceHistory } from './ResourceHistory/index.js';
 
 const tabOptions = new Set(['#history', '#json', '#properties']);
 

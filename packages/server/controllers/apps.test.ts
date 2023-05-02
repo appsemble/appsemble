@@ -1,11 +1,12 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { createServer } from '@appsemble/node-utils/createServer.js';
-import { App as AppType, Snapshot } from '@appsemble/types';
+import { type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 
+import * as controllers from './index.js';
 import {
   App,
   AppBlockStyle,
@@ -25,7 +26,6 @@ import { authentication } from '../utils/authentication.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let organization: Organization;
 let user: User;

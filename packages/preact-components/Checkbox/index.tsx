@@ -1,6 +1,6 @@
-import { BulmaColor, BulmaSize } from '@appsemble/types';
+import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
-import { ComponentChild, ComponentProps, JSX } from 'preact';
+import { type ComponentChild, type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 

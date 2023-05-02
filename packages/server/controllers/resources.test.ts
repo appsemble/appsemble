@@ -1,11 +1,11 @@
-import { createFormData } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
-import { Resource as ResourceType } from '@appsemble/types';
+import { createFormData, createServer } from '@appsemble/node-utils';
+import { type Resource as ResourceType } from '@appsemble/types';
 import { TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 import webpush from 'web-push';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -29,7 +29,6 @@ import {
   createTestUser,
 } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let organization: Organization;
 let member: Member;

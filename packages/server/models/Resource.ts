@@ -1,4 +1,4 @@
-import { Resource as ResourceType } from '@appsemble/types';
+import { type Resource as ResourceType } from '@appsemble/types';
 import {
   AllowNull,
   AutoIncrement,

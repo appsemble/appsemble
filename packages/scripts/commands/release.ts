@@ -2,18 +2,18 @@ import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, parse } from 'node:path';
 
 import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { AppsembleMessages } from '@appsemble/types';
+import { type AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
 import fsExtra from 'fs-extra';
 import { globby } from 'globby';
 import { capitalize, mapValues } from 'lodash-es';
-import { BlockContent, ListItem } from 'mdast';
+import { type BlockContent, type ListItem } from 'mdast';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { toString } from 'mdast-util-to-string';
 import semver from 'semver';
-import { PackageJson } from 'type-fest';
+import { type PackageJson } from 'type-fest';
 import { stringify } from 'yaml';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 import {
   createHeading,

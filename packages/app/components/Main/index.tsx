@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import { ComponentPropsWithoutRef, ReactElement, useMemo } from 'react';
+import { type ComponentPropsWithoutRef, type ReactElement, useMemo } from 'react';
 
+import styles from './index.module.css';
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
 
 type MainProps = ComponentPropsWithoutRef<'main'>;
 

@@ -1,9 +1,9 @@
 import { FormattedMessage, useBlock } from '@appsemble/preact';
 import { InputField, SliderField } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { InputProps, NumberField } from '../../../block.js';
+import { type InputProps, type NumberField } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { getMax, getMin, getStep, isRequired } from '../../utils/requirements.js';
 

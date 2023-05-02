@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, ReactChild, ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactChild, type ReactElement } from 'react';
 
 import { Button, useSimpleForm } from '../index.js';
 

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { lookup } from 'mime-types';
-import { DataTypes, QueryTypes, Sequelize } from 'sequelize';
+import { DataTypes, QueryTypes, type Sequelize } from 'sequelize';
 import sharp from 'sharp';
 
 export const key = '0.18.25';

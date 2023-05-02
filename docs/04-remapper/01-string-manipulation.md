@@ -1,5 +1,13 @@
 # String manipulation
 
+## Table of Contents
+
+- [Introduction](#introduction)
+  - [String remappers](#string-remappers)
+    - [string.case](#stringcase)
+    - [string.format](#stringformat)
+    - [string.replace](#stringreplace)
+
 ## Introduction
 
 With remappers you can manipulate strings in a number of ways. This can be very helpful when you

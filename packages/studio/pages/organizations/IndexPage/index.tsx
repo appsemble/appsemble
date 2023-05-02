@@ -1,16 +1,16 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
-import { Organization } from '@appsemble/types';
-import { ReactElement, useCallback } from 'react';
+import { type Organization } from '@appsemble/types';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
 import { Collapsible } from '../../../components/Collapsible/index.js';
 import { CreateOrganizationModal } from '../../../components/CreateOrganizationModal/index.js';
 import { HeaderControl } from '../../../components/HeaderControl/index.js';
 import { ListButton } from '../../../components/ListButton/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-import { messages } from './messages.js';
 
 export function IndexPage(): ReactElement {
   const result = useData<Organization[]>('/api/organizations');

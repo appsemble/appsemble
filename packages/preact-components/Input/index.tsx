@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { ComponentProps, JSX } from 'preact';
+import { type ComponentProps, type JSX } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { useCallback } from 'preact/hooks';
 

@@ -1,12 +1,16 @@
 import { randomBytes } from 'node:crypto';
 
-import { createFormData, readFixture } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import {
+  createFormData,
+  createServer,
+  organizationBlocklist,
+  readFixture,
+} from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import * as Koa from 'koa';
+import type Koa from 'koa';
 
-import { organizationBlocklist } from '../../node-utils/organizationBlocklist.js';
+import * as controllers from './index.js';
 import {
   App,
   BlockVersion,
@@ -22,7 +26,6 @@ import { authentication } from '../utils/authentication.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 let organization: Organization;
 let server: Koa;

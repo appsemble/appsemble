@@ -1,8 +1,8 @@
-import { TeamMember } from '@appsemble/types';
+import { type TeamMember } from '@appsemble/types';
 import axios from 'axios';
 
+import { type ActionCreator } from './index.js';
 import { apiUrl, appId } from '../settings.js';
-import { ActionCreator } from './index.js';
 
 export const teamJoin: ActionCreator<'team.join'> = ({ getUserInfo, updateTeam }) => [
   async (id: number) => {

@@ -1,10 +1,10 @@
 import { useBlock } from '@appsemble/preact';
 import { ButtonGroup, ButtonOption } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { VNode } from 'preact';
+import { type VNode } from 'preact';
 
-import { ButtonsField, FieldComponentProps } from '../../../block.js';
 import styles from './index.module.css';
+import { type ButtonsField, type FieldComponentProps } from '../../../block.js';
 
 export function ButtonsFieldComponent({
   className,

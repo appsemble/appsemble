@@ -1,4 +1,4 @@
-import { FileField, FileRequirement } from '../../../block.js';
+import { type FileField, type FileRequirement } from '../../../block.js';
 
 export function validateFile(field: FileField, value: File | File[]): FileRequirement {
   return field.requirements?.find((requirement) => {

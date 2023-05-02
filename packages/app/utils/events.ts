@@ -1,7 +1,7 @@
-import { EventEmitter } from 'events';
+import { type EventEmitter } from 'events';
 
-import { Events } from '@appsemble/sdk';
-import { BlockDefinition, BlockManifest } from '@appsemble/types';
+import { type Events } from '@appsemble/sdk';
+import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 

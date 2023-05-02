@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useContext, useEffect } from 'react';
+import { type ReactElement, useCallback, useContext, useEffect } from 'react';
 import { UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
 
 /**

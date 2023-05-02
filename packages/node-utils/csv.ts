@@ -1,4 +1,4 @@
-import { PreValidatePropertyFunction } from 'jsonschema';
+import { type PreValidatePropertyFunction } from 'jsonschema';
 
 export const preProcessCSV: PreValidatePropertyFunction = (instance, key, schema, options, ctx) => {
   // CSV is parsed into an array of flat objects. This means all instances are a direct descendant

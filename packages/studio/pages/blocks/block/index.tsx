@@ -9,21 +9,21 @@ import {
   useData,
   useMeta,
 } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
-import { ChangeEvent, ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
 
-import { CodeBlock } from '../../../components/CodeBlock/index.js';
-import { MarkdownContent } from '../../../components/MarkdownContent/index.js';
-import { Schema } from '../../../components/Schema/index.js';
 import { ActionTable } from './ActionTable/index.js';
 import { EventTable } from './EventTable/index.js';
 import styles from './index.module.css';
 import { messages, untranslatedMessages } from './messages.js';
 import { RefLink } from './RefLink/index.js';
+import { CodeBlock } from '../../../components/CodeBlock/index.js';
+import { MarkdownContent } from '../../../components/MarkdownContent/index.js';
+import { Schema } from '../../../components/Schema/index.js';
 
 /**
  * Render documentation for blocks.
@@ -90,10 +90,6 @@ export function BlockPage(): ReactElement {
 
   if (loading) {
     return <Loader />;
-  }
-
-  if (!selectedBlockManifest) {
-    return <Navigate to={blockVersions[0].version} />;
   }
 
   return (

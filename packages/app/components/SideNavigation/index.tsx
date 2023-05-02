@@ -1,17 +1,17 @@
 import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-components';
-import { PageDefinition } from '@appsemble/types';
+import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { Fragment, ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { appId, sentryDsn } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { useAppMessages } from '../AppMessagesProvider/index.js';
-import { BlockMenuItem } from '../MenuProvider/index.js';
+import { type BlockMenuItem } from '../MenuProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface SideNavigationProps {
   pages: PageDefinition[];

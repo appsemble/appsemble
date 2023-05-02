@@ -1,8 +1,12 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { Action, BaseMessage, BulmaColor, BulmaSize, Theme } from '@appsemble/types';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { IconName } from '@fortawesome/fontawesome-common-types';
-import { Promisable } from 'type-fest';
+import {
+  type Action,
+  type BaseMessage,
+  type BulmaColor,
+  type BulmaSize,
+  type Theme,
+} from '@appsemble/types';
+import { type IconName } from '@fortawesome/fontawesome-common-types';
+import { type Promisable } from 'type-fest';
 
 export { IconName };
 export { Action, BulmaColor, BulmaSize, Theme };
@@ -308,7 +312,7 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
  *
  * @param fn The bootstrap function to register
  *
- * If the function returns an element, it’s appended to the shadow root.
+ *   If the function returns an element, it’s appended to the shadow root.
  */
 export function bootstrap(fn: BootstrapFunction): void {
   const event: AppsembleBootstrapEvent = new CustomEvent('AppsembleBootstrap', {

@@ -10,18 +10,18 @@ import {
   SimpleModalFooter,
   useData,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { messages } from './messages.js';
 import { CreateOrganizationModal } from '../../../../components/CreateOrganizationModal/index.js';
 import { ResendEmailButton } from '../../../../components/ResendEmailButton/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
-import { messages } from './messages.js';
 
 interface Template {
   id: number;

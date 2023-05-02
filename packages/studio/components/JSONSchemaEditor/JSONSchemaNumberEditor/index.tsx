@@ -1,10 +1,10 @@
 import { InputField } from '@appsemble/react-components';
-import { OpenAPIV3 } from 'openapi-types';
-import { ReactElement } from 'react';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type ReactElement } from 'react';
 
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
-import { CommonJSONSchemaEditorProps } from '../types.js';
+import { type CommonJSONSchemaEditorProps } from '../types.js';
 
 export function JSONSchemaNumberEditor({
   disabled,

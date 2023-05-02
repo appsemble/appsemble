@@ -1,9 +1,9 @@
-import { BlockVersionsGetter } from '@appsemble/utils';
+import { type BlockVersionsGetter } from '@appsemble/utils';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { registerMarkerDataProvider } from 'monaco-marker-data-provider';
 import { createWorkerManager } from 'monaco-worker-manager';
 
-import { AppValidationWorker } from './worker.js';
+import { type AppValidationWorker } from './worker.js';
 
 export const appValidationLabel = 'appValidation';
 

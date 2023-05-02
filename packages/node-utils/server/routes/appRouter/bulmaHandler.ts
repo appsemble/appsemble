@@ -1,14 +1,14 @@
 import { createRequire } from 'node:module';
 
-import { Theme as ThemeType } from '@appsemble/types';
+import { type Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json' assert { type: 'json' };
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import sass from 'sass';
 import stripBom from 'strip-bom';
 
 import { logger } from '../../../logger.js';
-import { Options } from '../../types.js';
+import { type Options } from '../../types.js';
 
 const require = createRequire(import.meta.url);
 

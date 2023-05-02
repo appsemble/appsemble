@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
+import { databaseBuilder } from './builder/database.js';
 import { initDB, Resource } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { databaseBuilder } from './builder/database.js';
 
 export const command = 'cleanup-resources';
 export const description = 'Deletes all expired resources from the database.';

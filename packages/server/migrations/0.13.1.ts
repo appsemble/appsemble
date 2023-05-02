@@ -1,4 +1,4 @@
-import { DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, type Sequelize } from 'sequelize';
 
 export const key = '0.13.1';
 

@@ -1,10 +1,10 @@
 import { Table, Title } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
-import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
 import { messages } from './messages.js';
+import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
 
 interface EventTableProps {
   /**

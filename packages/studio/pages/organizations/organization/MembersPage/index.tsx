@@ -1,5 +1,5 @@
 import { useMeta } from '@appsemble/react-components';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import { MemberTable } from '../MemberTable/index.js';
 

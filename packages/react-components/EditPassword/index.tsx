@@ -1,6 +1,7 @@
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import {
   FormButtons,
   Message,
@@ -11,7 +12,6 @@ import {
   SimpleFormField,
   SimpleSubmit,
 } from '../index.js';
-import { messages } from './messages.js';
 
 export interface EditPasswordValues {
   password: string;

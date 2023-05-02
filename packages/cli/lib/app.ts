@@ -1,21 +1,27 @@
-import { createReadStream, existsSync, ReadStream } from 'node:fs';
+import { createReadStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
 import { basename, extname, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { App, AppDefinition, AppsembleMessages, AppVisibility, Messages } from '@appsemble/types';
+import {
+  type App,
+  type AppDefinition,
+  type AppsembleMessages,
+  type AppVisibility,
+  type Messages,
+} from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-import { AppsembleContext, AppsembleRC } from '../types.js';
 import { authenticate } from './authentication.js';
 import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
 import { createResource } from './resource.js';
+import { type AppsembleContext, type AppsembleRC } from '../types.js';
 
 interface CreateAppParams {
   /**
@@ -332,7 +338,7 @@ export async function uploadMessages(
 /**
  * @param path The path to the app directory.
  * @param languages A list of languages for which translations should be added in addition to the
- * existing ones.
+ *   existing ones.
  * @param verify A list of languages to verify.
  * @param format The file format that should be used for the output.
  */

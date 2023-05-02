@@ -4,7 +4,7 @@ import { serveIcon } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
 
 import { organizationBlocklist } from '../../node-utils/organizationBlocklist.js';

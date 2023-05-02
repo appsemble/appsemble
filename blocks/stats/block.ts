@@ -1,4 +1,4 @@
-import { IconName, Remapper } from '@appsemble/sdk';
+import { type IconName, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object describing what a stats field looks like.

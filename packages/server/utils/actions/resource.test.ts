@@ -1,5 +1,6 @@
-import { ActionDefinition } from '@appsemble/types';
+import { type ActionDefinition } from '@appsemble/types';
 
+import { query } from './resource.js';
 import { App } from '../../models/App.js';
 import { Organization } from '../../models/Organization.js';
 import { Resource } from '../../models/Resource.js';
@@ -8,7 +9,6 @@ import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';
 import { Mailer } from '../email/Mailer.js';
 import { useTestDatabase } from '../test/testSchema.js';
-import { query } from './resource.js';
 
 useTestDatabase(import.meta);
 

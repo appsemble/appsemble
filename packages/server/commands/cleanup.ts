@@ -1,10 +1,10 @@
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
+import { databaseBuilder } from './builder/database.js';
 import { initDB } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { cleanupDNS } from '../utils/dns/index.js';
 import { handleDBError } from '../utils/sqlUtils.js';
-import { databaseBuilder } from './builder/database.js';
 
 export const command = 'cleanup';
 export const description = 'Restore the app DNS settings from the database in the host platform';

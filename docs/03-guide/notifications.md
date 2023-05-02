@@ -6,6 +6,13 @@ sending out notifications related to changes being made to [resources](resources
 
 This page serves to explain the concepts used to send out these notifications.
 
+## Table of Contents
+
+- [Subscribing](#subscribing)
+- [Resource notifications](#resource-notifications)
+- [Subscribing to individual resources](#subscribing-to-individual-resources)
+- [Customizing the content of a notification](#customizing-the-content-of-a-notification)
+
 ## Subscribing
 
 In order to enable notifications, you must set the
@@ -100,7 +107,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.20.41
+        version: 0.20.42
         actions:
           onLoad:
             type: resource.query
@@ -109,7 +116,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.20.41
+        version: 0.20.42
         parameters:
           fields:
             - name:

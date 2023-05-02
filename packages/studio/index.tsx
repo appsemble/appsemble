@@ -1,6 +1,6 @@
 import { setupSentry } from '@appsemble/web-utils';
 import '@fortawesome/fontawesome-free/css/all.css';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import './bulma.scss';
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
   { path: '*', element: <App /> },
 ]);
 
-render(<RouterProvider router={router} />, document.getElementById('app'));
+createRoot(document.getElementById('app')).render(<RouterProvider router={router} />);
 
 if (process.env.NODE_ENV === 'production') {
   navigator.serviceWorker?.register('/service-worker.js');

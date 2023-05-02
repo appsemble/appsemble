@@ -6,17 +6,17 @@ import {
   SimpleFormError,
   SimpleFormField,
   SimpleModalFooter,
-  Toggle,
+  type Toggle,
 } from '@appsemble/react-components';
-import { Organization } from '@appsemble/types';
+import { type Organization } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { messages } from './messages.js';
 import { IconPreview } from '../IconPreview/index.js';
 import { useUser } from '../UserProvider/index.js';
-import { messages } from './messages.js';
 
 /**
  * Calculate an organization id based on a given organization name.

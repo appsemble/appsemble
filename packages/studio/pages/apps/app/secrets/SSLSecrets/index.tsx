@@ -9,12 +9,12 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js';
 import { useApp } from '../../index.js';
-import { messages } from './messages.js';
 
 const certPlaceholder = `-----BEGIN CERTIFICATE-----
 

@@ -1,22 +1,22 @@
 import {
   Content,
   Login,
-  LoginFormValues,
+  type LoginFormValues,
   OAuth2LoginButton,
   useMeta,
   useQuery,
   useToggle,
 } from '@appsemble/react-components';
-import { TokenResponse } from '@appsemble/types';
+import { type TokenResponse } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { useUser } from '../../components/UserProvider/index.js';
-import { enableRegistration, logins } from '../../utils/settings.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useUser } from '../../components/UserProvider/index.js';
+import { enableRegistration, logins } from '../../utils/settings.js';
 
 export function LoginPage(): ReactElement {
   useMeta(messages.title, messages.description);

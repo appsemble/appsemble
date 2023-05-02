@@ -1,7 +1,7 @@
-import { Permission, roles } from '@appsemble/utils';
+import { type Permission, roles } from '@appsemble/utils';
 import { forbidden, unauthorized } from '@hapi/boom';
-import { Context } from 'koa';
-import { FindOptions } from 'sequelize';
+import { type Context } from 'koa';
+import { type FindOptions } from 'sequelize';
 
 import { Member } from '../models/index.js';
 
@@ -12,7 +12,7 @@ import { Member } from '../models/index.js';
  * @param organizationId The id of which to check if the user may perform the action for.
  * @param permissions An array of required permissions or a single required permission.
  * @param queryOptions Additional query options. Use this to include for example the user or
- * organization the member is linked to.
+ *   organization the member is linked to.
  * @returns The member of the organization.
  */
 export async function checkRole(
