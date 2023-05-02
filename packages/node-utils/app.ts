@@ -1,15 +1,11 @@
-import { App, UserInfo } from '@appsemble/types';
-import {
-  defaultLocale,
-  has,
-  IntlMessageFormat,
-  objectCache,
-  RemapperContext,
-} from '@appsemble/utils';
+import { type App, type UserInfo } from '@appsemble/types';
+import { defaultLocale, has, objectCache, type RemapperContext } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
-import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { IntlMessageFormat } from 'intl-messageformat';
+import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
-import { Options } from './server/types.js';
+import { type Options } from './server/types.js';
 
 // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
 const getNumberFormat = memoize.default(
