@@ -64,6 +64,13 @@ The `policy` property can be set to `everyone` to give everyone the default role
 only do this for users being in the same organization as the app, and `invite` which does not assign
 roles by default at all.
 
+> **Important**: When [OAuth2](oauth2.md) or [SAML2.0](saml.md) is used in the app, you must set the
+> policy to `everyone`. This will specifically allow every configured authentication method on the
+> secrets page to be used as login method. If you do not want other Appsemble user accounts to be
+> able to log in, you must `disable` the `appsemble login` options (including the Appsemble OAuth2
+> option) in the secrets page. If this option is enabled, any Appsemble user account is able to log
+> in to the app and will receive the default role.
+
 The roles listed in the `roles` object may be used to restrict specific parts of an app. This can be
 done by adding a `roles` property containing a list of roles that may access the property of the app
 it has been applied to. Depending on which property this is applied to, different behavior can be
