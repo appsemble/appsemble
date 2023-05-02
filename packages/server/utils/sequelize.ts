@@ -1,15 +1,29 @@
-import { FindOptions, Operator, operators } from '@appsemble/node-utils/server/types';
-import { Op, WhereOptions } from 'sequelize';
+import { Op } from 'sequelize';
 
-export const parseWhereRecursively = ({ where }: Pick<FindOptions, 'where'>): WhereOptions => {
-  const result = {} as any;
-  for (const entry of Object.entries(where)) {
-    const [key, value] = entry;
-    if (operators.includes(key as Operator)) {
-      result[Op[key as keyof typeof Op]] = parseWhereRecursively(value);
-    } else {
-      result[key] = parseWhereRecursively(value);
-    }
+export function mapKeysRecursively(obj: any): any {
+  if (typeof obj !== 'object' || obj == null) {
+    return obj;
   }
+
+  if (obj.attribute && obj.comparator && obj.logic) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((value) => mapKeysRecursively(value));
+  }
+
+  let result = obj as Record<string, any>;
+
+  for (const entry of Object.entries(obj)) {
+    const [key, value] = entry;
+    const newKey = Op[key as keyof typeof Op] || key;
+    delete result[key];
+    result = {
+      ...result,
+      [newKey]: mapKeysRecursively(value),
+    };
+  }
+
   return result;
-};
+}

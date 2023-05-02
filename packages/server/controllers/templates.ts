@@ -74,6 +74,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
   try {
     const keys = webpush.generateVAPIDKeys();
     const result: Partial<App> = {
+      domain: '127.0.0.1',
       definition: {
         ...template.definition,
         description,

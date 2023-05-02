@@ -35,7 +35,7 @@ export const getBlockMessages = async ({
     }
 
     return {
-      name: blockVersion.name,
+      name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
       version: blockVersion.version,
       messages,
     };

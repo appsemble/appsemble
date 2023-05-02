@@ -1,8 +1,8 @@
+import { getResourceDefinition } from '@appsemble/node-utils';
 import { notFound } from '@hapi/boom';
 import { Context } from 'koa';
 
 import { App, Resource, ResourceVersion, User } from '../models/index.js';
-import { getResourceDefinition } from '../utils/resource.js';
 
 export async function getResourceHistory(ctx: Context): Promise<void> {
   const {
@@ -25,7 +25,11 @@ export async function getResourceHistory(ctx: Context): Promise<void> {
     ],
   });
 
-  const definition = getResourceDefinition(app, resourceType);
+  if (!app) {
+    throw notFound('App not found');
+  }
+
+  const definition = getResourceDefinition(app.toJSON(), resourceType);
 
   if (!definition.history) {
     throw notFound(`Resource “${resourceType}” has no history`);

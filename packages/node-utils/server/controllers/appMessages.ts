@@ -37,7 +37,7 @@ export function createGetMessages({
       throw notFound('App not found');
     }
 
-    const appMessages = await getAppMessages({ context: ctx, app, lang, baseLang, merge });
+    const appMessages = await getAppMessages({ context: ctx, app, language });
 
     const blockPrefixes: [string, Prefix][] = [];
 

@@ -17,12 +17,22 @@ export const updateAppResource = ({
   resourceDefinition,
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> =>
   transactional(async (transaction) => {
+    const persistedApp = await App.findOne({
+      where: {
+        id: app.id,
+      },
+    });
+
     const { $clonable: clonable, $expires: expires, ...data } = resource as Record<string, unknown>;
 
     const oldResource = await Resource.findOne({
       where: {
         id,
       },
+      include: [
+        { association: 'Author', attributes: ['id', 'name'], required: false },
+        { model: Asset, attributes: ['id'], required: false },
+      ],
     });
 
     const oldData = oldResource.data;
@@ -43,7 +53,7 @@ export const updateAppResource = ({
         preparedAssets.map((asset) => ({
           ...asset,
           AppId: app.id,
-          ResourceId: resource.id,
+          ResourceId: id,
           UserId: context.user?.id,
         })),
         { logging: false, transaction },
@@ -72,8 +82,13 @@ export const updateAppResource = ({
       await Promise.all(assetPromises);
     }
 
-    processReferenceHooks(context.user, { id: app.id } as App, newResource, action);
-    processHooks(context.user, { id: app.id } as App, newResource, action);
+    const reloaded = await newResource.reload({
+      include: [{ association: 'Editor' }],
+      transaction,
+    });
 
-    return newResource.toJSON();
+    processReferenceHooks(context.user, persistedApp, newResource, action, options, context);
+    processHooks(context.user, persistedApp, newResource, action, options, context);
+
+    return reloaded.toJSON();
   });

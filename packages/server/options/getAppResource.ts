@@ -2,15 +2,19 @@ import { GetAppResourceParams } from '@appsemble/node-utils/server/types.js';
 import { Resource as ResourceInterface } from '@appsemble/types';
 
 import { Resource } from '../models/Resource.js';
+import { mapKeysRecursively } from '../utils/sequelize.js';
 
 export const getAppResource = async ({
-  app,
-  id,
-  type,
-  whereOptions,
+  findOptions,
 }: GetAppResourceParams): Promise<ResourceInterface | null> => {
   const resource = await Resource.findOne({
-    where: { id, type, AppId: app.id, ...whereOptions },
+    ...findOptions,
+    where: mapKeysRecursively(findOptions.where),
+    include: [
+      { association: 'Author', attributes: ['id', 'name'], required: false },
+      { association: 'Editor', attributes: ['id', 'name'], required: false },
+    ],
   });
-  return resource.toJSON();
+
+  return resource ? resource.toJSON() : null;
 };

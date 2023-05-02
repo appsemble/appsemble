@@ -86,10 +86,7 @@ export type NonReserved<T extends string> = T extends Reserved ? never : T;
 
 export type WhereOptions = Record<string, any>;
 
-export interface OrderItem {
-  property: string;
-  direction: -1 | 1;
-}
+export type OrderItem = [string, string];
 
 export interface FindOptions {
   where?: WhereOptions;
@@ -115,9 +112,8 @@ export interface GetAppSubEntityParams {
 }
 
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
+  language: string;
   merge?: string[] | string;
-  lang?: string;
-  baseLang: string;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -214,9 +210,9 @@ export interface ParseQueryParams {
 }
 
 export interface GetAppResourceParams extends GetAppSubEntityParams {
-  id: number | string;
+  findOptions: FindOptions;
   type: string;
-  whereOptions?: WhereOptions;
+  id: number | string;
 }
 
 export interface GetAppResourcesParams extends GetAppSubEntityParams {
@@ -253,6 +249,7 @@ export interface DeleteAppResourceParams extends GetAppSubEntityParams {
   type: string;
   whereOptions?: WhereOptions;
   action: HookAction;
+  options: Options;
 }
 
 export interface CreateAppAssetParams extends GetAppSubEntityParams {

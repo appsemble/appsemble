@@ -12,6 +12,7 @@ import {
 } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import { authorizeApp, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 import * as controllers from './index.js';
@@ -70,6 +71,7 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    authentication: authentication(),
   });
   await setTestApp(server);
 });

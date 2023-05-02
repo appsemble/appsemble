@@ -55,7 +55,7 @@ export function createIndexHandler({
     }
 
     const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
-    const appMessages = await getAppMessages({ app, context: ctx, baseLang: defaultLanguage });
+    const appMessages = await getAppMessages({ app, context: ctx, lang: defaultLanguage });
 
     const languages = [
       ...new Set([...appMessages.map(({ language }) => language), defaultLanguage]),

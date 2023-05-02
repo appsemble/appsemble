@@ -1,3 +1,4 @@
+import { mergeMessages } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { Context } from 'koa';
@@ -6,7 +7,6 @@ import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
 import { App, AppMessages } from '../models/index.js';
 import { argv } from './argv.js';
-import { mergeMessages } from '../../node-utils/mergeMessages.js';
 
 interface GetAppValue {
   /**
@@ -57,13 +57,13 @@ export async function getApp(
       [value.appPath, value.organizationId] = subdomain;
       value.app = await App.findOne({
         ...queryOptions,
-        where: { path: value.appPath, OrganizationId: value.organizationId },
+        where: { path: value.appPath, OrganizationId: value.organizationId, ...queryOptions.where },
       });
     }
   } else {
     value.app = await App.findOne({
       ...queryOptions,
-      where: { domain: hostname },
+      where: { domain: hostname, ...queryOptions.where },
     });
   }
   return value;

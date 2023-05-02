@@ -2,7 +2,7 @@ import {
   extractResourceBody,
   getResourceDefinition,
   processResourceBody,
-} from '@appsemble/node-utils/resource';
+} from '@appsemble/node-utils';
 import {
   createCountResources,
   createCreateResource,
@@ -10,7 +10,7 @@ import {
   createGetResourceById,
   createQueryResources,
   createUpdateResource,
-} from '@appsemble/node-utils/server/controllers/resources';
+} from '@appsemble/node-utils/server/controllers/resources.js';
 import { Resource as ResourceType } from '@appsemble/types';
 import { badRequest, notFound } from '@hapi/boom';
 import { Context } from 'koa';

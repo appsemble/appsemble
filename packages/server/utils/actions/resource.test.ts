@@ -3,12 +3,12 @@ import { ActionDefinition } from '@appsemble/types';
 import { App } from '../../models/App.js';
 import { Organization } from '../../models/Organization.js';
 import { Resource } from '../../models/Resource.js';
+import { options } from '../../options/options.js';
 import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';
 import { Mailer } from '../email/Mailer.js';
 import { useTestDatabase } from '../test/testSchema.js';
 import { query } from './resource.js';
-import { options } from '../../options/options.js';
 
 useTestDatabase(import.meta);
 
@@ -71,7 +71,7 @@ describe('resource.query', () => {
       mailer,
       data: {},
       options,
-      context: {},
+      context: {} as any,
     });
 
     expect(result).toStrictEqual([
@@ -158,6 +158,8 @@ describe('resource.query', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual([

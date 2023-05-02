@@ -171,7 +171,6 @@ describe('getApp', () => {
 
 describe('getRemapperContext', () => {
   it('should return a message getter with the app context', async () => {
-    const context = {};
     await Organization.create({ id: 'test' });
     const app = await App.create({
       definition: '',
@@ -208,7 +207,7 @@ describe('getRemapperContext', () => {
       'nl-nl-brabants',
       userInfo,
       options,
-      context: {},
+      {} as any,
     );
     const word = remapperContext.getMessage({ id: 'word' });
     const hello = remapperContext.getMessage({ id: 'hello' });

@@ -15,3 +15,6 @@ export * from './readAsset.js';
 export * from './render.js';
 export * from './getAppsembleMessages.js';
 export * from './odata.js';
+export * from './resource.js';
+export * from './app.js';
+export * from './mergeMessages.js';

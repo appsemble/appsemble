@@ -1,4 +1,4 @@
-import { getRemapperContext } from '@appsemble/node-utils/app';
+import { getRemapperContext } from '@appsemble/node-utils';
 import { NotifyActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 

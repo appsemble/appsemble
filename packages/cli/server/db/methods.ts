@@ -1,4 +1,4 @@
-import { FindOptions } from '@appsemble/node-utils/server/types.js';
+import { FindOptions, OrderItem } from '@appsemble/node-utils/server/types.js';
 
 import { getAppDir } from './app.js';
 import { db } from './index.js';
@@ -77,6 +77,35 @@ function applyAnd<M>(entities: M[], and: Record<string, any>[]): M[] {
   return entities.filter((entity) => and.every((subQuery) => applyWhere(entity, subQuery)));
 }
 
+function applyAttributes<M>(entities: M[], attributes: string[]): M[] {
+  return entities.map((entity) => {
+    const result = {} as M;
+    for (const attribute of attributes) {
+      if (entity[attribute as keyof M] !== undefined) {
+        result[attribute as keyof M] = entity[attribute as keyof M];
+      }
+    }
+    return result;
+  });
+}
+
+function applyOrder<M>(entities: M[], order: OrderItem[]): void {
+  for (const orderItem of order) {
+    entities.sort((a, b) => {
+      const [property, direction] = orderItem;
+      if (a[property as keyof typeof a] > b[property as keyof typeof b]) {
+        return direction === 'DESC' ? -1 : 1;
+      }
+
+      if (a[property as keyof typeof a] < b[property as keyof typeof b]) {
+        return direction === 'DESC' ? 1 : -1;
+      }
+
+      return 0;
+    });
+  }
+}
+
 export const Methods = {
   async create<M>(values: Record<string, unknown>, modelDir = '/'): Promise<M> {
     const existing = await this.findAll({}, modelDir);
@@ -129,18 +158,10 @@ export const Methods = {
       const dir = `${getAppDir()}/${modelDir}`;
       const entities = await db.getObject<M[]>(dir);
 
-      const mapped =
-        query.attributes && query.attributes.length > 0
-          ? entities.map((entity) => {
-              const result = {} as M;
-              for (const attribute of query.attributes) {
-                if (entity[attribute as keyof M] !== undefined) {
-                  result[attribute as keyof M] = entity[attribute as keyof M];
-                }
-              }
-              return result;
-            })
-          : entities;
+      let mapped = entities;
+      if (query.attributes && query.attributes.length > 0) {
+        mapped = applyAttributes(mapped, query.attributes);
+      }
 
       let filtered = mapped;
 
@@ -152,7 +173,12 @@ export const Methods = {
         filtered = applyOr(filtered, query.where.or);
       }
 
-      return filtered[0] || null;
+      const sorted = filtered;
+      if (query.order) {
+        applyOrder(sorted, query.order);
+      }
+
+      return sorted[0] || null;
     } catch {
       return null;
     }
@@ -168,18 +194,10 @@ export const Methods = {
         ((query.limit ? query.limit - 1 + (query.offset || 0) : 0) || entities.length) + 1,
       );
 
-      const mapped =
-        query.attributes && query.attributes.length > 0
-          ? sliced.map((entity) => {
-              const result = {} as M;
-              for (const attribute of query.attributes) {
-                if (entity[attribute as keyof M] !== undefined) {
-                  result[attribute as keyof M] = entity[attribute as keyof M];
-                }
-              }
-              return result;
-            })
-          : sliced;
+      let mapped = sliced;
+      if (query.attributes && query.attributes.length > 0) {
+        mapped = applyAttributes(mapped, query.attributes);
+      }
 
       let filtered = mapped;
 
@@ -193,20 +211,7 @@ export const Methods = {
 
       const sorted = filtered;
       if (query.order) {
-        for (const orderItem of query.order) {
-          sorted.sort((a, b) => {
-            const { direction, property } = orderItem;
-            if (a[property as keyof typeof a] > b[property as keyof typeof b]) {
-              return Number(direction);
-            }
-
-            if (a[property as keyof typeof a] < b[property as keyof typeof b]) {
-              return direction * -1;
-            }
-
-            return 0;
-          });
-        }
+        applyOrder(sorted, query.order);
       }
 
       return sorted;

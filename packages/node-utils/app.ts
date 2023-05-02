@@ -1,4 +1,4 @@
-import { App, AppMessages, UserInfo } from '@appsemble/types';
+import { App, UserInfo } from '@appsemble/types';
 import {
   defaultLocale,
   has,
@@ -7,8 +7,9 @@ import {
   RemapperContext,
 } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
-import {Options} from "./server/types";
-import {DefaultContext, DefaultState, ParameterizedContext} from "koa";
+import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
+
+import { Options } from './server/types.js';
 
 // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
 const getNumberFormat = memoize.default(
@@ -42,11 +43,10 @@ export async function getRemapperContext(
   const { getAppMessages, getAppUrl } = options;
 
   const appUrl = String(await getAppUrl({ context, app }));
-  const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
   const appMessages = await getAppMessages({
-    context,
     app,
-    baseLang: defaultLanguage,
+    context,
+    language,
   });
 
   const cache = objectCache(

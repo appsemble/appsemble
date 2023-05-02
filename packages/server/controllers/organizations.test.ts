@@ -18,6 +18,8 @@ import {
 } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 import * as controllers from './index.js';
@@ -34,6 +36,8 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    authentication: authentication(),
+    context: { mailer: new Mailer(argv) },
   });
   await setTestApp(server);
 });
@@ -73,6 +77,7 @@ describe('getOrganizations', () => {
       vapidPrivateKey: '',
       OrganizationId: 'appsemble',
       visibility: 'public',
+      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         resources: { testResource: { schema: { type: 'object' } } },
@@ -89,6 +94,7 @@ describe('getOrganizations', () => {
       vapidPrivateKey: '',
       OrganizationId: 'testorganization',
       visibility: 'public',
+      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         resources: { testResource: { schema: { type: 'object' } } },
@@ -105,6 +111,7 @@ describe('getOrganizations', () => {
       vapidPrivateKey: '',
       OrganizationId: 'private',
       visibility: 'unlisted',
+      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         resources: { testResource: { schema: { type: 'object' } } },
@@ -197,6 +204,7 @@ describe('getOrganizationApps', () => {
   it('should only return public organization apps', async () => {
     await App.create({
       path: 'test-app',
+      domain: '127.0.0.1',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -205,6 +213,7 @@ describe('getOrganizationApps', () => {
     });
     await App.create({
       path: 'test-app-2',
+      domain: '127.0.0.1',
       definition: { name: 'Test App 2', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -213,6 +222,7 @@ describe('getOrganizationApps', () => {
     });
     const app = await App.create({
       path: 'test-app-3',
+      domain: '127.0.0.1',
       definition: { name: 'Test App 3', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -226,6 +236,7 @@ describe('getOrganizationApps', () => {
       data: [
         {
           OrganizationId: 'testorganization',
+          domain: '127.0.0.1',
           definition: app.definition,
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
@@ -241,6 +252,7 @@ describe('getOrganizationApps', () => {
     authorizeStudio(user);
     const appA = await App.create({
       path: 'test-app',
+      domain: '127.0.0.1',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -249,6 +261,7 @@ describe('getOrganizationApps', () => {
     });
     const appB = await App.create({
       path: 'test-app-2',
+      domain: '127.0.0.1',
       definition: { name: 'Test App 2', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -257,6 +270,7 @@ describe('getOrganizationApps', () => {
     });
     const appC = await App.create({
       path: 'test-app-3',
+      domain: '127.0.0.1',
       definition: { name: 'Test App 3', defaultPage: 'Test Page' },
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
@@ -270,6 +284,7 @@ describe('getOrganizationApps', () => {
       data: [
         {
           OrganizationId: 'testorganization',
+          domain: '127.0.0.1',
           definition: appA.definition,
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
@@ -280,6 +295,7 @@ describe('getOrganizationApps', () => {
         },
         {
           OrganizationId: 'testorganization',
+          domain: '127.0.0.1',
           definition: appB.definition,
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',
@@ -290,6 +306,7 @@ describe('getOrganizationApps', () => {
         },
         {
           OrganizationId: 'testorganization',
+          domain: '127.0.0.1',
           definition: appC.definition,
           iconUrl:
             '/api/organizations/testorganization/icon?background=%23ffffff&maskable=true&updated=1970-01-01T00%3A00%3A00.000Z',

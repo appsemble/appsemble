@@ -1,9 +1,9 @@
 import {
   AppBlockStyle as AppBlockStyleInterface,
   GetAppBlockStylesParams,
-} from 'packages/node-utils/server/routes/types';
+} from '@appsemble/node-utils/server/types';
 
-import { AppBlockStyle } from '../models';
+import { AppBlockStyle } from '../models/index.js';
 
 export const getAppBlockStyles = async ({
   app,

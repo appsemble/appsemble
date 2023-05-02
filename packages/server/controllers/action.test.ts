@@ -7,6 +7,7 @@ import { App, Asset, Organization } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 import * as controllers from './index.js';
 
@@ -20,6 +21,7 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    context: { mailer: new Mailer(argv) },
   });
 
   await setTestApp(server);
@@ -45,6 +47,7 @@ it('should handle if the path doesn’t point to an action', async () => {
     vapidPublicKey: '',
     vapidPrivateKey: '',
     OrganizationId: 'org',
+    domain: '127.0.0.1',
     definition: {
       defaultPage: '',
       resources: { testResource: { schema: { type: 'object' } } },
@@ -87,6 +90,7 @@ describe('handleRequestProxy', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
+      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         pages: [
@@ -309,6 +313,7 @@ describe('handleEmail', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
+      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         pages: [

@@ -1,5 +1,4 @@
-import { getRemapperContext } from '@appsemble/node-utils/app';
-import { getResourceDefinition } from '@appsemble/node-utils/resource';
+import { getRemapperContext, getResourceDefinition } from '@appsemble/node-utils';
 import { ResourceQueryActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { QueryParams } from 'koas-parameters';

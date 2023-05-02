@@ -48,15 +48,10 @@ export const createAppResourcesWithAssets = async ({
     );
   });
 
-  processReferenceHooks(
-    context.user,
-    { id: app.id } as App,
-    createdResources[0],
-    action,
-    options,
-    context,
-  );
-  processHooks(context.user, { id: app.id } as App, createdResources[0], action, options, context);
+  const persistedApp = await App.findOne({ where: { id: app.id } });
+
+  processReferenceHooks(context.user, persistedApp, createdResources[0], action, options, context);
+  processHooks(context.user, persistedApp, createdResources[0], action, options, context);
 
   return createdResources.map((resource) => resource.toJSON());
 };

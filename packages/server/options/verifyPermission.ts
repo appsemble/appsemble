@@ -1,3 +1,4 @@
+import { getResourceDefinition } from '@appsemble/node-utils';
 import { VerifyPermissionParams } from '@appsemble/node-utils/server/types';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { forbidden, unauthorized } from '@hapi/boom';
@@ -19,11 +20,12 @@ export const verifyPermission = async ({
   options: { checkRole },
   resourceType,
 }: VerifyPermissionParams): Promise<Record<string, any>> => {
-  const resourceDefinition = app.definition.resources[resourceType];
+  const view = context.queryParams?.view;
+
+  const resourceDefinition = getResourceDefinition(app, resourceType, view);
 
   const {
     query: { $team },
-    queryParams: { view },
     user,
     users,
   } = context;

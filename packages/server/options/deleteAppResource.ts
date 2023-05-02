@@ -8,15 +8,22 @@ export const deleteAppResource = async ({
   app,
   context,
   id,
+  options,
   type,
   whereOptions,
 }: DeleteAppResourceParams): Promise<void> => {
+  const persistedApp = await App.findOne({
+    where: {
+      id: app.id,
+    },
+  });
+
   const resource = await Resource.findOne({
     where: { id, type, AppId: app.id, ...whereOptions },
   });
 
-  processReferenceHooks(context.user, { id: app.id } as App, resource, action);
-  processHooks(context.user, { id: app.id } as App, resource, action);
+  processReferenceHooks(context.user, persistedApp, resource, action, options, context);
+  processHooks(context.user, persistedApp, resource, action, options, context);
 
   return resource.destroy();
 };

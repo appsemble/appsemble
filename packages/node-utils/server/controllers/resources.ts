@@ -5,7 +5,7 @@ import { Context, Middleware } from 'koa';
 
 import { getRemapperContext } from '../../app.js';
 import { logger } from '../../logger.js';
-import { FindOptions, Options, OrderItem, WhereOptions} from '../types.js';
+import { FindOptions, Options, OrderItem, WhereOptions } from '../types.js';
 
 function generateQuery(
   ctx: Context,
@@ -25,14 +25,14 @@ function generateQuery(
 export function createQueryResources(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceType },
-      queryParams: { $select, $skip, $top, view },
+      pathParams: { appId, resourceType },
+      queryParams: { $select, $skip, $top },
       user,
     } = ctx;
 
     const { getApp, getAppResources, verifyPermission } = options;
 
-    const app = await getApp({ context: ctx, user });
+    const app = await getApp({ context: ctx, user, query: { where: { id: appId } } });
 
     const { order, where } = generateQuery(ctx, options);
 
@@ -54,7 +54,7 @@ export function createQueryResources(options: Options): Middleware {
           {
             ...userQuery,
             type: resourceType,
-            AppId: app.id,
+            AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
           },
         ],
@@ -68,6 +68,8 @@ export function createQueryResources(options: Options): Middleware {
       type: resourceType,
       context: ctx,
     });
+
+    const view = ctx.queryParams?.view;
 
     const resourceDefinition = getResourceDefinition(app, resourceType, view);
 
@@ -99,24 +101,36 @@ export function createQueryResources(options: Options): Middleware {
 export function createCountResources(options: Options) {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceType },
+      pathParams: { appId, resourceType },
     } = ctx;
 
     const action = 'count';
 
     const { getApp, getAppResources, verifyPermission } = options;
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    await verifyPermission({ app, context: ctx, action, resourceType, options });
+    const userQuery = await verifyPermission({ app, context: ctx, action, resourceType, options });
 
     const { where } = generateQuery(ctx, options);
 
+    const findOptions: FindOptions = {
+      where: {
+        and: [
+          where || {},
+          {
+            ...userQuery,
+            type: resourceType,
+            AppId: appId,
+            expires: { or: [{ gt: new Date() }, null] },
+          },
+        ],
+      },
+    };
+
     const resources = await getAppResources({
       app,
-      findOptions: {
-        where,
-      },
+      findOptions,
       type: resourceType,
       context: ctx,
     });
@@ -128,22 +142,37 @@ export function createCountResources(options: Options) {
 export function createGetResourceById(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceId, resourceType },
+      pathParams: { appId, resourceId, resourceType },
       queryParams: { view },
       user,
     } = ctx;
 
-    const { getApp, getAppResource } = options;
+    const action = 'get';
 
-    const app = await getApp({ context: ctx });
+    const { getApp, getAppResource, verifyPermission } = options;
+
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType, view);
+
+    const userQuery = await verifyPermission({ app, context: ctx, action, resourceType, options });
+
+    const findOptions: FindOptions = {
+      where: {
+        ...userQuery,
+        id: resourceId,
+        type: resourceType,
+        AppId: appId,
+        expires: { or: [{ gt: new Date() }, null] },
+      },
+    };
 
     const resource = await getAppResource({
       app,
       id: resourceId,
       type: resourceType,
       context: ctx,
+      findOptions,
     });
 
     if (!resource) {
@@ -176,12 +205,12 @@ export function createGetResourceById(options: Options): Middleware {
 export function createCreateResource(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceType },
+      pathParams: { appId, resourceType },
     } = ctx;
     const { createAppResourcesWithAssets, getApp, verifyPermission } = options;
     const action = 'create';
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
     await verifyPermission({ app, context: ctx, action, resourceType, options });
@@ -210,23 +239,17 @@ export function createCreateResource(options: Options): Middleware {
 export function createUpdateResource(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceId, resourceType },
+      pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
-    const {
-      deleteAppResource,
-      getApp,
-      getAppAssets,
-      getAppResource,
-      updateAppResource,
-      verifyPermission,
-    } = options;
+    const { getApp, getAppAssets, getAppResource, updateAppResource, verifyPermission } = options;
     const action = 'update';
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
-    const whereOptions = await verifyPermission({
+
+    const userQuery = await verifyPermission({
       app,
       context: ctx,
       action,
@@ -234,12 +257,22 @@ export function createUpdateResource(options: Options): Middleware {
       options,
     });
 
+    const findOptions: FindOptions = {
+      where: {
+        ...userQuery,
+        id: resourceId,
+        type: resourceType,
+        AppId: appId,
+        expires: { or: [{ gt: new Date() }, null] },
+      },
+    };
+
     const oldResource = await getAppResource({
       app,
       id: resourceId,
       type: resourceType,
       context: ctx,
-      whereOptions,
+      findOptions,
     });
 
     if (!oldResource) {
@@ -257,7 +290,7 @@ export function createUpdateResource(options: Options): Middleware {
 
     const resources = Array.isArray(processedBody) ? processedBody : [processedBody];
 
-    await updateAppResource({
+    ctx.body = await updateAppResource({
       app,
       context: ctx,
       id: resourceId,
@@ -269,31 +302,21 @@ export function createUpdateResource(options: Options): Middleware {
       action,
       options,
     });
-
-    await deleteAppResource({
-      app,
-      context: ctx,
-      id: resourceId,
-      type: resourceType,
-      action: 'delete',
-    });
-
-    ctx.status = 204;
   };
 }
 
 export function createDeleteResource(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { resourceId, resourceType },
+      pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
     const { deleteAppResource, getApp, getAppResource, verifyPermission } = options;
     const action = 'delete';
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const whereOptions = await verifyPermission({
+    const userQuery = await verifyPermission({
       app,
       context: ctx,
       action,
@@ -301,19 +324,36 @@ export function createDeleteResource(options: Options): Middleware {
       options,
     });
 
+    const findOptions: FindOptions = {
+      where: {
+        ...userQuery,
+        id: resourceId,
+        type: resourceType,
+        AppId: appId,
+        expires: { or: [{ gt: new Date() }, null] },
+      },
+    };
+
     const resource = await getAppResource({
       app,
       id: resourceId,
       type: resourceType,
       context: ctx,
-      whereOptions,
+      findOptions,
     });
 
     if (!resource) {
       throw notFound('Resource not found');
     }
 
-    await deleteAppResource({ app, context: ctx, id: resourceId, type: resourceType, action });
+    await deleteAppResource({
+      app,
+      context: ctx,
+      id: resourceId,
+      type: resourceType,
+      action,
+      options,
+    });
 
     ctx.status = 204;
   };

@@ -19,8 +19,9 @@ import {
   Organization,
   User,
 } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.ts';
+import { appRouter } from '../routes/appRouter/index.js';
 import { setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
@@ -39,6 +40,7 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    authentication: authentication(),
   });
   await setTestApp(server);
 });

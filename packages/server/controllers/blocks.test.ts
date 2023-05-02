@@ -9,6 +9,7 @@ import stripIndent from 'strip-indent';
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 import * as controllers from './index.js';
@@ -21,6 +22,7 @@ beforeEach(async () => {
     argv,
     appRouter,
     controllers,
+    authentication: authentication(),
   });
   const user = await createTestUser();
   const organization = await Organization.create({

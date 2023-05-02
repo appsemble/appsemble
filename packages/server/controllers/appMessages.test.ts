@@ -15,6 +15,7 @@ import {
 } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import {
   authorizeClientCredentials,
   authorizeStudio,
@@ -34,6 +35,7 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    authentication: authentication(),
   });
   await setTestApp(server);
 });
@@ -50,6 +52,7 @@ beforeEach(async () => {
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: 'testorganization',
+    domain: '127.0.0.1',
     definition: {
       name: 'Test App',
       description: 'Description',
