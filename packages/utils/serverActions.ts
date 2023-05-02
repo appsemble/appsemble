@@ -7,6 +7,11 @@ export const serverActions = new Set([
   'log',
   'notify',
   'request',
+  'resource.get',
   'resource.query',
+  'resource.create',
+  'resource.patch',
+  'resource.update',
+  'resource.delete',
   'static',
 ]);
