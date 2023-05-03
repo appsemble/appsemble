@@ -12,7 +12,7 @@ import { createJWTResponse } from '../utils/createJWTResponse.js';
 export async function getUser(ctx: Context): Promise<void> {
   const { user } = ctx;
 
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: Organization,
@@ -31,7 +31,7 @@ export async function getUser(ctx: Context): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    organizations: user.Organizations.map((org: Organization) => ({
+    organizations: (user as User).Organizations.map((org: Organization) => ({
       id: org.id,
       name: org.name,
       iconUrl: org.get('hasIcon')
@@ -145,7 +145,7 @@ export async function addEmail(ctx: Context): Promise<void> {
     throw conflict('This email has already been registered.');
   }
 
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: EmailAuthorization,
@@ -171,7 +171,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
   const { request, user } = ctx;
 
   const email = request.body.email.toLowerCase();
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: EmailAuthorization,
@@ -188,7 +188,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
     throw notFound('This email address is not associated with your account.');
   }
 
-  if (user.EmailAuthorizations.length === 1 && !user.OAuthAuthorizations.length) {
+  if (user.EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length) {
     throw notAcceptable('Deleting this email results in the inability to access this account.');
   }
 

@@ -1,7 +1,7 @@
 import { type BlockManifest } from '@appsemble/types';
 import { type Context } from 'koa';
 
-import { type BlockVersion, Organization } from '../models/index.js';
+import { type BlockVersion, Organization, type User } from '../models/index.js';
 
 interface ExtendedBlockVersion extends BlockVersion {
   hasIcon?: boolean;
@@ -17,7 +17,7 @@ export async function createBlockVersionResponse(
   const { user } = ctx;
 
   if (user) {
-    await user.reload({
+    await (user as User).reload({
       include: [
         {
           model: Organization,
@@ -30,7 +30,7 @@ export async function createBlockVersionResponse(
   }
 
   const organizationIds = new Set(
-    user?.Organizations?.map((org: Organization) => org.id) || undefined,
+    (user as User)?.Organizations?.map((org: Organization) => org.id) || undefined,
   );
 
   return blockVersions

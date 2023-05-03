@@ -12,6 +12,7 @@
     - [Registering an Organization](#registering-an-organization)
     - [Publishing Blocks](#publishing-blocks)
     - [Publishing App templates](#publishing-app-templates)
+  - [Development Server](#development-server)
   - [Tests](#tests)
   - [Building](#building)
 - [Contributing](#contributing)
@@ -156,10 +157,10 @@ The development server can create an app from a specified folder containing an a
 file. It will check what blocks are needed for the app and will read them from the local workspaces,
 listed in the package.json file in the root of the project, if they are present.
 
-The development server will fetch all remote repositories listed in the .git/config file in the root
-of the project. It will fetch blocks that are missing from the workspaces from the corresponding
-remote repository. It will check only the main and master branches, to fetch blocks from other
-branches run:
+The development server will fetch all remote repositories listed in the `.git/config` file in the
+root of the project. It will fetch blocks that are missing from the workspaces from the
+corresponding remote repository. It will check only the main and master branches, to fetch blocks
+from other branches run:
 
 ```sh
 git checkout <remote-name>/<branch-name> -- <path-to-block-directory>
@@ -171,7 +172,7 @@ Supported remote repositories can be inspected by running:
 git remote -v
 ```
 
-New remote repositories can be added to the config file by running:
+New remote repositories can be added to the git configuration file by running:
 
 ```sh
 git remote add <remote-name> <remote-url>
@@ -190,13 +191,13 @@ root of the project:
 git checkout <remote-name>/<branch-name> -- <path-to-app-directory>
 ```
 
-Once the development server is started, making a change to a block's code or styles will reflect in
-the browser immediately after refreshing the page, without the need of increasing the block's
+Once the development server is started, making a change to a block’s code or styles will reflect in
+the browser immediately after refreshing the page, without the need of increasing the block’s
 version. Running docker database containers, creating a user account and creating an organization
 are not needed.
 
-App resources will be stored locally in the data.json file in the root of the project. App assets
-and block assets will be served from the local filesystem.
+App resources will be stored locally in the `data.json` file in the root of the project. App assets
+and block assets will be served from the local file system.
 
 The development server can be started by running:
 
@@ -204,7 +205,7 @@ The development server can be started by running:
 yarn appsemble serve <path-to-app-directory>
 ```
 
-This will serve the app on http://<app-name>.localhost:9090
+This will serve the app on `http://<app-name>.localhost:9090`
 
 ### Tests
 

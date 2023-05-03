@@ -1,5 +1,13 @@
 import { parse } from 'node:querystring';
 
+import {
+  appMapper,
+  boomMiddleware,
+  conditional,
+  frontend,
+  loggerMiddleware,
+  type UtilsUser,
+} from '@appsemble/node-utils';
 import { api, convertToCsv } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
@@ -30,11 +38,6 @@ import { statusCode } from 'koas-status-code';
 import { swaggerUI } from 'koas-swagger-ui';
 import { type Configuration } from 'webpack';
 
-import { appMapper } from './middleware/appMapper.js';
-import { boomMiddleware } from './middleware/boom.js';
-import { conditional } from './middleware/conditional.js';
-import { frontend } from './middleware/frontend.js';
-import { loggerMiddleware } from './middleware/loggerMiddleware.js';
 import pkg from './package.json' assert { type: 'json' };
 
 const xWwwFormUrlencodedParser: Parser<unknown> = async (body, mediaTypeObject, options, ctx) => {
@@ -55,20 +58,11 @@ const csvParser: Parser<unknown[]> = (body) =>
     );
   });
 
-interface User {
-  id: string;
-  name: string;
-  primaryEmail: string;
-  password: string;
-  locale: string;
-  timezone: string;
-}
-
 export interface AuthenticationCheckers {
-  basic: GetHttpUser<User>;
-  app: GetOAuth2User<User>;
-  cli: GetOAuth2User<User>;
-  studio: GetApiKeyUser<User>;
+  basic: GetHttpUser<UtilsUser>;
+  app: GetOAuth2User<UtilsUser>;
+  cli: GetOAuth2User<UtilsUser>;
+  studio: GetApiKeyUser<UtilsUser>;
 }
 
 interface CreateServerOptions {

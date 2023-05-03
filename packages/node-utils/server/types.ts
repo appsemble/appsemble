@@ -17,6 +17,15 @@ import {
   type ParameterizedContext,
 } from 'koa';
 
+export interface UtilsUser {
+  id: string;
+  name: string;
+  primaryEmail: string;
+  timezone: string;
+  locale: string;
+  EmailAuthorizations?: { verified: boolean }[];
+}
+
 declare module 'koa' {
   interface Request {
     body: any;
@@ -35,9 +44,17 @@ declare module 'koa' {
 
 declare module 'koas-security' {
   interface Clients {
+    app: { scope: string; app: App };
     basic: {};
     cli: { scope: string };
     studio: {};
+  }
+
+  interface Users {
+    app: UtilsUser;
+    basic: UtilsUser;
+    cli: UtilsUser;
+    studio: UtilsUser;
   }
 }
 
@@ -90,6 +107,7 @@ export interface FindOptions {
   offset?: number;
   attributes?: string[];
   order?: OrderItem[];
+  include?: any[];
 }
 
 export interface ContextBlockConfig extends BlockConfig {

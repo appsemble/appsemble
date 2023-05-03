@@ -23,6 +23,7 @@ import {
   ResourceSubscription,
   ResourceVersion,
   transactional,
+  type User,
 } from '../models/index.js';
 import { options } from '../options/options.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
@@ -274,8 +275,8 @@ export async function updateResources(ctx: Context): Promise<void> {
   ctx.body = updatedResources;
 
   for (const resource of updatedResources) {
-    processReferenceHooks(user, app, resource, action, options, ctx);
-    processHooks(user, app, resource, action, options, ctx);
+    processReferenceHooks(user as User, app, resource, action, options, ctx);
+    processHooks(user as User, app, resource, action, options, ctx);
   }
 }
 
@@ -430,8 +431,8 @@ export async function deleteResources(ctx: Context): Promise<void> {
       limit: 100,
     })) {
       await resource.destroy();
-      processReferenceHooks(user, app, resource, action, options, ctx);
-      processHooks(user, app, resource, action, options, ctx);
+      processReferenceHooks(user as User, app, resource, action, options, ctx);
+      processHooks(user as User, app, resource, action, options, ctx);
     }
     deletedAmount += 100;
   }

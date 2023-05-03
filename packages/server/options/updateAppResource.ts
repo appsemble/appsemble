@@ -1,7 +1,7 @@
 import { type UpdateAppResourceParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
-import { App, Asset, ResourceVersion, transactional } from '../models/index.js';
+import { App, Asset, ResourceVersion, transactional, type User } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
@@ -17,6 +17,8 @@ export function updateAppResource({
   resourceDefinition,
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   return transactional(async (transaction) => {
+    const { user } = context;
+
     const persistedApp = await App.findOne({
       where: {
         id: app.id,
@@ -43,7 +45,7 @@ export function updateAppResource({
         data,
         clonable,
         expires,
-        EditorId: context.user?.id,
+        EditorId: user?.id,
       },
       { transaction },
     );
@@ -54,7 +56,7 @@ export function updateAppResource({
           ...asset,
           AppId: app.id,
           ResourceId: id,
-          UserId: context.user?.id,
+          UserId: user?.id,
         })),
         { logging: false, transaction },
       );
@@ -87,8 +89,8 @@ export function updateAppResource({
       transaction,
     });
 
-    processReferenceHooks(context.user, persistedApp, newResource, action, options, context);
-    processHooks(context.user, persistedApp, newResource, action, options, context);
+    processReferenceHooks(user as User, persistedApp, newResource, action, options, context);
+    processHooks(user as User, persistedApp, newResource, action, options, context);
 
     return reloaded.toJSON();
   });

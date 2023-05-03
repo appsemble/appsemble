@@ -297,7 +297,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  await user.reload({
+  await (user as User).reload({
     attributes: ['primaryEmail', 'name'],
     include: [
       {

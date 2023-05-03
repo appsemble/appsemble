@@ -64,7 +64,7 @@ export async function getUserInfo(ctx: Context): Promise<void> {
       zoneinfo: appMember.User.timezone,
     };
   } else {
-    await user.reload({
+    await (user as User).reload({
       attributes: ['primaryEmail', 'name', 'locale', 'timezone'],
       include: [
         {
@@ -112,7 +112,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  const isAllowed = await checkIsAllowed(app, user);
+  const isAllowed = await checkIsAllowed(app, user as User);
 
   if (!isAllowed) {
     throw badRequest('User is not allowed to login due to the app’s security policy', {
@@ -129,7 +129,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
   }
 
   ctx.body = {
-    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user)),
+    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User)),
     isAllowed: true,
   };
 }
@@ -151,7 +151,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (!(await checkIsAllowed(app, user))) {
+  if (!(await checkIsAllowed(app, user as User))) {
     throw badRequest('User is not allowed to login due to the app’s security policy', {
       appName: app.definition.name,
       isAllowed: false,
@@ -161,7 +161,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
   if (app.AppMembers.length) {
     await AppMember.update({ consent: new Date() }, { where: { id: app.AppMembers[0].id } });
   } else {
-    await user.reload({
+    await (user as User).reload({
       include: [
         {
           model: EmailAuthorization,
@@ -180,5 +180,5 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
       consent: new Date(),
     });
   }
-  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user);
+  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User);
 }

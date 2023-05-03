@@ -1,6 +1,6 @@
 import { type DeleteAppResourceParams } from '@appsemble/node-utils';
 
-import { App, Resource } from '../models/index.js';
+import { App, Resource, type User } from '../models/index.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 export async function deleteAppResource({
@@ -12,6 +12,8 @@ export async function deleteAppResource({
   type,
   whereOptions,
 }: DeleteAppResourceParams): Promise<void> {
+  const { user } = context;
+
   const persistedApp = await App.findOne({
     where: {
       id: app.id,
@@ -22,8 +24,8 @@ export async function deleteAppResource({
     where: { id, type, AppId: app.id, ...whereOptions },
   });
 
-  processReferenceHooks(context.user, persistedApp, resource, action, options, context);
-  processHooks(context.user, persistedApp, resource, action, options, context);
+  processReferenceHooks(user as User, persistedApp, resource, action, options, context);
+  processHooks(user as User, persistedApp, resource, action, options, context);
 
   return resource.destroy();
 }

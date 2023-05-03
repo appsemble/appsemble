@@ -298,7 +298,7 @@ export async function getAppAccounts(ctx: Context): Promise<void> {
   const { user } = ctx;
   const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
 
-  const apps = await App.findAll(createAppAccountQuery(user, query));
+  const apps = await App.findAll(createAppAccountQuery(user as User, query));
 
   ctx.body = apps.map((app) => outputAppMember(app, language, baseLanguage));
 }
@@ -312,7 +312,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
-    ...createAppAccountQuery(user, query),
+    ...createAppAccountQuery(user as User, query),
   });
 
   if (!app) {
@@ -335,7 +335,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
-    ...createAppAccountQuery(user, query),
+    ...createAppAccountQuery(user as User, query),
   });
 
   if (!app) {

@@ -322,7 +322,7 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
     loginRequest.AppSamlSecret.App,
     loginRequest.redirectUri,
     loginRequest.scope,
-    loginRequest.User ?? user,
+    loginRequest.User ?? (user as User),
   );
   const redirect = new URL(loginRequest.redirectUri);
   redirect.searchParams.set('code', code);
