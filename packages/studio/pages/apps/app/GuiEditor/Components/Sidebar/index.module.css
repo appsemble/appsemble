@@ -4,6 +4,7 @@
   -ms-overflow-style: none;
   overflow-x: hidden;
   padding: 0;
+  position: relative;
   scrollbar-width: none;
 }
 
