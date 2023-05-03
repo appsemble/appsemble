@@ -1,17 +1,17 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
-import { Sidebar } from '../Components/Sidebar/index.js';
-import { TreeList } from '../Components/TreeList/index.js';
 import { CreateRolePage } from './CreateRolePage/index.js';
 import { DefaultPage } from './DefaultPage/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
 import { TeamsPage } from './TeamsPage/index.js';
+import { useApp } from '../../index.js';
+import { Preview } from '../Components/Preview/index.js';
+import { Sidebar } from '../Components/Sidebar/index.js';
+import { TreeList } from '../Components/TreeList/index.js';
 
 interface SecurityTabProps {
   isOpenLeft: boolean;
@@ -41,51 +41,6 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
-  const [editRoleName, setEditRoleName] = useState<string>(null);
-  const [newRoleName, setNewRoleName] = useState<string>(null);
-  const [createRoleName, setCreateRoleName] = useState<string>(null);
-
-  const onChangeTab = useCallback(
-    (tab: (typeof tabChangeOptions)[number]) => {
-      if (tab === 'createRole') {
-        setCurrentSideBar(Tabs[2]);
-        setSelectedRole(null);
-      } else {
-        setCurrentSideBar(Tabs.find(({ tab: t }) => t === tab));
-      }
-    },
-    [setCurrentSideBar, setSelectedRole],
-  );
-
-  const onChangeTeamsJoin = useCallback(
-    (index: number) => {
-      if (app.definition.security.teams) {
-        app.definition.security.teams.join = teamsJoinOptions[index];
-        setApp({ ...app });
-      }
-    },
-    [app, setApp],
-  );
-
-  const onRoleSelect = useCallback(
-    (index: number) => {
-      setSelectedRole(
-        Object.entries(app.definition.security?.roles || []).map(([key]) => key)[index],
-      );
-      setCurrentSideBar(Tabs[2]);
-    },
-    [app],
-  );
-
-  const onChangeTeamsJoin = useCallback(
-    (index: number) => {
-      if (app.definition.security.teams) {
-        app.definition.security.teams.join = teamsJoinOptions[index];
-        setApp({ ...app });
-      }
-    },
-    [app, setApp],
-  );
 
   const onChangeTab = useCallback(
     (tab: (typeof tabChangeOptions)[number]) => {

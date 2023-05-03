@@ -1,13 +1,23 @@
-import { DragEvent, ReactElement, useCallback, useRef, useState } from 'react';
-import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
-import { Sidebar } from '../Components/Sidebar/index.js';
-import { generateData } from '../Utils/schemaGenerator.js';
+import {
+  type BasicPageDefinition,
+  type BlockDefinition,
+  type BlockManifest,
+  type FlowPageDefinition,
+  type LoopPageDefinition,
+  type TabsPageDefinition,
+} from '@appsemble/types';
+import { normalizeBlockName } from '@appsemble/utils';
+import { type ReactElement, useCallback, useRef, useState } from 'react';
+
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
+import { useApp } from '../../index.js';
+import { Preview } from '../Components/Preview/index.js';
+import { Sidebar } from '../Components/Sidebar/index.js';
+import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
   isOpenLeft: boolean;
@@ -131,23 +141,9 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           onDragLeave={handleDragExit}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-        >
-          {blockManifest}
-        </div>
+        />
+        <Preview app={app} iframeRef={frame} />
       </div>
-      <Preview app={app} iframeRef={frame} />
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        className={dragOver ? styles.rootDragOver : styles.root}
-        onDragEnter={handleDragEnter}
-        onDragExit={handleDragExit}
-        onDragLeave={handleDragExit}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
-        {/* <Preview app={app} iframeRef={frame} /> */}
-      </div>
-
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
