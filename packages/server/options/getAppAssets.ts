@@ -1,8 +1,8 @@
-import { AppAsset, GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
+import { type AppAsset, type GetAppSubEntityParams } from '@appsemble/node-utils';
 
 import { Asset } from '../models/index.js';
 
-export const getAppAssets = async ({ app }: GetAppSubEntityParams): Promise<AppAsset[]> => {
+export async function getAppAssets({ app }: GetAppSubEntityParams): Promise<AppAsset[]> {
   const assets = await Asset.findAll({
     where: {
       AppId: app.id,
@@ -13,4 +13,4 @@ export const getAppAssets = async ({ app }: GetAppSubEntityParams): Promise<AppA
     id: asset.id,
     resourceId: asset.ResourceId,
   })) as AppAsset[];
-};
+}

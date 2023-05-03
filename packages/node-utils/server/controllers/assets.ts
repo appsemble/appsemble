@@ -1,9 +1,8 @@
+import { type FindOptions, type Options } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
-
-import { FindOptions, Options } from '../types.js';
 
 export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): Middleware {
   return async (ctx: Context) => {

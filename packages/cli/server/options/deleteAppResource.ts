@@ -1,6 +1,7 @@
-import { DeleteAppResourceParams } from '@appsemble/node-utils/server/types.js';
+import { type DeleteAppResourceParams } from '@appsemble/node-utils';
 
 import { Resource } from '../models/Resource.js';
 
-export const deleteAppResource = ({ id, type }: DeleteAppResourceParams): Promise<void> =>
-  Resource.deleteOne(id, type);
+export function deleteAppResource({ id, type }: DeleteAppResourceParams): Promise<void> {
+  return Resource.deleteOne(id, type);
+}

@@ -1,15 +1,15 @@
 import { readFile } from 'node:fs/promises';
 
 import {
-  AppScreenshot as AppScreenShotInterface,
-  GetAppSubEntityParams,
-} from '@appsemble/node-utils/server/types';
+  type AppScreenshot as AppScreenShotInterface,
+  type GetAppSubEntityParams,
+} from '@appsemble/node-utils';
 import { lookup } from 'mime-types';
 import sharp from 'sharp';
 
-export const getAppScreenshots = ({
+export function getAppScreenshots({
   app,
-}: GetAppSubEntityParams): Promise<AppScreenShotInterface[]> => {
+}: GetAppSubEntityParams): Promise<AppScreenShotInterface[]> {
   const appScreenshotsPromises = app.screenshotUrls.map(async (screenshotUrl, index) => {
     const screenshot = await readFile(`${app.path}/screenshots/${screenshotUrl}`);
     const img = sharp(screenshot);
@@ -26,4 +26,4 @@ export const getAppScreenshots = ({
   });
 
   return Promise.all(appScreenshotsPromises);
-};
+}

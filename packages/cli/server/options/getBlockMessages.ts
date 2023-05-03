@@ -1,8 +1,10 @@
 import {
-  BlockMessages as BlockMessagesInterface,
-  GetBlockMessagesParams,
-} from '@appsemble/node-utils/server/types';
+  type BlockMessages as BlockMessagesInterface,
+  type GetBlockMessagesParams,
+} from '@appsemble/node-utils';
 
-export const getBlockMessages = ({
+export function getBlockMessages({
   context,
-}: GetBlockMessagesParams): Promise<BlockMessagesInterface[]> => Promise.resolve(context.appBlocks);
+}: GetBlockMessagesParams): Promise<BlockMessagesInterface[]> {
+  return Promise.resolve(context.appBlocks);
+}

@@ -1,13 +1,13 @@
 import {
-  AppScreenshot as AppScreenShotInterface,
-  GetAppSubEntityParams,
-} from '@appsemble/node-utils/server/types';
+  type AppScreenshot as AppScreenShotInterface,
+  type GetAppSubEntityParams,
+} from '@appsemble/node-utils';
 
 import { AppScreenshot } from '../models/index.js';
 
-export const getAppScreenshots = async ({
+export async function getAppScreenshots({
   app,
-}: GetAppSubEntityParams): Promise<AppScreenShotInterface[]> => {
+}: GetAppSubEntityParams): Promise<AppScreenShotInterface[]> {
   const appScreenshots = await AppScreenshot.findAll({
     attributes: ['id', 'mime', 'screenshot', 'width', 'height'],
     where: { AppId: app.id },
@@ -20,4 +20,4 @@ export const getAppScreenshots = async ({
     width: appScreenshot.width,
     height: appScreenshot.height,
   }));
-};
+}

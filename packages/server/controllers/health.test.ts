@@ -1,11 +1,11 @@
+import { createServer } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { createServer } from '../../node-utils/createServer.js';
+import * as controllers from './index.js';
 import { getDB } from '../models/index.js';
 import { appRouter } from '../routes/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 useTestDatabase(import.meta);
 

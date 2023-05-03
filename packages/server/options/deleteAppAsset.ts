@@ -1,6 +1,7 @@
-import { DeleteAppAssetParams } from '@appsemble/node-utils/server/types';
+import { type DeleteAppAssetParams } from '@appsemble/node-utils';
 
 import { Asset } from '../models/index.js';
 
-export const deleteAppAsset = ({ id, transaction }: DeleteAppAssetParams): Promise<number> =>
-  Asset.destroy({ where: { id }, transaction });
+export function deleteAppAsset({ id, transaction }: DeleteAppAssetParams): Promise<number> {
+  return Asset.destroy({ where: { id }, transaction });
+}

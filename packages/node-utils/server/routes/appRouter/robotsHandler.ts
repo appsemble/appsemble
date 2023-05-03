@@ -1,4 +1,4 @@
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 
 export function createRobotsHandler(): Middleware {
   return (ctx: Context) => {

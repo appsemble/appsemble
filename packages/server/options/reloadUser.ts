@@ -1,9 +1,9 @@
-import { ReloadUserParams } from '@appsemble/node-utils/server/types';
+import { type ReloadUserParams } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { EmailAuthorization } from '../models/index.js';
 
-export const reloadUser = ({ context }: ReloadUserParams): Promise<Record<string, any>> => {
+export function reloadUser({ context }: ReloadUserParams): Promise<Record<string, any>> {
   const { user } = context;
   return user?.reload({
     attributes: ['primaryEmail', 'name', 'timezone'],
@@ -18,4 +18,4 @@ export const reloadUser = ({ context }: ReloadUserParams): Promise<Record<string
       },
     ],
   });
-};
+}

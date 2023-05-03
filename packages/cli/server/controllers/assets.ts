@@ -1,13 +1,16 @@
-import {
-  createCreateAsset,
-  createGetAssetById,
-  createGetAssets,
-} from '@appsemble/node-utils/server/controllers/assets.js';
+import { createCreateAsset, createGetAssetById, createGetAssets } from '@appsemble/node-utils';
+import { type DefaultContext, type DefaultState, type Middleware } from 'koa';
 
 import { options } from '../options/options.js';
 
-export const getAssets = createGetAssets(options);
+export function getAssets(): Middleware<DefaultState, DefaultContext> {
+  return createGetAssets(options);
+}
 
-export const getAssetById = createGetAssetById(options);
+export function getAssetById(): Middleware<DefaultState, DefaultContext> {
+  return createGetAssetById(options);
+}
 
-export const createAsset = createCreateAsset(options);
+export function createAsset(): Middleware<DefaultState, DefaultContext> {
+  return createCreateAsset(options);
+}

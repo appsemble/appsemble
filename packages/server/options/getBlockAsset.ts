@@ -1,15 +1,15 @@
 import {
-  BlockAsset as BlockAssetInterface,
-  GetBlockAssetParams,
-} from '@appsemble/node-utils/server/types';
+  type BlockAsset as BlockAssetInterface,
+  type GetBlockAssetParams,
+} from '@appsemble/node-utils';
 
 import { BlockAsset, BlockVersion } from '../models/index.js';
 
-export const getBlockAsset = ({
+export function getBlockAsset({
   filename,
   name,
   version,
-}: GetBlockAssetParams): Promise<BlockAssetInterface> => {
+}: GetBlockAssetParams): Promise<BlockAssetInterface> {
   const [org, blockId] = name.split('/');
 
   return BlockAsset.findOne({
@@ -22,4 +22,4 @@ export const getBlockAsset = ({
       },
     ],
   });
-};
+}

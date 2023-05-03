@@ -1,7 +1,8 @@
-import { AppStyles, GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
+import { type AppStyles, type GetAppSubEntityParams } from '@appsemble/node-utils';
 
-export const getAppStyles = ({ context }: GetAppSubEntityParams): Promise<AppStyles> =>
-  Promise.resolve({
+export function getAppStyles({ context }: GetAppSubEntityParams): Promise<AppStyles> {
+  return Promise.resolve({
     coreStyle: context.appsembleApp.coreStyle,
     sharedStyle: context.appsembleApp.sharedStyle,
   });
+}

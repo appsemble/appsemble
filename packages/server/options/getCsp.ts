@@ -1,14 +1,14 @@
-import { ContentSecurityPolicy, GetCspParams } from '@appsemble/node-utils/server/types';
+import { type ContentSecurityPolicy, type GetCspParams } from '@appsemble/node-utils';
 
 import { getSentryClientSettings } from '../utils/sentry.js';
 
-export const getCsp = ({
+export function getCsp({
   app,
   host,
   hostname,
   nonce,
   settingsHash,
-}: GetCspParams): ContentSecurityPolicy => {
+}: GetCspParams): ContentSecurityPolicy {
   const { reportUri, sentryDsn, sentryOrigin } = getSentryClientSettings(
     hostname,
     app.sentryDsn,
@@ -33,4 +33,4 @@ export const getCsp = ({
     'font-src': ['*', 'data:'],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
-};
+}

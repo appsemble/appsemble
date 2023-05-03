@@ -1,11 +1,11 @@
 import { tinyRouter } from '@appsemble/node-utils';
 import { noop } from '@appsemble/utils';
 
-import { staticHandler } from '../static.js';
 import { faviconHandler } from './faviconHandler.js';
 import { iconHandler } from './iconHandler.js';
 import { indexHandler } from './indexHandler.js';
 import { tokenHandler } from './tokenHandler.js';
+import { staticHandler } from '../static.js';
 
 export const studioRouter = tinyRouter([
   {

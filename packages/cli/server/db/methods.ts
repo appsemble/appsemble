@@ -1,4 +1,4 @@
-import { FindOptions, OrderItem } from '@appsemble/node-utils/server/types.js';
+import { type FindOptions, type OrderItem } from '@appsemble/node-utils';
 
 import { getAppDir } from './app.js';
 import { db } from './index.js';

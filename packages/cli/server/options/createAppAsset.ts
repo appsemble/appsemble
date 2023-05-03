@@ -1,11 +1,11 @@
 import { writeFile } from 'node:fs/promises';
 
-import { AppAsset, CreateAppAssetParams } from '@appsemble/node-utils/server/types';
+import { type AppAsset, type CreateAppAssetParams } from '@appsemble/node-utils';
 
-export const createAppAsset = async ({
+export async function createAppAsset({
   context,
   payload,
-}: CreateAppAssetParams): Promise<AppAsset> => {
+}: CreateAppAssetParams): Promise<AppAsset> {
   const { data, filename, mime, name } = payload;
 
   const asset = {
@@ -21,4 +21,4 @@ export const createAppAsset = async ({
   await writeFile(filename, data);
 
   return asset;
-};
+}

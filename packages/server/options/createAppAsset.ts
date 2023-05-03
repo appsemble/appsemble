@@ -1,14 +1,14 @@
-import { AppAsset, CreateAppAssetParams } from '@appsemble/node-utils/server/types';
+import { type AppAsset, type CreateAppAssetParams } from '@appsemble/node-utils';
 import { conflict } from '@hapi/boom';
 import { UniqueConstraintError } from 'sequelize';
 
 import { Asset } from '../models/Asset.js';
 
-export const createAppAsset = async ({
+export async function createAppAsset({
   app,
   context,
   payload,
-}: CreateAppAssetParams): Promise<AppAsset> => {
+}: CreateAppAssetParams): Promise<AppAsset> {
   const { data, filename, mime, name } = payload;
 
   let asset: Asset;
@@ -29,4 +29,4 @@ export const createAppAsset = async ({
   }
 
   return asset;
-};
+}

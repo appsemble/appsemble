@@ -1,9 +1,9 @@
-import { AppDetails, GetAppParams } from '@appsemble/node-utils/server/types';
+import { type AppDetails, type GetAppParams } from '@appsemble/node-utils';
 
-export const getAppDetails = ({ context }: GetAppParams): Promise<AppDetails> => {
+export function getAppDetails({ context }: GetAppParams): Promise<AppDetails> {
   const { appsembleApp } = context;
   return Promise.resolve({
     appPath: appsembleApp.path,
     organizationId: appsembleApp.OrganizationId,
   });
-};
+}

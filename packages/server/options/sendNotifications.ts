@@ -1,14 +1,14 @@
-import { SendNotificationsParams } from '@appsemble/node-utils/server/types';
+import { type SendNotificationsParams } from '@appsemble/node-utils';
 
 import { App, AppSubscription } from '../models/index.js';
 import { sendNotification } from '../utils/sendNotification.js';
 
-export const sendNotifications = async ({
+export async function sendNotifications({
   app,
   body,
   title,
   to,
-}: SendNotificationsParams): Promise<void> => {
+}: SendNotificationsParams): Promise<void> {
   const persistedApp = await App.findByPk(app.id, {
     attributes: ['id', 'definition', 'vapidPrivateKey', 'vapidPublicKey'],
     include: [
@@ -31,4 +31,4 @@ export const sendNotifications = async ({
   for (const subscription of persistedApp.AppSubscriptions) {
     sendNotification(persistedApp, subscription, { title, body });
   }
-};
+}

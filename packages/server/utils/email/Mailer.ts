@@ -1,8 +1,4 @@
-import { logger } from '@appsemble/node-utils';
-import {
-  getAppsembleMessages,
-  getSupportedLanguages,
-} from '@appsemble/node-utils/getAppsembleMessages.js';
+import { getAppsembleMessages, getSupportedLanguages, logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
 import addrs, { type ParsedMailbox } from 'email-addresses';
 import { type FormatXMLElementFn, IntlMessageFormat, type PrimitiveType } from 'intl-messageformat';

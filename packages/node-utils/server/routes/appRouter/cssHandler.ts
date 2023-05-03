@@ -1,7 +1,6 @@
+import { type Options } from '@appsemble/node-utils';
 import { notFound } from '@hapi/boom';
-import { Context, Middleware } from 'koa';
-
-import { Options } from '../../types.js';
+import { type Context, type Middleware } from 'koa';
 
 export function createCssHandler(
   type: 'coreStyle' | 'sharedStyle',

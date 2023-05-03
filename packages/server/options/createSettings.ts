@@ -1,5 +1,7 @@
-import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
-import { CreateSettingsParams } from '@appsemble/node-utils/server/types.js';
+import {
+  type CreateSettingsParams,
+  createSettings as createUtilsSettings,
+} from '@appsemble/node-utils';
 import { parseBlockName } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
@@ -7,13 +9,13 @@ import { App, AppOAuth2Secret, AppSamlSecret, BlockAsset, BlockVersion } from '.
 import { createGtagCode } from '../utils/render.js';
 import { getSentryClientSettings } from '../utils/sentry.js';
 
-export const createSettings = async ({
+export async function createSettings({
   app,
   host,
   hostname,
   identifiableBlocks,
   languages,
-}: CreateSettingsParams): Promise<[digest: string, script: string]> => {
+}: CreateSettingsParams): Promise<[digest: string, script: string]> {
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
@@ -105,4 +107,4 @@ export const createSettings = async ({
     },
     app.googleAnalyticsID ? createGtagCode(app.googleAnalyticsID) : undefined,
   );
-};
+}

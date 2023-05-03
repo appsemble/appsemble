@@ -1,9 +1,8 @@
 import { readFile } from 'node:fs/promises';
 
+import { type Options } from '@appsemble/node-utils';
 import { getAppBlocks } from '@appsemble/utils';
-import { Context, Middleware } from 'koa';
-
-import { Options } from '../../types.js';
+import { type Context, type Middleware } from 'koa';
 
 export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Options): Middleware {
   return async (ctx: Context) => {

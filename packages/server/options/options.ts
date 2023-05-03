@@ -1,4 +1,4 @@
-import { Options } from '@appsemble/node-utils/server/types.js';
+import { type Options } from '@appsemble/node-utils';
 
 import {
   checkRole,

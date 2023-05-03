@@ -1,5 +1,4 @@
-import { createFixtureStream, readFixture } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createFixtureStream, createServer, readFixture } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';

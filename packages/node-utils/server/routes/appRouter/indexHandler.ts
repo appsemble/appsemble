@@ -3,11 +3,11 @@ import { randomBytes } from 'node:crypto';
 import { createThemeURL, defaultLocale, getAppBlocks, mergeThemes } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
 import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
 import { makeCSP, render } from '../../../render.js';
-import { Options } from '../../types.js';
+import { type Options } from '../../types.js';
 
 export const bulmaURL = `/bulma/${bulmaPkg.version}/bulma.min.css`;
 export const faURL = `/fa/${faPkg.version}/css/all.min.css`;
@@ -55,7 +55,7 @@ export function createIndexHandler({
     }
 
     const defaultLanguage = app.definition.defaultLanguage || defaultLocale;
-    const appMessages = await getAppMessages({ app, context: ctx, lang: defaultLanguage });
+    const appMessages = await getAppMessages({ app, context: ctx, language: defaultLanguage });
 
     const languages = [
       ...new Set([...appMessages.map(({ language }) => language), defaultLanguage]),

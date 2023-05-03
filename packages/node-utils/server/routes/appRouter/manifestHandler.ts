@@ -1,9 +1,8 @@
+import { type Options } from '@appsemble/node-utils';
 import { baseTheme, normalize } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
-
-import { Options } from '../../types.js';
 
 const iconSizes = [48, 144, 192, 512];
 

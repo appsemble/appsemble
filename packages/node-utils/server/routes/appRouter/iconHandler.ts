@@ -1,8 +1,6 @@
+import { type Options, serveIcon } from '@appsemble/node-utils';
 import { isEqual, parseISO } from 'date-fns';
-import { Context, Middleware } from 'koa';
-
-import { serveIcon } from '../../../icon.js';
-import { Options } from '../../types.js';
+import { type Context, type Middleware } from 'koa';
 
 export function createIconHandler({ getApp, getAppIcon, getDbUpdated }: Options): Middleware {
   return async (ctx: Context) => {

@@ -57,13 +57,17 @@ export async function getApp(
       [value.appPath, value.organizationId] = subdomain;
       value.app = await App.findOne({
         ...queryOptions,
-        where: { path: value.appPath, OrganizationId: value.organizationId, ...queryOptions.where },
+        where: {
+          path: value.appPath,
+          OrganizationId: value.organizationId,
+          ...(queryOptions ? queryOptions.where : {}),
+        },
       });
     }
   } else {
     value.app = await App.findOne({
       ...queryOptions,
-      where: { domain: hostname, ...queryOptions.where },
+      where: { domain: hostname, ...(queryOptions ? queryOptions.where : {}) },
     });
   }
   return value;

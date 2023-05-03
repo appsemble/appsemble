@@ -1,7 +1,4 @@
-import {
-  getAppsembleMessages,
-  getSupportedLanguages,
-} from '@appsemble/node-utils/getAppsembleMessages.js';
+import { getAppsembleMessages, getSupportedLanguages } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';

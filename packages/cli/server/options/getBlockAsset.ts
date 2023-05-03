@@ -1,16 +1,16 @@
 import { readFile } from 'node:fs/promises';
 
 import {
-  BlockAsset as BlockAssetInterface,
-  GetBlockAssetParams,
-} from '@appsemble/node-utils/server/types';
+  type BlockAsset as BlockAssetInterface,
+  type GetBlockAssetParams,
+} from '@appsemble/node-utils';
 import { lookup } from 'mime-types';
 
-export const getBlockAsset = async ({
+export async function getBlockAsset({
   context,
   filename,
   name,
-}: GetBlockAssetParams): Promise<BlockAssetInterface> => {
+}: GetBlockAssetParams): Promise<BlockAssetInterface> {
   const { blockConfigs } = context;
   const blockConfig = blockConfigs.find((block) => block.name === name);
 
@@ -21,4 +21,4 @@ export const getBlockAsset = async ({
     content: asset,
     mime,
   };
-};
+}

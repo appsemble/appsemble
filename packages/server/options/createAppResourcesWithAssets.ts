@@ -1,11 +1,11 @@
-import { CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils/server/types.js';
-import { Resource as ResourceInterface } from '@appsemble/types';
+import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
+import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { App, Asset, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
-export const createAppResourcesWithAssets = async ({
+export async function createAppResourcesWithAssets({
   action,
   app,
   context,
@@ -13,7 +13,7 @@ export const createAppResourcesWithAssets = async ({
   preparedAssets,
   resourceType,
   resources,
-}: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> => {
+}: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
   await context.user?.reload({ attributes: ['name'] });
 
   let createdResources: Resource[];
@@ -54,4 +54,4 @@ export const createAppResourcesWithAssets = async ({
   processHooks(context.user, persistedApp, createdResources[0], action, options, context);
 
   return createdResources.map((resource) => resource.toJSON());
-};
+}

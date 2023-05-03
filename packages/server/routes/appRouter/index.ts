@@ -1,4 +1,4 @@
-import { createAppRouter } from '@appsemble/node-utils/server/routes/appRouter/index.js';
+import { createAppRouter } from '@appsemble/node-utils';
 
 import { options } from '../../options/options.js';
 

@@ -1,7 +1,7 @@
-import { GetAppParams } from '@appsemble/node-utils/server/types.js';
-import { App as AppInterface } from '@appsemble/types';
+import { type GetAppParams } from '@appsemble/node-utils';
+import { type App as AppInterface } from '@appsemble/types';
 
-export const getApp = ({ context }: GetAppParams): Promise<AppInterface> => {
+export function getApp({ context }: GetAppParams): Promise<AppInterface> {
   const { appsembleApp } = context;
   return Promise.resolve(appsembleApp);
-};
+}

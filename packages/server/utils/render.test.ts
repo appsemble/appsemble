@@ -1,5 +1,4 @@
-import { makeCSP } from '@appsemble/node-utils';
-import { type ContentSecurityPolicy } from '@appsemble/node-utils/server/types';
+import { type ContentSecurityPolicy, makeCSP } from '@appsemble/node-utils';
 
 describe('makeCSP', () => {
   const fixtures: Record<string, ContentSecurityPolicy> = {

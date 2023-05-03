@@ -1,8 +1,7 @@
 import { promisify } from 'node:util';
 import { inflateRaw } from 'node:zlib';
 
-import { readFixture } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer, readFixture } from '@appsemble/node-utils';
 import { type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { toXml } from 'xast-util-to-xml';

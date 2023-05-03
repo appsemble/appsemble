@@ -1,8 +1,8 @@
-import { AppStyles, GetAppParams } from '@appsemble/node-utils/server/types';
+import { type AppStyles, type GetAppParams } from '@appsemble/node-utils';
 
 import { getApp as getServerApp } from '../utils/app.js';
 
-export const getAppStyles = async ({ context, query }: GetAppParams): Promise<AppStyles> => {
+export async function getAppStyles({ context, query }: GetAppParams): Promise<AppStyles> {
   const { app } = await getServerApp(context, query);
   return app || null;
-};
+}

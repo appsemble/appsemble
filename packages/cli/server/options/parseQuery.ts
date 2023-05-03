@@ -1,11 +1,11 @@
-import { processLiteral } from '@appsemble/node-utils';
 import {
-  OrderItem,
-  ParsedQuery,
-  ParseQueryParams,
-  WhereOptions,
-} from '@appsemble/node-utils/server/types.js';
-import { defaultParser, Token, TokenType } from '@odata/parser';
+  type OrderItem,
+  type ParsedQuery,
+  type ParseQueryParams,
+  processLiteral,
+  type WhereOptions,
+} from '@appsemble/node-utils';
+import { defaultParser, type Token, TokenType } from '@odata/parser';
 
 const operators = new Map([
   [TokenType.EqualsExpression, 'eq'],
@@ -79,31 +79,28 @@ function processLogicalExpression(token: Token): WhereOptions {
   return { [op]: [].concat(left).concat(right) };
 }
 
-const parseOdataFilter = (query: Token | string): WhereOptions => {
+function parseOdataFilter(query: Token | string): WhereOptions {
   if (!query) {
     return {};
   }
   const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
   return processLogicalExpression(ast);
-};
+}
 
-const parseOdataOrder = (query: string): OrderItem[] => {
+function parseOdataOrder(query: string): OrderItem[] {
   if (!query) {
     return [];
   }
 
   return query.split(/,/g).map((line: string) => {
     const [name, direction] = line.split(' ');
-    return {
-      property: renameOData(name),
-      direction: direction?.toUpperCase() === 'DESC' ? -1 : 1,
-    };
+    return [renameOData(name), direction?.toUpperCase()];
   });
-};
+}
 
-export const parseQuery = ({ $filter, $orderby }: ParseQueryParams): ParsedQuery => {
+export function parseQuery({ $filter, $orderby }: ParseQueryParams): ParsedQuery {
   return {
     where: parseOdataFilter($filter),
     order: parseOdataOrder($orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author')),
   };
-};
+}

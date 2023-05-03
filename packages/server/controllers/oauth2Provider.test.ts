@@ -1,4 +1,4 @@
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer } from '@appsemble/node-utils';
 import { type LoginCodeResponse, type UserInfo } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';

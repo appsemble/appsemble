@@ -1,4 +1,4 @@
-import { createGetMessages } from '@appsemble/node-utils/server/controllers/appMessages.js';
+import { createGetMessages } from '@appsemble/node-utils';
 import { compareStrings, defaultLocale, Permission } from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';

@@ -1,4 +1,4 @@
-import { type AuthenticationCheckers } from '@appsemble/node-utils/createServer';
+import { type AuthenticationCheckers } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize';

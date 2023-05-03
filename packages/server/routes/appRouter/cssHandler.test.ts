@@ -1,4 +1,4 @@
-import { boomMiddleware } from '@appsemble/node-utils/middleware/boom.js';
+import { boomMiddleware } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 

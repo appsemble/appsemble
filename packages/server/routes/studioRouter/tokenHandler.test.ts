@@ -12,10 +12,12 @@ import {
   type User,
 } from '../../models/index.js';
 import { argv, setArgv } from '../../utils/argv.js';
+import { authentication } from '../../utils/authentication.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { createTestUser } from '../../utils/test/authorization.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 import { appRouter } from '../appRouter/index.js';
+import { studioRouter } from '../studioRouter/index.js';
 
 let user: User;
 
@@ -27,6 +29,8 @@ beforeAll(async () => {
     argv,
     appRouter,
     controllers,
+    studioRouter,
+    authentication: authentication(),
   });
   await setTestApp(server);
 });

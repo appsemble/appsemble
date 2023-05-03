@@ -1,8 +1,8 @@
 import { readFile } from 'node:fs/promises';
 
-import { AppAsset, GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
+import { type AppAsset, type GetAppSubEntityParams } from '@appsemble/node-utils';
 
-export const getAppAssets = ({ context }: GetAppSubEntityParams): Promise<AppAsset[]> => {
+export function getAppAssets({ context }: GetAppSubEntityParams): Promise<AppAsset[]> {
   const assetPromises = context.appAssets.map(async (asset) => {
     const data = await readFile(asset.filename);
     return {
@@ -12,4 +12,4 @@ export const getAppAssets = ({ context }: GetAppSubEntityParams): Promise<AppAss
   });
 
   return Promise.all(assetPromises);
-};
+}

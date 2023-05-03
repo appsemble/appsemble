@@ -1,5 +1,9 @@
-import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import {
+  createFixtureStream,
+  createFormData,
+  createServer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

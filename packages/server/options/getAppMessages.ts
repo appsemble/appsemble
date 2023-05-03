@@ -1,15 +1,15 @@
-import { GetAppMessagesParams } from '@appsemble/node-utils/server/types';
-import { AppMessages as AppMessagesInterface } from '@appsemble/types';
+import { type GetAppMessagesParams } from '@appsemble/node-utils';
+import { type AppMessages as AppMessagesInterface } from '@appsemble/types';
 import tags from 'language-tags';
 import { Op } from 'sequelize';
 
 import { AppMessages } from '../models/AppMessages.js';
 
-export const getAppMessages = ({
+export function getAppMessages({
   app,
   context,
   language,
-}: GetAppMessagesParams): Promise<AppMessagesInterface[]> => {
+}: GetAppMessagesParams): Promise<AppMessagesInterface[]> {
   const { merge } = context.query || { merge: undefined };
 
   const lang = language.toLowerCase();
@@ -33,4 +33,4 @@ export const getAppMessages = ({
       },
     },
   });
-};
+}

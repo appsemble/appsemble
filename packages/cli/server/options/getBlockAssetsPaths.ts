@@ -1,9 +1,7 @@
-import { GetBlocksAssetsPathsParams } from '@appsemble/node-utils/server/types';
+import { type GetBlocksAssetsPathsParams } from '@appsemble/node-utils';
 import { prefixBlockURL } from '@appsemble/utils';
 
-export const getBlocksAssetsPaths = ({
-  context,
-}: GetBlocksAssetsPathsParams): Promise<string[]> => {
+export function getBlocksAssetsPaths({ context }: GetBlocksAssetsPathsParams): Promise<string[]> {
   const { appBlocks } = context;
 
   return Promise.resolve(
@@ -13,4 +11,4 @@ export const getBlocksAssetsPaths = ({
         .map((filename) => prefixBlockURL({ type: block.name, version: block.version }, filename)),
     ),
   );
-};
+}

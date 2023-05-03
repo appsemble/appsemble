@@ -1,11 +1,12 @@
-import { UpdateAppResourceParams } from '@appsemble/node-utils/server/types.js';
-import { Resource as ResourceInterface } from '@appsemble/types';
+import { type UpdateAppResourceParams } from '@appsemble/node-utils';
+import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { Resource } from '../models/Resource.js';
 
-export const updateAppResource = ({
+export function updateAppResource({
   id,
   resource,
   type,
-}: UpdateAppResourceParams): Promise<ResourceInterface | null> =>
-  Resource.updateOne(id, resource, type);
+}: UpdateAppResourceParams): Promise<ResourceInterface | null> {
+  return Resource.updateOne(id, resource, type);
+}

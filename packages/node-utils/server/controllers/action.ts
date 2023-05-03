@@ -1,3 +1,4 @@
+import { getRemapperContext, logger, type Options } from '@appsemble/node-utils';
 import {
   type ActionDefinition,
   type App,
@@ -11,10 +12,7 @@ import axios from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
-import { getRemapperContext } from '../../app.js';
-import { logger } from '../../logger.js';
 import pkg from '../../package.json' assert { type: 'json' };
-import { type Options } from '../types.js';
 
 /**
  * These response headers are forwarded when proxying requests.

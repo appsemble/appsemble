@@ -1,9 +1,11 @@
-import { GetAppResourcesParams } from '@appsemble/node-utils/server/types.js';
-import { Resource as ResourceInterface } from '@appsemble/types';
+import { type GetAppResourcesParams } from '@appsemble/node-utils';
+import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { Resource } from '../models/Resource.js';
 
-export const getAppResources = ({
+export function getAppResources({
   findOptions,
   type,
-}: GetAppResourcesParams): Promise<ResourceInterface[] | []> => Resource.findAll(findOptions, type);
+}: GetAppResourcesParams): Promise<ResourceInterface[] | []> {
+  return Resource.findAll(findOptions, type);
+}

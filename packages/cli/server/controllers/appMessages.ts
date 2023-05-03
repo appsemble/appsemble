@@ -1,5 +1,8 @@
-import { createGetMessages } from '@appsemble/node-utils/server/controllers/appMessages.js';
+import { createGetMessages } from '@appsemble/node-utils';
+import { type DefaultContext, type DefaultState, type Middleware } from 'koa';
 
 import { options } from '../options/options.js';
 
-export const getMessages = createGetMessages(options);
+export function getMessages(): Middleware<DefaultState, DefaultContext> {
+  return createGetMessages(options);
+}

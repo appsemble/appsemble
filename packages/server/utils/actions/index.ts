@@ -1,4 +1,4 @@
-import { type Options } from '@appsemble/node-utils/server/types';
+import { type Options } from '@appsemble/node-utils';
 import { type ActionDefinition } from '@appsemble/types';
 import { type RemapperContext } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';

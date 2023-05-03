@@ -1,8 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import { logger, readFileOrString } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer, logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';

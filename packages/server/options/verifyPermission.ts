@@ -1,8 +1,7 @@
-import { getResourceDefinition } from '@appsemble/node-utils';
-import { VerifyPermissionParams } from '@appsemble/node-utils/server/types';
+import { getResourceDefinition, type VerifyPermissionParams } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { forbidden, unauthorized } from '@hapi/boom';
-import { Op, WhereOptions } from 'sequelize';
+import { Op, type WhereOptions } from 'sequelize';
 
 import { AppMember, Organization, Team, TeamMember, User } from '../models/index.js';
 
@@ -13,13 +12,13 @@ const specialRoles = new Set([
   ...Object.values(TeamRole).map((r) => `$team:${r}`),
 ]);
 
-export const verifyPermission = async ({
+export async function verifyPermission({
   action,
   app,
   context,
   options: { checkRole },
   resourceType,
-}: VerifyPermissionParams): Promise<Record<string, any>> => {
+}: VerifyPermissionParams): Promise<Record<string, any>> {
   const view = context.queryParams?.view;
 
   const resourceDefinition = getResourceDefinition(app, resourceType, view);
@@ -175,4 +174,4 @@ export const verifyPermission = async ({
   }
 
   return result.length === 1 ? result[0] : { [Op.or]: result };
-};
+}

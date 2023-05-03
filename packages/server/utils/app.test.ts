@@ -1,4 +1,4 @@
-import { getRemapperContext } from '@appsemble/node-utils/app';
+import { getRemapperContext } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
 
 import { compareApps, getApp } from './app.js';

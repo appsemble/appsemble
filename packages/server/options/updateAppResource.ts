@@ -1,11 +1,11 @@
-import { UpdateAppResourceParams } from '@appsemble/node-utils/server/types.js';
-import { Resource as ResourceInterface } from '@appsemble/types';
+import { type UpdateAppResourceParams } from '@appsemble/node-utils';
+import { type Resource as ResourceInterface } from '@appsemble/types';
 
 import { App, Asset, ResourceVersion, transactional } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
-export const updateAppResource = ({
+export function updateAppResource({
   action,
   app,
   context,
@@ -15,8 +15,8 @@ export const updateAppResource = ({
   preparedAssets,
   resource,
   resourceDefinition,
-}: UpdateAppResourceParams): Promise<ResourceInterface | null> =>
-  transactional(async (transaction) => {
+}: UpdateAppResourceParams): Promise<ResourceInterface | null> {
+  return transactional(async (transaction) => {
     const persistedApp = await App.findOne({
       where: {
         id: app.id,
@@ -92,3 +92,4 @@ export const updateAppResource = ({
 
     return reloaded.toJSON();
   });
+}

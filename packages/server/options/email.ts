@@ -1,16 +1,16 @@
-import { EmailParams } from '@appsemble/node-utils/server/types';
+import { type EmailParams } from '@appsemble/node-utils';
 
 import { App } from '../models/index.js';
 import { email as serverEmail } from '../utils/actions/email.js';
 
-export const email = async ({
+export async function email({
   action,
   context,
   data,
   mailer,
   options,
   user,
-}: EmailParams): Promise<void> => {
+}: EmailParams): Promise<void> {
   const { getApp } = options;
   const app = await getApp({ context });
 
@@ -31,4 +31,4 @@ export const email = async ({
   });
 
   await serverEmail({ app: persistedApp, action, data, mailer, user, options, context });
-};
+}

@@ -1,4 +1,4 @@
-import { FindOptions } from '@appsemble/node-utils/server/types.js';
+import { type FindOptions } from '@appsemble/node-utils';
 
 import { Methods } from '../db/methods.js';
 

@@ -1,5 +1,9 @@
-import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import {
+  createFixtureStream,
+  createFormData,
+  createServer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { type AppAccount, type AppMember as AppMemberType } from '@appsemble/types';
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';

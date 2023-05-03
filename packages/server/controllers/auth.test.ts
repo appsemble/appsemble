@@ -1,15 +1,15 @@
-import { createServer } from '@appsemble/node-utils/createServer.js';
+import { createServer } from '@appsemble/node-utils';
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
+import * as controllers from './index.js';
 import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
 import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { Mailer } from '../utils/email/Mailer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
-import * as controllers from './index.js';
 
 useTestDatabase(import.meta);
 

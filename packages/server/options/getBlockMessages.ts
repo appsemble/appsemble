@@ -1,17 +1,17 @@
 import {
-  BlockMessages as BlockMessagesInterface,
-  GetBlockMessagesParams,
-} from '@appsemble/node-utils/server/types';
+  type BlockMessages as BlockMessagesInterface,
+  type GetBlockMessagesParams,
+} from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { BlockMessages, BlockVersion } from '../models/index.js';
 
-export const getBlockMessages = async ({
+export async function getBlockMessages({
   baseLang,
   blockQuery,
   lang,
-}: GetBlockMessagesParams): Promise<BlockMessagesInterface[]> => {
+}: GetBlockMessagesParams): Promise<BlockMessagesInterface[]> {
   const blockVersions = await BlockVersion.findAll({
     attributes: ['name', 'version', 'OrganizationId', 'id'],
     where: {
@@ -40,4 +40,4 @@ export const getBlockMessages = async ({
       messages,
     };
   });
-};
+}

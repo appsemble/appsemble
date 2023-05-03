@@ -1,12 +1,12 @@
-import { GetBlocksAssetsPathsParams } from '@appsemble/node-utils/server/types';
+import { type GetBlocksAssetsPathsParams } from '@appsemble/node-utils';
 import { parseBlockName, prefixBlockURL } from '@appsemble/utils';
 import { Op } from 'sequelize';
 
 import { BlockAsset, BlockVersion } from '../models/index.js';
 
-export const getBlocksAssetsPaths = async ({
+export async function getBlocksAssetsPaths({
   identifiableBlocks,
-}: GetBlocksAssetsPathsParams): Promise<string[]> => {
+}: GetBlocksAssetsPathsParams): Promise<string[]> {
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
@@ -34,4 +34,4 @@ export const getBlocksAssetsPaths = async ({
       ),
     ),
   );
-};
+}

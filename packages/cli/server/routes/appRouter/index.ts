@@ -1,5 +1,8 @@
-import { createAppRouter } from '@appsemble/node-utils/server/routes/appRouter/index.js';
+import { createAppRouter } from '@appsemble/node-utils';
+import { type Middleware } from 'koa';
 
 import { options } from '../../options/options.js';
 
-export const appRouter = createAppRouter(options);
+export function appRouter(): Middleware {
+  return createAppRouter(options);
+}

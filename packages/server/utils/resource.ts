@@ -1,5 +1,4 @@
-import { getRemapperContext } from '@appsemble/node-utils';
-import { type Options } from '@appsemble/node-utils/server/types';
+import { getRemapperContext, type Options } from '@appsemble/node-utils';
 import { type NotificationDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';

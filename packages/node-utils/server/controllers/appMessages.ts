@@ -1,12 +1,19 @@
-import { AppsembleMessages } from '@appsemble/types';
-import { defaultLocale, extractAppMessages, normalizeBlockName, Prefix } from '@appsemble/utils';
+import {
+  type BlockQueryItem,
+  getAppsembleMessages,
+  mergeMessages,
+  type Options,
+} from '@appsemble/node-utils';
+import { type AppsembleMessages } from '@appsemble/types';
+import {
+  defaultLocale,
+  extractAppMessages,
+  normalizeBlockName,
+  type Prefix,
+} from '@appsemble/utils';
 import { badRequest, notFound } from '@hapi/boom';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import tags from 'language-tags';
-
-import { getAppsembleMessages } from '../../getAppsembleMessages.js';
-import { mergeMessages } from '../../mergeMessages.js';
-import { BlockQueryItem, Options } from '../types.js';
 
 export function createGetMessages({
   getApp,

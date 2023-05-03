@@ -1,11 +1,13 @@
-import { createSettings as createUtilsSettings } from '@appsemble/node-utils';
-import { CreateSettingsParams } from '@appsemble/node-utils/server/types';
+import {
+  type CreateSettingsParams,
+  createSettings as createUtilsSettings,
+} from '@appsemble/node-utils';
 
-export const createSettings = ({
+export function createSettings({
   context,
   host,
   languages,
-}: CreateSettingsParams): Promise<[digest: string, script: string]> => {
+}: CreateSettingsParams): Promise<[digest: string, script: string]> {
   const { appBlocks, appsembleApp } = context;
 
   return Promise.resolve(
@@ -18,4 +20,4 @@ export const createSettings = ({
       appUpdated: appsembleApp.$updated,
     }),
   );
-};
+}

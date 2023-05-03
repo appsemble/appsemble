@@ -4,13 +4,25 @@ import http from 'node:http';
 import { basename, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
 
-import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
-import { createServer } from '@appsemble/node-utils/createServer.js';
-import { App, AppDefinition, AppMessages, AppsembleMessages, Asset } from '@appsemble/types';
+import {
+  AppsembleError,
+  createServer,
+  logger,
+  opendirSafe,
+  readData,
+  writeData,
+} from '@appsemble/node-utils';
+import {
+  type App,
+  type AppDefinition,
+  type AppMessages,
+  type AppsembleMessages,
+  type Asset,
+} from '@appsemble/types';
 import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
-import { Argv } from 'yargs';
+import { type Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
@@ -20,7 +32,7 @@ import * as controllers from '../server/controllers/index.js';
 import { setAppDir } from '../server/db/app.js';
 import { Resource } from '../server/models/Resource.js';
 import { appRouter } from '../server/routes/appRouter/index.js';
-import { BaseArguments } from '../types.js';
+import { type BaseArguments } from '../types.js';
 
 interface ServeArguments extends BaseArguments {
   path: string;

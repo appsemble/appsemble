@@ -1,11 +1,11 @@
-import { GetAppParams } from '@appsemble/node-utils/server/types.js';
-import { App as AppInterface } from '@appsemble/types';
+import { type GetAppParams } from '@appsemble/node-utils';
+import { type App as AppInterface } from '@appsemble/types';
 
 import { AppMember } from '../models/AppMember.js';
 import { Organization } from '../models/Organization.js';
 import { getApp as getServerApp } from '../utils/app.js';
 
-export const getApp = async ({ context, query, user }: GetAppParams): Promise<AppInterface> => {
+export async function getApp({ context, query, user }: GetAppParams): Promise<AppInterface> {
   const { app } = await getServerApp(context, {
     ...query,
     ...(user && {
@@ -21,4 +21,4 @@ export const getApp = async ({ context, query, user }: GetAppParams): Promise<Ap
     }),
   });
   return app ? app.toJSON() : null;
-};
+}

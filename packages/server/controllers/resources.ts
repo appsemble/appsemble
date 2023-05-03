@@ -1,16 +1,14 @@
 import {
-  extractResourceBody,
-  getResourceDefinition,
-  processResourceBody,
-} from '@appsemble/node-utils';
-import {
   createCountResources,
   createCreateResource,
   createDeleteResource,
   createGetResourceById,
   createQueryResources,
   createUpdateResource,
-} from '@appsemble/node-utils/server/controllers/resources.js';
+  extractResourceBody,
+  getResourceDefinition,
+  processResourceBody,
+} from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
 import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';

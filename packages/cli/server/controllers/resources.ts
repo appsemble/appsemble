@@ -5,18 +5,31 @@ import {
   createGetResourceById,
   createQueryResources,
   createUpdateResource,
-} from '@appsemble/node-utils/server/controllers/resources.js';
+} from '@appsemble/node-utils';
+import { type DefaultContext, type DefaultState, type Middleware } from 'koa';
 
 import { options } from '../options/options.js';
 
-export const createResource = createCreateResource(options);
+export function createResource(): Middleware<DefaultContext, DefaultState> {
+  return createCreateResource(options);
+}
 
-export const countResources = createCountResources(options);
+export function countResources(): Middleware<DefaultContext, DefaultState> {
+  return createCountResources(options);
+}
 
-export const getResourceById = createGetResourceById(options);
+export function getResourceById(): Middleware<DefaultContext, DefaultState> {
+  return createGetResourceById(options);
+}
 
-export const queryResources = createQueryResources(options);
+export function queryResources(): Middleware<DefaultContext, DefaultState> {
+  return createQueryResources(options);
+}
 
-export const updateResource = createUpdateResource(options);
+export function updateResource(): Middleware<DefaultContext, DefaultState> {
+  return createUpdateResource(options);
+}
 
-export const deleteResource = createDeleteResource(options);
+export function deleteResource(): Middleware<DefaultContext, DefaultState> {
+  return createDeleteResource(options);
+}

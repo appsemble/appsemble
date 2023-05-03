@@ -1,4 +1,4 @@
-import { GetAppSubEntityParams } from '@appsemble/node-utils/server/types';
+import { type GetAppSubEntityParams } from '@appsemble/node-utils';
 
 import { App } from '../models/index.js';
 import { getAppUrl as getServerAppUrl } from '../utils/app.js';

@@ -1,14 +1,13 @@
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 
+import { type Options, tinyRouter } from '@appsemble/node-utils';
 import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
-import { Middleware } from 'koa';
+import { type Middleware } from 'koa';
 import mount from 'koa-mount';
 import serve from 'koa-static';
 
-import { tinyRouter } from '../../../tinyRouter.js';
-import { Options } from '../../types.js';
 import { createBlockAssetHandler } from './blockAssetHandler.js';
 import { createBlockCssHandler } from './blockCssHandler.js';
 import { createBulmaHandler } from './bulmaHandler.js';

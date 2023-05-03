@@ -1,11 +1,12 @@
-import { CheckRoleParams } from '@appsemble/node-utils/server/types';
+import { type CheckRoleParams } from '@appsemble/node-utils';
 
 import { checkRole as checkRoleServer } from '../utils/checkRole.js';
 
-export const checkRole = ({
+export function checkRole({
   app,
   context,
   findOptions,
   permissions,
-}: CheckRoleParams): Promise<Record<string, any>> =>
-  checkRoleServer(context, app.OrganizationId, permissions, findOptions);
+}: CheckRoleParams): Promise<Record<string, any>> {
+  return checkRoleServer(context, app.OrganizationId, permissions, findOptions);
+}

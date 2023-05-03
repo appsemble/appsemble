@@ -1,5 +1,4 @@
-import { logger, serveIcon } from '@appsemble/node-utils';
-import { handleValidatorResult } from '@appsemble/node-utils/jsonschema.js';
+import { handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
