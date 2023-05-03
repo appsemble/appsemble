@@ -2,6 +2,7 @@ import { IconButton } from '@appsemble/react-components';
 import {
   BasicPageDefinition,
   FlowPageDefinition,
+  FontDefinition,
   TabsPageDefinition,
   Theme,
 } from '@appsemble/types';
@@ -34,6 +35,8 @@ interface ThemePageProps {
   selectedBlock: number;
   selectedSubParent: number;
 }
+
+const defaultFont: FontDefinition = { family: 'Open Sans', source: 'google' };
 export function ThemePage({
   selectedBlock,
   selectedPage,
@@ -47,7 +50,7 @@ export function ThemePage({
     page: number,
     subParent: number,
   ): { theme: Theme; inheritors: InheritedTheme } {
-    const theme = app.definition.theme ? { ...app.definition.theme } : { ...baseTheme };
+    const theme = app.definition.theme ? { ...app.definition.theme } : {};
     const inheritors: InheritedTheme = {
       themeInherited: formatMessage(messages.defaultTheme),
       primaryInherited: formatMessage(messages.defaultTheme),
@@ -339,7 +342,7 @@ export function ThemePage({
           app.definition.theme = {};
         }
         if (!app.definition.theme.font) {
-          app.definition.theme.font = { family: 'Open Sans', source: 'google' };
+          app.definition.theme.font = defaultFont;
         }
         if (type === 'family') {
           app.definition.theme.font.family = options[index];
@@ -354,10 +357,7 @@ export function ThemePage({
             app.definition.pages[selectedPage].theme = {};
           }
           if (!app.definition.pages[selectedPage].theme.font) {
-            app.definition.pages[selectedPage].theme.font = {
-              family: 'Open Sans',
-              source: 'google',
-            };
+            app.definition.pages[selectedPage].theme.font = defaultFont;
           }
           if (type === 'family') {
             app.definition.pages[selectedPage].theme.font.family = options[index];
@@ -377,7 +377,7 @@ export function ThemePage({
             if (!(currentPage as BasicPageDefinition).blocks[selectedBlock].theme.font) {
               (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
                 selectedBlock
-              ].theme.font = { family: 'Open Sans', source: 'google' };
+              ].theme.font = defaultFont;
             }
             if (type === 'family') {
               (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
@@ -405,7 +405,7 @@ export function ThemePage({
             ) {
               (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
                 selectedSubParent
-              ].blocks[selectedBlock].theme.font = { family: 'Open Sans', source: 'google' };
+              ].blocks[selectedBlock].theme.font = defaultFont;
             }
             if (type === 'family') {
               (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
@@ -433,7 +433,7 @@ export function ThemePage({
             ) {
               (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
                 selectedSubParent
-              ].blocks[selectedBlock].theme.font = { family: 'Open Sans', source: 'google' };
+              ].blocks[selectedBlock].theme.font = defaultFont;
             }
             if (type === 'family') {
               (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
