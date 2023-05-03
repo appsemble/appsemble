@@ -1,5 +1,11 @@
+import { mapValues } from '@appsemble/utils';
 import { Schema } from 'jsonschema';
 import { JsonValue } from 'type-fest';
+
+/**
+ * Generates values for each type in a Schema.
+ * This is done to allow new blocks made with the GUI Editor to have default values
+ */
 
 export const generateData = (
   definitions: Record<string, Schema>,
@@ -74,6 +80,9 @@ export const generateData = (
   }
   if (schema.type === 'boolean') {
     return false;
+  }
+  if (schema.type === 'object') {
+    return mapValues(schema.properties || {}, generateData);
   }
   return null;
 };
