@@ -16,9 +16,7 @@ export function PageProperty({ selectedPage }: PagePropertyProps): ReactElement 
   const [currentPageName, setCurrentPageName] = useState(
     selectedPage === -1 ? 'Page Name' : app.definition.pages[selectedPage].name,
   );
-  const [currentPageType, setCurrentPageType] = useState<typeof pageTypes[number]>(
-    selectedPage === -1 ? 'page' : app.definition.pages[selectedPage].type || 'page',
-  );
+  const [currentPageType, setCurrentPageType] = useState<(typeof pageTypes)[number]>('page');
 
   const onChangePageName = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {

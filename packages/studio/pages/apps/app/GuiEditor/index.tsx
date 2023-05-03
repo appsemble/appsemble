@@ -91,8 +91,8 @@ export default function EditPage(): ReactElement {
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
-    } catch {
-      push({ body: formatMessage(messages.failed), color: 'danger' });
+    } catch (error: any) {
+      push({ body: `${formatMessage(messages.failed)} ${error}`, color: 'danger' });
     }
   }, [app.definition, app.id, coreStyle, formatMessage, push, setApp, sharedStyle]);
 

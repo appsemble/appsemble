@@ -1,14 +1,23 @@
+import { mapValues } from '@appsemble/utils';
 import { Schema } from 'jsonschema';
 import { JsonValue } from 'type-fest';
 
+/**
+ * Generates values for each type in a Schema.
+ * This is done to allow new blocks made with the GUI Editor to have default values
+ */
+
 export const generateData = (
-  schema: Schema,
   definitions: Record<string, Schema>,
+  schema?: Schema,
   ownerKey = '',
 ): JsonValue => {
+  if (!schema) {
+    return;
+  }
   if (schema.$ref) {
     const ref = decodeURIComponent(schema.$ref.split('/').pop());
-    return generateData(definitions[ref!] as Schema, definitions);
+    return generateData(definitions, definitions[ref!] as Schema);
   }
   if (schema.default) {
     return schema.default;
@@ -17,7 +26,7 @@ export const generateData = (
     const data: Record<string, JsonValue> = {};
     if (schema.properties) {
       for (const key of Object.keys(schema.properties)) {
-        data[key] = generateData(schema.properties[key], definitions, key);
+        data[key] = generateData(definitions, schema.properties[key], key);
       }
     }
     /* If (typeof schema.required !== 'boolean' && schema.required?.length) {
@@ -28,32 +37,32 @@ export const generateData = (
     return data;
   }
   if (schema.anyOf) {
-    return [generateData(schema.anyOf[0], definitions)];
+    return [generateData(definitions, schema.anyOf[0])];
   }
   if (schema.oneOf) {
-    return generateData(schema.oneOf[0], definitions);
+    return generateData(definitions, schema.oneOf[0]);
   }
   if (schema.allOf) {
     const allOf = [];
     for (const allOfSchema of schema.allOf) {
-      allOf.push(generateData(allOfSchema, definitions));
+      allOf.push(generateData(definitions, allOfSchema));
     }
     return allOf;
   }
   if (schema.enum) {
     return schema.enum[0];
   }
-  if (schema.format === 'remapper') {
-    return { propName: ownerKey };
+  if (schema.format === 'remapper' && schema.required) {
+    return ownerKey;
   }
   if (schema.type === 'array') {
-    return Array.from({ length: schema.minItems }, (empty, index) =>
+    return Array.from({ length: 1 }, (empty, index) =>
       generateData(
+        definitions,
         Array.isArray(schema.items)
           ? schema.items[index] ||
               (typeof schema.additionalItems === 'object' && schema.additionalItems)
           : schema.items,
-        definitions,
       ),
     );
   }
@@ -71,6 +80,9 @@ export const generateData = (
   }
   if (schema.type === 'boolean') {
     return false;
+  }
+  if (schema.type === 'object') {
+    return mapValues(schema.properties || {}, generateData);
   }
   return null;
 };

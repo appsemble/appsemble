@@ -36,5 +36,4 @@ export function PropertiesHandler({
     </div>
   );
 }
-
 export default PropertiesHandler;
