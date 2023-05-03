@@ -1,7 +1,7 @@
 # SAML2.0
 
 Appsemble supports login to apps using SAML2.0 identity providers (IDP). This allows users to login
-using Single Sign On (SSO), for example using Microsoft Azure AD. In this case Appsemble Studio
+using Single Sign On (SSO), for example, using Microsoft Azure AD. In this case Appsemble Studio
 serves as the SAML2.0 service provider (SP).
 
 ## Table of Contents
@@ -18,12 +18,12 @@ serves as the SAML2.0 service provider (SP).
 
 Users may try to access an application from one of the following flows:
 
-- Service Provider (SP) flow. From a browser, the user attempts to go directly to the web resource
-  without authenticating. The user is redirected to the IDP to authenticate. Once authenticated the
+- Service Provider (SP) flow. From a browser the user attempts to go directly to the web resource
+  without authenticating. The user is redirected to the IDP to authenticate. Once authenticated, the
   user is redirected back to the web resource. **This flow is supported in Appsemble**
 - Identity provider (IDP) flow. The user launches applications to the service provider (SP)
-  resource. In Enterprise Application Access (EAA), this happens from the EAA Login Portal after the
-  user authenticates them. When the user clicks on an application icon, a SAML assertion
+  resource. In Enterprise Application Access (EAA) this happens from the EAA Login Portal after the
+  user authenticates them. When the user clicks on an application icon a SAML assertion
   (authentication) is sent over to the SP Assertion Consumer Service (ACS). The user is signed into
   the service and does not need to enter their credentials again. **This flow is currently
   unsupported in Appsemble**
@@ -39,8 +39,8 @@ There’s a certain order to configuring the Appsemble (SP) side of things and t
 
 ### 1. Appsemble side
 
-Configuration options for SAML2.0 can be found in Appsemble studio, on the _Secrets_ page of the
-app. Look for the _SAML_ segment and choose to **+ Add new secret**.
+Configuration options for SAML2.0 can be found in Appsemble studio on the _Secrets_ page of the app.
+Look for the _SAML_ segment and choose to **+ Add new secret**.
 
 The following properties can be filled in without restrictions. Use values that best match your app.
 
@@ -50,7 +50,7 @@ The following properties can be filled in without restrictions. Use values that 
 - **Login endpoint**: It’s a required field, but you might not yet have received the proper value
   from the IDP. If that’s the case, temporarily fill in: `https://example.com`
 
-Press **Save secret** to generate the secrets we need to continue. You get back to the _Secrets_
+Press **Save secret** to generate the secrets needed to continue. You get back to the _Secrets_
 page. Now click the created SAML secret to get back to the editing dialog. Scroll down and copy the
 following values and send them to the IDP.
 
@@ -82,7 +82,7 @@ Appsemble:
 
 ### 3. Appsemble side (again)
 
-In the studio, edit the existing SAML secret once more. Now fill in:
+In the studio edit the existing SAML secret once more. Now fill in:
 
 - **Login endpoint**: This is the URL where users will be redirected to perform a login. Typically
   this is a URL that ends on `/saml/login` or in case of Azure

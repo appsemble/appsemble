@@ -41,13 +41,13 @@ finishes the `onLoad` action. It also waits for any incoming events under the na
 recreate refreshing the data.
 
 This functionality may seem unwieldy at a first glance, but it allows for more powerful and flexible
-data management by giving app developers more control of what happens with the flow of data.
+data management by giving app developers more control of what happens with the data flow.
 
 In order to demonstrate why this is flexible and powerful, let’s consider the following hypothetical
 situation:
 
 You have an API from a third party that returns in a specific way that is for one reason or the
-other not usable within Appsemble. It may be in the wrong format, or its data needs to be processed.
+other not usable within Appsemble. It may be in the wrong format or its data needs to be processed.
 
 By chaining events it is possible to receive this incorrectly formatted data using `data-loader`,
 pass it to a block that processes this data, then finally sends this processed data to another block
@@ -55,8 +55,8 @@ that can display it.
 
 For example, using an API that returns a text file containing data in an arbitrary format: Pass it
 to a block called `txt-to-json` to convert this data to JSON, then pass it to a block called `sum`
-which aggregates the data by adding them together, then finally send it to the `report` block to
-display the data.
+which aggregates the data by adding it, then finally send it to the `report` block to display the
+data.
 
 ```mermaid
 graph LR

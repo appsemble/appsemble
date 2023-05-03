@@ -1,8 +1,8 @@
 # Assets
 
-Assets can be used to store binary data. Typically this is used for example for images, videos,
-audio fragments, or documents. They can be used by app creators, content managers who use Appsemble
-Studio, and end users of the app.
+Assets can be used to store binary data. Typically this is used for images, videos, audio fragments
+or documents. They can be used by app creators, content managers who use Appsemble Studio and end
+users of the app.
 
 ## Table of Contents
 
@@ -31,7 +31,7 @@ more information, see the [resource assets](./resources.md#assets) guide.
 
 ## Studio
 
-Assets can be viewed, downloaded, uploaded, and deleted from the _Details_ side menu of a single app
+Assets can be viewed, downloaded, uploaded and deleted from the _Details_ side menu of a single app
 view, given that the user has the correct permissions. When uploading an asset, a name can be
 entered through which the asset can be referenced in the API.
 
@@ -65,6 +65,6 @@ bootstrap(({ utils }) => {
 ## Security
 
 Assets can be referenced from a public API endpoint. The IDs are generated using UUID version 4,
-which is cryptographically secure, but the endpoints don’t require any further authentication. Also
-named assets can be referenced by their name. It’s not recommended to use the asset API for
+which is cryptographically secure, but the endpoints don’t require any further authentication. If
+named, assets can be referenced by their name. It’s not recommended to use the asset API for
 sensitive information.

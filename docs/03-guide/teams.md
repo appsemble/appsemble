@@ -11,10 +11,11 @@
 ## Introduction
 
 Teams can be used to organize groups of members in an app. Typically teams represent users that are
-linked together somehow. For example they belong to the same organizational unit or they are class
-mates. App managers can view and manage teams from the _Teams_ page in the app page in Appsemble
-Studio. In order to become a team member, a user must first be registered as an app member. They can
-do so by logging into the app. Teams determine how its members can share resources with each other.
+linked together somehow. For example they belong to the same organizational unit or they are
+classmates. App managers can view and manage teams from the _Teams_ page in the app page in
+Appsemble Studio. In order to become a team member, a user must first be registered as an app
+member. A user can do so by logging into the app. Teams determine how its members can share
+resources with each other.
 
 To enable teams, first `security.teams` needs to be enabled in the app definition. For more
 information, see [teams security](security.md#teams)
@@ -29,12 +30,12 @@ sure the app pages match the resource security definitions.
 ### Resources
 
 If a resource `create` definition specifies a role of `$team:manager`, only a user who is a manager
-of a team may create such a resources. If the role is `$team:member`, only a user who is a team
+of a team may create such a resource. If the role is `$team:member`, only a user who is a team
 member may create such a resource. The latter includes the team manager.
 
 If a resource action definition other than `create` specifies a role of `$team:member`, then any
-team members of the resource author may perform the action on that resource. If the role is
-`$team:manager`, then only the managers of the teams the author is in may perform that action on the
+team member of the resource author may perform the action on that resource. If the role is
+`$team:manager`, then only the managers of the team the author is in may perform that action on the
 resource.
 
 For example, let’s say we have an app for managing a soccer club:
@@ -108,7 +109,7 @@ However, if Alex reports absence, both Manny and Mandy can see it.
 ### Pages
 
 Page security rules should match that of the data they display. Otherwise, they show the user a
-bunch of errors, which leads to a bad user experience.
+bunch of errors which leads to a bad user experience.
 
 Continuing with the Soccer club app in the resources example, the following could represent the
 app’s pages:
@@ -147,9 +148,9 @@ pages:
 ```
 
 According to this app definition, only the team manager may view the pages called `Create strategy`
-and `View absence`. Any team members may view the `Strategies` and `Report absence` pages, but on
-the `Strategies` page, only team managers see a button which links to `Create strategy`. This means
-anyone who isn’t part of a team, can’t see any of those pages. The `About` page is accessible to
+and `View absence`. Any team member may view the `Strategies` and `Report absence` pages, but on the
+`Strategies` page, only team managers see a button which links to `Create strategy`. This means
+anyone who isn’t part of a team can’t see any of those pages. The `About` page is accessible to
 anyone.
 
 ## Actions

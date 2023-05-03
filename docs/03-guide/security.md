@@ -14,9 +14,9 @@
 
 ## Introduction
 
-While some apps may be intended for use by anyone, some apps may be intended for a select few
-people. In order to facilitate this, apps can be secured in various ways in order to protect the app
-or parts of the app from unauthorized users.
+While some apps may be intended for use by anyone, some apps may be intended for a fewer selection
+of people. In order to facilitate this, apps can be secured in various ways in order to protect the
+app or parts of the app from unauthorized users.
 
 There are several properties that can be set in an app definition in order to secure an app for
 different purposes.
@@ -34,14 +34,14 @@ definitions are required to restrict access to the app itself.
 ## App account management
 
 There are several methods available to secure access to apps. By going to the “Secrets” page from
-within the Appsemble Studio you can determine which login methods are available. By default
+within the Appsemble Studio you can determine which login methods would be available. By default
 Appsemble Studio’s OAuth2 login option is enabled, allowing users to login using their Appsemble
-Studio account. This method can be useful for apps where it’s expected the users already have
+Studio account. This method can be useful for apps where it’s expected that users already have
 Appsemble accounts since the same account can be reused.
 
 The second login option allows for users to login using a password and email address. When enabled,
-a login form appears on the login page from which a user can login, register a new account, or reset
-their password. This method also allows for the usage of the
+a login form appears on the login page from which a user can login, register a new account or reset
+their password. This method also allows usage of the
 [`user.login` and `user.register` actions](/docs/reference/actions#user.login).
 
 This login option can be customized by naming pages `Login` and `Register`. Doing so will display
@@ -51,8 +51,8 @@ The third login option allows for setting up your own login methods using [OAuth
 [SAML2.0](saml.md) which are described in more detail in their own pages.
 
 Users who have logged into your app can be viewed from the “Users” page. From here the roles of
-users can be adjusted as well as view and edit any custom properties associated with the user as set
-by the app.
+users can be adjusted, as well as view and edit any custom properties associated with the user as
+set by the app.
 
 ## Security Definition
 
@@ -61,7 +61,7 @@ define the roles that are used within the app. The security definition also dete
 default role is assigned.
 
 The `policy` property can be set to `everyone` to give everyone the default role, `organization` to
-only do this for users being in the same organization as the app, and `invite` which does not assign
+only do this for users being in the same organization as the app and `invite` which does not assign
 roles by default at all.
 
 The roles listed in the `roles` object may be used to restrict specific parts of an app. This can be
@@ -136,7 +136,7 @@ roles:
   - Reader
 ```
 
-> The example above signifies that everyone using the app must be logged in, in order to receive the
+> The example above signifies that everyone using the app must be logged-in in order to receive the
 > `Reader` role. This will result in each page that doesn’t have its own `roles` property defined
 > showing a login page if the user is not currently authenticated.
 
@@ -190,10 +190,10 @@ pages:
 ## Block roles
 
 By specifying the `roles` property for a block, it is possible to hide the block for users with
-insufficient roles. Users who don’t have any of the roles specified to the `roles` property of a
+insufficient roles. Users who don’t have any of the roles specified in the `roles` property of a
 block will not be able to view or interact with the block at all.
 
-This can be especially useful for extending the functionality of a page for a specific set of users,
+This can be especially useful for extending the functionality of a page for a specific set of users
 such as a button to create a new app for the administrators of a blog.
 
 ```yaml
@@ -215,10 +215,10 @@ pages:
 
 As described in the [Appsemble resources](resources.md) page, it is possible to define and manage
 various resources that can be used from within an app. By default the corresponding API endpoints
-are _not_ secured. They are able to be modified by anyone who knows the format of the resource as
-well as the specific endpoint being used. One exception to this is when the root of the app
-definition has a `roles` property defined. In that case, every resource action requires one of the
-roles as specified in this property, unless it is otherwise specified.
+are _not_ secured. They are available for modification by anyone who knows the format of the
+resource, as well as the specific endpoint being used. One exception to this is when the root of the
+app definition has a `roles` property defined. In that case, every resource action requires one of
+the roles as specified in this property, unless it is otherwise specified.
 
 By specifying the `roles` property for a specific action of a resource, it is possible to secure
 this action. For example, if your resource may be publicly viewed by anyone but not created anew by
@@ -253,9 +253,9 @@ resources:
 
 > In the above example, users with the “Reader” role will be able to view either all blog resources
 > or a singular one through the “query” and “get” resource actions, but they will not be able to
-> create, update, or delete blog resources without having the “Admin” role.
+> create, update or delete blog resources without having the “Admin” role.
 
-On top of specifying app roles to determine which users have access to resources, there are a couple
+On top of specifying app roles to determine which users have access to resources there are a couple
 of special options that are always available regardless of the presence of roles. All of these
 require the user to be logged in.
 

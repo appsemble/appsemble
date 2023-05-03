@@ -1,7 +1,7 @@
 # Developing on an existing app structure
 
 Some organizations have their own ecosystem of blocks, packages and apps. If you want to edit these
-existing systems, or create your own, there is some setup to do.
+existing systems or create your own, there is some setup to do.
 
 ## Table of Contents
 

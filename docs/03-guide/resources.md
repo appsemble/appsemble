@@ -1,7 +1,7 @@
 # Resources
 
 Appsemble out of the box provides its own method of storing and retrieving data specific to apps. It
-can also retrieve en store an external data source outside Appsemble. Data that is created via an
+can also retrieve and store an external data source outside Appsemble. Data that is created via an
 app is called a ´resource´.
 
 ## Table of Contents
@@ -30,9 +30,9 @@ app is called a ´resource´.
 
 ## Defining resources
 
-Resources can be defined within an [app definition](/docs/reference/app#app-definition) within the
+Resources can be defined in the [app definition](/docs/reference/app#app-definition) within the
 `resources` property. Each object within `resources` is considered to be a Resource, named after the
-name it is given within `resources`.
+name it was given within `resources`.
 
 The shape of a resource is defined using [JSON Schema](https://json-schema.org/). This makes it
 possible for submitted data to be validated on types and required properties automatically.
@@ -66,7 +66,7 @@ resources:
 
 The above resource will be recognized as an object which can be referred to from blocks using
 `$ref: /resources/person` or by using `resource` actions. It can be accessed in the API at
-`/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update, and
+`/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update and
 delete) actions.
 
 > Note: By default all resource actions are private. In order to access these, refer to
@@ -89,9 +89,9 @@ The following types can be used to define the type of a property:
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
 `resource actions`. Resource actions are actions that can fetch, modify, create or delete resources.
-These are configured to use Appsemble APIs by default, but can be overridden manually if need be.
+These are configured to use Appsemble APIs by default, but can be overridden manually if needed.
 
-The resource actions available are:
+The available resource actions are:
 
 - **resource.query**: Fetch all resources.
 - **resource.count**: Count all resources.
@@ -101,11 +101,11 @@ The resource actions available are:
 - **resource.delete**: Delete an existing resource.
 - **resource.subscription.subscribe**: Subscribe to an existing resource to receive push
   notifications. (See [notifications](notifications.md).)
-- **resource.subscription.unsubscribe**: Unsubscribes from an existing resource subscription. (See
-  [notifications](notifications.md).)
+- **resource.subscription.unsubscribe**: Unsubscribes from an existing resource notification
+  subscription. (See [notifications](notifications.md).)
 - **resource.subscription.toggle**: Toggle between subscribing and unsubscribing to an existing
-  resource. (See [notifications](notifications.md).)
-- **resource.subscription.status**: Fetch the status of a resource subscription. (See
+  resource notifications. (See [notifications](notifications.md).)
+- **resource.subscription.status**: Fetch the status of a resource notifications subscription. (See
   [notifications](notifications.md).)
 
 > Note: By default all resource calls are private.
@@ -115,14 +115,14 @@ The resource actions available are:
 An app may use external resources instead of ones stored in the Appsemble API. In this case a
 slightly more advanced configuration is necessary.
 
-A resource requires an identified. In the Appsemble API, and many external APIs, this property is
+A resource requires an identifier. In the Appsemble API, and many external APIs, this property is
 called `id`. For some APIs this may be different. Which field should be used to identify resources
 can be defined in the `id` property of a resource definition.
 
-The URL on which a resource can be found, can be defined on the `url` property. By default,
-resources can be created and queried from a base URL, and a single resource can be retrieved,
-updated, or deleted from the URL post fixed with the ID. Each action is usually performed using a
-standardized HTTP method, but external APIs may differ.
+The URL on which a resource can be found can be defined on the `url` property. By default resources
+can be created and queried from a base URL, and a single resource can be retrieved, updated or
+deleted from the URL post fixed with the ID. Each action is usually performed using a standardized
+HTTP method, but external APIs may differ.
 
 The following example demonstrates a more complex resource definition for an external API.
 
@@ -191,10 +191,10 @@ pages:
 
 ## Views
 
-When using roles for resources to secure the access to a resource it is usually to protect sensitive
-data that you don’t want to expose to everyone, such as names or email addresses. Sometimes it is
-still desirable to know about parts of a resource despite of this sensitive data. For this purpose
-resource _views_ can be used.
+When using roles for resources to secure the access to a resource it is usually done to protect
+sensitive data that you don’t want to expose to everyone, such as names or email addresses.
+Sometimes it is still desirable to know about parts of a resource despite of this sensitive data.
+For this purpose resource _views_ can be used.
 
 Views are alternate ways to display resources, using separate sets of roles. The output of these API
 calls can then be modified using [remappers](/docs/reference/remapper).
@@ -204,11 +204,11 @@ the name of the person who placed the reservation, as well as the table that has
 the creator of the resource is allowed to view their resource, otherwise personal information might
 get leaked.
 
-When making reservations however, it is still helpful to know which tables are already reserved. To
+When making reservations, however, it is still helpful to know which tables are already reserved. To
 accomplish this, views can be used. A view has a set of roles, as well as a
 [remapper](/docs/reference/remapper) that’s used to transform the output.
 
-In this case only the resource ID, table name, and the creation date should be included. The
+In this case only the resource ID, table name and the creation date should be included. The
 `object.from` remapper is suitable for this:
 
 ```yaml
@@ -280,7 +280,7 @@ person:
 In the above example, a resource will be removed 36 hours after it was created, unless this was
 otherwise specified.
 
-The syntax used for `expires` supports the following units, which can be combined:
+The syntax used for `expires` supports the following units which can be combined:
 
 ```
 seconds (s, sec)
@@ -404,11 +404,11 @@ These functions have only been implemented for strings, not for collections.
 
 ## Securing resources
 
-By default all resources and their corresponding actions are private by default. This means that in
-order to provide access to these actions, the `roles` property or an action’s `roles` property must
-be defined specifying the roles that the user needs to have. This makes it possible to, for example,
-restrict access to other user’s resources by only allowing users to interact with the resources they
-made themselves.
+All resources and their corresponding actions are private by default. This means that in order to
+provide access to these actions, the `roles` property or an action’s `roles` property must be
+defined, specifying the roles that the user needs to have. This makes it possible to, for example,
+restrict access to other user(s) resources by only allowing users to interact with the resources
+they made themselves.
 
 For more information about this, please refer to [this page](./security.md)
 
@@ -416,8 +416,8 @@ For more information about this, please refer to [this page](./security.md)
 
 Some resources may need binary data such as images or documents. To support this, Appsemble provides
 the [asset](./assets.md) API. The resource API works with the asset API to handle binary data. To
-treat a field in a resource in as a binary asset, specify it as `type: string` and `format: binary`
-in the JSON schema.
+treat a field in a resource as a binary asset, specify it as `type: string` and `format: binary` in
+the JSON schema.
 
 ```yaml
 resources:
@@ -431,7 +431,7 @@ resources:
           format: binary
 ```
 
-Now if the user uses resource actions to create or update a resource which has a picture, The
+Now if the user uses resource actions to create or update a resource which has a picture, the
 picture will be uploaded as a binary blob alongside the rest of the resource which is serialized as
 JSON. The API will replace the asset with an auto-generated ID. This ID can be used to reference the
 asset in a URL.

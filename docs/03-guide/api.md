@@ -15,8 +15,8 @@ Appsemble client credentials can be registered under
 [client credentials](/settings/client-credentials) in user settings. Registering client users will
 output the client id and client secret as `client_id:client_secret`.
 
-The client credentials may be used to request an access token. They need to be encoded joined using
-a colon (`:`) and encoded as base64.
+The client credentials may be used to request an access token. They need to be joined using a colon
+(`:`) and encoded as base64.
 
 For example, in NodeJS the client credentials can be encoded as base64 as follows:
 

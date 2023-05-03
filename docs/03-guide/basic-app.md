@@ -1,6 +1,6 @@
 # Basic app
 
-Each app has a name, description, and a default page. Notice the name and description have the value
+Each app has a name, description, and a default page. Notice that name and description have a value
 that was entered in the _“Create new app”_ dialog.
 
 ## Table of Contents
@@ -14,10 +14,10 @@ that was entered in the _“Create new app”_ dialog.
 
 ## Empty app
 
-The newly created app has two pages. On each page, an
+The newly created app has two pages. On each page an
 [`action-button`](/blocks/@appsemble/action-button) block is rendered.
 
-The icon on the button is specified in the block parameters. Because each block type has different
+The icon on the button is specified in the block parameters. Since each block type has different
 functionalities, they also accept different types of parameters.
 
 Each block type may also call specific types of actions. In case of the `action-button`, the button
@@ -27,8 +27,9 @@ _“Example Page B”_ has a button that links to _“Example Page A”_.
 
 ## Adding a resource
 
-Resources allow apps to store data in the Appsemble resource API, or to map resources to somewhat
-compliant third party APIs. This tutorial will focus on usage with Appsemble’s own resource API.
+Resources allow apps to store data in the Appsemble resource API or to map resources to somewhat
+compliant third party APIs. This tutorial will focus on usage of resources with Appsemble’s own
+resource API.
 
 Add the following to the app definition at the root of the YAML:
 
@@ -77,13 +78,13 @@ could represent the following data structure:
 
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
-When the app is published with the `resources` property, a new “Resources” menu item appears to the
+When the app is published with the `resources` property, a new “Resources” menu item appears in the
 side menu. This way resources can be managed in a generic way from within
 [Appsemble studio](studio.md) in an administrator-like fashion.
 
 ## Displaying data
 
-Resources exist for use it in the app. A simple way to display data is to add a `table` block. The
+Resources exist for using them in the app. A simple way to display data is to add a `table` block. A
 table block can display data in an orderly manner in a table.
 
 Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single page, named _“People”_.
@@ -258,7 +259,7 @@ Add a new page:
 ```
 
 This page uses the `form` block to enter the data to create a new `person` resource. It takes a
-parameter called `fields` which contains a list of various types of field types. In this case it’s 4
+parameter called `fields` which contains a list of fields of different types. In this case it’s 4
 `string` fields, where the first three are required and have a length requirement, and the last one
 is optional and allows for multi line input.
 
@@ -359,7 +360,7 @@ pages:
 ## Detail view
 
 The detail page only displays person’s first name and last name. Often such an overview is handy,
-but it is desired to add the ability to see more details. Another use case might be a form for
+but it is often desired to add the ability to see more details. Another use case might be a form for
 editing the resource, but for now we’ll focus on viewing.
 
 Add a new page:
@@ -400,7 +401,7 @@ Add a new page:
 ```
 
 This page loads data of a single person using the `resource.get` action. The person is then
-displayed in the `detail-viewer` block, which looks a very similar to the `table` and `form` blocks.
+displayed in the `detail-viewer` block, which looks very similar to the `table` and `form` blocks.
 
 What is new, is the `parameters` property. Also, when viewing the side menu, the person isn’t there.
 The `id` parameter refers to a parameter in the URL of the page. The `id` is used to determine which
