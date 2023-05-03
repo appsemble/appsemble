@@ -1,7 +1,34 @@
 .root {
   flex: 1;
   height: 80vh;
+  position: relative;
+}
+
+.dropzone {
+  border: none;
+  flex: 1;
+  position: absolute;
+}
+
+.dropzoneDragOver {
+  border: 3px solid hsl(115deg 76% 64%);
+  flex: 1;
+  position: absolute;
+}
+
+.dropzoneActive {
+  flex: 1;
+  height: 80vh;
+  position: absolute;
   width: 100%;
+}
+
+.dropzoneInactive {
+  border: none;
+  flex: 1;
+  height: 0%;
+  position: absolute;
+  width: 0%;
 }
 
 .rightBar {

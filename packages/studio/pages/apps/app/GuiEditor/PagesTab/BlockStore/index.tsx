@@ -1,44 +1,31 @@
-import { Loader, Message, Title, useData } from '@appsemble/react-components';
+import { InputField, Title } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ReactElement } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { useIntl } from 'react-intl';
 
-import { BlockStoreElement } from './BlockStoreElement/index.js';
+import { BlockList } from './BlockList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
 /**
- * The Block Store houses all available blocks as a grid.
- * Each block is shown as a container with its name in it.
- * Each block has a on hover and on mouse down class.
+ * The Block Store houses all available blocks as a list of thumbnails.
+ * Each block is shown as a thumbnail with the block name, icon and version in it.
  *
- * On mouse down a copy of the block is attached to the mouse and folows it until mouse up.
- * If mouse up happens outside of the app preview the block is discarded.
- * If mouse up happens over the app preview the held block is appended to the app definition
- * at the end of the blocks list.
- *
- * @returns A grid of available blocks that can be dragged and dropped into the app preview.
+ * @returns A list of available blocks that can be dragged and dropped into the app preview.
  */
 
-export function BlockStore(): ReactElement {
-  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
+interface BlockStoreProps {
+  dragEventListener: (data: BlockManifest) => void;
+}
 
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...messages.error} />
-      </Message>
-    );
-  }
+export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {
+  const [filter, setFilter] = useState('');
+  const { formatMessage } = useIntl();
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  const appsembleBlocks = blocks
-    .filter((b) => b.name.startsWith('@appsemble'))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.currentTarget.value);
+  }, []);
 
   return (
     <div className={styles.blockStore}>
@@ -56,11 +43,16 @@ export function BlockStore(): ReactElement {
           </div>
         </header>
       </div>
-      {appsembleBlocks.map((block) => (
-        <BlockStoreElement block={block} key={block.name} />
-      ))}
+      <div className={styles.blockStoreSearch}>
+        <InputField
+          icon="search"
+          name="search"
+          onChange={onFilterChange}
+          placeholder={formatMessage(messages.search)}
+          type="search"
+        />
+      </div>
+      <BlockList dragEventListener={dragEventListener} filter={filter} />
     </div>
   );
 }
-
-export default BlockStore;

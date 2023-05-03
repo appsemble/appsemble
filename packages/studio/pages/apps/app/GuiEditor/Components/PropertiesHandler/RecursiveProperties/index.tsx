@@ -9,6 +9,7 @@ import BooleanProperty from '../Inputs/BooleanProperty/index.js';
 import EnumProperty from '../Inputs/EnumProperty/index.js';
 import NumberProperty from '../Inputs/NumberProperty/index.js';
 import ObjectProperty from '../Inputs/ObjectProperty/index.js';
+import RemapperProperty from '../Inputs/RemapperProperty/index.js';
 import StringProperty from '../Inputs/StringProperty/index.js';
 
 interface RecursivePropertiesProps {
@@ -44,6 +45,11 @@ export function RecursiveProperties({
         schema={refSchema}
         value={value}
       />
+    );
+  }
+  if (schema?.format === 'remapper') {
+    return (
+      <RemapperProperty onChange={onChange} property={property} schema={schema} value={value} />
     );
   }
 
