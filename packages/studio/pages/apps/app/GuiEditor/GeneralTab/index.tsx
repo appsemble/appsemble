@@ -1,15 +1,15 @@
 import { Button } from '@appsemble/react-components';
-import { ChangeEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { useApp } from '../../index.js';
 import { InputList } from '../Components/InputList/index.js';
 import { InputString } from '../Components/InputString/index.js';
 import { InputTextArea } from '../Components/InputTextArea/index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 export interface GeneralTabProps {
   isOpenLeft: boolean;
@@ -207,7 +207,6 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
               />
             </div>
           )}
-
           {currentSideBar.tab === 'layout' && (
             <div className={styles.rightBar}>
               <InputList
