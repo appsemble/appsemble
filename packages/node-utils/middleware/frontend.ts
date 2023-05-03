@@ -2,11 +2,10 @@ import { isIP } from 'node:net';
 
 import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
 import expressToKoa from 'express-to-koa';
-import { Context, Middleware } from 'koa';
+import { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
-import webpack, { Configuration } from 'webpack';
+import webpack, { type Configuration } from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
 
 /**
  * Bypass the dev server for API requests to speed them up.
@@ -30,9 +29,6 @@ export function frontend(
   const fs: import('memfs').IFs = devMiddleware.context.outputFileSystem;
   const koaDevMiddleware = expressToKoa(devMiddleware);
 
-  // const hotMiddleware = webpackHotMiddleware(compiler as any);
-  // const koaHotMiddleware = expressToKoa(hotMiddleware);
-
   return compose<Context>([
     (ctx, next) => {
       ctx.fs = fs;
@@ -49,6 +45,5 @@ export function frontend(
       }
       return koaDevMiddleware(ctx, next);
     },
-    // koaHotMiddleware,
   ]);
 }

@@ -1,15 +1,19 @@
 import { randomBytes } from 'node:crypto';
 
 import { logger, serveIcon } from '@appsemble/node-utils';
-import { AppAccount, AppMember as AppMemberType, SSOConfiguration } from '@appsemble/types';
+import {
+  type AppAccount,
+  type AppMember as AppMemberType,
+  type SSOConfiguration,
+} from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
 import { badRequest, conflict, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import {
   DatabaseError,
-  FindOptions,
-  IncludeOptions,
+  type FindOptions,
+  type IncludeOptions,
   literal,
   Op,
   UniqueConstraintError,

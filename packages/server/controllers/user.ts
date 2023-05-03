@@ -31,18 +31,20 @@ export async function getUser(ctx: Context): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    organizations: user.Organizations.map((org) => ({
+    organizations: user.Organizations.map((org: Organization) => ({
       id: org.id,
       name: org.name,
       iconUrl: org.get('hasIcon')
         ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
         : null,
     })),
-    emails: user.EmailAuthorizations.map(({ email, verified }) => ({
-      email,
-      verified,
-      primary: user.primaryEmail === email,
-    })),
+    emails: user.EmailAuthorizations.map(
+      ({ email, verified }: { email: string; verified: boolean }) => ({
+        email,
+        verified,
+        primary: user.primaryEmail === email,
+      }),
+    ),
     locale: user.locale,
     timezone: user.timezone,
   };
@@ -64,7 +66,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
     include: [{ model: User, where: { id: user.id } }],
   });
 
-  ctx.body = organizations.map((org) => ({
+  ctx.body = organizations.map((org: Organization) => ({
     id: org.id,
     name: org.name,
     role: org.Users[0].Member.role,

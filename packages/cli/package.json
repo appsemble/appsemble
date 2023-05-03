@@ -78,6 +78,7 @@
     "@types/postcss-url": "^10.0.0",
     "concat-stream": "^2.0.0"
   },
+  "peerDependencies": {},
   "optionalDependencies": {
     "keytar": "^7.0.0"
   },

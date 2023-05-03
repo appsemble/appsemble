@@ -1,4 +1,4 @@
-import { Token } from '@odata/parser';
+import { type Token } from '@odata/parser';
 
 export enum Edm {
   null = 'null',

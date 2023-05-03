@@ -29,7 +29,9 @@ export async function createBlockVersionResponse(
     });
   }
 
-  const organizationIds = new Set(user?.Organizations?.map((org) => org.id) || undefined);
+  const organizationIds = new Set(
+    user?.Organizations?.map((org: Organization) => org.id) || undefined,
+  );
 
   return blockVersions
     .filter(

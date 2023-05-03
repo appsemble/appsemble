@@ -1,9 +1,7 @@
+import { logger, loggerMiddleware } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import chalk from 'chalk';
 import Koa from 'koa';
-
-import { logger } from '../logger.js';
-import { loggerMiddleware } from './loggerMiddleware.js';
 
 class TestError extends Error {
   constructor(message?: string) {

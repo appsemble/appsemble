@@ -52,6 +52,11 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'The HTTP server port to use.',
       type: 'number',
       default: 9999,
+    })
+    .option('user-role', {
+      desc: 'The role to authenticate the user with.',
+      type: 'string',
+      default: 9999,
     });
 }
 

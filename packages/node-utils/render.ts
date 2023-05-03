@@ -1,11 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
+import { type ContentSecurityPolicy } from '@appsemble/node-utils';
 import { compareStrings } from '@appsemble/utils';
-import { Context } from 'koa';
+import { type Context } from 'koa';
 import mustache from 'mustache';
-
-import { ContentSecurityPolicy } from './server/types.js';
 
 /**
  * Render settings as an HTML script tag.
@@ -13,7 +12,7 @@ import { ContentSecurityPolicy } from './server/types.js';
  * @param settings The settings to render. This must be a JSON serializable object.
  * @param statements Custom JavaScript statements to append.
  * @returns A tuple of the digest and the HTML script tag. The digest should be added to the CSP
- * `script-src`.
+ *   `script-src`.
  */
 export function createSettings(
   settings: unknown,

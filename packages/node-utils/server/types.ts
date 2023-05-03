@@ -1,17 +1,21 @@
 import {
-  App,
-  AppMessages,
-  Asset,
-  BlockConfig,
-  BlockDefinition,
-  BlockManifest,
-  EmailActionDefinition,
-  Resource,
-  ResourceDefinition,
-  Theme as ThemeType,
+  type App,
+  type AppMessages,
+  type Asset,
+  type BlockConfig,
+  type BlockDefinition,
+  type BlockManifest,
+  type EmailActionDefinition,
+  type Resource,
+  type ResourceDefinition,
+  type Theme as ThemeType,
 } from '@appsemble/types';
-import { IdentifiableBlock, Permission } from '@appsemble/utils';
-import { DefaultContext, DefaultState, ParameterizedContext } from 'koa';
+import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
+import {
+  type DefaultContext as DefaultContextInterface,
+  type DefaultState,
+  type ParameterizedContext,
+} from 'koa';
 
 declare module 'koa' {
   interface Request {
@@ -31,17 +35,9 @@ declare module 'koa' {
 
 declare module 'koas-security' {
   interface Clients {
-    app: { scope: string; app: App };
     basic: {};
     cli: { scope: string };
     studio: {};
-  }
-
-  interface Users {
-    app: any;
-    basic: any;
-    cli: any;
-    studio: any;
   }
 }
 
@@ -101,13 +97,13 @@ export interface ContextBlockConfig extends BlockConfig {
 }
 
 export interface GetAppParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   query?: Record<string, any>;
   user?: any;
 }
 
 export interface GetAppSubEntityParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
 }
 
@@ -129,21 +125,21 @@ export type BlockMessages = Pick<BlockManifest, 'messages' | 'name' | 'version'>
 export type BlockQueryItem = Pick<ContextBlockConfig, 'name' | 'OrganizationId' | 'version'>;
 
 export interface GetBlockMessagesParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   blockQuery: BlockQueryItem[];
   baseLang: string;
   lang: string;
 }
 
 export interface GetBlockAssetParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   name: string;
   filename: string;
   version: string;
 }
 
 export interface GetBlocksAssetsPathsParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   identifiableBlocks: IdentifiableBlock[];
 }
 
@@ -154,7 +150,7 @@ export type ExtendedTheme = Omit<Partial<ThemeType>, 'font'> & {
 };
 
 export interface GetHostParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
 
 export interface GetThemeParams {
@@ -166,7 +162,7 @@ export interface CreateThemeParams extends ExtendedTheme {
 }
 
 export interface CreateSettingsParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
   host: string;
   identifiableBlocks: IdentifiableBlock[];
@@ -186,7 +182,7 @@ export type HookAction = 'create' | 'delete' | 'update';
 export type Action = HookAction | 'count' | 'get' | 'patch' | 'query';
 
 export interface VerifyPermissionParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
   resourceType: string;
   action: Action;
@@ -194,14 +190,14 @@ export interface VerifyPermissionParams {
 }
 
 export interface CheckRoleParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
   permissions: Permission | Permission[];
   findOptions?: FindOptions;
 }
 
 export interface ReloadUserParams {
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
 
 export interface ParseQueryParams {
@@ -272,7 +268,7 @@ export interface EmailParams {
   mailer: any;
   user: any;
   options: Options;
-  context: ParameterizedContext<DefaultState, DefaultContext, any>;
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
 }
 
 export interface SendNotificationsParams {

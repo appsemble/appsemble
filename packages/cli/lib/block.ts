@@ -18,7 +18,6 @@ import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import FormData from 'form-data';
 import { type PackageJson } from 'type-fest';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import webpack, { type Stats } from 'webpack';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';

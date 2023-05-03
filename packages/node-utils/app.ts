@@ -1,7 +1,6 @@
 import { type App, type UserInfo } from '@appsemble/types';
 import { defaultLocale, has, objectCache, type RemapperContext } from '@appsemble/utils';
 import memoize from '@formatjs/fast-memoize';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IntlMessageFormat } from 'intl-messageformat';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
