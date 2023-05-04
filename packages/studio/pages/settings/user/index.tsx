@@ -20,7 +20,7 @@ import {
 import { type UserEmail } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useMatch, useNavigate } from 'react-router-dom';
 
@@ -48,6 +48,9 @@ export function UserPage(): ReactElement {
     setData: setEmails,
   } = useData<UserEmail[]>('/api/user/email');
   const timezones = useData<string[]>('/api/timezones');
+
+  const [rerenderKey, setRerenderKey] = useState(0);
+  useEffect(() => setRerenderKey((prevKey) => prevKey + 1), [pathname]);
 
   const onSaveProfile = useCallback(
     async (values: { name: string; locale: string; timezone: string }) => {
@@ -130,6 +133,7 @@ export function UserPage(): ReactElement {
               : localStorage.getItem('preferredLanguage') || defaultLocale,
             timezone: userInfo.zoneinfo,
           }}
+          key={rerenderKey}
           onSubmit={onSaveProfile}
         >
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
