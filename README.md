@@ -196,8 +196,8 @@ the browser immediately after refreshing the page, without the need of increasin
 version. Running docker database containers, creating a user account and creating an organization
 are not needed.
 
-App resources will be stored locally in the `/packages/cli/data.json` file. App assets
-and block assets will be served from the local file system.
+App resources will be stored locally in the `/packages/cli/data.json` file. App assets and block
+assets will be served from the local file system.
 
 The development server can be started by running:
 
