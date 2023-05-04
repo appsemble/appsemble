@@ -10,13 +10,13 @@ import HtmlWebpackPlugin, { type MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeMdxTitle from 'rehype-mdx-title';
+import rehypeMermaid from 'rehype-mermaidjs';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkMdxCodeMeta from 'remark-mdx-code-meta';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkMdxImages from 'remark-mdx-images';
-import remarkMermaid from 'remark-mermaidjs';
 import { type Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
@@ -171,18 +171,13 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 remarkPlugins: [
                   remarkFrontmatter,
                   remarkGfm,
-                  production && [
-                    remarkMermaid,
-                    {
-                      launchOptions: { executablePath: process.env.CHROME_BIN || 'google-chrome' },
-                    },
-                  ],
                   remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
                   remarkRewriteLinks,
-                ].filter(Boolean),
+                ],
                 rehypePlugins: [
+                  production && rehypeMermaid,
                   rehypeMdxTitle,
                   rehypeSlug,
                   [
@@ -198,7 +193,7 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                     },
                   ],
                   rehypeSearchIndex,
-                ],
+                ].filter(Boolean),
               },
             },
           ],

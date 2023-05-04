@@ -1,8 +1,9 @@
 # Build production files
-FROM registry.gitlab.com/appsemble/docker-node-chrome AS build
+FROM node:18-bullseye-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile
+RUN yarn playwright install --with-deps chromium
 RUN yarn scripts build
 RUN yarn workspace @appsemble/types prepack
 RUN yarn workspace @appsemble/sdk prepack
