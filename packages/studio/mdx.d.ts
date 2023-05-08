@@ -4,10 +4,14 @@
 declare module '*.md' {
   import { IconName } from '@fortawesome/fontawesome-common-types';
 
-  /**
-   * An icon for the document.
-   */
-  export const icon: IconName | undefined;
+  export const frontmatter:
+    | undefined
+    | {
+        /**
+         * An icon for the document.
+         */
+        icon?: IconName | undefined;
+      };
 
   export const searchIndex: [string, { title: string; haystack: string }][];
 
@@ -23,10 +27,14 @@ declare module '*.md' {
 declare module '*.mdx' {
   import { IconName } from '@fortawesome/fontawesome-common-types';
 
-  /**
-   * An icon for the document.
-   */
-  export const icon: IconName | undefined;
+  export const frontmatter:
+    | undefined
+    | {
+        /**
+         * An icon for the document.
+         */
+        icon?: IconName | undefined;
+      };
 
   export const searchIndex: [string, { title: string; haystack: string }][];
 
