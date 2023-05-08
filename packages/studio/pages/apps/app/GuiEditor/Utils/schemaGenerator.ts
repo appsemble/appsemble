@@ -1,6 +1,6 @@
-import { mapValues } from '@appsemble/utils';
-import { Schema } from 'jsonschema';
-import { JsonValue } from 'type-fest';
+import { type mapValues } from '@appsemble/utils';
+import { type Schema } from 'jsonschema';
+import { type JsonValue } from 'type-fest';
 
 /**
  * Generates values for each type in a Schema.
@@ -29,6 +29,7 @@ export const generateData = (
         data[key] = generateData(definitions, schema.properties[key], key);
       }
     }
+
     /* If (typeof schema.required !== 'boolean' && schema.required?.length) {
       for (const key of schema.required || []) {
         data[key] = generateData(schema.properties![key], definitions);
@@ -52,7 +53,7 @@ export const generateData = (
   if (schema.enum) {
     return schema.enum[0];
   }
-  if (schema.format === 'remapper' && schema.required) {
+  if (schema.format === 'remapper') {
     return ownerKey;
   }
   if (schema.type === 'array') {

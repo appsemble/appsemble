@@ -33,6 +33,9 @@
   "resolutions": {
     "axios": "~1.2.0"
   },
+  "dependencies": {
+    "yaml": "^2.2.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@lhci/cli": "^0.12.0",
