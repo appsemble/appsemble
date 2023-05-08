@@ -952,7 +952,7 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@braintree/sanitize-url@^6.0.0":
+"@braintree/sanitize-url@^6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@braintree/sanitize-url/-/sanitize-url-6.0.2.tgz#6110f918d273fe2af8ea1c4398a88774bb9fc12f"
   integrity sha512-Tbsj02wXCbqGmzdnXNk0SOF19ChhRU70BsroIi4Pm6Ehp56in6vch94mfbdQ17DozxkL3BAVjbZ4Qc1a0HFRAg==
@@ -1974,6 +1974,13 @@
   dependencies:
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
+
+"@khanacademy/simple-markdown@^0.9.0":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@khanacademy/simple-markdown/-/simple-markdown-0.9.2.tgz#9ffdf66d2b68ba8047825f93b5d1b571596b96df"
+  integrity sha512-iRkSaVuUT+ho8B0aY0uLGgfS1YU84l/mSwjJTh0N0k0WzjdJUJY4+Eh56kn8whwD8QX6uNblAT0lT5ICATLtZg==
+  dependencies:
+    "@types/react" ">=16.0.0"
 
 "@koa/cors@^4.0.0":
   version "4.0.0"
@@ -3082,6 +3089,15 @@
   version "18.2.6"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.6.tgz#5cd53ee0d30ffc193b159d3516c8c8ad2f19d571"
   integrity sha512-wRZClXn//zxCFW+ye/D2qY65UsYP1Fpex2YXorHc8awoNamkMZSvBxwxdYVInsHOZZd2Ppq8isnSzJL5Mpf8OA==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@>=16.0.0":
+  version "18.2.5"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.5.tgz#f9403e1113b12b53f7edcdd9a900c10dd4b49a59"
+  integrity sha512-RuoMedzJ5AOh23Dvws13LU9jpZHIc/k90AgmK7CecAYeWmSr3553L4u5rk4sWAPBuQosfT7HmTfG4Rg5o4nGEA==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -5563,10 +5579,10 @@ d3@^7.4.0, d3@^7.8.2:
     d3-transition "3"
     d3-zoom "3"
 
-dagre-d3-es@7.0.9:
-  version "7.0.9"
-  resolved "https://registry.yarnpkg.com/dagre-d3-es/-/dagre-d3-es-7.0.9.tgz#aca12fccd9d09955a4430029ba72ee6934542a8d"
-  integrity sha512-rYR4QfVmy+sR44IBDvVtcAmOReGBvRCWDpO2QjYwqgh9yijw6eSHBqaPG/LIOEy7aBsniLvtMW6pg19qJhq60w==
+dagre-d3-es@7.0.10:
+  version "7.0.10"
+  resolved "https://registry.yarnpkg.com/dagre-d3-es/-/dagre-d3-es-7.0.10.tgz#19800d4be674379a3cd8c86a8216a2ac6827cadc"
+  integrity sha512-qTCQmEhcynucuaZgY5/+ti3X/rnszKZhEQH/ZdWdtP1tA/y3VoHJzcVrO9pjjJCNpigfscAtoUB5ONcd2wNn0A==
   dependencies:
     d3 "^7.8.2"
     lodash-es "^4.17.21"
@@ -5956,10 +5972,10 @@ domhandler@^5.0.2, domhandler@^5.0.3:
   dependencies:
     domelementtype "^2.3.0"
 
-dompurify@2.4.3:
-  version "2.4.3"
-  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.4.3.tgz#f4133af0e6a50297fc8874e2eaedc13a3c308c03"
-  integrity sha512-q6QaLcakcRjebxjg8/+NP+h0rPfatOgOzc46Fst9VAA3jF2ApfKBNKMzdP4DYTqtUMXSCd5pRS/8Po/OmoCHZQ==
+dompurify@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.2.tgz#bc4c7c011c825e7704341a285461d8d407d9429a"
+  integrity sha512-B8c6JdiEpxAKnd8Dm++QQxJL4lfuc757scZtcapj6qjTjrQzyq5iAyznLKVvK+77eYNiFblHBlt7MM0fOeqoKw==
 
 domutils@^2.5.2, domutils@^2.8.0:
   version "2.8.0"
@@ -7422,6 +7438,27 @@ hast-util-from-dom@^4.0.0:
   dependencies:
     hastscript "^7.0.0"
     web-namespaces "^2.0.0"
+
+hast-util-from-html-isomorphic@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/hast-util-from-html-isomorphic/-/hast-util-from-html-isomorphic-1.0.0.tgz#592b2bea880d476665b76ca1cf7d1a94925c80ec"
+  integrity sha512-Yu480AKeOEN/+l5LA674a+7BmIvtDj24GvOt7MtQWuhzUwlaaRWdEPXAh3Qm5vhuthpAipFb2vTetKXWOjmTvw==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    hast-util-from-dom "^4.0.0"
+    hast-util-from-html "^1.0.0"
+    unist-util-remove-position "^4.0.0"
+
+hast-util-from-html@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/hast-util-from-html/-/hast-util-from-html-1.0.2.tgz#2482fd701b2d8270b912b3909d6fb645d4a346cf"
+  integrity sha512-LhrTA2gfCbLOGJq2u/asp4kwuG0y6NhWTXiPKP+n0qNukKy7hc10whqqCFfyvIA1Q5U5d0sp9HhNim9gglEH4A==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    hast-util-from-parse5 "^7.0.0"
+    parse5 "^7.0.0"
+    vfile "^5.0.0"
+    vfile-message "^3.0.0"
 
 hast-util-from-parse5@^7.0.0:
   version "7.1.2"
@@ -10035,24 +10072,34 @@ merge@^2.0.0:
   resolved "https://registry.yarnpkg.com/merge/-/merge-2.1.1.tgz#59ef4bf7e0b3e879186436e8481c06a6c162ca98"
   integrity sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==
 
-mermaid@^9.0.0:
-  version "9.4.3"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-9.4.3.tgz#62cf210c246b74972ea98c19837519b6f03427f2"
-  integrity sha512-TLkQEtqhRSuEHSE34lh5bCa94KATCyluAXmFnNI2PRZwOpXFeqiJWwZl+d2CcemE1RS6QbbueSSq9QIg8Uxcyw==
+mermaid-isomorphic@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/mermaid-isomorphic/-/mermaid-isomorphic-2.0.0.tgz#05220fa6b8aeb68f3e4800c447bc1cafd537c8f0"
+  integrity sha512-gLvSiDk2edx6XT+RufoN3XKZDXRk9F5VeBlfTbQPcNNTegCLVlGn8ppt7HHIPFlkTmhzN6QYA7n5qF2Mowv7Mw==
   dependencies:
-    "@braintree/sanitize-url" "^6.0.0"
+    "@fortawesome/fontawesome-free" "^6.0.0"
+    mermaid "10.2.0-rc.2"
+    playwright-core "^1.0.0"
+
+mermaid@10.2.0-rc.2:
+  version "10.2.0-rc.2"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-10.2.0-rc.2.tgz#6e1b50234204d869e2951dd4386c77155a613343"
+  integrity sha512-kKP+hOahUeIKYlvKvpO1l6oPv3C8Z6R3EDEMnxQC2J6kmI3fs+A3DSSWUVwIKcPmMz0roaD+VRv1knnTFVJPCQ==
+  dependencies:
+    "@braintree/sanitize-url" "^6.0.2"
+    "@khanacademy/simple-markdown" "^0.9.0"
     cytoscape "^3.23.0"
     cytoscape-cose-bilkent "^4.1.0"
     cytoscape-fcose "^2.1.0"
     d3 "^7.4.0"
-    dagre-d3-es "7.0.9"
+    dagre-d3-es "7.0.10"
     dayjs "^1.11.7"
-    dompurify "2.4.3"
+    dompurify "3.0.2"
     elkjs "^0.8.2"
     khroma "^2.0.0"
     lodash-es "^4.17.21"
     non-layered-tidy-tree-layout "^2.0.2"
-    stylis "^4.1.2"
+    stylis "^4.1.3"
     ts-dedent "^2.2.0"
     uuid "^9.0.0"
     web-worker "^1.2.0"
@@ -10515,6 +10562,11 @@ mini-jsx@^3.0.0:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-3.0.4.tgz#6952f3626db4f9a932f0732a486cc5bfc6ce6ab9"
   integrity sha512-pf0ug6uL/HLIZ7T11Tm2wJr1WZQ/wFPxEKRam43WO9alk1uOYbL+5CdsJQQo+H7knfYm8sqWHA5KzSfW9/KT6g==
+
+mini-svg-data-uri@^1.0.0:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/mini-svg-data-uri/-/mini-svg-data-uri-1.4.4.tgz#8ab0aabcdf8c29ad5693ca595af19dd2ead09939"
+  integrity sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==
 
 minimalistic-assert@^1.0.0:
   version "1.0.1"
@@ -11508,7 +11560,7 @@ pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   dependencies:
     find-up "^4.0.0"
 
-playwright-core@1.33.0:
+playwright-core@1.33.0, playwright-core@^1.0.0:
   version "1.33.0"
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.33.0.tgz#269efe29a927cd6d144d05f3c2d2f72bd72447a1"
   integrity sha512-aizyPE1Cj62vAECdph1iaMILpT0WUDCq3E6rW6I+dleSbBoGbktvJtzS6VHkZ4DKNEOG9qJpiom/ZxO+S15LAw==
@@ -12274,7 +12326,7 @@ punycode@^2.1.0, punycode@^2.1.1:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-puppeteer-core@^19.0.0, puppeteer-core@^19.6.0:
+puppeteer-core@^19.6.0:
   version "19.11.1"
   resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-19.11.1.tgz#4c63d7a0a6cd268ff054ebcac315b646eee32667"
   integrity sha512-qcuC2Uf0Fwdj9wNtaTZ2OvYRraXpAK+puwwVW8ofOhOgLPZyz1c68tsorfIZyCUOpyBisjr+xByu7BMbEYMepA==
@@ -12672,6 +12724,21 @@ rehype-mdx-title@^2.0.0:
     unified "^10.0.0"
     unist-util-visit "^4.0.0"
 
+rehype-mermaidjs@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rehype-mermaidjs/-/rehype-mermaidjs-1.0.1.tgz#d48b6c961bead4cc237c01e90f286719d444e9e4"
+  integrity sha512-bXuvGxzljFS1KQphX8FKELLxLtHrHi0tI7G9s0a9IpydLF7miYH9/HDXr0RAgWtUxuERSUKtpD5zSur22aCvOA==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    hast-util-from-html-isomorphic "^1.0.0"
+    hast-util-to-text "^3.0.0"
+    mermaid-isomorphic "^2.0.0"
+    mini-svg-data-uri "^1.0.0"
+    space-separated-tokens "^2.0.0"
+    unified "^10.0.0"
+    unist-util-visit-parents "^5.0.0"
+    vfile "^5.0.0"
+
 rehype-raw@^6.0.0:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/rehype-raw/-/rehype-raw-6.1.1.tgz#81bbef3793bd7abacc6bf8335879d1b6c868c9d4"
@@ -12905,22 +12972,6 @@ remark-mdx@^2.0.0:
   dependencies:
     mdast-util-mdx "^2.0.0"
     micromark-extension-mdxjs "^1.0.0"
-
-remark-mermaidjs@^4.0.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/remark-mermaidjs/-/remark-mermaidjs-4.1.1.tgz#6af41e789c73c2bdb3068884bec19a5123971daa"
-  integrity sha512-CJjxejSlk6LvAqTic1GE7VqqvpffJ7LoFZXYT/uGpyJU0MglqI3ZsPY2nHMdP56eteHkUWAZhY1Z2/FG95mW0w==
-  dependencies:
-    "@types/mdast" "^3.0.0"
-    hast-util-from-dom "^4.0.0"
-    hast-util-from-parse5 "^7.0.0"
-    mermaid "^9.0.0"
-    parse5 "^7.0.0"
-    puppeteer-core "^19.0.0"
-    svgo "^3.0.0"
-    unified "^10.0.0"
-    unist-util-visit "^4.0.0"
-    vfile "^5.0.0"
 
 remark-parse@^10.0.0:
   version "10.0.1"
@@ -14111,10 +14162,10 @@ stylelint@^15.0.0:
     v8-compile-cache "^2.3.0"
     write-file-atomic "^5.0.1"
 
-stylis@^4.1.2:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.2.0.tgz#79daee0208964c8fe695a42fcffcac633a211a51"
-  integrity sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==
+stylis@^4.1.3:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.1.4.tgz#9cb60e7153d8ac6d02d773552bf51c7a0344535b"
+  integrity sha512-USf5pszRYwuE6hg9by0OkKChkQYEXfkeTtm0xKw+jqQhwyjCVLdYyMBK7R+n7dhzsblAWJnGxju4vxq5eH20GQ==
 
 supports-color@^5.3.0:
   version "5.5.0"
