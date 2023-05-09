@@ -1,4 +1,4 @@
-import { type mapValues } from '@appsemble/utils';
+import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
 import { type JsonValue } from 'type-fest';
 
