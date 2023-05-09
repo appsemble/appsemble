@@ -61,8 +61,8 @@ yarn test -u
 #### End 2 End Tests
 
 The end 2 end tests are run using
-[![](https://playwright.dev/img/playwright-logo.svg) Playwright](https://playwright.dev). They
-reside in [`packages/e2e`](packages/e2e).
+[![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
+They reside in [`packages/e2e`](packages/e2e).
 
 ### Changelog
 
