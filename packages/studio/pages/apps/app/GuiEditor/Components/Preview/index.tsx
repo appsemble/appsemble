@@ -1,12 +1,12 @@
 import { Loader } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
-import { ReactElement, Ref } from 'react';
+import { type App } from '@appsemble/types';
+import { type ReactElement, type Ref } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { useSSLStatus } from '../../../../../../components/useSSLStatus.js';
-import { getAppUrl } from '../../../../../../utils/getAppUrl.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { useSSLStatus } from '../../../../../../components/useSSLStatus.js';
+import { getAppUrl } from '../../../../../../utils/getAppUrl.js';
 
 interface AppPreviewProps {
   /**

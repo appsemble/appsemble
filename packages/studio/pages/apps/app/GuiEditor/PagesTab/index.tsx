@@ -1,4 +1,5 @@
 import {
+  type AppDefinition,
   type BasicPageDefinition,
   type BlockDefinition,
   type BlockManifest,
@@ -7,13 +8,15 @@ import {
   type TabsPageDefinition,
 } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useMemo, useRef, useState } from 'react';
+import { parse } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
+import { UndoRedo } from './UndoRedo/index.js';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
@@ -26,6 +29,9 @@ interface PagesTabProps {
 
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
+  const [saveStack, setSaveStack] = useState([app.yaml]);
+  const [index, setIndex] = useState(0);
+  const state = useMemo(() => saveStack[index], [saveStack, index]);
   const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
@@ -46,6 +52,30 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   const handleDragExit = (): void => {
     setDragOver(false);
   };
+
+  const getStackSize = (): number => saveStack.length;
+
+  const setSaveState = (value: string): void => {
+    if (state === value) {
+      return;
+    }
+    const copy = saveStack.slice(0, index + 1);
+    copy.push(value);
+    setSaveStack(copy);
+    setIndex(copy.length - 1);
+  };
+
+  const onUndo = useCallback(() => {
+    setIndex(Math.max(0, Number(index) - 1));
+    app.definition = parse(state) as AppDefinition;
+    setApp({ ...app });
+  }, [app, index, setApp, state]);
+
+  const onRedo = useCallback(() => {
+    setIndex(Math.min(saveStack.length - 1, Number(index) + 1));
+    app.definition = parse(state) as AppDefinition;
+    setApp({ ...app });
+  }, [app, index, saveStack.length, setApp, state]);
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
@@ -105,6 +135,21 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     }
     onChangePagesBlocks(selectedPage, 0, pageLength - 1);
     setApp({ ...app });
+    setSaveState(app.yaml);
+  };
+
+  const deleteBlock = (): void => {
+    const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
+    blockList.splice(selectedBlock, 1);
+    if (blockList[selectedBlock - 1]) {
+      setSelectedBlock(selectedBlock - 1);
+    } else if (blockList.length > 0) {
+      setSelectedBlock(0);
+    } else {
+      setSelectedBlock(-1);
+    }
+    setApp({ ...app });
+    setSaveState(app.yaml);
   };
 
   const handleDrop = (): void => {
@@ -120,6 +165,11 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
+        <UndoRedo
+          getStackSize={getStackSize}
+          redoEventListener={onRedo}
+          undoEventListener={onUndo}
+        />
         <ElementsList
           onChange={onChangePagesBlocks}
           onCreateBlock={onCreateBlock}
@@ -149,9 +199,9 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
           {editBlockView ? (
             <BlockProperty
+              deleteBlock={deleteBlock}
               selectedBlock={selectedBlock}
               selectedPage={selectedPage}
-              setSelected={setSelectedBlock}
             />
           ) : null}
         </div>

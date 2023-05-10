@@ -339,6 +339,8 @@
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.BlockList.noBlocks": "No blocks match your search",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.error": "Something went wrong when fetching all blocks.",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.search": "Search",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.redo": "Redo last undo (ctrl+y)",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.undo": "Undo last change (ctrl+z)",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "Inherit Role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.createRoleButton": "Create role",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.defaultPageLabel": "Default Page",

@@ -1,12 +1,11 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
-import { MessageDescriptor, useIntl } from 'react-intl';
+import { type ReactElement, useCallback, useState } from 'react';
+import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
 import { stringify } from 'yaml';
 
-import { useApp } from '../index.js';
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -14,6 +13,7 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { useApp } from '../index.js';
 
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'theme';
 export interface GuiEditorTabs {

@@ -1,0 +1,15 @@
+.undoredoContainer {
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.undoButton {
+  margin-right: 0.5rem;
+  position: relative;
+  width: 46%;
+}
+
+.redoButton {
+  position: relative;
+  width: 46%;
+}

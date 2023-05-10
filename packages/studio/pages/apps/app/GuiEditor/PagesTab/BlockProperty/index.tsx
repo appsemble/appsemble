@@ -1,28 +1,29 @@
 import { Button, Loader, useData } from '@appsemble/react-components';
-import { BasicPageDefinition, BlockManifest } from '@appsemble/types';
+import { type BasicPageDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
+import { type JsonObject } from 'type-fest';
 
+import styles from './index.module.css';
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
-import styles from './index.module.css';
 
 interface BlockPropertyProps {
+  deleteBlock: (currentBlock: number) => void;
   selectedBlock: number;
   selectedPage: number;
-  setSelected: (selectedNew: number) => void;
 }
 export function BlockProperty({
+  deleteBlock,
   selectedBlock,
   selectedPage,
-  setSelected,
 }: BlockPropertyProps): ReactElement {
   const { app, setApp } = useApp();
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   const onChangeProperties = useCallback(
-    (parameters) => {
+    (parameters: JsonObject) => {
       if (selectedBlock === -1) {
         return;
       }
@@ -47,22 +48,9 @@ export function BlockProperty({
     [app, blocks, selectedBlock, selectedPage, setApp],
   );
 
-  let currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
+  const currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
     selectedBlock
   ];
-
-  const deleteBlock = (): void => {
-    const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
-    blockList.splice(selectedBlock, 1);
-    if (blockList.length > 0) {
-      // eslint-disable-next-line prefer-destructuring
-      currentBlock = blockList[0];
-      setSelected(0);
-    } else {
-      setSelected(-1);
-    }
-    setApp({ ...app });
-  };
 
   if (error) {
     return null;
@@ -79,7 +67,7 @@ export function BlockProperty({
             className={`is-danger ${styles.deleteButton}`}
             component="a"
             icon="trash"
-            onClick={() => deleteBlock()}
+            onClick={() => deleteBlock(selectedBlock)}
           >
             Delete Block
           </Button>

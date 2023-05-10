@@ -339,6 +339,8 @@
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.BlockList.noBlocks": "Uw zoekterm heeft geen blokken opgeleverd",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.error": "Error",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.search": "Zoeken",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.redo": "",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.undo": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "Erft rol",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.createRoleButton": "Rol aanmaken",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.defaultPageLabel": "Standaard pagina",
