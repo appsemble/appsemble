@@ -377,7 +377,7 @@ cleanup k8s jobs:
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
-# Delete all successful jobs for review environments nightly
+# Update lockfile and fix formatting where possible
 update dependencies:
   extends: .yarn
   stage: deploy
