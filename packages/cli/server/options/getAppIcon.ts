@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
-import { type GetAppSubEntityParams } from '@appsemble/node-utils';
+import { type GetAppSubEntityParams, readAsset } from '@appsemble/node-utils';
 
 export function getAppIcon({ app }: GetAppSubEntityParams): Promise<Buffer> {
-  return readFile(app.iconUrl);
+  return app.iconUrl ? readFile(app.iconUrl) : readAsset('appsemble.png');
 }
