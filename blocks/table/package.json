@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/table",
-  "version": "0.20.42",
+  "version": "0.20.43",
   "private": true,
   "description": "A block that can be used to display larger sets of data.",
   "homepage": "https://appsemble.app",
@@ -17,10 +17,10 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.20.42",
-    "@appsemble/preact-components": "0.20.42",
-    "@appsemble/sdk": "0.20.42",
-    "@appsemble/utils": "0.20.42",
+    "@appsemble/preact": "0.20.43",
+    "@appsemble/preact-components": "0.20.43",
+    "@appsemble/sdk": "0.20.43",
+    "@appsemble/utils": "0.20.43",
     "classnames": "^2.0.0",
     "preact": "^10.0.0"
   }

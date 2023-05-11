@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.43](https://gitlab.com/appsemble/appsemble/-/releases/0.20.43)] - 2023-05-11
+
+### Added
+
+- Block(`table`): Support custom size of image in table cell.
+- Block(`table`): Support images in table cell.
+- Server: Support authentication for the `request action` using app service secrets when proxied.
+- Studio: Add service secrets to app secrets page.
+- Utils: Add `log` remapper.
+- Utils: Add `match` remapper.
+- Utils: Add `not` remapper.
+
+### Changed
+
+- Block(`form`): The form block now uses actions to `autofill` form fields.
+
+### Fixed
+
+- Block(`form`): Resolve date fields and boolean field missing form values when remapping in
+  `required` requirement.
+
 ## \[[0.20.42](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)] - 2023-04-04
 
 ## \[[0.20.41](https://gitlab.com/appsemble/appsemble/-/releases/0.20.41)] - 2023-03-24

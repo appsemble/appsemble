@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.42
-appVersion: 0.20.42
+version: 0.20.43
+appVersion: 0.20.43
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,27 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(table): Support custom size of image in table cell."
+    - kind: added
+      description: "Block(table): Support images in table cell."
+    - kind: added
+      description: "Server: Support authentication for the request action using app
+        service secrets when proxied."
+    - kind: added
+      description: "Studio: Add service secrets to app secrets page."
+    - kind: added
+      description: "Utils: Add log remapper."
+    - kind: added
+      description: "Utils: Add match remapper."
+    - kind: added
+      description: "Utils: Add not remapper."
+    - kind: changed
+      description: "Block(form): The form block now uses actions to autofill form fields."
+    - kind: fixed
+      description: "Block(form): Resolve date fields and boolean field missing form
+        values when remapping in required requirement."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
