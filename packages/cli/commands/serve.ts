@@ -278,7 +278,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
     appRouter,
     controllers,
     context: {
-      appHost: `http://${appName}.localhost:9090`,
+      appHost: `http://${appName}.localhost:${argv.port}`,
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
@@ -298,10 +298,12 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const callback = server.callback();
   const httpServer = http.createServer(callback);
 
-  httpServer.listen(9090, '::', () => {
+  httpServer.listen(argv.port, '::', () => {
     logger.info(asciiLogo);
     logger.info(
-      `The app can be found on\n> http://${normalize(appsembleApp.definition.name)}.localhost:9090`,
+      `The app can be found on\n> http://${normalize(appsembleApp.definition.name)}.localhost:${
+        argv.port
+      }`,
     );
     logger.info(api(pkg.version, { port: 9090 }).info.description);
   });
