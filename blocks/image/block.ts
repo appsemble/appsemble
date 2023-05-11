@@ -27,5 +27,15 @@ declare module '@appsemble/sdk' {
      * @default 'left'
      */
     alignment?: 'center' | 'left' | 'right';
+
+    /**
+     * The width of the image in pixels.
+     */
+    width?: number;
+
+    /**
+     * The height of the image in pixels.
+     */
+    height?: number;
   }
 }

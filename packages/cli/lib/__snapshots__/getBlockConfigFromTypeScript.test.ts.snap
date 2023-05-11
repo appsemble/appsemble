@@ -3315,6 +3315,10 @@ exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
         "description": "The alt text of the image.",
         "format": "remapper",
       },
+      "height": {
+        "description": "The height of the image in pixels.",
+        "type": "number",
+      },
       "rounded": {
         "description": "Is image rounded.",
         "type": "boolean",
@@ -3324,6 +3328,10 @@ exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
 
 Note that this is ignored if the onImage event listener is set.",
         "format": "remapper",
+      },
+      "width": {
+        "description": "The width of the image in pixels.",
+        "type": "number",
       },
     },
     "required": [
