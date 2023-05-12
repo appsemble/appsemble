@@ -102,7 +102,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   script:
     - helm lint config/charts/*
 
@@ -202,7 +202,7 @@ pack:
 
 # Package the Helm chart
 helm package:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   stage: build
   needs: []
   script:
@@ -293,7 +293,7 @@ publish docker:
 
 # Publish the Helm chart to https://charts.appsemble.com
 publish helm:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   needs:
     - helm package
   stage: publish
@@ -368,7 +368,7 @@ release minor:
 
 # Delete all successful jobs for review environments nightly
 cleanup k8s jobs:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   stage: deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
@@ -419,7 +419,7 @@ update dependencies:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   stage: deploy
   needs:
     - build docker image
@@ -470,7 +470,7 @@ review:
 
 # Stop a review environment.
 stop review:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   dependencies: []
   stage: deploy
   rules:
@@ -490,7 +490,7 @@ stop review:
 
 # Deploy the Docker image for main to the staging environment.
 staging:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   stage: deploy
   needs:
     - build docker image
@@ -538,7 +538,7 @@ staging:
       --set "sentry.secret=sentry"
 
 production:
-  image: dtzar/helm-kubectl:3
+  image: dtzar/helm-kubectl:3.11
   stage: deploy
   needs:
     - publish docker
