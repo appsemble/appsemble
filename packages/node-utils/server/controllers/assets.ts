@@ -7,10 +7,11 @@ import { extension } from 'mime-types';
 export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): Middleware {
   return async (ctx: Context) => {
     const {
+      pathParams: { appId },
       queryParams: { $skip, $top },
     } = ctx;
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
       throw notFound('App not found');
@@ -31,10 +32,10 @@ export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): M
 export function createGetAssetById({ getApp, getAppAssets }: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { assetId },
+      pathParams: { appId, assetId },
     } = ctx;
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
       throw notFound('App not found');
@@ -82,6 +83,7 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
 export function createCreateAsset({ createAppAsset, getApp }: Options): Middleware {
   return async (ctx: Context) => {
     const {
+      pathParams: { appId },
       request: {
         body: {
           file: { contents, filename, mime },
@@ -90,7 +92,7 @@ export function createCreateAsset({ createAppAsset, getApp }: Options): Middlewa
       },
     } = ctx;
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
       throw notFound('App not found');

@@ -21,9 +21,9 @@ export function frontend(
   const configStudio = createStudioConfig({ mode: 'development' });
 
   const configs = [configApp, ...(serveStudio ? [configStudio] : []), ...webpackConfigs];
-  const compiler = webpack(configs as any);
+  const compiler = webpack(configs);
 
-  const devMiddleware = webpackDevMiddleware(compiler as any, { serverSideRender: true });
+  const devMiddleware = webpackDevMiddleware(compiler, { serverSideRender: true });
 
   // @ts-expect-error outputFileSystem exists despite what the types say.
   const fs: import('memfs').IFs = devMiddleware.context.outputFileSystem;
@@ -40,9 +40,11 @@ export function frontend(
       if (!skipRoute.test(ctx.path)) {
         return koaDevMiddleware(ctx, next);
       }
+
       if (new URL(argv.host).hostname === hostname || isIP(hostname)) {
         return next();
       }
+
       return koaDevMiddleware(ctx, next);
     },
   ]);

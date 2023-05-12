@@ -47,7 +47,6 @@ it('should handle if the path doesn’t point to an action', async () => {
     vapidPublicKey: '',
     vapidPrivateKey: '',
     OrganizationId: 'org',
-    domain: '127.0.0.1',
     definition: {
       defaultPage: '',
       resources: { testResource: { schema: { type: 'object' } } },
@@ -90,7 +89,6 @@ describe('handleRequestProxy', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
-      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         pages: [
@@ -313,7 +311,6 @@ describe('handleEmail', () => {
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
-      domain: '127.0.0.1',
       definition: {
         defaultPage: '',
         pages: [

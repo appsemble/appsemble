@@ -181,7 +181,6 @@ describe('createTemplateApp', () => {
           name: 'Test app',
           pages: [],
         },
-        domain: '127.0.0.1',
         iconUrl: null,
         id: response.data.id,
         path: 'test-app',

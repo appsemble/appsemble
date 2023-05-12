@@ -164,10 +164,10 @@ async function handleRequestProxy(
 function createProxyHandler(useBody: boolean, options: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { path },
+      pathParams: { appId, path },
     } = ctx;
 
-    const app = await options.getApp({ context: ctx });
+    const app = await options.getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
       throw notFound('App not found');

@@ -25,6 +25,8 @@ interface GetAppValue {
   organizationId?: string;
 }
 
+const localHostnames = new Set(['127.0.0.1', 'localhost']);
+
 /**
  * Get an app from the database based on the Koa context and URL.
  *
@@ -47,6 +49,8 @@ export async function getApp(
     organizationId: undefined,
   };
 
+  const { where, ...findOptions } = queryOptions;
+
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname
       .slice(0, Math.max(0, hostname.length - platformHost.length - 1))
@@ -55,19 +59,20 @@ export async function getApp(
       [value.organizationId] = subdomain;
     } else if (subdomain.length === 2) {
       [value.appPath, value.organizationId] = subdomain;
+
       value.app = await App.findOne({
-        ...queryOptions,
         where: {
           path: value.appPath,
           OrganizationId: value.organizationId,
-          ...(queryOptions ? queryOptions.where : {}),
+          ...where,
         },
+        ...findOptions,
       });
     }
   } else {
     value.app = await App.findOne({
-      ...queryOptions,
-      where: { domain: hostname, ...(queryOptions ? queryOptions.where : {}) },
+      where: { ...(localHostnames.has(hostname) ? {} : { domain: hostname }), ...where },
+      ...findOptions,
     });
   }
   return value;

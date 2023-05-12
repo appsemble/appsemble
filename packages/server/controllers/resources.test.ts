@@ -37,7 +37,6 @@ let originalSendNotification: typeof webpush.sendNotification;
 
 const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
   App.create({
-    domain: '127.0.0.1',
     definition: {
       name: 'Test App',
       defaultPage: 'Test Page',
@@ -2603,7 +2602,6 @@ describe('createResource', () => {
 
   it('should check if an app has any resource definitions', async () => {
     const app = await App.create({
-      domain: '127.0.0.1',
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
       vapidPublicKey: 'a',

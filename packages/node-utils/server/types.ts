@@ -117,7 +117,6 @@ export interface ContextBlockConfig extends BlockConfig {
 export interface GetAppParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   query?: Record<string, any>;
-  user?: any;
 }
 
 export interface GetAppSubEntityParams {

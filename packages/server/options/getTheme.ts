@@ -5,6 +5,6 @@ import { Theme } from '../models/index.js';
 export async function getTheme({ theme }: GetThemeParams): Promise<ThemeInterface> {
   const persistedTheme = await Theme.findOne({ where: theme });
   return {
-    css: persistedTheme.css,
+    css: persistedTheme ? persistedTheme.css : '',
   };
 }

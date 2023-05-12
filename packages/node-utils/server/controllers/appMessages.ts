@@ -22,7 +22,7 @@ export function createGetMessages({
 }: Options): Middleware {
   return async (ctx: Context) => {
     const {
-      pathParams: { language },
+      pathParams: { appId, language },
       query: { merge, override = 'true' },
     } = ctx;
 
@@ -38,7 +38,7 @@ export function createGetMessages({
 
     const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
 
-    const app = await getApp({ context: ctx });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
       throw notFound('App not found');

@@ -50,7 +50,6 @@ beforeEach(async () => {
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: 'testorganization',
-    domain: '127.0.0.1',
     definition: {
       name: 'Test App',
       description: 'Description',

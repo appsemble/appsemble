@@ -5,17 +5,17 @@ import { AppMember } from '../models/AppMember.js';
 import { Organization } from '../models/Organization.js';
 import { getApp as getServerApp } from '../utils/app.js';
 
-export async function getApp({ context, query, user }: GetAppParams): Promise<AppInterface> {
+export async function getApp({ context, query }: GetAppParams): Promise<AppInterface> {
   const { app } = await getServerApp(context, {
     ...query,
-    ...(user && {
+    ...(context.user && {
       include: [
         { model: Organization, attributes: ['id'] },
         {
           model: AppMember,
           attributes: ['role', 'UserId'],
           required: false,
-          where: { UserId: user.id },
+          where: { UserId: context.user.id },
         },
       ],
     }),

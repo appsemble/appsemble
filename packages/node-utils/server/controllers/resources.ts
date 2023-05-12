@@ -37,7 +37,7 @@ export function createQueryResources(options: Options): Middleware {
 
     const { getApp, getAppResources, verifyPermission } = options;
 
-    const app = await getApp({ context: ctx, user, query: { where: { id: appId } } });
+    const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const { order, where } = generateQuery(ctx, options);
 

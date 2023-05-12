@@ -285,7 +285,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appAssets,
       blockConfigs,
     },
-    webpackConfigs: webpackConfigs as any,
+    webpackConfigs,
   });
 
   server.on('error', (err) => {
