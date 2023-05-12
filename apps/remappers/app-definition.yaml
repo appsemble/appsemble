@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.20.43)
+description: This app contains every Remapper currently in Appsemble as of (0.20.44)
 defaultPage: Introduction
 
 security:
@@ -29,7 +29,7 @@ pages:
   - name: Introduction
     blocks:
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           content: |
             # Welcome
@@ -44,7 +44,7 @@ pages:
               - [History](/history)
 
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.query
@@ -67,7 +67,7 @@ pages:
           emit:
             data: peopleInEindhoven
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -80,13 +80,13 @@ pages:
     blocks:
       # string.case
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## string.case
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label:
@@ -95,13 +95,13 @@ pages:
 
       # string.format
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## string.format
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: noop
@@ -112,7 +112,7 @@ pages:
           emit:
             data: lotteryResults
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - value:
@@ -126,13 +126,13 @@ pages:
 
       # string.replace
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## string.replace
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: noop
@@ -144,7 +144,7 @@ pages:
           emit:
             data: stringReplaceData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - value: { root }
@@ -156,13 +156,13 @@ pages:
     blocks:
       # object.from
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## object.from
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -184,7 +184,7 @@ pages:
           emit:
             data: objectFromData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: { prop: username }
@@ -199,13 +199,13 @@ pages:
 
       # object.assign
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## object.assign
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -219,7 +219,7 @@ pages:
           emit:
             data: objectAssignData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: { prop: title }
@@ -234,13 +234,13 @@ pages:
 
       # object.omit
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## object.omit
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -262,7 +262,7 @@ pages:
           emit:
             data: objectOmitData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: { prop: title }
@@ -275,13 +275,13 @@ pages:
     blocks:
       # array.from
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## array.from
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -296,7 +296,7 @@ pages:
           emit:
             data: arrayFromData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -309,13 +309,13 @@ pages:
 
       # array.map
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## array.map
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -337,7 +337,7 @@ pages:
           emit:
             data: arrayMapData1
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -349,7 +349,7 @@ pages:
             data: arrayMapData1
 
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -377,7 +377,7 @@ pages:
           emit:
             data: arrayMapData2
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -390,13 +390,13 @@ pages:
 
       ## array.append
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## array.append
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -419,7 +419,7 @@ pages:
           emit:
             data: arrayAppendData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -432,13 +432,13 @@ pages:
 
       ## array.omit
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## array.omit
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -462,7 +462,7 @@ pages:
           emit:
             data: arrayOmitData1
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -473,7 +473,7 @@ pages:
           listen:
             data: arrayOmitData1
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         events:
           listen:
             data: arrayOmitData1
@@ -508,13 +508,13 @@ pages:
 
       ## array.unique
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## array.unique
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -544,7 +544,7 @@ pages:
           emit:
             data: arrayUniqueData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -559,13 +559,13 @@ pages:
     blocks:
       # root
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## root
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.query
@@ -586,7 +586,7 @@ pages:
           emit:
             data: rootData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: Name
@@ -601,13 +601,13 @@ pages:
 
       # history
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## history
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -628,7 +628,7 @@ pages:
           emit:
             data: 1historyData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: { prop: title }
@@ -639,13 +639,13 @@ pages:
 
       # app
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## app
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -661,7 +661,7 @@ pages:
           emit:
             data: appData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - value:
@@ -685,13 +685,13 @@ pages:
 
       # page
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## page
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: noop
@@ -705,7 +705,7 @@ pages:
           emit:
             data: pageData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - value:
@@ -724,13 +724,13 @@ pages:
 
       # user
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## user
       - type: html
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           placeholders:
             sub: { user: sub }
@@ -755,13 +755,13 @@ pages:
 
       # context
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## context
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             remapBefore:
@@ -780,7 +780,7 @@ pages:
           emit:
             data: contextData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         events:
           listen:
             data: contextData
@@ -802,13 +802,13 @@ pages:
 
       # translate
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## translate
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           fields:
             - label: { translate: weatherTitle }
@@ -818,13 +818,13 @@ pages:
     blocks:
       # history
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## history
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.query
@@ -843,7 +843,7 @@ pages:
           emit:
             data: historyData1
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           fields:
@@ -853,7 +853,7 @@ pages:
           listen:
             data: historyData1
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.query
@@ -872,7 +872,7 @@ pages:
           emit:
             data: historyData2
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           fields:
@@ -882,7 +882,7 @@ pages:
           listen:
             data: historyData2
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.query
@@ -897,7 +897,7 @@ pages:
           emit:
             data: historyData3
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           fields:
@@ -911,13 +911,13 @@ pages:
 
       # from.history
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## from.history
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: noop
@@ -946,7 +946,7 @@ pages:
           emit:
             data: fromHistoryData
       - type: detail-viewer
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           fields:
@@ -957,7 +957,7 @@ pages:
           listen:
             data: fromHistoryData
       - type: table
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           fields:
@@ -973,13 +973,13 @@ pages:
 
       # assign.history
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## assign.history
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: resource.count
@@ -1009,7 +1009,7 @@ pages:
           emit:
             data: assignHistoryData
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           content:
             string.format:
@@ -1033,13 +1033,13 @@ pages:
 
       # omit.history
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         layout: static
         parameters:
           content: |
             * ## omit.history
       - type: data-loader
-        version: 0.20.43
+        version: 0.20.44
         actions:
           onLoad:
             type: noop
@@ -1071,7 +1071,7 @@ pages:
           emit:
             data: omitHistoryData
       - type: markdown
-        version: 0.20.43
+        version: 0.20.44
         parameters:
           content:
             string.format:

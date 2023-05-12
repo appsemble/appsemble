@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/video",
-  "version": "0.20.43",
+  "version": "0.20.44",
   "private": true,
   "description": "A block that embeds a Vimeo video.",
   "homepage": "https://appsemble.app",
@@ -17,7 +17,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.20.43",
+    "@appsemble/sdk": "0.20.44",
     "@types/vimeo__player": "^2.0.0",
     "@vimeo/player": "^2.0.0"
   }

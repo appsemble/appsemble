@@ -52,7 +52,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.43
+    version: 0.20.44
     parameters:
       content:
         translate: myMessage
@@ -69,7 +69,7 @@ Alternatively using `string.format`:
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.43
+    version: 0.20.44
     parameters:
       content:
         string.format:
@@ -160,7 +160,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.43": {
+      "0.20.44": {
         "submit": "An example override of the submit message in the form block."
       }
     }

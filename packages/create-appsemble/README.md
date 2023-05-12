@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.43/config/assets/logo.svg) Appsemble Create
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.44/config/assets/logo.svg) Appsemble Create
 
 > Bootstrap an Appsemble block
 
 [![npm](https://img.shields.io/npm/v/create-appsemble)](https://www.npmjs.com/package/create-appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.43/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.43)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.44/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.44)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -36,5 +36,5 @@ npm init appsemble block
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.43/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.44/LICENSE.md) ©
 [Appsemble](https://appsemble.com)
