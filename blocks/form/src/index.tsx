@@ -32,7 +32,7 @@ bootstrap(
     utils,
   }) => {
     const initialLoad = useRef(true);
-    const [fields, setFields] = useState(initialFields);
+    const [fields, setFields] = useState(initialFields ?? []);
     const defaultValues = useMemo<Values>(() => {
       const valuesFromData = generateDefaultValues(fields);
 
