@@ -1,11 +1,24 @@
 {
   "name": "@appsemble/barcode-scan",
-  "version": "0.20.134",
+  "version": "0.20.44",
   "private": true,
+  "description": "A block that scans barcode",
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/barcode-scan"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
   "dependencies": {
-    "@appsemble/preact": "0.20.42",
-    "@appsemble/sdk": "0.20.42",
+    "@appsemble/preact": "0.20.44",
+    "@appsemble/sdk": "0.20.44",
     "@ericblade/quagga2": "^1.8.2",
     "preact": "^10.0.0"
   }

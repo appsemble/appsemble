@@ -3,7 +3,7 @@ declare module '@appsemble/sdk' {
     /**
      * Event that gets emitted once the barcode scanner has identified and resolved a barcode.
      *
-     * barcode event only holds the barocde number.
+     * barcode event only holds the object with property barcode.
      */
     foundBarcode: never;
   }
@@ -29,6 +29,6 @@ declare module '@appsemble/sdk' {
     /**
      * Type is either camera or file
      */
-    type?: 'camera';
+    type?: 'camera' | 'file';
   }
 }

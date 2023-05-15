@@ -1,18 +1,12 @@
-import { useBlock } from '@appsemble/preact';
-import Quagga, { type QuaggaJSResultObject } from '@ericblade/quagga2';
+import Quagga, { type QuaggaJSResultCallbackFunction } from '@ericblade/quagga2';
 import { type VNode } from 'preact';
-import { useRef, useState } from 'preact/hooks';
+import { useRef } from 'preact/hooks';
 
-export function CameraScanner(): VNode {
+interface CameraScannerProps {
+  onDetected: QuaggaJSResultCallbackFunction;
+}
+export function CameraScanner({ onDetected }: CameraScannerProps): VNode {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [barcode, setBarcode] = useState('123');
-
-  const { events, parameters } = useBlock();
-
-  const onDetected = (result: QuaggaJSResultObject): void => {
-    setBarcode(result.codeResult.code);
-    events.emit.foundBarcode(result.codeResult.code);
-  };
 
   function videoStart(): void {
     Quagga.init(
@@ -48,24 +42,21 @@ export function CameraScanner(): VNode {
     Quagga.onDetected(onDetected);
   }
 
-  if (parameters.type === 'camera') {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then((stream) => {
-      videoRef.current.srcObject = stream;
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then((stream) => {
+    videoRef.current.srcObject = stream;
 
-      videoRef.current.setAttribute('playsinline', 'true');
+    videoRef.current.setAttribute('playsinline', 'true');
 
-      videoRef.current.play();
+    videoRef.current.play();
 
-      if (videoRef.current) {
-        videoStart();
-      }
-    });
-  }
+    if (videoRef.current) {
+      videoStart();
+    }
+  });
 
   return (
     <div>
       <h1>Camera Scanner</h1>
-      <p>barcode: {barcode}</p>
       <video id="interactive" ref={videoRef}>
         <track class="viewport" kind="captions" label="English" src="captions.vtt" />
       </video>
