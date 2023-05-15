@@ -23,18 +23,16 @@ export function UndoRedo({
       <Button
         className={styles.undoButton}
         disabled={getStackSize() < 1}
+        icon="rotate-left"
         onClick={undoEventListener}
         title={formatMessage(messages.undo)}
-      >
-        Undo
-      </Button>
+      />
       <Button
         className={styles.redoButton}
+        icon="rotate-right"
         onClick={redoEventListener}
         title={formatMessage(messages.redo)}
-      >
-        Redo
-      </Button>
+      />
     </div>
   );
 }

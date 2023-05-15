@@ -53,12 +53,13 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     setDragOver(false);
   };
 
-  const getStackSize = (): number => saveStack.length;
+  const getStackSize = (): number => index;
 
   const setSaveState = (value: string): void => {
     if (state === value) {
       return;
     }
+
     const copy = saveStack.slice(0, index + 1);
     copy.push(value);
     setSaveStack(copy);
@@ -66,13 +67,13 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   };
 
   const onUndo = useCallback(() => {
-    setIndex(Math.max(0, Number(index) - 1));
+    setIndex(Math.max(0, index - 1));
     app.definition = parse(state) as AppDefinition;
     setApp({ ...app });
   }, [app, index, setApp, state]);
 
   const onRedo = useCallback(() => {
-    setIndex(Math.min(saveStack.length - 1, Number(index) + 1));
+    setIndex(Math.min(saveStack.length - 1, index + 1));
     app.definition = parse(state) as AppDefinition;
     setApp({ ...app });
   }, [app, index, saveStack.length, setApp, state]);
