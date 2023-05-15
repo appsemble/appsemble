@@ -27,7 +27,7 @@ start receiving push notifications.
 ## Resource notifications
 
 As previously mentioned, it’s possible to automate sending out notification when certain events such
-as resource creation or update happens.
+as resource creation or an update happens.
 
 This can be done by using resource hooks. Resource hooks are special events that are triggered when
 certain changes happen like creating a new resource. One such hook is the `notifications` hook.
@@ -146,7 +146,7 @@ content: Updated person 123
 
 This can be customized by defining an object called `data` with the properties `title` and `content`
 in the notification hook object. The values can be either regular strings if they don’t have to be
-dynamic or a valid [remapper definition](/docs/reference/remapper).
+dynamic, or a valid [remapper definition](/docs/reference/remapper).
 
 For example:
 

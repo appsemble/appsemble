@@ -1,7 +1,7 @@
 # Basic app
 
-Each app has a name, description, and a default page. Notice that name and description have a value
-that was entered in the _“Create new app”_ dialog.
+Each app has a name, description, and a default page. Notice that the name and description have the
+value that was entered in the _“Create new app”_ dialog.
 
 ## Table of Contents
 
@@ -84,8 +84,8 @@ side menu. This way resources can be managed in a generic way from within
 
 ## Displaying data
 
-Resources exist for using them in the app. A simple way to display data is to add a `table` block. A
-table block can display data in an orderly manner in a table.
+Resources exist for use in the app. A simple way to display data is to add a `table` block. A table
+block can display data in an orderly manner in a table.
 
 Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single page, named _“People”_.
 

@@ -52,7 +52,7 @@ There are 3 main browser storage options:
 - **[sessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)**: Stores
   data just like `localStorage` except it clears the data whenever the browser tab is closed.
 
-To see what is stored in the browser open up the browser developer tools by pressing `F12` and head
+To see what is stored in the browser, open up the browser developer tools by pressing `F12` and head
 over to the storage section.
 
 ### App Storage

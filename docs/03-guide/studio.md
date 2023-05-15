@@ -10,8 +10,8 @@
 
 Apps can be created and modified using the [Appsemble studio](/).
 
-After logging in, a list of apps you can manage will appear, providing direct links to the app
-itself, as well as the corresponding app detail pages.
+After logging in, a list of apps you can manage will appear. These apps will provide direct links to
+the app itself, as well as the corresponding app detail pages.
 
 From this screen new apps can be created by clicking on _“Create new app”_ card.
 

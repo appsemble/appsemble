@@ -39,8 +39,7 @@ from Appsemble itself.
 
 ## The building blocks of an Appsemble App
 
-An app consists of a page or multiple pages. Always define the default page for the app to start
-with.
+An app consists of a page or multiple pages. Always define the default page for the app to start in.
 
 An app can consist of the following elements:
 

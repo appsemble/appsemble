@@ -16,7 +16,7 @@
 
 ## Introduction
 
-There are lots of points to get data from in Appsemble. There is a number of different remappers to
+There are lots of points to get data from in Appsemble. There are a number of different remappers to
 get this data from certain places in an app definition.
 
 ### Data remappers
