@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.20.42",
+  "version": "0.20.44",
   "private": true,
   "description": "Reusable React components for internal use",
   "keywords": [
@@ -26,9 +26,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.42",
-    "@appsemble/utils": "0.20.42",
-    "@appsemble/web-utils": "0.20.42",
+    "@appsemble/types": "0.20.44",
+    "@appsemble/utils": "0.20.44",
+    "@appsemble/web-utils": "0.20.44",
     "@creativebulma/bulma-tagsinput": "^1.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^7.0.0",
@@ -39,7 +39,7 @@
     "@types/react-router-dom": "^5.0.0",
     "@types/react-transition-group": "^4.0.0",
     "@types/webpack-env": "^1.0.0",
-    "@zxcvbn-ts/core": "^2.0.0",
+    "@zxcvbn-ts/core": "^3.0.0",
     "axios": "^1.0.0",
     "classnames": "^2.0.0",
     "date-fns": "^2.0.0",
