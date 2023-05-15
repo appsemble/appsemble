@@ -1,4 +1,4 @@
-import { Content, InputField, SelectField } from '@appsemble/react-components';
+import { Content, InputField, SelectField, useData } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -46,6 +46,7 @@ export function IndexPage(): ReactElement {
     },
     [],
   );
+  const userhasApps = useData<App[]>(`/api/user/apps?language=${lang}`).data == null;
 
   return (
     <Content className={styles.content} main>
@@ -94,7 +95,7 @@ export function IndexPage(): ReactElement {
         {userInfo ? <CreateAppButton className={styles.createAppButton} /> : null}
       </div>
 
-      {userInfo ? (
+      {userInfo && userhasApps ? (
         <CollapsibleAppList
           filter={filter}
           reverse={sort?.reverse}
