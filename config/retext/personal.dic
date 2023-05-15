@@ -67,6 +67,7 @@ fieldsets
 GDPR
 GitLab
 Gravatar
+HTTPS
 IDP
 JSON
 JSX
@@ -94,6 +95,7 @@ remapper/mapper
 Redux
 SAML
 SAML2.0
+SCIM
 SDK
 SMTP
 SSL

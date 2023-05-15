@@ -25,12 +25,11 @@ export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): v
       retry: { max: 3 },
     });
 
-    // eslint-disable-next-line unicorn/prefer-string-slice
     dbName = rootDB
-      .escape(`appsemble_test_${parse(meta.url).name}_${new Date().toISOString()}`)
+      .escape(`appsemble_${parse(meta.url).name}_${new Date().toISOString()}`)
       .replace(/'/g, '')
       .replace(/\W+/g, '_')
-      .substring(0, 63)
+      .slice(0, 63)
       .toLowerCase();
 
     await rootDB.query(`CREATE DATABASE ${dbName}`);

@@ -45,6 +45,21 @@ export function authentication(): AuthenticationCheckers {
       return [new User({ id: sub }), { scope }];
     },
 
+    async scim(scimToken, { path }) {
+      // This runs before the path parameter parsing, so we can’t use pathParams
+      const match = path.match(/^\/api\/apps\/(\d+)\/scim/);
+      if (!match) {
+        return;
+      }
+      const app = await App.findOne({
+        where: { id: Number(match[1]), scimEnabled: true, scimToken },
+        attributes: ['id'],
+      });
+      if (app) {
+        return {} as User;
+      }
+    },
+
     studio(accessToken) {
       const { sub } = jwt.verify(accessToken, secret, { audience: host }) as JwtPayload;
       return new User({ id: sub });
