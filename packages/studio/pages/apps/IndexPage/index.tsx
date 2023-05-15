@@ -46,7 +46,8 @@ export function IndexPage(): ReactElement {
     },
     [],
   );
-  const userhasApps = useData<App[]>(`/api/user/apps?language=${lang}`).data == null;
+  const userApps = useData<App[]>(`/api/user/apps?language=${lang}`);
+  const userhasApps = userApps.data != null && userApps.data.length > 0;
 
   return (
     <Content className={styles.content} main>
