@@ -49,7 +49,7 @@ export async function getApp(
     organizationId: undefined,
   };
 
-  const { where, ...findOptions } = queryOptions;
+  const { where, ...findOptions } = queryOptions ?? { where: {} };
 
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname
