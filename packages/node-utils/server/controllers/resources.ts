@@ -103,7 +103,7 @@ export function createQueryResources(options: Options): Middleware {
   };
 }
 
-export function createCountResources(options: Options) {
+export function createCountResources(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceType },
@@ -148,7 +148,6 @@ export function createGetResourceById(options: Options): Middleware {
   return async (ctx: Context) => {
     const {
       pathParams: { appId, resourceId, resourceType },
-      queryParams: { view },
       user,
     } = ctx;
 
@@ -157,6 +156,8 @@ export function createGetResourceById(options: Options): Middleware {
     const { getApp, getAppResource, verifyPermission } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+
+    const view = ctx.queryParams?.view;
 
     const resourceDefinition = getResourceDefinition(app, resourceType, view);
 
