@@ -34,7 +34,7 @@
     "axios": "~1.2.0"
   },
   "dependencies": {
-    "yaml": "^2.2.2"
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
