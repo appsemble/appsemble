@@ -1,4 +1,4 @@
-import { Content, InputField, SelectField, useData } from '@appsemble/react-components';
+import { Content, InputField, SelectField } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -46,9 +46,6 @@ export function IndexPage(): ReactElement {
     },
     [],
   );
-  const userApps = useData<App[]>(`/api/user/apps?language=${lang}`);
-  const userhasApps = userApps.data != null && userApps.data.length > 0;
-
   return (
     <Content className={styles.content} main>
       <div className="is-flex">
@@ -96,15 +93,17 @@ export function IndexPage(): ReactElement {
         {userInfo ? <CreateAppButton className={styles.createAppButton} /> : null}
       </div>
 
-      {userInfo && userhasApps ? (
+      {userInfo ? (
         <CollapsibleAppList
           filter={filter}
           reverse={sort?.reverse}
           sortFunction={sortFunctions[sort?.name]}
           target={`/api/user/apps?language=${lang}`}
           title={<FormattedMessage {...messages.myApps} />}
+          userApps
         />
       ) : null}
+      <br />
       <CollapsibleAppList
         filter={filter}
         reverse={sort?.reverse}

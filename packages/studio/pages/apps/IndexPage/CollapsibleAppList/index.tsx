@@ -34,6 +34,11 @@ interface CollapsibleAppListProps {
    * Whether the sort function should be reversed.
    */
   reverse: boolean;
+
+  /**
+   * Whether the apps are user apps.
+   */
+  userApps?: boolean;
 }
 
 /**
@@ -45,12 +50,15 @@ export function CollapsibleAppList({
   sortFunction,
   target,
   title,
+  userApps,
 }: CollapsibleAppListProps): ReactElement {
   const result = useData<App[]>(target);
 
   return (
     <AsyncDataView
-      emptyMessage={<FormattedMessage {...messages.emptyApps} />}
+      emptyMessage={
+        <FormattedMessage {...(userApps ? messages.emptyUserApps : messages.emptyApps)} />
+      }
       errorMessage={<FormattedMessage {...messages.error} />}
       loadingMessage={<FormattedMessage {...messages.loading} />}
       result={result}
