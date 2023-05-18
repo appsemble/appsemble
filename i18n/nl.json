@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Inloggen",
   "studio.components.VerifyBanner.verifyEmail": "Verifieer je e-mailadres ({email}) om je Appsemble-registratie te voltooien.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Er zijn momenteel geen apps beschikbaar.",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "Er zijn momenteel geen gebruikers-apps beschikbaar.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Er is een fout opgetreden tijdens het laden van de apps.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Apps inladen…",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "Er zijn geen apps die voldoen aan jouw zoekopdracht.",
