@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Identifiant",
   "studio.components.VerifyBanner.verifyEmail": "Veuillez vérifier votre adresse e-mail ({email}) pour terminer votre inscription à Appsemble.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Il n’y a pas d’application disponible actuellement.",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Quelque chose s’est mal passé en essayant de charger les applications.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Chargement des applications…",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "Il n’y a pas d’application qui corresponde à vos paramètres de recherche.",
