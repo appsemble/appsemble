@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Masuk",
   "studio.components.VerifyBanner.verifyEmail": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "",

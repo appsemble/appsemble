@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Log ind",
   "studio.components.VerifyBanner.verifyEmail": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Der er i øjeblikket ingen apps tilgængelige.",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Noget gik galt under forsøget på at indlæse denne app.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Indlæser apps …",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "Der er ingen apps, der matcher dine søgeparametre.",

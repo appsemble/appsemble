@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Benutzername",
   "studio.components.VerifyBanner.verifyEmail": "Bitte bestätigen Sie Ihre E-Mail-Adresse ({email}), um Ihre Appsemble-Registrierung abzuschließen.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Es sind derzeit keine Apps verfügbar.",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Beim Versuch, die Apps zu laden, ist etwas schief gelaufen.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Apps laden…",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "Es gibt keine Apps, die Ihren Suchparametern entsprechen.",
