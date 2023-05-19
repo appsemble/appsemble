@@ -75,6 +75,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/TeamInviteActionDefinition' },
         { $ref: '#/components/schemas/TeamJoinActionDefinition' },
         { $ref: '#/components/schemas/TeamListActionDefinition' },
+        { $ref: '#/components/schemas/TeamMembersActionDefinition' },
         { $ref: '#/components/schemas/ThrowActionDefinition' },
         { $ref: '#/components/schemas/UserLoginActionDefinition' },
         { $ref: '#/components/schemas/UserRegisterActionDefinition' },

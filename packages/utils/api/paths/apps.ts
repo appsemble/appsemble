@@ -1174,7 +1174,7 @@ This will return a 404 if the user has not uploaded one.`,
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['teams:read'] }],
     },
     post: {
       tags: ['app'],
@@ -1228,6 +1228,23 @@ This will return a 404 if the user has not uploaded one.`,
         schema: { $ref: '#/components/schemas/User/properties/id' },
       },
     ],
+    get: {
+      tags: ['app'],
+      description: 'Get a certain team member from a team',
+      operationId: 'getTeamMember',
+      responses: {
+        200: {
+          description: 'The specified team member',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+    },
     put: {
       tags: ['app'],
       description: 'Update the role of a team member.',
