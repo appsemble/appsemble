@@ -33,42 +33,32 @@ export const teamInvite: ActionCreator<'team.invite'> = ({ definition, remap }) 
   },
 ];
 
-export const teamMembers: ActionCreator<'team.members'> = ({
-  definition,
-  getUserInfo,
-  remap,
-  teams,
-}) => [
+export const teamMembers: ActionCreator<'team.members'> = ({ definition, getUserInfo, remap }) => [
   async (data) => {
     const teamId = definition.id ? remap(definition.id, data) : null;
     const userInfo = getUserInfo();
+
+    async function checkUserInTeam(id: number): Promise<void> {
+      try {
+        await axios.get(`${apiUrl}/api/apps/${appId}/teams/${id}/members/${userInfo.sub}`);
+      } catch {
+        throw new Error('User is not a member of the specified team');
+      }
+    }
+
     if (!userInfo) {
       throw new Error('User is not logged in');
     }
 
-    let teamMemberList: TeamMember[] = [];
-
-    if (teamId) {
-      teamMemberList = await axios
-        .get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members`)
-        .then((response) => response.data);
-
-      if (!teamMemberList.some((member) => String(member.id) === userInfo.sub)) {
-        throw new Error('User is not a member of the specified team');
-      }
-    } else {
-      let userFirstTeam: TeamMember;
-      for (const team of teams) {
-        userFirstTeam = await axios
-          .get(`${apiUrl}/api/apps/${appId}/teams/${team.id}/members/${userInfo.sub}`)
-          .then((response) => response.data)
-          .catch(() => null);
-      }
-
-      teamMemberList = await axios
-        .get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams/${userFirstTeam.id}/members`)
-        .then((response) => response.data);
+    if (!teamId) {
+      throw new Error('Team id is not valid');
     }
+
+    checkUserInTeam(teamId);
+
+    const teamMemberList = await axios
+      .get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members`)
+      .then((response) => response.data);
 
     return teamMemberList;
   },
