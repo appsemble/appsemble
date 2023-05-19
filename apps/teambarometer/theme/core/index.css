@@ -1,0 +1,73 @@
+main {
+  margin: 0;
+  padding-left: 0.8125rem;
+  padding-right: 0.8125rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 480px;
+  flex-basis: 100%;
+}
+
+.bottom-nav {
+  height: 6em !important;
+  box-shadow: none !important;
+  border-top: 1px solid #f5f5f5;
+}
+
+.bottom-nav-item:nth-child(1) {
+  border-right: 1px solid #f5f5f5;
+}
+
+.bottom-nav-item-link.px-4 {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+.bottom-nav-item-link > .icon {
+  height: 2em;
+  width: 2em;
+}
+
+.bottom-nav-item-link .fa-3x {
+  font-size: 2em;
+}
+
+.bottom-nav-item-link span {
+  font-size: 0.9em;
+}
+
+.navbar-brand.is-flex-grow-1 {
+  background-image: url(https://appsemble.app/api/apps/292/assets/logo);
+  background-repeat: no-repeat;
+  background-size: 8rem;
+  background-position-x: 8px;
+  background-position-y: center;
+}
+
+.navbar-item.title {
+  display: none;
+}
+
+.navbar-end .navbar-item a.navbar-item:hover {
+  background-color: initial;
+}
+
+/* The class name of the message div changes when it's in production. Change the name accordingly:
+  Development: message.packages-react-components-MessagesProvider-index-module_content.packages-react-components-MessagesProvider-index-module_bottom.is-info
+  Production: HlmpK.mx-3
+*/
+.HlmpK.mx-3 {
+  bottom: unset;
+  top: 10px;
+}
+
+main[data-path='pages.vragenlijst-details'] > div:first-child {
+  right: 50%;
+  transform: translateX(50%);
+
+  & div {
+    height: 14px;
+    width: 14px;
+    margin-top: 0.6rem;
+  }
+}

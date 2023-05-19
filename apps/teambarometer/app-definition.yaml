@@ -1,0 +1,1977 @@
+name: Team barometer app
+description: Enquête met resultaten beeld voor team barometer
+defaultPage: Teambarometer
+notifications: opt-in
+
+theme:
+  primaryColor: '#D73D31'
+  themeColor: '#D73D31'
+  linkColor: '#333333'
+  font:
+    family: Noto Sans
+
+anchors:
+  - &blocks-version 0.20.44
+  - &reminder-fields
+    fields:
+      - label: { translate: titleNotification }
+        type: string
+        name: title
+        requirements:
+          - required: true
+      - type: date
+        label: Start
+        name: date
+        requirements:
+          - required: true
+          - from: { prop: surveyStartDate }
+          - to: { prop: surveyEndDate }
+      - label: { translate: message }
+        name: content
+        type: string
+        multiline: true
+        placeholder: { translate: notificationMessagePlaceholder }
+        requirements:
+          - required: true
+  - &clear-temp-formdata
+    type: storage.delete
+    key: tempQuestions
+    storage: localStorage
+    onSuccess:
+      type: storage.delete
+      key: tempSurveyUsers
+      storage: localStorage
+  - &surveyLoader
+    type: data-loader
+    version: *blocks-version
+    actions:
+      onLoad:
+        type: storage.read
+        storage: sessionStorage
+        key: survey
+    events:
+      emit:
+        data: surveyData
+  - &dateRangeRemapper
+    if:
+      condition: { prop: startDate }
+      then:
+        string.format:
+          template: |
+            {startDate} / {endDate}
+          values:
+            startDate: { prop: startDate }
+            endDate: { prop: endDate }
+      else:
+  - &surveyTitle
+    type: html
+    version: *blocks-version
+    layout: static
+    events:
+      listen:
+        data: surveyData
+    parameters:
+      content: |
+        <div class="titleDateCombo">
+          <h2 data-content="title"></h2>
+          <div data-content="dateRange"></div>
+        </div>
+      placeholders:
+        title: { prop: title }
+        dateRange: *dateRangeRemapper
+
+security:
+  default:
+    role: User
+    policy: organization
+  roles:
+    User:
+      description: User who can answer a survey
+
+roles:
+  - User
+
+layout:
+  navigation: bottom
+
+resources:
+  user:
+    roles:
+      - $public
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - userName
+        - externalId
+        - name
+        - emails
+      properties:
+        userName:
+          type: string
+        externalId:
+          type: string
+        name:
+          type: object
+          additionalProperties: false
+          properties:
+            familyName:
+              type: string
+            givenName:
+              type: string
+        emails:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              primary:
+                type: boolean
+              type:
+                type: string
+              value:
+                type: string
+        urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:
+          type: object
+          additionalProperties: false
+          properties:
+            Manager:
+              type: string
+  survey:
+    schema:
+      type: object
+      additionalProperties: false
+      required:
+        - title
+        - message
+      properties:
+        title:
+          type: string
+        message:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        status:
+          type: string
+        team:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+              primaryEmail:
+                type: string
+        questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              question:
+                type: string
+              answerType:
+                title: answerType
+                enum:
+                  - open
+                  - meerkeuze
+    roles: [$public]
+
+  reminder:
+    roles: [$public]
+    schema:
+      additionalProperties: false
+      type: object
+      required:
+        - title
+        - content
+        - surveyId
+        - date
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        surveyId:
+          type: integer
+        date:
+          type: string
+
+  answers:
+    roles:
+      - $public
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        surveyId:
+          type: number
+        answers:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              question:
+                type: string
+              answer:
+                enum:
+                  - happy
+                  - neutral
+                  - sad
+              comment:
+                type: string
+    create:
+      roles:
+        - User
+
+pages:
+  - name: Privacy Policy
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link
+            to: Resultaten
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: privacyPolicy }
+      - type: markdown
+        version: *blocks-version
+        parameters:
+          content: |
+            Deelname is vrijwillig, natuurlijk hebben we graag dat je wel deelneemt.
+            Jij krijgt een uitnodiging per mail. Bij deelname halen we via het Eindhovense systeem jouw naam, afdeling, sector op. Jouw e-mailadres blijven we vasthouden om voor deze enquête jou nog een reminder te kunnen sturen met verzoek deel te nemen. En om jou een seintje te geven dat de resultaten beschikbaar zijn. Daarna wordt jouw e-mailadres verwijderd uit de app. En we anonimiseren jou als deelnemer zodat de antwoorden niet herleidbaar zijn naar jou. Als extra stap om herleidbaarheid te voorkomen worden er pas resultaten getoond als minimaal 5 deelnemers antwoorden hebben ingevuld.
+
+            Heb je toch nog vragen of opmerkingen? Stel deze dan aan:
+
+            servicedesk.teambarometer@eindhoven.nl
+
+  - name: Gebruiker selecteren
+    # This page serves as a mock SCIM-endpoint for testing purposes.
+    # To effectively make use of the app, create at least two users:
+    #   Both users should have the required fields filled in.
+    #   One of these users is the manager. To make this person a manager, set the 'Manager' field of another user as this person's 'externalId'.
+    # This page should be removed when the app is put into production.
+    icon: user
+    blocks:
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: selectUser }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: resource.query
+            resource: user
+            remapAfter:
+              array.map:
+                - object.assign:
+                    primaryEmail:
+                      - prop: emails
+                      - array.map:
+                          if:
+                            condition: { equals: [{ prop: primary }, true] }
+                            then:
+                              prop: value
+                            else: false
+                      - prop: 0
+                - object.assign:
+                    managerId:
+                      - prop: urn:ietf:params:scim:schemas:extension:enterprise:2.0:User
+                      - prop: Manager
+        events:
+          emit:
+            data: users
+      - type: table
+        version: *blocks-version
+        parameters:
+          fields:
+            - label: Name
+              value: { prop: userName }
+              onClick: userLogin
+            - label: Email
+              value: { prop: primaryEmail }
+            - label: Manager ID
+              value: { prop: managerId }
+        actions:
+          userLogin:
+            type: log
+            onSuccess:
+              type: resource.query
+              resource: user
+              remapAfter:
+                - array.map:
+                    if:
+                      condition:
+                        {
+                          equals:
+                            [
+                              [{ history: 0 }, { prop: externalId }],
+                              [
+                                {
+                                  prop: urn:ietf:params:scim:schemas:extension:enterprise:2.0:User,
+                                },
+                                { prop: Manager },
+                              ],
+                            ],
+                        }
+                      then:
+                        object.from:
+                          id:
+                            prop: externalId
+                          primaryEmail:
+                            - prop: emails
+                            - array.map:
+                                if:
+                                  condition: { equals: [{ prop: primary }, true] }
+                                  then:
+                                    prop: value
+                                  else: false
+                            - prop: 0
+                      else: null
+                - null.strip: null
+              onSuccess:
+                remapBefore:
+                  from.history:
+                    index: 0
+                    props:
+                      # Use this to store anything in the user data storage
+                      externalId: { prop: externalId }
+                      primaryEmail: { prop: primaryEmail }
+                      userName: { prop: userName }
+                      team: { root }
+                type: storage.write
+                key: loggedInUser
+                value: { root }
+                onSuccess:
+                  type: message
+                  dismissable: true
+                  timeout: 5000
+                  body:
+                    string.format:
+                      template: Succesfully logged in as ''{name}''
+                      values:
+                        name: { prop: userName }
+        events:
+          listen:
+            data: users
+  - name: Teambarometer
+    icon: question-circle
+    blocks:
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: teambarometer }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            key: loggedInUser
+            onSuccess:
+              type: resource.query
+              resource: survey
+              remapAfter:
+                - array.map:
+                    if:
+                      condition:
+                        { gt: [[{ date.now }], [{ prop: startDate }, { date.parse: yyyy-MM-dd }]] }
+                      then:
+                        if:
+                          condition:
+                            {
+                              lt: [[{ date.now }], [{ prop: endDate }, { date.parse: yyyy-MM-dd }]],
+                            }
+                          then:
+                            object.from:
+                              id: { prop: id }
+                              title: { prop: title }
+                              message: { prop: message }
+                              questions: { prop: questions }
+                              team: { prop: team }
+                          else: null
+                      else: null
+              onSuccess:
+                type: each
+                do:
+                  remapBefore:
+                    - prop: team
+                    - array.map:
+                        if:
+                          condition:
+                            { equals: [{ prop: id }, [{ history: 1 }, { prop: externalId }]] }
+                          then:
+                            root: null
+                          else: null
+                    - null.strip: null
+                    - prop: 0
+                    - if:
+                        condition: { prop: questions }
+                        then:
+                          root: null
+                        else: null
+                  type: noop
+                onSuccess:
+                  remapBefore:
+                    - null.strip: null
+                    - prop: 0
+                  type: condition
+                  if: { prop: questions }
+                  then:
+                    type: storage.write
+                    key: activeSurvey
+                    value: { root }
+                  else:
+                    type: message
+                    dismissable: true
+                    timeout: 5000
+                    body:
+                      Team barometer ingevuld. Op het moment zijn er geen nieuwe barometers
+                      beschikbaar.
+                    onSuccess:
+                      type: link
+                      to: Resultaten
+        events:
+          emit:
+            data: survey
+      - type: markdown
+        version: *blocks-version
+        parameters:
+          content:
+            string.format:
+              template: |
+                ### {title}
+                {message}
+              values:
+                title: { prop: title }
+                message: { prop: message }
+        events:
+          listen:
+            data: survey
+      - type: button-list
+        version: *blocks-version
+        parameters:
+          buttons:
+            - label: Start
+              color: primary
+              onClick: goToSurvey
+        actions:
+          goToSurvey:
+            type: link
+            to: Vragenlijst invullen
+  - name: Vragenlijst invullen
+    type: loop
+    hideNavTitle: true
+    retainFlowData: false
+    progress: hidden
+    foreach:
+      name: Title
+      blocks:
+        - type: data-loader
+          version: *blocks-version
+          actions:
+            onLoad:
+              type: storage.read
+              key: activeSurvey
+          events:
+            emit:
+              data: activeSurvey
+        - type: html
+          version: *blocks-version
+          layout: static
+          events:
+            listen:
+              data: activeSurvey
+          parameters:
+            content: |
+              <h2 data-content="title"></h2>
+            placeholders:
+              title: { prop: title }
+        - type: markdown
+          layout: static
+          version: *blocks-version
+          parameters:
+            content: { step: question }
+        - type: form
+          version: *blocks-version
+          parameters:
+            disableDefault: true
+            fields:
+              - type: radio
+                show: { equals: [{ step: answerType }, meerkeuze] }
+                name: answer
+                requirements:
+                  - required: { equals: [{ step: answerType }, meerkeuze] }
+                options:
+                  - value: sad
+                    icon: face-frown
+                    label: ''
+                  - value: neutral
+                    icon: face-meh
+                    label: ''
+                  - value: happy
+                    icon: face-smile
+                    label: ''
+              - type: string
+                name: comment
+                multiline: true
+                label: { translate: comment }
+          actions:
+            onSubmit:
+              type: flow.next
+    actions:
+      onLoad:
+        type: storage.read
+        key: activeSurvey
+        onSuccess:
+          type: resource.get
+          resource: survey
+          remapAfter:
+            - prop: questions
+      onFlowFinish:
+        remapBefore:
+          if:
+            condition: { prop: 0 }
+            then:
+              array.map:
+                object.omit:
+                  - answerType
+            else:
+              array.from:
+                - object.omit:
+                    - answerType
+        type: storage.read
+        key: activeSurvey
+        remapAfter:
+          object.from:
+            answers:
+              history: 0
+            surveyId:
+              prop: id
+        onSuccess:
+          type: resource.create
+          resource: answers
+          onSuccess:
+            type: storage.read
+            key: loggedInUser
+            onSuccess:
+              type: resource.query
+              resource: survey
+              query:
+                object.from:
+                  $filter:
+                    string.format:
+                      template: id eq ''{surveyId}''
+                      values:
+                        surveyId: [{ history: 2 }, { prop: surveyId }]
+              remapAfter:
+                # Remove logged in user from the survey (because they filled it in already)
+                - prop: 0
+                - object.assign:
+                    team:
+                      - prop: team
+                      - array.map:
+                          if:
+                            condition:
+                              { equals: [{ prop: id }, [{ history: 3 }, { prop: externalId }]] }
+                            then: null
+                            else:
+                              object.from:
+                                id:
+                                  prop: id
+                                primaryEmail:
+                                  prop: primaryEmail
+                      - null.strip: null
+              onSuccess:
+                type: resource.update
+                resource: survey
+                onSuccess:
+                  type: link
+                  to: Vragenlijst bedankt
+
+  - name: Vragenlijst bedankt
+    hideNavTitle: true
+    blocks:
+      - type: markdown
+        version: *blocks-version
+        parameters:
+          content: |
+            ### Bedankt
+            Bedankt voor je deelname. Momenteel heb je alle vragen beantwoord.
+            De resultaten kun je bekijken op de resultaten pagina.
+
+            We hopen dat je de volgende keer weer mee doet.
+
+  - name: Maak vragenlijst
+    icon: plus
+    blocks:
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: surveys }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: resource.query
+            resource: survey
+        events:
+          emit:
+            data: surveys
+          listen:
+            refresh: refreshSurveys
+      - type: table
+        version: *blocks-version
+        parameters:
+          fields:
+            - label: { translate: name }
+              value: { prop: title }
+            - label: Status
+              value: { prop: status }
+            - dropdown:
+                icon: ellipsis-vertical
+                options:
+                  - label: { translate: plan }
+                    onClick: plan
+                  - label: { translate: edit }
+                    onClick: editSurvey
+                  - label: { translate: reminders }
+                    onClick: toReminders
+                  - label: { translate: remove }
+                    onClick: deleteSurvey
+        actions:
+          plan:
+            type: storage.write
+            storage: localStorage
+            key: editSurvey
+            value: { root }
+            onSuccess:
+              type: link
+              to: Inplannen
+              onSuccess: *clear-temp-formdata
+          editSurvey:
+            type: storage.write
+            storage: localStorage
+            key: editSurvey
+            value: { root }
+            onSuccess:
+              type: link
+              to: Vragenlijst details
+              onSuccess: *clear-temp-formdata
+          toReminders:
+            type: storage.write
+            storage: sessionStorage
+            key: survey
+            value: { root }
+            onSuccess:
+              type: link
+              to: Reminders
+          deleteSurvey:
+            type: dialog
+            title: Vragenlijst verwijderen
+            closable: true
+            blocks:
+              - type: markdown
+                version: *blocks-version
+                parameters:
+                  content: |
+                    Weet u zeker dat u de vragenlijst wilt verwijderen?
+              - type: button-list
+                version: *blocks-version
+                parameters:
+                  buttons:
+                    - label: Verwijderen
+                      onClick: delete
+                actions:
+                  delete:
+                    type: resource.query
+                    resource: reminder
+                    query:
+                      object.from:
+                        $filter:
+                          string.format:
+                            template: surveyId eq ''{surveyId}''
+                            values:
+                              surveyId: { prop: id }
+                    onSuccess:
+                      type: each
+                      do:
+                        type: resource.delete
+                        resource: reminder
+                      onSuccess:
+                        remapBefore: { history: 0 }
+                        type: resource.delete
+                        resource: survey
+                        onSuccess:
+                          type: event
+                          event: refreshSurveys
+                          onSuccess:
+                            type: dialog.ok
+        events:
+          listen:
+            data: surveys
+      - type: button-list
+        version: *blocks-version
+        parameters:
+          buttons:
+            - label: { translate: newSurvey }
+              color: primary
+              onClick: createSurvey
+        actions:
+          createSurvey:
+            type: storage.delete
+            storage: localStorage
+            key: editSurvey
+            onSuccess:
+              type: link
+              to: Vragenlijst details
+              onSuccess: *clear-temp-formdata
+
+  - name: Resultaten
+    icon: square-poll-vertical
+    blocks:
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: resultaten }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: resource.query
+            resource: survey
+        events:
+          emit:
+            data: surveys
+      - type: table
+        version: *blocks-version
+        parameters:
+          fields:
+            - label: { translate: name }
+              value: { prop: title }
+            - onClick: seeResults
+              button:
+                color: primary
+                label:
+                  if:
+                    condition: { equals: [{ prop: status }, Closed] }
+                    then: { translate: results }
+                    else: Not available
+                disabled:
+                  equals: # invert bool
+                    - equals: [{ prop: status }, Closed]
+                    - false
+                title: Zie resultaten
+        actions:
+          seeResults:
+            type: storage.delete
+            key: resultSurvey
+            onSuccess:
+              type: link
+              to: Resultaat
+        events:
+          listen:
+            data: surveys
+      - type: html
+        layout: float
+        position: bottom left
+        version: *blocks-version
+        parameters:
+          content: |
+            <div>Link to
+              <a href="/nl/privacy-policy" title="privacy policy">privacy policy</a>
+            </div>
+
+  - name: Resultaat
+    parameters:
+      - id
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link
+            to: Resultaten
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: resultaat }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: resource.get
+            resource: survey
+            onSuccess:
+              type: condition
+              if:
+                equals:
+                  - prop: status
+                  - Closed
+              then:
+                type: storage.write
+                key: resultSurvey
+                value: { root }
+                onSuccess:
+                  type: resource.count
+                  resource: answers
+                  query:
+                    object.from:
+                      $filter:
+                        string.format:
+                          template: surveyId eq ''{surveyId}''
+                          values:
+                            surveyId: { prop: id }
+                  onSuccess:
+                    type: condition
+                    if:
+                      lt:
+                        - root: null
+                        - 5
+                    then:
+                      type: message
+                      body: Nog niet genoeg mensen hebben deze vragenlijst ingevuld!
+                      dismissable: true
+                      timeout: 5000
+                      onSuccess:
+                        type: link
+                        to: Resultaten
+                    else:
+                      type: noop
+              else:
+                type: message
+                body: Deze vragenlijst is nog niet gesloten!
+                dismissable: true
+                timeout: 5000
+                onSuccess:
+                  type: link
+                  to: Resultaten
+        events:
+          emit:
+            data: resultSurvey
+      - type: 'results-loader'
+        version: 0.20.44
+        actions:
+          onLoad:
+            type: storage.read
+            key: resultSurvey
+            onSuccess:
+              type: resource.query
+              resource: answers
+              query:
+                object.from:
+                  $filter:
+                    string.format:
+                      template: surveyId eq ''{surveyId}''
+                      values:
+                        surveyId: { prop: id }
+              remapAfter:
+                array.map:
+                  object.assign:
+                    colors:
+                      static: ['rgb(255, 0, 0', 'rgb(255, 230, 0)', 'rgb(0, 255, 0)']
+        events:
+          listen:
+            data: resultSurvey
+          emit:
+            data: stats
+      - type: chart
+        version: *blocks-version
+        events:
+          listen:
+            replace: stats
+        parameters:
+          type: bar
+          backgroundColors:
+            - 'rgb(0, 255, 0)'
+            - 'rgb(255, 230, 0)'
+            - 'rgb(255, 0, 0'
+          labelOptions:
+            font:
+              size: 16
+            maxWidth: 20
+          yAxis:
+            step: 1
+            colors:
+              - '#aaaaaa'
+        actions:
+          onClick:
+            type: noop
+            onSuccess:
+              type: storage.read
+              key: resultSurvey
+              onSuccess:
+                type: resource.query
+                resource: answers
+                query:
+                  object.from:
+                    $filter:
+                      string.format:
+                        template: surveyId eq ''{surveyId}''
+                        values:
+                          surveyId: { prop: id }
+                onSuccess:
+                  type: storage.write
+                  key: activeComments
+                  storage: localStorage
+                  value:
+                    array.from: []
+                  onSuccess:
+                    type: each
+                    do:
+                      remapBefore:
+                        - prop: answers
+                        - array.map:
+                            if:
+                              condition:
+                                { equals: [[{ history: 0 }, { prop: label }], { prop: question }] }
+                              then:
+                                object.omit:
+                                  - answer
+                                  - question
+                              else: null
+                        - null.strip: null
+                      type: noop
+                    onSuccess:
+                      type: each
+                      serial: true
+                      do:
+                        type: each
+                        serial: true
+                        do:
+                          type: storage.append
+                          key: activeComments
+                          storage: localStorage
+                          value:
+                            prop: comment
+                          onSuccess:
+                            type: link
+                            to: Opmerkingen wolk
+
+  - name: Opmerkingen wolk
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: storage.delete
+            key: activeComments
+            storage: localStorage
+            onSuccess:
+              type: storage.read
+              key: resultSurvey
+              onSuccess:
+                type: link
+                to: Resultaat
+      - type: html
+        version: *blocks-version
+        layout: static
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { translate: wordCloud }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            key: activeComments
+            storage: localStorage
+        events:
+          emit:
+            data: comments
+      - type: wordcloud
+        version: *blocks-version
+        parameters:
+          fields:
+            - { root }
+          options:
+            weightFactor: 40
+        events:
+          listen:
+            data: comments
+
+  - name: Vragenlijst details
+    icon: plus
+    type: flow
+    retainFlowData: false
+    hideNavTitle: true
+    actions:
+      onFlowFinish:
+        type: link
+        to: Maak vragenlijst
+    steps:
+      - name: Nieuwe vragenlijst
+        blocks:
+          - type: control-buttons
+            version: *blocks-version
+            parameters:
+              forward: false
+            actions:
+              onBack:
+                type: link
+                to: Maak vragenlijst
+          - type: html
+            version: *blocks-version
+            layout: static
+            events:
+              listen:
+                data: editData
+            parameters:
+              content: |
+                <div class="titleDateCombo">
+                  <h2 data-content="title"></h2>
+                  <div data-content="dateRange"></div>
+                </div>
+              placeholders:
+                title:
+                  if:
+                    condition: { prop: title }
+                    then: { prop: title }
+                    else: { translate: newSurvey }
+                dateRange: *dateRangeRemapper
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: storage.read
+                storage: localStorage
+                key: editSurvey
+                onError:
+                  type: noop
+            events:
+              emit:
+                data: editData
+          - type: form
+            version: *blocks-version
+            parameters:
+              fields:
+                - label: { translate: nameSurvey }
+                  name: title
+                  type: string
+                  requirements:
+                    - required: true
+                - label: { translate: welcomeMessageForEmployees }
+                  name: message
+                  type: string
+                  multiline: true
+                  requirements:
+                    - required: true
+            actions:
+              onSubmit:
+                type: condition
+                if: { gt: [{ prop: id }, -1] }
+                then:
+                  type: resource.patch
+                  resource: survey
+                  onSuccess:
+                    type: storage.write
+                    storage: localStorage
+                    key: editSurvey
+                    value: { root }
+                else:
+                  type: resource.create
+                  resource: survey
+                  body:
+                    - root:
+                    - object.assign: { status: Concept }
+                onSuccess:
+                  type: storage.write
+                  storage: localStorage
+                  key: surveyId
+                  value: { prop: id }
+                  onSuccess:
+                    type: flow.next
+            events:
+              listen:
+                data: editData
+      - name: Questions
+        blocks:
+          - type: control-buttons
+            version: *blocks-version
+            parameters:
+              forward: false
+            actions:
+              onBack:
+                type: flow.back
+          - type: html
+            version: *blocks-version
+            layout: static
+            parameters:
+              content: |
+                <h2 data-content="title"></h2>
+              placeholders:
+                title: { translate: addQuestions }
+          # Patch survey when question changed
+          - type: data-loader
+            version: *blocks-version
+            parameters:
+              skipInitialLoad: true
+            actions:
+              onLoad:
+                type: storage.read
+                storage: localStorage
+                key: tempQuestions
+                onSuccess:
+                  type: storage.read
+                  storage: localStorage
+                  key: surveyId
+                  onSuccess:
+                    remapBefore:
+                      object.from:
+                        id: { root }
+                        questions: { history: 1 }
+                    type: resource.patch
+                    resource: survey
+                    onSuccess:
+                      type: storage.read
+                      storage: localStorage
+                      key: editSurvey
+                      onSuccess:
+                        type: storage.write
+                        storage: localStorage
+                        key: editSurvey
+                        value: { history: 3 }
+                      onError:
+                        type: noop
+            events:
+              listen:
+                refresh: patchQuestions
+          # Load questions
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: storage.read
+                storage: localStorage
+                key: tempQuestions
+                onError:
+                  type: storage.read
+                  storage: localStorage
+                  key: editSurvey
+                  onSuccess:
+                    type: condition
+                    if: { prop: questions }
+                    then:
+                      type: storage.write
+                      key: tempQuestions
+                      storage: localStorage
+                      value: { prop: questions }
+                      onSuccess:
+                        type: event
+                        event: refreshQuestions
+                        waitFor: questions
+                    else:
+                      remapBefore:
+                        array.from:
+                          - object.assign:
+                              answerType: open
+                      type: noop
+                  onError:
+                    remapBefore:
+                      array.from:
+                        - object.assign:
+                            answerType: open
+                    type: storage.write
+                    key: tempQuestions
+                    storage: localStorage
+                    value: { root }
+                    onSuccess:
+                      type: event
+                      event: refreshQuestions
+            events:
+              listen:
+                refresh: refreshQuestions
+              emit:
+                data: questions
+          - type: table
+            version: *blocks-version
+            events:
+              listen:
+                data: questions
+            parameters:
+              fields:
+                - label: { translate: question }
+                  value: { prop: question }
+                  string:
+                    name: question
+                    onEdit: editQuestion
+                    placeholder: { translate: empty }
+                    multiline: true
+                - alignment: left
+                  label: Type
+                  dropdown:
+                    label:
+                      prop: answerType
+                    icon: chevron-down
+                    options:
+                      - label: open
+                        onClick: editAnswerType
+                      - label: meerkeuze
+                        onClick: editAnswerType
+                - dropdown:
+                    icon: ellipsis-vertical
+                    options:
+                      - label: { translate: remove }
+                        onClick: removeQuestion
+            actions:
+              editQuestion:
+                type: storage.update
+                key: tempQuestions
+                storage: localStorage
+                item: { context: index }
+                value:
+                  object.assign:
+                    question:
+                      prop: question
+                onSuccess:
+                  type: event
+                  event: patchQuestions
+              editAnswerType:
+                type: storage.update
+                key: tempQuestions
+                storage: localStorage
+                item:
+                  context: index
+                value:
+                  if:
+                    condition:
+                      equals:
+                        - prop: answerType
+                        - open
+                    then:
+                      object.assign:
+                        answerType: meerkeuze
+                    else:
+                      object.assign:
+                        answerType: open
+                onSuccess:
+                  type: event
+                  event: patchQuestions
+                  onSuccess:
+                    type: event
+                    event: refreshQuestions
+              removeQuestion:
+                remapBefore:
+                  object.from:
+                    index:
+                      context: index
+                type: dialog
+                closable: true
+                blocks:
+                  - type: markdown
+                    version: *blocks-version
+                    parameters:
+                      content: |
+                        ### Vraag verwijderen
+                        Weet u zeker dat u de vraag wilt verwijderen?
+                  - type: button-list
+                    version: *blocks-version
+                    parameters:
+                      buttons:
+                        - label: Verwijderen
+                          onClick: onClick
+                    actions:
+                      onClick:
+                        type: storage.update
+                        key: tempQuestions
+                        storage: localStorage
+                        item:
+                          - history: 0
+                          - prop: index
+                        value: null
+                        onSuccess:
+                          type: storage.read
+                          key: tempQuestions
+                          storage: localStorage
+                          remapAfter:
+                            null.strip: null
+                          onSuccess:
+                            type: storage.write
+                            key: tempQuestions
+                            storage: localStorage
+                            value:
+                              root: null
+                            onSuccess:
+                              type: event
+                              event: patchQuestions
+                              onSuccess:
+                                type: event
+                                event: refreshQuestions
+                                onSuccess:
+                                  type: dialog.ok
+          - type: button-list
+            version: *blocks-version
+            parameters:
+              buttons:
+                - label: { translate: addQuestion }
+                  color: primary
+                  icon: plus
+                  onClick: addQuestion
+            actions:
+              addQuestion:
+                type: storage.append
+                key: tempQuestions
+                storage: localStorage
+                remapBefore:
+                  object.from:
+                    answerType: open
+                value:
+                  root: null
+                onSuccess:
+                  type: event
+                  event: patchQuestions
+                  onSuccess:
+                    type: event
+                    event: refreshQuestions
+          - type: button-list
+            version: *blocks-version
+            parameters:
+              buttons:
+                - label: { translate: buttonToControl }
+                  color: primary
+                  onClick: toControl
+            actions:
+              toControl:
+                type: storage.read
+                key: tempQuestions
+                storage: localStorage
+                remapAfter:
+                  from.history:
+                    index: 0
+                    props:
+                      message:
+                        prop: message
+                      title:
+                        prop: title
+                      questions:
+                        root: null
+                onSuccess:
+                  type: flow.next
+      - name: Controle
+        blocks:
+          - type: control-buttons
+            version: *blocks-version
+            parameters:
+              forward: false
+            actions:
+              onBack:
+                type: flow.back
+          - type: html
+            version: *blocks-version
+            layout: static
+            parameters:
+              content: |
+                <h2 data-content="title"></h2>
+              placeholders:
+                title: { translate: sendControlTo }
+          - type: data-loader
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: storage.read
+                key: tempSurveyUsers
+                storage: localStorage
+                onError:
+                  type: storage.read
+                  storage: localStorage
+                  key: editSurvey
+                  onSuccess:
+                    type: condition
+                    if: { prop: team }
+                    then:
+                      type: storage.write
+                      key: tempSurveyUsers
+                      storage: localStorage
+                      value: { prop: team }
+                      onSuccess:
+                        type: event
+                        event: refreshSurveyTeam
+                    else:
+                      type: storage.write
+                      key: tempSurveyUsers
+                      storage: localStorage
+                      value: { array.from: [] }
+                      onSuccess:
+                        type: event
+                        event: refreshSurveyTeam
+                  onError:
+                    type: storage.read
+                    key: loggedInUser
+                    remapAfter:
+                      prop: team
+                    onSuccess:
+                      type: storage.write
+                      key: tempSurveyUsers
+                      storage: localStorage
+                      value: { root }
+                      onSuccess:
+                        type: event
+                        event: refreshSurveyTeam
+            events:
+              listen:
+                refresh: checkEditSurvey
+          - type: data-loader # The above and below data-loaders get called twice should prevent unnecessary calls
+            version: *blocks-version
+            actions:
+              onLoad:
+                type: storage.read
+                key: tempSurveyUsers
+                storage: localStorage
+                onSuccess:
+                  type: storage.read
+                  storage: localStorage
+                  key: surveyId
+                  onSuccess:
+                    remapBefore:
+                      object.from:
+                        id: { root }
+                        team: { history: 1 }
+                    type: resource.patch
+                    resource: survey
+                    remapAfter: { history: 1 }
+                onError:
+                  type: event
+                  event: checkEditSurvey
+            events:
+              emit:
+                data: team
+              listen:
+                refresh: refreshSurveyTeam
+          - type: table
+            version: *blocks-version
+            parameters:
+              fields:
+                - label: { translate: employees }
+                  value: { prop: primaryEmail }
+                - onClick: removeEmployee
+                  button:
+                    outlined: true
+                    color: danger
+                    label: Delete
+            actions:
+              removeEmployee:
+                type: storage.read
+                key: tempSurveyUsers
+                storage: localStorage
+                onSuccess:
+                  type: noop
+                  remapAfter:
+                    array.map:
+                      if:
+                        condition: { equals: [{ prop: id }, [{ history: 0 }, { prop: id }]] }
+                        then: null
+                        else:
+                          object.from:
+                            id:
+                              prop: id
+                            primaryEmail:
+                              prop: primaryEmail
+                  onSuccess:
+                    remapBefore:
+                      null.strip: null
+                    type: storage.write
+                    key: tempSurveyUsers
+                    storage: localStorage
+                    value:
+                      root: null
+                    onSuccess:
+                      type: event
+                      event: refreshSurveyTeam
+            events:
+              listen:
+                data: team
+          - type: button-list
+            version: *blocks-version
+            parameters:
+              buttons:
+                - label: { translate: createSurvey }
+                  color: primary
+                  onClick: create
+            actions:
+              create:
+                type: flow.finish
+
+  - name: Inplannen
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link.back
+      - type: html
+        version: *blocks-version
+        layout: static
+        events:
+          listen:
+            data: editData
+        parameters:
+          content: |
+            <h2 data-content="title"></h2>
+          placeholders:
+            title: { prop: title }
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            storage: localStorage
+            key: editSurvey
+            remapAfter:
+              object.from:
+                title:
+                  prop: title
+                startDate:
+                  prop: startDate
+                endDate:
+                  prop: endDate
+            onError:
+              type: noop
+        events:
+          emit:
+            data: editData
+      - type: form
+        version: *blocks-version
+        parameters:
+          previous: true
+          fields:
+            - label: Start
+              name: startDate
+              icon: calendar
+              type: date
+              requirements:
+                - required: true
+                - from: { date.now }
+            - label: { translate: until }
+              name: endDate
+              icon: calendar
+              type: date
+              requirements:
+                - required: true
+                - from: [{ prop: startDate }, { date.parse: yyyy-MM-dd }, { date.add: 1d }]
+        actions:
+          onPrevious:
+            type: storage.read
+            key: editSurvey
+            storage: localStorage
+            onSuccess:
+              remapBefore:
+                object.from:
+                  id: { prop: id }
+                  status: Concept
+                  startDate: ''
+                  endDate: ''
+              type: resource.patch
+              resource: survey
+              onSuccess:
+                type: link.back
+          onSubmit:
+            type: storage.read
+            key: editSurvey
+            storage: localStorage
+            remapAfter:
+              - object.from:
+                  id: { prop: id }
+              - assign.history:
+                  index: 0
+                  props:
+                    startDate: { prop: startDate }
+                    endDate: { prop: endDate }
+            onSuccess:
+              remapBefore:
+                object.assign:
+                  status:
+                    if:
+                      condition: { prop: startDate }
+                      then:
+                        if:
+                          condition:
+                            gt:
+                              [
+                                [{ date.now }],
+                                [
+                                  { prop: endDate },
+                                  { date.parse: yyyy-MM-dd },
+                                  { date.add: 86399000ms },
+                                ],
+                              ]
+                          then: { static: Closed }
+                          else: { static: Ingepland }
+                      else: { static: Concept }
+              type: resource.patch
+              resource: survey
+              onSuccess:
+                type: link.back
+        events:
+          listen:
+            data: editData
+
+  - name: Reminders
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link
+            to: Maak vragenlijst
+      - *surveyLoader
+      - *surveyTitle
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            storage: sessionStorage
+            key: survey
+            remapAfter: { prop: id }
+            onSuccess:
+              type: resource.query
+              resource: reminder
+              query:
+                object.from:
+                  $orderby: date ASC
+                  $filter:
+                    string.format:
+                      template: surveyId eq ''{surveyId}'' and date gt ''{date}''
+                      values:
+                        surveyId: { root }
+                        date: [{ date.now }, { date.format }]
+        events:
+          emit:
+            data: reminders
+          listen:
+            refresh: refresh
+      - type: table
+        version: *blocks-version
+        events:
+          listen:
+            data: reminders
+        parameters:
+          fields:
+            - label: Notifications
+              value: { prop: title }
+            - label: Wanneer
+              value:
+                string.format:
+                  template: '{date, date, ::dd}-{date, date, ::MM}-{date, date, ::yyyy}'
+                  values:
+                    date:
+                      - prop: date
+                      - date.parse: ''
+            - alignment: right
+              dropdown:
+                icon: ellipsis-vertical
+                options:
+                  - onClick: editReminder
+                    label: { translate: edit }
+                  - onClick: deleteReminder
+                    label: Verwijderen
+        actions:
+          editReminder:
+            type: storage.write
+            storage: sessionStorage
+            key: reminder
+            value: { root }
+            onSuccess:
+              type: link
+              to: EditReminder
+          deleteReminder:
+            type: dialog
+            title: Notificatie verwijderen
+            closable: true
+            blocks:
+              - type: markdown
+                version: *blocks-version
+                parameters:
+                  content: |
+                    Weet u zeker dat u de notificatie wilt verwijderen?
+              - type: button-list
+                version: *blocks-version
+                parameters:
+                  buttons:
+                    - label: Verwijderen
+                      onClick: delete
+                actions:
+                  delete:
+                    type: resource.delete
+                    resource: reminder
+                    onSuccess:
+                      type: event
+                      event: refresh
+                      onSuccess:
+                        type: dialog.ok
+      - type: button-list
+        version: *blocks-version
+        parameters:
+          buttons:
+            - label: { translate: addNotification }
+              color: primary
+              onClick: addReminder
+        actions:
+          addReminder:
+            type: link
+            to: AddReminder
+
+  - name: AddReminder
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link
+            to: Reminders
+      - *surveyLoader
+      - *surveyTitle
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            storage: sessionStorage
+            key: survey
+            remapAfter:
+              object.from:
+                surveyId: { prop: id }
+                surveyStartDate: { prop: startDate }
+                surveyEndDate: { prop: endDate }
+        events:
+          emit:
+            data: survey
+      - type: form
+        version: *blocks-version
+        events:
+          listen:
+            data: survey
+        actions:
+          onSubmit:
+            remapBefore:
+              object.from:
+                title: { prop: title }
+                content: { prop: content }
+                surveyId: { prop: surveyId }
+                date:
+                  - prop: date
+                  - date.parse: 'yyyy-MM-dd'
+                  - date.add: 11h # set time to 10am
+            type: resource.create
+            resource: reminder
+            onSuccess:
+              type: link
+              to: Reminders
+        parameters: *reminder-fields
+
+  - name: EditReminder
+    hideNavTitle: true
+    blocks:
+      - type: control-buttons
+        version: *blocks-version
+        parameters:
+          forward: false
+        actions:
+          onBack:
+            type: link
+            to: Reminders
+      - *surveyLoader
+      - *surveyTitle
+      - type: data-loader
+        version: *blocks-version
+        actions:
+          onLoad:
+            type: storage.read
+            storage: sessionStorage
+            key: survey
+            onSuccess:
+              type: storage.read
+              storage: sessionStorage
+              key: reminder
+              remapAfter:
+                assign.history:
+                  index: 1
+                  props:
+                    surveyStartDate: { prop: startDate }
+                    surveyEndDate: { prop: endDate }
+        events:
+          emit:
+            data: reminder
+      - type: form
+        version: *blocks-version
+        events:
+          listen:
+            data: reminder
+        actions:
+          onSubmit:
+            remapBefore:
+              object.from:
+                id: { prop: id }
+                title: { prop: title }
+                content: { prop: content }
+                surveyId: { prop: surveyId }
+                date:
+                  - prop: date
+                  - date.add: 11h # set time to 10am
+            type: resource.update
+            resource: reminder
+            onSuccess:
+              type: link
+              to: Reminders
+        parameters: *reminder-fields
+
+cron:
+  dailyReminders:
+    schedule: '0 10 * * *' # every day at 10:00 am
+    action:
+      type: request
+      url:
+        string.format:
+          template: https://appsemble.app/api/apps/{appId}/resources/reminder
+          values:
+            appId: { app: id }
+      onSuccess:
+        type: each
+        do:
+          remapBefore:
+            object.assign:
+              date:
+                - prop: date
+                - date.parse: ''
+          type: condition
+          if: { lt: [{ prop: date }, { date.now }] }
+          then:
+            type: condition
+            if:
+              gt:
+                - prop: date
+                - [{ date.now }, { date.add: '-1d' }]
+            then:
+              type: notify
+              title: { prop: title }
+              body: { prop: content }
+              to: all
+              onSuccess:
+                type: resource.query # get user emails from SCIM
+                resource: survey
+                query:
+                  object.from:
+                    $filter:
+                      string.format:
+                        template: surveyId eq ''{surveyId}''
+                        values:
+                          surveyId:
+                            - history: 1
+                            - prop: surveyId
+                remapAfter:
+                  - prop: team
+                onSuccess:
+                  type: each
+                  do:
+                    remapBefore:
+                      assign.history:
+                        index: 1
+                        props:
+                          title: { prop: title }
+                          content: { prop: content }
+                    type: email
+                    subject: { prop: title }
+                    body: { prop: content }
+                    to: { prop: primaryEmail }
+            else:
+              type: noop
+          else:
+            type: noop
+
+  checkSurveyStatus:
+    schedule: '0 10 * * *'
+    action:
+      type: request
+      url:
+        string.format:
+          template: https://appsemble.app/api/apps/{appId}/resources/survey
+          values:
+            appId: { app: id }
+      onSuccess:
+        type: each
+        do:
+          type: condition
+          if: { gt: [{ date.now: null }, [{ prop: startDate }, { date.parse: '' }]] }
+          then:
+            type: condition
+            if:
+              {
+                lt:
+                  [{ date.now: null }, [{ prop: startDate }, { date.parse: '' }, { date.add: 1d }]],
+              }
+            then:
+              remapBefore:
+                - prop: team
+              type: each
+              do:
+                remapBefore:
+                  object.assign:
+                    surveyTitle:
+                      - history: 2
+                      - prop: title
+                type: email
+                subject: Nieuwe teambarometer
+                body:
+                  string.format:
+                    template: |
+                      Er is een nieuwe teambarometer: ''{surveyName}'' beschikbaar om in te vullen!
+
+                      Zie <{url}>
+                    values:
+                      url: { app: url }
+                      surveyName: { prop: surveyTitle }
+                to: { prop: primaryEmail }
+            else:
+              type: noop
+          else:
+            type: noop

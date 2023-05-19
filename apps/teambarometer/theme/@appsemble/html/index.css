@@ -1,0 +1,7 @@
+h2[data-content='title'] {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  color: black;
+}

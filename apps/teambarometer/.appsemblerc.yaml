@@ -1,0 +1,6 @@
+context:
+  development:
+    organization: samsoft1
+    remote: http://localhost:9999
+    template: true
+    visibility: public
