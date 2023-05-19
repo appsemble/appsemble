@@ -244,6 +244,29 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
   }));
 }
 
+export async function getTeamMember(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberId, teamId },
+  } = ctx;
+
+  const team = await Team.findOne({
+    where: { id: teamId, AppId: appId },
+    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
+  });
+
+  if (!team) {
+    throw notFound('Team not found.');
+  }
+
+  const teamMember = team.Users.some((user) => user.id === memberId);
+
+  if (!teamMember) {
+    throw notFound('User not found in team');
+  }
+
+  ctx.body = teamMember;
+}
+
 export async function inviteTeamMember(ctx: Context): Promise<void> {
   const {
     mailer,
