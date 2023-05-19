@@ -64,6 +64,48 @@ The result must be either a audio URL or an object containing a property \`url\`
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks barcode-scan 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": {
+      "foundBarcode": {
+        "description": "Event that gets emitted once the barcode scanner has identified and resolved a barcode.
+
+barcode event only holds the object with property barcode.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": {
+    "empty": {
+      "description": "This message is displayed if the data is empty.",
+    },
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+    "loading": {
+      "description": "This message is displayed if no data has been loaded yet.",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "type": {
+        "description": "Type is either camera or file",
+        "enum": [
+          "camera",
+          "file",
+        ],
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
 {
   "actions": {
