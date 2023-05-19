@@ -1178,7 +1178,7 @@ export interface TeamMembersActionDefinition extends BaseActionDefinition<'team.
   /**
    * The ID of the team to get the members from.
    */
-  id?: Remapper;
+  id: Remapper;
 }
 
 export interface UserLoginAction extends BaseActionDefinition<'user.login'> {

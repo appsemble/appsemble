@@ -4,7 +4,7 @@ import { extendJSONSchema } from './utils.js';
 export const TeamMembersActionDefinition = extendJSONSchema(BaseActionDefinition, {
   type: 'object',
   additionalProperties: false,
-  required: ['type'],
+  required: ['type', 'id'],
   properties: {
     type: {
       enum: ['team.members'],
