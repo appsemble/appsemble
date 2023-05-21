@@ -192,6 +192,10 @@ export default function EditPage(): ReactElement {
       sharedStyleErrorCount,
   );
 
+  const conditialWindowWidth = window.innerWidth >= 900;
+
+  const renderAppPreview = <AppPreview app={app} iframeRef={frame} />;
+
   return (
     <div className={`${styles.root} is-flex`}>
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
@@ -237,9 +241,10 @@ export default function EditPage(): ReactElement {
             {...monacoProps}
           />
         </div>
+        {conditialWindowWidth ? null : renderAppPreview}
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      <AppPreview app={app} iframeRef={frame} />
+      {conditialWindowWidth ? renderAppPreview : null}
     </div>
   );
 }
