@@ -26,6 +26,7 @@ export function IndexPage(): ReactElement {
   const { lang } = useParams<{ lang: string }>();
 
   const appLang = app.definition.defaultLanguage || defaultLocale;
+  const conditialWindowWidth = window.innerWidth < 450;
 
   return (
     <main>
@@ -80,6 +81,7 @@ export function IndexPage(): ReactElement {
             )}
           </Button>
           <MarkdownContent content={app.longDescription} lang={appLang} />
+          {conditialWindowWidth ? <br /> : null}
         </div>
       ) : null}
       <AppRatings />
