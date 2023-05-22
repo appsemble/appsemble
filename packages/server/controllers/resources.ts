@@ -152,7 +152,7 @@ export async function updateResources(ctx: Context): Promise<void> {
     pathParams: { appId, resourceType },
     user,
   } = ctx;
-  const { verifyPermission } = options;
+  const { verifyResourceActionPermission } = options;
 
   const action = 'update';
 
@@ -172,7 +172,7 @@ export async function updateResources(ctx: Context): Promise<void> {
   });
 
   const definition = getResourceDefinition(app.toJSON(), resourceType);
-  const userQuery = await verifyPermission({
+  const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -287,7 +287,7 @@ export async function patchResource(ctx: Context): Promise<void> {
     pathParams: { appId, resourceId, resourceType },
     user,
   } = ctx;
-  const { verifyPermission } = options;
+  const { verifyResourceActionPermission } = options;
 
   const action = 'patch';
 
@@ -307,7 +307,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   const definition = getResourceDefinition(app.toJSON(), resourceType);
-  const userQuery = await verifyPermission({
+  const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -391,7 +391,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
     request: { body },
     user,
   } = ctx;
-  const { verifyPermission } = options;
+  const { verifyResourceActionPermission } = options;
 
   const action = 'delete';
 
@@ -411,7 +411,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
   });
 
   getResourceDefinition(app.toJSON(), resourceType);
-  const userQuery = await verifyPermission({
+  const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,

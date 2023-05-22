@@ -1,6 +1,7 @@
 import { type Options } from '@appsemble/node-utils';
 
 import {
+  applyAppServiceSecrets,
   checkRole,
   createAppAsset,
   createAppResourcesWithAssets,
@@ -31,10 +32,11 @@ import {
   reloadUser,
   sendNotifications,
   updateAppResource,
-  verifyPermission,
+  verifyResourceActionPermission,
 } from './index.js';
 
 export const options: Options = {
+  applyAppServiceSecrets,
   checkRole,
   createAppAsset,
   createAppResourcesWithAssets,
@@ -65,5 +67,5 @@ export const options: Options = {
   reloadUser,
   sendNotifications,
   updateAppResource,
-  verifyPermission,
+  verifyResourceActionPermission,
 };

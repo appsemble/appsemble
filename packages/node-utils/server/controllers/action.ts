@@ -111,7 +111,7 @@ async function handleRequestProxy(
     }
   }
 
-  const { reloadUser } = options;
+  const { applyAppServiceSecrets, reloadUser } = options;
   await reloadUser({ context: ctx });
 
   const remapperContext = await getRemapperContext(
@@ -128,12 +128,14 @@ async function handleRequestProxy(
     ctx,
   );
 
-  const axiosConfig = formatRequestAction(
+  let axiosConfig = formatRequestAction(
     action,
     data,
     (remapper, d) => remap(remapper, d, remapperContext),
     remapperContext.context,
   );
+
+  axiosConfig = await applyAppServiceSecrets({ axiosConfig, context: ctx, app });
 
   if (axiosConfig.method.toUpperCase() !== method) {
     throw badRequest('Method does match the request action method');

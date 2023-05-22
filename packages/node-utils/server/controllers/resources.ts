@@ -35,13 +35,13 @@ export function createQueryResources(options: Options): Middleware {
       user,
     } = ctx;
 
-    const { getApp, getAppResources, verifyPermission } = options;
+    const { getApp, getAppResources, verifyResourceActionPermission } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const { order, where } = generateQuery(ctx, options);
 
-    const userQuery = await verifyPermission({
+    const userQuery = await verifyResourceActionPermission({
       context: ctx,
       app,
       resourceType,
@@ -111,11 +111,17 @@ export function createCountResources(options: Options): Middleware {
 
     const action = 'count';
 
-    const { getApp, getAppResources, verifyPermission } = options;
+    const { getApp, getAppResources, verifyResourceActionPermission } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyPermission({ app, context: ctx, action, resourceType, options });
+    const userQuery = await verifyResourceActionPermission({
+      app,
+      context: ctx,
+      action,
+      resourceType,
+      options,
+    });
 
     const { where } = generateQuery(ctx, options);
 
@@ -153,7 +159,7 @@ export function createGetResourceById(options: Options): Middleware {
 
     const action = 'get';
 
-    const { getApp, getAppResource, verifyPermission } = options;
+    const { getApp, getAppResource, verifyResourceActionPermission } = options;
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
@@ -161,7 +167,13 @@ export function createGetResourceById(options: Options): Middleware {
 
     const resourceDefinition = getResourceDefinition(app, resourceType, view);
 
-    const userQuery = await verifyPermission({ app, context: ctx, action, resourceType, options });
+    const userQuery = await verifyResourceActionPermission({
+      app,
+      context: ctx,
+      action,
+      resourceType,
+      options,
+    });
 
     const findOptions: FindOptions = {
       where: {
@@ -213,13 +225,13 @@ export function createCreateResource(options: Options): Middleware {
     const {
       pathParams: { appId, resourceType },
     } = ctx;
-    const { createAppResourcesWithAssets, getApp, verifyPermission } = options;
+    const { createAppResourcesWithAssets, getApp, verifyResourceActionPermission } = options;
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
-    await verifyPermission({ app, context: ctx, action, resourceType, options });
+    await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options });
 
     const [processedBody, preparedAssets] = processResourceBody(ctx, resourceDefinition);
     if (Array.isArray(processedBody) && !processedBody.length) {
@@ -248,14 +260,20 @@ export function createUpdateResource(options: Options): Middleware {
       pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
-    const { getApp, getAppAssets, getAppResource, updateAppResource, verifyPermission } = options;
+    const {
+      getApp,
+      getAppAssets,
+      getAppResource,
+      updateAppResource,
+      verifyResourceActionPermission,
+    } = options;
     const action = 'update';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
 
-    const userQuery = await verifyPermission({
+    const userQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -317,12 +335,12 @@ export function createDeleteResource(options: Options): Middleware {
       pathParams: { appId, resourceId, resourceType },
     } = ctx;
 
-    const { deleteAppResource, getApp, getAppResource, verifyPermission } = options;
+    const { deleteAppResource, getApp, getAppResource, verifyResourceActionPermission } = options;
     const action = 'delete';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyPermission({
+    const userQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,

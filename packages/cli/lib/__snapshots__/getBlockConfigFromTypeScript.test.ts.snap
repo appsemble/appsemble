@@ -64,6 +64,48 @@ The result must be either a audio URL or an object containing a property \`url\`
 }
 `;
 
+exports[`getBlockConfigFromTypeScript official blocks barcode-scan 1`] = `
+{
+  "actions": undefined,
+  "events": {
+    "emit": {
+      "foundBarcode": {
+        "description": "Event that gets emitted once the barcode scanner has identified and resolved a barcode.
+
+barcode event only holds the object with property barcode.",
+      },
+    },
+    "listen": undefined,
+  },
+  "messages": {
+    "empty": {
+      "description": "This message is displayed if the data is empty.",
+    },
+    "error": {
+      "description": "This message is displayed if there was a problem loading the data.",
+    },
+    "loading": {
+      "description": "This message is displayed if no data has been loaded yet.",
+    },
+  },
+  "parameters": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "type": {
+        "description": "Type is either camera or file",
+        "enum": [
+          "camera",
+          "file",
+        ],
+        "type": "string",
+      },
+    },
+    "type": "object",
+  },
+}
+`;
+
 exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
 {
   "actions": {
@@ -1753,6 +1795,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "defaultValue": {
+            "description": "The default value of the field.",
+            "type": "string",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
@@ -1863,6 +1909,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
+          },
+          "defaultValue": {
+            "description": "The default value of the field.",
+            "type": "string",
           },
           "disabled": {
             "default": false,
@@ -2791,12 +2841,6 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
-      "Record<string,Remapper>": {
-        "additionalProperties": {
-          "format": "remapper",
-        },
-        "type": "object",
-      },
       "Record<string,number>": {
         "additionalProperties": {
           "type": "number",
@@ -3167,29 +3211,33 @@ Replaces the optional label if the field is optional. Won’t display if the fie
     "properties": {
       "autofill": {
         "additionalProperties": false,
-        "description": "This allows you to add automatic form completion through external API's.",
+        "description": "This allows you to update fields automatically with actions by typing in a selected field.
+
+To authenticate with an external API see [Services](../../../docs/03-guide/service)",
         "properties": {
+          "action": {
+            "description": "The name of the action to trigger when the selected field values are changed.
+
+The final output of the action(s) will get applied to the form fields.",
+            "format": "action",
+            "type": "string",
+          },
           "delay": {
             "default": 1000,
-            "description": "Set how many \`milliseconds\` it must take between keystrokes to be able to send a request.",
+            "description": "Set how many \`milliseconds\` it must take between input changes to call the action.",
             "type": "number",
           },
-          "params": {
-            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
-            "description": "Set the search parameters given some predefined mapper keys.",
-          },
-          "response": {
-            "$ref": "#/definitions/Record%3Cstring%2CRemapper%3E",
-            "description": "Set the field values given some predefined mapper keys.",
-          },
-          "route": {
-            "description": "The api route (url) to request data from.",
-            "type": "string",
+          "names": {
+            "description": "The names of the fields for which to detect changes.",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
           },
         },
         "required": [
-          "route",
-          "response",
+          "action",
+          "names",
         ],
         "type": "object",
       },
@@ -3317,6 +3365,10 @@ exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
         "description": "The alt text of the image.",
         "format": "remapper",
       },
+      "height": {
+        "description": "The height of the image in pixels.",
+        "type": "number",
+      },
       "rounded": {
         "description": "Is image rounded.",
         "type": "boolean",
@@ -3326,6 +3378,10 @@ exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
 
 Note that this is ignored if the onImage event listener is set.",
         "format": "remapper",
+      },
+      "width": {
+        "description": "The width of the image in pixels.",
+        "type": "number",
       },
     },
     "required": [

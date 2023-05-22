@@ -1,27 +1,40 @@
 import { createServer } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 
 import * as controllers from './index.js';
-import { App, Asset, Organization } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  AppServiceSecret,
+  Asset,
+  Organization,
+  type User,
+} from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
 import { appRouter } from '../routes/appRouter/index.js';
-import { argv, setArgv } from '../utils/argv.js';
+import { setArgv } from '../utils/argv.js';
+import { encrypt } from '../utils/crypto.js';
 import { Mailer } from '../utils/email/Mailer.js';
+import { authorizeApp, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
+let user: User;
+const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
 useTestDatabase(import.meta);
 
-beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
+beforeEach(async () => {
+  setArgv(argv);
+  user = await createTestUser();
   server = await createServer({
     argv,
     appRouter,
     controllers,
-    context: { mailer: new Mailer(argv) },
+    context: { mailer: new Mailer(argv as any), user },
   });
 
   await setTestApp(server);
@@ -75,8 +88,10 @@ describe('handleRequestProxy', () => {
   let proxiedApp: Koa;
   let proxiedContext: ParameterizedContext;
   let proxiedRequest: AxiosTestInstance;
+  let app: App;
 
   beforeEach(async () => {
+    import.meta.jest.useFakeTimers({ now: 0 });
     proxiedApp = new Koa().use((ctx) => {
       ctx.body = { message: 'I’m a teapot' };
       ctx.status = 418;
@@ -85,12 +100,26 @@ describe('handleRequestProxy', () => {
     proxiedRequest = await createInstance(proxiedApp);
     const { baseURL } = proxiedRequest.defaults;
     await Organization.create({ id: 'org' });
-    await App.create({
+    app = await App.create({
       vapidPublicKey: '',
       vapidPrivateKey: '',
       OrganizationId: 'org',
       definition: {
         defaultPage: '',
+        roles: ['Visitor', 'Reader', 'Admin'],
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'invite',
+          },
+          roles: {
+            Visitor: {},
+            Reader: {},
+            Admin: {
+              inherits: ['Reader'],
+            },
+          },
+        },
         pages: [
           {
             name: '',
@@ -301,6 +330,805 @@ describe('handleRequestProxy', () => {
         "statusCode": 502,
       }
     `);
+  });
+
+  it('should not apply secret if unauthorized', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    server.context.user = null;
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should not apply secrets when no urls matched', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: `!${proxiedRequest.defaults.baseURL}`,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with HTTP basic authentication', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe(
+      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should not authenticate request action with HTTP basic authentication when Authorization header already specified', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'not_john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe(
+      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with client certificate', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-certificate',
+      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+      secret: encrypt(
+        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+        argv.aesSecret,
+      ),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'cert'],
+      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'key'],
+      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+    );
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should not authenticate request action with client certificate when httpsAgent already present', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-certificate',
+      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+      secret: encrypt(
+        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+        argv.aesSecret,
+      ),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-certificate',
+      identifier: '-----BEGIN CERTIFICATE-----\nTEST1\n-----END CERTIFICATE-----',
+      secret: encrypt(
+        '-----BEGIN PRIVATE KEY-----\nTEST1\n-----END PRIVATE KEY-----',
+        argv.aesSecret,
+      ),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'cert'],
+      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'key'],
+      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+    );
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with client credentials', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-credentials',
+      identifier: 'id',
+      secret: encrypt('secret', argv.aesSecret),
+      tokenUrl: `${proxiedRequest.defaults.baseURL}/oauth/token`,
+      accessToken: encrypt('abcd', argv.aesSecret),
+      expiresAt: 6 * 1e5,
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe('Bearer abcd');
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should not authenticate request action with client credentials when Authorization header already specified', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-credentials',
+      identifier: 'id',
+      secret: encrypt('secret', argv.aesSecret),
+      tokenUrl: `${proxiedRequest.defaults.baseURL}/oauth/token`,
+      accessToken: encrypt('abcd', argv.aesSecret),
+      expiresAt: 6 * 1e5,
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe(
+      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with cookie', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'cookie',
+      identifier: 'cookie',
+      secret: encrypt('secret', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe('cookie=secret;');
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with 2 cookies', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'cookie',
+      identifier: 'cookie',
+      secret: encrypt('secret', argv.aesSecret),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'cookie',
+      identifier: 'another-cookie',
+      secret: encrypt('another-secret', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers['Set-Cookie']).toBe(
+      'cookie=secret; another-cookie=another-secret;',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with custom header', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'custom-header',
+      identifier: 'custom-header',
+      secret: encrypt('secret', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers['custom-header']).toBe('secret');
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should not authenticate request action with header authorization', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'custom-header',
+      identifier: 'Authorization',
+      secret: encrypt('secret', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe(
+      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toBeUndefined();
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with query secret', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'query-parameter',
+      identifier: 'authKey',
+      secret: encrypt('key', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toStrictEqual({
+      authKey: 'key',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with 2 query secrets', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'query-parameter',
+      identifier: 'authKey',
+      secret: encrypt('key', argv.aesSecret),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'query-parameter',
+      identifier: 'anotherOne',
+      secret: encrypt('w', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBeUndefined();
+    expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
+    expect(outgoingRequestConfig.params).toStrictEqual({
+      authKey: 'key',
+      anotherOne: 'w',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+  });
+
+  it('should authenticate request action with multiple authentication methods', async () => {
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    authorizeApp(app);
+
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'http-basic',
+      identifier: 'john_doe',
+      secret: encrypt('Strong_Password-123', argv.aesSecret),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'client-certificate',
+      identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+      secret: encrypt(
+        '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+        argv.aesSecret,
+      ),
+      AppId: app.id,
+    });
+    await AppServiceSecret.create({
+      serviceName: 'Test service',
+      urlPatterns: proxiedRequest.defaults.baseURL,
+      authenticationMethod: 'query-parameter',
+      identifier: 'authKey',
+      secret: encrypt('key', argv.aesSecret),
+      AppId: app.id,
+    });
+
+    let outgoingRequestConfig: InternalAxiosRequestConfig;
+
+    const interceptor = axios.interceptors.request.use((config) => {
+      outgoingRequestConfig = config;
+      return config;
+    });
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+
+    axios.interceptors.request.eject(interceptor);
+
+    expect(outgoingRequestConfig.headers.Authorization).toBe(
+      'Basic am9obl9kb2U6U3Ryb25nX1Bhc3N3b3JkLTEyMw==',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'cert'],
+      '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
+    );
+    expect(outgoingRequestConfig.httpsAgent).toHaveProperty(
+      ['options', 'key'],
+      '-----BEGIN PRIVATE KEY-----\nTEST\n-----END PRIVATE KEY-----',
+    );
+    expect(outgoingRequestConfig.params).toStrictEqual({
+      authKey: 'key',
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
   });
 });
 

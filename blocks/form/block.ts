@@ -334,6 +334,11 @@ interface InlineField {
  */
 export interface DateTimeField extends AbstractField {
   /**
+   * The default value of the field.
+   */
+  defaultValue?: string;
+
+  /**
    * Whether the confirm button should be shown
    *
    * @default false
@@ -401,6 +406,11 @@ export interface DateTimeField extends AbstractField {
  * A date/time picker that results in an exact date and time.
  */
 export interface DateField extends AbstractField, InlineField {
+  /**
+   * The default value of the field.
+   */
+  defaultValue?: string;
+
   /**
    * Whether the confirm button should be shown
    *
@@ -1027,26 +1037,27 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
-     * This allows you to add automatic form completion through external API's.
+     * This allows you to update fields automatically with actions by typing in a selected field.
+     *
+     * To authenticate with an external API see [Services](../../../docs/03-guide/service)
      */
     autofill?: {
       /**
-       * The api route (url) to request data from.
+       * The name of the action to trigger when the selected field values are changed.
+       *
+       * The final output of the action(s) will get applied to the form fields.
+       *
+       * @format action
        */
-      route: string;
+      action: string;
 
       /**
-       * Set the search parameters given some predefined mapper keys.
+       * The names of the fields for which to detect changes.
        */
-      params?: Record<string, Remapper>;
+      names: string[];
 
       /**
-       * Set the field values given some predefined mapper keys.
-       */
-      response: Record<string, Remapper>;
-
-      /**
-       * Set how many `milliseconds` it must take between keystrokes to be able to send a request.
+       * Set how many `milliseconds` it must take between input changes to call the action.
        *
        * @default 1000
        */

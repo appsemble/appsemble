@@ -7,13 +7,32 @@ import { tags } from './tags/index.js';
 export * as schemas from './components/schemas/index.js';
 
 interface APIParams {
+  /**
+   * The port on which the server runs.
+   */
   port?: number;
+
+  /**
+   * The host on which the server is exposed.
+   */
   host?: string;
+
+  /**
+   * Whether or not the API is served using SSL.
+   */
+  ssl?: boolean;
 }
 
+/**
+ * Get the OpenAPI document for the Appsemble REST API.
+ *
+ * @param version The Appsemble version
+ * @param argv The parsed command line arguments.
+ * @returns The OpenAPI document for Appsemble.
+ */
 export function api(
   version: string,
-  { port = 9999, host = `http://localhost:${port}` }: APIParams = {},
+  { port = 9999, ssl, host = `${ssl ? 'https' : 'http'}://localhost:${port}` }: APIParams = {},
 ): OpenAPIV3.Document {
   return {
     openapi: '3.0.2',

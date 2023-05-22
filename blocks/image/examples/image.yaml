@@ -3,3 +3,5 @@ parameters:
   alt: Alt text for image
   rounded: true
   alignment: center
+  width: 100
+  height: 100

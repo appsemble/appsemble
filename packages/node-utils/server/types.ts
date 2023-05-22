@@ -11,6 +11,7 @@ import {
   type Theme as ThemeType,
 } from '@appsemble/types';
 import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
+import { type RawAxiosRequestConfig } from 'axios';
 import {
   type DefaultContext as DefaultContextInterface,
   type DefaultState,
@@ -77,6 +78,7 @@ declare module 'koas-parameters' {
     snapshotId: number;
     teamId: string;
     token: string;
+    appServiceId: number;
   }
 
   interface QueryParams {
@@ -198,12 +200,18 @@ export interface GetCspParams {
 export type HookAction = 'create' | 'delete' | 'update';
 export type Action = HookAction | 'count' | 'get' | 'patch' | 'query';
 
-export interface VerifyPermissionParams {
+export interface VerifyResourceActionPermissionParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   app: App;
   resourceType: string;
   action: Action;
   options: Options;
+}
+
+export interface ApplyAppServiceSecretsParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  app: App;
+  axiosConfig: RawAxiosRequestConfig<any>;
 }
 
 export interface CheckRoleParams {
@@ -359,7 +367,12 @@ export interface Options {
   getHost: (params: GetHostParams) => string;
   getCsp: (params: GetCspParams) => ContentSecurityPolicy;
   createSettings: (params: CreateSettingsParams) => Promise<[digest: string, script: string]>;
-  verifyPermission: (params: VerifyPermissionParams) => Promise<Record<string, any>>;
+  verifyResourceActionPermission: (
+    params: VerifyResourceActionPermissionParams,
+  ) => Promise<Record<string, any>>;
+  applyAppServiceSecrets: (
+    params: ApplyAppServiceSecretsParams,
+  ) => Promise<RawAxiosRequestConfig<any>>;
   checkRole: (params: CheckRoleParams) => Promise<Record<string, any>>;
   reloadUser: (params: ReloadUserParams) => Promise<Record<string, any>>;
   parseQuery: (params: ParseQueryParams) => ParsedQuery;

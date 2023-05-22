@@ -11,6 +11,7 @@ import { AppRating } from './AppRating.js';
 import { AppSamlAuthorization } from './AppSamlAuthorization.js';
 import { AppSamlSecret } from './AppSamlSecret.js';
 import { AppScreenshot } from './AppScreenshot.js';
+import { AppServiceSecret } from './AppServiceSecret.js';
 import { AppSnapshot } from './AppSnapshot.js';
 import { AppSubscription } from './AppSubscription.js';
 import { Asset } from './Asset.js';
@@ -51,6 +52,7 @@ export interface InitDBParams {
 
 export {
   App,
+  AppServiceSecret,
   AppBlockStyle,
   AppMember,
   AppOAuth2Authorization,
@@ -104,6 +106,7 @@ export function initDB({
     retry: { max: 3 },
     models: [
       App,
+      AppServiceSecret,
       AppBlockStyle,
       AppMember,
       AppOAuth2Authorization,
