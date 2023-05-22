@@ -199,6 +199,45 @@ export interface Argv {
   smtpSecure: boolean;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
+  // IMAP
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
+
+  /**
+   * The IMAP server host to use.
+   */
+  imapHost: string;
+
+  /**
+   * The IMAP server port to use.
+   */
+  imapPort: number;
+
+  /**
+   * The username to use for authenticating to the IMAP server.
+   */
+  imapUser: string;
+
+  /**
+   * The password to use for authenticating to the IMAP server.
+   */
+  imapPass: string;
+
+  /**
+   * Whether or not to use the secure IMAP protocol.
+   *
+   * @default false
+   */
+  imapSecure: boolean;
+
+  /**
+   * Whether or not to copy sent messages to the sent folder.
+   * Experimental
+   *
+   * @default false
+   */
+  imapCopyToSentFolder: boolean;
+
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Sentry                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   /**
@@ -308,6 +347,12 @@ const defaults: Argv = {
   smtpUser: undefined,
   smtpPass: undefined,
   smtpSecure: false,
+  imapHost: undefined,
+  imapPort: undefined,
+  imapSecure: false,
+  imapUser: undefined,
+  imapPass: undefined,
+  imapCopyToSentFolder: false,
   sentryDsn: undefined,
   sentryEnvironment: undefined,
   githubClientId: undefined,
