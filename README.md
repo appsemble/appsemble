@@ -206,7 +206,9 @@ The development server can be started by running:
 yarn appsemble serve <path-to-app-directory>
 ```
 
-This will serve the app on `http://<app-name>.localhost:9090`
+This will serve the app on `http://<app-name>.localhost:9999`
+
+A different port can be specified with the `--port` parameter.
 
 ### Tests
 
