@@ -23,7 +23,7 @@ import {
   type ParsedQuery,
   type ParseQueryParams,
   type UtilsUser,
-  type VerifyPermissionParams,
+  type VerifyResourceActionPermissionParams,
 } from '../types.js';
 
 const { jest } = import.meta;
@@ -31,7 +31,10 @@ const { jest } = import.meta;
 let mockGetApp: jest.Mock<Promise<App>, [GetAppParams]>;
 let mockGetAppResources: jest.Mock<Promise<Resource[]>, [GetAppResourcesParams]>;
 let mockGetAppResource: jest.Mock<Promise<Resource>, [GetAppResourceParams]>;
-let mockVerifyPermission: jest.Mock<Promise<Record<string, any>>, [VerifyPermissionParams]>;
+let mockVerifyResourceActionPermission: jest.Mock<
+  Promise<Record<string, any>>,
+  [VerifyResourceActionPermissionParams]
+>;
 let mockParseQuery: jest.Mock<ParsedQuery, [ParseQueryParams]>;
 let mockGetAppUrl: jest.Mock<Promise<URL>, [GetAppSubEntityParams]>;
 let mockGetAppMessages: jest.Mock<Promise<AppMessages[]>, [GetAppMessagesParams]>;
@@ -42,7 +45,7 @@ describe('createQueryResources', () => {
   beforeEach(() => {
     mockGetApp = jest.fn();
     mockGetAppResources = jest.fn();
-    mockVerifyPermission = jest.fn();
+    mockVerifyResourceActionPermission = jest.fn();
     mockParseQuery = jest.fn();
     mockGetAppUrl = jest.fn();
     mockGetAppMessages = jest.fn();
@@ -81,8 +84,8 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
@@ -180,8 +183,8 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
@@ -224,8 +227,8 @@ describe('createQueryResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
       getAppUrl: mockGetAppUrl as (params: GetAppSubEntityParams) => Promise<URL>,
@@ -260,7 +263,7 @@ describe('createCountResources', () => {
   beforeEach(() => {
     mockGetApp = jest.fn();
     mockGetAppResources = jest.fn();
-    mockVerifyPermission = jest.fn();
+    mockVerifyResourceActionPermission = jest.fn();
     mockParseQuery = jest.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -296,8 +299,8 @@ describe('createCountResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
@@ -383,8 +386,8 @@ describe('createCountResources', () => {
       getAppResources: mockGetAppResources as (
         params: GetAppResourcesParams,
       ) => Promise<Resource[]>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
@@ -399,7 +402,7 @@ describe('createGetResourceById', () => {
   beforeEach(() => {
     mockGetApp = jest.fn();
     mockGetAppResource = jest.fn();
-    mockVerifyPermission = jest.fn();
+    mockVerifyResourceActionPermission = jest.fn();
     mockGetAppUrl = jest.fn();
     mockGetAppMessages = jest.fn();
 
@@ -426,8 +429,8 @@ describe('createGetResourceById', () => {
     const middleware = createGetResourceById({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
     } as Options);
 
@@ -499,8 +502,8 @@ describe('createGetResourceById', () => {
     const middleware = createGetResourceById({
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
     } as Options);
 
@@ -532,8 +535,8 @@ describe('createGetResourceById', () => {
     const options = {
       getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
       getAppResource: mockGetAppResource as (params: GetAppResourceParams) => Promise<Resource>,
-      verifyPermission: mockVerifyPermission as (
-        params: VerifyPermissionParams,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
       ) => Promise<Record<string, any>>,
       getAppUrl: mockGetAppUrl as (params: GetAppSubEntityParams) => Promise<URL>,
       getAppMessages: mockGetAppMessages as (
