@@ -13,14 +13,14 @@ export function toOData(fields: Field[], values: FilterValues): string {
         case 'buttons':
           return (value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ');
         case 'date':
-          return `${field.name} eq ${value}`;
+          return `${field.name} eq '${value}'`;
         case 'date-range': {
           const filters = [];
           if (value[0]) {
-            filters.push(`${field.name} ge ${value[0]}`);
+            filters.push(`${field.name} ge '${value[0]}'`);
           }
           if (value[1]) {
-            filters.push(`${field.name} le ${value[1]}`);
+            filters.push(`${field.name} le '${value[1]}'`);
           }
           if (!filters.length) {
             return null;

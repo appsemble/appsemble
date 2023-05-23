@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Логин",
   "studio.components.VerifyBanner.verifyEmail": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Что-то пошло не так при попытке загрузить приложения.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Загрузка приложений…",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "",

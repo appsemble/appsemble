@@ -46,7 +46,6 @@ export function IndexPage(): ReactElement {
     },
     [],
   );
-
   return (
     <Content className={styles.content} main>
       <div className="is-flex">
@@ -101,8 +100,10 @@ export function IndexPage(): ReactElement {
           sortFunction={sortFunctions[sort?.name]}
           target={`/api/user/apps?language=${lang}`}
           title={<FormattedMessage {...messages.myApps} />}
+          userApps
         />
       ) : null}
+      <br />
       <CollapsibleAppList
         filter={filter}
         reverse={sort?.reverse}

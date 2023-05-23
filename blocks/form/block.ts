@@ -334,6 +334,11 @@ interface InlineField {
  */
 export interface DateTimeField extends AbstractField {
   /**
+   * The default value of the field.
+   */
+  defaultValue?: string;
+
+  /**
    * Whether the confirm button should be shown
    *
    * @default false
@@ -401,6 +406,11 @@ export interface DateTimeField extends AbstractField {
  * A date/time picker that results in an exact date and time.
  */
 export interface DateField extends AbstractField, InlineField {
+  /**
+   * The default value of the field.
+   */
+  defaultValue?: string;
+
   /**
    * Whether the confirm button should be shown
    *

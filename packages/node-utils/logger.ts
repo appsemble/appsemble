@@ -65,6 +65,9 @@ function httpErrorToString(error: AxiosError): string {
 
 function toString(info: TransformableInfo): string {
   if (info instanceof Error) {
+    if ('sql' in info) {
+      return info.stack.replace(/^Error/, `${info.sql}\n${info.name}: ${info.message}`);
+    }
     if (axios.isAxiosError(info)) {
       return httpErrorToString(info);
     }

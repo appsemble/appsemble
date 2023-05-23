@@ -278,6 +278,7 @@
   "studio.components.Toolbar.login": "Prijava",
   "studio.components.VerifyBanner.verifyEmail": "Potvrdi svoju email adresu ({email}) za dovršavanje tvoje Appsemble registracije.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.emptyApps": "Trenutačno nema programa.",
+  "studio.pages.apps.IndexPage.CollapsibleAppList.emptyUserApps": "",
   "studio.pages.apps.IndexPage.CollapsibleAppList.error": "Dogodila se greška tijekom pokušaja učitavanja programa.",
   "studio.pages.apps.IndexPage.CollapsibleAppList.loading": "Učitavanje programa …",
   "studio.pages.apps.IndexPage.CollapsibleAppList.noApps": "Nema programa koji odgovaraju parametrima tvoje pretrage.",
