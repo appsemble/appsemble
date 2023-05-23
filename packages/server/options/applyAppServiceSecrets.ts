@@ -157,7 +157,6 @@ export async function applyAppServiceSecrets({
             },
             httpsAgent,
           });
-          // eslint-disable-next-line prefer-destructuring
           const updatedSecret = (
             await AppServiceSecret.update(
               {
