@@ -80,9 +80,7 @@ export function CardHeaderControl({
             ) : null}
             {details}
           </div>
-          <div className={`${styles.buttonContainer}${window.innerWidth > 450 ? ' is-flex' : ''}`}>
-            {controls}
-          </div>
+          <div className={`${styles.buttonContainer}' is-flex-tablet'`}>{controls}</div>
         </div>
       </div>
       {children}

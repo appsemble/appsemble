@@ -47,13 +47,11 @@ export function IndexPage(): ReactElement {
     [],
   );
 
-  const conditialWindowWidth = window.innerWidth > 700;
-
   return (
     <Content className={styles.content} main>
-      <div className={conditialWindowWidth ? 'is-flex' : ''}>
+      <div className="is-flex-desktop">
         <InputField
-          className={`'mr-4 mb-0'${conditialWindowWidth ? '' : 'is-fullwidth'}`}
+          className="mr-4 mb-0 is-fullwidth"
           icon="search"
           name="search"
           onChange={onFilterChange}
