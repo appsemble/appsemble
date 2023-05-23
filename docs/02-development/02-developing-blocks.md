@@ -1,6 +1,6 @@
 # Developing Blocks
 
-This document will guide you through the creation of your first block.
+This document will guide you through the process of creating your first block.
 
 ## Table of Contents
 
@@ -96,8 +96,8 @@ yarn appsemble block publish blocks/test
 
 ## Testing the Block
 
-Open the Appsemble studio on at the base URL of Appsemble. Login, and create your first app. This
-following example app will display your new block.
+Open the Appsemble studio on <https://appsemble.app>. Login and create your first app. This example
+app will display your new block.
 
 ```yaml copy filename="app-definition.yaml"
 name: Test App
@@ -178,7 +178,7 @@ pages:
 ```
 
 It may be interesting to show content from the context that the page was linked to. Blocks can pass
-data to dispatched actions. This data is then available ad the `data` object in the next block.
+data to dispatched actions. This data is then available as the `data` object in the next block.
 
 Let’s to a little rewrite of our block.
 
@@ -212,7 +212,7 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 As you can see, the button is now wrapped by a wrapper element. There is also a new text element. If
 the block received data, the text will render the text property of the received data.
 
-When the click action if dispatched, the block parameters are passed as the context to the action.
+When the click action is dispatched, the block parameters are passed as the context to the action.
 In our example app, the test block on the other page will render this when the user navigates
 between pages.
 
@@ -286,7 +286,7 @@ bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, util
 ```
 
 The event will be emitted to all blocks on the page. Go on and add a second `@your-org/test` block
-the page to see the event is received by both blocks.
+to the page to see the event is received by both blocks.
 
 ## Further Reading
 
@@ -295,7 +295,7 @@ have a look at the
 [officially supported Appsemble blocks](https://gitlab.com/appsemble/appsemble/-/tree/0.20.44/blocks).
 For example, if you want to create a block to display a set of dynamically loaded data, have a look
 at the `table` or `tiles` block. If you’re interested in displaying a single entity, have a look at
-the `detail-viewer` or `stats` block. If would like to create a block to process data based on
+the `detail-viewer` or `stats` block. If you would like to create a block to process data based on
 events, have a look at the `data-loader` or `data-notifier` block.
 
 Need help developing a block? Feel free to join our [Discord server](https://discord.gg/q5aZAyq5kZ).

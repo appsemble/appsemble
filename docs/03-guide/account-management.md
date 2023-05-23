@@ -27,7 +27,7 @@ To do so, click on any of the “Login with” buttons on the login screen. If y
 this way before or manually associated your Appsemble account with one of these services, you’ll
 automatically be logged into your account. If not, a new account will be created.
 
-To view which social logins that are connected to your account, visit the
+To view which social logins are connected to your account, visit the
 [Social login](/settings/social) page in your account’s settings. From here you can view all the
 currently available login options and connect your account to them. You may also disconnect your
 account from these providers from here.

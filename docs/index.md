@@ -4,9 +4,9 @@ icon: book-open
 
 # Reading guide
 
-Some of the content in the Appsemble documentation is of interest to a wide range of software
-development and IT professionals. This section provides you with links to topics that are organized
-by professional role and common task scenarios.
+Some of the contents in the Appsemble documentation are of interest to a wide range of software
+developers and IT professionals. This section provides links to topics that are organized by
+professional role and common task scenarios.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ by professional role and common task scenarios.
 ## New to Appsemble?
 
 Creating an app all by yourself can be a difficult task. To help you get started with Appsemble, we
-have provided an easy to understand tutorial so you can get right into creating your very own app
+have provided an easy to understand tutorial, so you can get right into creating your very own app.
 
 - [Appsemble tutorial](01-tutorial/index.md)
 
@@ -36,7 +36,7 @@ Check out the resources below for more information on how to develop apps using 
 
 ## System Admin
 
-As a system admin you might be interested in learning more about how Appsemble’s infrastructure
+As a system admin, you might be interested in learning more about how Appsemble’s infrastructure
 works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
@@ -56,8 +56,8 @@ started.
 
 ## Core Developer
 
-The Appsemble core consists of all the systems that makes Appsemble as a whole tick, like the API,
-database, authentication provider, and the app components used to display apps.
+The Appsemble core consists of all the systems that make Appsemble whole, like the API, database,
+authentication provider and the app components used to display apps.
 
 See also:
 

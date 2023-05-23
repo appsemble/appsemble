@@ -88,8 +88,8 @@ Creates a new object based on the specified properties in the given history inde
 useful when you want to combine two sources of data together. It’s also cleaner than separately
 using `object.from` together with `history`.
 
-In the following example you can see why this might be handy. Let’s say you get the details about a
-concert from a source like an action or a block. You have this information, and then you want to get
+In the following example, you can see why this might be handy. Let’s say you get the details about a
+concert from a source like an action or a block. You have this information and then you want to get
 some additional data like the attendees of the concert. With `from.history` you can combine the
 older data like the name and date, and add the new `attendees` data. The result will be an object
 with this combined data.
@@ -191,7 +191,7 @@ Result:
 
 #### [omit.history](/docs/reference/remapper#omit.history)
 
-Assigns properties from the specified history stack index to the current value, and excludes the
+Assigns properties from the specified history stack index to the current value and excludes the
 given properties.
 
 Similarly to the other history remappers, this gives you the data from a certain point in the

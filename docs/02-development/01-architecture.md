@@ -61,10 +61,10 @@ The app component handles everything that is necessary in order to render apps a
 new data. Apps are uploaded to the database using the Appsemble editor after which it can be
 displayed by retrieving the app definition from the database.
 
-The app definition contains information about how an app should be built, such as resource
-definitions, security, pages and blocks. Depending on the configuration apps may communicate with
-either the Appsemble server or external servers to fetch and submit data, defaulting to the
-Appsemble server.
+The app definition contains information about how an app should be built, such as pages, blocks,
+resource definitions and security. Depending on the configuration, apps may communicate with either
+the Appsemble server or external servers to fetch and submit data, defaulting to the Appsemble
+server.
 
 ## Editor
 
@@ -82,7 +82,7 @@ app and studio components as well as the API, which is used to interact with the
 ## CLI
 
 The CLI allows developers to communicate with the Appsemble server in order to register new blocks,
-upload new versions of an existing blocks, or upload themes for entire organizations.
+upload new versions of existing blocks, or upload themes for entire organizations.
 
 ## SDK
 

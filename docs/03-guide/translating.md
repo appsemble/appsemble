@@ -20,14 +20,14 @@ code.
 
 Every translatable part of Appsemble is called a “message” and will be referred to as such in this
 document. Internally it uses the _[ICU message syntax][icu]_ which is one of the available standards
-that is commonly used for internationalization. This allows for support for arguments,
-pluralization, date formatting, number formatting, and more.
+that is commonly used for internationalization. This allows for support of arguments, pluralization,
+date formatting, number formatting and more.
 
 ## Appsemble Core and Blocks
 
 Appsemble provides default translations for the core parts of an app, the part that is provided by
 Appsemble itself without any further configuration. Generally speaking, this includes messages such
-as error messages, menu options, and block messages. The languages that are maintained by the
+as error messages, menu options and block messages. The languages that are maintained by the
 Appsemble team are English and Dutch, with support for crowd-sourced translations via Weblate which
 can be found [here](https://hosted.weblate.org/projects/appsemble/#languages).
 
@@ -44,7 +44,7 @@ It is possible to provide custom messages within an app. This can be done by usi
 [`translate`](/docs/reference/remapper#translate) or
 [`string.format`](/docs/reference/remapper#stringformat) remappers. The former is typically used for
 simple translations that don’t use any arguments, whereas the latter can be used for more control
-over arguments that get passed in (for usage with the [ICU syntax][icu]) as well as optionally
+over arguments that get passed in (for usage with the [ICU syntax][icu]), as well as optionally
 defining a default or fallback translation.
 
 Let’s look at a simple example of what this looks like in an app.
@@ -82,13 +82,13 @@ blocks:
 ![Untranslated message](../../config/assets/default-message.png)
 
 By default, like before, will display `{myMessage}` if the message is not defined for the current
-language. With a message defined like this however, it would then be possible to define a message
+language. With a message defined like this, however, it would then be possible to define a message
 like so:
 
 For English: `Welcome {name}!` For Dutch: `Welkom {name}!`
 
 If the user is logged in and has their name set in their Appsemble account, it will display the
-message as well as the name of the user assuming they are logged in:
+message, as well as the name of the user assuming they are logged in:
 
 ![Translated message](../../config/assets/translated-message.png)
 
@@ -109,8 +109,8 @@ The categories are:
 
 - Custom messages: These are all the IDs of messages defined by `translate` and `string.format`
   messages.
-- App messages: These are messages that provide translations for various metadata of the app, such
-  as its name, the description, the names of its pages, as well as overrides for block messages on a
+- App messages: These are the messages that provide translations for various metadata of the app,
+  such as its name, the description, the names of its pages and overrides for block messages on a
   per-page basis.
 - Block messages: These are the messages used by blocks. If the currently selected language is
   supported by Appsemble these will be filled in by default, otherwise you might have to provide
@@ -118,7 +118,7 @@ The categories are:
   this list due to the fact that each version can potentially have a completely different set of
   message IDs and translations.
 - Core messages: These are all the messages Appsemble uses when displaying the app. These range from
-  the messages used for logging in and out, errors that may show up, and so forth.
+  the messages used for logging in and out, errors that may show up and so forth.
 
 After filling in the translations, make sure to click the `Save` button at the bottom of the page.
 
@@ -127,7 +127,7 @@ After filling in the translations, make sure to click the `Save` button at the b
 ## Translating using the Appsemble CLI
 
 An alternative method for providing an app with translations is to use the Appsemble CLI. This is
-what the Appsemble team uses to keep the translations from Weblate as well as the English and Dutch
+what the Appsemble team uses to keep the translations from Weblate, as well as the English and Dutch
 translations up to date.
 
 This section assumes that the entire app structure is defined locally.
@@ -172,8 +172,8 @@ The format used for these translation files is similar to the format shown on th
 ```
 
 Updating the app’s messages is done automatically when updating the app through the Appsemble CLI.
-The messages are be validated and the CLI should give helpful clues as to what needs to be changed
-in order to resolve any potential mistakes that it finds.
+The messages are validated and the CLI should give helpful clues as to what needs to be changed in
+order to resolve any potential mistakes that it finds.
 
 ```sh
 $ yarn appsemble app update ./my-app
