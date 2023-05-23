@@ -264,7 +264,12 @@ export async function getTeamMember(ctx: Context): Promise<void> {
     throw notFound('User not found in team');
   }
 
-  ctx.body = teamMember;
+  ctx.body = {
+    id: teamMember.id,
+    name: teamMember.name,
+    primaryEmail: teamMember.primaryEmail,
+    role: teamMember.TeamMember.role,
+  };
 }
 
 export async function inviteTeamMember(ctx: Context): Promise<void> {

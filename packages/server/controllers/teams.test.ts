@@ -578,35 +578,12 @@ describe('getTeamMember', () => {
     authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members/${user.id}`);
 
-    expect(response).toMatchInlineSnapshot(
-      {
-        data: {
-          TeamMember: {
-            UserId: expect.any(String),
-            created: expect.any(String),
-            updated: expect.any(String),
-          },
-          id: expect.any(String),
-        },
-      },
-      `
-      HTTP/1.1 200 OK
-      Content-Type: application/json; charset=utf-8
-
-      {
-        "TeamMember": {
-          "TeamId": 1,
-          "UserId": Any<String>,
-          "created": Any<String>,
-          "role": "member",
-          "updated": Any<String>,
-        },
-        "id": Any<String>,
-        "name": "Test User",
-        "primaryEmail": "test@example.com",
-      }
-    `,
-    );
+    expect(response.data).toStrictEqual({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+      role: TeamRole.Member,
+    });
   });
 });
 
