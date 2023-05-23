@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`copyToSentFolder should copy the email to the sent folder 1`] = `
+"Content-Type: multipart/alternative;
+
+From: test@example.com
+To: Me <test@example.com>
+Subject: Test
+
+Date: Thu, 01 Jan 1970 00:00:00 +0000
+MIME-Version: 1.0
+
+
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+Test
+
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<p>Test</p>
+
+"
+`;
+
 exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange 0 for locale en 1`] = `undefined`;
 
 exports[`sendTranslatedEmail appMemberEmailChange en should render appMemberEmailChange 0 for locale en 2`] = `

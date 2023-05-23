@@ -7,5 +7,5 @@
   <line stroke="#00aa00" x1="10" y1="50" x2="90" y2="50" />
   <polygon fill="#00aa00" points="90 50, 82 47, 82 53" />
   <polygon fill="#00aa00" points="10 50, 18 47, 18 53" />
-  <text fill="#00aa00" x="50" y="52" text-anchor="middle" alignment-baseline="hanging">80%</text>
+  <text fill="#00aa00" x="50" y="58" text-anchor="middle" alignment-baseline="hanging">80%</text>
 </svg>

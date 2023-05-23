@@ -18,7 +18,7 @@ users in uppercase you can simply use the `string.case` remapper.
 
 #### [string.case](/docs/reference/remapper#string.case)
 
-Convert a string to upper- or lower case.
+Convert a string to upper or lower case.
 
 ```yaml
 string.case: upper
@@ -48,8 +48,8 @@ Result:
 "You have won €5000 in the lottery!!"
 ```
 
-> **Tip:** Considering this is can be inserted anywhere a remapper is accepted, you can also use
-> this to more accurately choose specific URL’s.
+> **Tip:** Considering this can be inserted anywhere a remapper is accepted. You can also use this
+> to choose specific URL’s more accurately.
 
 #### [string.replace](/docs/reference/remapper#string.replace)
 

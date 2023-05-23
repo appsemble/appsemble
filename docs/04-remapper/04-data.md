@@ -16,8 +16,8 @@
 
 ## Introduction
 
-There are a lot of points to get data from in Appsemble. There are a number of different remappers
-to get this data from certain places in an app definition.
+There are lots of points to get data from in Appsemble. There are a number of different remappers to
+get this data from certain places in an app definition.
 
 ### Data remappers
 
@@ -112,7 +112,7 @@ Result:
 
 #### [app](/docs/reference/remapper#app)
 
-Gives actual information about the current app. Using this remapper, you will have access to the
+Gives actual information about the current app. Using this remapper you will have access to the
 following information:
 
 - `id`: App ID
@@ -211,8 +211,8 @@ Provides some fields of user information taken from the OpenID user info. These 
 
 - `email`: User’s **primary** email address
 - `email_verified`: Whether the user’s primary email address is verified or not (`boolean`)
-- `locale`: The user’s set default language as
-  [`BCP47`](https://en.wikipedia.org/wiki/IETF_language_tag) language tag (ex. `en`) (Broken)
+- `locale`: The user’s default language [`BCP47`](https://en.wikipedia.org/wiki/IETF_language_tag)
+  language tag (ex. `en`) (Broken)
 - `name`: The user’s name
 - `picture`: Full URL to the user’s profile picture web address
 - `sub`: The user’s identifier
@@ -308,7 +308,7 @@ foreach:
           - label: { step: title }
 ```
 
-With this example, we load in an array of questions that have the `title` property. What the `step`
+With this example, we load an array of questions that have the `title` property. What the `step`
 remapper does in this case is show the title of the current question in the loop.
 
 The result of this is a flow page where each page shows the question’s title.

@@ -10,14 +10,14 @@
 
 ## Introduction
 
-There are a lot of ways you can work with objects in remappers.
+There are lots of ways you can work with objects in remappers.
 
 ### Object remappers
 
 #### [object.from](/docs/reference/remapper#object.from)
 
-With this remapper you can create an entirely new object based on input values, and other remappers.
-`object.from` in itself accepts remapper functions as its input which allows you to chain multiple
+With this remapper you can create an entirely new object based on input values and other remappers.
+`object.from` itself accepts remapper functions as its input which allows you to chain multiple
 remappers together to make complex objects.
 
 As a base, the remapper looks like this:
@@ -37,7 +37,7 @@ object.from:
 
 Most of the time you won’t create an object just to store one value. Luckily, this is where the
 chaining of remappers comes in. You can create an object that contains an `object.from` remapper
-itself, which then allows more inputs to be put in:
+which then allows more inputs:
 
 ```yaml
 object.from:

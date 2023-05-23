@@ -1,6 +1,7 @@
 import { getAppsembleMessages, getSupportedLanguages, logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
 import addrs, { type ParsedMailbox } from 'email-addresses';
+import { ImapFlow } from 'imapflow';
 import { type FormatXMLElementFn, IntlMessageFormat, type PrimitiveType } from 'intl-messageformat';
 import tags from 'language-tags';
 import {
@@ -8,6 +9,7 @@ import {
   type SendMailOptions as MailerSendMailOptions,
   type Transporter,
 } from 'nodemailer';
+import MailComposer from 'nodemailer/lib/mail-composer/index.js';
 import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
@@ -82,23 +84,45 @@ export interface SendMailOptions {
   >;
 }
 
+type MailerArgs = Partial<
+  Pick<
+    typeof argv,
+    | 'imapCopyToSentFolder'
+    | 'imapHost'
+    | 'imapPass'
+    | 'imapPort'
+    | 'imapSecure'
+    | 'imapUser'
+    | 'smtpFrom'
+    | 'smtpHost'
+    | 'smtpPass'
+    | 'smtpPort'
+    | 'smtpSecure'
+    | 'smtpUser'
+  >
+>;
+
 /**
  * A class to simplify sending emails.
  */
 export class Mailer {
   transport: Transporter;
+  imap: ImapFlow;
 
   constructor({
+    imapCopyToSentFolder,
+    imapHost,
+    imapPass,
+    imapPort,
+    imapSecure,
+    imapUser,
     smtpFrom,
     smtpHost,
     smtpPass,
     smtpPort,
     smtpSecure,
     smtpUser,
-  }: Pick<
-    typeof argv,
-    'smtpFrom' | 'smtpHost' | 'smtpPass' | 'smtpPort' | 'smtpSecure' | 'smtpUser'
-  >) {
+  }: MailerArgs) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = createTransport(
@@ -111,6 +135,17 @@ export class Mailer {
         } as Options,
         { from: smtpFrom },
       );
+    }
+    if (imapHost && imapCopyToSentFolder) {
+      this.imap = new ImapFlow({
+        host: imapHost,
+        port: imapPort || 993,
+        secure: imapSecure,
+        auth: {
+          user: imapUser,
+          pass: imapPass,
+        },
+      });
     }
   }
 
@@ -316,6 +351,7 @@ export class Mailer {
         )}`,
       );
     }
+
     if (transport) {
       await transport.sendMail({
         html,
@@ -327,5 +363,30 @@ export class Mailer {
       });
     }
     logger.verbose('Email sent successfully.');
+
+    if (argv.imapCopyToSentFolder) {
+      // https://stackoverflow.com/a/50310199
+      const message = await new MailComposer({
+        html,
+        from: fromHeader,
+        subject,
+        text,
+        to,
+        attachments,
+      })
+        .compile()
+        .build();
+      if (this.imap) {
+        await this.copyToSentFolder(message);
+      } else {
+        logger.warn('IMAP hasn’t been configured. Not moving email to sent folder.');
+      }
+      logger.info(String(message));
+    }
+  }
+
+  async copyToSentFolder(body: Buffer | string): Promise<void> {
+    await this.imap.connect();
+    await this.imap.append('Sent', String(body), ['\\Seen']);
   }
 }

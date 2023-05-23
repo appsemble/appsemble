@@ -52,7 +52,7 @@ app. To do so you will need the following element:
 - Resource
 - Data-loader (a block that loads the existing data)
 - Table (this will display the data)
-- Form (here you can update the data)
+- Form (here you can input new data)
 
 All these elements need to be defined in the code. Next we shall explain the elements. If you only
 need to show the data there is no need for the Form element.
@@ -101,8 +101,8 @@ The table element listens to the people event in order to get the correct data. 
 only show the `firstName` and the `lastName`. If you have 6 records in your resources. This table
 will show you 6 rows with the 2 columns `firstname` and `lastname`.
 
-If the resource is empty no data will be shown. We now continue with how to update the resource into
-the app via a form.
+If the resource is empty no data will be shown. We now continue with how to update the resource info
+in the app via a form.
 
 **form**
 
@@ -152,11 +152,11 @@ block as an input form:
 
 You can see the 4 fields being used which we also defined earlier in the resource person. Just like
 in the resource the first 3 fields, firstName, `lastName` and email are required. Also the length of
-the fields are defined. This all needs to match with the resource.
+the fields is defined. This all needs to match with the resource.
 
-With resource.create this form block can update the person resource with the information that is
-being provided in the form. `onSuccess` allows you to make a chain of actions, which in this case
-makes sure that when the form is submitted successfully the user is redirected to the Home page.
+With resource.create this form block updates the person resource with the information that is being
+provided in the form. `onSuccess` allows you to make a chain of actions, which in this case makes
+sure that when the form is submitted successfully the user is redirected to the Home page.
 
 - [Next: Tips and tricks](04-tips-and-tricks.md)
 - [Previous: Blocks](02-blocks.md)

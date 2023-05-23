@@ -14,11 +14,11 @@ icon: sitemap
 ## Introduction
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for
-various purposes, such as retrieving properties from data structures, transforming data, and
+various purposes, such as retrieving properties from data structures, transforming data and
 formatting text.
 
 A remapper is structured as follows. A remapper function gets data from a source. This can be an
-action, an event etc. Then, the function can define a remapper or an array or remappers to
+action, an event, etc. Then, the function can define a remapper or an array, or remappers to
 manipulate this data.
 
 When using an array of remappers, it executes each one after the other from top to bottom. This way
@@ -56,10 +56,10 @@ Result:
 We have now successfully remapped existing data! Instead of a big user dataset, it now only shows
 their first name.
 
-If we want to further manipulate this data, it’s best to do it in the same remap function as well.
+If we want to further manipulate this data, it’s best to do in the same remap function as well.
 Because the function can contain an array of remappers, we can easily alter the data further. In the
-`YAML` language, you can define an array in a multitude of ways. To keep your code looking clean,
-it’s best to define it with a `-` before each item.
+`YAML` language, you can define an array in a multitude of ways. To keep your code clean, it’s best
+to define it with a `-` before each item.
 
 With this in mind we can remap this data even further by defining the function as an array with
 multiple remappers. Now, we use the `prop` and `string.case` remappers to transform the data even
@@ -82,7 +82,7 @@ Now that you know the basics of remappers we can get into some real app writing.
 
 Let’s say you want to create an app that displays a list of songs in a table. You might not know
 this, but services like Spotify store a lot of data you don’t directly see in their database.
-According to the developer documentation, a track contains 18 audio features. Some of these features
+According to the developer documentation a track contains 18 audio features. Some of these features
 are `acousticness`, `danceability`, `loudness` and `duration_ms`. When you want to show a user their
 playlist of songs, you only want to show relevant information like the song’s title, artist and
 duration. We can use remappers to filter this data further to only show this information.
@@ -119,9 +119,9 @@ page is loaded. This action retrieves the entire dataset that is stored in the `
 ]
 ```
 
-If we want to only show certain properties we can directly use the `prop` remapper to only show what
-we want. The `table` block accepts a remapper as the value under a column. We can use this to insert
-the specific properties of a song we want.
+If we want to only show certain properties, we can directly use the `prop` remapper to only show
+what we want. The `table` block accepts a remapper as the value under a column. We can use this to
+insert the specific properties of a song we want.
 
 ```yaml
 - type: table
@@ -178,21 +178,21 @@ The `data-loader` here gets every person in the `people` resource. After that, i
 function containing two remappers:
 
 1. `array.map`: This remapper goes through every item in the data that is given (if the data is an
-   array), and applies the remappers in the function on it. So, within this remapper every person in
+   array) and applies the remappers in the function on it. So, within this remapper every person in
    the resource is individually given to the remappers inside. In this case, they are compared to an
    `if` remapper. This `if` remapper has a condition which compares the property `city` within the
    user and checks if it is equal to “Eindhoven”. If this is true, it removes the `city` property
    from the person’s properties. If this is false, it sets the person object to null.
 
-When this remapper is done, the output is an array that is filled with people that had the value of
-“Eindhoven” under the `city` property. The people that didn’t are set to null.
+When this remapper is done, an array that is filled with people that had the value of “Eindhoven”
+under the `city` property is outputted. People that didn’t are set to null.
 
 > **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
 > **context** of the remapper itself.
 
-2. `null.strip`: This remapper removes any `null` values from the data that is given to it.
-   Considering the output of the previous remapper was an array mixed with people and null values,
-   this cleans up the data so that you _only_ have actual people in the dataset.
+2. `null.strip`: This remapper removes any `null` value from the data that is given to it.
+   Considering the output of the previous remapper was an array mixed with people and null values.
+   This cleans up the data, so that you _only_ have actual people in the dataset.
 
 The end result of this is a fully filtered list of users from the city of Eindhoven. Next, you could
 display this information in any block you’d like to use via the event emitter from the data-loader
@@ -201,5 +201,5 @@ block.
 ### Conclusion
 
 You should be familiar with the very basics of remapping now. A lot more remappers exist in the
-framework, and more are added over time so it’s good to get familiar with the most important ones.
-Keep experimenting with them, and you will find out just how powerful remappers are.
+framework and more will be added over time, so it’s good to get familiar with the most important
+ones. Keep experimenting with them and you will find out just how powerful remappers are.
