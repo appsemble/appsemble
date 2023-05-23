@@ -19,7 +19,7 @@ import {
   type AppsembleMessages,
   type Asset,
 } from '@appsemble/types';
-import { api, asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
+import { asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import * as csvToJson from 'csvtojson';
 import FormData from 'form-data';
 import { type Argv } from 'yargs';
@@ -27,7 +27,6 @@ import { type Argv } from 'yargs';
 import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
-import pkg from '../package.json' assert { type: 'json' };
 import * as controllers from '../server/controllers/index.js';
 import { setAppDir } from '../server/db/app.js';
 import { Resource } from '../server/models/Resource.js';
@@ -305,6 +304,5 @@ export async function handler(argv: ServeArguments): Promise<void> {
         argv.port
       }`,
     );
-    logger.info(api(pkg.version, { port: 9090 }).info.description);
   });
 }

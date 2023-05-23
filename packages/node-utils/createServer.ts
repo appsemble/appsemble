@@ -104,6 +104,11 @@ interface CreateServerOptions {
    * Webpack configurations to serve using Webpack dev server middleware.
    */
   webpackConfigs?: Configuration[];
+
+  /**
+   * Specifies whether to serve the swagger ui for the server
+   */
+  swagger?: boolean;
 }
 
 export function createServer({
@@ -114,6 +119,7 @@ export function createServer({
   controllers,
   middleware,
   studioRouter,
+  swagger,
   webpackConfigs,
 }: CreateServerOptions): Koa {
   const app = new Koa();
@@ -150,7 +156,7 @@ export function createServer({
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
         koas(api(pkg.version, argv), [
           specHandler(),
-          swaggerUI({ url: '/api-explorer' }),
+          ...(swagger ? [swaggerUI({ url: '/api-explorer' })] : []),
           ...(authentication ? [security(authentication as SecurityOptions)] : []),
           parameters(),
           bodyParser({

@@ -71,7 +71,7 @@ The project structure looks like this:
      ├── blocks/
      │   └── test/
      |        ├── src
-     |        |    └── app.ts
+     |        |    └── index.ts
      |        ├── block.ts
      |        ├── package.json
      |        └── README.md
@@ -255,7 +255,7 @@ declare module '@appsemble/sdk' {
 We’ll also add a listener using `events.on.data()`. This will log the block’s own parameters and the
 data received from the event.
 
-```js copy filename="app.ts"
+```js copy filename="index.ts"
 import { bootstrap } from '@appsemble/sdk';
 
 bootstrap(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
