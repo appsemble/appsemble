@@ -4,7 +4,7 @@ To start using Appsemble you have to create an account.
 
 Go to [register](https://appsemble.app/nl/register)
 
-![Appsemble Account Registration](../../config/assets/tutorial-assets/register-account.png 'Appsemble Account Registration')
+![Appsemble Account Registration](../../tutorial-assets/register-account.png 'Appsemble Account Registration')
 
 Fill out the information. After your account is created you can _login_.
 
@@ -15,7 +15,7 @@ apps, access the documentation and of course create a new app.
 
 When you want to create a new app you will be prompted to create an organization.
 
-![Create Organization](../../config/assets/tutorial-assets/create-organization.png 'Create Organization')
+![Create Organization](../../tutorial-assets/create-organization.png 'Create Organization')
 
 People and apps need to be part of an organization so apps and rights can easily be shared and
 configured with or by your colleagues and users.
@@ -23,7 +23,7 @@ configured with or by your colleagues and users.
 After you fill out the information about your organization you will be prompted to fill out the
 create a new app form.
 
-![Create app](../../config/assets/tutorial-assets/create-new-app.png 'Create app')
+![Create app](../../tutorial-assets/create-new-app.png 'Create app')
 
 Most items are self explanatory. With template you can choose from existing templates. In this
 screenshot example it shows the Empty template which is in fact not empty but it will start with a
