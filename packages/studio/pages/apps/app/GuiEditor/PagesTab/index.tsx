@@ -58,10 +58,6 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
 
   const getStackSize = (): number => saveStack.length - 1;
 
-  useEffect(() => {
-    setApp({ ...app, definition: state.toJS() });
-  }, [app, index, setApp, state]);
-
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     copy.push(docRef.current.clone());
@@ -143,6 +139,11 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
     } as BlockDefinition;
     addBlock(newBlock);
   };
+
+  useEffect(() => {
+    setApp({ ...app, definition: state.toJS() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   return (
     <>
