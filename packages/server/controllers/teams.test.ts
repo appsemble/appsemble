@@ -566,6 +566,50 @@ describe('getTeamMembers', () => {
   });
 });
 
+describe('getTeamMember', () => {
+  it('should return specified member', async () => {
+    const team = await Team.create({ name: 'Test team', AppId: app.id });
+    await TeamMember.create({
+      TeamId: team.id,
+      UserId: user.id,
+      role: TeamRole.Member,
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members/${user.id}`);
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          TeamMember: {
+            UserId: expect.any(String),
+            created: expect.any(String),
+            updated: expect.any(String),
+          },
+          id: expect.any(String),
+        },
+      },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "TeamMember": {
+          "TeamId": 1,
+          "UserId": Any<String>,
+          "created": Any<String>,
+          "role": "member",
+          "updated": Any<String>,
+        },
+        "id": Any<String>,
+        "name": "Test User",
+        "primaryEmail": "test@example.com",
+      }
+    `,
+    );
+  });
+});
+
 describe('inviteTeamMember', () => {
   beforeEach(() => {
     authorizeApp(app);
