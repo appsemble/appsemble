@@ -1,10 +1,10 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
-import { stringify } from 'yaml';
+import { type Document, type ParsedNode, parseDocument, stringify } from 'yaml';
 
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
@@ -59,6 +59,10 @@ export default function EditPage(): ReactElement {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
   const { app, setApp } = useApp();
+  const docRef = useRef<Document<ParsedNode>>();
+  if (!docRef.current) {
+    docRef.current = parseDocument(app.yaml);
+  }
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
@@ -149,7 +153,7 @@ export default function EditPage(): ReactElement {
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
         )}
         {currentTab.tabName === 'pages' && (
-          <PagesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <PagesTab docRef={docRef} isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
         {currentTab.tabName === 'theme' && (
           <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />

@@ -1,7 +1,14 @@
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { type ReactElement, useCallback, useMemo, useRef, useState } from 'react';
-import { type Document, type Node, type ParsedNode, parseDocument, type YAMLSeq } from 'yaml';
+import {
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -15,16 +22,14 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
+  docRef: MutableRefObject<Document<ParsedNode>>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
 
-export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
+export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
-  const docRef = useRef<Document<ParsedNode>>();
-  if (!docRef.current) {
-    docRef.current = parseDocument(app.yaml);
-  }
+
   const [saveStack, setSaveStack] = useState([docRef.current]);
   const [index, setIndex] = useState(0);
   const state = useMemo(() => saveStack[index], [saveStack, index]);
@@ -56,7 +61,7 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     copy.push(docRef.current.clone());
     setSaveStack(copy);
     setIndex(copy.length - 1);
-  }, [saveStack, index, setIndex, setSaveStack]);
+  }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
   const onUndo = useCallback(() => {
     setIndex(Math.max(0, index - 1));
