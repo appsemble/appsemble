@@ -1,0 +1,1 @@
+Added specific `getTeamMember` endpoint
