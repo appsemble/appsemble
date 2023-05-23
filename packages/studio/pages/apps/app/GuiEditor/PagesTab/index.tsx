@@ -1,15 +1,7 @@
-import {
-  type AppDefinition,
-  type BasicPageDefinition,
-  type BlockDefinition,
-  type BlockManifest,
-  type FlowPageDefinition,
-  type LoopPageDefinition,
-  type TabsPageDefinition,
-} from '@appsemble/types';
+import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
 import { type ReactElement, useCallback, useMemo, useRef, useState } from 'react';
-import { parse } from 'yaml';
+import { type Document, type Node, type ParsedNode, parseDocument } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -29,7 +21,11 @@ interface PagesTabProps {
 
 export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
-  const [saveStack, setSaveStack] = useState([app.yaml]);
+  const docRef = useRef<Document<ParsedNode>>();
+  if (!docRef.current) {
+    docRef.current = parseDocument(app.yaml);
+  }
+  const [saveStack, setSaveStack] = useState([docRef.current]);
   const [index, setIndex] = useState(0);
   const state = useMemo(() => saveStack[index], [saveStack, index]);
   const frame = useRef<HTMLIFrameElement>();
@@ -55,28 +51,32 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
 
   const getStackSize = (): number => index;
 
-  const setSaveState = (value: string): void => {
-    if (state === value) {
-      return;
-    }
-
+  const setSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
-    copy.push(value);
+    copy.push(docRef.current.clone());
     setSaveStack(copy);
     setIndex(copy.length - 1);
-  };
+  }, [saveStack, index, setIndex, setSaveStack]);
 
   const onUndo = useCallback(() => {
     setIndex(Math.max(0, index - 1));
-    app.definition = parse(state) as AppDefinition;
-    setApp({ ...app });
+    setApp({ ...app, definition: state.toJS() });
   }, [app, index, setApp, state]);
 
   const onRedo = useCallback(() => {
     setIndex(Math.min(saveStack.length - 1, index + 1));
-    app.definition = parse(state) as AppDefinition;
-    setApp({ ...app });
+    setApp({ ...app, definition: state.toJS() });
   }, [app, index, saveStack.length, setApp, state]);
+
+  const deleteIn = (path: Iterable<unknown>): void => {
+    docRef.current.deleteIn(path);
+    setApp({ ...app, definition: docRef.current.toJS() });
+  };
+
+  const addIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.addIn(path, value);
+    setApp({ ...app, definition: docRef.current.toJS() });
+  };
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
@@ -112,45 +112,19 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
   );
 
   const addBlock = (nb: BlockDefinition): void => {
-    let pageLength = 0;
-    if (
-      !app.definition.pages[selectedPage].type ||
-      app.definition.pages[selectedPage].type === 'page'
-    ) {
-      pageLength = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks.push(nb);
-    }
-    if (app.definition.pages[selectedPage].type === 'flow') {
-      pageLength = (app.definition.pages[selectedPage] as FlowPageDefinition).steps
-        .flatMap((subPage) => subPage.blocks)
-        .push(nb);
-    }
-    if (app.definition.pages[selectedPage].type === 'loop') {
-      pageLength = (app.definition.pages[selectedPage] as LoopPageDefinition).foreach.blocks.push(
-        nb,
-      );
-    }
-    if (app.definition.pages[selectedPage].type === 'tabs') {
-      pageLength = (app.definition.pages[selectedPage] as TabsPageDefinition).tabs
-        .flatMap((subPage) => subPage.blocks)
-        .push(nb);
-    }
-    onChangePagesBlocks(selectedPage, 0, pageLength - 1);
-    setApp({ ...app });
-    setSaveState(app.yaml);
+    setSaveState();
+    const doc = docRef.current;
+    const newBlockNode = doc.createNode(nb);
+    const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']) as [];
+    addIn(['pages', selectedPage, 'blocks'], newBlockNode);
+    onChangePagesBlocks(selectedPage, 0, pageBlocks.length);
   };
 
   const deleteBlock = (): void => {
-    const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
-    blockList.splice(selectedBlock, 1);
-    if (blockList[selectedBlock - 1]) {
-      setSelectedBlock(selectedBlock - 1);
-    } else if (blockList.length > 0) {
-      setSelectedBlock(0);
-    } else {
-      setSelectedBlock(-1);
-    }
-    setApp({ ...app });
-    setSaveState(app.yaml);
+    setSaveState();
+    deleteIn(['pages', selectedPage, 'blocks', selectedBlock]);
+
+    setSelectedBlock(-1);
   };
 
   const handleDrop = (): void => {
