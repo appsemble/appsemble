@@ -1,7 +1,7 @@
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
 import { type ReactElement, useCallback, useMemo, useRef, useState } from 'react';
-import { type Document, type Node, type ParsedNode, parseDocument } from 'yaml';
+import { type Document, type Node, type ParsedNode, parseDocument, type YAMLSeq } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -115,16 +115,16 @@ export function PagesTab({ isOpenLeft, isOpenRight }: PagesTabProps): ReactEleme
     setSaveState();
     const doc = docRef.current;
     const newBlockNode = doc.createNode(nb);
-    const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']) as [];
+    const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
+    const newBlockIndex = pageBlocks.items.length;
     addIn(['pages', selectedPage, 'blocks'], newBlockNode);
-    onChangePagesBlocks(selectedPage, 0, pageBlocks.length);
+    onChangePagesBlocks(selectedPage, 0, newBlockIndex);
   };
 
   const deleteBlock = (): void => {
     setSaveState();
     deleteIn(['pages', selectedPage, 'blocks', selectedBlock]);
-
-    setSelectedBlock(-1);
+    onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
   };
 
   const handleDrop = (): void => {
