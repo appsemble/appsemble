@@ -4,6 +4,7 @@ import {
   type MutableRefObject,
   type ReactElement,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -29,8 +30,7 @@ interface PagesTabProps {
 
 export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
-
-  const [saveStack, setSaveStack] = useState([docRef.current]);
+  const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
   const [index, setIndex] = useState(0);
   const state = useMemo(() => saveStack[index], [saveStack, index]);
   const frame = useRef<HTMLIFrameElement>();
@@ -54,33 +54,37 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
     setDragOver(false);
   };
 
-  const getStackSize = (): number => index;
+  const getIndex = (): number => index;
 
-  const setSaveState = useCallback((): void => {
+  const getStackSize = (): number => saveStack.length - 1;
+
+  useEffect(() => {
+    setApp({ ...app, definition: state.toJS() });
+  }, [app, index, setApp, state]);
+
+  const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     copy.push(docRef.current.clone());
     setSaveStack(copy);
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
-  const onUndo = useCallback(() => {
+  const onUndo = (): void => {
     setIndex(Math.max(0, index - 1));
-    setApp({ ...app, definition: state.toJS() });
-  }, [app, index, setApp, state]);
+  };
 
-  const onRedo = useCallback(() => {
+  const onRedo = (): void => {
     setIndex(Math.min(saveStack.length - 1, index + 1));
-    setApp({ ...app, definition: state.toJS() });
-  }, [app, index, saveStack.length, setApp, state]);
+  };
 
   const deleteIn = (path: Iterable<unknown>): void => {
     docRef.current.deleteIn(path);
-    setApp({ ...app, definition: docRef.current.toJS() });
+    addSaveState();
   };
 
   const addIn = (path: Iterable<unknown>, value: Node): void => {
     docRef.current.addIn(path, value);
-    setApp({ ...app, definition: docRef.current.toJS() });
+    addSaveState();
   };
 
   const onChangePagesBlocks = useCallback(
@@ -117,7 +121,6 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
   );
 
   const addBlock = (nb: BlockDefinition): void => {
-    setSaveState();
     const doc = docRef.current;
     const newBlockNode = doc.createNode(nb);
     const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
@@ -127,7 +130,6 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
   };
 
   const deleteBlock = (): void => {
-    setSaveState();
     deleteIn(['pages', selectedPage, 'blocks', selectedBlock]);
     onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
   };
@@ -146,6 +148,7 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
         <UndoRedo
+          getIndex={getIndex}
           getStackSize={getStackSize}
           redoEventListener={onRedo}
           undoEventListener={onUndo}

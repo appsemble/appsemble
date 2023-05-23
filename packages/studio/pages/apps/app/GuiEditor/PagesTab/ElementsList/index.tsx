@@ -1,14 +1,14 @@
 import { Button, Icon } from '@appsemble/react-components';
 import {
-  BasicPageDefinition,
-  BlockDefinition,
-  FlowPageDefinition,
-  TabsPageDefinition,
+  type BasicPageDefinition,
+  type BlockDefinition,
+  type FlowPageDefinition,
+  type TabsPageDefinition,
 } from '@appsemble/types';
-import { DragEvent, MouseEvent, ReactElement, useCallback, useState } from 'react';
+import { type DragEvent, type MouseEvent, type ReactElement, useCallback, useState } from 'react';
 
-import { useApp } from '../../../index.js';
 import styles from './index.module.css';
+import { useApp } from '../../../index.js';
 
 interface PagesListProps {
   selectedPage: number;
