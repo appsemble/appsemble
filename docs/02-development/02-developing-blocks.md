@@ -96,8 +96,8 @@ yarn appsemble block publish blocks/test
 
 ## Testing the Block
 
-Open the Appsemble studio on at the base URL of Appsemble. Login and create your first app. This
-example app will display your new block.
+Open the Appsemble studio on <https://appsemble.app>. Login and create your first app. This example
+app will display your new block.
 
 ```yaml copy filename="app-definition.yaml"
 name: Test App

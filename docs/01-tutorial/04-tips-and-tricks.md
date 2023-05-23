@@ -16,7 +16,8 @@ Select the code: use TAB to indent to the right and use SHIFT + TAB to indent to
 
 ## Saving the file
 
-To save the file you can press `CTRL + S` or on a mac `CMD + S`
+To refresh the preview you can press `CTRL + S` or on a mac `CMD + S`. To actually save the changes
+you can click the `Publish` button.
 
 ## Comment
 

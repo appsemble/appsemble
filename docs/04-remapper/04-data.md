@@ -53,7 +53,7 @@ type: resource.query
 resource: people
 query:
   object.from:
-    $filter: city of 'Eindhoven'
+    $filter: city eq 'Eindhoven'
 onSuccess:
   remapBefore:
     object.from:
