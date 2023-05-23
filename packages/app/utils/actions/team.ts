@@ -38,14 +38,6 @@ export const teamMembers: ActionCreator<'team.members'> = ({ definition, getUser
     const teamId = definition.id ? remap(definition.id, data) : null;
     const userInfo = getUserInfo();
 
-    async function checkUserInTeam(id: number): Promise<void> {
-      try {
-        await axios.get(`${apiUrl}/api/apps/${appId}/teams/${id}/members/${userInfo.sub}`);
-      } catch {
-        throw new Error('User is not a member of the specified team');
-      }
-    }
-
     if (!userInfo) {
       throw new Error('User is not logged in');
     }
@@ -54,7 +46,11 @@ export const teamMembers: ActionCreator<'team.members'> = ({ definition, getUser
       throw new Error('Team id is not valid');
     }
 
-    checkUserInTeam(teamId);
+    try {
+      await axios.get(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members/${userInfo.sub}`);
+    } catch {
+      throw new Error('User is not a member of the specified team');
+    }
 
     const teamMemberList = await axios
       .get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams/${teamId}/members`)

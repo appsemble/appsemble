@@ -258,7 +258,7 @@ export async function getTeamMember(ctx: Context): Promise<void> {
     throw notFound('Team not found.');
   }
 
-  const teamMember = team.Users.some((user) => user.id === memberId);
+  const teamMember = team.Users.find((user) => user.id === memberId);
 
   if (!teamMember) {
     throw notFound('User not found in team');
