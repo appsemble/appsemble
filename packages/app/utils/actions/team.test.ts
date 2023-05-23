@@ -50,3 +50,41 @@ describe('team.list', () => {
     ]);
   });
 });
+
+describe('team.members', () => {
+  let mock: MockAdapter;
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+  });
+
+  it('should get the members of the specified team', async () => {
+    mock
+      .onGet(`${apiUrl}/api/apps/42/teams/1337/members/some-uuid`)
+      .reply(() => [200, { id: 1337, role: 'member', annotations: {} }]);
+    mock
+      .onGet(`${apiUrl}/api/apps/42/teams/1337/members`)
+      .reply(() => [200, [{ id: 1337, role: 'member', annotations: {} }]]);
+
+    const action = createTestAction({
+      definition: { type: 'team.members', id: 1337 },
+      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
+    });
+
+    const result = await action();
+
+    expect(result).toStrictEqual([{ id: 1337, role: 'member', annotations: {} }]);
+  });
+
+  it('should throw an error if the user isn’t in the team', async () => {
+    mock.onGet(`${apiUrl}/api/apps/42/teams/1337/members`).reply(() => [200, []]);
+    const action = createTestAction({
+      definition: { type: 'team.members', id: 1337 },
+      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
+    });
+
+    await expect(action()).rejects.toThrow(expect.any(Error));
+  });
+});
