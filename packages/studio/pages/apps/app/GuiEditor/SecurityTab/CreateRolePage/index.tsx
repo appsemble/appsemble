@@ -1,14 +1,14 @@
 import { Button, useMessages } from '@appsemble/react-components';
-import { RoleDefinition } from '@appsemble/types';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type RoleDefinition } from '@appsemble/types';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
 import { OptionalList } from '../../Components/OptionalList/index.js';
-import { messages } from './messages.js';
 
 export function CreateRolePage(): ReactElement {
   const { app, setApp } = useApp();

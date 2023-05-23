@@ -1,6 +1,6 @@
-import { Schema } from 'jsonschema';
-import { createContext, ReactElement, useCallback } from 'react';
-import { JsonObject } from 'type-fest';
+import { type Schema } from 'jsonschema';
+import { createContext, type ReactElement, useCallback } from 'react';
+import { type JsonObject } from 'type-fest';
 
 import RecursiveProperties from './RecursiveProperties/index.js';
 

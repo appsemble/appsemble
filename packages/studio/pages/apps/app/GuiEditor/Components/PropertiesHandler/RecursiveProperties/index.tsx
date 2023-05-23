@@ -1,6 +1,6 @@
-import { Schema } from 'jsonschema';
-import { ReactElement, useContext } from 'react';
-import { JsonObject } from 'type-fest';
+import { type Schema } from 'jsonschema';
+import { type ReactElement, useContext } from 'react';
+import { type JsonObject } from 'type-fest';
 
 import { SchemaDefinitionsContext } from '../index.js';
 import AnyOfProperty from '../Inputs/AnyOfProperty/index.js';

@@ -1,11 +1,11 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
+import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
-import { tabChangeOptions } from '../index.js';
-import { messages } from './messages.js';
+import { type tabChangeOptions } from '../index.js';
 
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
 

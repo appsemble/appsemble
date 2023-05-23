@@ -1,12 +1,12 @@
 import { Loader, useData } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { parseBlockName } from '@appsemble/utils';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { BlockStoreElement } from '../BlockStoreElement/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { BlockStoreElement } from '../BlockStoreElement/index.js';
 
 interface BlockListProps {
   /**

@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
 

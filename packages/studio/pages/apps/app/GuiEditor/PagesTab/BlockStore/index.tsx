@@ -1,7 +1,7 @@
 import { InputField, Title } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { BlockList } from './BlockList/index.js';

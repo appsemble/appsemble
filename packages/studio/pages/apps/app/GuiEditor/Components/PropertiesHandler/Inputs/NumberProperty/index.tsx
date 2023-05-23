@@ -1,7 +1,7 @@
 import { InputField } from '@appsemble/react-components';
-import { Schema } from 'jsonschema';
-import { OpenAPIV3 } from 'openapi-types';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type Schema } from 'jsonschema';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 interface NumberPropertyProps {
   value: any;

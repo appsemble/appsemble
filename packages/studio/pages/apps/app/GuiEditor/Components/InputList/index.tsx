@@ -1,5 +1,5 @@
 import { Dropdown } from '@appsemble/react-components';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
