@@ -85,6 +85,6 @@ describe('team.members', () => {
       getUserInfo: () => ({ sub: 'some-uuid', name: '', email: '', email_verified: false }),
     });
 
-    await expect(action()).rejects.toThrow(expect.any(Error));
+    await expect(action()).rejects.toThrow('User is not a member of the specified team');
   });
 });
