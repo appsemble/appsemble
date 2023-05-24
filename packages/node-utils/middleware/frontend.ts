@@ -1,6 +1,5 @@
 import { isIP } from 'node:net';
 
-import { createAppConfig, createStudioConfig } from '@appsemble/webpack-core';
 import expressToKoa from 'express-to-koa';
 import { type Context, type Middleware } from 'koa';
 import compose from 'koa-compose';
@@ -17,6 +16,11 @@ export function frontend(
   argv: Record<string, any>,
   serveStudio = false,
 ): Middleware {
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+  // @ts-ignore Because the webpack core config isn’t built when building the server, an error is
+  // expected here at build time, but while type checking.
+  const { createAppConfig, createStudioConfig } = await import('@appsemble/webpack-core');
+
   const configApp = createAppConfig({ mode: 'development' });
   const configStudio = createStudioConfig({ mode: 'development' });
 
