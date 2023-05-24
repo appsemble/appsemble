@@ -111,7 +111,7 @@ interface CreateServerOptions {
   swagger?: boolean;
 }
 
-export function createServer({
+export async function createServer({
   appRouter,
   argv,
   authentication,
@@ -121,7 +121,7 @@ export function createServer({
   studioRouter,
   swagger,
   webpackConfigs,
-}: CreateServerOptions): Koa {
+}: CreateServerOptions): Promise<Koa> {
   const app = new Koa();
 
   if (argv.secret) {
@@ -147,7 +147,7 @@ export function createServer({
   }
 
   if (!['test', 'production'].includes(process.env.NODE_ENV)) {
-    app.use(frontend(webpackConfigs, argv, Boolean(studioRouter)));
+    app.use(await frontend(webpackConfigs, argv, Boolean(studioRouter)));
   }
 
   app.use(

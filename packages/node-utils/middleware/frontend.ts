@@ -11,11 +11,11 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
  */
 const skipRoute = /^\/(api|oauth2\/token)/;
 
-export function frontend(
+export async function frontend(
   webpackConfigs: Configuration[],
   argv: Record<string, any>,
   serveStudio = false,
-): Middleware {
+): Promise<Middleware> {
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
   // @ts-ignore Because the webpack core config isn’t built when building the server, an error is
   // expected here at build time, but while type checking.

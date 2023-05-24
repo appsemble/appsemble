@@ -272,7 +272,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
     $updated: new Date().toISOString(),
   } as App;
 
-  const server = createServer({
+  const server = await createServer({
     argv,
     appRouter,
     controllers,
