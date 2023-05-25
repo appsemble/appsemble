@@ -51,14 +51,21 @@ export async function getApp(
 
   const { where, ...findOptions } = queryOptions ?? { where: {} };
 
-  logger.log('/server/utils/app/getApp where', where);
-  logger.log('/server/utils/app/getApp findOptions', findOptions);
+  logger.info('/server/utils/app/getApp where');
+  logger.info(where);
 
-  logger.log('/server/utils/app/getApp hostname', hostname);
-  logger.log('/server/utils/app/getApp platformHost', platformHost);
+  logger.info('/server/utils/app/getApp findOptions');
+  logger.info(findOptions);
+
+  logger.info('/server/utils/app/getApp hostname');
+  logger.info(hostname);
+
+  logger.info('/server/utils/app/getApp platformHost');
+  logger.info(platformHost);
 
   const apps = await App.findAll();
-  logger.log('/server/utils/app/getApp apps', apps);
+  logger.info('/server/utils/app/getApp apps');
+  logger.info(apps);
 
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname

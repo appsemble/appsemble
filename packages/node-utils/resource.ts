@@ -36,7 +36,8 @@ export function getResourceDefinition(
   resourceType: string,
   view?: string,
 ): ResourceDefinition {
-  logger.log('/node-utils/resource app', app);
+  logger.info('/node-utils/resource app');
+  logger.info(app);
   if (!app) {
     throw notFound('App not found');
   }
