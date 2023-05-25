@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { handleValidatorResult, type PreparedAsset } from '@appsemble/node-utils';
+import { handleValidatorResult, logger, type PreparedAsset } from '@appsemble/node-utils';
 import { type App, type ResourceDefinition, type Resource as ResourceType } from '@appsemble/types';
 import { notFound } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
@@ -36,6 +36,7 @@ export function getResourceDefinition(
   resourceType: string,
   view?: string,
 ): ResourceDefinition {
+  logger.log('/node-utils/resource app', app);
   if (!app) {
     throw notFound('App not found');
   }
