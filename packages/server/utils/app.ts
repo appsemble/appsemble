@@ -1,4 +1,4 @@
-import { logger, mergeMessages } from '@appsemble/node-utils';
+import { mergeMessages } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
 import { type Context } from 'koa';
@@ -50,22 +50,6 @@ export async function getApp(
   };
 
   const { where, ...findOptions } = queryOptions ?? { where: {} };
-
-  logger.info('/server/utils/app/getApp where');
-  logger.info(where);
-
-  logger.info('/server/utils/app/getApp findOptions');
-  logger.info(findOptions);
-
-  logger.info('/server/utils/app/getApp hostname');
-  logger.info(hostname);
-
-  logger.info('/server/utils/app/getApp platformHost');
-  logger.info(platformHost);
-
-  const apps = await App.findAll();
-  logger.info('/server/utils/app/getApp apps');
-  logger.info(apps);
 
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname

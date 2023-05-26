@@ -699,6 +699,8 @@ export async function createApp({
       baseURL: remote,
       params: { dryRun: dryRun || undefined },
     }));
+    logger.info('Successfully created app');
+    logger.info(data);
   } catch (error) {
     if (!axios.isAxiosError(error)) {
       throw error;
