@@ -28,7 +28,7 @@ of the icons should be within a 80% diameter circle within the full image, also 
 area. The rest should be filled with the background, which may be stripped when the icon is
 displayed.
 
-![Maskable icon template](../../config/assets/maskable-icon-template.svg 'Maskable icon template')
+![Maskable icon template](../../../../../../config/assets/maskable-icon-template.svg 'Maskable icon template')
 
 If no maskable icon is specified, Appsemble will scale the regular icon so it fits within this safe
 area. The transparent background is filled with a background color that can be selected.
