@@ -229,6 +229,8 @@ export function createCreateResource(options: Options): Middleware {
     const action = 'create';
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
+    logger.info(`/node-utils/server/controllers/resources app ${appId}`);
+    logger.info(app);
 
     const resourceDefinition = getResourceDefinition(app, resourceType);
     await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options });
