@@ -71,12 +71,6 @@ export async function createResource({
 
   logger.info(`Creating resource(s) from ${path}`);
 
-  const { data: app } = await axios.get(`/api/apps/${appId}`);
-  logger.info(app);
-
-  const { data: apps } = await axios.get('/api/apps');
-  logger.info(apps);
-
   const { data } = await axios.post<Resource | Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}`,
     resources,
