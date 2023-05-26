@@ -87,4 +87,16 @@ describe('team.members', () => {
 
     await expect(action()).rejects.toThrow('User is not a member of the specified team');
   });
+
+  it('should throw an error if the user is not logged in/valid', async () => {
+    mock.onGet(`${apiUrl}/api/apps/42/teams/1337/members`).reply(() => [200, []]);
+    const userInfo: any = undefined;
+    const action = createTestAction({
+      definition: { type: 'team.members', id: 1337 },
+      teams: [{ id: 1337, name: 'IT', role: 'member' }],
+      getUserInfo: () => userInfo,
+    });
+
+    await expect(action()).rejects.toThrow('User is not logged in');
+  });
 });
