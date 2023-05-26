@@ -1174,6 +1174,13 @@ export interface TeamInviteActionDefinition extends BaseActionDefinition<'team.i
   email?: Remapper;
 }
 
+export interface TeamMembersActionDefinition extends BaseActionDefinition<'team.members'> {
+  /**
+   * The ID of the team to get the members from.
+   */
+  id: Remapper;
+}
+
 export interface UserLoginAction extends BaseActionDefinition<'user.login'> {
   /**
    * The email address to login with.
@@ -1444,6 +1451,7 @@ export type ActionDefinition =
   | StorageUpdateActionDefinition
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
+  | TeamMembersActionDefinition
   | UserLoginAction
   | UserRegisterAction
   | UserUpdateAction;

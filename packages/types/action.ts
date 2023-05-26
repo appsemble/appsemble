@@ -87,6 +87,7 @@ export type Action =
   | BaseAction<'team.invite'>
   | BaseAction<'team.join'>
   | BaseAction<'team.list'>
+  | BaseAction<'team.members'>
   | BaseAction<'throw'>
   | BaseAction<'user.login'>
   | BaseAction<'user.register'>
