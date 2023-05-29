@@ -9,6 +9,8 @@ function generateDefaultValue(field: Field): unknown {
   switch (field.type) {
     case 'boolean':
       return false;
+    case 'date':
+      return new Date().toISOString();
     case 'number':
       return field.display === 'slider' ? getMin(field) : undefined;
     case 'string':

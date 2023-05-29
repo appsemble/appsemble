@@ -1795,6 +1795,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
           },
+          "defaultValue": {
+            "description": "The default value of the field.",
+            "type": "string",
+          },
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
@@ -1905,6 +1909,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 
 The date value can be accessed using the \`root\` remapper.",
             "format": "remapper",
+          },
+          "defaultValue": {
+            "description": "The default value of the field.",
+            "type": "string",
           },
           "disabled": {
             "default": false,
