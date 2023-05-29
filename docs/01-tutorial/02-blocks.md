@@ -72,16 +72,16 @@ A few things to notice:
 
 ## Indentation
 
-All elements that belong to the same group, are the same type, have the same level of indentation.
-The different pages are on the same level. The action-button blocks are on the same level. And the
-parameters, attributes and other configuration items of the blocks are on the same level. This is
-necessary for Appsemble so that it can correctly parse the code.
+All elements that belong to the same group and/or are the same type, have the same level of
+indentation. The different pages are on the same level. The action-button blocks are on the same
+level. And the parameters, attributes and other configuration items of the blocks are on the same
+level. This is necessary for Appsemble so that it can correctly parse the code.
 
 ## The Dash (-)
 
-The different pages and the different blocks start with a dash (-). This is to tell Appsemble that
-this element is potentially part of a longer list of these elements. It also makes the code more
-readable.
+The different pages and the different blocks start with a dash (-). This is done to tell Appsemble
+that this element is potentially part of a longer list of different elements. It also makes the code
+more readable.
 
 ## Name vs type
 

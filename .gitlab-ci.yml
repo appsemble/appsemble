@@ -681,7 +681,7 @@ lighthouse:
 playwright:
   stage: end 2 end
   extends: .yarn
-  image: mcr.microsoft.com/playwright:v1.34.0
+  image: mcr.microsoft.com/playwright
   needs:
     - job: provision review
       optional: true

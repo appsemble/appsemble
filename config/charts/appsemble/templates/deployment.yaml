@@ -103,6 +103,38 @@ spec:
                   name: {{ . | quote }}
                   key: from
             {{- end }}
+            {{- with .Values.imapSecret }}
+            - name: IMAP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-host
+            - name: IMAP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-port
+            - name: IMAP_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-secure
+            - name: IMAP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-user
+            - name: IMAP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-pass
+            - name: IMAP_COPY_TO_SENT_FOLDER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: imap-copy-to-sent-folder
+            {{- end }}
             {{- with .Values.oauthSecret }}
             - name: GITHUB_CLIENT_ID
               valueFrom:

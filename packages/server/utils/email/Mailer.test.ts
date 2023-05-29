@@ -1,5 +1,6 @@
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
+import { type ImapFlow } from 'imapflow';
 import { type Transporter } from 'nodemailer';
 
 import { Mailer } from './Mailer.js';
@@ -13,7 +14,7 @@ let mailer: Mailer;
 useTestDatabase(import.meta);
 
 beforeEach(() => {
-  setArgv({ host: '', smtpFrom: 'test@example.com' });
+  setArgv({ host: '', smtpFrom: 'test@example.com', imapCopyToSentFolder: true });
   mailer = new Mailer(argv);
 });
 
@@ -465,5 +466,57 @@ _Test App_
         expect((mailer.transport.sendMail as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
       });
     });
+  });
+});
+
+describe('copyToSentFolder', () => {
+  beforeAll(() => {
+    import.meta.jest.useFakeTimers({
+      advanceTimers: true,
+      now: 0,
+    });
+  });
+
+  afterAll(() => {
+    import.meta.jest.runOnlyPendingTimers();
+    import.meta.jest.useRealTimers();
+  });
+
+  it('should copy the email to the sent folder', async () => {
+    const appendMock = import.meta.jest.fn<
+      ReturnType<ImapFlow['append']>,
+      [string, string, string[]]
+    >(() => Promise.resolve() as any);
+    mailer.transport = {
+      sendMail: import.meta.jest.fn(() => Promise.resolve() as any),
+    } as Partial<Transporter> as Transporter;
+    mailer.imap = {
+      append: appendMock,
+      connect: import.meta.jest.fn(() => Promise.resolve() as any),
+    } as Partial<ImapFlow> as ImapFlow;
+    await mailer.sendEmail({
+      to: 'Me <test@example.com>',
+      from: 'test@example.com',
+      subject: 'Test',
+      text: 'Test',
+      html: '<p>Test</p>',
+      attachments: [],
+    });
+    expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      to: 'Me <test@example.com>',
+      from: 'test@example.com <test@example.com>',
+      subject: 'Test',
+      text: 'Test',
+      html: '<p>Test</p>',
+      attachments: [],
+    });
+    expect(mailer.imap.connect).toHaveBeenCalledWith();
+    expect(appendMock.mock.calls[0][0]).toBe('Sent');
+    const appendCallBody = appendMock.mock.calls[0][1]
+      .replace(/^\s*boundary=.*$/gm, '')
+      .replace(/^Message-ID: <.*@example\.com>$/gm, '')
+      .replace(/^-{4}_NmP-.*-Part_1(?:--)?$/gm, '');
+    expect(appendCallBody).toMatchSnapshot();
+    expect(appendMock.mock.calls[0][2]).toStrictEqual(['\\Seen']);
   });
 });

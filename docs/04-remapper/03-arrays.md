@@ -12,7 +12,7 @@
 
 ## Introduction
 
-While developing an app you will likely have to deal a lot with arrays. Luckily, there are a lot of
+While developing an app you will likely have to deal with arrays a lot. Luckily, there are lots of
 remappers available to make this easier.
 
 ### Array remappers
@@ -48,7 +48,7 @@ Input:
 
 ```yaml
 array.from:
-  - root: null # Takes the data passed to this remapper, explained more in the 'Data' page
+  - root: null # Takes the data passed to this remapper. Explained more in the 'Data' page
 ```
 
 Result:
@@ -65,8 +65,8 @@ Result:
 #### [array.map](/docs/reference/remapper#array.map)
 
 The remapper goes through the given array and applies the given remappers on each individual item.
-This can be very handy when sorting arrays for certain data. The remapper always returns an array,
-can be empty if the supplied data isn’t an array.
+This can be very handy when sorting arrays by certain data. The remapper always returns an array.
+Output can be an empty array if the supplied data isn’t an array.
 
 For example, if you want to sort through a list of people and only get their occupations you can do
 the following:
@@ -135,7 +135,7 @@ Result:
 
 Because `array.map` returns an array, every item has to return something. This is why we have to
 return the full object with the data we want in the `then` section. It’s also why we return `null`.
-This results in an array consisting of `null` values, and objects with actual data in them. To solve
+This results in an array consisting of `null` values and objects with actual data in them. To solve
 this problem, we use the `null.strip` remapper to remove any null values which results in a clean
 array.
 
@@ -177,11 +177,11 @@ Result:
 
 #### [array.omit](/docs/reference/remapper#array.omit)
 
-Remove values from an array. The input is expected to be the index(es) of the items to delete.
-Accepts an array of static- or remapper values.
+Remove values from an array. The input is expected to be the index(es) of the items to be deleted.
+Accepts an array of static or remapper values.
 
 With the previous example we added a new person to the list of people, so now we can remove that
-person again. We already know the index of this person in the array is `3`, so it’s easy:
+person. We already know the index of this person in the array is `3`, so it’s easy:
 
 ```yaml
 array.omit:
@@ -208,8 +208,8 @@ Result:
 ```
 
 However, usually we don’t know the exact index of the item we want to delete. Because the remapper
-accepts remappers as input we can get this ID from another source as well. Take the following
-example:
+accepts remappers as input we can get the desired item’s ID from another source as well. Take the
+following example:
 
 In this example we assume the data from the previous example is passed to this table block using a
 data loader’s emitting event called “people”. When the user clicks on one of the people in the
@@ -243,10 +243,10 @@ actions:
 
 #### [array.unique](/docs/reference/remapper#array.unique)
 
-Filters out unique values from an array. The value Remapper is applied to each entry in the array,
+Filters out unique values from an array. The value Remapper is applied to each entry in the array
 using its result to determine uniqueness.
 
-If the value Remapper result in undefined or null, the entire entry is used for uniqueness.
+If the value Remapper results in undefined or null, the entire entry is used for uniqueness.
 
 If the input is not an array, the input is returned without any modifications.
 
@@ -269,7 +269,7 @@ Result:
 You can also check for more complex values in arrays. The remapper accepts remappers as well, so you
 can also use entire objects to check for unique values.
 
-For this example we have the following extended data, with some duplicate values:
+For this example, we have the following extended data with some duplicate values:
 
 ```json
 [
@@ -296,7 +296,7 @@ For this example we have the following extended data, with some duplicate values
 ]
 ```
 
-We can be fairly sure in this list of people the first two Peter’s are the same person but with a
+We can be fairly sure in this list of people the first two Peters are the same person but with a
 different occupation. To get more complex unique values from here, we can do the following:
 
 ```yaml

@@ -14,7 +14,9 @@ For app icons it’s generally recommended to use a transparent icon that looks 
 light background.
 
 In addition to regular icons, Appsemble also supports maskable icons, sometimes referred to as
-adaptive icons. Some example usages are:
+adaptive icons.
+
+Some example usages are:
 
 - App icon on Android
 - App icon on iPhone
@@ -22,7 +24,7 @@ adaptive icons. Some example usages are:
 - App icon in Appsemble Studio
 
 Maskable icons may be rendered using some platform specific contexts and shapes. The important part
-of the icons should with within a 80% diameter circle within the full image, also known as the safe
+of the icons should be within a 80% diameter circle within the full image, also known as the safe
 area. The rest should be filled with the background, which may be stripped when the icon is
 displayed.
 

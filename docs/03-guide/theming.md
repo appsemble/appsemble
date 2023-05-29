@@ -25,7 +25,7 @@ setting basic colors and custom styling for advanced or more specific styling.
 ## Theme options
 
 The Bulma CSS framework uses a set of colors for different parts of its elements. Appsemble supports
-customizing a subset of these variables by including a `theme` object at different points within an
+customizing a subset of these variables by including a `theme` object at different points within the
 app definition.
 
 The supported variables are:
@@ -82,7 +82,7 @@ pages:
 
 The above example sets the app´s primary color to green, the color of its links to orange and the
 color of ´success´ elements to purple. The page `Red Page` overwrites the primary color to be red
-and one of its blocks overwrites the primary color to be blue instead.
+and one of its blocks overwrites the primary color to blue instead.
 
 If a theme variable is not overwritten, it will simply use the theme of its parent.
 
@@ -130,13 +130,13 @@ modules _do not_ get applied to blocks.
 
 **Block** styling gets applied to a specific block.
 
-**Shared** styling gets applied to each individual block as well as the Appsemble core. This is
-useful for applying styles to elements that can appear in both the core modules as well as blocks,
-such as input fields. It can also be used to apply [CSS variables][css-variables].
+**Shared** styling gets applied to each individual block, as well as the Appsemble core. This is
+useful for applying styles to elements that can appear in both the core modules and blocks such as
+input fields. It can also be used to apply [CSS variables][css-variables].
 
 ### Applying themes for an application
 
-Open the Appsemble studio located at the base URL of Appsemble. Login, and create your first app.
+Open the Appsemble studio located at the base URL of Appsemble. Login and create your first app.
 Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
 styling for these modules. Tabs containing styling for specific blocks are automatically added and
 removed depending on which blocks are used within the app definition.
@@ -188,9 +188,9 @@ form {
 
 Specific pages and elements can be styled in the core styling by using the `data-` attributes that
 are applied to pages. Each page has a `data-path` and a `data-path-index` attribute. The `data-path`
-is a unique path calculated using Appsemble’s normalization function that represents a page or
+is a unique path calculated using Appsemble’s normalization function that represents a page or a
 block. For example, it could be `data-path="pages.example-page"`. `data-path-index` is the same,
-except it uses the index of the page. For example `data-path-index="pages.0"`.
+except it uses the index of the page. For example, `data-path-index="pages.0"`.
 
 To target this using CSS:
 
@@ -201,10 +201,10 @@ To target this using CSS:
 ```
 
 The blocks within a page also have their own data properties applied to them. These are `data-path`,
-`data-path-index`, and `data-type`. The property `data-path` looks similar to `data-path` on pages,
-with `.blocks.` being added following by the index number of the block, such as:
+`data-path-index` and `data-type`. The property `data-path` looks similar to `data-path` on pages
+with `.blocks.` being added followed by the index number of the block such as:
 `pages.example-page.blocks.1` for the second block on the first page. The `data-path-index` property
-is the same as `data-path`, using the index of the page instead of the page’s internal name. The
+is the same as `data-path` using the index of the page instead of the page’s internal name. The
 `data-type` property contains the full name of the block. Both of these can be combined to target
 specific blocks on specific pages.
 
@@ -222,9 +222,9 @@ specific blocks on specific pages.
 
 ## Using the CLI
 
-Themes may also be uploaded as part of an app by the CLI. To do this, create a directory named
-`theme` inside the app directory. Within the `themes` directory, the core style goes into
-`core/index.css`, shared style into `shared/index.css`, and block styling into
+Themes may also be uploaded as part of an app via the CLI. To do this, create a directory named
+`theme` inside the app directory. Within the `themes` directory the core style goes into
+`core/index.css`, shared style into `shared/index.css` and block styling into
 `@<organizationId>/<blockId>/index.css`. An example app theme file structure could look like this:
 
 ```
@@ -247,7 +247,7 @@ following syntax:
 @import 'other-file.css';
 ```
 
-To do even more advanced CSS transformations, a custom `postcssrc` file can be created. See
+To do even more advanced CSS transformations a custom `postcssrc` file can be created. See
 [`postcss-load-config`][] for details.
 
 [bulma]: https://bulma.io/
