@@ -1,4 +1,7 @@
+import { languages } from 'monaco-editor';
 import { type ReactElement, useEffect, useRef } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { prism as style } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export interface HighlightedCodeProps {
   /**
@@ -23,9 +26,12 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
   const ref = useRef<HTMLPreElement>();
 
   const language = languageRegex.exec(className)?.[1];
+  const isLanguageSupported = languages
+    .getLanguages()
+    .some((lang) => (lang.id === language && language !== 'json') || !language);
 
   useEffect(() => {
-    if (language) {
+    if (isLanguageSupported) {
       Promise.all([
         import('monaco-editor/esm/vs/editor/editor.api.js'),
         import('../MonacoEditor/languages.js'),
@@ -33,11 +39,17 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
         editor.colorizeElement(ref.current, { mimeType: language, theme: 'vs' });
       });
     }
-  }, [language]);
+  }, [language, isLanguageSupported]);
 
   return (
     <code className={className} ref={ref}>
-      {children?.trimEnd()}
+      {isLanguageSupported ? (
+        children?.trimEnd()
+      ) : (
+        <SyntaxHighlighter language={language} style={style}>
+          {children?.trimEnd()}
+        </SyntaxHighlighter>
+      )}
     </code>
   );
 }
