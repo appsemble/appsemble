@@ -11,7 +11,7 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
     const filename = production ? '/service-worker.js' : '/app/service-worker.js';
 
     const serviceWorker = await (production
-      ? readFile(new URL('../../../dist/app/service-worker.js', import.meta.url), 'utf8')
+      ? readFile(new URL('../../../../../dist/app/service-worker.js', import.meta.url), 'utf8')
       : ctx.fs.promises.readFile(filename, 'utf8'));
 
     const app = await getApp({ context: ctx });
