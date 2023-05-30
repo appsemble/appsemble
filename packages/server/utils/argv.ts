@@ -238,6 +238,27 @@ export interface Argv {
   imapCopyToSentFolder: boolean;
 
   // //////////////////////////////////////////////////////////////////////////////////////////// //
+  // App email quotas                                                                             //
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
+
+  /**
+   * Whether or not to set a quota on the number of emails that can be sent per app per day.
+   *
+   * @default false
+   */
+  enableAppEmailQuota: boolean;
+
+  /**
+   * A maximum number of emails that can be sent per app per day.
+   *
+   * Not applied to system emails/emails from apps with custom mail settings.
+   *
+   * @default 10
+   */
+
+  dailyAppEmailQuota: number;
+
+  // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Sentry                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   /**
@@ -353,6 +374,8 @@ const defaults: Argv = {
   imapUser: undefined,
   imapPass: undefined,
   imapCopyToSentFolder: false,
+  enableAppEmailQuota: false,
+  dailyAppEmailQuota: 10,
   sentryDsn: undefined,
   sentryEnvironment: undefined,
   githubClientId: undefined,

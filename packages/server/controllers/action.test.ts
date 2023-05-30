@@ -1568,4 +1568,41 @@ describe('handleEmail', () => {
       }
     `);
   });
+
+  it('should apply quotas to app emails', async () => {
+    setArgv({
+      ...argv,
+      enableAppEmailQuota: true,
+      dailyAppEmailQuota: 3,
+    });
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
+    const email = {
+      to: 'test@example.com',
+      body: 'Body',
+    };
+
+    expect(
+      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+    ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(
+      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+    ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+    expect(
+      await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email),
+    ).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    expect(await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', email))
+      .toMatchInlineSnapshot(`
+        HTTP/1.1 429 Too Many Requests
+        Content-Type: application/json; charset=utf-8
+
+        {
+          "error": "Too Many Requests",
+          "message": "Too many emails sent today",
+          "statusCode": 429,
+        }
+      `);
+
+    spy.mockRestore();
+  });
 });

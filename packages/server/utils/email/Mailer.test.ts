@@ -6,7 +6,7 @@ import { type Mock } from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import { App, AppMessages, Organization } from '../../models/index.js';
-import { argv, setArgv } from '../argv.js';
+import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
@@ -14,8 +14,13 @@ let mailer: Mailer;
 
 useTestDatabase(import.meta);
 
+const baseArgv: Partial<Argv> = {
+  host: '',
+  smtpFrom: 'test@example.com',
+};
+
 beforeEach(() => {
-  setArgv({ host: '', smtpFrom: 'test@example.com', imapCopyToSentFolder: true });
+  setArgv(baseArgv);
   mailer = new Mailer(argv);
 });
 
@@ -474,8 +479,14 @@ describe('copyToSentFolder', () => {
   beforeAll(() => {
     vi.useFakeTimers({
       shouldAdvanceTime: true,
-      now: 0,
     });
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+  });
+
+  beforeEach(() => {
+    setArgv({ ...baseArgv, imapCopyToSentFolder: true });
   });
 
   afterAll(() => {
@@ -484,15 +495,13 @@ describe('copyToSentFolder', () => {
   });
 
   it('should copy the email to the sent folder', async () => {
-    const appendMock = vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>(
-      () => Promise.resolve() as any,
-    );
+    const appendMock = vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>();
     mailer.transport = {
-      sendMail: vi.fn(() => Promise.resolve() as any),
+      sendMail: vi.fn(),
     } as Partial<Transporter> as Transporter;
     mailer.imap = {
       append: appendMock,
-      connect: vi.fn(() => Promise.resolve() as any),
+      connect: vi.fn(),
     } as Partial<ImapFlow> as ImapFlow;
     await mailer.sendEmail({
       to: 'Me <test@example.com>',
@@ -518,5 +527,214 @@ describe('copyToSentFolder', () => {
       .replaceAll(/^-{4}_NmP-.*-Part_1(?:--)?$/gm, '');
     expect(appendCallBody).toMatchSnapshot();
     expect(appendMock.mock.calls[0][2]).toStrictEqual(['\\Seen']);
+  });
+});
+
+describe('emailQuota', () => {
+  let app: App;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
+    setArgv({ ...baseArgv, enableAppEmailQuota: true, dailyAppEmailQuota: 3 });
+  });
+
+  beforeEach(async () => {
+    const server = await createServer();
+    await setTestApp(server);
+    const organization = await Organization.create({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
+    app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should rate limit emails based on quota (sendTranslatedEmail)', async () => {
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendTranslatedEmail']>[0] = {
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'en',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](https://example.com/token=abcdefg)`,
+      },
+    };
+
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+
+    await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+  });
+
+  it('should rate limit emails based on quota (sendEmail)', async () => {
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendEmail']>[0] = {
+      to: 'test@example.com',
+      from: 'test@example.com',
+      subject: 'Test',
+      text: 'Test',
+      html: '<p>Test</p>',
+      attachments: [],
+      app,
+    };
+
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+
+    await expect(mailer.sendEmail(email)).rejects.toThrow('Too many emails sent today');
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+  });
+
+  it('should reset app email quota after midnight UTC', async () => {
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendTranslatedEmail']>[0] = {
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'en',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](https://example.com/token=abcdefg)`,
+      },
+    };
+
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+
+    await expect(mailer.sendTranslatedEmail(email)).rejects.toThrow('Too many emails sent today');
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(3);
+
+    // After this, the time should be 1970-01-02T00:00:03.000Z
+    vi.advanceTimersByTime(24 * 60 * 60 * 1000);
+
+    await mailer.sendTranslatedEmail(email);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(4);
+  });
+
+  it('should not rate limit emails sent without an app ID', async () => {
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendEmail']>[0] = {
+      to: 'Me <test@example.com>',
+      from: 'test@example.com',
+      subject: 'Test',
+      text: 'Test',
+      html: '<p>Test</p>',
+      attachments: [],
+    };
+
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(4);
+  });
+
+  it('should not rate limit emails if the enableAppEmailQuota flag is not set', async () => {
+    setArgv({ ...baseArgv, enableAppEmailQuota: false, dailyAppEmailQuota: 3 });
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendEmail']>[0] = {
+      to: 'Me <test@example.com>',
+      from: 'test@example.com',
+      subject: 'Test',
+      text: 'Test',
+      html: '<p>Test</p>',
+      attachments: [],
+      app,
+    };
+    const translatedEmail: Parameters<Mailer['sendTranslatedEmail']>[0] = {
+      appId: app.id,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'en',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](https://example.com/token=abcdefg)`,
+      },
+    };
+
+    await mailer.sendTranslatedEmail(translatedEmail);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(translatedEmail);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(translatedEmail);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(translatedEmail);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(4);
+
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendEmail(email);
+    expect(mailer.transport.sendMail).toHaveBeenCalledTimes(8);
   });
 });
