@@ -11,7 +11,7 @@ export const docs = context
     } = context(key) as typeof import('*.md');
     return {
       Component,
-      p: key
+      path: key
         .replace(/^\.\//, '')
         .replace(/\.mdx?$/, '')
         .replace(/(^|\/)index$/, '/'),
@@ -20,4 +20,4 @@ export const docs = context
       ...frontmatter,
     };
   })
-  .sort((a, b) => a.p.localeCompare(b.p));
+  .sort((a, b) => a.path.localeCompare(b.path));

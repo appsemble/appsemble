@@ -21,8 +21,8 @@ import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
-function getUrl(p: string, base: string): string {
-  return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;
+function getUrl(path: string, base: string): string {
+  return path === '/' ? base : `${base}/${path.replace(/\/$/, '')}`;
 }
 
 /**
@@ -43,17 +43,19 @@ export function DocsRoutes(): ReactElement {
         <FormattedMessage {...messages.search} />
       </MenuItem>
       {docs
-        .filter(({ p }) => p.endsWith('/'))
-        .map(({ icon, p, title }) => {
-          const subRoutes = docs.filter((subRoute) => subRoute.p !== p && subRoute.p.startsWith(p));
+        .filter(({ path }) => path.endsWith('/'))
+        .map(({ icon, path, title }) => {
+          const subRoutes = docs.filter(
+            (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
+          );
           return [
-            <MenuItem exact icon={icon} key="docs-title" to={getUrl(p, url)}>
+            <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
               {title}
             </MenuItem>,
             subRoutes.length ? (
               <MenuSection key="docs-section">
                 {subRoutes.map((subRoute) => (
-                  <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
+                  <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
                     {subRoute.title}
                   </MenuItem>
                 ))}
@@ -118,11 +120,15 @@ export function DocsRoutes(): ReactElement {
       <Route element={<WebpackConfig />} path="/packages/webpack-config" />
       <Route element={<CreateAppsemble />} path="/packages/create-appsemble" />
       <Route element={<ReferenceRoutes />} path="/reference/*" />
-      {docs.map(({ Component, p, title }) => (
-        <Route element={<Doc component={Component} title={title} />} key={p} path={getUrl(p, '')} />
+      {docs.map(({ Component, path, title }) => (
+        <Route
+          element={<Doc component={Component} title={title} />}
+          key={path}
+          path={getUrl(path, '')}
+        />
       ))}
-      {docs.map(({ p }) => (
-        <Route element={<Navigate to={getUrl(p, '')} />} key={p} path="*" />
+      {docs.map(({ path }) => (
+        <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
       ))}
       <Route element={<Navigate to={url} />} path="*" />
     </MetaSwitch>
