@@ -1,13 +1,12 @@
-import { useData } from '@appsemble/react-components';
-import { type AppDefinition, type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { getAppBlocks, normalizeBlockName } from '@appsemble/utils';
+import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
+import { normalizeBlockName } from '@appsemble/utils';
 import {
   type MutableRefObject,
   type ReactElement,
+  type Ref,
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
@@ -18,8 +17,6 @@ import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import { UndoRedo } from './UndoRedo/index.js';
-import { getCachedBlockVersions } from '../../../../../components/MonacoEditor/appValidation/index.js';
-import { getAppUrl } from '../../../../../utils/getAppUrl.js';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
@@ -27,17 +24,21 @@ import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
   docRef: MutableRefObject<Document<ParsedNode>>;
+  frameRef: Ref<HTMLIFrameElement>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
 
-export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): ReactElement {
+export function PagesTab({
+  docRef,
+  frameRef,
+  isOpenLeft,
+  isOpenRight,
+}: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
-  const { id } = app;
   const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
   const [index, setIndex] = useState(0);
   const state = useMemo(() => saveStack[index], [saveStack, index]);
-  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -46,8 +47,6 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
   const [dragOver, setDragOver] = useState<Boolean>(false);
   const [blockManifest, setBlockManifest] = useState<BlockManifest>(null);
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
-  const { data: coreStyle } = useData<string>(`/api/apps/${id}/style/core`);
-  const { data: sharedStyle } = useData<string>(`/api/apps/${id}/style/shared`);
 
   const onDragEvent = (data: BlockManifest): void => {
     setBlockManifest(data);
@@ -146,21 +145,8 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
     addBlock(newBlock);
   };
 
-  const updatePreview = useCallback(async () => {
-    const definition = state.toJS() as AppDefinition;
-
-    const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
-
-    delete definition.anchors;
-    frame.current?.contentWindow.postMessage(
-      { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
-      getAppUrl(app.OrganizationId, app.path),
-    );
-  }, [app.OrganizationId, app.path, coreStyle, sharedStyle, state]);
-
   useEffect(() => {
     setApp({ ...app, definition: state.toJS() });
-    updatePreview();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
@@ -195,7 +181,7 @@ export function PagesTab({ docRef, isOpenLeft, isOpenRight }: PagesTabProps): Re
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         />
-        <Preview app={app} iframeRef={frame} />
+        <Preview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>

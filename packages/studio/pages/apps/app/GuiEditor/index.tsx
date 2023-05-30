@@ -1,5 +1,5 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
@@ -13,6 +13,7 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'theme';
@@ -63,6 +64,7 @@ export default function EditPage(): ReactElement {
   if (!docRef.current) {
     docRef.current = parseDocument(app.yaml);
   }
+  const frame = useRef<HTMLIFrameElement>();
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
@@ -98,7 +100,13 @@ export default function EditPage(): ReactElement {
     } catch (error: any) {
       push({ body: `${formatMessage(messages.failed)} ${error}`, color: 'danger' });
     }
-  }, [app.definition, app.id, coreStyle, formatMessage, push, setApp, sharedStyle]);
+    const definition = app.definition as AppDefinition;
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/gui/EDIT_SUCCESS', definition },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app, coreStyle, formatMessage, push, setApp, sharedStyle]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
@@ -153,7 +161,12 @@ export default function EditPage(): ReactElement {
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
         )}
         {currentTab.tabName === 'pages' && (
-          <PagesTab docRef={docRef} isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <PagesTab
+            docRef={docRef}
+            frameRef={frame}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
         {currentTab.tabName === 'theme' && (
           <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
