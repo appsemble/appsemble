@@ -8,7 +8,7 @@ import serve from 'koa-static';
  * @returns Koa middleware which serves the specified dist directory.
  */
 export function staticHandler(name: string): Middleware {
-  return serve(fileURLToPath(new URL(`../../../dist/${name}`, import.meta.url)), {
+  return serve(fileURLToPath(new URL(`../../dist/${name}`, import.meta.url)), {
     index: false,
     maxAge: 365 * 24 * 60 * 60 * 1000,
   });
