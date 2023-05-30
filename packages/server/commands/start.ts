@@ -13,8 +13,7 @@ import * as controllers from '../controllers/index.js';
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
-import { appRouter } from '../routes/appRouter/index.js';
-import { studioRouter } from '../routes/index.js';
+import { appRouter, studioRouter } from '../routes/index.js';
 import { argv } from '../utils/argv.js';
 import { authentication } from '../utils/authentication.js';
 import { configureDNS } from '../utils/dns/index.js';
@@ -167,6 +166,7 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
     controllers,
     context: serverContext,
     webpackConfigs: webpackConfigs as any,
+    swagger: true,
   });
 
   app.on('error', (err, ctx: Context) => {

@@ -32,7 +32,7 @@ export async function render(
     ctx.body = JSON.stringify({ filename, data });
   } else {
     const template = await (process.env.NODE_ENV === 'production'
-      ? readFile(new URL(`../../../dist/${filename}`, import.meta.url), 'utf8')
+      ? readFile(new URL(`../../dist/${filename}`, import.meta.url), 'utf8')
       : ctx.fs.promises.readFile(`/${filename}`, 'utf8'));
     ctx.body = mustache.render(template, data);
   }
