@@ -2,7 +2,14 @@
 import Cli from '@appsemble/cli/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Preact from '@appsemble/preact/README.md';
-import { Input, MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+import {
+  DocSection,
+  Input,
+  MenuItem,
+  MenuSection,
+  MetaSwitch,
+  useSideMenu,
+} from '@appsemble/react-components';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Sdk from '@appsemble/sdk/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
@@ -63,20 +70,22 @@ export function DocsRoutes(): ReactElement {
             ) : null,
           ];
         })}
-      <MenuItem exact icon="book" to={`${url}/reference`}>
-        <FormattedMessage {...messages.reference} />
-      </MenuItem>
-      <MenuSection>
-        <MenuItem exact to={`${url}/reference/app`}>
-          <FormattedMessage {...messages.app} />
+      <DocSection>
+        <MenuItem exact icon="book" to={`${url}/reference`}>
+          <FormattedMessage {...messages.reference} />
         </MenuItem>
-        <MenuItem exact to={`${url}/reference/action`}>
-          <FormattedMessage {...messages.action} />
-        </MenuItem>
-        <MenuItem exact to={`${url}/reference/remapper`}>
-          <FormattedMessage {...messages.remapper} />
-        </MenuItem>
-      </MenuSection>
+        <MenuSection>
+          <MenuItem exact to={`${url}/reference/app`}>
+            <FormattedMessage {...messages.app} />
+          </MenuItem>
+          <MenuItem exact to={`${url}/reference/action`}>
+            <FormattedMessage {...messages.action} />
+          </MenuItem>
+          <MenuItem exact to={`${url}/reference/remapper`}>
+            <FormattedMessage {...messages.remapper} />
+          </MenuItem>
+        </MenuSection>
+      </DocSection>
       <MenuItem exact icon="cubes" to={`${url}/packages`}>
         <FormattedMessage {...messages.packages} />
       </MenuItem>
