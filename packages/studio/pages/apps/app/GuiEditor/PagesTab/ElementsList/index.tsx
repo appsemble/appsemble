@@ -1,16 +1,25 @@
 import { Button, Icon } from '@appsemble/react-components';
 import {
   type BasicPageDefinition,
-  type BlockDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type DragEvent, type MouseEvent, type ReactElement, useCallback, useState } from 'react';
+import {
+  type DragEvent,
+  type MouseEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
+import { type Document, type Node, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
 import styles from './index.module.css';
 import { useApp } from '../../../index.js';
 
 interface PagesListProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
   selectedBlock: number;
   selectedSubParent: number;
@@ -19,6 +28,8 @@ interface PagesListProps {
   onCreatePage: () => void;
 }
 export function ElementsList({
+  changeIn,
+  docRef,
   onChange,
   onCreateBlock,
   onCreatePage,
@@ -65,20 +76,9 @@ export function ElementsList({
       }
     });
 
-  const getBlocks = (pageIndex: number): BlockDefinition[] => {
-    if (!app.definition.pages[pageIndex].type || app.definition.pages[pageIndex].type === 'page') {
-      return (app.definition.pages[pageIndex] as BasicPageDefinition).blocks;
-    }
-    if (app.definition.pages[pageIndex].type === 'flow') {
-      return (app.definition.pages[pageIndex] as FlowPageDefinition).steps.flatMap(
-        (subPage) => subPage.blocks,
-      );
-    }
-    if (app.definition.pages[pageIndex].type === 'tabs') {
-      return (app.definition.pages[pageIndex] as TabsPageDefinition).tabs.flatMap(
-        (subPage) => subPage.blocks,
-      );
-    }
+  const getBlocks = (pageIndex: number): YAMLMap[] => {
+    const blocksList = docRef.current.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq;
+    return blocksList.items as YAMLMap[];
   };
 
   const handleDragStart = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
@@ -92,16 +92,22 @@ export function ElementsList({
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       blockList.splice(targetIndex, 0, draggedBlock);
+      changeIn(['pages', targetPageIndex, 'blocks'], docRef.current.createNode(blockList));
     } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
       const targetBlockList = getBlocks(targetPageIndex);
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       targetBlockList.splice(targetIndex, 0, draggedBlock);
+      changeIn(['pages', targetPageIndex, 'blocks'], docRef.current.createNode(targetBlockList));
+      changeIn(['pages', dragPageIndex, 'blocks'], docRef.current.createNode(blockList));
     } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
-      const draggedPage = app.definition.pages[dragPageIndex];
-      app.definition.pages.splice(dragPageIndex, 1);
-      app.definition.pages.splice(targetPageIndex, 0, draggedPage);
+      const dragPage = docRef.current.getIn(['pages', dragPageIndex]) as YAMLSeq;
+      const targetPage = docRef.current.getIn(['pages', targetPageIndex]) as YAMLSeq;
+      dragPage.items.splice(dragPageIndex, 1);
+      targetPage.items.splice(targetPageIndex, 0, dragPage);
+      changeIn(['pages', targetPageIndex], docRef.current.createNode(dragPage));
+      changeIn(['pages', dragPageIndex], docRef.current.createNode(targetPage));
     }
     setDragItem(-1);
     setDragPageIndex(-1);

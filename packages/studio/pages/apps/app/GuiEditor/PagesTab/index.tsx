@@ -187,6 +187,8 @@ export function PagesTab({
           undoEventListener={onUndo}
         />
         <ElementsList
+          changeIn={changeIn}
+          docRef={docRef}
           onChange={onChangePagesBlocks}
           onCreateBlock={onCreateBlock}
           onCreatePage={onCreatePage}
