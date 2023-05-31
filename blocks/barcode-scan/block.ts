@@ -47,6 +47,11 @@ declare module '@appsemble/sdk' {
       | 'upc';
 
     /**
+     * @default x-large
+     */
+    patchSize?: 'large' | 'medium' | 'multiple' | 'small' | 'x-large' | 'x-small';
+
+    /**
      * Type is either camera or file
      */
     type: 'camera' | 'file';
