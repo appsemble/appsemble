@@ -581,6 +581,7 @@ describe('emailQuota', () => {
 
     const email: Parameters<Mailer['sendTranslatedEmail']>[0] = {
       appId: app.id,
+      app,
       emailName: 'welcome',
       to: { email: 'test@example.com', name: 'John Doe' },
       locale: 'en',
@@ -637,6 +638,7 @@ describe('emailQuota', () => {
 
     const email: Parameters<Mailer['sendTranslatedEmail']>[0] = {
       appId: app.id,
+      app,
       emailName: 'welcome',
       to: { email: 'test@example.com', name: 'John Doe' },
       locale: 'en',
@@ -708,6 +710,7 @@ describe('emailQuota', () => {
     };
     const translatedEmail: Parameters<Mailer['sendTranslatedEmail']>[0] = {
       appId: app.id,
+      app,
       emailName: 'welcome',
       to: { email: 'test@example.com', name: 'John Doe' },
       locale: 'en',

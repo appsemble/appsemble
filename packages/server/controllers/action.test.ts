@@ -1209,6 +1209,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1246,6 +1247,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1283,6 +1285,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1347,6 +1350,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1375,6 +1379,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
 
@@ -1410,6 +1415,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1448,6 +1454,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
   });
@@ -1492,6 +1499,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();
@@ -1530,6 +1538,7 @@ describe('handleEmail', () => {
         emailPort: 587,
         emailSecure: true,
         emailUser: null,
+        id: 1,
       },
     });
     spy.mockRestore();

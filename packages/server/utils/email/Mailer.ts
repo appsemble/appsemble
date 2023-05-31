@@ -1,5 +1,7 @@
 import { getAppsembleMessages, getSupportedLanguages, logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
+import { startOfDay } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import addrs, { type ParsedMailbox } from 'email-addresses';
 import { ImapFlow } from 'imapflow';
 import { type FormatXMLElementFn, IntlMessageFormat, type PrimitiveType } from 'intl-messageformat';
@@ -13,8 +15,10 @@ import MailComposer from 'nodemailer/lib/mail-composer/index.js';
 import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
+import { EmailQuotaExceededError } from './EmailQuotaExceededError.js';
 import { renderEmail } from './renderEmail.js';
-import { type App, AppMessages } from '../../models/index.js';
+import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
+import { type App, AppMessages, transactional } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
 import { readAsset } from '../readAsset.js';
@@ -80,7 +84,7 @@ export interface SendMailOptions {
    */
   app?: Pick<
     App,
-    'emailHost' | 'emailName' | 'emailPassword' | 'emailPort' | 'emailSecure' | 'emailUser'
+    'emailHost' | 'emailName' | 'emailPassword' | 'emailPort' | 'emailSecure' | 'emailUser' | 'id'
   >;
 }
 
@@ -249,22 +253,8 @@ export class Mailer {
       subject,
       html,
       text,
+      app,
     };
-
-    if (app?.emailHost && app?.emailUser && app?.emailPassword) {
-      const smtpPass = decrypt(app.emailPassword, argv.aesSecret);
-      const mailer = new Mailer({
-        smtpFrom: from,
-        smtpHost: app.emailHost,
-        smtpPass,
-        smtpPort: app.emailPort,
-        smtpSecure: app.emailSecure,
-        smtpUser: app.emailUser,
-      });
-
-      await mailer.sendEmail(email);
-      return;
-    }
 
     await this.sendEmail(email);
   }
@@ -299,6 +289,7 @@ export class Mailer {
    * Send an email using the configured SMTP transport.
    *
    * @param options The options specifying the contents and metadata of the email
+   * @throws EmailQuotaExceededError If an app has sent too many emails today
    */
   async sendEmail({
     app,
@@ -329,6 +320,36 @@ export class Mailer {
     if (!transport) {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
+
+    if (
+      argv.enableAppEmailQuota &&
+      app &&
+      !(app?.emailHost && app?.emailUser && app?.emailPassword)
+    ) {
+      const todayStartUTC = zonedTimeToUtc(startOfDay(new Date()), 'UTC');
+      await transactional(async (transaction) => {
+        const emailsSentToday = await AppEmailQuotaLog.count({
+          where: {
+            created: {
+              [Op.gte]: todayStartUTC,
+            },
+            AppId: app.id,
+          },
+          transaction,
+        });
+        if (emailsSentToday >= argv.dailyAppEmailQuota) {
+          throw new EmailQuotaExceededError('Too many emails sent today');
+        }
+
+        await AppEmailQuotaLog.create(
+          {
+            AppId: app.id,
+          },
+          { transaction },
+        );
+      });
+    }
+
     const parsed = addrs.parseOneAddress(argv.smtpFrom) as ParsedMailbox;
     const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;
 
