@@ -64,6 +64,8 @@ passed as a command line parameter instead, if desired.
 | `IMAP_USER`                |              | The user to use to login to the IMAP server.                                                                           |
 | `IMAP_PASS`                |              | The password to use to login to the IMAP server.                                                                       |
 | `IMAP_COPY_TO_SENT_FOLDER` | `false`      | If specified, sent email will be copied to the IMAP server's "Sent" folder.                                            |
+| `ENABLE_APP_EMAIL_QUOTA`   | `false`      | If specified, rate limiting will be applied to emails sent by apps without a custom mail server configured.            |
+| `DAILY_APP_EMAIL_QUOTA`    | `10`         | The maximum number of emails an app can send per day without a custom mail server configured.                          |
 | `DISABLE_REGISTRATION`     | `false`      | If specified, user registration will be disabled on the server                                                         |
 | `HOST`                     |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
 | `REMOTE`                   | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
