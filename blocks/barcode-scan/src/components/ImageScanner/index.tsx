@@ -6,9 +6,15 @@ interface ImageScannerProps {
   config: any;
   onDetected: QuaggaJSResultCallbackFunction;
   onProcessed: QuaggaJSResultCallbackFunction;
+  resolution: number;
 }
 
-export function ImageScanner({ config, onDetected, onProcessed }: ImageScannerProps): VNode {
+export function ImageScanner({
+  config,
+  onDetected,
+  onProcessed,
+  resolution,
+}: ImageScannerProps): VNode {
   const [selectedImage, setSelectedImage] = useState(null);
 
   function runBarcodeDetection(image: any): void {
@@ -16,7 +22,7 @@ export function ImageScanner({ config, onDetected, onProcessed }: ImageScannerPr
       src: image,
       inputStream: {
         type: 'ImageStream',
-        size: 800,
+        size: resolution,
         singleChannel: false,
       },
       ...config,

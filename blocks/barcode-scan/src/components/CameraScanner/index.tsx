@@ -8,8 +8,9 @@ import { useRef } from 'preact/hooks';
 interface CameraScannerProps {
   config: any;
   onDetected: QuaggaJSResultCallbackFunction;
+  resolution: number;
 }
-export function CameraScanner({ config, onDetected }: CameraScannerProps): VNode {
+export function CameraScanner({ config, onDetected, resolution }: CameraScannerProps): VNode {
   const videoRef = useRef<HTMLVideoElement>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -55,7 +56,7 @@ export function CameraScanner({ config, onDetected }: CameraScannerProps): VNode
           type: 'LiveStream',
           target: videoRef.current,
           willReadFrequently: true,
-          size: 800,
+          size: resolution,
           constraints: {
             width: 640,
             height: 320,

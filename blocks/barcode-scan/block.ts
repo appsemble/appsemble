@@ -31,7 +31,6 @@ declare module '@appsemble/sdk' {
      */
     barcodeType?:
       | '2of5'
-      | 'codabar'
       | 'code_32'
       | 'code_39_vin'
       | 'code_39'
@@ -50,6 +49,11 @@ declare module '@appsemble/sdk' {
      * @default x-large
      */
     patchSize?: 'large' | 'medium' | 'multiple' | 'small' | 'x-large' | 'x-small';
+
+    /**
+     * @default 800
+     */
+    resolution?: number;
 
     /**
      * Type is either camera or file
