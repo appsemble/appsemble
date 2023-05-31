@@ -3,33 +3,26 @@ import { type VNode } from 'preact';
 import { useState } from 'preact/hooks';
 
 interface ImageScannerProps {
+  config: any;
   onDetected: QuaggaJSResultCallbackFunction;
+  onProcessed: QuaggaJSResultCallbackFunction;
 }
 
-export function ImageScanner({ onDetected }: ImageScannerProps): VNode {
+export function ImageScanner({ config, onDetected, onProcessed }: ImageScannerProps): VNode {
   const [selectedImage, setSelectedImage] = useState(null);
 
   function runBarcodeDetection(image: any): void {
-    // @ts-expect-error Quagga types are wrong
     Quagga.decodeSingle({
+      src: image,
       inputStream: {
         type: 'ImageStream',
         size: 800,
         singleChannel: false,
       },
-      locator: {
-        patchSize: 'x-large',
-        halfSample: true,
-      },
-      numOfWorkers: 4,
-      decoder: {
-        readers: ['code_128_reader'],
-      },
-      locate: true,
-      src: image,
+      ...config,
     });
 
-    // @ts-expect-error Quagga types are wrong
+    Quagga.onProcessed(onProcessed);
     Quagga.onDetected(onDetected);
   }
 

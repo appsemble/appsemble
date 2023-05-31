@@ -27,8 +27,28 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * @default code_128
+     */
+    barcodeType?:
+      | '2of5'
+      | 'codabar'
+      | 'code_32'
+      | 'code_39_vin'
+      | 'code_39'
+      | 'code_93'
+      | 'code_128'
+      | 'ean_2'
+      | 'ean_5'
+      | 'ean_8'
+      | 'ean'
+      | 'i2of5'
+      | 'multiple'
+      | 'upc_e'
+      | 'upc';
+
+    /**
      * Type is either camera or file
      */
-    type?: 'camera' | 'file';
+    type: 'camera' | 'file';
   }
 }
