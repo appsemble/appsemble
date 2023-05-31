@@ -93,13 +93,16 @@ export default function EditPage(): ReactElement {
       formData.append('yaml', ymlString);
       formData.append('coreStyle', coreStyle);
       formData.append('sharedStyle', sharedStyle);
-
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
     } catch (error: any) {
-      push({ body: `${formatMessage(messages.failed)} ${error}`, color: 'danger' });
+      push({
+        body: `${formatMessage(messages.failed)} ${error}`,
+        color: 'danger',
+      });
     }
+    // Update App preview
     const definition = app.definition as AppDefinition;
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
