@@ -1,5 +1,5 @@
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { normalizeBlockName } from '@appsemble/utils';
+import { normalizeBlockName } from '@appsemble/utils/blockUtils.js';
 import {
   type MutableRefObject,
   type ReactElement,
@@ -9,6 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
@@ -89,7 +90,7 @@ export function PagesTab({
   };
 
   const changeIn = (path: Iterable<unknown>, value: Node): void => {
-    docRef.current.addIn(path, value);
+    docRef.current.setIn(path, value);
     addSaveState();
   };
 
@@ -140,11 +141,24 @@ export function PagesTab({
     onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
   };
 
-  const changeProperty = (): void => {
+  const changeProperty = (parameters: JsonObject): void => {
     const doc = docRef.current;
     changeIn(
+      ['pages', selectedPage, 'blocks', selectedBlock, 'parameters'],
+      doc.createNode(parameters) as Node,
+    );
+  };
+
+  const changeType = (blockType: BlockManifest): void => {
+    const doc = docRef.current;
+    const newBlockType = {
+      type: normalizeBlockName(blockType.name),
+      version: blockType.version,
+      parameters: generateData(blockType.parameters.definitions, blockType.parameters),
+    } as BlockDefinition;
+    changeIn(
       ['pages', selectedPage, 'blocks', selectedBlock],
-      doc.getIn(['pages', selectedPage, 'blocks', selectedBlock]) as Node,
+      doc.createNode(newBlockType) as Node,
     );
   };
 
@@ -202,6 +216,7 @@ export function PagesTab({
           {editBlockView ? (
             <BlockProperty
               changeProperty={changeProperty}
+              changeType={changeType}
               deleteBlock={deleteBlock}
               selectedBlock={selectedBlock}
               selectedPage={selectedPage}

@@ -10,47 +10,30 @@ import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
 interface BlockPropertyProps {
-  changeProperty: (currentBlock: number) => void;
-  deleteBlock: (currentBlock: number) => void;
+  changeProperty: (parameters: JsonObject) => void;
+  changeType: (blockManifest: BlockManifest) => void;
+  deleteBlock: () => void;
   selectedBlock: number;
   selectedPage: number;
 }
 export function BlockProperty({
   changeProperty,
+  changeType,
   deleteBlock,
   selectedBlock,
   selectedPage,
 }: BlockPropertyProps): ReactElement {
-  const { app, setApp } = useApp();
+  const { app } = useApp();
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
-
-  const onChangeProperties = useCallback(
-    (parameters: JsonObject) => {
-      if (selectedBlock === -1) {
-        return;
-      }
-      changeProperty(selectedBlock);
-
-      // Old way
-      (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock].parameters =
-        parameters;
-      setApp({ ...app });
-    },
-    [app, selectedBlock, selectedPage, setApp, changeProperty],
-  );
 
   const onTypeChange = useCallback(
     (index: number) => {
       if (selectedBlock === -1) {
         return;
       }
-      (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock] = {
-        version: blocks[index].version,
-        type: blocks[index].name,
-      };
-      setApp({ ...app });
+      changeType(blocks[index]);
     },
-    [app, blocks, selectedBlock, selectedPage, setApp],
+    [blocks, changeType, selectedBlock],
   );
 
   const currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
@@ -72,7 +55,7 @@ export function BlockProperty({
             className={`is-danger ${styles.deleteButton}`}
             component="a"
             icon="trash"
-            onClick={() => deleteBlock(selectedBlock)}
+            onClick={() => deleteBlock()}
           >
             Delete Block
           </Button>
@@ -84,7 +67,7 @@ export function BlockProperty({
             value={normalizeBlockName(currentBlock.type)}
           />
           <PropertiesHandler
-            onChange={onChangeProperties}
+            onChange={changeProperty}
             parameters={currentBlock.parameters}
             schema={
               blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.type))
