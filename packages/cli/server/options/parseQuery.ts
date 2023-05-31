@@ -101,6 +101,8 @@ function parseOdataOrder(query: string): OrderItem[] {
 export function parseQuery({ $filter, $orderby }: ParseQueryParams): ParsedQuery {
   return {
     where: parseOdataFilter($filter),
-    order: parseOdataOrder($orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author')),
+    order: parseOdataOrder(
+      $orderby ? $orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author') : undefined,
+    ),
   };
 }
