@@ -88,6 +88,11 @@ export function PagesTab({
     addSaveState();
   };
 
+  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.addIn(path, value);
+    addSaveState();
+  };
+
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
       setSelectedPage(page);
@@ -133,6 +138,14 @@ export function PagesTab({
   const deleteBlock = (): void => {
     deleteIn(['pages', selectedPage, 'blocks', selectedBlock]);
     onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
+  };
+
+  const changeProperty = (): void => {
+    const doc = docRef.current;
+    changeIn(
+      ['pages', selectedPage, 'blocks', selectedBlock],
+      doc.getIn(['pages', selectedPage, 'blocks', selectedBlock]) as Node,
+    );
   };
 
   const handleDrop = (): void => {
@@ -188,6 +201,7 @@ export function PagesTab({
           {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
           {editBlockView ? (
             <BlockProperty
+              changeProperty={changeProperty}
               deleteBlock={deleteBlock}
               selectedBlock={selectedBlock}
               selectedPage={selectedPage}

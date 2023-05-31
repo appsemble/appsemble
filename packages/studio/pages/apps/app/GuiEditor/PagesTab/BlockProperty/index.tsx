@@ -10,11 +10,13 @@ import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
 interface BlockPropertyProps {
+  changeProperty: (currentBlock: number) => void;
   deleteBlock: (currentBlock: number) => void;
   selectedBlock: number;
   selectedPage: number;
 }
 export function BlockProperty({
+  changeProperty,
   deleteBlock,
   selectedBlock,
   selectedPage,
@@ -27,11 +29,14 @@ export function BlockProperty({
       if (selectedBlock === -1) {
         return;
       }
+      changeProperty(selectedBlock);
+
+      // Old way
       (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock].parameters =
         parameters;
       setApp({ ...app });
     },
-    [app, selectedBlock, selectedPage, setApp],
+    [app, selectedBlock, selectedPage, setApp, changeProperty],
   );
 
   const onTypeChange = useCallback(
