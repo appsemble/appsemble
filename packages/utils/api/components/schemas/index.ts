@@ -103,6 +103,7 @@ export * from './TabsPageDefinition.js';
 export * from './TeamInviteActionDefinition.js';
 export * from './TeamJoinActionDefinition.js';
 export * from './TeamListActionDefinition.js';
+export * from './TeamMembersActionDefinition.js';
 export * from './TeamsDefinition.js';
 export * from './Theme.js';
 export * from './ThrowActionDefinition.js';

@@ -576,6 +576,27 @@ describe('getTeamMembers', () => {
   });
 });
 
+describe('getTeamMember', () => {
+  it('should return specified member', async () => {
+    const team = await Team.create({ name: 'Test team', AppId: app.id });
+    await TeamMember.create({
+      TeamId: team.id,
+      UserId: user.id,
+      role: TeamRole.Member,
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members/${user.id}`);
+
+    expect(response.data).toStrictEqual({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+      role: TeamRole.Member,
+    });
+  });
+});
+
 describe('inviteTeamMember', () => {
   beforeEach(() => {
     authorizeApp(app);

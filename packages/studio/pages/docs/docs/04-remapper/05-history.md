@@ -19,7 +19,7 @@ The following example shows what a history stack would look like in an action. E
 from between two actions, including the first action, is assigned to that point in the history
 stack:
 
-![history stack](../../config/assets/remapper-tutorial/history-stack.jpg 'History stack visualisation')
+![history stack](../../../../../../config/assets/remapper-tutorial/history-stack.jpg 'History stack visualisation')
 
 Keep in mind that the value passed to the action can be influenced by changing the data beforehand
 using `remapBefore` or `remapAfter`.
@@ -50,7 +50,7 @@ The reason for this is because `remapAfter` changed the resulting value of the `
 action and instead the object gets passed to the log action. The result of the resource query is not
 relevant anymore.
 
-![history data explained](../../config/assets/remapper-tutorial/history-data-assigning-explained.png 'History data explained')
+![history data explained](../../../../../../config/assets/remapper-tutorial/history-data-assigning-explained.png 'History data explained')
 
 Now, if you want to get the resulting (remapped) data back from the first action, you can count the
 index of the action (in this case 1) that the data got passed along to and use it with the `history`

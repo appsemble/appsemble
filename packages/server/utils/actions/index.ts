@@ -73,6 +73,7 @@ export const actions = {
   'team.invite': noop,
   'team.join': noop,
   'team.list': noop,
+  'team.members': noop,
   throw: throwAction,
   'user.register': noop,
   'user.login': noop,
