@@ -86,6 +86,18 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
+  const updateAppPreview = useCallback(() => {
+    const definition = app.definition as AppDefinition;
+    delete definition.anchors;
+    if (!app.path) {
+      return;
+    }
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/gui/EDIT_SUCCESS', definition },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app, frame]);
+
   const handleSave = useCallback(async () => {
     const ymlString = stringify(app.definition);
     try {
@@ -102,14 +114,8 @@ export default function EditPage(): ReactElement {
         color: 'danger',
       });
     }
-    // Update App preview
-    const definition = app.definition as AppDefinition;
-    delete definition.anchors;
-    frame.current?.contentWindow.postMessage(
-      { type: 'editor/gui/EDIT_SUCCESS', definition },
-      getAppUrl(app.OrganizationId, app.path),
-    );
-  }, [app, coreStyle, formatMessage, push, setApp, sharedStyle]);
+    updateAppPreview();
+  }, [app, coreStyle, formatMessage, push, setApp, sharedStyle, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
@@ -169,6 +175,7 @@ export default function EditPage(): ReactElement {
             frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
+            updateAppPreview={updateAppPreview}
           />
         )}
         {currentTab.tabName === 'theme' && (

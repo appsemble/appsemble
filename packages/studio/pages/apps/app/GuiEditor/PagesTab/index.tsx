@@ -28,6 +28,7 @@ interface PagesTabProps {
   frameRef: Ref<HTMLIFrameElement>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
+  updateAppPreview: () => void;
 }
 
 export function PagesTab({
@@ -35,6 +36,7 @@ export function PagesTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
+  updateAppPreview,
 }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
   const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
@@ -176,6 +178,10 @@ export function PagesTab({
     setApp({ ...app, definition: state.toJS() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
+
+  useEffect(() => {
+    updateAppPreview();
+  }, [setApp, updateAppPreview]);
 
   return (
     <>
