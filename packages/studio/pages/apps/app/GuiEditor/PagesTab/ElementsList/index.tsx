@@ -104,8 +104,6 @@ export function ElementsList({
     } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
       const dragPage = docRef.current.getIn(['pages', dragPageIndex]) as YAMLSeq;
       const targetPage = docRef.current.getIn(['pages', targetPageIndex]) as YAMLSeq;
-      dragPage.items.splice(dragPageIndex, 1);
-      targetPage.items.splice(targetPageIndex, 0, dragPage);
       changeIn(['pages', targetPageIndex], docRef.current.createNode(dragPage));
       changeIn(['pages', dragPageIndex], docRef.current.createNode(targetPage));
     }
