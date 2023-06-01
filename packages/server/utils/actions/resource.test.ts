@@ -13,10 +13,10 @@ useTestDatabase(import.meta);
 
 let mailer: Mailer;
 
-beforeEach(() => {
+beforeEach(async () => {
   setArgv({ host: 'https://example.com' });
   mailer = new Mailer(argv);
-  Organization.create({ id: 'testorg' });
+  await Organization.create({ id: 'testorg' });
   import.meta.jest.useFakeTimers({ now: new Date('2022-02-02T22:22:22Z') });
 });
 
