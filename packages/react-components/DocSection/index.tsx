@@ -1,37 +1,38 @@
-import { Fragment, type ReactElement, type ReactNode, useCallback, useState } from 'react';
+import {
+  Children,
+  createContext,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  useState,
+} from 'react';
 
-import styles from './index.module.css';
-import { Icon } from '../Icon/index.js';
+import { MenuItem } from '../MenuItem/index.js';
+import { MenuSection } from '../MenuSection/index.js';
 
 interface DocSectionProps {
   children: ReactNode;
 }
 
+export const CollapsedContext = createContext({ collapsed: false, setCollapsed(): void {} });
+
 export function DocSection({ children }: DocSectionProps): ReactElement {
-  const [hideChildren, setHideChildren] = useState(false);
-  const clickHideButton = useCallback(() => {
-    setHideChildren(!hideChildren);
-  }, [hideChildren]);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <>
-      {Object.entries(children).map(([index, child]) => {
-        if (index === '0') {
-          return (
-            <Fragment key={index}>
-              <Icon
-                className={styles.icon}
-                icon={hideChildren ? 'chevron-up' : 'chevron-down'}
-                onClick={clickHideButton}
-                size="medium"
-              />
-              {child}
-            </Fragment>
-          );
+      {Children.map(children, (child) => {
+        if (!isValidElement(child)) {
+          return;
         }
-        if (!hideChildren) {
-          return child;
+        if (child.type === MenuSection && collapsed) {
+          return;
         }
+        return (
+          <CollapsedContext.Provider value={{ collapsed, setCollapsed }}>
+            {child}
+          </CollapsedContext.Provider>
+        );
       })}
     </>
   );

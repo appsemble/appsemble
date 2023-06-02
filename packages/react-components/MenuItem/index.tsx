@@ -1,8 +1,8 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactElement, type ReactNode } from 'react';
+import { useContext, type ReactElement, type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
-import { Icon, NavLink } from '../index.js';
+import { CollapsedContext, Icon, NavLink } from '../index.js';
 
 interface SideNavLinkProps {
   /**
@@ -37,6 +37,11 @@ interface SideNavLinkProps {
  * https://bulma.io/documentation/components/menu
  */
 export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
+  const { collapsed, setCollapsed } = useContext(CollapsedContext);
+  const clickHideButton = useCallback(() => {
+    setCollapsed(!collapsed);
+  }, [collapsed, setCollapsed]);
+
   return (
     <NavLink
       className={`is-flex is-align-items-center ${styles.root}`}
@@ -46,6 +51,12 @@ export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps)
     >
       {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
+      <Icon
+        className={styles.icon}
+        icon={collapsed ? 'chevron-up' : 'chevron-down'}
+        onClick={clickHideButton}
+        size="medium"
+      />
     </NavLink>
   );
 }

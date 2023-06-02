@@ -71,7 +71,7 @@ export function DocsRoutes(): ReactElement {
           ];
         })}
       <DocSection>
-        <MenuItem exact icon="book" to={`${url}/reference`}>
+        <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
         <MenuSection>
