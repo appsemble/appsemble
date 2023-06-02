@@ -56,10 +56,11 @@ export function DocsRoutes(): ReactElement {
             (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
           );
           return [
-            <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
-              {title}
-            </MenuItem>,
-            subRoutes.length ? (
+            <DocSection key="section-wrapper">
+              <MenuItem collapsable exact icon={icon} key="docs-title" to={getUrl(path, url)}>
+                {title}
+              </MenuItem>
+              , subRoutes.length ? (
               <MenuSection key="docs-section">
                 {subRoutes.map((subRoute) => (
                   <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
@@ -67,11 +68,12 @@ export function DocsRoutes(): ReactElement {
                   </MenuItem>
                 ))}
               </MenuSection>
-            ) : null,
+              ) : null,
+            </DocSection>,
           ];
         })}
       <DocSection>
-        <MenuItem icon="book" to={`${url}/reference`}>
+        <MenuItem collapsable icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
         <MenuSection>
@@ -86,16 +88,18 @@ export function DocsRoutes(): ReactElement {
           </MenuItem>
         </MenuSection>
       </DocSection>
-      <MenuItem exact icon="cubes" to={`${url}/packages`}>
-        <FormattedMessage {...messages.packages} />
-      </MenuItem>
-      <MenuSection>
-        <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
-        <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
-        <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
-        <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
-        <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
-      </MenuSection>
+      <DocSection>
+        <MenuItem collapsable exact icon="cubes" to={`${url}/packages`}>
+          <FormattedMessage {...messages.packages} />
+        </MenuItem>
+        <MenuSection>
+          <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
+          <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
+          <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
+          <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
+          <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
+        </MenuSection>
+      </DocSection>
       <MenuItem exact icon="scroll" to={`${url}/changelog`}>
         <FormattedMessage {...messages.changelog} />
       </MenuItem>

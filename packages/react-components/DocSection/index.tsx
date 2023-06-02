@@ -1,23 +1,36 @@
 import {
   Children,
   createContext,
+  type Dispatch,
   isValidElement,
   type ReactElement,
   type ReactNode,
+  type SetStateAction,
+  useMemo,
   useState,
 } from 'react';
 
-import { MenuItem } from '../MenuItem/index.js';
 import { MenuSection } from '../MenuSection/index.js';
 
 interface DocSectionProps {
   children: ReactNode;
 }
 
-export const CollapsedContext = createContext({ collapsed: false, setCollapsed(): void {} });
+interface CollapsedContextInterface {
+  collapsed: boolean;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
+}
+
+export const CollapsedContext = createContext<CollapsedContextInterface>({
+  collapsed: false,
+  setCollapsed() {
+    // Do nothing
+  },
+});
 
 export function DocSection({ children }: DocSectionProps): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
+  const collapseContext = useMemo(() => ({ collapsed, setCollapsed }), [collapsed]);
 
   return (
     <>
@@ -29,9 +42,7 @@ export function DocSection({ children }: DocSectionProps): ReactElement {
           return;
         }
         return (
-          <CollapsedContext.Provider value={{ collapsed, setCollapsed }}>
-            {child}
-          </CollapsedContext.Provider>
+          <CollapsedContext.Provider value={collapseContext}>{child}</CollapsedContext.Provider>
         );
       })}
     </>

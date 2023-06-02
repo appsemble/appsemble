@@ -11,3 +11,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.icon {
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+}

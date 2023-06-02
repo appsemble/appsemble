@@ -1,5 +1,5 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { useContext, type ReactElement, type ReactNode, useCallback } from 'react';
+import { type ReactElement, type ReactNode, useCallback, useContext } from 'react';
 
 import styles from './index.module.css';
 import { CollapsedContext, Icon, NavLink } from '../index.js';
@@ -29,6 +29,8 @@ interface SideNavLinkProps {
    * Where to navigate to.
    */
   to: string;
+
+  collapsable?: boolean;
 }
 
 /**
@@ -36,7 +38,14 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
+export function MenuItem({
+  children,
+  collapsable,
+  exact,
+  icon,
+  title,
+  to,
+}: SideNavLinkProps): ReactElement {
   const { collapsed, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(() => {
     setCollapsed(!collapsed);
@@ -51,12 +60,14 @@ export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps)
     >
       {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
-      <Icon
-        className={styles.icon}
-        icon={collapsed ? 'chevron-up' : 'chevron-down'}
-        onClick={clickHideButton}
-        size="medium"
-      />
+      {collapsable ? (
+        <Icon
+          className={styles.icon}
+          icon={collapsed ? 'chevron-up' : 'chevron-down'}
+          onClick={clickHideButton}
+          size="medium"
+        />
+      ) : null}
     </NavLink>
   );
 }
