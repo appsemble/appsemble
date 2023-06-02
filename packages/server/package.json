@@ -49,7 +49,7 @@
     "axios": "^1.0.0",
     "bcrypt": "^5.0.0",
     "bulma": "0.9.3",
-    "bulma-checkradio": "^2.0.0",
+    "bulma-checkradio": "2.1.1",
     "bulma-slider": "2.0.4",
     "bulma-switch": "^2.0.0",
     "cli-highlight": "^2.0.0",
