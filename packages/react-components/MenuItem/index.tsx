@@ -29,8 +29,6 @@ interface SideNavLinkProps {
    * Where to navigate to.
    */
   to: string;
-
-  collapsable?: boolean;
 }
 
 /**
@@ -38,19 +36,11 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({
-  children,
-  collapsable,
-  exact,
-  icon,
-  title,
-  to,
-}: SideNavLinkProps): ReactElement {
-  const { collapsed, setCollapsed } = useContext(CollapsedContext);
+export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
+  const { collapsable, collapsed, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(() => {
     setCollapsed(!collapsed);
   }, [collapsed, setCollapsed]);
-
   return (
     <NavLink
       className={`is-flex is-align-items-center ${styles.root}`}

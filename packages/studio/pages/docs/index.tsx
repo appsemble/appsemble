@@ -57,7 +57,7 @@ export function DocsRoutes(): ReactElement {
           );
           return [
             <DocSection key="section-wrapper">
-              <MenuItem collapsable exact icon={icon} key="docs-title" to={getUrl(path, url)}>
+              <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
                 {title}
               </MenuItem>
               , subRoutes.length ? (
@@ -73,7 +73,7 @@ export function DocsRoutes(): ReactElement {
           ];
         })}
       <DocSection>
-        <MenuItem collapsable icon="book" to={`${url}/reference`}>
+        <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
         <MenuSection>
@@ -89,7 +89,7 @@ export function DocsRoutes(): ReactElement {
         </MenuSection>
       </DocSection>
       <DocSection>
-        <MenuItem collapsable exact icon="cubes" to={`${url}/packages`}>
+        <MenuItem exact icon="cubes" to={`${url}/packages`}>
           <FormattedMessage {...messages.packages} />
         </MenuItem>
         <MenuSection>

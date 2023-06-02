@@ -10,6 +10,7 @@ import {
   useState,
 } from 'react';
 
+import { MenuItem } from '../MenuItem/index.js';
 import { MenuSection } from '../MenuSection/index.js';
 
 interface DocSectionProps {
@@ -17,8 +18,9 @@ interface DocSectionProps {
 }
 
 interface CollapsedContextInterface {
-  collapsed: boolean;
-  setCollapsed: Dispatch<SetStateAction<boolean>>;
+  collapsed?: boolean;
+  setCollapsed?: Dispatch<SetStateAction<boolean>>;
+  collapsable: boolean;
 }
 
 export const CollapsedContext = createContext<CollapsedContextInterface>({
@@ -26,23 +28,47 @@ export const CollapsedContext = createContext<CollapsedContextInterface>({
   setCollapsed() {
     // Do nothing
   },
+  collapsable: false,
 });
+
+function checkForEmptySection(child: ReactNode): boolean {
+  if (!isValidElement(child)) {
+    return false;
+  }
+
+  if (child.props.children <= 0) {
+    return false;
+  }
+
+  return true;
+}
 
 export function DocSection({ children }: DocSectionProps): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
-  const collapseContext = useMemo(() => ({ collapsed, setCollapsed }), [collapsed]);
+  const [collapsable, setCollapsable] = useState(
+    checkForEmptySection(Children.toArray(children)[2]),
+  );
+
+  const collapseContext = useMemo(
+    () => ({ collapsed, setCollapsed, collapsable }),
+    [collapsed, collapsable],
+  );
 
   return (
     <>
-      {Children.map(children, (child) => {
+      {Children.map(children, (child, index) => {
         if (!isValidElement(child)) {
           return;
         }
-        if (child.type === MenuSection && collapsed) {
-          return;
+        if (index === 0 && child.type === MenuItem) {
+          return (
+            <CollapsedContext.Provider value={collapseContext}>{child}</CollapsedContext.Provider>
+          );
         }
         return (
-          <CollapsedContext.Provider value={collapseContext}>{child}</CollapsedContext.Provider>
+          <CollapsedContext.Provider value={{ ...collapseContext, collapsable: false }}>
+            {child}
+          </CollapsedContext.Provider>
         );
       })}
     </>
