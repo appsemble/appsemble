@@ -37,7 +37,7 @@ interface SideNavLinkProps {
  * https://bulma.io/documentation/components/menu
  */
 export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
-  const { collapsable, collapsed, setCollapsed } = useContext(CollapsedContext);
+  const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
   const clickHideButton = useCallback(() => {
     setCollapsed(!collapsed);
   }, [collapsed, setCollapsed]);
@@ -50,7 +50,7 @@ export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps)
     >
       {icon ? <Icon className={`mr-1 ${styles.middle}`} icon={icon} size="medium" /> : null}
       <span className={styles.text}>{children}</span>
-      {collapsable ? (
+      {collapsible ? (
         <Icon
           className={styles.icon}
           icon={collapsed ? 'chevron-up' : 'chevron-down'}

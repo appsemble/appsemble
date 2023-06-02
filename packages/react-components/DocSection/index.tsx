@@ -19,7 +19,7 @@ interface DocSectionProps {
 interface CollapsedContextInterface {
   collapsed?: boolean;
   setCollapsed?: Dispatch<SetStateAction<boolean>>;
-  collapsable: boolean;
+  collapsible: boolean;
 }
 
 export const CollapsedContext = createContext<CollapsedContextInterface>({
@@ -27,20 +27,20 @@ export const CollapsedContext = createContext<CollapsedContextInterface>({
   setCollapsed() {
     // Do nothing
   },
-  collapsable: false,
+  collapsible: false,
 });
 
 export function DocSection({ children }: DocSectionProps): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
   // Checks if there are any sub-sections
-  const collapsable = useMemo(() => Children.toArray(children)[1] != null, [children]);
+  const collapsible = useMemo(() => Children.toArray(children)[1] != null, [children]);
 
   const collapseContext = useMemo(
-    () => ({ collapsed, setCollapsed, collapsable }),
-    [collapsed, collapsable],
+    () => ({ collapsed, setCollapsed, collapsible }),
+    [collapsed, collapsible],
   );
 
-  const notCollapsableContext = useMemo(() => ({ collapsable: false }), []);
+  const notCollapsibleContext = useMemo(() => ({ collapsible: false }), []);
 
   return (
     <>
@@ -57,7 +57,7 @@ export function DocSection({ children }: DocSectionProps): ReactElement {
           return;
         }
         return (
-          <CollapsedContext.Provider value={notCollapsableContext}>
+          <CollapsedContext.Provider value={notCollapsibleContext}>
             {child}
           </CollapsedContext.Provider>
         );
