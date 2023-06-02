@@ -2121,9 +2121,9 @@
     tar "^6.1.11"
 
 "@mdn/browser-compat-data@^5.2.34", "@mdn/browser-compat-data@^5.2.47":
-  version "5.2.60"
-  resolved "https://registry.yarnpkg.com/@mdn/browser-compat-data/-/browser-compat-data-5.2.60.tgz#15838518cbff7ce0db94d4eff62e6ec9b5ce3a9b"
-  integrity sha512-HbULfvqZLvcjqjvXjQKpFPts6pS4awUa++0j8UukBPwDMLQYvDDbZnl/CQTjFv3cGGaoJS5A1aHLgxP9d/4SMw==
+  version "5.2.61"
+  resolved "https://registry.yarnpkg.com/@mdn/browser-compat-data/-/browser-compat-data-5.2.61.tgz#763c335b3ae4f5b16833566ab74ffa370efbc7c1"
+  integrity sha512-jzPrheqEtrnUWWNUS8SFVbQAnoO6rOXetkjiJyzP92UM+BNcyExLD0Qikv9z6TU9D6A9rbXkh3pSmZ5G88d6ew==
 
 "@mdx-js/loader@^2.0.0":
   version "2.3.0"
@@ -10458,9 +10458,9 @@ mermaid-isomorphic@^2.0.0:
     playwright-core "^1.0.0"
 
 mermaid@^10.0.0:
-  version "10.2.1"
-  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-10.2.1.tgz#5183c956a64e1ed9cf0122cec6c6cb4900521966"
-  integrity sha512-gziwXLuAidRxPJxcA0LqPhToirGZ2J2gD+UrDEtGNeKb98BtcQde28UUcCUCmNplkQOwE7oynrzKcMe9i29AMw==
+  version "10.2.2"
+  resolved "https://registry.yarnpkg.com/mermaid/-/mermaid-10.2.2.tgz#6635b9af5f5850f4df39e4235f3d0913c4ab2965"
+  integrity sha512-ifYKlCcZKYq48hxC1poJXnvk/PbCdgqqbg5B4qsybb8nIItPM1ATKqVEDkyde6BBJxVFhVJr9hoUjipzniQJZg==
   dependencies:
     "@braintree/sanitize-url" "^6.0.2"
     cytoscape "^3.23.0"
