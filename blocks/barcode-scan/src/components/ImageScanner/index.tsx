@@ -32,7 +32,7 @@ export function ImageScanner({ onDetected }: ImageScannerProps): VNode {
   }
 
   const handleFileChange = (event: any): void => {
-    const [file] = event.target.files;
+    const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataURL = e.target.result;
