@@ -30,8 +30,6 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.20.44",
-    "@types/react-syntax-highlighter": "^15.5.0",
-    "react-syntax-highlighter": "^15.5.0"
+    "@appsemble/cli": "0.20.44"
   }
 }
