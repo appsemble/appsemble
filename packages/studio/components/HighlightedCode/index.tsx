@@ -1,75 +1,66 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { type ReactElement, useEffect, useRef } from 'react';
 
-class MonacoConfiguration {
-  languageConfiguration: monaco.languages.LanguageConfiguration = {
-    comments: {
-      lineComment: '//',
-      blockComment: ['/*', '*/'],
-    },
-    brackets: [
-      ['{', '}'],
-      ['[', ']'],
-      ['(', ')'],
-    ],
-    autoClosingPairs: [
-      { open: '{', close: '}' },
-      { open: '[', close: ']' },
-      { open: '(', close: ')' },
-      { open: "'", close: "'", notIn: ['string', 'comment'] },
-      { open: '"', close: '"', notIn: ['string', 'comment'] },
-    ],
-    surroundingPairs: [
-      { open: '"', close: '"' },
-      { open: "'", close: "'" },
-      { open: '(', close: ')' },
-      { open: '[', close: ']' },
-      { open: '{', close: '}' },
-    ],
-  };
+const languageConfiguration: monaco.languages.LanguageConfiguration = {
+  comments: {
+    lineComment: '//',
+    blockComment: ['/*', '*/'],
+  },
+  brackets: [
+    ['{', '}'],
+    ['[', ']'],
+  ],
+  autoClosingPairs: [
+    { open: '{', close: '}' },
+    { open: '[', close: ']' },
+    { open: '(', close: ')' },
+    { open: "'", close: "'", notIn: ['string', 'comment'] },
+    { open: '"', close: '"', notIn: ['string', 'comment'] },
+  ],
+  surroundingPairs: [
+    { open: '"', close: '"' },
+    { open: "'", close: "'" },
+    { open: '(', close: ')' },
+    { open: '[', close: ']' },
+    { open: '{', close: '}' },
+  ],
+};
 
-  tokensProvider: monaco.languages.IMonarchLanguage = {
-    tokenizer: {
-      root: [
-        [/{/, 'delimiter.bracket'],
-        [/}/, 'delimiter.bracket'],
-        [/\[/, 'delimiter.bracket'],
-        [/]/, 'delimiter.bracket'],
-        { include: '@whitespace' },
-        { include: '@numbers' },
-        [/:/, 'delimiter'],
-        [/,/, 'delimiter'],
-        [/("[^"]*")(\s*)(:)/, ['key', 'white', 'delimiter']],
-        [/("[^"]*")(\s*)/, 'property'],
-        [/\/\/.*$/, 'comment'],
-        [/\/\*/, 'comment', '@comment'],
-      ],
-      whitespace: [[/\s+/, 'white']],
-      numbers: [[/-?\d+(\.\d+)?/, 'number']],
-      comment: [
-        [/[^*/]+/, 'comment'],
-        [/\*\//, 'comment', '@pop'],
-        [/[*/]/, 'comment'],
-      ],
-    },
-  };
-
-  theme: monaco.editor.IStandaloneThemeData = {
-    base: 'vs',
-    inherit: true,
-    colors: {},
-    rules: [
-      { token: 'key', foreground: '#991861' },
-      { token: 'property', foreground: '#659404' },
-      { token: 'comment', foreground: '#BAA393' },
-      { token: 'comment', fontStyle: 'italic' },
-      { token: 'number', foreground: '#C76B29' },
-      { token: 'delimiter.bracket', foreground: '#BAA393' },
+const tokensProvider: monaco.languages.IMonarchLanguage = {
+  tokenizer: {
+    root: [
+      [/{/, 'delimiter.bracket'],
+      [/}/, 'delimiter.bracket'],
+      [/\[/, 'delimiter.bracket'],
+      [/]/, 'delimiter.bracket'],
+      { include: '@whitespace' },
+      { include: '@numbers' },
+      [/:/, 'delimiter'],
+      [/,/, 'delimiter'],
+      [/("[^"]*")(\s*)(:)/, ['key', 'white', 'delimiter']],
+      [/("[^"]*")(\s*)/, 'property'],
+      [/\/\/.*$/, 'comment'],
+      [/\/\*/, 'comment', '@comment'],
     ],
-  };
-}
+    whitespace: [[/\s+/, 'white']],
+    numbers: [[/-?\d+(\.\d+)?/, 'number']],
+    comment: [
+      [/[^*/]+/, 'comment'],
+      [/\*\//, 'comment', '@pop'],
+      [/[*/]/, 'comment'],
+    ],
+  },
+};
 
-const monacoConfig = new MonacoConfiguration();
+const theme: monaco.editor.IStandaloneThemeData = {
+  base: 'vs',
+  inherit: true,
+  colors: {},
+  rules: [
+    { token: 'key', foreground: '#991861' },
+    { token: 'property', foreground: '#659404' },
+  ],
+};
 
 export interface HighlightedCodeProps {
   /**
@@ -100,21 +91,24 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
       Promise.all([
         import('monaco-editor/esm/vs/editor/editor.api.js'),
         import('../MonacoEditor/languages.js'),
-      ]).then(([{ editor, languages }]) => {
-        const isLanguageSupported = languages
+      ]).then(([MonacoEditor]) => {
+        const isLanguageSupported = MonacoEditor.languages
           .getLanguages()
           .some((lang) => (lang.id === language && language !== 'json') || !language);
-        if (!isLanguageSupported) {
-          languages.register({ id: 'custom' });
-          languages.setMonarchTokensProvider('custom', monacoConfig.tokensProvider);
-          languages.setLanguageConfiguration('custom', monacoConfig.languageConfiguration);
-          editor.defineTheme('custom', monacoConfig.theme);
-          editor.create(ref.current, {
+        const isCustomThemeAdded = MonacoEditor.languages
+          .getLanguages()
+          .some((lang) => lang.id === 'custom');
+        if (!isLanguageSupported && !isCustomThemeAdded) {
+          MonacoEditor.languages.register({ id: 'custom' });
+          MonacoEditor.languages.setMonarchTokensProvider('custom', tokensProvider);
+          MonacoEditor.languages.setLanguageConfiguration('custom', languageConfiguration);
+          MonacoEditor.editor.defineTheme('custom', theme);
+          MonacoEditor.editor.create(ref.current, {
             language: 'custom',
             theme: 'custom',
           });
         }
-        editor.colorizeElement(ref.current, {
+        MonacoEditor.editor.colorizeElement(ref.current, {
           mimeType: isLanguageSupported ? language : 'custom',
           theme: 'custom',
         });
