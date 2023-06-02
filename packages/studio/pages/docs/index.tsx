@@ -60,15 +60,15 @@ export function DocsRoutes(): ReactElement {
               <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
                 {title}
               </MenuItem>
-              , subRoutes.length ? (
-              <MenuSection key="docs-section">
-                {subRoutes.map((subRoute) => (
-                  <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
-                    {subRoute.title}
-                  </MenuItem>
-                ))}
-              </MenuSection>
-              ) : null,
+              {subRoutes.length ? (
+                <MenuSection key="docs-section">
+                  {subRoutes.map((subRoute) => (
+                    <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
+                      {subRoute.title}
+                    </MenuItem>
+                  ))}
+                </MenuSection>
+              ) : null}
             </DocSection>,
           ];
         })}

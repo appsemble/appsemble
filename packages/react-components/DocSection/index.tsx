@@ -11,7 +11,6 @@ import {
 } from 'react';
 
 import { MenuItem } from '../MenuItem/index.js';
-import { MenuSection } from '../MenuSection/index.js';
 
 interface DocSectionProps {
   children: ReactNode;
@@ -31,28 +30,17 @@ export const CollapsedContext = createContext<CollapsedContextInterface>({
   collapsable: false,
 });
 
-function checkForEmptySection(child: ReactNode): boolean {
-  if (!isValidElement(child)) {
-    return false;
-  }
-
-  if (child.props.children <= 0) {
-    return false;
-  }
-
-  return true;
-}
-
 export function DocSection({ children }: DocSectionProps): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
-  const [collapsable, setCollapsable] = useState(
-    checkForEmptySection(Children.toArray(children)[2]),
-  );
+  // Checks if there are any sub-sections
+  const collapsable = useMemo(() => Children.toArray(children)[1] != null, [children]);
 
   const collapseContext = useMemo(
     () => ({ collapsed, setCollapsed, collapsable }),
     [collapsed, collapsable],
   );
+
+  const notCollapsableContext = useMemo(() => ({ collapsable: false }), []);
 
   return (
     <>
@@ -65,8 +53,11 @@ export function DocSection({ children }: DocSectionProps): ReactElement {
             <CollapsedContext.Provider value={collapseContext}>{child}</CollapsedContext.Provider>
           );
         }
+        if (collapsed) {
+          return;
+        }
         return (
-          <CollapsedContext.Provider value={{ ...collapseContext, collapsable: false }}>
+          <CollapsedContext.Provider value={notCollapsableContext}>
             {child}
           </CollapsedContext.Provider>
         );
