@@ -1,7 +1,7 @@
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 import { type ReactElement, useEffect, useRef } from 'react';
 
-const languageConfiguration: monaco.languages.LanguageConfiguration = {
+const languageConfigurationJSON: monaco.languages.LanguageConfiguration = {
   comments: {
     lineComment: '//',
     blockComment: ['/*', '*/'],
@@ -26,7 +26,7 @@ const languageConfiguration: monaco.languages.LanguageConfiguration = {
   ],
 };
 
-const tokensProvider: monaco.languages.IMonarchLanguage = {
+const tokensProviderJSON: monaco.languages.IMonarchLanguage = {
   tokenizer: {
     root: [
       [/{/, 'delimiter.bracket'],
@@ -52,6 +52,56 @@ const tokensProvider: monaco.languages.IMonarchLanguage = {
   },
 };
 
+const languageConfigurationHTTP: monaco.languages.LanguageConfiguration = {
+  comments: {
+    lineComment: '//',
+    blockComment: ['/*', '*/'],
+  },
+  brackets: [
+    ['{', '}'],
+    ['[', ']'],
+  ],
+  autoClosingPairs: [
+    { open: '{', close: '}' },
+    { open: '[', close: ']' },
+    { open: '(', close: ')' },
+    { open: "'", close: "'", notIn: ['string', 'comment'] },
+    { open: '"', close: '"', notIn: ['string', 'comment'] },
+  ],
+  surroundingPairs: [
+    { open: '"', close: '"' },
+    { open: "'", close: "'" },
+    { open: '(', close: ')' },
+    { open: '[', close: ']' },
+    { open: '{', close: '}' },
+  ],
+};
+
+const tokensProviderHTTP: monaco.languages.IMonarchLanguage = {
+  tokenizer: {
+    root: [
+      [/--(.*)$/, 'http-comment'],
+      [/HTTP\s*\/(.*)$/, 'http'],
+      [/^[^\s:]+(?=:)/, 'http-header'],
+      [/"[^\n\r"]*"/, 'http-body'],
+      [/^(POST|GET|PUT|DELETE|PATCH)\s+(\S+)/, 'http-method'],
+      [/({[^{}]+})/, 'http-keyword'],
+      [/:(?:(?![":;[\]{}]).)*(?=\s*($|[:;[\]{}]))/, 'http-value'],
+      [/(?<=\s*)[^\s!&,.:;=]+(?=[\s!&,.:;]|$)/, 'http-value'],
+      [/\b[\w-]+(?=\s*=)/, 'http-key'],
+      [/{|}|\[|]|;|:,|=|&/, 'delimiter'],
+      [/./, 'default'],
+    ],
+    whitespace: [[/\s+/, 'white']],
+    numbers: [[/-?\d+(\.\d+)?/, 'number']],
+    comment: [
+      [/[^*/]+/, 'comment'],
+      [/\*\//, 'comment', '@pop'],
+      [/[*/]/, 'comment'],
+    ],
+  },
+};
+
 const theme: monaco.editor.IStandaloneThemeData = {
   base: 'vs',
   inherit: true,
@@ -59,6 +109,17 @@ const theme: monaco.editor.IStandaloneThemeData = {
   rules: [
     { token: 'key', foreground: '#991861' },
     { token: 'property', foreground: '#659404' },
+
+    { token: 'http', foreground: '#000000' },
+    { token: 'http-method', foreground: '#800080', fontStyle: 'bold' },
+    { token: 'http-header', foreground: '#800080', fontStyle: 'bold' },
+    { token: 'http-value', foreground: '#C18945' },
+    { token: 'http-comment', foreground: '#808080', fontStyle: 'italic' },
+    { token: 'http-body', foreground: '#45A245' },
+    { token: 'http-key', foreground: '#991861' },
+    { token: 'delimiter', foreground: '808080' },
+    { token: 'default', foreground: '#808080' },
+    { token: 'http-keyword', foreground: '#CC5500' },
   ],
 };
 
@@ -95,22 +156,40 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
         const isLanguageSupported = MonacoEditor.languages
           .getLanguages()
           .some((lang) => (lang.id === language && language !== 'json') || !language);
+        const languageName = `custom-${language}`;
         const isCustomThemeAdded = MonacoEditor.languages
           .getLanguages()
-          .some((lang) => lang.id === 'custom');
+          .some((lang) => lang.id === languageName);
         if (!isLanguageSupported && !isCustomThemeAdded) {
-          MonacoEditor.languages.register({ id: 'custom' });
-          MonacoEditor.languages.setMonarchTokensProvider('custom', tokensProvider);
-          MonacoEditor.languages.setLanguageConfiguration('custom', languageConfiguration);
-          MonacoEditor.editor.defineTheme('custom', theme);
+          let tokensProvider = null;
+          let languageConfiguration = null;
+          switch (language) {
+            case 'json':
+              tokensProvider = tokensProviderJSON;
+              languageConfiguration = languageConfigurationJSON;
+              break;
+            case 'http':
+              tokensProvider = tokensProviderHTTP;
+              languageConfiguration = languageConfigurationHTTP;
+              break;
+            default:
+              tokensProvider = tokensProviderJSON;
+              languageConfiguration = languageConfigurationJSON;
+              break;
+          }
+
+          MonacoEditor.languages.register({ id: languageName });
+          MonacoEditor.languages.setMonarchTokensProvider(languageName, tokensProvider);
+          MonacoEditor.languages.setLanguageConfiguration(languageName, languageConfiguration);
+          MonacoEditor.editor.defineTheme('custom-theme', theme);
           MonacoEditor.editor.create(ref.current, {
-            language: 'custom',
-            theme: 'custom',
+            language: languageName,
+            theme: languageName,
           });
         }
         MonacoEditor.editor.colorizeElement(ref.current, {
-          mimeType: isLanguageSupported ? language : 'custom',
-          theme: 'custom',
+          mimeType: isLanguageSupported ? language : languageName,
+          theme: 'custom-theme',
         });
       });
     }
