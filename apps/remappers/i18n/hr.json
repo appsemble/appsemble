@@ -1,0 +1,18 @@
+{
+  "app": {
+    "app.roles.User": "Korisnik",
+    "app.roles.User.description": "korisnik",
+    "description": "Ovaj program sadrži sve trenutačne Remappere u Appsembleu od (0.20.40)",
+    "name": "Remapperi",
+    "pages.arrays": "Nizovi",
+    "pages.data": "Podaci",
+    "pages.history": "Povijest",
+    "pages.introduction": "Uvod",
+    "pages.objects": "Objekti",
+    "pages.strings": "Izrazi"
+  },
+  "messageIds": {
+    "weatherBody": "Sunčano 28 °C",
+    "weatherTitle": "Vremenska prognoza danas"
+  }
+}
