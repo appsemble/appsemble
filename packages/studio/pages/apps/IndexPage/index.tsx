@@ -49,9 +49,9 @@ export function IndexPage(): ReactElement {
 
   return (
     <Content className={styles.content} main>
-      <div className="is-flex-desktop is-1">
+      <div className="is-flex-desktop">
         <InputField
-          className="mb-0 is-fullwidth"
+          className={`"mb-0 is-fullwidth " ${styles.searchSpace}`}
           icon="search"
           name="search"
           onChange={onFilterChange}

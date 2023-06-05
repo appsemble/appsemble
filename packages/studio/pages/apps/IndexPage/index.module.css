@@ -32,3 +32,9 @@
   display: grid;
   margin: 0 auto;
 }
+
+@media (width >= 600px) {
+  .searchSpace {
+    padding-right: 1rem;
+  }
+}
