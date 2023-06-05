@@ -32,3 +32,7 @@
   display: grid;
   margin: 0 auto;
 }
+
+.gap {
+  gap: 1rem;
+}
