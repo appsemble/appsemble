@@ -13189,6 +13189,18 @@ rehype-dom-stringify@^3.0.0:
     unified "^10.0.0"
     web-namespaces "^2.0.0"
 
+rehype-mdx-code-props@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rehype-mdx-code-props/-/rehype-mdx-code-props-1.0.0.tgz#c929d4a0910f11a9e3c641489481f0e2779726ed"
+  integrity sha512-NvHm7pTqIIfhpKmjNNizIIJzOcaRDvsAI2katLLylxX5DdhTw/sYKTKnvVZTungykXQglcYnlyVglsEuZ/jZxA==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    acorn "^8.0.0"
+    acorn-jsx "^5.0.0"
+    hast-util-to-estree "^2.0.0"
+    unified "^10.0.0"
+    unist-util-visit-parents "^5.0.0"
+
 rehype-mdx-title@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/rehype-mdx-title/-/rehype-mdx-title-2.0.0.tgz#f5ab8c273150f5b395f5029c97bf440c8c33376a"
@@ -13405,19 +13417,6 @@ remark-lint-no-unused-definitions@^3.0.0:
     unified "^10.0.0"
     unified-lint-rule "^2.0.0"
     unist-util-generated "^2.0.0"
-    unist-util-visit "^4.0.0"
-
-remark-mdx-code-meta@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/remark-mdx-code-meta/-/remark-mdx-code-meta-2.0.0.tgz#3280d366f6489ea799e8b5623401e07105fa8ac1"
-  integrity sha512-UA7i3ooevNEmgr5DAVtUY+KRIkvbVe5OOysvJcNXEjS2ZiT3gaibPHN57JPbbiT1kq4x8+e3viy88svrReuLfw==
-  dependencies:
-    "@types/mdast" "^3.0.0"
-    acorn "^8.0.0"
-    acorn-jsx "^5.0.0"
-    estree-util-is-identifier-name "^2.0.0"
-    hast-util-to-string "^2.0.0"
-    unified "^10.0.0"
     unist-util-visit "^4.0.0"
 
 remark-mdx-frontmatter@^3.0.0:
