@@ -192,10 +192,6 @@ export default function EditPage(): ReactElement {
       sharedStyleErrorCount,
   );
 
-  const conditialWindowWidth = window.innerWidth >= 900;
-
-  const renderAppPreview = <AppPreview app={app} iframeRef={frame} />;
-
   return (
     <div className={`${styles.root} is-flex`}>
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
@@ -219,12 +215,7 @@ export default function EditPage(): ReactElement {
             <FormattedMessage {...messages.shortcuts} />
           </Button>
         </div>
-        <Tabs
-          boxed
-          className={`"mb-0"${styles.editorTabs}`}
-          onChange={changeTab}
-          value={location.hash}
-        >
+        <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
             <FormattedMessage {...messages.app} />
           </EditorTab>
@@ -246,10 +237,9 @@ export default function EditPage(): ReactElement {
             {...monacoProps}
           />
         </div>
-        {conditialWindowWidth ? null : renderAppPreview}
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      {conditialWindowWidth ? renderAppPreview : null}
+      <AppPreview app={app} iframeRef={frame} />
     </div>
   );
 }

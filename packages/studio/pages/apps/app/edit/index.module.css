@@ -14,11 +14,3 @@
 .editor {
   height: 100%;
 }
-
-.editorTabs {
-  max-width: 100%;
-}
-
-.editorTabs > li {
-  max-width: 33%;
-}
