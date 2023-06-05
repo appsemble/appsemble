@@ -219,7 +219,12 @@ export default function EditPage(): ReactElement {
             <FormattedMessage {...messages.shortcuts} />
           </Button>
         </div>
-        <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
+        <Tabs
+          boxed
+          className={`"mb-0"${styles.editorTabs}`}
+          onChange={changeTab}
+          value={location.hash}
+        >
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
             <FormattedMessage {...messages.app} />
           </EditorTab>
