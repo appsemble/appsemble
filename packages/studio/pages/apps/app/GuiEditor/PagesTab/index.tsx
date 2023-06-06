@@ -185,12 +185,7 @@ export function PagesTab({
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <UndoRedo
-          getIndex={getIndex}
-          getStackSize={getStackSize}
-          redoEventListener={onRedo}
-          undoEventListener={onUndo}
-        />
+        <UndoRedo getIndex={getIndex} getStackSize={getStackSize} onRedo={onRedo} onUndo={onUndo} />
         <ElementsList
           changeIn={changeIn}
           docRef={docRef}
