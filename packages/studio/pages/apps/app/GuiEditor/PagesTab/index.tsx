@@ -68,17 +68,21 @@ export function PagesTab({
 
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
-    copy.push(docRef.current.clone());
+    const clone = docRef.current.clone();
+    copy.push(clone);
     setSaveStack(copy);
     setIndex(copy.length - 1);
-  }, [docRef, saveStack, index, setIndex, setSaveStack]);
+    setApp({ ...app, definition: clone.toJS() });
+  }, [app, docRef, saveStack, index, setApp, setIndex, setSaveStack]);
 
   const onUndo = (): void => {
-    setIndex(Math.max(0, index - 1));
+    setIndex((currentIndex) => Math.max(0, currentIndex - 1));
+    setApp({ ...app, definition: state.toJS() });
   };
 
   const onRedo = (): void => {
-    setIndex(Math.min(saveStack.length - 1, index + 1));
+    setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
+    setApp({ ...app, definition: state.toJS() });
   };
 
   const deleteIn = (path: Iterable<unknown>): void => {
@@ -173,11 +177,6 @@ export function PagesTab({
     } as BlockDefinition;
     addBlock(newBlock);
   };
-
-  useEffect(() => {
-    setApp({ ...app, definition: state.toJS() });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
 
   useEffect(() => {
     updateAppPreview();
