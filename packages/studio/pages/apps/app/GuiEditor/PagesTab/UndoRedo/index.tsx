@@ -6,27 +6,27 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 
 interface UndoRedoProps {
-  getIndex: () => number;
-  getStackSize: () => number;
+  index: number;
   onRedo: () => void;
   onUndo: () => void;
+  stackSize: number;
 }
 
-export function UndoRedo({ getIndex, getStackSize, onRedo, onUndo }: UndoRedoProps): ReactElement {
+export function UndoRedo({ index, onRedo, onUndo, stackSize }: UndoRedoProps): ReactElement {
   const { formatMessage } = useIntl();
 
   return (
     <div className={styles.undoredoContainer}>
       <Button
         className={styles.undoButton}
-        disabled={getIndex() < 1}
+        disabled={index < 1}
         icon="rotate-left"
         onClick={onUndo}
         title={formatMessage(messages.undo)}
       />
       <Button
         className={styles.redoButton}
-        disabled={getIndex() >= getStackSize()}
+        disabled={index >= stackSize}
         icon="rotate-right"
         onClick={onRedo}
         title={formatMessage(messages.redo)}

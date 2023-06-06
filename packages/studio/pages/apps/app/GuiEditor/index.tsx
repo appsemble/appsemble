@@ -1,7 +1,7 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
 import { type Document, type ParsedNode, parseDocument, stringify } from 'yaml';
@@ -64,6 +64,9 @@ export default function EditPage(): ReactElement {
   if (!docRef.current) {
     docRef.current = parseDocument(app.yaml);
   }
+  const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
+  const [index, setIndex] = useState(0);
+  const state = useMemo(() => saveStack[index], [saveStack, index]);
   const frame = useRef<HTMLIFrameElement>();
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
@@ -85,6 +88,22 @@ export default function EditPage(): ReactElement {
   const handleRightPanelToggle = useCallback(() => {
     setRightPanelOpen((open) => !open);
   }, []);
+
+  const addSaveState = useCallback((): void => {
+    const copy = saveStack.slice(0, index + 1);
+    const clone = docRef.current.clone();
+    copy.push(clone);
+    setSaveStack(copy);
+    setIndex(copy.length - 1);
+  }, [docRef, saveStack, index, setIndex, setSaveStack]);
+
+  const onUndo = (): void => {
+    setIndex((currentIndex) => Math.max(0, currentIndex - 1));
+  };
+
+  const onRedo = (): void => {
+    setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
+  };
 
   const updateAppPreview = useCallback(() => {
     const definition = app.definition as AppDefinition;
@@ -116,6 +135,11 @@ export default function EditPage(): ReactElement {
     }
     updateAppPreview();
   }, [app, coreStyle, formatMessage, push, setApp, sharedStyle, updateAppPreview]);
+
+  useEffect(() => {
+    setApp((currApp) => ({ ...currApp, definition: state.toJS() }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
@@ -171,10 +195,15 @@ export default function EditPage(): ReactElement {
         )}
         {currentTab.tabName === 'pages' && (
           <PagesTab
+            addSaveState={addSaveState}
             docRef={docRef}
             frameRef={frame}
+            index={index}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
+            onRedo={onRedo}
+            onUndo={onUndo}
+            stackSize={saveStack.length}
             updateAppPreview={updateAppPreview}
           />
         )}

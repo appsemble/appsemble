@@ -6,7 +6,6 @@ import {
   type Ref,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { type JsonObject } from 'type-fest';
@@ -24,24 +23,32 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
+  addSaveState: () => void;
+
   docRef: MutableRefObject<Document<ParsedNode>>;
   frameRef: Ref<HTMLIFrameElement>;
+  index: number;
   isOpenLeft: boolean;
   isOpenRight: boolean;
+  onRedo: () => void;
+  onUndo: () => void;
+  stackSize: number;
   updateAppPreview: () => void;
 }
 
 export function PagesTab({
+  addSaveState,
   docRef,
   frameRef,
+  index,
   isOpenLeft,
   isOpenRight,
+  onRedo,
+  onUndo,
+  stackSize,
   updateAppPreview,
 }: PagesTabProps): ReactElement {
   const { app, setApp } = useApp();
-  const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
-  const [index, setIndex] = useState(0);
-  const state = useMemo(() => saveStack[index], [saveStack, index]);
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -60,29 +67,6 @@ export function PagesTab({
   };
   const handleDragExit = (): void => {
     setDragOver(false);
-  };
-
-  const getIndex = (): number => index;
-
-  const getStackSize = (): number => saveStack.length - 1;
-
-  const addSaveState = useCallback((): void => {
-    const copy = saveStack.slice(0, index + 1);
-    const clone = docRef.current.clone();
-    copy.push(clone);
-    setSaveStack(copy);
-    setIndex(copy.length - 1);
-    setApp({ ...app, definition: clone.toJS() });
-  }, [app, docRef, saveStack, index, setApp, setIndex, setSaveStack]);
-
-  const onUndo = (): void => {
-    setIndex((currentIndex) => Math.max(0, currentIndex - 1));
-    setApp({ ...app, definition: state.toJS() });
-  };
-
-  const onRedo = (): void => {
-    setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
-    setApp({ ...app, definition: state.toJS() });
   };
 
   const deleteIn = (path: Iterable<unknown>): void => {
@@ -185,7 +169,7 @@ export function PagesTab({
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <UndoRedo getIndex={getIndex} getStackSize={getStackSize} onRedo={onRedo} onUndo={onUndo} />
+        <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={stackSize} />
         <ElementsList
           changeIn={changeIn}
           docRef={docRef}
