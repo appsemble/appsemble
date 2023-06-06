@@ -1,10 +1,10 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
-import { type Document, type ParsedNode, parseDocument, stringify } from 'yaml';
+import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
 
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
@@ -66,7 +66,6 @@ export default function EditPage(): ReactElement {
   }
   const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
   const [index, setIndex] = useState(0);
-  const state = useMemo(() => saveStack[index], [saveStack, index]);
   const frame = useRef<HTMLIFrameElement>();
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
@@ -96,6 +95,21 @@ export default function EditPage(): ReactElement {
     setSaveStack(copy);
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
+
+  const deleteIn = (path: Iterable<unknown>): void => {
+    docRef.current.deleteIn(path);
+    addSaveState();
+  };
+
+  const addIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.addIn(path, value);
+    addSaveState();
+  };
+
+  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.setIn(path, value);
+    addSaveState();
+  };
 
   const onUndo = (): void => {
     setIndex((currentIndex) => Math.max(0, currentIndex - 1));
@@ -137,7 +151,11 @@ export default function EditPage(): ReactElement {
   }, [app, coreStyle, formatMessage, push, setApp, sharedStyle, updateAppPreview]);
 
   useEffect(() => {
-    setApp((currApp) => ({ ...currApp, definition: state.toJS() }));
+    updateAppPreview();
+  }, [setApp, updateAppPreview]);
+
+  useEffect(() => {
+    setApp((currApp) => ({ ...currApp, definition: saveStack[index].toJS() }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
@@ -195,7 +213,9 @@ export default function EditPage(): ReactElement {
         )}
         {currentTab.tabName === 'pages' && (
           <PagesTab
-            addSaveState={addSaveState}
+            addIn={addIn}
+            changeIn={changeIn}
+            deleteIn={deleteIn}
             docRef={docRef}
             frameRef={frame}
             index={index}
@@ -204,7 +224,6 @@ export default function EditPage(): ReactElement {
             onRedo={onRedo}
             onUndo={onUndo}
             stackSize={saveStack.length}
-            updateAppPreview={updateAppPreview}
           />
         )}
         {currentTab.tabName === 'theme' && (

@@ -26,7 +26,7 @@ export function UndoRedo({ index, onRedo, onUndo, stackSize }: UndoRedoProps): R
       />
       <Button
         className={styles.redoButton}
-        disabled={index >= stackSize}
+        disabled={index >= stackSize - 1}
         icon="rotate-right"
         onClick={onRedo}
         title={formatMessage(messages.redo)}

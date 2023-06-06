@@ -1,13 +1,6 @@
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils/blockUtils.js';
-import {
-  type MutableRefObject,
-  type ReactElement,
-  type Ref,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
@@ -23,8 +16,9 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
-  addSaveState: () => void;
-
+  addIn: (path: Iterable<unknown>, value: Node) => void;
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   frameRef: Ref<HTMLIFrameElement>;
   index: number;
@@ -33,11 +27,12 @@ interface PagesTabProps {
   onRedo: () => void;
   onUndo: () => void;
   stackSize: number;
-  updateAppPreview: () => void;
 }
 
 export function PagesTab({
-  addSaveState,
+  addIn,
+  changeIn,
+  deleteIn,
   docRef,
   frameRef,
   index,
@@ -46,9 +41,8 @@ export function PagesTab({
   onRedo,
   onUndo,
   stackSize,
-  updateAppPreview,
 }: PagesTabProps): ReactElement {
-  const { app, setApp } = useApp();
+  const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -67,21 +61,6 @@ export function PagesTab({
   };
   const handleDragExit = (): void => {
     setDragOver(false);
-  };
-
-  const deleteIn = (path: Iterable<unknown>): void => {
-    docRef.current.deleteIn(path);
-    addSaveState();
-  };
-
-  const addIn = (path: Iterable<unknown>, value: Node): void => {
-    docRef.current.addIn(path, value);
-    addSaveState();
-  };
-
-  const changeIn = (path: Iterable<unknown>, value: Node): void => {
-    docRef.current.setIn(path, value);
-    addSaveState();
   };
 
   const onChangePagesBlocks = useCallback(
@@ -161,10 +140,6 @@ export function PagesTab({
     } as BlockDefinition;
     addBlock(newBlock);
   };
-
-  useEffect(() => {
-    updateAppPreview();
-  }, [setApp, updateAppPreview]);
 
   return (
     <>
