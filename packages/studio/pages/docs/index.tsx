@@ -24,6 +24,7 @@ import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
+import { RemapperRoutes } from './remapper/index.js';
 import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
@@ -125,6 +126,7 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
       <Route element={<Cli />} path="/packages/cli" />
