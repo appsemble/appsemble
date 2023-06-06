@@ -24,6 +24,7 @@ import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
+import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
 import { RemapperRoutes } from './remapper/index.js';
 import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
@@ -73,6 +74,12 @@ export function DocsRoutes(): ReactElement {
             </CollapsibleMenuSection>,
           ];
         })}
+      <CollapsibleMenuSection>
+        <MenuItem exact icon="sitemap" to={`${url}/remapper`}>
+          <FormattedMessage {...messages.remapper} />
+        </MenuItem>
+        <MenuSection>{RemapperMenuItems(url)}</MenuSection>
+      </CollapsibleMenuSection>
       <CollapsibleMenuSection>
         <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />

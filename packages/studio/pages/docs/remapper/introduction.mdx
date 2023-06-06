@@ -1,3 +1,5 @@
+import { importDocs } from './components/RemapperMenuItems.js';
+
 # Remapper
 
 ## Introduction
@@ -192,3 +194,13 @@ block.
 You should be familiar with the very basics of remapping now. A lot more remappers exist in the
 framework and more will be added over time, so it’s good to get familiar with the most important
 ones. Keep experimenting with them and you will find out just how powerful remappers are.
+
+### Table of contents
+
+<div>
+  {importDocs().map((section) => (
+    <li key={section.title.toLowerCase()}>
+      <a href={`/docs/remapper/${section.title.toLowerCase()}`}>{section.title}</a>
+    </li>
+  ))}
+</div>
