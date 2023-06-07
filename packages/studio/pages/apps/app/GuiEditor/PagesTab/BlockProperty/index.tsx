@@ -1,11 +1,10 @@
 import { Button, Loader, useData } from '@appsemble/react-components';
-import { type BasicPageDefinition, type BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
 import { type ReactElement, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import styles from './index.module.css';
-import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
@@ -13,32 +12,37 @@ interface BlockPropertyProps {
   changeProperty: (parameters: JsonObject) => void;
   changeType: (blockManifest: BlockManifest) => void;
   deleteBlock: () => void;
-  selectedBlock: number;
-  selectedPage: number;
+  selectedBlockName: string;
 }
 export function BlockProperty({
   changeProperty,
   changeType,
   deleteBlock,
-  selectedBlock,
-  selectedPage,
+  selectedBlockName,
 }: BlockPropertyProps): ReactElement {
-  const { app } = useApp();
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   const onTypeChange = useCallback(
     (index: number) => {
-      if (selectedBlock === -1) {
+      if (!selectedBlockName) {
         return;
       }
       changeType(blocks[index]);
     },
-    [blocks, changeType, selectedBlock],
+    [blocks, changeType, selectedBlockName],
   );
 
-  const currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-    selectedBlock
-  ];
+  const getCurrentBlockManifest = (): BlockManifest => {
+    if (loading) {
+      return;
+    }
+    const foundBlock = blocks.find(
+      (thisBlock) => thisBlock.name === normalizeBlockName(selectedBlockName),
+    );
+    if (foundBlock) {
+      return foundBlock;
+    }
+  };
 
   if (error) {
     return null;
@@ -46,7 +50,7 @@ export function BlockProperty({
   if (loading) {
     return <Loader />;
   }
-
+  const currentBlock = getCurrentBlockManifest();
   return (
     <div>
       {Boolean(currentBlock) && (
@@ -64,13 +68,13 @@ export function BlockProperty({
             label="Type"
             onChange={onTypeChange}
             options={blocks.map((block) => block.name)}
-            value={normalizeBlockName(currentBlock.type)}
+            value={normalizeBlockName(currentBlock.name)}
           />
           <PropertiesHandler
             onChange={changeProperty}
             parameters={currentBlock.parameters}
             schema={
-              blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.type))
+              blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.name))
                 .parameters
             }
           />

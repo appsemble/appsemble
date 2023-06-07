@@ -2,7 +2,7 @@ import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils/blockUtils.js';
 import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
-import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
+import { type Document, type Node, type ParsedNode, stringify, type YAMLSeq } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
@@ -63,16 +63,19 @@ export function PagesTab({
     setDragOver(false);
   };
 
-  const getSelectedBlockDefinition = (blockIndex: number): Document<ParsedNode> => {
-    const selectedBlockDef = docRef.current.getIn([
-      'pages',
-      selectedPage,
-      'blocks',
-      selectedBlock,
-    ]) as Document<ParsedNode>;
-    setSelectedBlock(blockIndex);
-    return selectedBlockDef;
-  };
+  const getSelectedBlockName = useCallback(
+    (): string =>
+      stringify(
+        docRef.current.getIn([
+          'pages',
+          selectedPage,
+          'blocks',
+          selectedBlock,
+          'type',
+        ]) as Document<ParsedNode>,
+      ),
+    [docRef, selectedBlock, selectedPage],
+  );
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
@@ -190,8 +193,7 @@ export function PagesTab({
               changeProperty={changeProperty}
               changeType={changeType}
               deleteBlock={deleteBlock}
-              selectedBlock={getSelectedBlockDefinition(selectedBlock)}
-              selectedPage={selectedPage}
+              selectedBlockName={getSelectedBlockName().replace(/["']/g, '').trim()}
             />
           ) : null}
         </div>
