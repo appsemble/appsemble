@@ -1,7 +1,7 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { type App, type AppDefinition } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
 import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
@@ -88,13 +88,23 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
+  const updateAppPreview = useCallback(() => {
+    const definition = saveStack[index].toJS();
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/gui/EDIT_SUCCESS', definition },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app.OrganizationId, app.path, index, saveStack]);
+
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     const clone = docRef.current.clone();
     copy.push(clone);
     setSaveStack(copy);
     setIndex(copy.length - 1);
-  }, [docRef, saveStack, index, setIndex, setSaveStack]);
+    updateAppPreview();
+  }, [docRef, saveStack, index, setIndex, setSaveStack, updateAppPreview]);
 
   const deleteIn = (path: Iterable<unknown>): void => {
     docRef.current.deleteIn(path);
@@ -119,19 +129,8 @@ export default function EditPage(): ReactElement {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
   };
 
-  const updateAppPreview = useCallback(() => {
-    const definition = app.definition as AppDefinition;
-    delete definition.anchors;
-    if (!app.path) {
-      return;
-    }
-    frame.current?.contentWindow.postMessage(
-      { type: 'editor/gui/EDIT_SUCCESS', definition },
-      getAppUrl(app.OrganizationId, app.path),
-    );
-  }, [app, frame]);
-
   const handleSave = useCallback(async () => {
+    setApp((currApp) => ({ ...currApp, definition: saveStack[index].toJS() }));
     const ymlString = stringify(app.definition);
     try {
       const formData = new FormData();
@@ -148,16 +147,18 @@ export default function EditPage(): ReactElement {
       });
     }
     updateAppPreview();
-  }, [app, coreStyle, formatMessage, push, setApp, sharedStyle, updateAppPreview]);
-
-  useEffect(() => {
-    updateAppPreview();
-  }, [setApp, updateAppPreview]);
-
-  useEffect(() => {
-    setApp((currApp) => ({ ...currApp, definition: saveStack[index].toJS() }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
+  }, [
+    app.definition,
+    app.id,
+    coreStyle,
+    formatMessage,
+    index,
+    push,
+    saveStack,
+    setApp,
+    sharedStyle,
+    updateAppPreview,
+  ]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;

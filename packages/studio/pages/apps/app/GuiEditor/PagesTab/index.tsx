@@ -63,6 +63,17 @@ export function PagesTab({
     setDragOver(false);
   };
 
+  const getSelectedBlockDefinition = (blockIndex: number): Document<ParsedNode> => {
+    const selectedBlockDef = docRef.current.getIn([
+      'pages',
+      selectedPage,
+      'blocks',
+      selectedBlock,
+    ]) as Document<ParsedNode>;
+    setSelectedBlock(blockIndex);
+    return selectedBlockDef;
+  };
+
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
       setSelectedPage(page);
@@ -179,7 +190,7 @@ export function PagesTab({
               changeProperty={changeProperty}
               changeType={changeType}
               deleteBlock={deleteBlock}
-              selectedBlock={selectedBlock}
+              selectedBlock={getSelectedBlockDefinition(selectedBlock)}
               selectedPage={selectedPage}
             />
           ) : null}
