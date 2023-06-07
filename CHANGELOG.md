@@ -38,6 +38,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Server: Set missing `userinfo` fields (`locale` and `zoneinfo`) in the `userinfo` API.
+- Server: Implement `resource.query` action instead of reusing the `request` action.
 
 ## \[[0.20.40](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)] - 2023-03-06
 
