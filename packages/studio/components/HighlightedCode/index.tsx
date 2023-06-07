@@ -42,7 +42,7 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
         if (!isLanguageSupported && !isCustomThemeAdded) {
           const languageConfig = new LanguageConfiguration(language);
           const tokensProvider = languageConfig.getTokensProvider();
-          const languageConfiguration = languageConfig.getLanguageCongifuration();
+          const languageConfiguration = languageConfig.getLanguageConfig();
           const theme = languageConfig.getTheme();
           MonacoEditor.languages.register({ id: languageName });
           MonacoEditor.languages.setMonarchTokensProvider(languageName, tokensProvider);
