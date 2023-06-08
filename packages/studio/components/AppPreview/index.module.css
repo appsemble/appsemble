@@ -3,6 +3,7 @@
   border-radius: 22px;
   box-sizing: border-box;
   flex: 0 0 40vw;
+  min-height: 100%;
 }
 
 .appFrame {

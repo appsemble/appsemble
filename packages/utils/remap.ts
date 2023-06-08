@@ -219,7 +219,7 @@ const mapperImplementations: MapperImplementations = {
 
   not(mappers, input, context) {
     if (mappers.length <= 1) {
-      return false;
+      return !remap(mappers[0], input, context);
     }
 
     const [firstValue, ...otherValues] = mappers.map((mapper) => remap(mapper, input, context));

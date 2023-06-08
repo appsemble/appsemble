@@ -80,6 +80,7 @@ export function IndexPage(): ReactElement {
             )}
           </Button>
           <MarkdownContent content={app.longDescription} lang={appLang} />
+          <br />
         </div>
       ) : null}
       <AppRatings />

@@ -402,15 +402,20 @@ describe('not', () => {
       mappers: { not: [{ prop: '0' }, { prop: '1' }] },
       expected: true,
     },
-    'return false on empty arrays': {
-      input: { empty: [] },
-      mappers: { not: [] },
+    'return true if (computed) input is false': {
+      input: false,
+      mappers: { not: [{ root: null }] },
+      expected: true,
+    },
+    'return false if (computed) input is true': {
+      input: true,
+      mappers: { not: [{ root: null }] },
       expected: false,
     },
-    'return false on arrays with 1 entry': {
-      input: { empty: [] },
-      mappers: { not: [{ prop: 'empty' }] },
-      expected: false,
+    'return true when mappers is empty': {
+      input: true,
+      mappers: { not: [] },
+      expected: true,
     },
   });
 });

@@ -126,7 +126,7 @@ pages:
       - $team:member
     blocks:
       - type: action-button
-        version: 0.20.44
+        version: 0.20.45
         roles: $team:member
         actions:
           onClick:
@@ -160,3 +160,4 @@ The following team related actions are can be used within an app:
 - [`team.invite`](/docs/reference/action#team.invite)
 - [`team.join`](/docs/reference/action#team.join)
 - [`team.list`](/docs/reference/action#team.list)
+- [`team.members`](/docs/reference/action#team.members)

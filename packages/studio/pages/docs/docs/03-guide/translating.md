@@ -52,7 +52,7 @@ Let’s look at a simple example of what this looks like in an app.
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.44
+    version: 0.20.45
     parameters:
       content:
         translate: myMessage
@@ -69,7 +69,7 @@ Alternatively using `string.format`:
 ```yaml
 blocks:
   - type: markdown
-    version: 0.20.44
+    version: 0.20.45
     parameters:
       content:
         string.format:
@@ -79,7 +79,7 @@ blocks:
               user: name
 ```
 
-![Untranslated message](../../config/assets/default-message.png)
+![Untranslated message](../../../../../../config/assets/default-message.png)
 
 By default, like before, will display `{myMessage}` if the message is not defined for the current
 language. With a message defined like this, however, it would then be possible to define a message
@@ -90,7 +90,7 @@ For English: `Welcome {name}!` For Dutch: `Welkom {name}!`
 If the user is logged in and has their name set in their Appsemble account, it will display the
 message, as well as the name of the user assuming they are logged in:
 
-![Translated message](../../config/assets/translated-message.png)
+![Translated message](../../../../../../config/assets/translated-message.png)
 
 With the above example if the user is not logged in it will display a blank spot in the spot where
 the `{name}` value is set. This could be solved by using an
@@ -122,7 +122,7 @@ The categories are:
 
 After filling in the translations, make sure to click the `Save` button at the bottom of the page.
 
-![The app translations page](../../config/assets/translations-page.png)
+![The app translations page](../../../../../../config/assets/translations-page.png)
 
 ## Translating using the Appsemble CLI
 
@@ -160,7 +160,7 @@ The format used for these translation files is similar to the format shown on th
   },
   "blocks": {
     "@appsemble/form": {
-      "0.20.44": {
+      "0.20.45": {
         "submit": "An example override of the submit message in the form block."
       }
     }
