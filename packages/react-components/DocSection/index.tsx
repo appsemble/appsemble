@@ -40,8 +40,6 @@ export function DocSection({ children }: DocSectionProps): ReactElement {
     [collapsed, collapsible],
   );
 
-  const notCollapsibleContext = useMemo(() => ({ collapsible: false }), []);
-
   return (
     <>
       {Children.map(children, (child, index) => {
@@ -53,11 +51,7 @@ export function DocSection({ children }: DocSectionProps): ReactElement {
             <CollapsedContext.Provider value={collapseContext}>{child}</CollapsedContext.Provider>
           );
         }
-        return (
-          <CollapsedContext.Provider value={notCollapsibleContext}>
-            {child}
-          </CollapsedContext.Provider>
-        );
+        return child;
       })}
     </>
   );
