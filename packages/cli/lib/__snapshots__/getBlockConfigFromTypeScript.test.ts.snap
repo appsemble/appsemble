@@ -94,6 +94,11 @@ barcode event only holds the object with property barcode.",
     "properties": {
       "barcodeType": {
         "default": "code_128",
+        "description": "The type of barcode that will be scanned by the block.
+
+Choosing 'multiple' will display a dropdown box to show list of code type to select from.
+
+It has to be configured according to the code image to allow scanning.",
         "enum": [
           "2of5",
           "code_32",
@@ -114,6 +119,11 @@ barcode event only holds the object with property barcode.",
       },
       "patchSize": {
         "default": "x-large",
+        "description": "The type of patch size should depend on the size of code image.
+
+Choosing 'multiple' will display a dropdown box to show list of patch size to select from.
+
+It has to be configured according to the code image to allow scanning.",
         "enum": [
           "large",
           "medium",
@@ -126,10 +136,17 @@ barcode event only holds the object with property barcode.",
       },
       "resolution": {
         "default": 800,
+        "description": "The resolution should allow scanning code to be precise.
+
+It has to be configured according to the code image to allow scanning.",
         "type": "number",
       },
       "type": {
-        "description": "Type is either camera or file",
+        "description": "Type is either camera or file
+
+Type 'file' allows to upload code image to scan.
+
+Type 'camera' allows to scan code using webcam.",
         "enum": [
           "camera",
           "file",

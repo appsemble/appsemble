@@ -27,6 +27,12 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * The type of barcode that will be scanned by the block.
+     *
+     * Choosing 'multiple' will display a dropdown box to show list of code type to select from.
+     *
+     * It has to be configured according to the code image to allow scanning.
+     *
      * @default code_128
      */
     barcodeType?:
@@ -46,17 +52,31 @@ declare module '@appsemble/sdk' {
       | 'upc';
 
     /**
+     * The type of patch size should depend on the size of code image.
+     *
+     * Choosing 'multiple' will display a dropdown box to show list of patch size to select from.
+     *
+     * It has to be configured according to the code image to allow scanning.
+     *
      * @default x-large
      */
     patchSize?: 'large' | 'medium' | 'multiple' | 'small' | 'x-large' | 'x-small';
 
     /**
+     * The resolution should allow scanning code to be precise.
+     *
+     * It has to be configured according to the code image to allow scanning.
+     *
      * @default 800
      */
     resolution?: number;
 
     /**
      * Type is either camera or file
+     *
+     * Type 'file' allows to upload code image to scan.
+     *
+     * Type 'camera' allows to scan code using webcam.
      */
     type: 'camera' | 'file';
   }
