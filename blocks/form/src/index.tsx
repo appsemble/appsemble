@@ -1,5 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
+import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -224,15 +225,17 @@ bootstrap(
     const debouncedRequest = useMemo(
       () =>
         debounce(async (fieldValues: Values) => {
-          const response = await actions[autofill.action](fieldValues);
-          if (typeof response === 'object' && !Array.isArray(response)) {
-            const newValues = response as Record<string, unknown>;
-            for (const [key] of Object.entries(newValues)) {
-              newValues[key] ??= defaultValues[key];
+          await actions[autofill.action](fieldValues).then((response) => {
+            if (typeof response === 'object' && !Array.isArray(response)) {
+              const newValues = response as Record<string, unknown>;
+              for (const [key] of Object.entries(newValues)) {
+                newValues[key] ??= defaultValues[key];
+              }
+              setValues((prevValues) => ({ ...prevValues, ...newValues }));
+              setLastChanged(null);
             }
-            setValues((prevValues) => ({ ...prevValues, ...newValues }));
-            setLastChanged(null);
-          }
+            // TODO: Handle errors appropriately
+          }, identity);
         }, autofill?.delay),
       [actions, defaultValues, autofill],
     );

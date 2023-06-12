@@ -1,8 +1,15 @@
-import { getRemapperContext, type Options } from '@appsemble/node-utils';
-import { type NotificationDefinition } from '@appsemble/types';
+import { getRemapperContext, type Options, handleValidatorResult } from '@appsemble/node-utils';
+import {
+  type NotificationDefinition,
+  type ResourceDefinition,
+  type Resource as ResourceType,
+} from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
+import { addMilliseconds, isPast, parseISO } from 'date-fns';
+import { ValidationError, Validator } from 'jsonschema';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import { type QueryParams } from 'koas-parameters';
+import parseDuration from 'parse-duration';
 import { Op, type Order, type WhereOptions } from 'sequelize';
 
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
@@ -15,6 +22,16 @@ import {
   ResourceSubscription,
   User,
 } from '../models/index.js';
+
+function stripResource({
+  $author,
+  $created,
+  $editor,
+  $updated,
+  ...data
+}: ResourceType): Record<string, unknown> {
+  return data;
+}
 
 export function renameOData(name: string): string {
   switch (name) {
@@ -212,6 +229,83 @@ export async function processReferenceHooks(
       },
     ),
   );
+}
+
+/**
+ * Process resource data.
+ *
+ * This handles JSON schema validation, resource expiration, and validation.
+ *
+ * @param resource The resource to process.
+ * @param definition The resource definition to use for processing the request body.
+ * @param isPatch The "HTTP" method used.
+ * @param knownExpires A previously known expires value.
+ * @returns One or more resources.
+ */
+export function validate(
+  resource: Record<string, unknown> | Record<string, unknown>[],
+  definition: ResourceDefinition,
+  isPatch = false,
+  knownExpires?: Date,
+): Record<string, unknown> | Record<string, unknown>[] {
+  // TODO: unify validate with extractResourceBody to support Koa context and direct object inputs
+  const validator = new Validator();
+  const patchedSchema = {
+    ...definition.schema,
+    required: isPatch ? [] : definition.schema.required,
+    properties: {
+      ...definition.schema.properties,
+      id: { type: 'integer' },
+      $expires: { type: 'string', format: 'date-time' },
+      $clonable: { type: 'boolean' },
+    },
+  };
+  const customErrors: ValidationError[] = [];
+  const expiresDuration = definition.expires ? parseDuration(definition.expires) : undefined;
+  const strippedResource = Array.isArray(resource)
+    ? resource.map(stripResource)
+    : stripResource(resource as ResourceType);
+  const result = validator.validate(
+    strippedResource,
+    Array.isArray(strippedResource) ? { type: 'array', items: patchedSchema } : patchedSchema,
+    {
+      base: '#',
+      nestedErrors: true,
+      rewrite(value, { format }, options, { path }) {
+        if (
+          Array.isArray(strippedResource)
+            ? path.length === 2 && typeof path[0] === 'number' && path[1] === '$expires'
+            : path.length === 1 && path[0] === '$expires'
+        ) {
+          if (value !== undefined) {
+            const date = parseISO(value);
+            if (isPast(date)) {
+              customErrors.push(new ValidationError('has already passed', value, null, path));
+            }
+            return date;
+          }
+          if (knownExpires) {
+            return knownExpires;
+          }
+          if (expiresDuration) {
+            return addMilliseconds(new Date(), expiresDuration);
+          }
+        }
+        if (value === undefined) {
+          return;
+        }
+        if (format !== 'binary') {
+          return value;
+        }
+      },
+    },
+  );
+
+  result.errors.push(...customErrors);
+
+  handleValidatorResult(result, 'Resource validation failed');
+
+  return strippedResource;
 }
 
 /**

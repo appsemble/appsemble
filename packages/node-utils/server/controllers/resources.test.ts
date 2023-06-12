@@ -10,10 +10,18 @@ import { defaultLocale, remap } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import { type PathParams, type QueryParams } from 'koas-parameters';
 
-import { createCountResources, createGetResourceById, createQueryResources } from './resources.js';
+import {
+  createCountResources,
+  createCreateResource,
+  createGetResourceById,
+  createQueryResources,
+} from './resources.js';
 import { getRemapperContext } from '../../app.js';
 import { getResourceDefinition } from '../../resource.js';
 import {
+  type AppAsset,
+  type CreateAppResourcesWithAssetsParams,
+  type DeleteAppResourceParams,
   type GetAppMessagesParams,
   type GetAppParams,
   type GetAppResourceParams,
@@ -22,9 +30,11 @@ import {
   type Options,
   type ParsedQuery,
   type ParseQueryParams,
+  type UpdateAppResourceParams,
   type UtilsUser,
   type VerifyResourceActionPermissionParams,
 } from '../types.js';
+import {File} from "koas-body-parser";
 
 const { jest } = import.meta;
 
@@ -38,8 +48,16 @@ let mockVerifyResourceActionPermission: jest.Mock<
 let mockParseQuery: jest.Mock<ParsedQuery, [ParseQueryParams]>;
 let mockGetAppUrl: jest.Mock<Promise<URL>, [GetAppSubEntityParams]>;
 let mockGetAppMessages: jest.Mock<Promise<AppMessages[]>, [GetAppMessagesParams]>;
+let mockCreateAppResourcesWithAssets: jest.Mock<
+  Promise<Resource[]>,
+  [CreateAppResourcesWithAssetsParams]
+>;
+let mockGetAppAssets: jest.Mock<Promise<AppAsset[]>, [GetAppSubEntityParams]>;
+let mockUpdateAppResource: jest.Mock<Promise<Resource | null>, [UpdateAppResourceParams]>;
+let mockDeleteAppResource: jest.Mock<Promise<void>, [DeleteAppResourceParams]>;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
+let mockCtxIs: jest.Mock<string, []>;
 
 describe('createQueryResources', () => {
   beforeEach(() => {
@@ -567,3 +585,273 @@ describe('createGetResourceById', () => {
     expect(mockCtx.body).toStrictEqual(remappedResource);
   });
 });
+
+describe('createCreateResource', () => {
+  beforeEach(() => {
+    mockGetApp = jest.fn();
+    mockVerifyResourceActionPermission = jest.fn();
+    mockCreateAppResourcesWithAssets = jest.fn();
+
+    mockCtxIs = jest.fn();
+    mockCtx = {
+      pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
+      user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+      is: mockCtxIs as () => string,
+      request: {},
+    } as ParameterizedContext<DefaultState, DefaultContext>;
+  });
+
+  it('should fetch app and create multiple resources', async () => {
+    const mockApp = {
+      id: 1,
+      definition: {
+        resources: {
+          mockResourceType: { id: 'id', schema: {} },
+        } as Record<string, ResourceDefinition>,
+      } as AppDefinition,
+    } as App;
+    const mockResources = [{ id: 1 }, { id: 2 }] as Resource[];
+
+    mockCtx.request.body = { resource: mockResources };
+
+    mockGetApp.mockResolvedValue(mockApp);
+    mockCtxIs.mockReturnValue('multipart/form-data');
+    mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
+
+    const middleware = createCreateResource({
+      getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
+      createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
+        params: CreateAppResourcesWithAssetsParams,
+      ) => Promise<Resource[]>,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
+      ) => Promise<Record<string, any>>,
+    } as Options);
+
+    await middleware(mockCtx, jest.fn());
+
+    expect(mockGetApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          pathParams: expect.objectContaining({ appId: 1 }),
+        }),
+        query: expect.objectContaining({ where: { id: 1 } }),
+      }),
+    );
+
+    expect(mockCreateAppResourcesWithAssets).toHaveBeenCalledWith(
+      expect.objectContaining({
+        app: expect.objectContaining({
+          definition: expect.objectContaining({
+            resources: expect.objectContaining({
+              mockResourceType: expect.objectContaining({
+                id: 'id',
+                schema: {},
+              }),
+            }),
+          }),
+          id: 1,
+        }),
+        context: expect.objectContaining({
+          request: expect.objectContaining({
+            body: {
+              resource: mockResources,
+            },
+          }),
+          pathParams: expect.objectContaining({
+            appId: 1,
+            resourceType: 'mockResourceType',
+          }),
+          user: expect.objectContaining({
+            id: 'mockUserId',
+            name: 'John Doe',
+            primaryEmail: 'john@example.com',
+          }),
+        }),
+      }),
+    );
+
+    expect(mockCtx.body).toStrictEqual(mockResources);
+  });
+
+  it('should fetch app and create a single resource', async () => {
+    const mockApp = {
+      id: 1,
+      definition: {
+        resources: {
+          mockResourceType: { id: 'id', schema: {} },
+        } as Record<string, ResourceDefinition>,
+      } as AppDefinition,
+    } as App;
+    const mockResources = [{ id: 1 }] as Resource[];
+
+    mockCtx.request.body = { resource: mockResources[0] };
+
+    mockGetApp.mockResolvedValue(mockApp);
+    mockCtxIs.mockReturnValue('multipart/form-data');
+    mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
+
+    const middleware = createCreateResource({
+      getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
+      createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
+        params: CreateAppResourcesWithAssetsParams,
+      ) => Promise<Resource[]>,
+      verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+        params: VerifyResourceActionPermissionParams,
+      ) => Promise<Record<string, any>>,
+    } as Options);
+
+    await middleware(mockCtx, jest.fn());
+
+    expect(mockGetApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        context: expect.objectContaining({
+          pathParams: expect.objectContaining({ appId: 1 }),
+        }),
+        query: expect.objectContaining({ where: { id: 1 } }),
+      }),
+    );
+
+    expect(mockCreateAppResourcesWithAssets).toHaveBeenCalledWith(
+      expect.objectContaining({
+        app: expect.objectContaining({
+          definition: expect.objectContaining({
+            resources: expect.objectContaining({
+              mockResourceType: expect.objectContaining({
+                id: 'id',
+                schema: {},
+              }),
+            }),
+          }),
+          id: 1,
+        }),
+        context: expect.objectContaining({
+          request: expect.objectContaining({
+            body: {
+              resource: mockResources[0],
+            },
+          }),
+          pathParams: expect.objectContaining({
+            appId: 1,
+            resourceType: 'mockResourceType',
+          }),
+          user: expect.objectContaining({
+            id: 'mockUserId',
+            name: 'John Doe',
+            primaryEmail: 'john@example.com',
+          }),
+        }),
+      }),
+    );
+
+    expect(mockCtx.body).toStrictEqual(mockResources[0]);
+  });
+
+  // it('should fetch app and create multiple resources with assets', async () => {
+  //   const mockApp = {
+  //     id: 1,
+  //     definition: {
+  //       resources: {
+  //         mockResourceType: { id: 'id', schema: { format: 'binary '} },
+  //       } as Record<string, ResourceDefinition>,
+  //     } as AppDefinition,
+  //   } as App;
+  //   const mockResources = [{ id: 1 }, { id: 2 }] as Resource[];
+  //   const mockAssets = [
+  //     { contents: Buffer.from('Test data 1'), filename: 'mock_asset_1', mime: 'png' },
+  //     { contents: Buffer.from('Test data 2'), filename: 'mock_asset_2', mime: 'png' },
+  //   ] as File[];
+  //
+  //   mockCtx.request.body = { resource: mockResources, assets: mockAssets };
+  //
+  //   mockGetApp.mockResolvedValue(mockApp);
+  //   mockCtxIs.mockReturnValue('multipart/form-data');
+  //   mockCreateAppResourcesWithAssets.mockResolvedValue(mockResources);
+  //
+  //   const middleware = createCreateResource({
+  //     getApp: mockGetApp as (params: GetAppParams) => Promise<App>,
+  //     createAppResourcesWithAssets: mockCreateAppResourcesWithAssets as (
+  //       params: CreateAppResourcesWithAssetsParams,
+  //     ) => Promise<Resource[]>,
+  //     verifyResourceActionPermission: mockVerifyResourceActionPermission as (
+  //       params: VerifyResourceActionPermissionParams,
+  //     ) => Promise<Record<string, any>>,
+  //   } as Options);
+  //
+  //   await middleware(mockCtx, jest.fn());
+  //
+  //   expect(mockGetApp).toHaveBeenCalledWith(
+  //     expect.objectContaining({
+  //       context: expect.objectContaining({
+  //         pathParams: expect.objectContaining({ appId: 1 }),
+  //       }),
+  //       query: expect.objectContaining({ where: { id: 1 } }),
+  //     }),
+  //   );
+  //
+  //   expect(mockCreateAppResourcesWithAssets).toHaveBeenCalledWith(
+  //     expect.objectContaining({
+  //       app: expect.objectContaining({
+  //         definition: expect.objectContaining({
+  //           resources: expect.objectContaining({
+  //             mockResourceType: expect.objectContaining({
+  //               id: 'id',
+  //               schema: {},
+  //             }),
+  //           }),
+  //         }),
+  //         id: 1,
+  //       }),
+  //       context: expect.objectContaining({
+  //         request: expect.objectContaining({
+  //           body: {
+  //             resource: mockResources,
+  //             assets: mockAssets,
+  //           },
+  //         }),
+  //         pathParams: expect.objectContaining({
+  //           appId: 1,
+  //           resourceType: 'mockResourceType',
+  //         }),
+  //         user: expect.objectContaining({
+  //           id: 'mockUserId',
+  //           name: 'John Doe',
+  //           primaryEmail: 'john@example.com',
+  //         }),
+  //       }),
+  //     }),
+  //   );
+  //
+  //   expect(mockCtx.body).toStrictEqual(mockResources);
+  // });
+});
+
+// Describe('createUpdateResource', () => {
+//   beforeEach(() => {
+//     mockGetApp = jest.fn();
+//     mockGetAppResource = jest.fn();
+//     mockVerifyPermission = jest.fn();
+//     mockGetAppUrl = jest.fn();
+//     mockGetAppMessages = jest.fn();
+//
+//     mockCtx = {
+//       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
+//       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+//     } as ParameterizedContext<DefaultState, DefaultContext>;
+//   });
+// });
+//
+// describe('createDeleteResource', () => {
+//   beforeEach(() => {
+//     mockGetApp = jest.fn();
+//     mockGetAppResource = jest.fn();
+//     mockVerifyPermission = jest.fn();
+//     mockGetAppUrl = jest.fn();
+//     mockGetAppMessages = jest.fn();
+//
+//     mockCtx = {
+//       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
+//       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
+//     } as ParameterizedContext<DefaultState, DefaultContext>;
+//   });
+// });

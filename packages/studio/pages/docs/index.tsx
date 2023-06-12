@@ -2,7 +2,14 @@
 import Cli from '@appsemble/cli/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Preact from '@appsemble/preact/README.md';
-import { Input, MenuItem, MenuSection, MetaSwitch, useSideMenu } from '@appsemble/react-components';
+import {
+  CollapsibleMenuSection,
+  Input,
+  MenuItem,
+  MenuSection,
+  MetaSwitch,
+  useSideMenu,
+} from '@appsemble/react-components';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Sdk from '@appsemble/sdk/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
@@ -21,8 +28,8 @@ import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
 
-function getUrl(p: string, base: string): string {
-  return p === '/' ? base : `${base}/${p.replace(/\/$/, '')}`;
+function getUrl(path: string, base: string): string {
+  return path === '/' ? base : `${base}/${path.replace(/\/$/, '')}`;
 }
 
 /**
@@ -43,48 +50,56 @@ export function DocsRoutes(): ReactElement {
         <FormattedMessage {...messages.search} />
       </MenuItem>
       {docs
-        .filter(({ p }) => p.endsWith('/'))
-        .map(({ icon, p, title }) => {
-          const subRoutes = docs.filter((subRoute) => subRoute.p !== p && subRoute.p.startsWith(p));
+        .filter(({ path }) => path.endsWith('/'))
+        .map(({ icon, path, title }) => {
+          const subRoutes = docs.filter(
+            (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
+          );
           return [
-            <MenuItem exact icon={icon} key="docs-title" to={getUrl(p, url)}>
-              {title}
-            </MenuItem>,
-            subRoutes.length ? (
-              <MenuSection key="docs-section">
-                {subRoutes.map((subRoute) => (
-                  <MenuItem key={subRoute.p} to={getUrl(subRoute.p, url)}>
-                    {subRoute.title}
-                  </MenuItem>
-                ))}
-              </MenuSection>
-            ) : null,
+            <CollapsibleMenuSection key="section-wrapper">
+              <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
+                {title}
+              </MenuItem>
+              {subRoutes.length ? (
+                <CollapsibleMenuSection key="docs-section">
+                  {subRoutes.map((subRoute) => (
+                    <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
+                      {subRoute.title}
+                    </MenuItem>
+                  ))}
+                </CollapsibleMenuSection>
+              ) : null}
+            </CollapsibleMenuSection>,
           ];
         })}
-      <MenuItem exact icon="book" to={`${url}/reference`}>
-        <FormattedMessage {...messages.reference} />
-      </MenuItem>
-      <MenuSection>
-        <MenuItem exact to={`${url}/reference/app`}>
-          <FormattedMessage {...messages.app} />
+      <CollapsibleMenuSection>
+        <MenuItem icon="book" to={`${url}/reference`}>
+          <FormattedMessage {...messages.reference} />
         </MenuItem>
-        <MenuItem exact to={`${url}/reference/action`}>
-          <FormattedMessage {...messages.action} />
+        <CollapsibleMenuSection>
+          <MenuItem exact to={`${url}/reference/app`}>
+            <FormattedMessage {...messages.app} />
+          </MenuItem>
+          <MenuItem exact to={`${url}/reference/action`}>
+            <FormattedMessage {...messages.action} />
+          </MenuItem>
+          <MenuItem exact to={`${url}/reference/remapper`}>
+            <FormattedMessage {...messages.remapper} />
+          </MenuItem>
+        </CollapsibleMenuSection>
+      </CollapsibleMenuSection>
+      <CollapsibleMenuSection>
+        <MenuItem exact icon="cubes" to={`${url}/packages`}>
+          <FormattedMessage {...messages.packages} />
         </MenuItem>
-        <MenuItem exact to={`${url}/reference/remapper`}>
-          <FormattedMessage {...messages.remapper} />
-        </MenuItem>
-      </MenuSection>
-      <MenuItem exact icon="cubes" to={`${url}/packages`}>
-        <FormattedMessage {...messages.packages} />
-      </MenuItem>
-      <MenuSection>
-        <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
-        <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
-        <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
-        <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
-        <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
-      </MenuSection>
+        <CollapsibleMenuSection>
+          <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
+          <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
+          <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
+          <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
+          <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
+        </CollapsibleMenuSection>
+      </CollapsibleMenuSection>
       <MenuItem exact icon="scroll" to={`${url}/changelog`}>
         <FormattedMessage {...messages.changelog} />
       </MenuItem>
@@ -118,11 +133,15 @@ export function DocsRoutes(): ReactElement {
       <Route element={<WebpackConfig />} path="/packages/webpack-config" />
       <Route element={<CreateAppsemble />} path="/packages/create-appsemble" />
       <Route element={<ReferenceRoutes />} path="/reference/*" />
-      {docs.map(({ Component, p, title }) => (
-        <Route element={<Doc component={Component} title={title} />} key={p} path={getUrl(p, '')} />
+      {docs.map(({ Component, path, title }) => (
+        <Route
+          element={<Doc component={Component} title={title} />}
+          key={path}
+          path={getUrl(path, '')}
+        />
       ))}
-      {docs.map(({ p }) => (
-        <Route element={<Navigate to={getUrl(p, '')} />} key={p} path="*" />
+      {docs.map(({ path }) => (
+        <Route element={<Navigate to={getUrl(path, '')} />} key={path} path="*" />
       ))}
       <Route element={<Navigate to={url} />} path="*" />
     </MetaSwitch>

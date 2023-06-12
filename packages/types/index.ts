@@ -321,7 +321,7 @@ export interface Remappers {
    *
    * Returns `false` if all entries are equal to the first entry, otherwise `true`.
    *
-   * If only 1 or less are passed to it `false` is returned.
+   * If only one remapper or none is passed, the remapper value gets computed and then inverted.
    */
   not: Remapper[];
 

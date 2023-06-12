@@ -48,6 +48,9 @@ be used in older apps, but will run a `noop` action instead. The actions also wo
 different e.g. the actions are not run by the user, so retrieving user information with the
 [user](/docs/reference/remapper#user) remapper won't work the same.
 
+> Note: We do not recommend using resource actions with resources that have properties in binary
+> format, as assets are currently unsupported.
+
 Supported (server-side) actions:
 
 <ul>
