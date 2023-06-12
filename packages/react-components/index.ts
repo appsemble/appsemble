@@ -11,6 +11,7 @@ export * from './CheckboxField/index.js';
 export * from './Content/index.js';
 export * from './Confirmation/index.js';
 export * from './DateTimeField/index.js';
+export * from './CollapsibleMenuSection/index.js';
 export * from './Dropdown/index.js';
 export * from './EditPassword/index.js';
 export * from './ErrorHandler/index.js';

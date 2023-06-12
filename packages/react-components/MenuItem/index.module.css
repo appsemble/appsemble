@@ -1,3 +1,7 @@
+.menuContainer {
+  position: relative;
+}
+
 .root {
   display: flex;
   height: 3rem;
@@ -10,4 +14,12 @@
 .text {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.icon {
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
 }

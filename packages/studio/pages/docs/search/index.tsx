@@ -23,7 +23,7 @@ const index: SearchEntry[] = [];
 for (const doc of docs) {
   for (const [hash, { haystack, title }] of doc.searchIndex) {
     index.push({
-      url: `../${doc.p.replace(/^\//, '')}#${hash}`,
+      url: `../${doc.path.replace(/^\//, '')}#${hash}`,
       title,
       haystack,
     });
