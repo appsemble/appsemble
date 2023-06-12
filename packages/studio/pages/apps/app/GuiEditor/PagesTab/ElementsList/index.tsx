@@ -34,7 +34,7 @@ export function ElementsList({
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
 
   const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
-    (index: number) => docRef.current.getIn(['pages', index, 'name']) as string,
+    (page, index: number) => docRef.current.getIn(['pages', index, 'name']) as string,
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
