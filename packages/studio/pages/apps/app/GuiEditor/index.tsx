@@ -129,8 +129,7 @@ export default function EditPage(): ReactElement {
   };
 
   const handleSave = useCallback(async () => {
-    setApp((currApp) => ({ ...currApp, definition: saveStack[index].toJS() }));
-    const ymlString = stringify(app.definition);
+    const ymlString = stringify(saveStack[index]);
     try {
       const formData = new FormData();
       formData.append('yaml', ymlString);
@@ -147,7 +146,6 @@ export default function EditPage(): ReactElement {
     }
     updateAppPreview();
   }, [
-    app.definition,
     app.id,
     coreStyle,
     formatMessage,
