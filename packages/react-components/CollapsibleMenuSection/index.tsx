@@ -12,7 +12,7 @@ import {
 
 import { MenuItem } from '../MenuItem/index.js';
 
-interface DocSectionProps {
+interface CollapsibleMenuSectionProps {
   children: ReactNode;
 }
 
@@ -30,7 +30,7 @@ export const CollapsedContext = createContext<CollapsedContextInterface>({
   collapsible: false,
 });
 
-export function DocSection({ children }: DocSectionProps): ReactElement {
+export function CollapsibleMenuSection({ children }: CollapsibleMenuSectionProps): ReactElement {
   const [collapsed, setCollapsed] = useState(false);
   // Checks if there are any sub-sections
   const collapsible = useMemo(() => Boolean(Children.toArray(children)[1]), [children]);

@@ -3,7 +3,7 @@ import Cli from '@appsemble/cli/README.md';
 // eslint-disable-next-line import/no-extraneous-dependencies, n/no-extraneous-import
 import Preact from '@appsemble/preact/README.md';
 import {
-  DocSection,
+  CollapsibleMenuSection,
   Input,
   MenuItem,
   MenuSection,
@@ -56,27 +56,27 @@ export function DocsRoutes(): ReactElement {
             (subRoute) => subRoute.path !== path && subRoute.path.startsWith(path),
           );
           return [
-            <DocSection key="section-wrapper">
+            <CollapsibleMenuSection key="section-wrapper">
               <MenuItem exact icon={icon} key="docs-title" to={getUrl(path, url)}>
                 {title}
               </MenuItem>
               {subRoutes.length ? (
-                <MenuSection key="docs-section">
+                <CollapsibleMenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
                     <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
                       {subRoute.title}
                     </MenuItem>
                   ))}
-                </MenuSection>
+                </CollapsibleMenuSection>
               ) : null}
-            </DocSection>,
+            </CollapsibleMenuSection>,
           ];
         })}
-      <DocSection>
+      <CollapsibleMenuSection>
         <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
-        <MenuSection>
+        <CollapsibleMenuSection>
           <MenuItem exact to={`${url}/reference/app`}>
             <FormattedMessage {...messages.app} />
           </MenuItem>
@@ -86,20 +86,20 @@ export function DocsRoutes(): ReactElement {
           <MenuItem exact to={`${url}/reference/remapper`}>
             <FormattedMessage {...messages.remapper} />
           </MenuItem>
-        </MenuSection>
-      </DocSection>
-      <DocSection>
+        </CollapsibleMenuSection>
+      </CollapsibleMenuSection>
+      <CollapsibleMenuSection>
         <MenuItem exact icon="cubes" to={`${url}/packages`}>
           <FormattedMessage {...messages.packages} />
         </MenuItem>
-        <MenuSection>
+        <CollapsibleMenuSection>
           <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
           <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
           <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
           <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
           <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
-        </MenuSection>
-      </DocSection>
+        </CollapsibleMenuSection>
+      </CollapsibleMenuSection>
       <MenuItem exact icon="scroll" to={`${url}/changelog`}>
         <FormattedMessage {...messages.changelog} />
       </MenuItem>
