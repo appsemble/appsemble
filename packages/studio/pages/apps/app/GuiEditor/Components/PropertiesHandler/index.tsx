@@ -7,8 +7,8 @@ import RecursiveProperties from './RecursiveProperties/index.js';
 export const SchemaDefinitionsContext = createContext({});
 
 interface PropertiesHandlerProps {
-  parameters: any;
   onChange: (newParameterDefinition: JsonObject) => void;
+  parameters: any;
   schema: Schema;
 }
 export function PropertiesHandler({

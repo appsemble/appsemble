@@ -1,7 +1,7 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
 import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
@@ -103,8 +103,7 @@ export default function EditPage(): ReactElement {
     copy.push(clone);
     setSaveStack(copy);
     setIndex(copy.length - 1);
-    updateAppPreview();
-  }, [docRef, saveStack, index, setIndex, setSaveStack, updateAppPreview]);
+  }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
   const deleteIn = (path: Iterable<unknown>): void => {
     docRef.current.deleteIn(path);
@@ -159,6 +158,10 @@ export default function EditPage(): ReactElement {
     sharedStyle,
     updateAppPreview,
   ]);
+
+  useEffect(() => {
+    updateAppPreview();
+  }, [setIndex, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;

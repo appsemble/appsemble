@@ -3,6 +3,7 @@ import { type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
 import { type ReactElement, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
+import { type Document, parse, type ParsedNode, stringify } from 'yaml';
 
 import styles from './index.module.css';
 import { InputList } from '../../Components/InputList/index.js';
@@ -12,37 +13,30 @@ interface BlockPropertyProps {
   changeProperty: (parameters: JsonObject) => void;
   changeType: (blockManifest: BlockManifest) => void;
   deleteBlock: () => void;
-  selectedBlockName: string;
+  selectedBlock: Document<ParsedNode>;
 }
 export function BlockProperty({
   changeProperty,
   changeType,
   deleteBlock,
-  selectedBlockName,
+  selectedBlock,
 }: BlockPropertyProps): ReactElement {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
+  const blockName = normalizeBlockName(
+    stringify(selectedBlock.getIn(['type']))
+      .replace(/["']/g, '')
+      .trim(),
+  );
 
   const onTypeChange = useCallback(
     (index: number) => {
-      if (!selectedBlockName) {
+      if (!selectedBlock) {
         return;
       }
       changeType(blocks[index]);
     },
-    [blocks, changeType, selectedBlockName],
+    [blocks, changeType, selectedBlock],
   );
-
-  const getCurrentBlockManifest = (): BlockManifest => {
-    if (loading) {
-      return;
-    }
-    const foundBlock = blocks.find(
-      (thisBlock) => thisBlock.name === normalizeBlockName(selectedBlockName),
-    );
-    if (foundBlock) {
-      return foundBlock;
-    }
-  };
 
   if (error) {
     return null;
@@ -50,10 +44,10 @@ export function BlockProperty({
   if (loading) {
     return <Loader />;
   }
-  const currentBlock = getCurrentBlockManifest();
+
   return (
     <div>
-      {Boolean(currentBlock) && (
+      {Boolean(selectedBlock) && (
         <div>
           <Button
             className={`is-danger ${styles.deleteButton}`}
@@ -68,19 +62,13 @@ export function BlockProperty({
             label="Type"
             onChange={onTypeChange}
             options={blocks.map((block) => block.name)}
-            value={normalizeBlockName(currentBlock.name)}
+            value={normalizeBlockName(blockName)}
           />
           <PropertiesHandler
             onChange={changeProperty}
-            parameters={currentBlock.parameters}
-            schema={
-              blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.name))
-                .parameters
-            }
+            parameters={parse(stringify(selectedBlock)).parameters}
+            schema={blocks.find((thisBlock) => thisBlock.name === blockName).parameters}
           />
-          <Button className="is-primary" component="a" icon="add">
-            Save Block
-          </Button>
         </div>
       )}
     </div>
