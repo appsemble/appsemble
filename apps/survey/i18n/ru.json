@@ -5,9 +5,14 @@
     "pages.finished": "Завершено",
     "pages.survey": "Опрос",
     "pages.survey.steps.0": "Введение",
+    "pages.survey.steps.1": "",
+    "pages.survey.steps.2": "",
     "pages.survey.steps.3": "Обратная связь",
     "pages.survey.steps.4": "Рейтинги функций",
-    "pages.survey.steps.6": "Ваше следующее приложение"
+    "pages.survey.steps.5": "",
+    "pages.survey.steps.6": "Ваше следующее приложение",
+    "pages.survey.steps.7": "",
+    "pages.survey.steps.8": ""
   },
   "blocks": {
     "@appsemble/form": {

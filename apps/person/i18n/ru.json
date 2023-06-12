@@ -2,9 +2,9 @@
   "app": {
     "description": "Простое приложение для просмотра форм и данных с использованием API ресурсов",
     "name": "Person",
+    "pages.person-details": "Подробности о лице",
     "pages.person-list": "Список лиц",
-    "pages.person-registration-form": "Форма регистрации лица",
-    "pages.person-details": "Подробности о лице"
+    "pages.person-registration-form": "Форма регистрации лица"
   },
   "messageIds": {
     "description": "Описание",

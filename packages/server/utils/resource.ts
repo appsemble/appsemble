@@ -1,4 +1,4 @@
-import { getRemapperContext, type Options, handleValidatorResult } from '@appsemble/node-utils';
+import { getRemapperContext, handleValidatorResult, type Options } from '@appsemble/node-utils';
 import {
   type NotificationDefinition,
   type ResourceDefinition,
