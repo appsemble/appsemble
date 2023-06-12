@@ -144,18 +144,7 @@ export default function EditPage(): ReactElement {
         color: 'danger',
       });
     }
-    updateAppPreview();
-  }, [
-    app.id,
-    coreStyle,
-    formatMessage,
-    index,
-    push,
-    saveStack,
-    setApp,
-    sharedStyle,
-    updateAppPreview,
-  ]);
+  }, [app.id, coreStyle, formatMessage, index, push, saveStack, setApp, sharedStyle]);
 
   useEffect(() => {
     updateAppPreview();

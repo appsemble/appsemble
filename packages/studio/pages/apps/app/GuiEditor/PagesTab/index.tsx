@@ -97,10 +97,10 @@ export function PagesTab({
   }, [setEditPageView, setEditBlockView]);
 
   const onCreateBlock = useCallback(
-    (pageToAdd: number) => {
+    (blockToAdd: number) => {
       setEditPageView(false);
       setEditBlockView(true);
-      setSelectedPage(pageToAdd);
+      setSelectedPage(blockToAdd);
     },
     [setEditPageView, setEditBlockView, setSelectedPage],
   );

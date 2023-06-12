@@ -104,7 +104,7 @@ export function ElementsList({
     [onChange],
   );
 
-  const onselectBlock = useCallback(
+  const onSelectBlock = useCallback(
     (parentIndex: number, subParentIndex: number, blockIndex: number) => {
       onChange(parentIndex, subParentIndex, blockIndex);
     },
@@ -159,7 +159,7 @@ export function ElementsList({
                     }`}
                     draggable
                     key={block.block}
-                    onClick={() => onselectBlock(block.parent, -1, block.block)}
+                    onClick={() => onSelectBlock(block.parent, -1, block.block)}
                     onDragOver={(e) => e.preventDefault()}
                     onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
                     onDrop={(e) => handleDrop(e, block.block, pageIndex)}
