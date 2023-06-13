@@ -4,8 +4,8 @@ import { logger, type Options } from '@appsemble/node-utils';
 import { type Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json' assert { type: 'json' };
-import { renderSync } from 'sass';
 import { type Context, type Middleware } from 'koa';
+import { renderSync } from 'sass';
 import stripBom from 'strip-bom';
 
 const require = createRequire(import.meta.url);
