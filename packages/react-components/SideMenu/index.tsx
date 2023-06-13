@@ -89,6 +89,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
       )}
     >
       <div className={styles.sideMenuWrapper}>
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
           className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
           onClick={disable}
