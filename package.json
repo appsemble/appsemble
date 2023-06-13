@@ -33,9 +33,6 @@
   "resolutions": {
     "axios": "~1.2.0"
   },
-  "dependencies": {
-    "playwright": "^1.35.0"
-  },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@lhci/cli": "^0.12.0",
