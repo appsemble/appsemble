@@ -31,7 +31,8 @@
     ]
   },
   "resolutions": {
-    "axios": "~1.2.0"
+    "axios": "~1.2.0",
+    "react-router-dom": "6.11.2"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
