@@ -61,13 +61,13 @@ export function DocsRoutes(): ReactElement {
                 {title}
               </MenuItem>
               {subRoutes.length ? (
-                <CollapsibleMenuSection key="docs-section">
+                <MenuSection key="docs-section">
                   {subRoutes.map((subRoute) => (
                     <MenuItem key={subRoute.path} to={getUrl(subRoute.path, url)}>
                       {subRoute.title}
                     </MenuItem>
                   ))}
-                </CollapsibleMenuSection>
+                </MenuSection>
               ) : null}
             </CollapsibleMenuSection>,
           ];
@@ -76,7 +76,7 @@ export function DocsRoutes(): ReactElement {
         <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
-        <CollapsibleMenuSection>
+        <MenuSection>
           <MenuItem exact to={`${url}/reference/app`}>
             <FormattedMessage {...messages.app} />
           </MenuItem>
@@ -86,19 +86,19 @@ export function DocsRoutes(): ReactElement {
           <MenuItem exact to={`${url}/reference/remapper`}>
             <FormattedMessage {...messages.remapper} />
           </MenuItem>
-        </CollapsibleMenuSection>
+        </MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
         <MenuItem exact icon="cubes" to={`${url}/packages`}>
           <FormattedMessage {...messages.packages} />
         </MenuItem>
-        <CollapsibleMenuSection>
+        <MenuSection>
           <MenuItem to={`${url}/packages/cli`}>@appsemble/cli</MenuItem>
           <MenuItem to={`${url}/packages/preact`}>@appsemble/preact</MenuItem>
           <MenuItem to={`${url}/packages/sdk`}>@appsemble/sdk</MenuItem>
           <MenuItem to={`${url}/packages/webpack-config`}>@appsemble/webpack-config</MenuItem>
           <MenuItem to={`${url}/packages/create-appsemble`}>create-appsemble</MenuItem>
-        </CollapsibleMenuSection>
+        </MenuSection>
       </CollapsibleMenuSection>
       <MenuItem exact icon="scroll" to={`${url}/changelog`}>
         <FormattedMessage {...messages.changelog} />
