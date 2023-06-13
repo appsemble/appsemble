@@ -31,8 +31,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
-    "@appsemble/utils": "0.20.45",
     "@appsemble/types": "0.20.45",
+    "@appsemble/utils": "0.20.45",
     "@formatjs/fast-memoize": "^1.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@hapi/boom": "^10.0.0",
