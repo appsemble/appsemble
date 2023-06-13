@@ -173,7 +173,6 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   }
 
   sig.keyInfoProvider = {
-    file: null,
     getKeyInfo: null,
     getKey: () => Buffer.from(idpCertificate || secret.idpCertificate),
   };
