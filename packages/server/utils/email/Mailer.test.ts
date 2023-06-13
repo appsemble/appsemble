@@ -1,12 +1,14 @@
+import { createServer } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow } from 'imapflow';
 import { type Transporter } from 'nodemailer';
 
 import { Mailer } from './Mailer.js';
+import * as controllers from '../../controllers/index.js';
 import { App, AppMessages, Organization } from '../../models/index.js';
+import { appRouter } from '../../routes/appRouter/index.js';
 import { argv, setArgv } from '../argv.js';
-import { createServer } from '../createServer.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
 let mailer: Mailer;
@@ -147,7 +149,11 @@ describe('sendTranslatedEmail', () => {
   });
 
   beforeEach(async () => {
-    const server = await createServer();
+    const server = await createServer({
+      argv,
+      appRouter,
+      controllers,
+    });
     await setTestApp(server);
     const organization = await Organization.create({
       id: 'testorganization',

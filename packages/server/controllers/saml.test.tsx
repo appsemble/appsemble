@@ -1,15 +1,17 @@
 import { promisify } from 'node:util';
 import { inflateRaw } from 'node:zlib';
 
-import { readFixture } from '@appsemble/node-utils';
+import { createServer, readFixture } from '@appsemble/node-utils';
 import { type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';
 
+import * as controllers from './index.js';
 import { App, AppSamlSecret, Organization, SamlLoginRequest, type User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/index.js';
+import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -178,7 +180,12 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+    authentication: authentication(),
+  });
   await setTestApp(server);
 });
 

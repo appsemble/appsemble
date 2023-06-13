@@ -6,6 +6,7 @@ import { App } from '../../models/App.js';
 import { Organization } from '../../models/Organization.js';
 import { Resource } from '../../models/Resource.js';
 import { ResourceVersion } from '../../models/ResourceVersion.js';
+import { options } from '../../options/options.js';
 import { handleAction } from '../action.js';
 import { argv, setArgv } from '../argv.js';
 import { Mailer } from '../email/Mailer.js';
@@ -144,6 +145,8 @@ describe('resource.query', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual([
@@ -187,6 +190,8 @@ describe('resource.query', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual([
@@ -221,6 +226,8 @@ describe('resource.get', () => {
       action,
       mailer,
       data: { id: 1 },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -256,6 +263,8 @@ describe('resource.get', () => {
       action,
       mailer,
       data: { id: 1 },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({ fullName: 'Spongebob Squarepants' });
@@ -285,6 +294,8 @@ describe('resource.get', () => {
         action,
         mailer,
         data: {},
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Missing id');
 
@@ -326,6 +337,8 @@ describe('resource.get', () => {
         action,
         mailer,
         data: { id: 72_183 },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -362,6 +375,8 @@ describe('resource.create', () => {
         firstName: 'Spongebob',
         lastName: 'Squarepants',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -393,6 +408,8 @@ describe('resource.create', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -420,6 +437,8 @@ describe('resource.create', () => {
         data: {
           firstName: 'Spongebob',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource validation failed');
   });
@@ -439,6 +458,8 @@ describe('resource.create', () => {
         action,
         mailer,
         data: {},
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('App does not have resources called testResourceC');
 
@@ -462,6 +483,8 @@ describe('resource.create', () => {
       data: {
         foo: 'bar',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -490,6 +513,8 @@ describe('resource.create', () => {
         foo: 'bar',
         $expires: '1970-01-01T00:05:00.000Z',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -522,6 +547,8 @@ describe('resource.create', () => {
           foo: 'bar',
           $expires: '1970-01-01T00:05:00.000Z',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource validation failed');
   });
@@ -549,6 +576,8 @@ describe('resource.create', () => {
           lastName: 'Star',
         },
       ],
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual([
@@ -598,6 +627,8 @@ describe('resource.update', () => {
         firstName: 'Patrick',
         lastName: 'Star',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -639,6 +670,8 @@ describe('resource.update', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -679,6 +712,8 @@ describe('resource.update', () => {
         action,
         mailer,
         data: {},
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Missing id');
 
@@ -734,6 +769,8 @@ describe('resource.update', () => {
         data: {
           id: 8132,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -784,6 +821,8 @@ describe('resource.update', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -829,6 +868,8 @@ describe('resource.update', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -873,6 +914,8 @@ describe('resource.update', () => {
           id: 1,
           firstName: 'Spongebob',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource validation failed');
   });
@@ -905,6 +948,8 @@ describe('resource.update', () => {
         lastName: 'Tentacles',
         $clonable: true,
       },
+      options,
+      context: {} as any,
     });
 
     await resource.reload();
@@ -946,6 +991,8 @@ describe('resource.update', () => {
         foo: 'updated',
         $expires: '1970-01-01T00:07:00.000Z',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -987,6 +1034,8 @@ describe('resource.update', () => {
           foo: 'updated',
           $expires: '1970-01-01T00:07:00.000Z',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource validation failed');
   });
@@ -1019,6 +1068,8 @@ describe('resource.update', () => {
         lastName: 'Tentacles',
         $clonable: true,
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1059,6 +1110,8 @@ describe('resource.update', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1107,6 +1160,8 @@ describe('resource.update', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1155,6 +1210,8 @@ describe('resource.update', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1206,6 +1263,8 @@ describe('resource.patch', () => {
         id: 1,
         firstName: 'Squidward',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1246,6 +1305,8 @@ describe('resource.patch', () => {
       action,
       mailer,
       data: {},
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1286,6 +1347,8 @@ describe('resource.patch', () => {
         action,
         mailer,
         data: {},
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Missing id');
 
@@ -1341,6 +1404,8 @@ describe('resource.patch', () => {
         data: {
           id: 8132,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -1391,6 +1456,8 @@ describe('resource.patch', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -1436,6 +1503,8 @@ describe('resource.patch', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -1480,6 +1549,8 @@ describe('resource.patch', () => {
           id: 1,
           firstName: 'Spongebob',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('App does not have resources called testResourceC');
   });
@@ -1510,6 +1581,8 @@ describe('resource.patch', () => {
         id: 1,
         firstName: 'Squidward',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1548,6 +1621,8 @@ describe('resource.patch', () => {
         firstName: 'Squidward',
         $clonable: true,
       },
+      options,
+      context: {} as any,
     });
 
     await resource.reload();
@@ -1589,6 +1664,8 @@ describe('resource.patch', () => {
         foo: 'updated',
         $expires: '1970-01-01T00:07:00.000Z',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1630,6 +1707,8 @@ describe('resource.patch', () => {
           foo: 'updated',
           $expires: '1970-01-01T00:07:00.000Z',
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource validation failed');
   });
@@ -1661,6 +1740,8 @@ describe('resource.patch', () => {
         firstName: 'Squidward',
         $clonable: true,
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1701,6 +1782,8 @@ describe('resource.patch', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1749,6 +1832,8 @@ describe('resource.patch', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1797,6 +1882,8 @@ describe('resource.patch', () => {
         id: 1,
         string: 'rev2',
       },
+      options,
+      context: {} as any,
     });
 
     expect(result).toStrictEqual({
@@ -1852,6 +1939,8 @@ describe('resource.delete', () => {
       data: {
         id: 1,
       },
+      options,
+      context: {} as any,
     });
 
     const remainingResources = await Resource.findAll();
@@ -1900,6 +1989,8 @@ describe('resource.delete', () => {
       data: {
         id: 1,
       },
+      options,
+      context: {} as any,
     });
 
     const remainingResources = await Resource.findAll();
@@ -1947,6 +2038,8 @@ describe('resource.delete', () => {
         action,
         mailer,
         data: {},
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Missing id');
 
@@ -2002,6 +2095,8 @@ describe('resource.delete', () => {
         data: {
           id: 8132,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -2052,6 +2147,8 @@ describe('resource.delete', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 
@@ -2097,6 +2194,8 @@ describe('resource.delete', () => {
         data: {
           id: 1,
         },
+        options,
+        context: {} as any,
       }),
     ).rejects.toThrow('Resource not found');
 

@@ -2,14 +2,14 @@
   "app": {
     "description": "A simple app that fetches holiday information for various countries.",
     "name": "Holidays",
-    "pages.holidays-in-europe": "Holidays in Europe",
-    "pages.holidays-in-europe.tabs.0": "Netherlands",
-    "pages.holidays-in-europe.tabs.1": "Germany",
-    "pages.holidays-in-europe.tabs.2": "Spain",
     "pages.holidays-in-america": "Holidays in America",
     "pages.holidays-in-america.tabs.0": "USA",
     "pages.holidays-in-america.tabs.1": "Canada",
-    "pages.holidays-in-america.tabs.2": "Mexico"
+    "pages.holidays-in-america.tabs.2": "Mexico",
+    "pages.holidays-in-europe": "Holidays in Europe",
+    "pages.holidays-in-europe.tabs.0": "Netherlands",
+    "pages.holidays-in-europe.tabs.1": "Germany",
+    "pages.holidays-in-europe.tabs.2": "Spain"
   },
   "messageIds": {
     "date": "Date",

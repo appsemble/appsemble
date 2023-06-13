@@ -8,6 +8,9 @@
   },
   "messageIds": {
     "body": "Corps",
+    "cancel": "",
+    "configDelete": "",
+    "confirmDelete": "",
     "title": "Titre"
   }
 }

@@ -2,14 +2,14 @@
   "app": {
     "description": "Jednostavan program za dohvaćanje podataka o praznicima za razne zemlje.",
     "name": "Praznici",
-    "pages.holidays-in-europe": "Praznici u Europi",
-    "pages.holidays-in-europe.tabs.0": "Nizozemska",
-    "pages.holidays-in-europe.tabs.1": "Njemačka",
-    "pages.holidays-in-europe.tabs.2": "Španjolska",
     "pages.holidays-in-america": "Praznici u Americi",
     "pages.holidays-in-america.tabs.0": "SAD",
     "pages.holidays-in-america.tabs.1": "Kanada",
-    "pages.holidays-in-america.tabs.2": "Meksiko"
+    "pages.holidays-in-america.tabs.2": "Meksiko",
+    "pages.holidays-in-europe": "Praznici u Europi",
+    "pages.holidays-in-europe.tabs.0": "Nizozemska",
+    "pages.holidays-in-europe.tabs.1": "Njemačka",
+    "pages.holidays-in-europe.tabs.2": "Španjolska"
   },
   "messageIds": {
     "date": "Datum",

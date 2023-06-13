@@ -1,3 +1,4 @@
+import { getRemapperContext, getResourceDefinition } from '@appsemble/node-utils';
 import {
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
@@ -12,20 +13,15 @@ import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset, Resource, ResourceVersion, transactional } from '../../models/index.js';
-import { getRemapperContext } from '../app.js';
-import {
-  getResourceDefinition,
-  parseQuery,
-  processHooks,
-  processReferenceHooks,
-  validate,
-} from '../resource.js';
+import { parseQuery, processHooks, processReferenceHooks, validate } from '../resource.js';
 
 export async function get({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceGetActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
@@ -35,7 +31,7 @@ export async function get({
   }
 
   const { view } = action;
-  const resourceDefinition = getResourceDefinition(app, action.resource, view);
+  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, view);
 
   const resource = await Resource.findOne({
     include: [
@@ -63,8 +59,8 @@ export async function get({
   const appMember =
     user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     appMember && {
       sub: user.id,
@@ -73,15 +69,19 @@ export async function get({
       email_verified: appMember.emailVerified,
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
-  return remap(resourceDefinition.views[view].remap, parsedResource, context);
+  return remap(resourceDefinition.views[view].remap, parsedResource, remapperContext);
 }
 
 export async function query({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceQueryActionDefinition>): Promise<unknown> {
   const { view } = action;
@@ -91,7 +91,7 @@ export async function query({
 
   const parsed = parseQuery(queryParams || {});
   const include = queryParams?.$select?.split(',').map((s) => s.trim());
-  const resourceDefinition = getResourceDefinition(app, action.resource, view);
+  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, view);
 
   const resources = await Resource.findAll({
     include: [
@@ -120,8 +120,8 @@ export async function query({
   const appMember =
     user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     appMember && {
       sub: user.id,
@@ -130,24 +130,28 @@ export async function query({
       email_verified: appMember.emailVerified,
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
   return mappedResources.map((resource) =>
-    remap(resourceDefinition.views[view].remap, resource, context),
+    remap(resourceDefinition.views[view].remap, resource, remapperContext),
   );
 }
 
 export async function create({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceCreateActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as
     | Record<string, unknown>
     | Record<string, unknown>[];
 
-  const definition = getResourceDefinition(app, action.resource);
+  const definition = getResourceDefinition(app.toJSON(), action.resource);
   const resource = validate(body, definition);
 
   const resources = Array.isArray(resource) ? resource : [resource];
@@ -161,8 +165,8 @@ export async function create({
     })),
   );
 
-  processReferenceHooks(user, app, createdResources[0], 'create');
-  processHooks(user, app, createdResources[0], 'create');
+  processReferenceHooks(user, app, createdResources[0], 'create', options, context);
+  processHooks(user, app, createdResources[0], 'create', options, context);
 
   const mappedResources = createdResources.map((r) => r.toJSON());
 
@@ -172,8 +176,10 @@ export async function create({
 export async function update({
   action,
   app,
+  context,
   data: actionData,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceUpdateActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, actionData, internalContext) ?? actionData) as Record<
@@ -185,7 +191,7 @@ export async function update({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app, action.resource);
+  const definition = getResourceDefinition(app.toJSON(), action.resource);
 
   const resource = await Resource.findOne({
     where: {
@@ -234,8 +240,8 @@ export async function update({
   });
   await resource.reload({ include: [{ association: 'Editor' }] });
 
-  processReferenceHooks(user, app, resource, 'update');
-  processHooks(user, app, resource, 'update');
+  processReferenceHooks(user, app, resource, 'update', options, context);
+  processHooks(user, app, resource, 'update', options, context);
 
   return resource.toJSON();
 }
@@ -255,7 +261,7 @@ export async function patch({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app, action.resource);
+  const definition = getResourceDefinition(app.toJSON(), action.resource);
 
   const resource = await Resource.findOne({
     where: {
@@ -311,13 +317,15 @@ export async function patch({
 export async function remove({
   action,
   app,
+  context,
   data,
   internalContext,
+  options,
   user,
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
 
-  getResourceDefinition(app, action.resource);
+  getResourceDefinition(app.toJSON(), action.resource);
 
   if (!body?.id) {
     throw new Error('Missing id');
@@ -344,8 +352,8 @@ export async function remove({
 
   await resource.destroy();
 
-  processReferenceHooks(user, app, resource, 'delete');
-  processHooks(user, app, resource, 'delete');
+  processReferenceHooks(user, app, resource, 'delete', options, context);
+  processHooks(user, app, resource, 'delete', options, context);
 
   // Returning empty string just like in the client-side resource.delete action.
   return '';

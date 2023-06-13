@@ -2,9 +2,9 @@
   "app": {
     "description": "Jednostavan program za obrasce i pregled podataka korištenjem API resursa",
     "name": "Osoba",
+    "pages.person-details": "Detalji osobe",
     "pages.person-list": "Popis osoba",
-    "pages.person-registration-form": "Obrazac za registriranje osobe",
-    "pages.person-details": "Detalji osobe"
+    "pages.person-registration-form": "Obrazac za registriranje osobe"
   },
   "messageIds": {
     "description": "Opis",

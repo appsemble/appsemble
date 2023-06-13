@@ -1,9 +1,11 @@
+import { getRemapperContext } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
 
-import { compareApps, getApp, getRemapperContext } from './app.js';
+import { compareApps, getApp } from './app.js';
 import { setArgv } from './argv.js';
 import { useTestDatabase } from './test/testSchema.js';
 import { App, AppMessages, Organization } from '../models/index.js';
+import { options } from '../options/options.js';
 
 useTestDatabase(import.meta);
 
@@ -200,13 +202,19 @@ describe('getRemapperContext', () => {
       sub: '',
     };
 
-    const context = await getRemapperContext(app, 'nl-nl-brabants', userInfo);
-    const word = context.getMessage({ id: 'word' });
-    const hello = context.getMessage({ id: 'hello' });
-    const bye = context.getMessage({ id: 'bye' });
-    const nothing = context.getMessage({ id: 'nothing' });
+    const remapperContext = await getRemapperContext(
+      app.toJSON(),
+      'nl-nl-brabants',
+      userInfo,
+      options,
+      {} as any,
+    );
+    const word = remapperContext.getMessage({ id: 'word' });
+    const hello = remapperContext.getMessage({ id: 'hello' });
+    const bye = remapperContext.getMessage({ id: 'bye' });
+    const nothing = remapperContext.getMessage({ id: 'nothing' });
 
-    expect(context.userInfo).toBe(userInfo);
+    expect(remapperContext.userInfo).toBe(userInfo);
     expect(word.format()).toBe('Woord');
     expect(hello.format()).toBe('Hoi');
     expect(bye.format()).toBe('Houdoe');

@@ -1,10 +1,11 @@
-import { createFormData } from '@appsemble/node-utils';
+import { createFormData, createServer } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
 import { TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 import webpush from 'web-push';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -18,8 +19,9 @@ import {
   TeamMember,
   User,
 } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
 import {
   authorizeApp,
   authorizeClientCredentials,
@@ -262,7 +264,12 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+    authentication: authentication(),
+  });
   await setTestApp(server);
   originalSendNotification = webpush.sendNotification;
 });

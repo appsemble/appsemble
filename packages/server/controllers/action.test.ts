@@ -1,8 +1,10 @@
+import { createServer } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -12,20 +14,28 @@ import {
   type User,
 } from '../models/index.js';
 import pkg from '../package.json' assert { type: 'json' };
+import { appRouter } from '../routes/appRouter/index.js';
 import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeApp, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let server: Koa;
+let user: User;
 const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret' };
 
 useTestDatabase(import.meta);
 
-beforeAll(async () => {
+beforeEach(async () => {
   setArgv(argv);
-  server = await createServer();
+  user = await createTestUser();
+  server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+    context: { mailer: new Mailer(argv as any), user },
+  });
 
   await setTestApp(server);
 });
@@ -79,7 +89,6 @@ describe('handleRequestProxy', () => {
   let proxiedContext: ParameterizedContext;
   let proxiedRequest: AxiosTestInstance;
   let app: App;
-  let user: User;
 
   beforeEach(async () => {
     import.meta.jest.useFakeTimers({ now: 0 });
@@ -88,7 +97,6 @@ describe('handleRequestProxy', () => {
       ctx.status = 418;
       proxiedContext = ctx;
     });
-    user = await createTestUser();
     proxiedRequest = await createInstance(proxiedApp);
     const { baseURL } = proxiedRequest.defaults;
     await Organization.create({ id: 'org' });
@@ -326,6 +334,7 @@ describe('handleRequestProxy', () => {
 
   it('should not apply secret if unauthorized', async () => {
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    server.context.user = null;
 
     await AppServiceSecret.create({
       serviceName: 'Test service',

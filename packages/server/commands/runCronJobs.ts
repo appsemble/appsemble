@@ -5,6 +5,7 @@ import { type Argv } from 'yargs';
 
 import { databaseBuilder } from './builder/database.js';
 import { App, initDB } from '../models/index.js';
+import { options } from '../options/options.js';
 import { handleAction } from '../utils/action.js';
 import { actions } from '../utils/actions/index.js';
 import { argv } from '../utils/argv.js';
@@ -108,7 +109,15 @@ export async function handler(): Promise<void> {
 
         logger.info(`Running cronjob ${id}. Last schedule: ${schedule.prev().toISOString()}`);
         const action = actions[job.action.type];
-        await handleAction(action, { app, user: null, action: job.action, mailer, data: null });
+        await handleAction(action, {
+          app,
+          user: null,
+          action: job.action,
+          mailer,
+          data: null,
+          options,
+          context: {} as any,
+        });
       }
     } catch (error: unknown) {
       logger.error(`Failed to run ${lastId} for app ${app.id}`);

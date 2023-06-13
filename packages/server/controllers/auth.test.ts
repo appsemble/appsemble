@@ -1,17 +1,27 @@
+import { createServer } from '@appsemble/node-utils';
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
+import * as controllers from './index.js';
 import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+    authentication: authentication(),
+    context: { mailer: new Mailer(argv) },
+  });
   await setTestApp(server);
 });
 

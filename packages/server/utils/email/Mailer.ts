@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { getAppsembleMessages, getSupportedLanguages, logger } from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
 import addrs, { type ParsedMailbox } from 'email-addresses';
 import { ImapFlow } from 'imapflow';
@@ -17,7 +17,6 @@ import { renderEmail } from './renderEmail.js';
 import { type App, AppMessages } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
-import { getAppsembleMessages, getSupportedLanguages } from '../getAppsembleMessages.js';
 import { readAsset } from '../readAsset.js';
 
 const supportedLanguages = getSupportedLanguages();

@@ -1,9 +1,15 @@
-import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
+import {
+  createFixtureStream,
+  createFormData,
+  createServer,
+  readFixture,
+} from '@appsemble/node-utils';
 import { type AppAccount, type AppMember as AppMemberType } from '@appsemble/types';
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
 
+import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -16,8 +22,10 @@ import {
   Organization,
   User,
 } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
-import { createServer } from '../utils/createServer.js';
+import { appRouter } from '../routes/appRouter/index.js';
+import { argv, setArgv } from '../utils/argv.js';
+import { authentication } from '../utils/authentication.js';
+import { Mailer } from '../utils/email/Mailer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -52,7 +60,13 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({
+    argv,
+    appRouter,
+    controllers,
+    authentication: authentication(),
+    context: { mailer: new Mailer(argv) },
+  });
   await setTestApp(server);
 });
 

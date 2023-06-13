@@ -1,11 +1,11 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
+import { createSettings, makeCSP, render } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { argv } from '../../utils/argv.js';
 import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets.js';
-import { createSettings, makeCSP, render } from '../../utils/render.js';
 import { getSentryClientSettings } from '../../utils/sentry.js';
 
 /**

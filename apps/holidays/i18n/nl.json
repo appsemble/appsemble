@@ -2,14 +2,14 @@
   "app": {
     "description": "Een eenvoudige app die feestdagen voor verschillende landen ophaalt.",
     "name": "Feestdagen",
-    "pages.holidays-in-europe": "Feestdagen in Europa",
-    "pages.holidays-in-europe.tabs.0": "Nederland",
-    "pages.holidays-in-europe.tabs.1": "Duitsland",
-    "pages.holidays-in-europe.tabs.2": "Spanje",
     "pages.holidays-in-america": "Feestdagen in Amerika",
     "pages.holidays-in-america.tabs.0": "VS",
     "pages.holidays-in-america.tabs.1": "Canada",
-    "pages.holidays-in-america.tabs.2": "Mexico"
+    "pages.holidays-in-america.tabs.2": "Mexico",
+    "pages.holidays-in-europe": "Feestdagen in Europa",
+    "pages.holidays-in-europe.tabs.0": "Nederland",
+    "pages.holidays-in-europe.tabs.1": "Duitsland",
+    "pages.holidays-in-europe.tabs.2": "Spanje"
   },
   "messageIds": {
     "date": "Datum",

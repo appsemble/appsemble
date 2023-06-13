@@ -103,7 +103,7 @@ it('should fall back to a white background if theme is undefined', async () => {
 });
 
 it('should fall back to the organization icon if no app app icon is defined', async () => {
-  App.create({
+  await App.create({
     definition: {},
     path: 'test-app',
     OrganizationId: 'testorg',

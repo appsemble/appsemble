@@ -70,6 +70,7 @@ export async function createResource({
   }
 
   logger.info(`Creating resource(s) from ${path}`);
+
   const { data } = await axios.post<Resource | Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}`,
     resources,
