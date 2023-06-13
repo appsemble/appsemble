@@ -27,7 +27,7 @@ export function InputString({
   allowSymbols = false,
   allowUpperChars = true,
   label,
-  labelPosition = 'left',
+  labelPosition = 'top',
   maxLength = 32,
   minLength = 1,
   onChange,

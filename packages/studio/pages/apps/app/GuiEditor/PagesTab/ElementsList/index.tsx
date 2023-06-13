@@ -1,7 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import {
   type DragEvent,
-  type MouseEvent,
   type MutableRefObject,
   type ReactElement,
   useCallback,
@@ -17,14 +16,12 @@ interface PagesListProps {
   selectedPage: number;
   selectedBlock: number;
   onChange: (page: number, subParent: number, block: number) => void;
-  onCreateBlock: (pageToAdd: number) => void;
   onCreatePage: () => void;
 }
 export function ElementsList({
   changeIn,
   docRef,
   onChange,
-  onCreateBlock,
   onCreatePage,
   selectedBlock,
   selectedPage,
@@ -34,7 +31,7 @@ export function ElementsList({
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
 
   const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
-    (page, index: number) => docRef.current.getIn(['pages', index, 'name']) as string,
+    (page, pageIndex: number) => docRef.current.getIn(['pages', pageIndex, 'name']) as string,
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
@@ -62,25 +59,26 @@ export function ElementsList({
   };
 
   const handleDrop = (e: DragEvent, targetIndex: number, targetPageIndex: number): void => {
+    const doc = docRef.current;
     if (targetPageIndex === dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       blockList.splice(targetIndex, 0, draggedBlock);
-      changeIn(['pages', targetPageIndex, 'blocks'], docRef.current.createNode(blockList));
+      changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(blockList));
     } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
       const targetBlockList = getBlocks(targetPageIndex);
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       targetBlockList.splice(targetIndex, 0, draggedBlock);
-      changeIn(['pages', targetPageIndex, 'blocks'], docRef.current.createNode(targetBlockList));
-      changeIn(['pages', dragPageIndex, 'blocks'], docRef.current.createNode(blockList));
+      changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(targetBlockList));
+      changeIn(['pages', dragPageIndex, 'blocks'], doc.createNode(blockList));
     } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
-      const dragPage = docRef.current.getIn(['pages', dragPageIndex]) as YAMLSeq;
-      const targetPage = docRef.current.getIn(['pages', targetPageIndex]) as YAMLSeq;
-      changeIn(['pages', targetPageIndex], docRef.current.createNode(dragPage));
-      changeIn(['pages', dragPageIndex], docRef.current.createNode(targetPage));
+      const dragPage = doc.getIn(['pages', dragPageIndex]) as YAMLSeq;
+      const targetPage = doc.getIn(['pages', targetPageIndex]) as YAMLSeq;
+      changeIn(['pages', targetPageIndex], doc.createNode(dragPage));
+      changeIn(['pages', dragPageIndex], doc.createNode(targetPage));
     }
     setDragItem(-1);
     setDragPageIndex(-1);
@@ -111,15 +109,6 @@ export function ElementsList({
     [onChange],
   );
 
-  const onAddBlock = useCallback(
-    (event: MouseEvent<HTMLSpanElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      onCreateBlock(selectedPage);
-    },
-    [onCreateBlock, selectedPage],
-  );
-
   return (
     <>
       {pageNames.map((page, pageIndex) => (
@@ -146,7 +135,6 @@ export function ElementsList({
                 onClick={() => toggleDropdownPages(pageIndex)}
               />
             )}
-            <Icon className="has-text-grey" icon="plus" onClick={onAddBlock} />
           </Button>
           {!disabledPages.includes(pageIndex) && (
             <>

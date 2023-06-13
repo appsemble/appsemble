@@ -74,7 +74,7 @@ export function PagesTab({
   );
 
   const onChangePagesBlocks = useCallback(
-    (page: number, subParent: number, block: number) => {
+    (page: number, parentIndex: number, block: number) => {
       setSelectedPage(page);
       setSelectedBlock(block);
       if (block !== -1) {
@@ -95,15 +95,6 @@ export function PagesTab({
     setEditBlockView(false);
     setSelectedPage(-1);
   }, [setEditPageView, setEditBlockView]);
-
-  const onCreateBlock = useCallback(
-    (blockToAdd: number) => {
-      setEditPageView(false);
-      setEditBlockView(true);
-      setSelectedPage(blockToAdd);
-    },
-    [setEditPageView, setEditBlockView, setSelectedPage],
-  );
 
   const addBlock = (nb: BlockDefinition): void => {
     const doc = docRef.current;
@@ -158,7 +149,6 @@ export function PagesTab({
           changeIn={changeIn}
           docRef={docRef}
           onChange={onChangePagesBlocks}
-          onCreateBlock={onCreateBlock}
           onCreatePage={onCreatePage}
           selectedBlock={selectedBlock}
           selectedPage={selectedPage}
