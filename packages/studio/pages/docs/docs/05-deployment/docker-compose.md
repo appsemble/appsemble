@@ -58,7 +58,7 @@ It is also recommended to modify the database name, user, password and the Appse
 
 To start the service, run the following command.
 
-```
+```sh
 $ docker compose up -d
 ```
 
@@ -78,6 +78,6 @@ $ docker run --network=appsemble \
 
 To stop the service, run the following command.
 
-```
+```sh
 $ docker compose down
 ```
