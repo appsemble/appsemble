@@ -48,10 +48,6 @@ export function HighlightedCode({ children, className }: HighlightedCodeProps): 
           MonacoEditor.languages.setMonarchTokensProvider(languageName, tokensProvider);
           MonacoEditor.languages.setLanguageConfiguration(languageName, languageConfiguration);
           MonacoEditor.editor.defineTheme('custom-theme', theme);
-          MonacoEditor.editor.create(ref.current, {
-            language: languageName,
-            theme: languageName,
-          });
         }
         MonacoEditor.editor.colorizeElement(ref.current, {
           mimeType: isLanguageSupported ? language : languageName,
