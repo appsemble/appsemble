@@ -17,6 +17,14 @@ New languages can be added [here](https://hosted.weblate.org/projects/appsemble/
 The entire code base is formatted using
 [![](https://avatars.githubusercontent.com/u/25822731?s=16) Prettier](https://prettier.io).
 
+Please install the
+[![](https://avatars.githubusercontent.com/u/1165674?s=16&v=4) EditorConfig](https://editorconfig.org)
+extension for your editor of choice if it doesn’t support so out of the box.
+
+This is to ensure stricter whitespace related rules from the
+[.editorconfig](https://gitlab.com/appsemble/appsemble/-/blob/main/.editorconfig) file which aren’t
+covered by CI.
+
 #### JavaScript / TypeScript
 
 JavaScript and TypeScript code are linted using

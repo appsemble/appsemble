@@ -36,6 +36,7 @@ unconfigure/reconfigure
 workspace/mare
 
 # Technical slang and libraries
+.editorconfig
 AES
 API/URL
 Airbnb
@@ -57,6 +58,7 @@ DOM
 DSN
 dropdown
 EAA
+EditorConfig
 ESLint
 falsy
 fieldset
@@ -158,6 +160,7 @@ noninteractive
 rehype
 formatjs
 geocoordinates
+whitespace
 # LGPL specific
 4d0
 4d1
