@@ -25,6 +25,7 @@ export * from './team.js';
 export * from './template.js';
 export * from './theme.js';
 export * from './user.js';
+export * from './quota.js';
 
 /**
  * A representation of a generated OAuth2 authorization code response.
