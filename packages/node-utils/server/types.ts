@@ -1,5 +1,6 @@
 import {
   type App,
+  type AppMember,
   type AppMessages,
   type Asset,
   type BlockConfig,
@@ -8,7 +9,9 @@ import {
   type EmailActionDefinition,
   type Resource,
   type ResourceDefinition,
+  type TeamMember,
   type Theme as ThemeType,
+  type UserInfo,
 } from '@appsemble/types';
 import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
@@ -37,6 +40,9 @@ declare module 'koa' {
     appsembleApp: App;
     appBlocks: BlockManifest[];
     appMessages: AppMessages[];
+    appMembers: AppMember[];
+    appUserInfo: UserInfo;
+    appTeams: ExtendedTeam[];
     appAssets: AppAsset[];
     blockConfigs: ContextBlockConfig[];
     params?: Record<string, string>;
@@ -129,6 +135,24 @@ export interface GetAppSubEntityParams {
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
   language?: string;
   merge?: string[] | string;
+}
+
+export interface GetAppMembersParams extends GetAppSubEntityParams {
+  memberId: string;
+}
+
+export interface GetAppUserInfoParams {
+  context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
+  client: { scope: string } | { scope: string; app: App } | {};
+  user: UtilsUser;
+}
+
+export interface ExtendedTeam extends TeamMember {
+  size: number;
+}
+
+export interface GetAppTeamsParams extends GetAppSubEntityParams {
+  user: UtilsUser;
 }
 
 export interface GetAppBlockStylesParams extends GetAppSubEntityParams {
@@ -353,6 +377,9 @@ export interface Options {
   getApp: (params: GetAppParams) => Promise<App>;
   getAppDetails: (params: GetAppParams) => Promise<AppDetails>;
   getAppMessages: (params: GetAppMessagesParams) => Promise<AppMessages[]>;
+  getAppMembers: (params: GetAppMembersParams) => Promise<AppMember[]>;
+  getAppUserInfo: (params: GetAppUserInfoParams) => Promise<UserInfo>;
+  getAppTeams: (params: GetAppTeamsParams) => Promise<ExtendedTeam[]>;
   getAppStyles: (params: GetAppParams | GetAppSubEntityParams) => Promise<AppStyles>;
   getAppScreenshots: (params: GetAppSubEntityParams) => Promise<AppScreenshot[]>;
   getAppBlockStyles: (params: GetAppBlockStylesParams) => Promise<AppBlockStyle[]>;

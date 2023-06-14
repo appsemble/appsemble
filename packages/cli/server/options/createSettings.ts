@@ -18,6 +18,7 @@ export function createSettings({
       languages,
       definition: appsembleApp.definition,
       appUpdated: appsembleApp.$updated,
+      development: true,
     }),
   );
 }
