@@ -80,8 +80,8 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appMembers: AppMember[] = [
     {
       id: '1',
-      name: 'test',
-      primaryEmail: 'test@gmail.com',
+      name: 'dev',
+      primaryEmail: 'dev@appsemble.com',
       role: passedUserRole,
     },
   ];
@@ -105,9 +105,9 @@ export async function handler(argv: ServeArguments): Promise<void> {
   ];
 
   const appUserInfo: UserInfo = {
-    email: 'test@gmail.com',
+    email: 'dev@appsemble.com',
     email_verified: true,
-    name: 'test',
+    name: 'dev',
     sub: '1',
   };
 
