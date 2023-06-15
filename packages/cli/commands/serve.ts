@@ -82,7 +82,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
       id: '1',
       name: 'dev',
       primaryEmail: 'dev@appsemble.com',
-      role: passedUserRole,
+      role: passedUserRole || appsembleApp.definition.security.default.role,
     },
   ];
 

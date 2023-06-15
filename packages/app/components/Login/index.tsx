@@ -19,6 +19,7 @@ import {
   apiUrl,
   appId,
   appUpdated,
+  development,
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
@@ -53,7 +54,7 @@ export function Login(): ReactElement {
     [busy, passwordLogin],
   );
 
-  if (isLoggedIn || !definition.security) {
+  if (isLoggedIn || !definition.security || development) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
     return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
