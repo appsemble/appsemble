@@ -54,12 +54,12 @@ export function Login(): ReactElement {
     [busy, passwordLogin],
   );
 
-  if (isLoggedIn || !definition.security || development) {
+  if (isLoggedIn || !definition.security) {
     const defaultPageName = getDefaultPageName(isLoggedIn, role, definition);
     return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
 
-  if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin) {
+  if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin && !development) {
     return (
       <Content padding>
         <Message color="danger">
