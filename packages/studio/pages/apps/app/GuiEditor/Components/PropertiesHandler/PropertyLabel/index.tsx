@@ -1,10 +1,10 @@
 import { Box, Icon } from '@appsemble/react-components';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { MarkdownContent } from '../../../../../../../components/MarkdownContent/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { MarkdownContent } from '../../../../../../../components/MarkdownContent/index.js';
 
 interface PropertyLabelProps {
   label: string;

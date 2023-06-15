@@ -1,12 +1,11 @@
 import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { ReactElement, useCallback, useState } from 'react';
-import { MessageDescriptor, useIntl } from 'react-intl';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
-import { stringify } from 'yaml';
+import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
 
-import { useApp } from '../index.js';
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -14,6 +13,8 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { getAppUrl } from '../../../../utils/getAppUrl.js';
+import { useApp } from '../index.js';
 
 type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'theme';
 export interface GuiEditorTabs {
@@ -59,6 +60,13 @@ export default function EditPage(): ReactElement {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
   const { app, setApp } = useApp();
+  const docRef = useRef<Document<ParsedNode>>();
+  if (!docRef.current) {
+    docRef.current = parseDocument(app.yaml);
+  }
+  const [saveStack, setSaveStack] = useState([docRef.current.clone()]);
+  const [index, setIndex] = useState(0);
+  const frame = useRef<HTMLIFrameElement>();
   const push = useMessages();
   const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
@@ -80,21 +88,67 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
+  const updateAppPreview = useCallback(() => {
+    const definition = saveStack[index].toJS();
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/gui/EDIT_SUCCESS', definition },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app.OrganizationId, app.path, index, saveStack]);
+
+  const addSaveState = useCallback((): void => {
+    const copy = saveStack.slice(0, index + 1);
+    const clone = docRef.current.clone();
+    copy.push(clone);
+    setSaveStack(copy);
+    setIndex(copy.length - 1);
+  }, [docRef, saveStack, index, setIndex, setSaveStack]);
+
+  const deleteIn = (path: Iterable<unknown>): void => {
+    docRef.current.deleteIn(path);
+    addSaveState();
+  };
+
+  const addIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.addIn(path, value);
+    addSaveState();
+  };
+
+  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+    docRef.current.setIn(path, value);
+    addSaveState();
+  };
+
+  const onUndo = (): void => {
+    setIndex((currentIndex) => Math.max(0, currentIndex - 1));
+  };
+
+  const onRedo = (): void => {
+    setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
+  };
+
   const handleSave = useCallback(async () => {
-    const ymlString = stringify(app.definition);
+    const ymlString = stringify(saveStack[index]);
     try {
       const formData = new FormData();
       formData.append('yaml', ymlString);
       formData.append('coreStyle', coreStyle);
       formData.append('sharedStyle', sharedStyle);
-
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
     } catch (error: any) {
-      push({ body: `${formatMessage(messages.failed)} ${error}`, color: 'danger' });
+      push({
+        body: `${formatMessage(messages.failed)} ${error}`,
+        color: 'danger',
+      });
     }
-  }, [app.definition, app.id, coreStyle, formatMessage, push, setApp, sharedStyle]);
+  }, [app.id, coreStyle, formatMessage, index, push, saveStack, setApp, sharedStyle]);
+
+  useEffect(() => {
+    updateAppPreview();
+  }, [setIndex, updateAppPreview]);
 
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
@@ -149,7 +203,19 @@ export default function EditPage(): ReactElement {
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
         )}
         {currentTab.tabName === 'pages' && (
-          <PagesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <PagesTab
+            addIn={addIn}
+            changeIn={changeIn}
+            deleteIn={deleteIn}
+            docRef={docRef}
+            frameRef={frame}
+            index={index}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+            onRedo={onRedo}
+            onUndo={onUndo}
+            stackSize={saveStack.length}
+          />
         )}
         {currentTab.tabName === 'theme' && (
           <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />

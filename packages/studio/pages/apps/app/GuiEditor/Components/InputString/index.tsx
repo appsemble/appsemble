@@ -1,9 +1,9 @@
 import { Input } from '@appsemble/react-components';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
+import styles from './index.module.css';
 import getAllowedChars from '../../Utils/getAllowedChars.js';
 import getCheckedString from '../../Utils/getCheckedString.js';
-import styles from './index.module.css';
 
 interface InputStringProps {
   label?: string;
@@ -27,7 +27,7 @@ export function InputString({
   allowSymbols = false,
   allowUpperChars = true,
   label,
-  labelPosition = 'left',
+  labelPosition = 'top',
   maxLength = 32,
   minLength = 1,
   onChange,

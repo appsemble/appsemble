@@ -63,6 +63,9 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
         setBlockManifests(data.blockManifests);
         setDefinition(data.definition);
         setRevision(revision + 1);
+      } else if (origin === apiUrl && data?.type === 'editor/gui/EDIT_SUCCESS') {
+        setDefinition(data.definition);
+        setRevision(revision + 1);
       }
     },
     [revision],

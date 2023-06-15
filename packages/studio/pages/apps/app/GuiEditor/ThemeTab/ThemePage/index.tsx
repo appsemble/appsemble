@@ -1,21 +1,21 @@
 import { IconButton } from '@appsemble/react-components';
 import {
-  BasicPageDefinition,
-  FlowPageDefinition,
-  FontDefinition,
-  TabsPageDefinition,
-  Theme,
+  type BasicPageDefinition,
+  type FlowPageDefinition,
+  type FontDefinition,
+  type TabsPageDefinition,
+  type Theme,
 } from '@appsemble/types';
 import { baseTheme, googleFonts } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
 import { ColorPicker } from '../../Components/ColorPicker/index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface InheritedTheme {
   themeInherited: string;

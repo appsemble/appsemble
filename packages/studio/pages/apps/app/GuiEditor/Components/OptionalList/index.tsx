@@ -1,10 +1,10 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { InputList } from '../InputList/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { InputList } from '../InputList/index.js';
 
 interface OptionalListProps {
   label?: string;

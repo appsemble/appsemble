@@ -339,6 +339,8 @@
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.BlockList.noBlocks": "",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.error": "",
   "studio.pages.apps.app.GuiEditor.PagesTab.BlockStore.search": "",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.redo": "",
+  "studio.pages.apps.app.GuiEditor.PagesTab.UndoRedo.undo": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.addInheritanceLabel": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.createRoleButton": "",
   "studio.pages.apps.app.GuiEditor.SecurityTab.CreateRolePage.defaultPageLabel": "",

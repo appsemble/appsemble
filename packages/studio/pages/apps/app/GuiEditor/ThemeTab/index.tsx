@@ -1,14 +1,14 @@
 import { Button } from '@appsemble/react-components';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
-import { Sidebar } from '../Components/Sidebar/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { PagesList } from './PagesList/index.js';
 import { ThemePage } from './ThemePage/index.js';
+import { useApp } from '../../index.js';
+import { Preview } from '../Components/Preview/index.js';
+import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface ThemeTabProps {
   isOpenLeft: boolean;

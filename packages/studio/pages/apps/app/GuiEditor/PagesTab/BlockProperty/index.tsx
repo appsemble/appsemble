@@ -1,68 +1,42 @@
 import { Button, Loader, useData } from '@appsemble/react-components';
-import { BasicPageDefinition, BlockManifest } from '@appsemble/types';
+import { type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback } from 'react';
+import { type JsonObject } from 'type-fest';
+import { type Document, parse, type ParsedNode, stringify } from 'yaml';
 
-import { useApp } from '../../../index.js';
+import styles from './index.module.css';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
-import styles from './index.module.css';
 
 interface BlockPropertyProps {
-  selectedBlock: number;
-  selectedPage: number;
-  setSelected: (selectedNew: number) => void;
+  changeProperty: (parameters: JsonObject) => void;
+  changeType: (blockManifest: BlockManifest) => void;
+  deleteBlock: () => void;
+  selectedBlock: Document<ParsedNode>;
 }
 export function BlockProperty({
+  changeProperty,
+  changeType,
+  deleteBlock,
   selectedBlock,
-  selectedPage,
-  setSelected,
 }: BlockPropertyProps): ReactElement {
-  const { app, setApp } = useApp();
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
-
-  const onChangeProperties = useCallback(
-    (parameters) => {
-      if (selectedBlock === -1) {
-        return;
-      }
-      (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock].parameters =
-        parameters;
-      setApp({ ...app });
-    },
-    [app, selectedBlock, selectedPage, setApp],
+  const blockName = normalizeBlockName(
+    stringify(selectedBlock.getIn(['type']))
+      .replace(/["']/g, '')
+      .trim(),
   );
 
   const onTypeChange = useCallback(
     (index: number) => {
-      if (selectedBlock === -1) {
+      if (!selectedBlock) {
         return;
       }
-      (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock] = {
-        version: blocks[index].version,
-        type: blocks[index].name,
-      };
-      setApp({ ...app });
+      changeType(blocks[index]);
     },
-    [app, blocks, selectedBlock, selectedPage, setApp],
+    [blocks, changeType, selectedBlock],
   );
-
-  let currentBlock = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-    selectedBlock
-  ];
-
-  const deleteBlock = (): void => {
-    const blockList = (app.definition.pages[selectedPage] as BasicPageDefinition).blocks;
-    blockList.splice(selectedBlock, 1);
-    if (blockList.length > 0) {
-      // eslint-disable-next-line prefer-destructuring
-      currentBlock = blockList[0];
-      setSelected(0);
-    } else {
-      setSelected(-1);
-    }
-    setApp({ ...app });
-  };
 
   if (error) {
     return null;
@@ -73,7 +47,7 @@ export function BlockProperty({
 
   return (
     <div>
-      {Boolean(currentBlock) && (
+      {Boolean(selectedBlock) && (
         <div>
           <Button
             className={`is-danger ${styles.deleteButton}`}
@@ -88,19 +62,13 @@ export function BlockProperty({
             label="Type"
             onChange={onTypeChange}
             options={blocks.map((block) => block.name)}
-            value={normalizeBlockName(currentBlock.type)}
+            value={normalizeBlockName(blockName)}
           />
           <PropertiesHandler
-            onChange={onChangeProperties}
-            parameters={currentBlock.parameters}
-            schema={
-              blocks.find((thisBlock) => thisBlock.name === normalizeBlockName(currentBlock.type))
-                .parameters
-            }
+            onChange={changeProperty}
+            parameters={parse(stringify(selectedBlock)).parameters}
+            schema={blocks.find((thisBlock) => thisBlock.name === blockName).parameters}
           />
-          <Button className="is-primary" component="a" icon="add">
-            Save Block
-          </Button>
         </div>
       )}
     </div>

@@ -1,11 +1,11 @@
 import { Button } from '@appsemble/react-components';
-import { Schema } from 'jsonschema';
-import { OpenAPIV3 } from 'openapi-types';
-import { ReactElement, useCallback } from 'react';
-import { JsonObject } from 'type-fest';
+import { type Schema } from 'jsonschema';
+import { type OpenAPIV3 } from 'openapi-types';
+import { type ReactElement, useCallback } from 'react';
+import { type JsonObject } from 'type-fest';
 
-import RecursiveProperties from '../../RecursiveProperties/index.js';
 import styles from './index.module.css';
+import RecursiveProperties from '../../RecursiveProperties/index.js';
 
 interface ArrayPropertyProps {
   value: any[];

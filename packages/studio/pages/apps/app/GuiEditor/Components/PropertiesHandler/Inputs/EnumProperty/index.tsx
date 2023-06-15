@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
-import { Schema } from 'jsonschema';
-import { ChangeEvent, ReactElement, useCallback } from 'react';
+import { type Schema } from 'jsonschema';
+import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';

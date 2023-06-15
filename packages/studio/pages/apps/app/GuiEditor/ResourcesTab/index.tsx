@@ -1,9 +1,9 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { useIntl } from 'react-intl';
 
-import { Sidebar } from '../Components/Sidebar/index.js';
-import { GuiEditorTabs } from '../index.js';
 import styles from './index.module.css';
+import { Sidebar } from '../Components/Sidebar/index.js';
+import { type GuiEditorTabs } from '../index.js';
 
 interface ResourcesTabProps {
   tab: GuiEditorTabs;

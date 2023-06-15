@@ -6,17 +6,21 @@ import {
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
-import { BasicPageDefinition, ResourceCall, ResourceDefinition } from '@appsemble/types';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import {
+  type BasicPageDefinition,
+  type ResourceCall,
+  type ResourceDefinition,
+} from '@appsemble/types';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import styles from './index.module.css';
+import { messages } from './messages.js';
+import { RolesInheritanceList } from './RolesInheritanceList/index.js';
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
-import styles from './index.module.css';
-import { messages } from './messages.js';
-import { RolesInheritanceList } from './RolesInheritanceList/index.js';
 
 interface RolesPageProps {
   selectedRole: string;
@@ -142,6 +146,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
           return page;
         });
         setApp({ ...app });
+
         /* Send API request to server to rename roles from users currently using it */
       }
     },
@@ -206,6 +211,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       } else {
         onRoleNameChange(editRoleName, newRoleName);
       }
+
       /* Send API request to server to rename roles from users currently using it */
     }
     closeEditRoleName();
@@ -301,6 +307,7 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
         modalDeleteRole.enable();
         return;
       }
+
       /* Send API request to server to delete roles from users currently using it,
       give the user a dropdown to select which
       role to replace it with instead before it deletes */

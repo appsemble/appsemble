@@ -1,6 +1,6 @@
 import { mapValues } from '@appsemble/utils';
-import { Schema } from 'jsonschema';
-import { JsonValue } from 'type-fest';
+import { type Schema } from 'jsonschema';
+import { type JsonValue } from 'type-fest';
 
 /**
  * Generates values for each type in a Schema.
@@ -29,11 +29,6 @@ export const generateData = (
         data[key] = generateData(definitions, schema.properties[key], key);
       }
     }
-    /* If (typeof schema.required !== 'boolean' && schema.required?.length) {
-      for (const key of schema.required || []) {
-        data[key] = generateData(schema.properties![key], definitions);
-      }
-    } */
     return data;
   }
   if (schema.anyOf) {
@@ -52,11 +47,11 @@ export const generateData = (
   if (schema.enum) {
     return schema.enum[0];
   }
-  if (schema.format === 'remapper' && schema.required) {
+  if (schema.format === 'remapper') {
     return ownerKey;
   }
   if (schema.type === 'array') {
-    return Array.from({ length: 1 }, (empty, index) =>
+    const firstArray = Array.from({ length: schema.minItems }, (empty, index) =>
       generateData(
         definitions,
         Array.isArray(schema.items)
@@ -65,6 +60,8 @@ export const generateData = (
           : schema.items,
       ),
     );
+    // This is somehow a double array in the form block 'fields' therefore we check index 0
+    return Array.isArray(firstArray[0]) ? firstArray[0] : firstArray;
   }
   if (schema.type === 'string') {
     if (schema.format === 'fontawesome') {
@@ -79,7 +76,7 @@ export const generateData = (
     return 0;
   }
   if (schema.type === 'boolean') {
-    return false;
+    return true;
   }
   if (schema.type === 'object') {
     return mapValues(schema.properties || {}, generateData);

@@ -1,5 +1,5 @@
 import { Button, useMessages } from '@appsemble/react-components';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 
 import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';

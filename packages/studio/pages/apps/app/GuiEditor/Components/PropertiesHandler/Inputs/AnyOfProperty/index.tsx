@@ -1,8 +1,8 @@
 import { SelectField } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
-import { Schema } from 'jsonschema';
-import { ChangeEvent, ReactElement, useCallback, useContext, useState } from 'react';
-import { JsonObject } from 'type-fest';
+import { type Schema } from 'jsonschema';
+import { type ChangeEvent, type ReactElement, useCallback, useContext, useState } from 'react';
+import { type JsonObject } from 'type-fest';
 
 import { SchemaDefinitionsContext } from '../../index.js';
 import RecursiveProperties from '../../RecursiveProperties/index.js';
