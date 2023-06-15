@@ -678,10 +678,12 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
+
 playwright:
   stage: end 2 end
   extends: .yarn
   image: mcr.microsoft.com/playwright
+  parallel: 3
   needs:
     - job: provision review
       optional: true
@@ -693,7 +695,7 @@ playwright:
   script:
     - yarn playwright install
     - yarn scripts wait-for-ssl
-    - yarn workspace @appsemble/e2e run e2e
+    - yarn workspace @appsemble/e2e run e2e --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
   artifacts:
     expose_as: Playwright videos
     when: always
