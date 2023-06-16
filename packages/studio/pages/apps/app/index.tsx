@@ -29,6 +29,7 @@ import { DefinitionPage } from './definition/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 import { NotificationsPage } from './notifications/index.js';
+import { QuotasPage } from './quotas/index.js';
 import { ResourcesRoutes } from './resources/index.js';
 import { SecretsPage } from './secrets/index.js';
 import { SettingsPage } from './settings/index.js';
@@ -162,6 +163,11 @@ export function AppRoutes(): ReactElement {
             <FormattedMessage {...messages.secrets} />
           </MenuItem>
         ) : null}
+        {editPermission ? (
+          <MenuItem icon="chart-bar" to={`${url}/quotas`}>
+            <FormattedMessage {...messages.quotas} />
+          </MenuItem>
+        ) : null}
       </MenuSection>
     ),
   );
@@ -204,6 +210,7 @@ export function AppRoutes(): ReactElement {
             path="/edit"
           />
           <Route element={<SecretsPage />} path="/secrets" />
+          <Route element={<QuotasPage />} path="/quotas" />
           <Route element={<SnapshotsRoutes />} path="/snapshots/*" />
         </Route>
 
