@@ -77,12 +77,14 @@ export async function handler(argv: ServeArguments): Promise<void> {
     );
   }
 
+  const appSecurity = appsembleApp.definition.security;
+
   const appMembers: AppMember[] = [
     {
       id: '1',
       name: 'dev',
       primaryEmail: 'dev@appsemble.com',
-      role: passedUserRole || appsembleApp.definition.security.default.role,
+      role: passedUserRole || appSecurity?.default.role,
     },
   ];
 
@@ -287,9 +289,13 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
-      appMembers,
-      appUserInfo,
-      appTeams,
+      ...(appSecurity
+        ? {
+            appMembers,
+            appUserInfo,
+            appTeams,
+          }
+        : {}),
       appAssets,
       blockConfigs,
     },
