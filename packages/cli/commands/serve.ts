@@ -70,11 +70,15 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
+  const appRoles = appsembleApp.definition.roles;
+
   const passedUserRole = argv['user-role'];
-  if (passedUserRole && !appsembleApp.definition.roles.includes(passedUserRole)) {
-    throw new AppsembleError(
-      `The specified role ${passedUserRole} is not supported by this app. Allowed roles are [${appsembleApp.definition.roles}]`,
-    );
+  if (passedUserRole && !appRoles?.includes(passedUserRole)) {
+    throw appRoles
+      ? new AppsembleError(
+          `The specified role "${passedUserRole}" is not supported by this app. Supported roles are [${appRoles}]`,
+        )
+      : new AppsembleError('This app does not support roles');
   }
 
   const appSecurity = appsembleApp.definition.security;
