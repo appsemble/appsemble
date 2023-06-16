@@ -74,7 +74,7 @@ They reside in [`packages/e2e`](packages/e2e).
 
 ### Changelog
 
-Every block and package has a `changes` directory. This directory contains the following folders:
+Every block and package has a `changed` directory. This directory contains the following folders:
 
 - `added`
 - `changed`
