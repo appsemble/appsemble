@@ -84,19 +84,6 @@ export function TabsPage({
             />
           );
         })}
-        {/* Redirect from a matching sub URL to the actual URL */}
-        {page.tabs.map(({ name }, index) => {
-          const translatedName = getAppMessage({
-            id: `${prefix}.tabs.${index}`,
-            defaultMessage: name,
-          }).format() as string;
-
-          const exactPath = `/${lang}/${pageId}/${normalize(translatedName)}${
-            wildcard.includes('/') ? wildcard.slice(wildcard.indexOf('/')) : ''
-          }`;
-
-          return <Route element={<Navigate to={exactPath} />} key={exactPath} path="/*" />;
-        })}
 
         <Route
           element={
