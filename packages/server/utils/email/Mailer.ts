@@ -18,7 +18,7 @@ import { Op } from 'sequelize';
 import { EmailQuotaExceededError } from './EmailQuotaExceededError.js';
 import { renderEmail } from './renderEmail.js';
 import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
-import { type App, AppMessages, transactional } from '../../models/index.js';
+import { App, AppMessages, Member, Organization, transactional, User } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
 import { readAsset } from '../readAsset.js';
@@ -285,6 +285,73 @@ export class Mailer {
     });
   }
 
+  async tryRateLimiting({ app }: Pick<SendMailOptions, 'app'>): Promise<void> {
+    if (
+      argv.enableAppEmailQuota &&
+      app &&
+      !(app?.emailHost && app?.emailUser && app?.emailPassword)
+    ) {
+      const todayStartUTC = zonedTimeToUtc(startOfDay(new Date()), 'UTC');
+      await transactional(async (transaction) => {
+        const emailsSentToday = await AppEmailQuotaLog.count({
+          where: {
+            created: {
+              [Op.gte]: todayStartUTC,
+            },
+            AppId: app.id,
+          },
+          transaction,
+        });
+        if (emailsSentToday >= argv.dailyAppEmailQuota) {
+          throw new EmailQuotaExceededError('Too many emails sent today');
+        }
+        if (argv.enableAppEmailQuotaAlerts && emailsSentToday === argv.dailyAppEmailQuota - 1) {
+          // Notify app owner(s) they’re about to exceed their quota
+          const fullApp = await App.findByPk(app.id, {
+            include: [Organization],
+            transaction,
+          });
+          const members = await Member.findAll({
+            where: {
+              role: 'Owner',
+              OrganizationId: fullApp.OrganizationId,
+            },
+            include: [
+              {
+                model: User,
+                required: true,
+                attributes: ['primaryEmail'],
+              },
+            ],
+            attributes: [],
+            transaction,
+          });
+          const emails = members.map((m) => m.User.primaryEmail);
+          await Promise.all(
+            emails.map(async (email) => {
+              await this.sendTemplateEmail(
+                {
+                  email,
+                },
+                'appEmailQuotaLimitHit',
+                {
+                  appName: fullApp.definition.name,
+                },
+              );
+            }),
+          );
+        }
+
+        await AppEmailQuotaLog.create(
+          {
+            AppId: app.id,
+          },
+          { transaction },
+        );
+      });
+    }
+  }
+
   /**
    * Send an email using the configured SMTP transport.
    *
@@ -321,34 +388,7 @@ export class Mailer {
       logger.warn('SMTP hasn’t been configured. Not sending real email.');
     }
 
-    if (
-      argv.enableAppEmailQuota &&
-      app &&
-      !(app?.emailHost && app?.emailUser && app?.emailPassword)
-    ) {
-      const todayStartUTC = zonedTimeToUtc(startOfDay(new Date()), 'UTC');
-      await transactional(async (transaction) => {
-        const emailsSentToday = await AppEmailQuotaLog.count({
-          where: {
-            created: {
-              [Op.gte]: todayStartUTC,
-            },
-            AppId: app.id,
-          },
-          transaction,
-        });
-        if (emailsSentToday >= argv.dailyAppEmailQuota) {
-          throw new EmailQuotaExceededError('Too many emails sent today');
-        }
-
-        await AppEmailQuotaLog.create(
-          {
-            AppId: app.id,
-          },
-          { transaction },
-        );
-      });
-    }
+    await this.tryRateLimiting({ app });
 
     const parsed = addrs.parseOneAddress(argv.smtpFrom) as ParsedMailbox;
     const fromHeader = from ? `${from} <${parsed?.address}>` : argv.smtpFrom;

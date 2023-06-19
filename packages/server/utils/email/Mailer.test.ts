@@ -5,9 +5,10 @@ import { type Transporter } from 'nodemailer';
 import { type Mock } from 'vitest';
 
 import { Mailer } from './Mailer.js';
-import { App, AppMessages, Organization } from '../../models/index.js';
+import { App, AppMessages, Member, Organization, type User } from '../../models/index.js';
 import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
+import { createTestUser } from '../test/authorization.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
 let mailer: Mailer;
@@ -532,6 +533,7 @@ describe('copyToSentFolder', () => {
 
 describe('emailQuota', () => {
   let app: App;
+  let user: User;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -544,9 +546,15 @@ describe('emailQuota', () => {
   beforeEach(async () => {
     const server = await createServer();
     await setTestApp(server);
+    user = await createTestUser();
     const organization = await Organization.create({
       id: 'testorganization',
       name: 'Test Organization',
+    });
+    await Member.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
     });
     app = await App.create({
       definition: {
@@ -739,5 +747,51 @@ describe('emailQuota', () => {
     vi.advanceTimersByTime(60 * 1000);
     await mailer.sendEmail(email);
     expect(mailer.transport.sendMail).toHaveBeenCalledTimes(8);
+  });
+
+  it('should alert organization owners when the app email quota is exceeded', async () => {
+    setArgv({
+      ...baseArgv,
+      enableAppEmailQuota: true,
+      dailyAppEmailQuota: 3,
+      enableAppEmailQuotaAlerts: true,
+    });
+    mailer.transport = {
+      sendMail: vi.fn(),
+    } as Partial<Transporter> as Transporter;
+
+    const email: Parameters<Mailer['sendTranslatedEmail']>[0] = {
+      appId: app.id,
+      app,
+      emailName: 'welcome',
+      to: { email: 'test@example.com', name: 'John Doe' },
+      locale: 'en',
+      values: {
+        name: 'John Doe',
+        appName: 'Test App',
+        link: (text) => `[${text}](https://example.com/token=abcdefg)`,
+      },
+    };
+
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+    await mailer.sendTranslatedEmail(email);
+    vi.advanceTimersByTime(60 * 1000);
+
+    expect(mailer.transport.sendMail).toHaveBeenNthCalledWith(
+      3,
+      expect.objectContaining({
+        subject: 'Email quota hit',
+      }),
+    );
+
+    expect(mailer.transport.sendMail).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({
+        subject: 'Welcome to Test App',
+      }),
+    );
   });
 });

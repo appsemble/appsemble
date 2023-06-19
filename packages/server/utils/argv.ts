@@ -258,6 +258,13 @@ export interface Argv {
 
   dailyAppEmailQuota: number;
 
+  /**
+   * Whether or not to send an email to the app owner when the app email quota is reached.
+   *
+   * @default false
+   */
+  enableAppEmailQuotaAlerts: boolean;
+
   // //////////////////////////////////////////////////////////////////////////////////////////// //
   // Sentry                                                                                       //
   // //////////////////////////////////////////////////////////////////////////////////////////// //
@@ -376,6 +383,7 @@ const defaults: Argv = {
   imapCopyToSentFolder: false,
   enableAppEmailQuota: false,
   dailyAppEmailQuota: 10,
+  enableAppEmailQuotaAlerts: false,
   sentryDsn: undefined,
   sentryEnvironment: undefined,
   githubClientId: undefined,

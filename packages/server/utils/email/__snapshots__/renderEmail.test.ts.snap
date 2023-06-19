@@ -1,5 +1,33 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`appEmailQuotaLimitHit > should render appEmailQuotaLimitHit 0 > html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>Your app Test App has hit its email quota limit.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`appEmailQuotaLimitHit > should render appEmailQuotaLimitHit 0 > text 1`] = `
+"Hello,
+
+Your app Test App has hit its email quota limit.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
 exports[`appMemberEmailChange > should render appMemberEmailChange 0 > html 1`] = `
 "<!doctype html>
 <html lang=\\"en\\">
