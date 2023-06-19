@@ -1709,6 +1709,7 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "coreStyle": "body { color: blue; }",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Foobar",
@@ -1738,6 +1739,7 @@ describe('createApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "sharedStyle": ":root { --primary-color: purple; }",
         "showAppDefinition": true,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,
@@ -3455,6 +3457,7 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "coreStyle": "body { color: yellow; }",
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -3473,6 +3476,7 @@ describe('patchApp', () => {
         "screenshotUrls": [],
         "sentryDsn": null,
         "sentryEnvironment": null,
+        "sharedStyle": "body { color: blue; }",
         "showAppDefinition": false,
         "showAppsembleLogin": false,
         "showAppsembleOAuth2Login": true,

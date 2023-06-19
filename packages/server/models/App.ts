@@ -240,6 +240,8 @@ export class App extends Model {
       iconBackground: this.iconBackground || '#ffffff',
       iconUrl: resolveIconUrl(this),
       longDescription: this.longDescription,
+      coreStyle: this.coreStyle == null ? undefined : this.coreStyle,
+      sharedStyle: this.sharedStyle == null ? undefined : this.sharedStyle,
       definition,
       yaml: omittedValues.includes('yaml')
         ? undefined

@@ -184,6 +184,8 @@ it('should render the index page', async () => {
     path: 'app',
     vapidPublicKey: '',
     vapidPrivateKey: '',
+    coreStyle: '',
+    sharedStyle: '',
   });
   const response = await request.get('/');
 
@@ -209,6 +211,7 @@ it('should render the index page', async () => {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "test",
+          "coreStyle": "",
           "definition": {
             "name": "Test App",
             "pages": [
@@ -272,6 +275,7 @@ it('should render the index page', async () => {
           "path": "app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "sharedStyle": "",
           "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
