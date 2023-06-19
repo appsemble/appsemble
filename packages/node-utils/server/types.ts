@@ -127,7 +127,7 @@ export interface GetAppSubEntityParams {
 }
 
 export interface GetAppMessagesParams extends GetAppSubEntityParams {
-  language: string;
+  language?: string;
   merge?: string[] | string;
 }
 

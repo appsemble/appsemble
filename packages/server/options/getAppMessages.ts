@@ -12,25 +12,31 @@ export function getAppMessages({
 }: GetAppMessagesParams): Promise<AppMessagesInterface[]> {
   const { merge } = context.query || { merge: undefined };
 
-  const lang = language.toLowerCase();
-  const languages = lang.split(/-/g);
+  if (language) {
+    const lang = language.toLowerCase();
+    const languages = lang.split(/-/g);
 
-  const baseLanguage = tags(language)
-    .subtags()
-    .find((sub) => sub.type() === 'language');
+    const baseLanguage = tags(language)
+      .subtags()
+      .find((sub) => sub.type() === 'language');
 
-  const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
+    const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
+
+    return AppMessages.findAll({
+      order: [['language', 'desc']],
+      where: {
+        AppId: app.id,
+        language: {
+          [Op.or]: [
+            ...(merge && baseLang ? [baseLang] : []),
+            ...languages.map((la, i) => languages.slice(0, i + 1).join('-')),
+          ],
+        },
+      },
+    });
+  }
 
   return AppMessages.findAll({
-    order: [['language', 'desc']],
-    where: {
-      AppId: app.id,
-      language: {
-        [Op.or]: [
-          ...(merge && baseLang ? [baseLang] : []),
-          ...languages.map((la, i) => languages.slice(0, i + 1).join('-')),
-        ],
-      },
-    },
+    where: { AppId: app.id },
   });
 }
