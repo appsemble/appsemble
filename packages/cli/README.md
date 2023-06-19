@@ -10,11 +10,15 @@
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Development server](#development-server)
   - [Authentication](#authentication)
   - [Organizations](#organizations)
   - [Apps](#apps)
   - [Blocks](#blocks)
+  - [Teams](#teams)
   - [Assets](#assets)
+  - [Resources](#resources)
+  - [Cronjobs](#cronjobs)
 - [License](#license)
 
 ## Installation
@@ -32,6 +36,63 @@ appsemble --help
 ```
 
 Every subcommand also supports the `--help` flag.
+
+### Development server
+
+The development server can create an app from a specified folder containing an `app-definition.yml`
+file. It will check what blocks are needed for the app and will try to load them from the local
+workspaces, listed in the `package.json` file in the root of the project, if they are present. This
+way, all default Appsemble blocks shipped with Appsemble are loaded automatically.
+
+Once the development server is started, making a change to a block’s code or styles will reflect in
+the browser immediately after refreshing the page, without the need of increasing the block’s
+version. Running docker database containers, creating a user account and creating an organization
+are not needed.
+
+The Appsemble CLI can be used to start the development server. For example, the following command
+serves `my-app`:
+
+```sh
+appsemble serve <path-to-app-directory>
+```
+
+This will serve the app on `http://<my-app>.localhost:9999`
+
+A different port can be specified with the `--port` parameter.
+
+The following option allows you to view the app with a specified role:
+
+```sh
+appsemble serve <path-to-app-directory> --user-role test
+```
+
+The following option allows you to view the app as a Manager of a team:
+
+```sh
+appsemble serve <path-to-app-directory> --team-role Manager
+```
+
+App data is stored within a `db.json` file in your machine’s cache directory. Each app has their own
+directory `appsemble-<my-app>`.
+
+```sh
+MacOS - /Users/<my-name>/Library/Caches/appsemble-<my-app>
+Linux - /home/<my-name>/.cache/appsemble-<my-app>
+Windows - C:\Users\<my-name>\AppData\Local\appsemble-<my-app>\Cache
+```
+
+App assets and block assets will be served from the local file system.
+
+The development server will fetch all remote repositories listed in the `.git/config` file in the
+root of the project. It will fetch blocks that are missing from the workspaces from the
+corresponding remote repository. These are typically third-party or proprietary blocks. It will
+check only the main and master branches, to fetch blocks from other branches run:
+
+New remote repositories can be added to the git configuration file by running:
+
+```sh
+git remote add <remote-name> <remote-url>
+```
 
 ### Authentication
 
@@ -94,6 +155,15 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 For a more in-depth explanation of how to build apps, use our
 [block development guide](https://appsemble.app/docs/development/developing-blocks).
 
+### Teams
+
+The Appsemble CLI can be used to manage teams for apps. For example, the following command creates a
+new team named `My Team`:
+
+```sh
+appsemble team create 'My Team' --app-id 1 --context development
+```
+
 ### Assets
 
 The Appsemble CLI can be used to upload assets from disk. For example, the following command creates
@@ -101,6 +171,59 @@ an asset named `example-asset`:
 
 ```sh
 appsemble asset create --app-id 1 path/to/example-asset.png
+```
+
+### Resources
+
+The Appsemble CLI can be used to create a resource from a JSON file or directory:
+
+```json
+[
+  {
+    "title": "My Resource",
+    "description": "This record is an example."
+  }
+]
+```
+
+```sh
+appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/my-resource.json
+```
+
+```sh
+appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+```
+
+And resources can also be updated when they contain an id in the JSON file.
+
+```json
+[
+  {
+    "id": 1,
+    "title": "My Updated Resource",
+    "description": "This will be the updated content of the first my-resource record."
+  }
+]
+```
+
+```sh
+appsemble resource update --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+```
+
+### Cronjobs
+
+The Appsemble CLI can be used to run app cronjobs. The following command runs all cronjobs that were
+scheduled to run in the past 5 minutes:
+
+```sh
+appsemble run-cronjobs
+```
+
+How often jobs are run (more accurately how far back the job can be scheduled for it to run) the
+time interval (in minutes) can also be set with:
+
+```sh
+appsemble run-cronjobs --interval 30
 ```
 
 ## License

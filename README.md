@@ -153,62 +153,13 @@ The published apps will be displayed on the `App store` page.
 
 ### Development Server
 
-The development server can create an app from a specified folder containing an `app-definition.yml`
-file. It will check what blocks are needed for the app and will try to load them from the local
-workspaces, listed in the `package.json` file in the root of the project, if they are present. This
-way, all default Appsemble blocks shipped with Appsemble are loaded automatically.
-
-Once the development server is started, making a change to a block’s code or styles will reflect in
-the browser immediately after refreshing the page, without the need of increasing the block’s
-version. Running docker database containers, creating a user account and creating an organization
-are not needed.
-
-App resources will be stored locally in the `/packages/cli/data.json` file. App assets and block
-assets will be served from the local file system.
-
-The development server will fetch all remote repositories listed in the `.git/config` file in the
-root of the project. It will fetch blocks that are missing from the workspaces from the
-corresponding remote repository. These are typically third-party or proprietary blocks. It will
-check only the main and master branches, to fetch blocks from other branches run:
-
-```sh
-git checkout <remote-name>/<branch-name> -- <path-to-block-directory>
-```
-
-Supported remote repositories can be inspected by running:
-
-```sh
-git remote -v
-```
-
-New remote repositories can be added to the git configuration file by running:
-
-```sh
-git remote add <remote-name> <remote-url>
-```
-
-To fetch all remote repositories run the following command:
-
-```sh
-git fetch --all
-```
-
-Apps can also be fetched from a remote repository manually by running the following command in the
-root of the project:
-
-```sh
-git checkout <remote-name>/<branch-name> -- <path-to-app-directory>
-```
-
 The development server can be started by running:
 
 ```sh
 yarn appsemble serve <path-to-app-directory>
 ```
 
-This will serve the app on `http://<app-name>.localhost:9999`
-
-A different port can be specified with the `--port` parameter.
+See the [CLI readme](packages/cli/README.md#development-server)
 
 ### Tests
 
