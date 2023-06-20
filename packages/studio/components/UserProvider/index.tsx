@@ -126,6 +126,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
 
     setAccessToken(tokenResponse.access_token);
 
+    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
     const timeout = exp * 1e3 - REFRESH_BUFFER - Date.now();
     const timeoutId = setTimeout(async () => {

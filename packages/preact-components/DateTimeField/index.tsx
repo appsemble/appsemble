@@ -11,7 +11,7 @@ import { FormComponent, Input, type SharedFormComponentProps } from '../index.js
 
 type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
   Pick<
-    flatpickr.Options.Options,
+    flatpickr.default.Options.Options,
     | 'allowInput'
     | 'altFormat'
     | 'altInput'
@@ -101,7 +101,7 @@ export function DateTimeField({
 }: DateTimeFieldProps): VNode {
   const wrapper = useRef<HTMLDivElement>();
   const positionElement = useRef<HTMLDivElement>();
-  const [picker, setPicker] = useState<flatpickr.Instance>(null);
+  const [picker, setPicker] = useState<flatpickr.default.Instance>(null);
   const {
     utils: { remap },
   } = useBlock();
@@ -134,6 +134,7 @@ export function DateTimeField({
       template += '{date, time, short}';
     }
 
+    // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
     const p = flatpickr(wrapper.current, {
       appendTo: wrapper.current,
       enableTime,
@@ -152,8 +153,10 @@ export function DateTimeField({
       maxDate,
       minTime,
       maxTime,
+      // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
       plugins: confirm ? [confirmDatePlugin({ confirmText: confirmLabel })] : [],
       minuteIncrement,
+      // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
       formatDate: (date) =>
         remap(
           dateFormat || {

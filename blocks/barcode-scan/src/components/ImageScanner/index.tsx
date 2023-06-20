@@ -10,6 +10,7 @@ export function ImageScanner({ onDetected }: ImageScannerProps): VNode {
   const [selectedImage, setSelectedImage] = useState(null);
 
   function runBarcodeDetection(image: any): void {
+    // @ts-expect-error Quagga types are wrong
     Quagga.decodeSingle({
       inputStream: {
         type: 'ImageStream',
@@ -28,6 +29,7 @@ export function ImageScanner({ onDetected }: ImageScannerProps): VNode {
       src: image,
     });
 
+    // @ts-expect-error Quagga types are wrong
     Quagga.onDetected(onDetected);
   }
 

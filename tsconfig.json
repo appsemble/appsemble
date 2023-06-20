@@ -7,7 +7,7 @@
     "lib": ["esnext"],
     "module": "esnext",
     "moduleDetection": "force",
-    "moduleResolution": "Node",
+    "moduleResolution": "node16",
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
