@@ -203,8 +203,8 @@ export function GeneralTab({
                 label={formatMessage(messages.defaultPageLabel)}
                 labelPosition="top"
                 onChange={onDefaultPageChange}
-                options={app.definition.pages.map((option) => option.name)}
-                value={app.definition.defaultPage}
+                options={docRef.current.toJS().pages.map((item: any) => item.name)}
+                value={docRef.current.toJS().defaultPage}
               />
               <InputList
                 label={formatMessage(messages.defaultLanguageLabel)}
