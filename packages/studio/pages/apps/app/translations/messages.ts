@@ -71,4 +71,28 @@ export const messages = defineMessages({
     id: 'studio.xTZrx0',
     defaultMessage: 'Successfully deleted messages',
   },
+  export: {
+    id: 'studio.MHyPpu',
+    defaultMessage: 'Export as JSON',
+  },
+  import: {
+    id: 'studio.4qv+fW',
+    defaultMessage: 'Import from JSON file',
+  },
+  importSuccess: {
+    id: 'studio.2rkKvL',
+    defaultMessage: 'Successfully imported {selectedLanguage} translations',
+  },
+  importError: {
+    id: 'studio./pCfeM',
+    defaultMessage: 'Something went wrong when creating the new translations.',
+  },
+  errorMessage: {
+    id: 'studio.ql9rKu',
+    defaultMessage: 'Error loading app messages',
+  },
+  loadingMessage: {
+    id: 'studio.Ft/dkd',
+    defaultMessage: 'Loading app messages',
+  },
 });

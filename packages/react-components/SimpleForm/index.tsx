@@ -4,6 +4,7 @@ import {
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -47,6 +48,11 @@ export function SimpleForm<T extends {}>({
   ...props
 }: SimpleFormProps<T>): ReactNode {
   const [values, setValues] = useState(defaultValues);
+
+  useEffect(() => {
+    setValues(defaultValues);
+  }, [defaultValues]);
+
   const [submitError, setSubmitError] = useState<Error>(null);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [pristine, setPristine] = useState(

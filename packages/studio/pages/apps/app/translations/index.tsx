@@ -13,14 +13,16 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
+import { type AppMessages } from '@appsemble/types';
 import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
+import { downloadBlob } from '@appsemble/web-utils';
 import axios from 'axios';
 import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import { MessagesLoader } from './MessagesLoader/index.js';
+import { MessagesForm } from './MessagesForm/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
 
@@ -100,6 +102,59 @@ export function TranslationsPage(): ReactNode {
     [app, modal, languageIds],
   );
 
+  const result = useData<AppMessages>(`/api/apps/${app.id}/messages/${languageId}`);
+  const defaultMessagesResult = useData<AppMessages>(
+    `/api/apps/${app.id}/messages/${languageId}?override=false`,
+  );
+
+  const downloadJson = useCallback(() => {
+    const bytes = new TextEncoder().encode(JSON.stringify(result?.data?.messages, null, 2));
+    downloadBlob(new Blob([bytes]), `${languageId}.json`);
+  }, [languageId, result?.data?.messages]);
+
+  const uploadJson = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.click();
+    input.addEventListener('change', () => {
+      const [file] = input.files;
+      const reader = new FileReader();
+      reader.addEventListener(
+        'load',
+        () => {
+          axios
+            .post<AppMessages>(`/api/apps/${app.id}/messages`, {
+              language: languageId,
+              messages: JSON.parse(reader.result as string),
+            })
+            .then(
+              ({ data }) => {
+                result.setData(data);
+                push({
+                  body: formatMessage(messages.importSuccess, {
+                    selectedLanguage: getLanguageDisplayName(languageId),
+                  }) as string,
+                  color: 'success',
+                });
+              },
+              () => {
+                push({
+                  body: formatMessage(messages.importError),
+                  color: 'danger',
+                });
+              },
+            );
+        },
+        false,
+      );
+
+      if (file) {
+        reader.readAsText(file);
+      }
+    });
+  }, [app.id, formatMessage, languageId, push, result]);
+
   return (
     <>
       <Title>
@@ -118,32 +173,60 @@ export function TranslationsPage(): ReactNode {
           </option>
         ))}
       </SelectField>
-      <div className="is-pulled-right">
-        <Button
-          className="mr-2"
-          color="danger"
-          disabled={
-            submitting ||
-            app.locked !== 'unlocked' ||
-            !selectedLanguage ||
-            selectedLanguage === (app.definition.defaultLanguage ?? 'en')
-          }
-          icon="minus"
-          onClick={onDeleteLanguage}
-        />
-        <Button
-          color="success"
-          disabled={submitting || app.locked !== 'unlocked'}
-          icon="plus"
-          onClick={modal.enable}
-        />
+      <div className="buttons is-justify-content-space-between">
+        <span className="buttons m-0">
+          <Button
+            color="danger"
+            disabled={
+              submitting ||
+              app.locked ||
+              !selectedLanguage ||
+              selectedLanguage === (app.definition.defaultLanguage ?? 'en')
+            }
+            icon="minus"
+            onClick={onDeleteLanguage}
+          />
+          <Button
+            color="success"
+            disabled={submitting || app.locked !== 'unlocked'}
+            icon="plus"
+            onClick={modal.enable}
+          />
+        </span>
+        <span className="buttons m-0">
+          <Button icon="download" onClick={downloadJson}>
+            <FormattedMessage {...messages.export} />
+          </Button>
+          <Button icon="upload" onClick={uploadJson}>
+            <FormattedMessage {...messages.import} />
+          </Button>
+        </span>
       </div>
 
       <Title className="my-4" size={4}>
         <FormattedMessage {...messages.messages} />
       </Title>
-      <AsyncDataView errorMessage={null} loadingMessage={null} result={languageIds}>
-        {() => <MessagesLoader languageId={languageId} />}
+
+      <AsyncDataView
+        errorMessage={<FormattedMessage {...messages.errorMessage} />}
+        loadingMessage={<FormattedMessage {...messages.loadingMessage} />}
+        result={result}
+      >
+        {(appMessages) => (
+          <AsyncDataView
+            errorMessage={<FormattedMessage {...messages.errorMessage} />}
+            loadingMessage={<FormattedMessage {...messages.loadingMessage} />}
+            result={defaultMessagesResult}
+          >
+            {(defaultAppMessages) => (
+              <MessagesForm
+                appMessages={appMessages}
+                defaultAppMessages={defaultAppMessages}
+                languageId={languageId}
+              />
+            )}
+          </AsyncDataView>
+        )}
       </AsyncDataView>
       <ModalCard
         component={SimpleForm}
