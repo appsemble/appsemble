@@ -91,7 +91,8 @@ export function ThemePage({
       theme.tileLayer = theme.tileLayer || baseTheme.tileLayer;
       return { theme: theme as Theme, inheritors };
     }
-    const currentPage = app.definition.pages[page];
+
+    const currentPage = docRef.current.toJS().pages[page];
     if (page !== -1 && block === -1 && subParent === -1) {
       theme.themeColor = currentPage.theme?.themeColor || theme.themeColor || baseTheme.themeColor;
       inheritors.themeInherited = currentPage.theme?.themeColor ? '' : inheritors.themeInherited;
