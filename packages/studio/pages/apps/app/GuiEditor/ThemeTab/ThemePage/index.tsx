@@ -7,8 +7,9 @@ import {
   type Theme,
 } from '@appsemble/types';
 import { baseTheme, googleFonts } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type MutableRefObject, type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -31,6 +32,8 @@ interface InheritedTheme {
 }
 
 interface ThemePageProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
   selectedBlock: number;
   selectedSubParent: number;
@@ -38,6 +41,8 @@ interface ThemePageProps {
 
 const defaultFont: FontDefinition = { family: 'Open Sans', source: 'google' };
 export function ThemePage({
+  changeIn,
+  docRef,
   selectedBlock,
   selectedPage,
   selectedSubParent,
@@ -213,60 +218,54 @@ export function ThemePage({
 
   const onChangeTheme = useCallback(
     (input: string, type: keyof Omit<Theme, 'font'>) => {
+      const doc = docRef.current;
       if (isDefaultTheme) {
-        if (!app.definition.theme) {
-          app.definition.theme = {};
-        }
-        app.definition.theme[type] = input;
+        changeIn(['theme', type], doc.createNode(input));
       } else {
-        const currentPage = app.definition.pages[selectedPage];
+        const currentPage = doc.getIn(['pages', selectedPage]) as YAMLMap;
         if (selectedPage !== -1 && selectedBlock === -1 && selectedSubParent === -1) {
-          if (!currentPage.theme) {
-            app.definition.pages[selectedPage].theme = {};
-          }
-          app.definition.pages[selectedPage].theme[type] = input;
+          changeIn(['pages', selectedPage, 'theme', type], doc.createNode({ theme: {} }));
         } else {
-          if (!currentPage.type || currentPage.type === 'page') {
-            if (!(currentPage as BasicPageDefinition).blocks[selectedBlock].theme) {
-              (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme = {};
-            }
-            (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock].theme[
-              type
-            ] = input;
+          if (!currentPage.get(['type']) || currentPage.get(['type']) === 'page') {
+            changeIn(
+              ['pages', selectedPage, 'blocks', selectedBlock, 'theme', type],
+              doc.createNode(input),
+            );
           }
-          if (currentPage.type === 'flow') {
-            if (
-              !(currentPage as FlowPageDefinition).steps[selectedSubParent].blocks[selectedBlock]
-                .theme
-            ) {
-              (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme = {};
-            }
-            (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-              selectedSubParent
-            ].blocks[selectedBlock].theme[type] = input;
+          if (currentPage.get(['type']) === 'flow') {
+            changeIn(
+              [
+                'pages',
+                selectedPage,
+                'steps',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+                type,
+              ],
+              doc.createNode(input),
+            );
           }
-          if (currentPage.type === 'tabs') {
-            if (
-              !(currentPage as TabsPageDefinition).tabs[selectedSubParent].blocks[selectedBlock]
-                .theme
-            ) {
-              (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme = {};
-            }
-            (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-              selectedSubParent
-            ].blocks[selectedBlock].theme[type] = input;
+          if (currentPage.get(['type']) === 'tabs') {
+            changeIn(
+              [
+                'pages',
+                selectedPage,
+                'tabs',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+                type,
+              ],
+              doc.createNode(input),
+            );
           }
         }
       }
-      setApp({ ...app });
     },
-    [app, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent, setApp],
+    [changeIn, docRef, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent],
   );
 
   const onReset = useCallback(
