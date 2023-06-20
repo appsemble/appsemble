@@ -29,6 +29,7 @@ bootstrap(({ events, parameters: { drawQr = false, height = 0, width = 0 }, them
       const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
 
       // Get URL from QR-Code
+      // @ts-expect-error https://github.com/cozmo/jsQR/pull/234
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
         inversionAttempts: 'dontInvert',
       });

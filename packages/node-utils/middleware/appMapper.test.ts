@@ -1,4 +1,4 @@
-import { argv, setArgv } from '@appsemble/server/utils/argv';
+import { argv, setArgv } from '@appsemble/server/utils/argv.js';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa, { type Context, type Middleware } from 'koa';
 

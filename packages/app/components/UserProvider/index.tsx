@@ -125,6 +125,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         ...params,
       }),
     );
+    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const payload = jwtDecode<JwtPayload>(accessToken);
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;

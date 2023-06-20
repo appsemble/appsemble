@@ -6,12 +6,10 @@ import { type DefaultContext, type DefaultState, type ParameterizedContext } fro
 
 import { type Options } from './server/types.js';
 
-// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
 const getNumberFormat = memoize.default(
   (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
 );
 
-// @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
 const getPluralRules = memoize.default(
   (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
 );
@@ -48,9 +46,9 @@ export async function getRemapperContext(
     (message) =>
       new IntlMessageFormat(message, language, undefined, {
         formatters: {
+          // @ts-expect-error intl-messageformat types are wrong
           getNumberFormat,
           getPluralRules,
-          // @ts-expect-error @formatjs/fast-memoize is typed for faux ESM
           getDateTimeFormat: memoize.default(
             (locale: string, opts: Intl.DateTimeFormatOptions) =>
               new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),

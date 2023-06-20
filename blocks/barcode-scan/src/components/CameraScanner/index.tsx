@@ -9,6 +9,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps): VNode {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   function videoStart(): void {
+    // @ts-expect-error Quagga types are wrong
     Quagga.init(
       {
         inputStream: {
@@ -36,9 +37,11 @@ export function CameraScanner({ onDetected }: CameraScannerProps): VNode {
         if (err) {
           return;
         }
+        // @ts-expect-error Quagga types are wrong
         Quagga.start();
       },
     );
+    // @ts-expect-error Quagga types are wrong
     Quagga.onDetected(onDetected);
   }
 

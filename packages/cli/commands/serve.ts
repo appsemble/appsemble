@@ -20,7 +20,7 @@ import {
   type Asset,
 } from '@appsemble/types';
 import { asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
-import * as csvToJson from 'csvtojson';
+import csvToJson from 'csvtojson';
 import FormData from 'form-data';
 import { type Argv } from 'yargs';
 
