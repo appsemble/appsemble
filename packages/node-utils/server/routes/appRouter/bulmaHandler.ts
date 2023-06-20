@@ -5,7 +5,7 @@ import { type Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import bulma from 'bulma/package.json' assert { type: 'json' };
 import { type Context, type Middleware } from 'koa';
-import sass from 'sass';
+import { renderSync } from 'sass';
 import stripBom from 'strip-bom';
 
 const require = createRequire(import.meta.url);
@@ -113,7 +113,7 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
     if (!css) {
       css = stripBom(
         String(
-          sass.renderSync({
+          renderSync({
             data: processStyle(theme),
             outputStyle: 'compressed',
             logger: {
