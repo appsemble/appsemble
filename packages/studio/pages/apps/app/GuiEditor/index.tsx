@@ -197,7 +197,12 @@ export default function EditPage(): ReactElement {
       </div>
       <div className={`${styles.guiEditorContainer} m-0 p-0`}>
         {currentTab.tabName === 'general' && (
-          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <GeneralTab
+            changeIn={changeIn}
+            docRef={docRef}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
         {currentTab.tabName === 'resources' && (
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
@@ -218,7 +223,12 @@ export default function EditPage(): ReactElement {
           />
         )}
         {currentTab.tabName === 'theme' && (
-          <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <ThemeTab
+            changeIn={changeIn}
+            docRef={docRef}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
         {currentTab.tabName === 'security' && (
           <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />

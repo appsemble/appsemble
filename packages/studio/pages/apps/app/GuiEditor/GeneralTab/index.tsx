@@ -1,6 +1,14 @@
 import { Button } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  type ChangeEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -12,6 +20,8 @@ import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 export interface GeneralTabProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
@@ -45,7 +55,12 @@ const Tabs = [
 
 type LeftSidebar = (typeof Tabs)[number];
 
-export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactElement {
+export function GeneralTab({
+  changeIn,
+  docRef,
+  isOpenLeft,
+  isOpenRight,
+}: GeneralTabProps): ReactElement {
   const { app, setApp } = useApp();
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
@@ -53,26 +68,26 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
 
   const onNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
-      app.definition.name = value;
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['name'], doc.createNode(value) as Node);
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>, value: string) => {
-      app.definition.description = value;
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['description'], doc.createNode(value) as Node);
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onDefaultPageChange = useCallback(
     (index: number) => {
-      app.definition.defaultPage = app.definition.pages[index].name;
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['defaultPage'], doc.createNode(doc.getIn(['pages', index, 'name'])) as Node);
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeDefaultLanguage = useCallback(
@@ -174,7 +189,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
                 maxLength={30}
                 minLength={1}
                 onChange={onNameChange}
-                value={app.definition.name}
+                value={docRef.current.getIn(['name'], true) as string}
               />
               <InputTextArea
                 allowSymbols
@@ -182,7 +197,7 @@ export function GeneralTab({ isOpenLeft, isOpenRight }: GeneralTabProps): ReactE
                 maxLength={80}
                 minLength={1}
                 onChange={onDescriptionChange}
-                value={app.definition.description}
+                value={docRef.current.getIn(['description'], true) as string}
               />
               <InputList
                 label={formatMessage(messages.defaultPageLabel)}
