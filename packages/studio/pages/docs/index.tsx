@@ -91,9 +91,6 @@ export function DocsRoutes(): ReactElement {
           <MenuItem exact to={`${url}/reference/action`}>
             <FormattedMessage {...messages.action} />
           </MenuItem>
-          <MenuItem exact to={`${url}/reference/remapper`}>
-            <FormattedMessage {...messages.remapper} />
-          </MenuItem>
         </MenuSection>
       </CollapsibleMenuSection>
       <CollapsibleMenuSection>
