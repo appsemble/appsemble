@@ -41,8 +41,8 @@ works or how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
 
-- [Deployment using Docker Compose](05-deployment/docker-compose.md)
-- [Deployment using Helm](05-deployment/helm.md)
+- [Deployment using Docker Compose](04-deployment/docker-compose.md)
+- [Deployment using Helm](04-deployment/helm.md)
 
 ## Block Developer
 

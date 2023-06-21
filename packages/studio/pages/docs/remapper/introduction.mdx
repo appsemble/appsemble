@@ -1,15 +1,6 @@
----
-icon: sitemap
----
+import { importDocs } from './components/RemapperMenuItems.js';
 
 # Remapper
-
-## Table of Contents
-
-- [Introduction](#introduction)
-  - [How does this work in an app?](#how-does-this-work-in-an-app)
-  - [Advanced remapping](#advanced-remapping)
-  - [Conclusion](#conclusion)
 
 ## Introduction
 
@@ -32,7 +23,7 @@ Given the following data:
 ```json
 {
   "firstName": "Patrick",
-  "lastName": "Star"
+  "lastName": "Stuart"
 }
 ```
 
@@ -184,11 +175,11 @@ function containing two remappers:
    user and checks if it is equal to “Eindhoven”. If this is true, it removes the `city` property
    from the person’s properties. If this is false, it sets the person object to null.
 
-When this remapper is done, an array that is filled with people that had the value of “Eindhoven”
-under the `city` property is outputted. People that didn’t are set to null.
+   When this remapper is done, an array that is filled with people that had the value of “Eindhoven”
+   under the `city` property is outputted. People that didn’t are set to null.
 
-> **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
-> **context** of the remapper itself.
+   > **Note:** Remappers don’t directly alter the resource itself. It only changes data within the
+   > **context** of the remapper itself.
 
 2. `null.strip`: This remapper removes any `null` value from the data that is given to it.
    Considering the output of the previous remapper was an array mixed with people and null values.
@@ -203,3 +194,13 @@ block.
 You should be familiar with the very basics of remapping now. A lot more remappers exist in the
 framework and more will be added over time, so it’s good to get familiar with the most important
 ones. Keep experimenting with them and you will find out just how powerful remappers are.
+
+### Table of contents
+
+<div>
+  {importDocs().map((section) => (
+    <li key={section.title.toLowerCase()}>
+      <a href={`/docs/remapper/${section.title.toLowerCase()}`}>{section.title}</a>
+    </li>
+  ))}
+</div>

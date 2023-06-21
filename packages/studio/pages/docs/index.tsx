@@ -24,6 +24,8 @@ import { Doc } from './Doc/index.js';
 import { docs } from './docs.js';
 import { messages } from './messages.js';
 import { ReferenceRoutes } from './reference/index.js';
+import { RemapperMenuItems } from './remapper/components/RemapperMenuItems.js';
+import { RemapperRoutes } from './remapper/index.js';
 import { SearchPage } from './search/index.js';
 import Changelog from '../../../../CHANGELOG.md';
 import { useBreadCrumbsDecoration } from '../../components/BreadCrumbsDecoration/index.js';
@@ -73,6 +75,12 @@ export function DocsRoutes(): ReactElement {
           ];
         })}
       <CollapsibleMenuSection>
+        <MenuItem exact icon="sitemap" to={`${url}/remapper`}>
+          <FormattedMessage {...messages.remapper} />
+        </MenuItem>
+        <MenuSection>{RemapperMenuItems(url)}</MenuSection>
+      </CollapsibleMenuSection>
+      <CollapsibleMenuSection>
         <MenuItem icon="book" to={`${url}/reference`}>
           <FormattedMessage {...messages.reference} />
         </MenuItem>
@@ -82,9 +90,6 @@ export function DocsRoutes(): ReactElement {
           </MenuItem>
           <MenuItem exact to={`${url}/reference/action`}>
             <FormattedMessage {...messages.action} />
-          </MenuItem>
-          <MenuItem exact to={`${url}/reference/remapper`}>
-            <FormattedMessage {...messages.remapper} />
           </MenuItem>
         </MenuSection>
       </CollapsibleMenuSection>
@@ -125,6 +130,7 @@ export function DocsRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={messages.title}>
+      <Route element={<RemapperRoutes />} path="/remapper/*" />
       <Route element={<SearchPage />} path="/search" />
       <Route element={<Changelog />} path="/changelog" />
       <Route element={<Cli />} path="/packages/cli" />
