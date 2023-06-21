@@ -87,7 +87,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
     {
       id: '1',
       name: 'dev',
-      primaryEmail: 'dev@appsemble.com',
+      primaryEmail: 'dev@example.com',
       role: passedUserRole || appSecurity?.default.role,
     },
   ];
@@ -111,7 +111,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   ];
 
   const appUserInfo: UserInfo = {
-    email: 'dev@appsemble.com',
+    email: 'dev@example.com',
     email_verified: true,
     name: 'dev',
     sub: '1',
