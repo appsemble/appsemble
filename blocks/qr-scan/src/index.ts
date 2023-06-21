@@ -51,7 +51,8 @@ bootstrap(({ events, parameters: { drawQr = false, height = 0, width = 0 }, them
         }
 
         // Emit event with QR URL
-        events.emit.foundQr(code.data);
+        const obj = { code: code.data };
+        events.emit.foundQr(obj);
       }
     }
     if (!stopped) {
