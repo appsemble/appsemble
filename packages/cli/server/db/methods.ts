@@ -118,7 +118,6 @@ export const Methods = {
     const payload = {
       ...values,
       id: existing.length + 1,
-      type: modelDir.slice(modelDir.indexOf('/') + 1 || 0),
       ...defaults,
     };
     await db.push(modelDir, payload, true);
@@ -135,7 +134,6 @@ export const Methods = {
     const payload = values.map((value, index) => ({
       ...value,
       id: existing.length + index + 1,
-      type: modelDir.slice(modelDir.indexOf('/') + 1 || 0),
       ...defaults,
     }));
     await db.push(modelDir, payload, existing.length === 0 ? true : override);

@@ -30,11 +30,6 @@ describe('methods', () => {
       expect(result).toHaveProperty('$updated');
       expect(result).toHaveProperty('expires', null);
     });
-
-    it('should add record type', async () => {
-      const result = await Methods.create({ name: 'testInstance' }, '/testModel');
-      expect(result).toHaveProperty('type', 'testModel');
-    });
   });
 
   describe('bulkCreate', () => {
@@ -63,15 +58,6 @@ describe('methods', () => {
       expect(result[1]).toHaveProperty('$created');
       expect(result[1]).toHaveProperty('$updated');
       expect(result[1]).toHaveProperty('expires', null);
-    });
-
-    it('should add records type', async () => {
-      const result = await Methods.bulkCreate(
-        [{ name: 'testInstance2' }, { name: 'testInstance3' }],
-        '/testModel',
-      );
-      expect(result[0]).toHaveProperty('type', 'testModel');
-      expect(result[1]).toHaveProperty('type', 'testModel');
     });
   });
 

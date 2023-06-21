@@ -13,7 +13,7 @@ export class Resource {
   [key: string]: unknown;
 
   static create(values: Record<string, unknown>, type: string): Promise<Resource | null> {
-    return Methods.create(values, `${dir}/${type}[]`);
+    return Methods.create({ ...values, type }, `${dir}/${type}[]`);
   }
 
   static bulkCreate(
@@ -21,7 +21,11 @@ export class Resource {
     type: string,
     override = false,
   ): Promise<Resource[] | []> {
-    return Methods.bulkCreate(values, `${dir}/${type}`, override);
+    return Methods.bulkCreate(
+      values.map((value) => ({ ...value, type })),
+      `${dir}/${type}`,
+      override,
+    );
   }
 
   static findById(id: number | string, type: string): Promise<Resource | null> {
