@@ -163,13 +163,6 @@ export interface RendererProps<F extends Field> {
 declare module '@appsemble/sdk' {
   interface Parameters {
     /**
-     * The base URL of the associated files.
-     *
-     * If not defined, Appsemble’s Asset API will be used instead.
-     */
-    fileBase?: string;
-
-    /**
      * A list of fields to display based on the name from the schema.
      */
     fields: (Field | FieldGroup)[];
