@@ -3,6 +3,7 @@ export const {
   appUpdated,
   blockManifests,
   definition,
+  development,
   id: appId,
   languages,
   logins,

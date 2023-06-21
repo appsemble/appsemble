@@ -7,6 +7,7 @@ import { Readable } from 'node:stream';
 import {
   AppsembleError,
   createServer,
+  type ExtendedTeam,
   logger,
   opendirSafe,
   readData,
@@ -14,10 +15,11 @@ import {
 } from '@appsemble/node-utils';
 import {
   type App,
-  type AppDefinition,
+  type AppMember,
   type AppMessages,
   type AppsembleMessages,
   type Asset,
+  type UserInfo,
 } from '@appsemble/types';
 import { asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
 import csvToJson from 'csvtojson';
@@ -36,7 +38,8 @@ import { type BaseArguments } from '../types.js';
 interface ServeArguments extends BaseArguments {
   path: string;
   port: number;
-  host: string;
+  'user-role': string;
+  'team-role': string;
 }
 
 export const command = 'serve path';
@@ -51,12 +54,69 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'The HTTP server port to use.',
       type: 'number',
       default: 9999,
+    })
+    .option('user-role', {
+      desc: 'The role to set to the mocked authenticated user.',
+      type: 'string',
+    })
+    .option('team-role', {
+      desc: 'The role to set to the mocked authenticated user in the team.',
+      type: 'string',
+      default: 'member',
     });
 }
 
 export async function handler(argv: ServeArguments): Promise<void> {
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
+
+  const appRoles = appsembleApp.definition.roles;
+
+  const passedUserRole = argv['user-role'];
+  if (passedUserRole && !appRoles?.includes(passedUserRole)) {
+    throw appRoles
+      ? new AppsembleError(
+          `The specified role "${passedUserRole}" is not supported by this app. Supported roles are [${appRoles}]`,
+        )
+      : new AppsembleError('This app does not support roles');
+  }
+
+  const appSecurity = appsembleApp.definition.security;
+
+  const appMembers: AppMember[] = [
+    {
+      id: '1',
+      name: 'dev',
+      primaryEmail: 'dev@appsemble.com',
+      role: passedUserRole || appSecurity?.default.role,
+    },
+  ];
+
+  const allowedTeamRoles = ['manager', 'member'] as const;
+  const passedTeamRole = argv['team-role'] as (typeof allowedTeamRoles)[number];
+  if (passedTeamRole && !allowedTeamRoles.includes(passedTeamRole)) {
+    throw new AppsembleError(
+      `The specified team role ${passedTeamRole} is not supported. Allowed roles are [member,manager]`,
+    );
+  }
+
+  const appTeams: ExtendedTeam[] = [
+    {
+      id: 1,
+      name: 'team',
+      size: 1,
+      role: passedTeamRole,
+      annotations: {},
+    },
+  ];
+
+  const appUserInfo: UserInfo = {
+    email: 'dev@appsemble.com',
+    email_verified: true,
+    name: 'dev',
+    sub: '1',
+  };
+
   const appName = normalize(appsembleApp.definition.name);
   const appId = 1;
   setAppDir(appName);
@@ -215,58 +275,10 @@ export async function handler(argv: ServeArguments): Promise<void> {
     { allowMissing: true },
   );
 
-  const publicResources = appsembleApp.definition.resources;
-  for (const entry of Object.entries(appsembleApp.definition.resources || {})) {
-    const [key, resource] = entry;
-    publicResources[key] = {
-      ...resource,
-      query: {
-        ...resource.query,
-        roles: ['$public'],
-      },
-      get: {
-        ...resource.get,
-        roles: ['$public'],
-      },
-      create: {
-        ...resource.create,
-        roles: ['$public'],
-      },
-      update: {
-        ...resource.update,
-        roles: ['$public'],
-      },
-      delete: {
-        ...resource.delete,
-        roles: ['$public'],
-      },
-      roles: ['$public'],
-    };
-  }
-
-  const publicPages = appsembleApp.definition.pages.map((page) => {
-    const publicBlocks =
-      'blocks' in page ? page.blocks.map((block) => ({ ...block, roles: undefined })) : undefined;
-    return {
-      ...page,
-      roles: ['$none'],
-      blocks: publicBlocks,
-    };
-  });
-
-  const publicAppDefinition: AppDefinition = {
-    ...appsembleApp.definition,
-    roles: ['$none'],
-    security: undefined,
-    resources: publicResources,
-    pages: publicPages,
-  };
-
   const stubbedApp = {
     ...appsembleApp,
     id: appId,
     path: appPath,
-    definition: publicAppDefinition,
     coreStyle: appsembleApp.coreStyle || '',
     sharedStyle: appsembleApp.sharedStyle || '',
     $updated: new Date().toISOString(),
@@ -281,6 +293,13 @@ export async function handler(argv: ServeArguments): Promise<void> {
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
+      ...(appSecurity
+        ? {
+            appMembers,
+            appUserInfo,
+            appTeams,
+          }
+        : {}),
       appAssets,
       blockConfigs,
     },

@@ -8,6 +8,7 @@ window.settings = {
   apiUrl: 'https://appsemble.dev',
   blockManifests: [],
   definition: null,
+  development: false,
   id: 42,
   languages: ['en', 'nl'],
   logins: [],

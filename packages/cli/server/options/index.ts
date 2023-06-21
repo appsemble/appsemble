@@ -30,3 +30,6 @@ export * from './reloadUser.js';
 export * from './email.js';
 export * from './sendNotifications.js';
 export * from './applyAppServiceSecrets.js';
+export * from './getAppMembers.js';
+export * from './getAppTeams.js';
+export * from './getAppUserInfo.js';
