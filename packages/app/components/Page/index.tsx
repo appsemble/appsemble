@@ -225,8 +225,6 @@ export function Page(): ReactElement {
               }
               path={String((page.parameters || []).map((param) => `/:${param}`))}
             />
-            {/* Redirect from a matching sub URL to the actual URL */}
-            {!page.parameters && <Route element={<Navigate to="url" />} path="*" />}
           </MetaSwitch>
         )}
         <PageDialog
