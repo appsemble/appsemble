@@ -1,9 +1,8 @@
 import { type FindOptions } from '@appsemble/node-utils';
 
-import { db } from '../db/index.js';
 import { Methods } from '../db/methods.js';
 
-const dir = 'resources';
+const dir = '/resources';
 
 export class Resource {
   id: number;
@@ -14,7 +13,7 @@ export class Resource {
   [key: string]: unknown;
 
   static create(values: Record<string, unknown>, type: string): Promise<Resource | null> {
-    return Methods.create(db, values, `${dir}/${type}[]`);
+    return Methods.create(values, `${dir}/${type}[]`);
   }
 
   static bulkCreate(
@@ -22,15 +21,15 @@ export class Resource {
     type: string,
     override = false,
   ): Promise<Resource[] | []> {
-    return Methods.bulkCreate(db, values, `${dir}/${type}`, override);
+    return Methods.bulkCreate(values, `${dir}/${type}`, override);
   }
 
   static findById(id: number | string, type: string): Promise<Resource | null> {
-    return Methods.findById(db, id, `${dir}/${type}`);
+    return Methods.findById(id, `${dir}/${type}`);
   }
 
   static findAll(query: FindOptions, type: string): Promise<Resource[] | []> {
-    return Methods.findAll(db, query, `${dir}/${type}`);
+    return Methods.findAll(query, `${dir}/${type}`);
   }
 
   static updateOne(
@@ -38,10 +37,10 @@ export class Resource {
     values: Record<string, unknown>,
     type: string,
   ): Promise<Resource | null> {
-    return Methods.updateOne(db, id, values, `${dir}/${type}`);
+    return Methods.updateOne(id, values, `${dir}/${type}`);
   }
 
   static deleteOne(id: number | string, type: string): Promise<void> {
-    return Methods.deleteOne(db, id, `${dir}/${type}`);
+    return Methods.deleteOne(id, `${dir}/${type}`);
   }
 }

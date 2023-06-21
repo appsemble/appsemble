@@ -28,7 +28,7 @@ import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
 import * as controllers from '../server/controllers/index.js';
-import { setAppDir } from '../server/db/app.js';
+import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
 import { appRouter } from '../server/routes/appRouter/index.js';
 import { type BaseArguments } from '../types.js';
@@ -59,7 +59,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
   const appName = normalize(appsembleApp.definition.name);
   const appId = 1;
-  setAppDir(appName);
+  setAppName(appName);
 
   const identifiableBlocks = getAppBlocks(appsembleApp.definition);
 
