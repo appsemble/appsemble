@@ -111,6 +111,16 @@ function applyOrder<M>(entities: M[], order: OrderItem[]): void {
   }
 }
 
+function clearEntity(entity: Record<string, unknown>): Record<string, unknown> {
+  const { AppId, type, ...cleanPayload } = entity;
+
+  if (!cleanPayload.expires) {
+    delete cleanPayload.expires;
+  }
+
+  return cleanPayload;
+}
+
 export const Methods = {
   async create<M>(values: Record<string, unknown>, modelDir = '/'): Promise<M> {
     const db = await getDb(appName);
@@ -121,7 +131,7 @@ export const Methods = {
       ...defaults,
     };
     await db.push(modelDir, payload, true);
-    return payload as M;
+    return clearEntity(payload) as M;
   },
 
   async bulkCreate<M>(
@@ -137,7 +147,7 @@ export const Methods = {
       ...defaults,
     }));
     await db.push(modelDir, payload, existing.length === 0 ? true : override);
-    return payload as M[];
+    return payload.map((instance) => clearEntity(instance)) as M[];
   },
 
   async findById<M>(id: number | string, modelDir = '/'): Promise<M | null> {
@@ -177,7 +187,7 @@ export const Methods = {
         applyOrder(sorted, query.order);
       }
 
-      return sorted[0] || null;
+      return (clearEntity(sorted[0] as Record<string, unknown>) as M) || null;
     } catch {
       return null;
     }
@@ -215,7 +225,7 @@ export const Methods = {
         applyOrder(sorted, query.order);
       }
 
-      return sorted;
+      return sorted.map((instance) => clearEntity(instance as Record<string, unknown>) as M);
     } catch {
       return [];
     }

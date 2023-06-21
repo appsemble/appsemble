@@ -25,10 +25,8 @@ describe('methods', () => {
 
     it('should add default values to the record', async () => {
       const result = await Methods.create({ name: 'testInstance' }, '/testModel');
-      expect(result).toHaveProperty('AppId', 1);
       expect(result).toHaveProperty('$created');
       expect(result).toHaveProperty('$updated');
-      expect(result).toHaveProperty('expires', null);
     });
   });
 
@@ -50,14 +48,10 @@ describe('methods', () => {
         [{ name: 'testInstance2' }, { name: 'testInstance3' }],
         '/testModel',
       );
-      expect(result[0]).toHaveProperty('AppId', 1);
       expect(result[0]).toHaveProperty('$created');
       expect(result[0]).toHaveProperty('$updated');
-      expect(result[0]).toHaveProperty('expires', null);
-      expect(result[1]).toHaveProperty('AppId', 1);
       expect(result[1]).toHaveProperty('$created');
       expect(result[1]).toHaveProperty('$updated');
-      expect(result[1]).toHaveProperty('expires', null);
     });
   });
 
