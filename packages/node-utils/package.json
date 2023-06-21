@@ -72,7 +72,7 @@
     "mustache": "^4.0.0",
     "parse-duration": "^1.0.0",
     "parse-json": "^7.0.0",
-    "sass": "1.62.1",
+    "sass": "^1.0.0",
     "sharp": "^0.32.0",
     "sort-keys": "^5.0.0",
     "strip-bom": "^5.0.0",
