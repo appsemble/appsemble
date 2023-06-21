@@ -13,7 +13,6 @@ import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { useApp } from '../../../index.js';
 import { ColorPicker } from '../../Components/ColorPicker/index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
@@ -33,6 +32,7 @@ interface InheritedTheme {
 
 interface ThemePageProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
   selectedBlock: number;
@@ -42,12 +42,12 @@ interface ThemePageProps {
 const defaultFont: FontDefinition = { family: 'Open Sans', source: 'google' };
 export function ThemePage({
   changeIn,
+  deleteIn,
   docRef,
   selectedBlock,
   selectedPage,
   selectedSubParent,
 }: ThemePageProps): ReactElement {
-  const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 
   function getTheme(
@@ -55,7 +55,8 @@ export function ThemePage({
     page: number,
     subParent: number,
   ): { theme: Theme; inheritors: InheritedTheme } {
-    const theme = app.definition.theme ? { ...app.definition.theme } : {};
+    const theme = docRef.current.toJS().theme ? { ...docRef.current.toJS().theme } : {};
+
     const inheritors: InheritedTheme = {
       themeInherited: formatMessage(messages.defaultTheme),
       primaryInherited: formatMessage(messages.defaultTheme),
@@ -225,7 +226,7 @@ export function ThemePage({
       } else {
         const currentPage = doc.getIn(['pages', selectedPage]) as YAMLMap;
         if (selectedPage !== -1 && selectedBlock === -1 && selectedSubParent === -1) {
-          changeIn(['pages', selectedPage, 'theme', type], doc.createNode({ theme: {} }));
+          changeIn(['pages', selectedPage, 'theme', type], doc.createNode(input));
         } else {
           if (!currentPage.get(['type']) || currentPage.get(['type']) === 'page') {
             changeIn(
@@ -271,186 +272,280 @@ export function ThemePage({
 
   const onReset = useCallback(
     (type: keyof Theme) => {
+      const doc = docRef.current;
       if (isDefaultTheme) {
-        delete app.definition.theme?.[type];
-        if (Object.keys(app.definition.theme).length === 0) {
-          delete app.definition.theme;
+        deleteIn(['theme', type]);
+        // Object.keys is equal to 2 when empty due to remaining '{}'
+        if (Object.keys(doc.getIn(['theme'])).length === 2) {
+          deleteIn(['theme']);
         }
       } else {
-        const currentPage = app.definition.pages[selectedPage];
+        const currentPage = doc.getIn(['pages', selectedPage]) as YAMLMap;
         if (selectedPage !== -1 && selectedBlock === -1 && selectedSubParent === -1) {
-          delete app.definition.pages[selectedPage].theme?.[type];
-          if (Object.keys(app.definition.pages[selectedPage].theme).length === 0) {
-            delete app.definition.pages[selectedPage].theme;
+          deleteIn(['pages', selectedPage, 'theme', type]);
+          if (Object.keys(doc.getIn(['pages', selectedPage, 'theme'])).length === 2) {
+            deleteIn(['pages', selectedPage, 'theme']);
           }
         } else {
-          if (!currentPage.type || currentPage.type === 'page') {
-            delete (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock]
-              .theme?.[type];
+          if (!currentPage.get(['type']) || currentPage.get(['type']) === 'page') {
+            deleteIn(['pages', selectedPage, 'blocks', selectedBlock, 'theme', type]);
             if (
-              Object.keys(
-                (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[selectedBlock]
-                  .theme,
-              ).length === 0
+              Object.keys(doc.toJS().pages[selectedPage].blocks[selectedBlock].theme).length === 0
             ) {
-              delete (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme;
+              deleteIn(['pages', selectedPage, 'blocks', selectedBlock, 'theme']);
             }
           }
-          if (currentPage.type === 'flow') {
-            delete (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-              selectedSubParent
-            ].blocks[selectedBlock].theme?.[type];
+          if (currentPage.get(['type']) === 'flow') {
+            deleteIn([
+              'pages',
+              selectedPage,
+              'steps',
+              selectedSubParent,
+              'blocks',
+              selectedBlock,
+              'theme',
+              type,
+            ]);
             if (
               Object.keys(
-                (app.definition.pages[selectedPage] as FlowPageDefinition).steps[selectedSubParent]
-                  .blocks[selectedBlock].theme,
+                doc.getIn([
+                  'pages',
+                  selectedPage,
+                  'steps',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                ]),
               ).length === 0
             ) {
-              delete (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme;
+              deleteIn([
+                'pages',
+                selectedPage,
+                'steps',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+              ]);
             }
           }
-          if (currentPage.type === 'tabs') {
-            delete (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-              selectedSubParent
-            ].blocks[selectedBlock].theme?.[type];
+          if (currentPage.get(['type']) === 'tabs') {
+            deleteIn([
+              'pages',
+              selectedPage,
+              'tabs',
+              selectedSubParent,
+              'blocks',
+              selectedBlock,
+              'theme',
+              type,
+            ]);
             if (
               Object.keys(
-                (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[selectedSubParent]
-                  .blocks[selectedBlock].theme,
+                doc.getIn([
+                  'pages',
+                  selectedPage,
+                  'tabs',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                ]),
               ).length === 0
             ) {
-              delete (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme;
+              deleteIn([
+                'pages',
+                selectedPage,
+                'tabs',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+              ]);
             }
           }
         }
       }
-      setApp({ ...app });
     },
-    [app, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent, setApp],
+    [deleteIn, docRef, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent],
   );
 
   const onChangeFont = useCallback(
     (index: number, options: string[], type: 'family' | 'source') => {
+      const doc = docRef.current;
       if (isDefaultTheme) {
-        if (!app.definition.theme) {
-          app.definition.theme = {};
-        }
-        if (!app.definition.theme.font) {
-          app.definition.theme.font = defaultFont;
+        if (!doc.getIn(['theme'])) {
+          changeIn(['theme', 'font'], doc.createNode(defaultFont));
         }
         if (type === 'family') {
-          app.definition.theme.font.family = options[index];
+          changeIn(['theme', 'font', 'family'], doc.createNode(options[index]));
         }
         if (type === 'source') {
-          app.definition.theme.font.source = options[index] as 'custom' | 'google';
+          changeIn(
+            ['theme', 'font', 'source'],
+            doc.createNode(options[index] as 'custom' | 'google'),
+          );
         }
       } else {
-        const currentPage = app.definition.pages[selectedPage];
+        const currentPage = doc.getIn(['pages', selectedPage]) as YAMLMap;
         if (selectedPage !== -1 && selectedBlock === -1 && selectedSubParent === -1) {
-          if (!app.definition.pages[selectedPage].theme) {
-            app.definition.pages[selectedPage].theme = {};
-          }
-          if (!app.definition.pages[selectedPage].theme.font) {
-            app.definition.pages[selectedPage].theme.font = defaultFont;
+          if (!doc.getIn(['pages', selectedPage, 'theme', 'font'])) {
+            changeIn(['pages', selectedPage, 'theme', 'font'], doc.createNode(defaultFont));
           }
           if (type === 'family') {
-            app.definition.pages[selectedPage].theme.font.family = options[index];
+            changeIn(
+              ['pages', selectedPage, 'theme', 'font', 'family'],
+              doc.createNode(options[index]),
+            );
           }
           if (type === 'source') {
-            app.definition.pages[selectedPage].theme.font.source = options[index] as
-              | 'custom'
-              | 'google';
+            changeIn(
+              ['pages', selectedPage, 'theme', 'font', 'source'],
+              doc.createNode(options[index] as 'custom' | 'google'),
+            );
           }
         } else {
-          if (!currentPage.type || currentPage.type === 'page') {
-            if (!(currentPage as BasicPageDefinition).blocks[selectedBlock].theme) {
-              (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme = {};
-            }
-            if (!(currentPage as BasicPageDefinition).blocks[selectedBlock].theme.font) {
-              (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme.font = defaultFont;
+          if (!currentPage.get(['type']) || currentPage.get(['type']) === 'page') {
+            if (!currentPage.get(['blocks', selectedBlock, 'theme', 'font'])) {
+              changeIn(
+                ['pages', selectedPage, 'blocks', selectedBlock, 'theme', 'font'],
+                doc.createNode(defaultFont),
+              );
             }
             if (type === 'family') {
-              (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme.font.family = options[index];
+              changeIn(
+                ['pages', selectedPage, 'blocks', selectedBlock, 'theme', 'font', 'family'],
+                doc.createNode(options[index]),
+              );
             }
             if (type === 'source') {
-              (app.definition.pages[selectedPage] as BasicPageDefinition).blocks[
-                selectedBlock
-              ].theme.font.source = options[index] as 'custom' | 'google';
+              changeIn(
+                ['pages', selectedPage, 'blocks', selectedBlock, 'theme', 'font', 'source'],
+                doc.createNode(options[index] as 'custom' | 'google'),
+              );
             }
           }
-          if (currentPage.type === 'flow') {
+          if (currentPage.get(['type']) === 'flow') {
             if (
-              !(currentPage as FlowPageDefinition).steps[selectedSubParent].blocks[selectedBlock]
-                .theme
+              !currentPage.get([
+                'steps',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+                'font',
+              ])
             ) {
-              (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme = {};
-            }
-            if (
-              !(currentPage as FlowPageDefinition).steps[selectedSubParent].blocks[selectedBlock]
-                .theme.font
-            ) {
-              (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font = defaultFont;
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'steps',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                ],
+                doc.createNode(defaultFont),
+              );
             }
             if (type === 'family') {
-              (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font.family = options[index];
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'steps',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                  'family',
+                ],
+                doc.createNode(options[index]),
+              );
             }
             if (type === 'source') {
-              (app.definition.pages[selectedPage] as FlowPageDefinition).steps[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font.source = options[index] as 'custom' | 'google';
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'steps',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                  'source',
+                ],
+                doc.createNode(options[index] as 'custom' | 'google'),
+              );
             }
           }
-          if (currentPage.type === 'tabs') {
+          if (currentPage.get(['type']) === 'tabs') {
             if (
-              !(currentPage as TabsPageDefinition).tabs[selectedSubParent].blocks[selectedBlock]
-                .theme
+              !currentPage.get([
+                'tabs',
+                selectedSubParent,
+                'blocks',
+                selectedBlock,
+                'theme',
+                'font',
+              ])
             ) {
-              (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme = {};
-            }
-            if (
-              !(currentPage as TabsPageDefinition).tabs[selectedSubParent].blocks[selectedBlock]
-                .theme.font
-            ) {
-              (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font = defaultFont;
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'tabs',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                ],
+                doc.createNode(defaultFont),
+              );
             }
             if (type === 'family') {
-              (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font.family = options[index];
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'tabs',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                  'family',
+                ],
+                doc.createNode(options[index]),
+              );
             }
             if (type === 'source') {
-              (app.definition.pages[selectedPage] as TabsPageDefinition).tabs[
-                selectedSubParent
-              ].blocks[selectedBlock].theme.font.source = options[index] as 'custom' | 'google';
+              changeIn(
+                [
+                  'pages',
+                  selectedPage,
+                  'tabs',
+                  selectedSubParent,
+                  'blocks',
+                  selectedBlock,
+                  'theme',
+                  'font',
+                  'source',
+                ],
+                doc.createNode(options[index] as 'custom' | 'google'),
+              );
             }
           }
         }
       }
-      setApp({ ...app });
     },
-    [app, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent, setApp],
+    [changeIn, docRef, isDefaultTheme, selectedBlock, selectedPage, selectedSubParent],
   );
 
   return (

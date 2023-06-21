@@ -13,12 +13,14 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface ThemeTabProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
 export function ThemeTab({
   changeIn,
+  deleteIn,
   docRef,
   isOpenLeft,
   isOpenRight,
@@ -68,6 +70,7 @@ export function ThemeTab({
         <div className={styles.rightBar}>
           <ThemePage
             changeIn={changeIn}
+            deleteIn={deleteIn}
             docRef={docRef}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}

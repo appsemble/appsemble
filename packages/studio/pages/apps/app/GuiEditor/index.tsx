@@ -225,6 +225,7 @@ export default function EditPage(): ReactElement {
         {currentTab.tabName === 'theme' && (
           <ThemeTab
             changeIn={changeIn}
+            deleteIn={deleteIn}
             docRef={docRef}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
