@@ -832,12 +832,6 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
         },
         "type": "array",
       },
-      "fileBase": {
-        "description": "The base URL of the associated files.
-
-If not defined, Appsemble’s Asset API will be used instead.",
-        "type": "string",
-      },
       "icons": {
         "anyOf": [
           {
