@@ -1,7 +1,6 @@
 import { type FindOptions, type OrderItem } from '@appsemble/node-utils';
-import { type JsonDB } from 'node-json-db';
 
-import { getAppDir } from './app.js';
+import { getDb } from './index.js';
 
 interface ResourceDefaults {
   AppId: number;
@@ -16,6 +15,12 @@ const defaults: ResourceDefaults = {
   $updated: new Date(),
   expires: null,
 };
+
+let appName = 'app';
+
+export function setAppName(name: string): void {
+  appName = name;
+}
 
 function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): boolean {
   if (subQuery == null && entity[key as keyof M] == null) {
@@ -106,52 +111,59 @@ function applyOrder<M>(entities: M[], order: OrderItem[]): void {
   }
 }
 
+function clearEntity(entity: Record<string, unknown>): Record<string, unknown> {
+  const { AppId, type, ...cleanPayload } = entity;
+
+  if (!cleanPayload.expires) {
+    delete cleanPayload.expires;
+  }
+
+  return cleanPayload;
+}
+
 export const Methods = {
-  async create<M>(db: JsonDB, values: Record<string, unknown>, modelDir = '/'): Promise<M> {
-    const existing = await this.findAll(db, {}, modelDir);
-    const dir = `${getAppDir()}/${modelDir}`;
+  async create<M>(values: Record<string, unknown>, modelDir = '/'): Promise<M> {
+    const db = await getDb(appName);
+    const existing = await this.findAll({}, modelDir);
     const payload = {
       ...values,
       id: existing.length + 1,
-      type: modelDir.slice(modelDir.indexOf('/') + 1 || 0),
       ...defaults,
     };
-    await db.push(dir, payload, true);
-    return payload as M;
+    await db.push(modelDir, payload, true);
+    return clearEntity(payload) as M;
   },
 
   async bulkCreate<M>(
-    db: JsonDB,
     values: Record<string, unknown>[],
     modelDir = '/',
     override = false,
   ): Promise<M[] | []> {
-    const existing = await this.findAll(db, {}, modelDir);
-    const dir = `${getAppDir()}/${modelDir}`;
+    const db = await getDb(appName);
+    const existing = await this.findAll({}, modelDir);
     const payload = values.map((value, index) => ({
       ...value,
       id: existing.length + index + 1,
-      type: modelDir.slice(modelDir.indexOf('/') + 1 || 0),
       ...defaults,
     }));
-    await db.push(dir, payload, override);
-    return payload as M[];
+    await db.push(modelDir, payload, existing.length === 0 ? true : override);
+    return payload.map((instance) => clearEntity(instance)) as M[];
   },
 
-  async findById<M>(db: JsonDB, id: number | string, modelDir = '/'): Promise<M | null> {
+  async findById<M>(id: number | string, modelDir = '/'): Promise<M | null> {
     try {
-      const dir = `${getAppDir()}/${modelDir}`;
-      const entityIndex = await db.getIndex(dir, id);
-      return await db.getObject<M>(`${dir}[${entityIndex}]`);
+      const db = await getDb(appName);
+      const entityIndex = await db.getIndex(modelDir, id);
+      return await db.getObject<M>(`${modelDir}[${entityIndex}]`);
     } catch {
       return null;
     }
   },
 
-  async findOne<M>(db: JsonDB, query: FindOptions, modelDir = '/'): Promise<M | null> {
+  async findOne<M>(query: FindOptions, modelDir = '/'): Promise<M | null> {
     try {
-      const dir = `${getAppDir()}/${modelDir}`;
-      const entities = await db.getObject<M[]>(dir);
+      const db = await getDb(appName);
+      const entities = await db.getObject<M[]>(modelDir);
 
       let mapped = entities;
       if (query.attributes && query.attributes.length > 0) {
@@ -163,10 +175,10 @@ export const Methods = {
       if (query.where) {
         if (query.where.and) {
           filtered = applyAnd(filtered, query.where.and);
-        }
-
-        if (query.where.or) {
+        } else if (query.where.or) {
           filtered = applyOr(filtered, query.where.or);
+        } else {
+          filtered = filtered.filter((entity) => applyWhere(entity, query.where));
         }
       }
 
@@ -175,16 +187,16 @@ export const Methods = {
         applyOrder(sorted, query.order);
       }
 
-      return sorted[0] || null;
+      return (clearEntity(sorted[0] as Record<string, unknown>) as M) || null;
     } catch {
       return null;
     }
   },
 
-  async findAll<M>(db: JsonDB, query: FindOptions = {}, modelDir = '/'): Promise<M[] | []> {
+  async findAll<M>(query: FindOptions = {}, modelDir = '/'): Promise<M[] | []> {
     try {
-      const dir = `${getAppDir()}/${modelDir}`;
-      const entities = await db.getObject<M[]>(dir);
+      const db = await getDb(appName);
+      const entities = await db.getObject<M[]>(modelDir);
 
       const sliced = entities.slice(
         query.offset || 0,
@@ -199,12 +211,12 @@ export const Methods = {
       let filtered = mapped;
 
       if (query.where) {
-        if (query.where.or) {
-          filtered = applyOr(filtered, query.where.or);
-        }
-
         if (query.where.and) {
           filtered = applyAnd(filtered, query.where.and);
+        } else if (query.where.or) {
+          filtered = applyOr(filtered, query.where.or);
+        } else {
+          filtered = filtered.filter((entity) => applyWhere(entity, query.where));
         }
       }
 
@@ -213,34 +225,33 @@ export const Methods = {
         applyOrder(sorted, query.order);
       }
 
-      return sorted;
+      return sorted.map((instance) => clearEntity(instance as Record<string, unknown>) as M);
     } catch {
       return [];
     }
   },
 
   async updateOne<M>(
-    db: JsonDB,
     id: number | string,
     values: Record<string, unknown>,
     modelDir = '/',
   ): Promise<M> {
     try {
-      const dir = `${getAppDir()}/${modelDir}`;
-      const entityIndex = await db.getIndex(dir, id);
-      const existing = await this.findById<M>(db, id, modelDir);
-      await db.push(`${dir}[${entityIndex}]`, { ...existing, ...values }, true);
-      return this.findOne<M>(db, { where: values }, modelDir);
+      const db = await getDb(appName);
+      const entityIndex = await db.getIndex(modelDir, id);
+      const existing = await this.findById<M>(id, modelDir);
+      await db.push(`${modelDir}[${entityIndex}]`, { ...existing, ...values }, true);
+      return this.findOne<M>({ where: values }, modelDir);
     } catch {
       return null;
     }
   },
 
-  async deleteOne(db: JsonDB, id: number | string, modelDir = '/'): Promise<void> {
+  async deleteOne(id: number | string, modelDir = '/'): Promise<void> {
     try {
-      const dir = `${getAppDir()}/${modelDir}`;
-      const entityIndex = await db.getIndex(dir, id);
-      return await db.delete(`${dir}[${entityIndex}]`);
+      const db = await getDb(appName);
+      const entityIndex = await db.getIndex(modelDir, id);
+      return await db.delete(`${modelDir}[${entityIndex}]`);
     } catch {
       return null;
     }
