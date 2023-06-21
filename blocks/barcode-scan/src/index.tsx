@@ -1,15 +1,22 @@
 import { bootstrap } from '@appsemble/preact';
 import { type QuaggaJSResultObject } from '@ericblade/quagga2';
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import { CameraScanner } from './components/CameraScanner/index.js';
 import { ImageScanner } from './components/ImageScanner/index.js';
 import { MultipleOptions } from './components/MultipleOptions/index.js';
+import styles from './index.module.css';
 
 bootstrap(
   ({
     events,
-    parameters: { barcodeType = 'code_128', patchSize = 'x-large', resolution = 800, type },
+    parameters: {
+      barcodeType = 'code_128',
+      patchSize = 'x-large',
+      resolution = 800,
+      showBarcode = false,
+      type,
+    },
     ready,
   }) => {
     useEffect(() => {
@@ -38,61 +45,73 @@ bootstrap(
     const [codeType, setCodeType] = useState(barcodeType === 'multiple' ? 'code_128' : barcodeType);
     const [pSize, setPSize] = useState(patchSize === 'multiple' ? 'x-large' : patchSize);
 
-    const onDetected = (result: QuaggaJSResultObject): void => {
-      const foundCode = result.codeResult.code;
-      setBarcode(foundCode);
-      events.emit.foundBarcode({ barcode: foundCode });
-    };
+    const config = useMemo(
+      () => ({
+        locator: {
+          patchSize: pSize,
+          halfSample: true,
+        },
+        numOfWorkers: 4,
+        decoder: {
+          readers: [`${codeType}_reader`],
+        },
+        locate: true,
+      }),
+      [pSize, codeType],
+    );
 
-    const onProcesseed = (): void => {
-      setBarcode(null);
-    };
-
-    const config = {
-      locator: {
-        patchSize: pSize,
-        halfSample: true,
+    const onDetected = useCallback(
+      (result: QuaggaJSResultObject): void => {
+        const foundCode = result.codeResult.code;
+        setBarcode(foundCode);
+        events.emit.foundBarcode({ barcode: foundCode });
       },
-      numOfWorkers: 4,
-      decoder: {
-        readers: [`${codeType}_reader`],
-      },
-      locate: true,
-    };
+      [config],
+    );
 
     const handleBarcodeTypeChange = (event: any): void => {
+      setBarcode(null);
       const selectedValue = event.target.value;
       setCodeType(selectedValue);
     };
 
     const handlePatchSizeChange = (event: any): void => {
+      setBarcode(null);
       const selectedValue = event.target.value;
       setPSize(selectedValue);
     };
 
     return (
-      <div>
-        <p>Barcode: {barcode}</p>
-        {barcodeType === 'multiple' ? (
-          <MultipleOptions
-            array={codeTypeList}
-            onChange={handleBarcodeTypeChange}
-            value={codeType}
-          />
-        ) : null}
+      <div className={styles.wrapper}>
+        {showBarcode ? <div>Barcode: {barcode}</div> : null}
 
-        {patchSize === 'multiple' ? (
-          <MultipleOptions array={patchSizeList} onChange={handlePatchSizeChange} value={pSize} />
-        ) : null}
+        <div className={styles.comboBoxes}>
+          {barcodeType === 'multiple' ? (
+            <MultipleOptions
+              array={codeTypeList}
+              onChange={handleBarcodeTypeChange}
+              value={codeType}
+            />
+          ) : null}
+
+          {patchSize === 'multiple' ? (
+            <MultipleOptions array={patchSizeList} onChange={handlePatchSizeChange} value={pSize} />
+          ) : null}
+        </div>
 
         {type === 'camera' ? (
-          <CameraScanner config={config} onDetected={onDetected} resolution={resolution} />
+          <CameraScanner
+            config={config}
+            onDetected={onDetected}
+            resolution={resolution}
+            setBarcode={setBarcode}
+          />
         ) : (
           <ImageScanner
             config={config}
             onDetected={onDetected}
-            onProcessed={onProcesseed}
             resolution={resolution}
+            setBarcode={setBarcode}
           />
         )}
       </div>

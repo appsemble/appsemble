@@ -1,0 +1,10 @@
+.wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.comboBoxes {
+  align-self: flex-end;
+}

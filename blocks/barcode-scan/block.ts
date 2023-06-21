@@ -72,6 +72,13 @@ declare module '@appsemble/sdk' {
     resolution?: number;
 
     /**
+     * Option to show scanned code
+     *
+     * @default false
+     */
+    showBarcode?: boolean;
+
+    /**
      * Type is either camera or file
      *
      * Type 'file' allows to upload code image to scan.

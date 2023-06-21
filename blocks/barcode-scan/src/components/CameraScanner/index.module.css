@@ -1,0 +1,51 @@
+.videoScannerWrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.start {
+  background-color: rgb(66 155 245);
+  border: none;
+  color: rgb(255 255 255);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+.start:hover {
+  background-color: rgb(66 155 245);
+}
+
+.videoContainer {
+  position: relative;
+}
+
+video {
+  height: auto;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.close {
+  align-items: center;
+  background-color: rgb(255 0 0);
+  border: none;
+  border-radius: 50%;
+  color: rgb(255 255 255);
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  height: 40px;
+  justify-content: center;
+  margin: 0;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 40px;
+}
+
+.close:hover {
+  background-color: rgb(255 0 0);
+}

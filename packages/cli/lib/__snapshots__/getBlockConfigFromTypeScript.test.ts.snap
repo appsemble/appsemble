@@ -141,6 +141,11 @@ It has to be configured according to the code image to allow scanning.",
 It has to be configured according to the code image to allow scanning.",
         "type": "number",
       },
+      "showBarcode": {
+        "default": false,
+        "description": "Option to show scanned code",
+        "type": "boolean",
+      },
       "type": {
         "description": "Type is either camera or file
 

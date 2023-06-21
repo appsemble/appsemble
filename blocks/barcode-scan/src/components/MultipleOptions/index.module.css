@@ -1,0 +1,31 @@
+.comboBoxContainer select {
+  background-color: hsl(0deg 0% 100%);
+  border: 1px solid hsl(0deg 0% 83%);
+  border-radius: 4px;
+  color: hsl(0deg 0% 0%);
+  font-size: 14px;
+  padding: 8px;
+}
+
+.comboBoxContainer select::-ms-expand {
+  display: none;
+}
+
+.comboBoxContainer select::after {
+  color: hsl(0deg 0% 50%);
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.comboBoxContainer select:hover {
+  border-color: hsl(210deg 100% 56%);
+}
+
+.comboBoxContainer select:focus {
+  border-color: hsl(210deg 100% 56%);
+  box-shadow: 0 0 0 2px rgb(30 144 255 / 30%);
+  outline: none;
+}

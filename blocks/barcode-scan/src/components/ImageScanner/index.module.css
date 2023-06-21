@@ -1,0 +1,60 @@
+.imageScannerWrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fileLabel {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+}
+
+.fileLabel i {
+  color: hsl(0deg 0% 0%);
+  font-size: 100px;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fileLabel i:hover {
+  color: hsl(210deg 100% 56%);
+  font-size: 105px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.imageContainer {
+  position: relative;
+}
+
+img {
+  height: auto;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.close {
+  align-items: center;
+  background-color: hsl(354deg 70% 54%);
+  border: none;
+  border-radius: 50%;
+  color: hsl(0deg 0% 100%);
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  height: 40px;
+  justify-content: center;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+}
+
+.close:hover {
+  background-color: hsl(354deg 70% 46%);
+}
