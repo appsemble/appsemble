@@ -126,6 +126,7 @@ export async function verifyResourceActionPermission({
   if (app.definition.security && !isPublic) {
     const member = await AppMember.findOne({
       where: {
+        AppId: app.id,
         UserId: user.id,
       },
     });
