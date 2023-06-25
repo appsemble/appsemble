@@ -1,12 +1,36 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  get: 'Get a single {resourceName} resource',
-  query: 'Get all {resourceName} resources',
-  create: 'Create a new {resourceName} resource',
-  delete: 'Delete an existing {resourceName} resource',
-  $count: 'Count {resourceName} resources',
-  update: 'Update an existing {resourceName} resource',
-  role: 'Role: {role}',
-  public: 'Public',
+  get: {
+    id: 'studio.qxLJfs',
+    defaultMessage: 'Get a single {resourceName} resource',
+  },
+  query: {
+    id: 'studio.+fopx3',
+    defaultMessage: 'Get all {resourceName} resources',
+  },
+  create: {
+    id: 'studio.eTyQpc',
+    defaultMessage: 'Create a new {resourceName} resource',
+  },
+  delete: {
+    id: 'studio.gwT1uG',
+    defaultMessage: 'Delete an existing {resourceName} resource',
+  },
+  $count: {
+    id: 'studio.0hZcSE',
+    defaultMessage: 'Count {resourceName} resources',
+  },
+  update: {
+    id: 'studio.XAw0Lo',
+    defaultMessage: 'Update an existing {resourceName} resource',
+  },
+  role: {
+    id: 'studio.QCmXtC',
+    defaultMessage: 'Role: {role}',
+  },
+  public: {
+    id: 'studio.uhu5aG',
+    defaultMessage: 'Public',
+  },
 });

@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  retry: 'Retry',
+  retry: {
+    id: 'studio.62nsdy',
+    defaultMessage: 'Retry',
+  },
 });

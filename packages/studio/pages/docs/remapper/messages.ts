@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Remapper Reference',
-  description: 'Reference documentation for Appsemble remappers',
+  title: {
+    id: 'studio.F9QCsK',
+    defaultMessage: 'Remapper Reference',
+  },
+  description: {
+    id: 'studio.d791Om',
+    defaultMessage: 'Reference documentation for Appsemble remappers',
+  },
 });

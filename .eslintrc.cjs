@@ -3,7 +3,7 @@ const { BasicAnnotationsReader } = require('ts-json-schema-generator');
 module.exports = {
   root: true,
   extends: ['remcohaszing'],
-  plugins: ['jest'],
+  plugins: ['jest', 'formatjs'],
   settings: {
     node: {
       convertPath: {

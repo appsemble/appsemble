@@ -1,10 +1,28 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  members: 'Organization Members',
-  membersError: 'There was a problem loading the members of this organization.',
-  addMembers: 'Add members',
-  name: 'Name',
-  actions: 'Actions',
-  notAllowed: 'You don’t have sufficient permissions to invite members.',
+  members: {
+    id: 'studio.dc9z3X',
+    defaultMessage: 'Organization Members',
+  },
+  membersError: {
+    id: 'studio.pwempj',
+    defaultMessage: 'There was a problem loading the members of this organization.',
+  },
+  addMembers: {
+    id: 'studio.OCiHj6',
+    defaultMessage: 'Add members',
+  },
+  name: {
+    id: 'studio.HAlOn1',
+    defaultMessage: 'Name',
+  },
+  actions: {
+    id: 'studio.wL7VAE',
+    defaultMessage: 'Actions',
+  },
+  notAllowed: {
+    id: 'studio.kznIRT',
+    defaultMessage: 'You don’t have sufficient permissions to invite members.',
+  },
 });

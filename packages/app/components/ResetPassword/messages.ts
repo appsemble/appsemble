@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Reset password',
-  returnToApp: 'Return to app',
+  title: {
+    id: 'app.Yy/yDL',
+    defaultMessage: 'Reset password',
+  },
+  returnToApp: {
+    id: 'app.SDua+Y',
+    defaultMessage: 'Return to app',
+  },
 });

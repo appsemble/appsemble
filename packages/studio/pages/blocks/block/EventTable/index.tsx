@@ -3,7 +3,6 @@ import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type ReactElement } from 'react';
 
-import { messages } from './messages.js';
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
 
 interface EventTableProps {
@@ -21,12 +20,12 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
     <>
       {manifest.events.emit ? (
         <>
-          <Title level={5}>{messages.emitEvents}</Title>
+          <Title level={5}>Emit Events</Title>
           <Table>
             <thead>
               <tr>
-                <th>{messages.name}</th>
-                <th>{messages.description}</th>
+                <th>Name</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody lang={defaultLocale}>
@@ -44,12 +43,12 @@ export function EventTable({ manifest }: EventTableProps): ReactElement {
       ) : null}
       {manifest.events.listen ? (
         <>
-          <Title level={5}>{messages.listenEvents}</Title>
+          <Title level={5}>Listen Events</Title>
           <Table>
             <thead>
               <tr>
-                <th>{messages.name}</th>
-                <th>{messages.description}</th>
+                <th>Name</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody lang={defaultLocale}>

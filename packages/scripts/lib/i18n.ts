@@ -3,11 +3,9 @@ import { join, parse } from 'node:path';
 
 import { readData } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
-import { transformFileAsync } from '@babel/core';
-import FormatJsPlugin from 'babel-plugin-formatjs';
-import { type Options as FormatJsPluginOptions } from 'babel-plugin-formatjs/types.js';
-import ReactIntlAutoPlugin from 'babel-plugin-react-intl-auto';
+import { extract, type MessageDescriptor } from '@formatjs/cli-lib';
 import { globby } from 'globby';
+import sortKeys from 'sort-keys';
 
 type Translations = Record<string, Record<string, string>>;
 
@@ -27,7 +25,13 @@ export async function extractMessages(): Promise<Translations> {
 
   const filenames = await readdir(translationsDir);
   const locales = filenames.map((filename) => parse(filename).name);
-  const paths = await globby('packages/**/messages.ts');
+  const paths = await globby('packages/{app,react-components,studio}/**/*.{ts,tsx}');
+  const messages: Record<string, MessageDescriptor> = JSON.parse(
+    await extract(
+      paths.filter((p) => !p.endsWith('.d.ts')),
+      {},
+    ),
+  );
 
   const currentTranslations: Translations = Object.fromEntries(
     await Promise.all(
@@ -39,40 +43,16 @@ export async function extractMessages(): Promise<Translations> {
   );
   const newTranslations: Translations = Object.fromEntries(locales.map((locale) => [locale, {}]));
 
-  for (const path of paths) {
-    await transformFileAsync(path, {
-      ast: true,
-      plugins: [
-        [ReactIntlAutoPlugin, { removePrefix: 'packages/' }],
-        [
-          FormatJsPlugin,
-          {
-            preserveWhitespace: true,
-            onMsgExtracted(filepath, messages) {
-              for (const locale of locales) {
-                if (locale === defaultLocale) {
-                  for (const message of messages) {
-                    newTranslations[locale][message.id] = message.defaultMessage;
-                  }
-                } else {
-                  for (const message of messages) {
-                    newTranslations[locale][message.id] =
-                      currentTranslations[locale][message.id] || '';
-                  }
-                }
-              }
-            },
-          } as FormatJsPluginOptions,
-        ],
-      ],
-    });
-  }
-
   for (const locale of locales) {
+    for (const [key, value] of Object.entries(messages)) {
+      newTranslations[locale][key] =
+        locale === defaultLocale ? value.defaultMessage : currentTranslations[locale][key] ?? '';
+    }
+
     for (const key of serverMessageKeys) {
       newTranslations[locale][key] = currentTranslations[locale][key] ?? '';
     }
   }
 
-  return newTranslations;
+  return sortKeys(newTranslations, { deep: true });
 }

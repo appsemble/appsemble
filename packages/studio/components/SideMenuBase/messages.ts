@@ -1,8 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  appStore: 'App store',
-  blockStore: 'Block store',
-  organizations: 'Organizations',
-  documentation: 'Documentation',
+  appStore: {
+    id: 'studio.tkC3xo',
+    defaultMessage: 'App store',
+  },
+  blockStore: {
+    id: 'studio.6Y13Gl',
+    defaultMessage: 'Block store',
+  },
+  organizations: {
+    id: 'studio.JD2pwH',
+    defaultMessage: 'Organizations',
+  },
+  documentation: {
+    id: 'studio.isGKnz',
+    defaultMessage: 'Documentation',
+  },
 });
