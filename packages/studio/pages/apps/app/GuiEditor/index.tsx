@@ -13,6 +13,7 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { UndoRedo } from './UndoRedo/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
@@ -181,8 +182,9 @@ export default function EditPage(): ReactElement {
             </li>
           ))}
         </ul>
+        <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={saveStack.length} />
+        <Button className="is-align-content-flex-end" icon="save" onClick={handleSave} />
         <div className={styles.panelTopRight}>
-          <Button className="is-align-content-flex-end" icon="save" onClick={handleSave} />
           <Button
             className="is-primary"
             icon={rightPanelOpen ? 'angles-right' : 'angles-left'}
@@ -215,12 +217,8 @@ export default function EditPage(): ReactElement {
             deleteIn={deleteIn}
             docRef={docRef}
             frameRef={frame}
-            index={index}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
-            onRedo={onRedo}
-            onUndo={onUndo}
-            stackSize={saveStack.length}
           />
         )}
         {currentTab.tabName === 'theme' && (

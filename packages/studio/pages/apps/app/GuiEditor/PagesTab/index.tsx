@@ -9,7 +9,6 @@ import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
-import { UndoRedo } from './UndoRedo/index.js';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
@@ -21,12 +20,8 @@ interface PagesTabProps {
   deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   frameRef: Ref<HTMLIFrameElement>;
-  index: number;
   isOpenLeft: boolean;
   isOpenRight: boolean;
-  onRedo: () => void;
-  onUndo: () => void;
-  stackSize: number;
 }
 
 export function PagesTab({
@@ -35,12 +30,8 @@ export function PagesTab({
   deleteIn,
   docRef,
   frameRef,
-  index,
   isOpenLeft,
   isOpenRight,
-  onRedo,
-  onUndo,
-  stackSize,
 }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(0);
@@ -144,7 +135,6 @@ export function PagesTab({
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={stackSize} />
         <ElementsList
           changeIn={changeIn}
           docRef={docRef}
