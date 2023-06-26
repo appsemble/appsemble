@@ -104,7 +104,7 @@ export function GeneralTab({
     (index: number) => {
       const doc = docRef.current;
       if (index === 0) {
-        deleteIn(['notificiations']);
+        deleteIn(['notifications']);
         return;
       }
       if (notificationOptions[index] === 'opt-in') {
