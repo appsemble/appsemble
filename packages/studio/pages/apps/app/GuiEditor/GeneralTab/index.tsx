@@ -199,7 +199,7 @@ export function GeneralTab({
                 labelPosition="top"
                 onChange={onChangeDefaultLanguage}
                 options={languages.map((option) => formatMessage(option.label))}
-                value={docRef.current.toJS().defaultLangugage || languages[0].value}
+                value={docRef.current.toJS().defaultLanguage || languages[0].value}
               />
               <InputList
                 label={formatMessage(messages.notificationsLabel)}
