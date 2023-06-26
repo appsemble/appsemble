@@ -95,7 +95,7 @@ export function GeneralTab({
   const onChangeDefaultLanguage = useCallback(
     (index: number) => {
       const doc = docRef.current;
-      changeIn(['defaultLangugage'], doc.createNode(languages[index].value));
+      changeIn(['defaultLanguage'], doc.createNode(languages[index].value));
     },
     [changeIn, docRef],
   );
