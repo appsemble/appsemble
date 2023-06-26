@@ -21,6 +21,7 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 
 export interface GeneralTabProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
@@ -57,11 +58,12 @@ type LeftSidebar = (typeof Tabs)[number];
 
 export function GeneralTab({
   changeIn,
+  deleteIn,
   docRef,
   isOpenLeft,
   isOpenRight,
 }: GeneralTabProps): ReactElement {
-  const { app, setApp } = useApp();
+  const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();
@@ -92,74 +94,60 @@ export function GeneralTab({
 
   const onChangeDefaultLanguage = useCallback(
     (index: number) => {
-      app.definition.defaultLanguage = languages[index].value;
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['defaultLangugage'], doc.createNode(languages[index].value));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeNotificationsOption = useCallback(
     (index: number) => {
+      const doc = docRef.current;
       if (index === 0) {
-        delete app.definition.notifications;
-        setApp({ ...app });
+        deleteIn(['notificiations']);
         return;
       }
       if (notificationOptions[index] === 'opt-in') {
-        app.definition.notifications = 'opt-in';
-        setApp({ ...app });
+        changeIn(['notifications'], doc.createNode('opt-in'));
         return;
       }
       if (notificationOptions[index] === 'startup') {
-        app.definition.notifications = 'startup';
-        setApp({ ...app });
+        changeIn(['notifications'], doc.createNode('startup'));
       }
     },
-    [app, setApp],
+    [changeIn, deleteIn, docRef],
   );
 
   const onChangeLoginOption = useCallback(
     (index: number) => {
-      if (!app.definition.layout) {
-        app.definition.layout = {};
-      }
-      app.definition.layout.login = loginOptions[index];
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['layout', 'login'], doc.createNode(loginOptions[index]));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeSettingsOption = useCallback(
     (index: number) => {
-      if (!app.definition.layout) {
-        app.definition.layout = {};
-      }
-      app.definition.layout.settings = settingsOptions[index];
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['layout', 'settings'], doc.createNode(settingsOptions[index]));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeFeedbackOption = useCallback(
     (index: number) => {
-      if (!app.definition.layout) {
-        app.definition.layout = {};
-      }
-      app.definition.layout.feedback = feedBackOptions[index];
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['layout', 'feedback'], doc.createNode(feedBackOptions[index]));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeNavigationOption = useCallback(
     (index: number) => {
-      if (!app.definition.layout) {
-        app.definition.layout = {};
-      }
-      app.definition.layout.navigation = navigationOptions[index];
-      setApp({ ...app });
+      const doc = docRef.current;
+      changeIn(['layout', 'navigation'], doc.createNode(navigationOptions[index]));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   return (
@@ -211,14 +199,14 @@ export function GeneralTab({
                 labelPosition="top"
                 onChange={onChangeDefaultLanguage}
                 options={languages.map((option) => formatMessage(option.label))}
-                value={app.definition.defaultLanguage || languages[0].value}
+                value={docRef.current.toJS().defaultLangugage || languages[0].value}
               />
               <InputList
                 label={formatMessage(messages.notificationsLabel)}
                 labelPosition="top"
                 onChange={onChangeNotificationsOption}
                 options={notificationOptions}
-                value={app.definition.notifications || notificationOptions[0]}
+                value={docRef.current.toJS().notifications || notificationOptions[0]}
               />
             </div>
           )}
@@ -229,28 +217,28 @@ export function GeneralTab({
                 labelPosition="top"
                 onChange={onChangeLoginOption}
                 options={loginOptions}
-                value={app.definition.layout?.login || loginOptions[0]}
+                value={docRef.current.toJS().layout?.login || loginOptions[0]}
               />
               <InputList
                 label={formatMessage(messages.settingsLabel)}
                 labelPosition="top"
                 onChange={onChangeSettingsOption}
                 options={settingsOptions}
-                value={app.definition.layout?.settings || settingsOptions[0]}
+                value={docRef.current.toJS().layout?.settings || settingsOptions[0]}
               />
               <InputList
                 label={formatMessage(messages.feedbackLabel)}
                 labelPosition="top"
                 onChange={onChangeFeedbackOption}
                 options={feedBackOptions}
-                value={app.definition.layout?.feedback || feedBackOptions[0]}
+                value={docRef.current.toJS().layout?.feedback || feedBackOptions[0]}
               />
               <InputList
                 label={formatMessage(messages.navigationLabel)}
                 labelPosition="top"
                 onChange={onChangeNavigationOption}
                 options={navigationOptions}
-                value={app.definition.layout?.navigation || navigationOptions[0]}
+                value={docRef.current.toJS().layout?.navigation || navigationOptions[0]}
               />
             </div>
           )}

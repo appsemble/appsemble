@@ -199,6 +199,7 @@ export default function EditPage(): ReactElement {
         {currentTab.tabName === 'general' && (
           <GeneralTab
             changeIn={changeIn}
+            deleteIn={deleteIn}
             docRef={docRef}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
