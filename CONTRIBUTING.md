@@ -12,6 +12,14 @@ New languages can be added [here](https://hosted.weblate.org/projects/appsemble/
 
 ## Development
 
+### Apps
+
+When building apps you can also use GitLab to maintain your app, and use CI/CD pipelines for
+validation and deployment.
+
+To get started head over to our [Template](https://gitlab.com/appsemble/apps/template) repository
+for further instructions.
+
 ### Style guide
 
 The entire code base is formatted using
