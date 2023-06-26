@@ -275,22 +275,22 @@ export function ThemePage({
       const doc = docRef.current;
       if (isDefaultTheme) {
         deleteIn(['theme', type]);
-        // Object.keys is equal to 2 when empty due to remaining '{}'
-        if (Object.keys(doc.getIn(['theme'])).length === 2) {
+        if ((doc.getIn(['theme']) as YAMLMap).items.length === 0) {
           deleteIn(['theme']);
         }
       } else {
         const currentPage = doc.getIn(['pages', selectedPage]) as YAMLMap;
         if (selectedPage !== -1 && selectedBlock === -1 && selectedSubParent === -1) {
           deleteIn(['pages', selectedPage, 'theme', type]);
-          if (Object.keys(doc.getIn(['pages', selectedPage, 'theme'])).length === 2) {
+          if ((doc.getIn(['pages', selectedPage, 'theme']) as YAMLMap).items.length === 0) {
             deleteIn(['pages', selectedPage, 'theme']);
           }
         } else {
           if (!currentPage.get(['type']) || currentPage.get(['type']) === 'page') {
             deleteIn(['pages', selectedPage, 'blocks', selectedBlock, 'theme', type]);
             if (
-              Object.keys(doc.toJS().pages[selectedPage].blocks[selectedBlock].theme).length === 0
+              (doc.getIn(['pages', selectedPage, 'blocks', selectedBlock, 'theme']) as YAMLMap)
+                .items.length === 0
             ) {
               deleteIn(['pages', selectedPage, 'blocks', selectedBlock, 'theme']);
             }
