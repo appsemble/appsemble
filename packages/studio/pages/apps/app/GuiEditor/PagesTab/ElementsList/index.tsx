@@ -15,6 +15,7 @@ interface PagesListProps {
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
   selectedBlock: number;
+  selectedSubParent: number;
   onChange: (page: number, subParent: number, block: number) => void;
   onCreatePage: () => void;
 }
@@ -25,32 +26,82 @@ export function ElementsList({
   onCreatePage,
   selectedBlock,
   selectedPage,
+  selectedSubParent,
 }: PagesListProps): ReactElement {
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
+  const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
   const [dragItem, setDragItem] = useState<number>(-1);
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
 
   const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
-    (page, pageIndex: number) => docRef.current.getIn(['pages', pageIndex, 'name']) as string,
+    (page: any, pageIndex: number) => {
+      if (!page.get(['type']) || page.get(['type']) === 'page') {
+        return docRef.current.getIn(['pages', pageIndex, 'name']) as string;
+      }
+      if (page.get(['type']) === 'flow') {
+        return docRef.current.getIn(['pages', pageIndex, 'steps', 'name']) as string;
+      }
+      if (page.get(['type']) === 'tabs') {
+        return docRef.current.getIn(['pages', pageIndex, 'tabs', 'name']) as string;
+      }
+    },
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
   const blocks: { type: string; parent: number; subParent: number; block: number }[] = (
     docRef.current.getIn(['pages']) as YAMLSeq
-  ).items.flatMap((page, pageIndex: number) =>
-    (docRef.current.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq).items.map(
-      (block, blockIndex) => ({
+  ).items.flatMap((page: YAMLMap, pageIndex: number) => {
+    if (!page.get(['type']) || page.get(['type']) === 'page') {
+      return page.items.map((block: any, blockIndex: number) => ({
         type: 'page',
         parent: pageIndex,
         subParent: -1,
         block: blockIndex,
-      }),
-    ),
-  );
+      }));
+    }
+    if (page.get(['type']) === 'flow') {
+      return (page.get(['steps']) as YAMLMap).items.flatMap((subPage: any, subPageIndex: number) =>
+        subPage.blocks.map((block: any, blockIndex: number) => ({
+          type: 'flow',
+          parent: pageIndex,
+          subParent: subPageIndex,
+          block: blockIndex,
+        })),
+      );
+    }
+    if (page.get(['type']) === 'tabs') {
+      return (page.get(['tabs']) as YAMLMap).items.flatMap((subPage: any, subPageIndex: number) =>
+        subPage.blocks.map((block: any, blockIndex: number) => ({
+          type: 'tabs',
+          parent: pageIndex,
+          subParent: subPageIndex,
+          block: blockIndex,
+        })),
+      );
+    }
+  });
 
   const getBlocks = (pageIndex: number): YAMLMap[] => {
-    const blocksList = docRef.current.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq;
-    return blocksList.items as YAMLMap[];
+    const doc = docRef.current;
+    if (
+      !doc.getIn(['pages', pageIndex, 'type']) ||
+      doc.getIn(['pages', pageIndex, 'type']) === 'page'
+    ) {
+      const blocksList = doc.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq;
+      return blocksList.items as YAMLMap[];
+    }
+    if (doc.getIn(['pages', pageIndex, 'type']) === 'flow') {
+      const blocksList = (doc.getIn(['pages', pageIndex, 'steps']) as YAMLSeq).items.flatMap(
+        (subPage: any) => subPage,
+      );
+      return blocksList as YAMLMap[];
+    }
+    if (doc.getIn(['pages', pageIndex, 'type']) === 'tabs') {
+      const blocksList = (doc.getIn(['pages', pageIndex, 'tabs']) as YAMLSeq).items.flatMap(
+        (subPage: any) => subPage,
+      );
+      return blocksList as YAMLMap[];
+    }
   };
 
   const handleDragStart = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
@@ -65,15 +116,37 @@ export function ElementsList({
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       blockList.splice(targetIndex, 0, draggedBlock);
-      changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(blockList));
+      if (
+        !doc.getIn(['pages', targetPageIndex, 'type']) ||
+        doc.getIn(['pages', targetPageIndex, 'type']) === 'page'
+      ) {
+        changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(blockList));
+      } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
+        // TODO: change subParent index (0) to match actual subParent
+        changeIn(['pages', targetPageIndex, 'steps', 0, 'blocks'], doc.createNode(blockList));
+      } else {
+        changeIn(['pages', targetPageIndex, 'tabs', 0, 'blocks'], doc.createNode(blockList));
+      }
     } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
       const targetBlockList = getBlocks(targetPageIndex);
       const draggedBlock = blockList[dragItem];
       blockList.splice(dragItem, 1);
       targetBlockList.splice(targetIndex, 0, draggedBlock);
-      changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(targetBlockList));
-      changeIn(['pages', dragPageIndex, 'blocks'], doc.createNode(blockList));
+      if (
+        !doc.getIn(['pages', targetPageIndex, 'type']) ||
+        doc.getIn(['pages', targetPageIndex, 'type']) === 'page'
+      ) {
+        changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(targetBlockList));
+        changeIn(['pages', dragPageIndex, 'blocks'], doc.createNode(blockList));
+      } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
+        // TODO: change subParent index (0) to match actual subParent
+        changeIn(['pages', targetPageIndex, 'steps', 0, 'blocks'], doc.createNode(targetBlockList));
+        changeIn(['pages', dragPageIndex, 'steps', 0, 'blocks'], doc.createNode(blockList));
+      } else {
+        changeIn(['pages', targetPageIndex, 'tabs', 0, 'blocks'], doc.createNode(targetBlockList));
+        changeIn(['pages', dragPageIndex, 'tabs', 0, 'blocks'], doc.createNode(blockList));
+      }
     } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
       const dragPage = doc.getIn(['pages', dragPageIndex]) as YAMLSeq;
       const targetPage = doc.getIn(['pages', targetPageIndex]) as YAMLSeq;
@@ -93,6 +166,17 @@ export function ElementsList({
       }
     },
     [disabledPages],
+  );
+
+  const toggleDropdownSubParents = useCallback(
+    (subParentIndex: number) => {
+      if (disabledSubParents.includes(subParentIndex)) {
+        setDisabledSubParents(disabledSubParents.filter((p) => p !== subParentIndex));
+      } else {
+        setDisabledSubParents([...disabledSubParents, subParentIndex]);
+      }
+    },
+    [disabledSubParents],
   );
 
   const onSelectPage = useCallback(
@@ -162,6 +246,81 @@ export function ElementsList({
                       ]) as string
                     }
                   </Button>
+                ))}
+              {blocks
+                .filter(
+                  (block, index, self) =>
+                    block.parent === pageIndex &&
+                    block.subParent !== -1 &&
+                    self.findIndex(
+                      (b) => b.subParent === block.subParent && b.parent === block.parent,
+                    ) === index,
+                )
+                .map((block) => (
+                  <div key={`subParent-${block.subParent}`}>
+                    <Button
+                      className={`${styles.subParent} ${
+                        block.subParent === selectedSubParent &&
+                        selectedPage === pageIndex &&
+                        selectedBlock !== -1
+                          ? 'is-info'
+                          : ''
+                      }`}
+                    >
+                      {block.type === 'flow'
+                        ? (docRef.current.toJS().pages[block.parent].steps[block.subParent]
+                            .name as string)
+                        : (docRef.current.toJS().pages[block.parent].tabs[block.subParent]
+                            .name as string)}
+                      {blocks.some(
+                        (blockItem) =>
+                          blockItem.parent === pageIndex && blockItem.subParent === block.subParent,
+                      ) && (
+                        <Icon
+                          className="mx-2"
+                          icon={
+                            disabledSubParents.includes(block.subParent)
+                              ? 'chevron-up'
+                              : 'chevron-down'
+                          }
+                          onClick={() => toggleDropdownSubParents(block.subParent)}
+                        />
+                      )}
+                    </Button>
+                    {!disabledSubParents.includes(block.subParent) && (
+                      <>
+                        {blocks
+                          .filter(
+                            (subBlock) =>
+                              subBlock.parent === pageIndex &&
+                              subBlock.subParent === block.subParent,
+                          )
+                          .map((subBlock) => (
+                            <Button
+                              className={`${styles.childItem} ${
+                                selectedBlock === subBlock.block &&
+                                selectedPage === pageIndex &&
+                                selectedSubParent === subBlock.subParent
+                                  ? 'is-link'
+                                  : ''
+                              }`}
+                              key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
+                              onClick={() =>
+                                onSelectBlock(subBlock.parent, subBlock.subParent, subBlock.block)
+                              }
+                            >
+                              {subBlock.type === 'flow'
+                                ? docRef.current.toJS().pages[subBlock.parent].steps[
+                                    subBlock.subParent
+                                  ].blocks[subBlock.block].type
+                                : docRef.current.toJS().pages[subBlock.parent].tabs[
+                                    subBlock.subParent
+                                  ].blocks[subBlock.block].type}
+                            </Button>
+                          ))}
+                      </>
+                    )}
+                  </div>
                 ))}
             </>
           )}

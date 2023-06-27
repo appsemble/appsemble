@@ -36,6 +36,7 @@ export function PagesTab({
   const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
+  const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
   const [editPageView, setEditPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
@@ -65,9 +66,10 @@ export function PagesTab({
   );
 
   const onChangePagesBlocks = useCallback(
-    (page: number, parentIndex: number, block: number) => {
+    (page: number, subParent: number, block: number) => {
       setSelectedPage(page);
       setSelectedBlock(block);
+      setSelectedSubParent(subParent);
       if (block !== -1) {
         setEditPageView(false);
         setEditBlockView(true);
@@ -78,7 +80,7 @@ export function PagesTab({
         setEditBlockView(false);
       }
     },
-    [setSelectedPage, setSelectedBlock],
+    [setSelectedPage, setSelectedBlock, setSelectedSubParent],
   );
 
   const onCreatePage = useCallback(() => {
@@ -142,6 +144,7 @@ export function PagesTab({
           onCreatePage={onCreatePage}
           selectedBlock={selectedBlock}
           selectedPage={selectedPage}
+          selectedSubParent={selectedSubParent}
         />
       </Sidebar>
       <div className={styles.root}>
