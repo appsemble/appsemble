@@ -73,25 +73,38 @@ appsemble serve <path-to-app-directory> --team-role Manager
 ```
 
 App data is stored within a `db.json` file in your machine’s cache directory. Each app has their own
-directory `appsemble-<my-app>`.
+directory `<my-app>`.
 
 ```sh
-MacOS - /Users/<my-name>/Library/Caches/appsemble-<my-app>
-Linux - /home/<my-name>/.cache/appsemble-<my-app>
-Windows - C:\Users\<my-name>\AppData\Local\appsemble-<my-app>\Cache
+MacOS - /Users/<my-name>/Library/Caches/appsemble/<my-app>
+Linux - /home/<my-name>/.cache/appsemble/<my-app>
+Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\<my-app>
 ```
 
-App assets and block assets will be served from the local file system.
+App assets will be served from the local file system.
 
-The development server will fetch all remote repositories listed in the `.git/config` file in the
-root of the project. It will fetch blocks that are missing from the workspaces from the
-corresponding remote repository. These are typically third-party or proprietary blocks. It will
-check only the main and master branches, to fetch blocks from other branches run:
-
-New remote repositories can be added to the git configuration file by running:
+The development server will automatically fetch all blocks that are needed for the served app but
+are missing from the local workspaces. These are typically third-party or proprietary blocks. The
+development server will use `https://appsemble.app` as the default remote server to fetch blocks
+from. The following option allows you to specify a different remote server:
 
 ```sh
-git remote add <remote-name> <remote-url>
+appsemble serve <path-to-app-directory> --remote <remote>
+```
+
+The development server will use the corresponding block directory in your machine’s cache directory
+to store and read block manifests and assets.
+
+```sh
+MacOS - /Users/<my-name>/Library/Caches/appsemble/blocks/<organisation>/<block-name>/<block-version>
+Linux - /home/<my-name>/.cache/appsemble/blocks/<organisation>/<block-name>/<block-version>
+Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\blocks\<organisation>\<block-name>\<block-version>
+```
+
+You can overwrite the existing block cache with the following option:
+
+```sh
+appsemble serve <path-to-app-directory> --remote <remote> --overwrite-block-cache
 ```
 
 ### Authentication

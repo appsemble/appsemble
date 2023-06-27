@@ -1,5 +1,5 @@
-import { spawnSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { createWriteStream, existsSync } from 'node:fs';
+import { mkdir, readFile } from 'node:fs/promises';
 import http from 'node:http';
 import { basename, extname, join, parse } from 'node:path';
 import { Readable } from 'node:stream';
@@ -19,11 +19,20 @@ import {
   type AppMessages,
   type AppsembleMessages,
   type Asset,
+  type BlockManifest,
   type UserInfo,
 } from '@appsemble/types';
-import { asciiLogo, getAppBlocks, normalize, parseBlockName } from '@appsemble/utils';
+import {
+  asciiLogo,
+  getAppBlocks,
+  type IdentifiableBlock,
+  normalize,
+  parseBlockName,
+} from '@appsemble/utils';
+import axios from 'axios';
 import csvToJson from 'csvtojson';
 import FormData from 'form-data';
+import globalCacheDir from 'global-cache-dir';
 import { type Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
@@ -40,6 +49,7 @@ interface ServeArguments extends BaseArguments {
   port: number;
   'user-role': string;
   'team-role': string;
+  'overwrite-block-cache': boolean;
 }
 
 export const command = 'serve path';
@@ -63,6 +73,15 @@ export function builder(yargs: Argv): Argv<any> {
       desc: 'The role to set to the mocked authenticated user in the team.',
       type: 'string',
       default: 'member',
+    })
+    .option('remote', {
+      desc: 'The address to fetch remote blocks from.',
+      type: 'string',
+    })
+    .option('overwrite-block-cache', {
+      desc: 'Whether to overwrite remote blocks cache if it exists.',
+      type: 'boolean',
+      default: false,
     });
 }
 
@@ -123,62 +142,21 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const identifiableBlocks = getAppBlocks(appsembleApp.definition);
 
-  const remotesFetchResult = spawnSync('git', ['fetch', '--all'], { encoding: 'utf8' });
+  const localIdentifiableBlocks: IdentifiableBlock[] = [];
+  const remoteIdentifiableBlocks: IdentifiableBlock[] = [];
 
-  if (remotesFetchResult.status !== 0) {
-    const fetchErrors = remotesFetchResult.stderr.trim().split('\n');
-    logger.error('There was an error fetching remote repositories');
-    for (const error of fetchErrors) {
-      logger.error(error);
+  for (const identifiableBlock of identifiableBlocks) {
+    const [, blockName] = parseBlockName(identifiableBlock.type);
+    if (existsSync(join(process.cwd(), 'blocks', blockName))) {
+      localIdentifiableBlocks.push(identifiableBlock);
+    } else {
+      remoteIdentifiableBlocks.push(identifiableBlock);
     }
   }
 
-  const blockConfigs = await Promise.all(
-    identifiableBlocks.map(async (identifiableBlock) => {
+  const localBlocksConfigs = await Promise.all(
+    localIdentifiableBlocks.map(async (identifiableBlock) => {
       const [organization, blockName] = parseBlockName(identifiableBlock.type);
-
-      if (organization !== 'appsemble') {
-        logger.info(`Checking out ${blockName} from ${organization}/master`);
-        const masterCheckoutResult = spawnSync(
-          'git',
-          ['checkout', `${organization}/master`, '--', `blocks/${blockName}`],
-          { encoding: 'utf8' },
-        );
-
-        if (masterCheckoutResult.status !== 0) {
-          const masterErrors = masterCheckoutResult.stderr.trim().split('\n');
-          logger.error(`There was an error checking out ${blockName} from ${organization}/master`);
-          for (const error of masterErrors) {
-            logger.error(error);
-          }
-
-          logger.info(`Checking out ${blockName} from ${organization}/main`);
-          const mainCheckoutResult = spawnSync(
-            'git',
-            ['checkout', `${organization}/main`, '--', `blocks/${blockName}`],
-            { encoding: 'utf8' },
-          );
-
-          if (mainCheckoutResult.status !== 0) {
-            const mainErrors = mainCheckoutResult.stderr.trim().split('\n');
-            logger.error(`There was an error checking out ${blockName} from ${organization}/main`);
-            for (const error of mainErrors) {
-              logger.error(error);
-            }
-          }
-        }
-
-        const [blockTsConfig] = (await readData(`blocks/${blockName}/tsconfig.json`)) as any;
-
-        await writeData(`blocks/${blockName}/tsconfig.json`, {
-          ...blockTsConfig,
-          compilerOptions: {
-            ...blockTsConfig.compilerOptions,
-            lib: ['dom', 'dom.iterable', 'esnext'],
-            types: ['@appsemble/webpack-config/types', 'jest'],
-          },
-        });
-      }
 
       const blockConfig = await getBlockConfig(join(process.cwd(), 'blocks', blockName));
       return {
@@ -188,19 +166,73 @@ export async function handler(argv: ServeArguments): Promise<void> {
     }),
   );
 
-  const blockPromises = blockConfigs.map(async (blockConfig) => {
+  const localBlocksPromises = localBlocksConfigs.map(async (blockConfig) => {
     await buildBlock(blockConfig);
-    const [, blockData] = await makePayload(blockConfig);
-    blockData.version = identifiableBlocks.find(
-      (identifiableBlock) => identifiableBlock.type === blockData.name,
+    const [, blockManifest] = await makePayload(blockConfig);
+    blockManifest.version = localIdentifiableBlocks.find(
+      (identifiableBlock) => identifiableBlock.type === blockManifest.name,
     ).version;
-    return blockData;
+    return blockManifest;
   });
 
-  const appBlocks = await Promise.all(blockPromises);
+  const cacheDir = await globalCacheDir('appsemble');
+  const remoteBlocksPromises = remoteIdentifiableBlocks.map(async (identifiableBlock) => {
+    const [organization, blockName] = parseBlockName(identifiableBlock.type);
+
+    const blockCacheDir = join(
+      cacheDir,
+      'blocks',
+      organization,
+      blockName,
+      identifiableBlock.version,
+    );
+
+    const cachedBlockManifest = join(blockCacheDir, 'manifest.json');
+
+    const cacheExists = existsSync(cachedBlockManifest);
+    if (!cacheExists || (cacheExists && argv['overwrite-block-cache'])) {
+      const blockUrl = `/api/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`;
+
+      const { data: blockManifest }: { data: BlockManifest } = await axios.get(
+        String(new URL(blockUrl, argv.remote)),
+      );
+
+      await writeData(cachedBlockManifest, blockManifest);
+
+      const assetsDir = join(blockCacheDir, 'assets');
+      if (!existsSync(assetsDir)) {
+        await mkdir(assetsDir);
+      }
+
+      const blockFilesPromises = blockManifest.files.map(async (filename) => {
+        const writer = createWriteStream(join(assetsDir, filename));
+
+        const { data: content } = await axios.get(
+          String(new URL(`${blockUrl}/asset?filename=${filename}`, argv.remote)),
+          {
+            responseType: 'stream',
+          },
+        );
+
+        content.pipe(writer);
+      });
+
+      await Promise.all(blockFilesPromises);
+
+      return blockManifest;
+    }
+
+    const [blockManifest] = await readData(cachedBlockManifest);
+    return blockManifest;
+  });
+
+  const localBlocks = await Promise.all(localBlocksPromises);
+  const remoteBlocks = await Promise.all(remoteBlocksPromises);
+
+  const appBlocks = [...localBlocks, ...remoteBlocks];
 
   const webpackConfigs = await Promise.all(
-    blockConfigs.map((blockConfig) =>
+    localBlocksConfigs.map((blockConfig) =>
       loadWebpackConfig(blockConfig, 'development', join(blockConfig.dir, blockConfig.output)),
     ),
   );
@@ -301,7 +333,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
           }
         : {}),
       appAssets,
-      blockConfigs,
+      blockConfigs: localBlocksConfigs,
     },
     webpackConfigs,
   });

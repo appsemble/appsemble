@@ -8,7 +8,8 @@ import { Methods, setAppName } from './methods.js';
 const appName = 'testApp';
 
 setAppName(appName);
-const dbDir = await globalCacheDir(`appsemble-${appName}`);
+const cacheDir = await globalCacheDir('appsemble');
+const dbDir = join(cacheDir, appName);
 const dbPath = join(dbDir, 'db.json');
 
 describe('methods', () => {
