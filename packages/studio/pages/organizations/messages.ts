@@ -14,8 +14,8 @@ export const messages = defineMessages({
     defaultMessage: 'The permission to create new apps or copy them from templates.',
   },
   DeleteApps: {
-    id: 'studio.2JIMfE',
-    defaultMessage: ' The permission to delete apps.',
+    id: 'studio.jNtX+C',
+    defaultMessage: 'The permission to delete apps.',
   },
   EditAppMessages: {
     id: 'studio.773Bdo',
