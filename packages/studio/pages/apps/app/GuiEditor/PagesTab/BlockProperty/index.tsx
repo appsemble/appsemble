@@ -5,7 +5,6 @@ import { type ReactElement, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, parse, type ParsedNode, stringify } from 'yaml';
 
-import styles from './index.module.css';
 import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
@@ -49,12 +48,7 @@ export function BlockProperty({
     <div>
       {Boolean(selectedBlock) && (
         <div>
-          <Button
-            className={`is-danger ${styles.deleteButton}`}
-            component="a"
-            icon="trash"
-            onClick={() => deleteBlock()}
-          >
+          <Button className="is-danger" component="a" icon="trash" onClick={() => deleteBlock()}>
             Delete Block
           </Button>
 

@@ -1,20 +1,37 @@
 import { Button, useMessages } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
+import { type Document, type Node, type ParsedNode } from 'yaml';
 
-import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
 
 interface PagePropertyProps {
+  addIn: (path: Iterable<unknown>, value: Node) => void;
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
 }
 
 const pageTypes = ['page', 'flow', 'tabs'] as const;
-export function PageProperty({ selectedPage }: PagePropertyProps): ReactElement {
-  const { app, setApp } = useApp();
+export function PageProperty({
+  addIn,
+  changeIn,
+  deleteIn,
+  docRef,
+  selectedPage,
+}: PagePropertyProps): ReactElement {
   const push = useMessages();
   const [currentPageName, setCurrentPageName] = useState(
-    selectedPage === -1 ? 'Page Name' : app.definition.pages[selectedPage].name,
+    selectedPage === -1
+      ? 'Page Name'
+      : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
   const [currentPageType, setCurrentPageType] = useState<(typeof pageTypes)[number]>('page');
 
@@ -33,9 +50,10 @@ export function PageProperty({ selectedPage }: PagePropertyProps): ReactElement 
   );
 
   const onChangePage = useCallback(() => {
+    const doc = docRef.current;
     if (selectedPage === -1) {
       // Create new page
-      if (app.definition.pages.some((page) => page.name === currentPageName)) {
+      if (doc.toJS().pages.some((page: any) => page.name === currentPageName)) {
         push({ body: 'Page name already exists', color: 'danger' });
         return;
       }
@@ -44,20 +62,21 @@ export function PageProperty({ selectedPage }: PagePropertyProps): ReactElement 
         return;
       }
       if (currentPageType === 'page') {
-        app.definition.pages.push({ name: currentPageName, type: 'page', blocks: [] });
+        addIn(['pages'], doc.createNode({ name: currentPageName, blocks: [] }));
       }
       if (currentPageType === 'flow') {
-        app.definition.pages.push({ name: currentPageName, type: 'flow', steps: [] });
+        addIn(['pages'], doc.createNode({ name: currentPageName, type: 'flow', steps: [] }));
       }
       if (currentPageType === 'tabs') {
-        app.definition.pages.push({ name: currentPageName, type: 'tabs', tabs: [] });
+        addIn(['pages'], doc.createNode({ name: currentPageName, type: 'tabs', tabs: [] }));
       }
     } else {
       // Update page
       if (
-        app.definition.pages
-          .filter((value, index) => index !== selectedPage)
-          .some((page) => page.name === currentPageName)
+        doc
+          .toJS()
+          .pages.filter((value: any, index: any) => index !== selectedPage)
+          .some((page: any) => page.name === currentPageName)
       ) {
         push({ body: 'Page name already exists', color: 'danger' });
         return;
@@ -66,19 +85,22 @@ export function PageProperty({ selectedPage }: PagePropertyProps): ReactElement 
         push({ body: 'Page name cannot be empty', color: 'danger' });
         return;
       }
-      app.definition.pages[selectedPage].name = currentPageName;
-      app.definition.pages[selectedPage].type = currentPageType;
+      changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName));
+      if (currentPageType !== 'page') {
+        changeIn(['pages', selectedPage, 'type'], doc.createNode(currentPageType));
+      }
     }
-    setApp({ ...app });
-  }, [app, currentPageName, currentPageType, push, selectedPage, setApp]);
+  }, [addIn, changeIn, currentPageName, currentPageType, docRef, push, selectedPage]);
+
+  const onDeletePage = useCallback(() => {
+    deleteIn(['pages', selectedPage]);
+  }, [deleteIn, selectedPage]);
 
   return (
     <div>
-      <h4>
-        {selectedPage === -1
-          ? 'Creating new page...'
-          : `Edit page:${app.definition.pages[selectedPage].name}`}
-      </h4>
+      <Button className="is-danger" component="a" icon="trash" onClick={() => onDeletePage()}>
+        Delete Page
+      </Button>
       <InputString label="Name" onChange={onChangePageName} value={currentPageName} />
       <InputList
         label="Type"

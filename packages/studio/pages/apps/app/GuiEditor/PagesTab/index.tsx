@@ -161,7 +161,15 @@ export function PagesTab({
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
-          {editPageView ? <PageProperty selectedPage={selectedPage} /> : null}
+          {editPageView ? (
+            <PageProperty
+              addIn={addIn}
+              changeIn={changeIn}
+              deleteIn={deleteIn}
+              docRef={docRef}
+              selectedPage={selectedPage}
+            />
+          ) : null}
           {editBlockView ? (
             <BlockProperty
               changeProperty={changeProperty}
