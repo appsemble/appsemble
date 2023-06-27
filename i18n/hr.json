@@ -537,6 +537,7 @@
   "studio.TdTXXf": "Saznaj više",
   "studio.TdzZP4": "Snimka ekrana programa {app}",
   "studio.TgSTnd": "Kratak opis o tome što program radi.",
+  "studio.Tk9rN+": "Tvoja e-mail adresa je uspješno potvrđena!\nSada se možeš prijaviti na Appsemble.",
   "studio.Ts6YUb": "Resurs {resourceName}",
   "studio.U5+MBC": "ID oznaka klijenta",
   "studio.U5QCQI": "Certifikat je prenešen",
@@ -885,6 +886,5 @@
   "studio.zX/a3U": "Izbriši {amount} {amount, plural, one {sredstvo} few {sredstva} other {sredstva}}",
   "studio.zZgIyO": "Prikazano ime za program",
   "studio.zji8KM": "Dazvoliti programu {app} izvršavanje sljedećih radnji u tvoje ime?",
-  "studio.zwurmB": "Kolačić",
-  "undefined": "Tvoja e-mail adresa je uspješno potvrđena!\nSada se možeš prijaviti na Appsemble."
+  "studio.zwurmB": "Kolačić"
 }

@@ -537,6 +537,7 @@
   "studio.TdTXXf": "Meer informatie (Engels)",
   "studio.TdzZP4": "Schermafbeelding",
   "studio.TgSTnd": "Een korte beschrijving over de functionaliteit van de app.",
+  "studio.Tk9rN+": "Jouw e-mail was succesvol geverifieerd! \nJe kan nu inloggen met je Appsemble account.",
   "studio.Ts6YUb": "Resource {resourceName}",
   "studio.U5+MBC": "Client ID",
   "studio.U5QCQI": "Certificaat geüpload",
@@ -885,6 +886,5 @@
   "studio.zX/a3U": "Verwijder {amount} {amount, plural, one {resource} other {resources}}",
   "studio.zZgIyO": "De naam zoals deze beschikbaar is in de app",
   "studio.zji8KM": "Wil je {app} toestemming geven om de volgende acties namens jou uit te voeren?",
-  "studio.zwurmB": "Cookie",
-  "undefined": "Jouw e-mail was succesvol geverifieerd! \nJe kan nu inloggen met je Appsemble account."
+  "studio.zwurmB": "Cookie"
 }

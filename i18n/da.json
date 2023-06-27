@@ -537,6 +537,7 @@
   "studio.TdTXXf": "Lær mere",
   "studio.TdzZP4": "Skærmbillede af {app}",
   "studio.TgSTnd": "En kort beskrivelse af, hvad appen kan gøre.",
+  "studio.Tk9rN+": "Din e-mail blev bekræftet! \nDu kan nu logge på Appsemble.",
   "studio.Ts6YUb": "Ressource {resourceName}",
   "studio.U5+MBC": "Klient-id",
   "studio.U5QCQI": "Certifikat uploadet",
@@ -885,6 +886,5 @@
   "studio.zX/a3U": "Slet {amount} {amount, plural, one {ressource} other {ressourcer}}",
   "studio.zZgIyO": "",
   "studio.zji8KM": "Vil du tillade{app} at udføre følgende handlinger på dine vegne?",
-  "studio.zwurmB": "",
-  "undefined": "Din e-mail blev bekræftet! \nDu kan nu logge på Appsemble."
+  "studio.zwurmB": ""
 }

@@ -29,7 +29,9 @@ export async function extractMessages(): Promise<Translations> {
   const messages: Record<string, MessageDescriptor> = JSON.parse(
     await extract(
       paths.filter((p) => !p.endsWith('.d.ts')),
-      {},
+      {
+        preserveWhitespace: true,
+      },
     ),
   );
 
