@@ -19,7 +19,7 @@ import { isMap, parseDocument } from 'yaml';
 import { ActionTable } from './ActionTable/index.js';
 import { EventTable } from './EventTable/index.js';
 import styles from './index.module.css';
-import { messages, untranslatedMessages } from './messages.js';
+import { messages } from './messages.js';
 import { RefLink } from './RefLink/index.js';
 import { CodeBlock } from '../../../components/CodeBlock/index.js';
 import { MarkdownContent } from '../../../components/MarkdownContent/index.js';
@@ -115,7 +115,7 @@ export function BlockPage(): ReactElement {
       </>
       <SelectField
         disabled={blockVersions.length === 1}
-        label={untranslatedMessages.selectedVersion}
+        label="Selected version"
         name="selectedVersion"
         onChange={onSelectedVersionChange}
         required
@@ -128,7 +128,7 @@ export function BlockPage(): ReactElement {
         ))}
       </SelectField>
 
-      <Title level={4}>{untranslatedMessages.description}</Title>
+      <Title level={4}>Description</Title>
       {selectedBlockManifest.description ? (
         <Message>{selectedBlockManifest.description}</Message>
       ) : null}
@@ -155,26 +155,26 @@ export function BlockPage(): ReactElement {
 
       {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
         <>
-          <Title level={4}>{untranslatedMessages.parameters}</Title>
+          <Title level={4}>Parameters</Title>
           <Schema anchors renderRef={RefLink} schema={selectedBlockManifest.parameters} />
         </>
       )}
       {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
         <>
-          <Title level={4}>{untranslatedMessages.actions}</Title>
+          <Title level={4}>Actions</Title>
           <ActionTable manifest={selectedBlockManifest} />
         </>
       )}
       {selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen ? (
         <>
-          <Title level={4}>{untranslatedMessages.events}</Title>
+          <Title level={4}>Events</Title>
           <EventTable manifest={selectedBlockManifest} />
         </>
       ) : null}
 
       {selectedBlockManifest.parameters?.definitions ? (
         <>
-          <Title level={4}>{untranslatedMessages.definitions}</Title>
+          <Title level={4}>Definitions</Title>
           {Object.entries(selectedBlockManifest.parameters.definitions).map(([key, definition]) => (
             <div className="mb-4 pl-4" key={key}>
               <Title className="mb-2" lang={defaultLocale} level={5}>

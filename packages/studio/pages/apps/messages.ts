@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Apps',
-  description: 'Browse the apps that are built using Appsemble',
+  title: {
+    id: 'studio.gRiKLf',
+    defaultMessage: 'Apps',
+  },
+  description: {
+    id: 'studio.qqW9Os',
+    defaultMessage: 'Browse the apps that are built using Appsemble',
+  },
 });

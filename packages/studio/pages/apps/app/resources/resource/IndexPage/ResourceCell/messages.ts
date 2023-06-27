@@ -1,8 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  undefined: 'No value',
-  null: 'Null',
-  emptyString: 'Empty string',
-  whitespace: 'Whitespace',
+  undefined: {
+    id: 'studio.eVrDft',
+    defaultMessage: 'No value',
+  },
+  null: {
+    id: 'studio.aruNNm',
+    defaultMessage: 'Null',
+  },
+  emptyString: {
+    id: 'studio.Ma39yN',
+    defaultMessage: 'Empty string',
+  },
+  whitespace: {
+    id: 'studio.vdaySH',
+    defaultMessage: 'Whitespace',
+  },
 });

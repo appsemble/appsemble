@@ -5,7 +5,6 @@ import { type ReactElement } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
-import { messages } from './messages.js';
 
 interface BlockCardProps {
   /**
@@ -26,7 +25,7 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
           {block.iconUrl ? (
-            <img alt={`${block.name} ${messages.blockLogo}`} src={block.iconUrl} />
+            <img alt={`${block.name} Logo`} src={block.iconUrl} />
           ) : (
             <Icon className={styles.iconFallback} icon="cubes" />
           )}
@@ -50,11 +49,13 @@ export function BlockCard({ block }: BlockCardProps): ReactElement {
         className={`card-content ${styles.description}`}
         lang={block.description ? defaultLocale : null}
       >
-        {block.description ?? <span className="has-text-grey-light">{messages.noDescription}</span>}
+        {block.description ?? (
+          <span className="has-text-grey-light">(No description available)</span>
+        )}
       </div>
       <footer className="card-footer">
         <Link className="card-footer-item" to={`/${lang}/blocks/${block.name}/${block.version}`}>
-          {messages.buttonDetails}
+          View details
         </Link>
       </footer>
     </div>

@@ -1,8 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  queryLabel: 'Query parameter',
-  queryHelp: 'The query parameter for query parameter authentication',
-  secretLabel: 'Secret',
-  secretHelp: 'The secret for query parameter authentication',
+  queryLabel: {
+    id: 'studio.rWPtv+',
+    defaultMessage: 'Query parameter',
+  },
+  queryHelp: {
+    id: 'studio.GNZzUE',
+    defaultMessage: 'The query parameter for query parameter authentication',
+  },
+  secretLabel: {
+    id: 'studio.CtZMCP',
+    defaultMessage: 'Secret',
+  },
+  secretHelp: {
+    id: 'studio.0agQte',
+    defaultMessage: 'The secret for query parameter authentication',
+  },
 });

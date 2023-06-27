@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  storeLink: 'View in app store',
+  storeLink: {
+    id: 'app.GJOhb3',
+    defaultMessage: 'View in app store',
+  },
 });

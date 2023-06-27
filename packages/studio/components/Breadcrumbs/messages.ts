@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  breadcrumbs: 'Breadcrumbs',
+  breadcrumbs: {
+    id: 'studio.ByoZDD',
+    defaultMessage: 'Breadcrumbs',
+  },
 });

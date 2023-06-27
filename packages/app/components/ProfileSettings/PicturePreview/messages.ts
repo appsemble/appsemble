@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  picture: 'Picture',
+  picture: {
+    id: 'app.wvoA3H',
+    defaultMessage: 'Picture',
+  },
 });

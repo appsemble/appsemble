@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  loginWith: 'Login with {name}',
+  loginWith: {
+    id: 'app.VVEa+s',
+    defaultMessage: 'Login with {name}',
+  },
 });
