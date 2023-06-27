@@ -84,8 +84,8 @@ export const messages = defineMessages({
     defaultMessage: 'Successfully imported {selectedLanguage} translations',
   },
   importError: {
-    id: 'studio./pCfeM',
-    defaultMessage: 'Something went wrong when creating the new translations.',
+    id: 'studio.U1cf2h',
+    defaultMessage: 'Something went wrong when reading the file.',
   },
   errorMessage: {
     id: 'studio.ql9rKu',

@@ -123,28 +123,33 @@ export function TranslationsPage(): ReactNode {
       reader.addEventListener(
         'load',
         () => {
-          axios
-            .post<AppMessages>(`/api/apps/${app.id}/messages`, {
-              language: languageId,
-              messages: JSON.parse(reader.result as string),
-            })
-            .then(
-              ({ data }) => {
+          try {
+            axios
+              .post<AppMessages>(`/api/apps/${app.id}/messages`, {
+                language: languageId,
+                messages: JSON.parse(reader.result as string),
+              })
+              .then(({ data }) => {
                 result.setData(data);
                 push({
                   body: formatMessage(messages.importSuccess, {
                     selectedLanguage: getLanguageDisplayName(languageId),
-                  }) as string,
+                  }),
                   color: 'success',
                 });
-              },
-              () => {
+              })
+              .catch(() => {
                 push({
-                  body: formatMessage(messages.importError),
+                  body: formatMessage(messages.uploadError),
                   color: 'danger',
                 });
-              },
-            );
+              });
+          } catch {
+            push({
+              body: formatMessage(messages.importError),
+              color: 'danger',
+            });
+          }
         },
         false,
       );
