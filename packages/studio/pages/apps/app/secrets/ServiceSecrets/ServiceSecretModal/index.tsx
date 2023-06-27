@@ -1,7 +1,6 @@
 import {
   Button,
   ModalCard,
-  NavLink,
   SelectField,
   SimpleForm,
   SimpleFormField,
@@ -15,7 +14,7 @@ import { type AppServiceSecret, type ServiceAuthenticationMethod } from '@appsem
 import axios from 'axios';
 import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { SwitchField } from './ConditionalFields/index.js';
 import styles from './index.module.css';
@@ -118,10 +117,16 @@ export function ServiceSecretsModal({
       title={<FormattedMessage {...messages.modalTitle} />}
     >
       <p className="mb-2">
-        <FormattedMessage {...messages.docs} />
-        <NavLink title="docs" to={`/${lang}/docs/03-guide/service`}>
-          <span>docs</span>
-        </NavLink>
+        <FormattedMessage
+          {...messages.docs}
+          values={{
+            link: (link) => (
+              <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/service`}>
+                {link}
+              </Link>
+            ),
+          }}
+        />
       </p>
       <SimpleFormField
         disabled={locked}

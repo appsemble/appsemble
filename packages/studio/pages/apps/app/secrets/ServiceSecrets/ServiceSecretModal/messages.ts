@@ -6,8 +6,8 @@ export const messages = defineMessages({
     defaultMessage: 'Service Secret',
   },
   docs: {
-    id: 'studio.MjjapL',
-    defaultMessage: 'Learn more in the ',
+    id: 'studio.9PjpLU',
+    defaultMessage: 'Learn more in the <link>documentation</link>',
   },
   serviceNameLabel: {
     id: 'studio.2bKI2L',
