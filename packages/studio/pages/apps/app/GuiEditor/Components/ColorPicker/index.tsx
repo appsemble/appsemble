@@ -1,5 +1,5 @@
 import { IconButton } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
 
 import styles from './index.module.css';
 
@@ -21,18 +21,29 @@ export function ColorPicker({
   onReset,
   selectedColor,
 }: ColorPickerProps): ReactElement {
-  const onColorChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      onChange(event.target.value);
+  const [color, setColor] = useState<string>('#000000');
+
+  const setCurrentColor = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      setColor(event.target.value);
     },
-    [onChange],
+    [setColor],
   );
+
+  const onColorChange = useCallback(() => {
+    onChange(color);
+  }, [color, onChange]);
 
   if (!label) {
     return (
       <div className="field is-flex is-align-items-stretch mb-0">
         <div className={styles.colorAndReset}>
-          <input onChange={onColorChange} type="color" value={selectedColor} />
+          <input
+            onBlur={onColorChange}
+            onChange={setCurrentColor}
+            type="color"
+            value={selectedColor}
+          />
           {canReset ? <IconButton icon="close" onClick={onReset} /> : null}
         </div>
       </div>
@@ -52,7 +63,12 @@ export function ColorPicker({
         </label>
       ) : null}
       <div className={styles.colorAndReset}>
-        <input onChange={onColorChange} type="color" value={selectedColor} />
+        <input
+          onBlur={onColorChange}
+          onChange={setCurrentColor}
+          type="color"
+          value={selectedColor}
+        />
         {canReset ? <IconButton icon="close" onClick={onReset} /> : null}
       </div>
     </div>

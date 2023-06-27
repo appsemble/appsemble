@@ -64,6 +64,8 @@ export function AppDefinitionProvider({ children }: AppDefinitionProviderProps):
         setDefinition(data.definition);
         setRevision(revision + 1);
       } else if (origin === apiUrl && data?.type === 'editor/gui/EDIT_SUCCESS') {
+        replaceStyle('appsemble-style-core', data.coreStyle);
+        replaceStyle('appsemble-style-shared', data.sharedStyle);
         setDefinition(data.definition);
         setRevision(revision + 1);
       }

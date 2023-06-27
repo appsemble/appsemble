@@ -88,15 +88,6 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
-  const updateAppPreview = useCallback(() => {
-    const definition = saveStack[index].toJS();
-    delete definition.anchors;
-    frame.current?.contentWindow.postMessage(
-      { type: 'editor/gui/EDIT_SUCCESS', definition },
-      getAppUrl(app.OrganizationId, app.path),
-    );
-  }, [app.OrganizationId, app.path, index, saveStack]);
-
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     const clone = docRef.current.clone();
@@ -127,6 +118,15 @@ export default function EditPage(): ReactElement {
   const onRedo = (): void => {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
   };
+
+  const updateAppPreview = useCallback(() => {
+    const definition = saveStack[index].toJS();
+    delete definition.anchors;
+    frame.current?.contentWindow.postMessage(
+      { type: 'editor/gui/EDIT_SUCCESS', definition, coreStyle, sharedStyle },
+      getAppUrl(app.OrganizationId, app.path),
+    );
+  }, [app.OrganizationId, app.path, coreStyle, index, saveStack, sharedStyle]);
 
   const handleSave = useCallback(async () => {
     const ymlString = stringify(saveStack[index]);
@@ -197,7 +197,13 @@ export default function EditPage(): ReactElement {
       </div>
       <div className={`${styles.guiEditorContainer} m-0 p-0`}>
         {currentTab.tabName === 'general' && (
-          <GeneralTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <GeneralTab
+            changeIn={changeIn}
+            deleteIn={deleteIn}
+            docRef={docRef}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
         {currentTab.tabName === 'resources' && (
           <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
@@ -218,7 +224,13 @@ export default function EditPage(): ReactElement {
           />
         )}
         {currentTab.tabName === 'theme' && (
-          <ThemeTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <ThemeTab
+            changeIn={changeIn}
+            deleteIn={deleteIn}
+            docRef={docRef}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
         {currentTab.tabName === 'security' && (
           <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />

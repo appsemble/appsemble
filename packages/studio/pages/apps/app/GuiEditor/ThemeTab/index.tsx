@@ -1,6 +1,7 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type MutableRefObject, type ReactElement, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -11,10 +12,19 @@ import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface ThemeTabProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
-export function ThemeTab({ isOpenLeft, isOpenRight }: ThemeTabProps): ReactElement {
+export function ThemeTab({
+  changeIn,
+  deleteIn,
+  docRef,
+  isOpenLeft,
+  isOpenRight,
+}: ThemeTabProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
@@ -59,6 +69,9 @@ export function ThemeTab({ isOpenLeft, isOpenRight }: ThemeTabProps): ReactEleme
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
           <ThemePage
+            changeIn={changeIn}
+            deleteIn={deleteIn}
+            docRef={docRef}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}
             selectedSubParent={selectedSubParent}
