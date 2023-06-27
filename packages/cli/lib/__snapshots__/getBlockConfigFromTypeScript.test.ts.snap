@@ -656,6 +656,9 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
           {
             "$ref": "#/definitions/StringField",
           },
+          {
+            "$ref": "#/definitions/VideoField",
+          },
         ],
         "description": "All supported types of fields.",
       },
@@ -814,6 +817,51 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
             "format": "remapper",
           },
         },
+        "type": "object",
+      },
+      "VideoField": {
+        "additionalProperties": false,
+        "description": "Allows render video.",
+        "properties": {
+          "height": {
+            "default": 350,
+            "description": "Height of the video element.",
+            "type": "number",
+          },
+          "label": {
+            "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
+            "format": "remapper",
+          },
+          "platform": {
+            "description": "Other platform the video is taken from.",
+            "enum": [
+              "vimeo",
+              "youtube",
+            ],
+            "type": "string",
+          },
+          "thumbnail": {
+            "description": "Image that will be there at the start of the video.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "video",
+            "description": "The name of the type of the field.",
+            "type": "string",
+          },
+          "value": {
+            "description": "The Remapper used to retrieve the data.",
+            "format": "remapper",
+          },
+          "width": {
+            "default": 350,
+            "description": "Width of the video element.",
+            "type": "number",
+          },
+        },
+        "required": [
+          "type",
+        ],
         "type": "object",
       },
     },
