@@ -54,16 +54,35 @@ export function PagesTab({
     setDragOver(false);
   };
 
-  const getSelectedBlock = useCallback(
-    (): Document<ParsedNode> =>
-      docRef.current.getIn([
+  const getSelectedBlock = useCallback((): Document<ParsedNode> => {
+    const doc = docRef.current;
+    if (
+      !doc.getIn(['pages', selectedPage, 'type']) ||
+      doc.getIn(['pages', selectedPage, 'type']) === 'page'
+    ) {
+      return doc.getIn(['pages', selectedPage, 'blocks', selectedBlock]) as Document<ParsedNode>;
+    }
+    if (doc.getIn(['pages', selectedPage, 'type']) === 'flow') {
+      return doc.getIn([
         'pages',
         selectedPage,
+        'steps',
+        selectedSubParent >= 0 ? selectedSubParent : 0,
         'blocks',
         selectedBlock,
-      ]) as Document<ParsedNode>,
-    [docRef, selectedBlock, selectedPage],
-  );
+      ]) as Document<ParsedNode>;
+    }
+    if (doc.getIn(['pages', selectedPage, 'type']) === 'tabs') {
+      return doc.getIn([
+        'pages',
+        selectedPage,
+        'tabs',
+        selectedSubParent >= 0 ? selectedSubParent : 0,
+        'blocks',
+        selectedBlock,
+      ]) as Document<ParsedNode>;
+    }
+  }, [docRef, selectedBlock, selectedPage, selectedSubParent]);
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {

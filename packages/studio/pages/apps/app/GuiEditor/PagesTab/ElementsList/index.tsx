@@ -35,13 +35,13 @@ export function ElementsList({
 
   const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
     (page: any, pageIndex: number) => {
-      if (!page.get(['type']) || page.get(['type']) === 'page') {
+      if (!page.getIn(['type']) || page.get(['type']) === 'page') {
         return docRef.current.getIn(['pages', pageIndex, 'name']) as string;
       }
-      if (page.get(['type']) === 'flow') {
+      if (page.getIn(['type']) === 'flow') {
         return docRef.current.getIn(['pages', pageIndex, 'steps', 'name']) as string;
       }
-      if (page.get(['type']) === 'tabs') {
+      if (page.getIn(['type']) === 'tabs') {
         return docRef.current.getIn(['pages', pageIndex, 'tabs', 'name']) as string;
       }
     },
@@ -51,7 +51,7 @@ export function ElementsList({
   const blocks: { type: string; parent: number; subParent: number; block: number }[] = (
     docRef.current.getIn(['pages']) as YAMLSeq
   ).items.flatMap((page: YAMLMap, pageIndex: number) => {
-    if (!page.get(['type']) || page.get(['type']) === 'page') {
+    if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
       return page.items.map((block: any, blockIndex: number) => ({
         type: 'page',
         parent: pageIndex,
@@ -59,19 +59,20 @@ export function ElementsList({
         block: blockIndex,
       }));
     }
-    if (page.get(['type']) === 'flow') {
-      return (page.get(['steps']) as YAMLMap).items.flatMap((subPage: any, subPageIndex: number) =>
-        subPage.blocks.map((block: any, blockIndex: number) => ({
-          type: 'flow',
-          parent: pageIndex,
-          subParent: subPageIndex,
-          block: blockIndex,
-        })),
+    if (page.getIn(['type']) === 'flow') {
+      return (page.getIn(['steps']) as YAMLSeq).items.flatMap(
+        (subPage: any, subPageIndex: number) =>
+          subPage.getIn(['blocks']).items.map((block: any, blockIndex: number) => ({
+            type: 'flow',
+            parent: pageIndex,
+            subParent: subPageIndex,
+            block: blockIndex,
+          })),
       );
     }
-    if (page.get(['type']) === 'tabs') {
-      return (page.get(['tabs']) as YAMLMap).items.flatMap((subPage: any, subPageIndex: number) =>
-        subPage.blocks.map((block: any, blockIndex: number) => ({
+    if (page.getIn(['type']) === 'tabs') {
+      return (page.getIn(['tabs']) as YAMLSeq).items.flatMap((subPage: any, subPageIndex: number) =>
+        subPage.getIn(['blocks']).items.map((block: any, blockIndex: number) => ({
           type: 'tabs',
           parent: pageIndex,
           subParent: subPageIndex,
@@ -123,9 +124,15 @@ export function ElementsList({
         changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(blockList));
       } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
         // TODO: change subParent index (0) to match actual subParent
-        changeIn(['pages', targetPageIndex, 'steps', 0, 'blocks'], doc.createNode(blockList));
+        changeIn(
+          ['pages', targetPageIndex, 'steps', selectedSubParent, 'blocks'],
+          doc.createNode(blockList),
+        );
       } else {
-        changeIn(['pages', targetPageIndex, 'tabs', 0, 'blocks'], doc.createNode(blockList));
+        changeIn(
+          ['pages', targetPageIndex, 'tabs', selectedSubParent, 'blocks'],
+          doc.createNode(blockList),
+        );
       }
     } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
@@ -267,11 +274,15 @@ export function ElementsList({
                           : ''
                       }`}
                     >
-                      {block.type === 'flow'
-                        ? (docRef.current.toJS().pages[block.parent].steps[block.subParent]
-                            .name as string)
-                        : (docRef.current.toJS().pages[block.parent].tabs[block.subParent]
-                            .name as string)}
+                      {
+                        docRef.current.getIn([
+                          'pages',
+                          block.parent,
+                          block.type === 'flow' ? 'steps' : 'tabs',
+                          block.subParent,
+                          'name',
+                        ]) as string
+                      }
                       {blocks.some(
                         (blockItem) =>
                           blockItem.parent === pageIndex && blockItem.subParent === block.subParent,
