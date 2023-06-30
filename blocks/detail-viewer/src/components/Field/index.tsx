@@ -4,11 +4,13 @@ import { type Field as FieldType, type RendererProps } from '../../../block.js';
 import { FileRenderer } from '../FileRenderer/index.js';
 import { GeoCoordinatesRenderer } from '../GeoCoordinatesRenderer/index.js';
 import { StringRenderer } from '../StringRenderer/index.js';
+import { VideoRenderer } from '../VideoRenderer/index.js';
 
 const renderers = {
   file: FileRenderer,
   geocoordinates: GeoCoordinatesRenderer,
   string: StringRenderer,
+  video: VideoRenderer,
 };
 
 /**
