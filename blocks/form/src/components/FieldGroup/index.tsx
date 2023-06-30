@@ -1,6 +1,8 @@
+import classNames from 'classnames';
 import { type ComponentChildren, type VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
+import styles from './index.module.css';
 import { type Field, type FieldErrorMap, type Values } from '../../../block.js';
 import { getValueByNameSequence } from '../../utils/getNested.js';
 import { FormInput } from '../FormInput/index.js';
@@ -59,15 +61,19 @@ export function FieldGroup({
     [name, onChange, formValues],
   );
 
-  return fields.map((f) => (
-    <FormInput
-      disabled={disabled}
-      error={errors?.[f.name]}
-      field={f}
-      formValues={formValues}
-      key={f.name}
-      name={name ? `${name}.${f.name}` : f.name}
-      onChange={handleChange}
-    />
-  )) as ComponentChildren as VNode;
+  return (
+    <div className={classNames({ [styles.wrapper]: fields.some((f: any) => f?.inline) })}>
+      {fields.map((f) => (
+        <FormInput
+          disabled={disabled}
+          error={errors?.[f.name]}
+          field={f}
+          formValues={formValues}
+          key={f.name}
+          name={name ? `${name}.${f.name}` : f.name}
+          onChange={handleChange}
+        />
+      ))}
+    </div>
+  ) as ComponentChildren as VNode;
 }
