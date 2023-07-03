@@ -1,4 +1,10 @@
-import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
+import {
+  Button,
+  useBeforeUnload,
+  useData,
+  useMessages,
+  useMeta,
+} from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -146,6 +152,8 @@ export default function EditPage(): ReactElement {
       });
     }
   }, [app.id, coreStyle, formatMessage, index, push, saveStack, setApp, sharedStyle]);
+
+  useBeforeUnload(docRef.current !== saveStack[index]);
 
   useEffect(() => {
     updateAppPreview();

@@ -54,36 +54,6 @@ export function PagesTab({
     setDragOver(false);
   };
 
-  const getSelectedBlock = useCallback((): Document<ParsedNode> => {
-    const doc = docRef.current;
-    if (
-      !doc.getIn(['pages', selectedPage, 'type']) ||
-      doc.getIn(['pages', selectedPage, 'type']) === 'page'
-    ) {
-      return doc.getIn(['pages', selectedPage, 'blocks', selectedBlock]) as Document<ParsedNode>;
-    }
-    if (doc.getIn(['pages', selectedPage, 'type']) === 'flow') {
-      return doc.getIn([
-        'pages',
-        selectedPage,
-        'steps',
-        selectedSubParent >= 0 ? selectedSubParent : 0,
-        'blocks',
-        selectedBlock,
-      ]) as Document<ParsedNode>;
-    }
-    if (doc.getIn(['pages', selectedPage, 'type']) === 'tabs') {
-      return doc.getIn([
-        'pages',
-        selectedPage,
-        'tabs',
-        selectedSubParent >= 0 ? selectedSubParent : 0,
-        'blocks',
-        selectedBlock,
-      ]) as Document<ParsedNode>;
-    }
-  }, [docRef, selectedBlock, selectedPage, selectedSubParent]);
-
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
       setSelectedPage(page);
@@ -108,26 +78,75 @@ export function PagesTab({
     setSelectedPage(-1);
   }, [setEditPageView, setEditBlockView]);
 
+  const getPagesBlocks = (): YAMLSeq => {
+    const doc = docRef.current;
+    if (
+      !doc.getIn(['pages', selectedPage, 'type']) ||
+      doc.getIn(['pages', selectedPage, 'type']) === 'page'
+    ) {
+      return doc.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
+    }
+    return doc.getIn([
+      'pages',
+      selectedPage,
+      doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+      selectedSubParent >= 0 ? selectedSubParent : 0,
+      'blocks',
+    ]) as YAMLSeq;
+  };
+
+  const getBlockPath = useCallback((): unknown[] => {
+    const doc = docRef.current;
+    if (
+      !doc.getIn(['pages', selectedPage, 'type']) ||
+      doc.getIn(['pages', selectedPage, 'type']) === 'page'
+    ) {
+      return ['pages', selectedPage, 'blocks'];
+    }
+    if (doc.getIn(['pages', selectedPage, 'type']) === 'flow') {
+      return [
+        'pages',
+        selectedPage,
+        'steps',
+        selectedSubParent >= 0 ? selectedSubParent : 0,
+        'blocks',
+      ];
+    }
+    if (doc.getIn(['pages', selectedPage, 'type']) === 'tabs') {
+      return [
+        'pages',
+        selectedPage,
+        'tabs',
+        selectedSubParent >= 0 ? selectedSubParent : 0,
+        'blocks',
+      ];
+    }
+  }, [docRef, selectedPage, selectedSubParent]);
+
+  const getSelectedBlock = useCallback((): Document<ParsedNode> => {
+    const doc = docRef.current;
+    return doc.getIn([...getBlockPath(), selectedBlock]) as Document<ParsedNode>;
+  }, [docRef, getBlockPath, selectedBlock]);
+
   const addBlock = (nb: BlockDefinition): void => {
     const doc = docRef.current;
     const newBlockNode = doc.createNode(nb);
-    const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
+    const pageBlocks = getPagesBlocks();
     const newBlockIndex = pageBlocks.items.length;
-    addIn(['pages', selectedPage, 'blocks'], newBlockNode);
+
+    addIn(getBlockPath(), newBlockNode);
+
     onChangePagesBlocks(selectedPage, 0, newBlockIndex);
   };
 
   const deleteBlock = (): void => {
-    deleteIn(['pages', selectedPage, 'blocks', selectedBlock]);
+    deleteIn([...getBlockPath(), selectedBlock]);
     onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
   };
 
   const changeProperty = (parameters: JsonObject): void => {
     const doc = docRef.current;
-    changeIn(
-      ['pages', selectedPage, 'blocks', selectedBlock, 'parameters'],
-      doc.createNode(parameters) as Node,
-    );
+    changeIn([...getBlockPath(), selectedBlock, 'parameters'], doc.createNode(parameters) as Node);
   };
 
   const changeBlockType = (blockType: BlockManifest): void => {
@@ -137,10 +156,7 @@ export function PagesTab({
       version: blockType.version,
       parameters: generateData(blockType.parameters.definitions, blockType.parameters),
     } as BlockDefinition;
-    changeIn(
-      ['pages', selectedPage, 'blocks', selectedBlock],
-      doc.createNode(newBlockType) as Node,
-    );
+    changeIn([...getBlockPath(), selectedBlock], doc.createNode(newBlockType) as Node);
   };
 
   const handleDrop = (): void => {
