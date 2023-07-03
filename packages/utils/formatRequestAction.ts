@@ -12,5 +12,6 @@ export function formatRequestAction(
     url: String(remap(action.url, data, context)),
     headers: {},
     params: remap(query, data, context),
+    responseType: 'arraybuffer',
   };
 }
