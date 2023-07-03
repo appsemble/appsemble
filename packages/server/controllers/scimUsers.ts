@@ -1,4 +1,4 @@
-import { scimAssert } from '@appsemble/node-utils';
+import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
 import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
@@ -23,7 +23,7 @@ function toScimUser(member: AppMember): ScimUser {
     timezone: member.User.timezone,
     locale: member.locale || member.User.locale,
     'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.User.TeamMembers?.length
-      ? { manager: member.User.TeamMembers[0].Team.name }
+      ? { manager: { value: member.User.TeamMembers[0].Team.name } }
       : undefined,
     meta: {
       created: member.created.toISOString(),
@@ -83,57 +83,61 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
     team = await Team.findOne({ where: { AppId: appId, name: managerId } });
   }
   const managerTeam = await Team.findOne({ where: { AppId: appId, name: externalId } });
-  await transactional(async (transaction) => {
-    const user = await User.create(
-      {
-        timezone,
-        locale,
-        name: formattedName,
-      },
-      { transaction },
-    );
+  try {
+    await transactional(async (transaction) => {
+      const user = await User.create(
+        {
+          timezone,
+          locale,
+          name: formattedName,
+        },
+        { transaction },
+      );
 
-    if (managerId) {
-      if (!team) {
-        team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+      if (managerId) {
+        if (!team) {
+          team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+        }
+        const teamMember = await TeamMember.create(
+          {
+            TeamId: team.id,
+            UserId: user.id,
+            role: 'member',
+          },
+          { transaction },
+        );
+        teamMember.Team = team;
+        user.TeamMembers = [teamMember];
       }
-      const teamMember = await TeamMember.create(
+
+      if (managerTeam) {
+        await TeamMember.create(
+          {
+            TeamId: managerTeam.id,
+            UserId: user.id,
+            role: 'manager',
+          },
+          { transaction },
+        );
+      }
+
+      member = await AppMember.create(
         {
-          TeamId: team.id,
           UserId: user.id,
-          role: 'member',
+          AppId: appId,
+          role: 'User',
+          email: userName,
+          name: formattedName,
+          scimExternalId: externalId,
         },
         { transaction },
       );
-      teamMember.Team = team;
-      user.TeamMembers = [teamMember];
-    }
 
-    if (managerTeam) {
-      await TeamMember.create(
-        {
-          TeamId: managerTeam.id,
-          UserId: user.id,
-          role: 'manager',
-        },
-        { transaction },
-      );
-    }
-
-    member = await AppMember.create(
-      {
-        UserId: user.id,
-        AppId: appId,
-        role: 'User',
-        email: userName,
-        name: formattedName,
-        scimExternalId: externalId,
-      },
-      { transaction },
-    );
-
-    member.User = user;
-  });
+      member.User = user;
+    });
+  } catch {
+    throw new SCIMError(409, 'Conflict');
+  }
 
   ctx.body = toScimUser(member);
 }
@@ -392,7 +396,11 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     } else if (lower === 'username') {
       member.email = value;
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
-      managerId = value as string;
+      if (!value || typeof value === 'string') {
+        managerId = value;
+      } else if (typeof value === 'object') {
+        managerId = getCaseInsensitive(value, 'value') as string;
+      }
     } else {
       ctx.throw(`Unknown path: ${path}`, 400);
     }
@@ -405,8 +413,14 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       'Expected operation to be an object',
     );
 
-    const op = getCaseInsensitive(operation, 'op');
-    scimAssert(op === 'replace', 400, 'Only replace operations are supported');
+    let op = getCaseInsensitive(operation, 'op');
+    scimAssert(typeof op === 'string', 400, 'Only add and replace operations are supported');
+    op = op.toLowerCase();
+    scimAssert(
+      op === 'add' || op === 'replace',
+      400,
+      'Only add and replace operations are supported',
+    );
 
     const value = getCaseInsensitive(operation, 'value');
     if (typeof value === 'string') {

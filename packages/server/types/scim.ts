@@ -505,7 +505,7 @@ export interface ScimUser extends ScimResource {
   }[];
 
   'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
-    manager: string;
+    manager: string | { value: string };
   };
 
   // XXX There are more fields
