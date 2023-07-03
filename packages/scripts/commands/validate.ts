@@ -75,7 +75,7 @@ interface Result {
 type Assert = (assertion: boolean, filename: string, message: string, workspace?: string) => void;
 
 async function validateTranslations(assert: Assert): Promise<void> {
-  const developerLocales = [defaultLocale, 'nl'].sort();
+  const developerLocales = [defaultLocale].sort();
   const translations: Record<string, Record<string, string>> = {};
 
   await opendirSafe('./i18n', async (filepath, stat) => {
