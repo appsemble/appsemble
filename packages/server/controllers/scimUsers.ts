@@ -443,7 +443,14 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.save({ transaction }),
     ];
     if (managerId != null) {
-      const team = await Team.findOne({ where: { AppId: appId, name: managerId } });
+      let teamManager: string;
+      try {
+        teamManager = member.User.TeamMembers[0].Team.getDataValue("name");
+      } catch(error) {
+        // do nothing
+      }
+
+      const team = await Team.findOne({ where: { AppId: appId, name: teamManager || managerId } })
       if (managerId === '') {
         if (team) {
           promises.push(
@@ -455,6 +462,10 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
           if (!(await TeamMember.findOne({ where: { TeamId: team.id, UserId: member.User.id } }))) {
             promises.push(
               TeamMember.create({ TeamId: team.id, UserId: member.User.id }, { transaction }),
+            );
+          } else {
+            promises.push(
+              team.update({ name: managerId }, { transaction })
             );
           }
         } else {
