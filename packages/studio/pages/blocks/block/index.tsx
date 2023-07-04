@@ -60,7 +60,10 @@ export function BlockPage(): ReactElement {
     [navigate, url, urlVersion],
   );
 
-  const selectedBlockManifest = blockVersions?.find((block) => block.version === urlVersion);
+  const selectedBlockManifest =
+    urlVersion === undefined
+      ? blockVersions?.at(blockVersions?.length - 1)
+      : blockVersions?.find((block) => block.version === urlVersion);
 
   useMeta(`${organization}/${blockName}`, selectedBlockManifest?.description);
 
