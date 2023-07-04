@@ -10,7 +10,15 @@ import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
-import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
+import {
+  type Document,
+  type Node,
+  type ParsedNode,
+  parseDocument,
+  stringify,
+  type YAMLMap,
+  type YAMLSeq,
+} from 'yaml';
 
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
@@ -126,6 +134,35 @@ export default function EditPage(): ReactElement {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
   };
 
+  const getErrorMessage = useCallback(
+    (error: any): string => {
+      const definition = saveStack[index];
+      const empty = (definition.getIn(['pages']) as YAMLSeq).items.map((page: YAMLMap) => {
+        if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
+          return page.getIn(['blocks']) === 0;
+        }
+        if (page.getIn(['type']) === 'flow') {
+          return (page.getIn(['steps']) as YAMLSeq).items.flatMap(
+            (subPage: any) => subPage.getIn(['blocks']) === 0,
+          );
+        }
+        if (page.getIn(['type']) === 'tabs') {
+          return (page.getIn(['tabs']) as YAMLSeq).items.flatMap(
+            (subPage: any) => subPage.getIn(['blocks']) === 0,
+          );
+        }
+      });
+      if (empty) {
+        return 'A page must have at least one block';
+      }
+      if (definition.errors.length > 0) {
+        return 'A YAML error has occured';
+      }
+      return error;
+    },
+    [index, saveStack],
+  );
+
   const updateAppPreview = useCallback(() => {
     const definition = saveStack[index].toJS() as AppDefinition;
     delete definition.anchors;
@@ -146,12 +183,23 @@ export default function EditPage(): ReactElement {
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
     } catch (error: any) {
+      const message = getErrorMessage(error);
       push({
-        body: `${formatMessage(messages.failed)} ${error}`,
+        body: `${formatMessage(messages.failed)} ${message}`,
         color: 'danger',
       });
     }
-  }, [app.id, coreStyle, formatMessage, index, push, saveStack, setApp, sharedStyle]);
+  }, [
+    app.id,
+    coreStyle,
+    formatMessage,
+    getErrorMessage,
+    index,
+    push,
+    saveStack,
+    setApp,
+    sharedStyle,
+  ]);
 
   useBeforeUnload(docRef.current !== saveStack[index]);
 

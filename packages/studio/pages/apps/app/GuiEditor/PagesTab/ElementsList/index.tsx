@@ -118,7 +118,6 @@ export function ElementsList({
       ) {
         changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(blockList));
       } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
-        // TODO: change subParent index (0) to match actual subParent
         changeIn(
           ['pages', targetPageIndex, 'steps', targetSubPageIndex, 'blocks'],
           doc.createNode(blockList),

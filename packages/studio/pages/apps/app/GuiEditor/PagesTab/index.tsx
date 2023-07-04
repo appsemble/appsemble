@@ -137,10 +137,15 @@ export function PagesTab({
     onChangePagesBlocks(selectedPage, selectedSubParent, newBlockIndex);
   };
 
-  const deleteBlock = (): void => {
+  const deleteBlock = useCallback(() => {
     deleteIn([...getBlockPath(), selectedBlock]);
     onChangePagesBlocks(selectedPage, selectedSubParent, selectedBlock - 1);
-  };
+  }, [deleteIn, getBlockPath, onChangePagesBlocks, selectedBlock, selectedPage, selectedSubParent]);
+
+  const deletePage = useCallback(() => {
+    deleteIn(['pages', selectedPage]);
+    onChangePagesBlocks(selectedPage - 1, selectedSubParent, selectedBlock);
+  }, [deleteIn, onChangePagesBlocks, selectedBlock, selectedPage, selectedSubParent]);
 
   const changeProperty = (parameters: JsonObject): void => {
     const doc = docRef.current;
@@ -201,7 +206,7 @@ export function PagesTab({
             <PageProperty
               addIn={addIn}
               changeIn={changeIn}
-              deleteIn={deleteIn}
+              deletePage={deletePage}
               docRef={docRef}
               selectedPage={selectedPage}
             />

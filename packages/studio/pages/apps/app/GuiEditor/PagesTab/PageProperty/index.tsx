@@ -14,7 +14,7 @@ import { InputString } from '../../Components/InputString/index.js';
 interface PagePropertyProps {
   addIn: (path: Iterable<unknown>, value: Node) => void;
   changeIn: (path: Iterable<unknown>, value: Node) => void;
-  deleteIn: (path: Iterable<unknown>) => void;
+  deletePage: () => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
 }
@@ -23,7 +23,7 @@ const pageTypes = ['page', 'flow', 'tabs'] as const;
 export function PageProperty({
   addIn,
   changeIn,
-  deleteIn,
+  deletePage,
   docRef,
   selectedPage,
 }: PagePropertyProps): ReactElement {
@@ -92,15 +92,13 @@ export function PageProperty({
     }
   }, [addIn, changeIn, currentPageName, currentPageType, docRef, push, selectedPage]);
 
-  const onDeletePage = useCallback(() => {
-    deleteIn(['pages', selectedPage]);
-  }, [deleteIn, selectedPage]);
-
   return (
     <div>
-      <Button className="is-danger" component="a" icon="trash" onClick={() => onDeletePage()}>
-        Delete Page
-      </Button>
+      {selectedPage !== -1 && (
+        <Button className="is-danger" component="a" icon="trash" onClick={() => deletePage()}>
+          Delete Page
+        </Button>
+      )}
       <InputString label="Name" onChange={onChangePageName} value={currentPageName} />
       <InputList
         label="Type"
