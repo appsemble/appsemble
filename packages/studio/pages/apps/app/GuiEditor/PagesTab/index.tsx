@@ -133,15 +133,13 @@ export function PagesTab({
     const newBlockNode = doc.createNode(nb);
     const pageBlocks = getPagesBlocks();
     const newBlockIndex = pageBlocks.items.length;
-
     addIn(getBlockPath(), newBlockNode);
-
-    onChangePagesBlocks(selectedPage, 0, newBlockIndex);
+    onChangePagesBlocks(selectedPage, selectedSubParent, newBlockIndex);
   };
 
   const deleteBlock = (): void => {
     deleteIn([...getBlockPath(), selectedBlock]);
-    onChangePagesBlocks(selectedPage, 0, selectedBlock - 1);
+    onChangePagesBlocks(selectedPage, selectedSubParent, selectedBlock - 1);
   };
 
   const changeProperty = (parameters: JsonObject): void => {

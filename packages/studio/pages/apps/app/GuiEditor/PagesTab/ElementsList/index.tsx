@@ -42,7 +42,7 @@ export function ElementsList({
     docRef.current.getIn(['pages']) as YAMLSeq
   ).items.flatMap((page: YAMLMap, pageIndex: number) => {
     if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
-      return page.items.map((block: any, blockIndex: number) => ({
+      return (page.getIn(['blocks']) as YAMLSeq).items.map((block: any, blockIndex: number) => ({
         type: 'page',
         parent: pageIndex,
         subParent: -1,
@@ -100,7 +100,12 @@ export function ElementsList({
     setDragPageIndex(pageIndex);
   };
 
-  const handleDrop = (e: DragEvent, targetIndex: number, targetPageIndex: number): void => {
+  const handleDrop = (
+    e: DragEvent,
+    targetIndex: number,
+    targetPageIndex: number,
+    targetSubPageIndex?: number,
+  ): void => {
     const doc = docRef.current;
     if (targetPageIndex === dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
@@ -115,12 +120,12 @@ export function ElementsList({
       } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
         // TODO: change subParent index (0) to match actual subParent
         changeIn(
-          ['pages', targetPageIndex, 'steps', selectedSubParent, 'blocks'],
+          ['pages', targetPageIndex, 'steps', targetSubPageIndex, 'blocks'],
           doc.createNode(blockList),
         );
       } else {
         changeIn(
-          ['pages', targetPageIndex, 'tabs', selectedSubParent, 'blocks'],
+          ['pages', targetPageIndex, 'tabs', targetSubPageIndex, 'blocks'],
           doc.createNode(blockList),
         );
       }
@@ -263,6 +268,12 @@ export function ElementsList({
                           ? 'is-info'
                           : ''
                       }`}
+                      draggable
+                      key={block.block}
+                      onClick={() => onSelectBlock(block.parent, block.subParent, block.block)}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+                      onDrop={(e) => handleDrop(e, block.block, pageIndex, block.subParent)}
                     >
                       {
                         docRef.current.getIn([
@@ -305,9 +316,15 @@ export function ElementsList({
                                   ? 'is-link'
                                   : ''
                               }`}
+                              draggable
                               key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
                               onClick={() =>
                                 onSelectBlock(subBlock.parent, subBlock.subParent, subBlock.block)
+                              }
+                              onDragOver={(e) => e.preventDefault()}
+                              onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+                              onDrop={(e) =>
+                                handleDrop(e, subBlock.block, pageIndex, subBlock.subParent)
                               }
                             >
                               {subBlock.type === 'flow'
