@@ -187,7 +187,9 @@ describe('createSCIMUser', () => {
         ],
         "timezone": "Europe/Amsterdam",
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-          "manager": "krbs",
+          "manager": {
+            "value": "krbs",
+          },
         },
         "userName": "spongebob@krustykrab.example",
       }
@@ -261,7 +263,9 @@ describe('createSCIMUser', () => {
         ],
         "timezone": "Europe/Amsterdam",
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-          "manager": "krbs",
+          "manager": {
+            "value": "krbs",
+          },
         },
         "userName": "spongebob@krustykrab.example",
       }
@@ -429,7 +433,9 @@ describe('getSCIMUser', () => {
         ],
         "timezone": "Europe/Amsterdam",
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-          "manager": "krbs",
+          "manager": {
+            "value": "krbs",
+          },
         },
       }
     `,
@@ -471,7 +477,7 @@ describe('getSCIMUsers', () => {
             "timezone": "Europe/Amsterdam",
           },
         ],
-        "itemsPerPage": 50,
+        "itemsPerPage": 1,
         "schemas": [
           "urn:ietf:params:scim:api:messages:2.0:ListResponse",
         ],
@@ -514,11 +520,13 @@ describe('getSCIMUsers', () => {
             ],
             "timezone": "Europe/Amsterdam",
             "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-              "manager": "krbs",
+              "manager": {
+                "value": "krbs",
+              },
             },
           },
         ],
-        "itemsPerPage": 50,
+        "itemsPerPage": 1,
         "schemas": [
           "urn:ietf:params:scim:api:messages:2.0:ListResponse",
         ],
@@ -527,6 +535,78 @@ describe('getSCIMUsers', () => {
       }
     `,
     );
+  });
+
+  it('should return a SCIM user based on querying their username', async () => {
+    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+      email: 'example@hotmail.com',
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/scim/Users?filter=uSeRnAmE Eq "eXaMpLe@HoTmAIl.CoM"`,
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { Resources: [{ id: expect.any(String), meta: { location: expect.any(String) } }] } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/scim+json
+
+      {
+        "Resources": [
+          {
+            "externalId": null,
+            "id": Any<String>,
+            "locale": null,
+            "meta": {
+              "created": "2000-01-01T00:00:00.000Z",
+              "lastModified": "2000-01-01T00:00:00.000Z",
+              "location": Any<String>,
+              "resourceType": "User",
+            },
+            "schemas": [
+              "urn:ietf:params:scim:schemas:core:2.0:User",
+              "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+            ],
+            "timezone": "Europe/Amsterdam",
+            "userName": "example@hotmail.com",
+          },
+        ],
+        "itemsPerPage": 1,
+        "schemas": [
+          "urn:ietf:params:scim:api:messages:2.0:ListResponse",
+        ],
+        "startIndex": 1,
+        "totalResults": 1,
+      }
+    `,
+    );
+  });
+
+  it('should return empty resources when user is not found', async () => {
+    const user = await User.create({ timezone: 'Europe/Amsterdam' });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+
+    const response = await request.get(`/api/apps/${app.id}/scim/Users?filter=uSeRnAmE eQ ""`);
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/scim+json
+
+      {
+        "Resources": [],
+        "itemsPerPage": 0,
+        "schemas": [
+          "urn:ietf:params:scim:api:messages:2.0:ListResponse",
+        ],
+        "startIndex": 1,
+        "totalResults": 0,
+      }
+    `);
   });
 });
 

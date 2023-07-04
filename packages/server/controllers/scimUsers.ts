@@ -1,5 +1,6 @@
 import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { ModelAttributes, type WhereOptions } from 'sequelize';
 
 import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
 import { type ScimUser } from '../types/scim.js';
@@ -185,61 +186,82 @@ export async function deleteSCIMUser(ctx: Context): Promise<void> {
 export async function getSCIMUsers(ctx: Context): Promise<void> {
   const {
     pathParams: { appId },
-    queryParams: { count = 50, startIndex = 1 },
+    queryParams: { count = 50, filter, startIndex = 1 },
   } = ctx;
 
-  const members = await AppMember.findAll({
-    limit: count,
-    offset: startIndex - 1,
-    where: { AppId: appId },
-    include: [
-      {
-        model: User,
-        include: [
-          {
-            model: TeamMember,
-            where: { role: 'member' },
-            required: false,
-            include: [
-              {
-                model: Team,
-                where: { AppId: appId },
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
-  const totalResults = await AppMember.count({
-    where: { AppId: appId },
-    include: [
-      {
-        model: User,
-        include: [
-          {
-            model: TeamMember,
-            where: { role: 'member' },
-            required: false,
-            include: [
-              {
-                model: Team,
-                where: { AppId: appId },
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  });
+  interface QueryFilter {
+    target: string;
+    operator: string;
+    value: string;
+  }
+
+  const include = [
+    {
+      model: User,
+      include: [
+        {
+          model: TeamMember,
+          where: { role: 'member' },
+          required: false,
+          include: [
+            {
+              model: Team,
+              where: { AppId: appId },
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  async function getUserResources(queryFilter: string): Promise<{
+    count: number,
+    rows: AppMember[]
+  }> {
+    const filter: QueryFilter = {
+      target: String(queryFilter.split(' ')[0].toLowerCase()),
+      operator: queryFilter.split(' ')[1].toLowerCase(),
+      value: queryFilter.split('"')[1],
+    };
+    const whereClause: WhereOptions<any> = {};
+
+    if (filter.target === 'username') {
+      whereClause.email = filter.value;
+    }
+
+    if (Object.keys(whereClause).length > 0) {
+      whereClause.AppId = appId;
+
+      const members = await AppMember.findAndCountAll({
+        limit: count,
+        offset: startIndex - 1,
+        where: whereClause,
+        include
+      })
+      return members;
+    }
+
+    return { count: 0, rows: [] };
+  }
+
+  const members = filter
+    ? await getUserResources(filter)
+    : await AppMember.findAndCountAll({
+        limit: count,
+        offset: startIndex - 1,
+        where: { AppId: appId },
+        include,
+      });
 
   ctx.body = {
     schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
-    totalResults,
+    totalResults: members.count,
     startIndex,
-    itemsPerPage: count,
-    Resources: members.map(toScimUser),
+    itemsPerPage: members.rows.length,
+    Resources: members.rows.map(toScimUser),
   };
+
+  console.log(ctx.body)
 }
 
 export async function updateSCIMUser(ctx: Context): Promise<void> {
