@@ -5,7 +5,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
@@ -127,7 +127,7 @@ export default function EditPage(): ReactElement {
   };
 
   const updateAppPreview = useCallback(() => {
-    const definition = saveStack[index].toJS();
+    const definition = saveStack[index].toJS() as AppDefinition;
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
       { type: 'editor/gui/EDIT_SUCCESS', definition, coreStyle, sharedStyle },
@@ -211,6 +211,7 @@ export default function EditPage(): ReactElement {
             changeIn={changeIn}
             deleteIn={deleteIn}
             docRef={docRef}
+            frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
           />
@@ -234,6 +235,7 @@ export default function EditPage(): ReactElement {
             changeIn={changeIn}
             deleteIn={deleteIn}
             docRef={docRef}
+            frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
           />

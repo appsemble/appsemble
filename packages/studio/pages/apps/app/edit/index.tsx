@@ -66,9 +66,7 @@ export default function EditPage(): ReactElement {
 
   const onSave = useCallback(async () => {
     const definition = parse(appDefinition) as AppDefinition;
-
     const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
-
     // YAML and schema appear to be valid, send it to the app preview iframe
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(

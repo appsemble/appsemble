@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type MutableRefObject, type ReactElement, useCallback, useRef, useState } from 'react';
+import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode } from 'yaml';
 
@@ -15,6 +15,7 @@ interface ThemeTabProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
   deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
+  frameRef: Ref<HTMLIFrameElement>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
@@ -22,12 +23,12 @@ export function ThemeTab({
   changeIn,
   deleteIn,
   docRef,
+  frameRef,
   isOpenLeft,
   isOpenRight,
 }: ThemeTabProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
-  const frame = useRef<HTMLIFrameElement>();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -64,7 +65,7 @@ export function ThemeTab({
         </>
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frame} />
+        <Preview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
