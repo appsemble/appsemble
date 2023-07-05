@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Snapshots',
+  title: {
+    id: 'studio.4y3rEL',
+    defaultMessage: 'Snapshots',
+  },
 });

@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  iconAlt: 'Appsemble logo',
-  login: 'Login',
+  iconAlt: {
+    id: 'studio.J0xFmK',
+    defaultMessage: 'Appsemble logo',
+  },
+  login: {
+    id: 'studio.AyGauy',
+    defaultMessage: 'Login',
+  },
 });

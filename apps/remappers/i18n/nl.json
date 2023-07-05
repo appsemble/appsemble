@@ -5,10 +5,14 @@
     "description": "Deze app bevat elke Remapper die op het moment in Appsemble zit vanaf (0.20.40)",
     "name": "Remappers",
     "pages.arrays": "Arrays",
+    "pages.conditionals": "Condities",
     "pages.data": "Data",
+    "pages.dates": "Datums",
     "pages.history": "History",
     "pages.introduction": "Introductie",
-    "pages.objects": "Objects",
+    "pages.objects": "Objecten",
+    "pages.other": "Overig",
+    "pages.randomness": "Willekeurigheid",
     "pages.strings": "Strings"
   },
   "messageIds": {

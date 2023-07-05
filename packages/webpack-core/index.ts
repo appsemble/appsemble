@@ -199,15 +199,6 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           ],
         },
         {
-          test: /[/\\]messages\.ts$/,
-          loader: 'babel-loader',
-          options: {
-            plugins: [
-              ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/' }],
-            ],
-          },
-        },
-        {
           test: /\.tsx?$/,
           loader: 'ts-loader',
           options: {

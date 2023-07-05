@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Error',
-  message: 'An unexpected error has occurred.',
+  title: {
+    id: 'react-components.KN7zKn',
+    defaultMessage: 'Error',
+  },
+  message: {
+    id: 'react-components.OJpqEr',
+    defaultMessage: 'An unexpected error has occurred.',
+  },
 });

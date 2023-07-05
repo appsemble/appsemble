@@ -20,6 +20,7 @@
     "return[^;]*"
   ],
   "ignoreWords": [
+    "domcontentloaded",
     "viewports",
     "msedge",
     "enableTime",
@@ -76,7 +77,6 @@
     "appmembers",
     "appnotifications",
     "appratings",
-    "babelignore",
     "proxying",
     "bulmahandler",
     "dvcm",

@@ -30,8 +30,7 @@ interface CreateSamlResponseOptions {
 /**
  * Create SAML response object for testing.
  *
- * The response was generated using `flask-saml2`. The response was then converted to hyperscript
- * using Babel.
+ * The response was generated using `flask-saml2`.
  *
  * @param options Options for the SAML response
  * @returns the base64 encoded SAML response object.

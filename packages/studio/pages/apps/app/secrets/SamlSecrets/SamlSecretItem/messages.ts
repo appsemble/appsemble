@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  certificateUploaded: 'Certificate uploaded',
+  certificateUploaded: {
+    id: 'studio.U5QCQI',
+    defaultMessage: 'Certificate uploaded',
+  },
 });

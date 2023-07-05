@@ -34,7 +34,6 @@
     "@types/hast": "^2.0.0",
     "@types/mdast": "^3.0.0",
     "@types/unused-webpack-plugin": "^2.0.0",
-    "babel-loader": "^9.0.0",
     "bulma": "0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",

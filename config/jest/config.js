@@ -37,11 +37,6 @@ export function createJestConfig({ url }) {
     setupFilesAfterEnv.push('@testing-library/jest-dom');
   }
 
-  // Handle messages.ts files using Babel if babel-plugin-react-intl-auto is enabled.
-  if (types.includes('babel-plugin-react-intl-auto')) {
-    transform[/\/[A-Z]\w+\/messages\.ts$/.source] = 'babel-jest';
-  }
-
   if ('jest-axios-snapshot' in dependencies) {
     snapshotSerializers.push('jest-axios-snapshot');
   }

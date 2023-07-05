@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  dismiss: 'Dismiss message',
+  dismiss: {
+    id: 'react-components.irMoe1',
+    defaultMessage: 'Dismiss message',
+  },
 });

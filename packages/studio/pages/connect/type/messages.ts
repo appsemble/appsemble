@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  error: 'An error has occurred.',
+  error: {
+    id: 'studio.IkprVS',
+    defaultMessage: 'An error has occurred.',
+  },
 });

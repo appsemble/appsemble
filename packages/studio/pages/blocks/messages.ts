@@ -1,6 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Blocks',
-  description: 'Browse all blocks that are available within Appsemble',
+  title: {
+    id: 'studio.+im1ZA',
+    defaultMessage: 'Blocks',
+  },
+  description: {
+    id: 'studio.Z/h2/C',
+    defaultMessage: 'Browse all blocks that are available within Appsemble',
+  },
 });

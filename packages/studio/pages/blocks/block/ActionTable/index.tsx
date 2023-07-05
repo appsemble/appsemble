@@ -3,8 +3,6 @@ import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
 import { type ReactElement } from 'react';
 
-import { messages } from './messages.js';
-
 interface ActionTableProps {
   /**
    * The block manifest to use for displaying the available actions.
@@ -20,15 +18,15 @@ export function ActionTable({ manifest }: ActionTableProps): ReactElement {
     <Table>
       <thead>
         <tr>
-          <th>{messages.name}</th>
-          <th>{messages.required}</th>
-          <th>{messages.description}</th>
+          <th>Name</th>
+          <th>Required</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody lang={defaultLocale}>
         {Object.entries(manifest.actions).map(([key, value]) => (
           <tr key={key}>
-            <td>{key === '$any' ? messages.anyAction : key}</td>
+            <td>{key === '$any' ? '[Any custom name]' : key}</td>
             <td>{value.required ? <Icon className="has-text-success" icon="check" /> : null}</td>
             <td>{value.description}</td>
           </tr>
