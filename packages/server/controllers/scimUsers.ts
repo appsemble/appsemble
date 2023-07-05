@@ -282,8 +282,6 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
     itemsPerPage: members.rows.length,
     Resources: members.rows.map(toScimUser),
   };
-
-  console.log(ctx.body)
 }
 
 export async function updateSCIMUser(ctx: Context): Promise<void> {
