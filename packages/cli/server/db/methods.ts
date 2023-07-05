@@ -48,26 +48,58 @@ function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): b
   }
 
   if (subQuery.eq) {
-    return entity[key as keyof M] === subQuery.eq;
+    const value = entity[key as keyof M];
+    switch (subQuery.eq) {
+      case 'false':
+        return value === false;
+      case 'true':
+        return value === true;
+      default:
+        return value === subQuery.eq;
+    }
   }
 
   if (subQuery.ne) {
-    return entity[key as keyof M] !== subQuery.ne;
+    const value = entity[key as keyof M];
+    switch (subQuery.ne) {
+      case 'false':
+        return value !== false;
+      case 'true':
+        return value !== true;
+      default:
+        return value !== subQuery.ne;
+    }
   }
 
   return entity[key as keyof M] === subQuery;
 }
 
 function applyWhere<M>(entity: M, where: Record<string, any>): boolean {
-  return Object.keys(where).every((key) => {
-    const { and, or } = where[key];
+  const { and, or } = where;
 
-    if (or && Array.isArray(or)) {
-      return or.some((subQuery) => applyQuery(entity, key, subQuery));
+  if (or && Array.isArray(or)) {
+    return or.some((subQuery) => {
+      const [key, value] = Object.entries(subQuery)[0];
+      return applyQuery(entity, key, value);
+    });
+  }
+
+  if (and && Array.isArray(and)) {
+    return and.every((subQuery) => {
+      const [key, value] = Object.entries(subQuery)[0];
+      return applyQuery(entity, key, value);
+    });
+  }
+
+  return Object.keys(where).every((key) => {
+    const { and: nestedAnd, or: nestedOr } = where[key];
+
+    if (nestedOr && Array.isArray(nestedOr)) {
+      return nestedOr.some((subQuery) => applyQuery(entity, key, subQuery));
     }
 
-    if (and && Array.isArray(and)) {
-      return and.every((subQuery) => applyQuery(entity, key, subQuery));
+    if (nestedAnd && Array.isArray(nestedAnd)) {
+      return nestedAnd.every((subQuery) => applyQuery(entity, key, subQuery));
     }
 
     return applyQuery(entity, key, where[key]);
