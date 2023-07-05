@@ -37,6 +37,7 @@ bootstrap(
     let player: Vimeo;
     let playerDiv: HTMLDivElement;
     let iframe: HTMLIFrameElement;
+    let videoPlayer: HTMLVideoElement;
     let currentUrl: string;
     let finished = false;
     const onFinish = (): void => {
@@ -56,19 +57,21 @@ bootstrap(
 
     const setupError = (): void => {
       player?.destroy();
-      iframe?.remove();
       playerDiv?.remove();
+      iframe?.remove();
+      videoPlayer?.remove();
+
       shadowRoot.append(errorNode);
     };
 
     const setupPlayer = (newURL: string): void => {
-      const isVimeo = vimeoRegex.test(newURL);
-      const isYoutube = youtubeRegex.test(newURL);
-
-      if (!isVimeo && !isYoutube) {
+      if (!newURL) {
         setupError();
         return;
       }
+
+      const isVimeo = vimeoRegex.test(newURL);
+      const isYoutube = youtubeRegex.test(newURL);
 
       const newPlayerDiv = document.createElement('div');
       newPlayerDiv.className = styles.container;
@@ -87,8 +90,9 @@ bootstrap(
       }
 
       playerDiv?.remove();
-      player?.destroy();
       iframe?.remove();
+      videoPlayer?.remove();
+      player?.destroy();
 
       playerDiv = newPlayerDiv;
       shadowRoot.append(playerDiv);
@@ -137,16 +141,19 @@ bootstrap(
         iframe.allowFullscreen = true;
         iframe.allow = autoplay ? 'autoplay' : '';
         iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+      } else {
+        videoPlayer = document.createElement('video');
+
+        playerDiv.append(videoPlayer);
+        videoPlayer.controls = true;
+
+        videoPlayer.src = /^(https?:)?\/\//.test(newURL) ? newURL : utils.asset(newURL);
       }
     };
 
     const hasEvent = events.on.onVideo((d) => {
-      if (typeof d !== 'string') {
-        setupError();
-        return;
-      }
-
-      setupPlayer(d);
+      const id = utils.remap(url, d) as string;
+      setupPlayer(id);
     });
 
     if (!hasEvent) {
