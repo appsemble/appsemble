@@ -21,26 +21,28 @@ export async function getAppBlockStyles({
 
   const [organisation, blockName] = parseBlockName(name);
 
-  if (existsSync(join(process.cwd(), 'blocks', blockName))) {
-    const blockConfig = blockConfigs.find((config) => config.name === name);
+  if (filename) {
+    let stylePath;
 
-    const stylePath = `${blockConfig.dir}/${blockConfig.output}/${filename}`;
+    if (existsSync(join(process.cwd(), 'blocks', blockName))) {
+      const blockConfig = blockConfigs.find((config) => config.name === name);
+      stylePath = `${blockConfig.dir}/${blockConfig.output}/${filename}`;
+    } else {
+      const cacheDir = await globalCacheDir('appsemble');
+      stylePath = join(
+        cacheDir,
+        'blocks',
+        organisation,
+        blockName,
+        block.version,
+        'assets',
+        filename,
+      );
+    }
 
-    const style = filename ? await processCss(stylePath) : null;
-    return [...(filename ? [{ style }] : [])];
+    const style = await processCss(stylePath);
+    return [{ style }];
   }
 
-  const cacheDir = await globalCacheDir('appsemble');
-  const stylePath = join(
-    cacheDir,
-    'blocks',
-    organisation,
-    blockName,
-    block.version,
-    'assets',
-    filename,
-  );
-
-  const style = filename ? await processCss(stylePath) : null;
-  return [...(filename ? [{ style }] : [])];
+  return [];
 }
