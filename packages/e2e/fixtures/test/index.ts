@@ -33,6 +33,10 @@ export const test = base.extend<Fixtures>({
     await use(async (redirect) => {
       const queryParams = new URLSearchParams({ redirect });
       await page.goto(`/en/login?${queryParams}`);
+
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
+
       await page.fill('#email', process.env.BOT_ACCOUNT_EMAIL);
       await page.fill('#password', process.env.BOT_ACCOUNT_PASSWORD);
       await page.click('[type="submit"]');
