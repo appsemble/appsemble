@@ -694,7 +694,7 @@ playwright:
   script:
     - yarn playwright install
     - yarn scripts wait-for-ssl
-    - yarn workspace @appsemble/e2e run e2e
+    - yarn e2e --max-failures 6
   artifacts:
     expose_as: Playwright videos
     when: always
