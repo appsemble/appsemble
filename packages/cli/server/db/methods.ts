@@ -47,7 +47,7 @@ function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): b
     return entity[key as keyof M] <= subQuery.lte;
   }
 
-  if (subQuery.eq) {
+  if (subQuery.eq || subQuery.eq === '') {
     const value = entity[key as keyof M];
     switch (subQuery.eq) {
       case 'false':
@@ -59,7 +59,7 @@ function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): b
     }
   }
 
-  if (subQuery.ne) {
+  if (subQuery.ne || subQuery.ne === '') {
     const value = entity[key as keyof M];
     switch (subQuery.ne) {
       case 'false':
