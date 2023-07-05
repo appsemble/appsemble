@@ -55,7 +55,7 @@ function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): b
       case 'true':
         return value === true;
       default:
-        return value === subQuery.eq;
+        return value === String(subQuery.eq);
     }
   }
 
@@ -67,28 +67,55 @@ function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): b
       case 'true':
         return value !== true;
       default:
-        return value !== subQuery.ne;
+        return value !== String(subQuery.ne);
     }
   }
 
   return entity[key as keyof M] === subQuery;
 }
 
-function applyWhere<M>(entity: M, where: Record<string, any>): boolean {
+function checkOr<M>(entity: M, or: Record<string, any>[]): boolean {
+  return or.some((subQuery) => {
+    const [key, value] = Object.entries(subQuery)[0];
+
+    if (key === 'and') {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return checkAnd(entity, value);
+    }
+
+    if (key === 'or') {
+      return checkOr(entity, value);
+    }
+
+    return applyQuery(entity, key, value);
+  });
+}
+
+function checkAnd<M>(entity: M, and: Record<string, any>[]): boolean {
+  return and.every((subQuery) => {
+    const [key, value] = Object.entries(subQuery)[0];
+
+    if (key === 'and') {
+      return checkAnd(entity, value);
+    }
+
+    if (key === 'or') {
+      return checkOr(entity, value);
+    }
+
+    return applyQuery(entity, key, value);
+  });
+}
+
+function checkWhere<M>(entity: M, where: Record<string, any>): boolean {
   const { and, or } = where;
 
   if (or && Array.isArray(or)) {
-    return or.some((subQuery) => {
-      const [key, value] = Object.entries(subQuery)[0];
-      return applyQuery(entity, key, value);
-    });
+    return checkOr(entity, or);
   }
 
   if (and && Array.isArray(and)) {
-    return and.every((subQuery) => {
-      const [key, value] = Object.entries(subQuery)[0];
-      return applyQuery(entity, key, value);
-    });
+    return checkAnd(entity, and);
   }
 
   return Object.keys(where).every((key) => {
@@ -107,11 +134,11 @@ function applyWhere<M>(entity: M, where: Record<string, any>): boolean {
 }
 
 function applyOr<M>(entities: M[], or: Record<string, any>[]): M[] {
-  return entities.filter((entity) => or.some((subQuery) => applyWhere(entity, subQuery)));
+  return entities.filter((entity) => or.some((subQuery) => checkWhere(entity, subQuery)));
 }
 
 function applyAnd<M>(entities: M[], and: Record<string, any>[]): M[] {
-  return entities.filter((entity) => and.every((subQuery) => applyWhere(entity, subQuery)));
+  return entities.filter((entity) => and.every((subQuery) => checkWhere(entity, subQuery)));
 }
 
 function applyAttributes<M>(entities: M[], attributes: string[]): M[] {
@@ -210,7 +237,7 @@ export const Methods = {
         } else if (query.where.or) {
           filtered = applyOr(filtered, query.where.or);
         } else {
-          filtered = filtered.filter((entity) => applyWhere(entity, query.where));
+          filtered = filtered.filter((entity) => checkWhere(entity, query.where));
         }
       }
 
@@ -248,7 +275,7 @@ export const Methods = {
         } else if (query.where.or) {
           filtered = applyOr(filtered, query.where.or);
         } else {
-          filtered = filtered.filter((entity) => applyWhere(entity, query.where));
+          filtered = filtered.filter((entity) => checkWhere(entity, query.where));
         }
       }
 
