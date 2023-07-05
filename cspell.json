@@ -20,6 +20,7 @@
     "return[^;]*"
   ],
   "ignoreWords": [
+    "domcontentloaded",
     "viewports",
     "msedge",
     "enableTime",
