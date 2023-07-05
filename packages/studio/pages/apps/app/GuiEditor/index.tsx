@@ -201,6 +201,29 @@ export default function EditPage(): ReactElement {
     sharedStyle,
   ]);
 
+  const getUnsavedChanges = useCallback(() => {
+    const unsavedChanges: string[] = ['Unsaved changes:\n'];
+    const old = app.definition;
+    const cur = saveStack[index].toJS();
+    // General tab changes
+    if (old.name !== cur.name) {
+      unsavedChanges.push(`Name:  ${cur.name}\n`);
+    }
+    if (old.description !== cur.description) {
+      unsavedChanges.push(`Description: ${cur.description}\n`);
+    }
+    if (old.defaultPage !== cur.defaultPage) {
+      unsavedChanges.push(`Default page: ${cur.defaultPage}\n`);
+    }
+    // Pages tab changes
+
+    // Empty the array when there are no unsaved changes.
+    if (unsavedChanges.length === 1) {
+      unsavedChanges.pop();
+    }
+    return unsavedChanges.join('');
+  }, [app.definition, index, saveStack]);
+
   useBeforeUnload(docRef.current !== saveStack[index]);
 
   useEffect(() => {
@@ -239,7 +262,13 @@ export default function EditPage(): ReactElement {
           ))}
         </ul>
         <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={saveStack.length} />
-        <Button className="is-align-content-flex-end" icon="save" onClick={handleSave} />
+        <Button
+          className="is-align-content-flex-end"
+          disabled={getUnsavedChanges().length === 0}
+          icon="save"
+          onClick={handleSave}
+          title={getUnsavedChanges()}
+        />
         <div className={styles.panelTopRight}>
           <Button
             className="is-primary"
