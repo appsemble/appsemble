@@ -1,5 +1,5 @@
 export function debounce(cb: (...args: any) => void, delay = 1000): (...args: any) => void {
-  let timeout: number;
+  let timeout: ReturnType<typeof setTimeout>;
 
   return (...args) => {
     clearTimeout(timeout);
