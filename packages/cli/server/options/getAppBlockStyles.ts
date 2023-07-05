@@ -19,7 +19,7 @@ export async function getAppBlockStyles({
   const block = appBlocks.find((appBlock) => appBlock.name === name);
   const filename = block.files.find((file) => file.endsWith('.css'));
 
-  const [organisation, blockName] = parseBlockName(name);
+  const [organization, blockName] = parseBlockName(name);
 
   if (filename) {
     let stylePath;
@@ -32,7 +32,7 @@ export async function getAppBlockStyles({
       stylePath = join(
         cacheDir,
         'blocks',
-        organisation,
+        organization,
         blockName,
         block.version,
         'assets',
