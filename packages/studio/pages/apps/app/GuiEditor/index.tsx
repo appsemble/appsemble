@@ -215,7 +215,6 @@ export default function EditPage(): ReactElement {
     if (old.defaultPage !== cur.defaultPage) {
       unsavedChanges.push(`Default page: ${cur.defaultPage}\n`);
     }
-    // Pages tab changes
 
     // Empty the array when there are no unsaved changes.
     if (unsavedChanges.length === 1) {
@@ -264,7 +263,7 @@ export default function EditPage(): ReactElement {
         <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={saveStack.length} />
         <Button
           className="is-align-content-flex-end"
-          disabled={getUnsavedChanges().length === 0}
+          disabled={getUnsavedChanges().length < 0}
           icon="save"
           onClick={handleSave}
           title={getUnsavedChanges()}
