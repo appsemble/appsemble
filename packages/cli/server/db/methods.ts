@@ -22,123 +22,121 @@ export function setAppName(name: string): void {
   appName = name;
 }
 
-function applyQuery<M>(entity: M, key: string, subQuery: Record<string, any>): boolean {
-  if (subQuery == null && entity[key as keyof M] == null) {
+const comparators = ['gt', 'gte', 'lt', 'lte', 'eq', 'ne'] as const;
+type Comparator = (typeof comparators)[number];
+
+const expressions = ['and', 'or'] as const;
+type Expression = (typeof expressions)[number];
+
+function applyQuery<M>(
+  entity: M,
+  key: string,
+  query: Record<Comparator | Expression, unknown>,
+): boolean {
+  if (query == null && entity[key as keyof M] == null) {
     return true;
   }
 
-  if (subQuery === undefined && entity[key as keyof M] === undefined) {
+  if (query === undefined && entity[key as keyof M] === undefined) {
     return true;
   }
 
-  if (subQuery.gt) {
-    return entity[key as keyof M] > subQuery.gt;
+  if (query.or && Array.isArray(query.or)) {
+    return query.or.some((subQuery: Record<Comparator | string, any>) =>
+      applyQuery(entity, key, subQuery),
+    );
   }
 
-  if (subQuery.gte) {
-    return entity[key as keyof M] >= subQuery.gte;
+  if (query.and && Array.isArray(query.and)) {
+    return query.and.every((subQuery: Record<Comparator | string, any>) =>
+      applyQuery(entity, key, subQuery),
+    );
   }
 
-  if (subQuery.lt) {
-    return entity[key as keyof M] < subQuery.lt;
+  if (query.gt) {
+    return entity[key as keyof M] > query.gt;
   }
 
-  if (subQuery.lte) {
-    return entity[key as keyof M] <= subQuery.lte;
+  if (query.gte) {
+    return entity[key as keyof M] >= query.gte;
   }
 
-  if (subQuery.eq || subQuery.eq === '') {
+  if (query.lt) {
+    return entity[key as keyof M] < query.lt;
+  }
+
+  if (query.lte) {
+    return entity[key as keyof M] <= query.lte;
+  }
+
+  if (query.eq || query.eq === '') {
     const value = entity[key as keyof M];
-    switch (subQuery.eq) {
+    switch (query.eq) {
       case 'false':
         return value === false;
       case 'true':
         return value === true;
       default:
-        return value === String(subQuery.eq);
+        return value === String(query.eq);
     }
   }
 
-  if (subQuery.ne || subQuery.ne === '') {
+  if (query.ne || query.ne === '') {
     const value = entity[key as keyof M];
-    switch (subQuery.ne) {
+    switch (query.ne) {
       case 'false':
         return value !== false;
       case 'true':
         return value !== true;
       default:
-        return value !== String(subQuery.ne);
+        return value !== String(query.ne);
     }
   }
 
-  return entity[key as keyof M] === subQuery;
+  return entity[key as keyof M] === query;
 }
 
-function checkOr<M>(entity: M, or: Record<string, any>[]): boolean {
+function checkOr<M>(entity: M, or: Record<Expression | string, unknown>[]): boolean {
   return or.some((subQuery) => {
-    const [key, value] = Object.entries(subQuery)[0];
+    if (subQuery.or) {
+      return checkOr(entity, subQuery.or as []);
+    }
 
-    if (key === 'and') {
+    if (subQuery.and) {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      return checkAnd(entity, value);
+      return checkAnd(entity, subQuery.and as []);
     }
 
-    if (key === 'or') {
-      return checkOr(entity, value);
-    }
-
-    return applyQuery(entity, key, value);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return checkEntity(entity, subQuery);
   });
 }
 
-function checkAnd<M>(entity: M, and: Record<string, any>[]): boolean {
+function checkAnd<M>(entity: M, and: Record<Expression | string, unknown>[]): boolean {
   return and.every((subQuery) => {
-    const [key, value] = Object.entries(subQuery)[0];
-
-    if (key === 'and') {
-      return checkAnd(entity, value);
+    if (subQuery.or) {
+      return checkOr(entity, subQuery.or as []);
     }
 
-    if (key === 'or') {
-      return checkOr(entity, value);
+    if (subQuery.and) {
+      return checkAnd(entity, subQuery.and as []);
     }
 
-    return applyQuery(entity, key, value);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return checkEntity(entity, subQuery);
   });
 }
 
-function checkWhere<M>(entity: M, where: Record<string, any>): boolean {
-  const { and, or } = where;
-
-  if (or && Array.isArray(or)) {
-    return checkOr(entity, or);
+function checkEntity<M>(entity: M, query: Record<Expression | string, any>): boolean {
+  if (query.or && Array.isArray(query.or)) {
+    return checkOr(entity, query.or);
   }
 
-  if (and && Array.isArray(and)) {
-    return checkAnd(entity, and);
+  if (query.and && Array.isArray(query.and)) {
+    return checkAnd(entity, query.and);
   }
 
-  return Object.keys(where).every((key) => {
-    const { and: nestedAnd, or: nestedOr } = where[key];
-
-    if (nestedOr && Array.isArray(nestedOr)) {
-      return nestedOr.some((subQuery) => applyQuery(entity, key, subQuery));
-    }
-
-    if (nestedAnd && Array.isArray(nestedAnd)) {
-      return nestedAnd.every((subQuery) => applyQuery(entity, key, subQuery));
-    }
-
-    return applyQuery(entity, key, where[key]);
-  });
-}
-
-function applyOr<M>(entities: M[], or: Record<string, any>[]): M[] {
-  return entities.filter((entity) => or.some((subQuery) => checkWhere(entity, subQuery)));
-}
-
-function applyAnd<M>(entities: M[], and: Record<string, any>[]): M[] {
-  return entities.filter((entity) => and.every((subQuery) => checkWhere(entity, subQuery)));
+  return Object.entries(query).every(([key, value]) => applyQuery(entity, key, value));
 }
 
 function applyAttributes<M>(entities: M[], attributes: string[]): M[] {
@@ -232,13 +230,7 @@ export const Methods = {
       let filtered = mapped;
 
       if (query.where) {
-        if (query.where.and) {
-          filtered = applyAnd(filtered, query.where.and);
-        } else if (query.where.or) {
-          filtered = applyOr(filtered, query.where.or);
-        } else {
-          filtered = filtered.filter((entity) => checkWhere(entity, query.where));
-        }
+        filtered = filtered.filter((entity) => checkEntity(entity, query.where));
       }
 
       const sorted = filtered;
@@ -270,13 +262,7 @@ export const Methods = {
       let filtered = mapped;
 
       if (query.where) {
-        if (query.where.and) {
-          filtered = applyAnd(filtered, query.where.and);
-        } else if (query.where.or) {
-          filtered = applyOr(filtered, query.where.or);
-        } else {
-          filtered = filtered.filter((entity) => checkWhere(entity, query.where));
-        }
+        filtered = filtered.filter((entity) => checkEntity(entity, query.where));
       }
 
       const sorted = filtered;
