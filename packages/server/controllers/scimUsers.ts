@@ -14,6 +14,7 @@ function toScimUser(member: AppMember): ScimUser {
       'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
     ],
     userName: member.email ?? undefined,
+    active: member.scimActive,
     id: member.id,
     externalId: member.scimExternalId,
     name: member.name
@@ -46,6 +47,9 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
 
   const userName = getCaseInsensitive(body, 'username');
   scimAssert(typeof userName === 'string', 400, 'Expected userName to be string');
+
+  const active = getCaseInsensitive(body, 'active');
+  scimAssert(typeof active === 'boolean', 400, 'Expected active to be boolean');
 
   const name = getCaseInsensitive(body, 'name');
   scimAssert(name == null || typeof name === 'object', 400, 'Expected name to be an object');
@@ -296,6 +300,9 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
 
   const userName = getCaseInsensitive(body, 'username');
   scimAssert(typeof userName === 'string', 400, 'Expected userName to be string');
+
+  const active = getCaseInsensitive(body, 'active');
+  scimAssert(typeof active === 'boolean', 400, 'Expected active to be boolean');
 
   const name = getCaseInsensitive(body, 'name');
   scimAssert(name == null || typeof name === 'object', 400, 'Expected name to be an object');

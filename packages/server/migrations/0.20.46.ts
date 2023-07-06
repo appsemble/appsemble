@@ -26,6 +26,9 @@ export async function up(db: Sequelize): Promise<void> {
 
   logger.info('Adding column `scimExternalId` to `AppMember`');
   await queryInterface.addColumn('AppMember', 'scimExternalId', { type: DataTypes.STRING });
+
+  logger.info('Adding column `scimEnabled` to `AppMember`');
+  await queryInterface.addColumn('AppMember', 'scimEnabled', { type: DataTypes.BOOLEAN });
 }
 
 /**
@@ -47,4 +50,7 @@ export async function down(db: Sequelize): Promise<void> {
 
   logger.warn('Removing column `App`.`scimEnabled`');
   await queryInterface.removeColumn('App', 'scimEnabled');
+
+  logger.info('Removing column `scimEnabled`.`AppMember`');
+  await queryInterface.removeColumn('AppMember', 'scimEnabled');
 }

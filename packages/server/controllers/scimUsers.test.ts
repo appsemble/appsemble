@@ -41,6 +41,7 @@ describe('createSCIMUser', () => {
       ],
       ExTeRnAlId: 'spgb',
       UsErNaMe: 'spongebob@krustykrab.example',
+      active: true,
       MeTa: {
         ReSoUrCeTyPe: 'User',
       },
@@ -58,6 +59,7 @@ describe('createSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": "spgb",
         "id": Any<String>,
         "locale": "nl_NL",
@@ -104,6 +106,7 @@ describe('createSCIMUser', () => {
       ],
       uSeRnAmE: 'spongebob@krustykrab.example',
       eXtErNaLiD: 'spgb',
+      active: true,
       mEtA: {
         rEsOuRcEtYpE: 'User',
       },
@@ -116,6 +119,7 @@ describe('createSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": "spgb",
         "id": Any<String>,
         "locale": "en",
@@ -157,6 +161,7 @@ describe('createSCIMUser', () => {
       ],
       uSeRnAmE: 'spongebob@krustykrab.example',
       eXtErNaLiD: 'spgb',
+      active: true,
       mEtA: {
         rEsOuRcEtYpE: 'User',
       },
@@ -172,6 +177,7 @@ describe('createSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": "spgb",
         "id": Any<String>,
         "locale": "en",
@@ -233,6 +239,7 @@ describe('createSCIMUser', () => {
       ],
       uSeRnAmE: 'spongebob@krustykrab.example',
       eXtErNaLiD: 'spgb',
+      active: true,
       mEtA: {
         rEsOuRcEtYpE: 'User',
       },
@@ -248,6 +255,7 @@ describe('createSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": "spgb",
         "id": Any<String>,
         "locale": "en",
@@ -308,6 +316,7 @@ describe('createSCIMUser', () => {
         'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
       ],
       uSeRnAmE: 'krabs@krustykrab.example',
+      active: true,
       eXtErNaLiD: 'krbs',
       mEtA: {
         rEsOuRcEtYpE: 'User',
@@ -321,6 +330,7 @@ describe('createSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": "krbs",
         "id": Any<String>,
         "locale": "en",
@@ -412,6 +422,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -448,6 +459,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
+        "active": true,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -491,6 +503,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
+            "active": true,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -535,6 +548,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
+            "active": true,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -589,6 +603,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
+            "active": true,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -652,6 +667,7 @@ describe('updateSCIMUser', () => {
       ],
       ExTeRnAlId: 'ptrk',
       UsErNaMe: 'patrick@krustykrab.example',
+      active: true,
       MeTa: {
         ReSoUrCeTyPe: 'User',
       },
@@ -669,6 +685,7 @@ describe('updateSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "active": true,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",
@@ -739,6 +756,7 @@ describe('patchSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "active": true,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",
@@ -802,6 +820,7 @@ describe('patchSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
+        "active": true,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",
