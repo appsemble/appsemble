@@ -1,6 +1,6 @@
 import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
-import { ModelAttributes, type WhereOptions } from 'sequelize';
+import { col, fn, where, type WhereOptions } from 'sequelize';
 
 import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
 import { type ScimUser } from '../types/scim.js';
@@ -98,6 +98,20 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
       if (managerId) {
         if (!team) {
           team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+          const teamManager = await AppMember.findOne({
+            where: { AppId: appId, scimExternalId: team.name },
+          });
+
+          if (teamManager) {
+            await TeamMember.create(
+              {
+                TeamId: team.id,
+                UserId: teamManager.UserId,
+                role: 'manager',
+              },
+              { transaction },
+            );
+          }
         }
         const teamMember = await TeamMember.create(
           {
@@ -215,18 +229,25 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
   ];
 
   async function getUserResources(queryFilter: string): Promise<{
-    count: number,
-    rows: AppMember[]
+    count: number;
+    rows: AppMember[];
   }> {
-    const filter: QueryFilter = {
-      target: String(queryFilter.split(' ')[0].toLowerCase()),
-      operator: queryFilter.split(' ')[1].toLowerCase(),
-      value: queryFilter.split('"')[1],
+    const filterData: QueryFilter = {
+      target: (queryFilter.split(' ')[0] || '').toLowerCase(),
+      operator: (queryFilter.split(' ')[1] || '').toLowerCase(),
+      value: (queryFilter.split('"')[1] || '').toLowerCase(),
     };
     const whereClause: WhereOptions<any> = {};
 
-    if (filter.target === 'username') {
-      whereClause.email = filter.value;
+    if (filterData.operator !== 'eq') {
+      return { count: 0, rows: [] };
+    }
+
+    if (filterData.target === 'username') {
+      whereClause.email = where(fn('LOWER', col('email')), filterData.value);
+    }
+    if (filterData.target === 'externalid') {
+      whereClause.scimExternalId = filterData.value;
     }
 
     if (Object.keys(whereClause).length > 0) {
@@ -236,8 +257,8 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
         limit: count,
         offset: startIndex - 1,
         where: whereClause,
-        include
-      })
+        include,
+      });
       return members;
     }
 
@@ -467,12 +488,12 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     if (managerId != null) {
       let teamManager: string;
       try {
-        teamManager = member.User.TeamMembers[0].Team.getDataValue("name");
-      } catch(error) {
-        // do nothing
+        teamManager = member.User.TeamMembers[0].Team.getDataValue('name');
+      } catch {
+        // Do nothing
       }
 
-      const team = await Team.findOne({ where: { AppId: appId, name: teamManager || managerId } })
+      const team = await Team.findOne({ where: { AppId: appId, name: teamManager || managerId } });
       if (managerId === '') {
         if (team) {
           promises.push(
@@ -481,13 +502,11 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
         }
       } else {
         if (team) {
-          if (!(await TeamMember.findOne({ where: { TeamId: team.id, UserId: member.User.id } }))) {
-            promises.push(
-              TeamMember.create({ TeamId: team.id, UserId: member.User.id }, { transaction }),
-            );
+          if (await TeamMember.findOne({ where: { TeamId: team.id, UserId: member.User.id } })) {
+            promises.push(team.update({ name: managerId }, { transaction }));
           } else {
             promises.push(
-              team.update({ name: managerId }, { transaction })
+              TeamMember.create({ TeamId: team.id, UserId: member.User.id }, { transaction }),
             );
           }
         } else {

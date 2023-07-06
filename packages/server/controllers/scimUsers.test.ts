@@ -366,6 +366,36 @@ describe('createSCIMUser', () => {
       scimExternalId: 'krbs',
     });
   });
+
+  it('should assign manager to team that was created before their team’s creation, with the appropriate role', async () => {
+    const user = await User.create({ timezone: '' });
+    const appMember = await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      role: 'User',
+      scimExternalId: 'krbs',
+    });
+
+    await request.post(`/api/apps/${app.id}/scim/Users`, {
+      sChEmAs: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      uSeRnAmE: 'spgb@krustykrab.example',
+      eXtErNaLiD: 'spgb',
+      mEtA: {
+        rEsOuRcEtYpE: 'User',
+      },
+      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
+        mAnAgEr: 'krbs',
+      },
+    });
+    const result = await Team.findOne({
+      where: { AppId: app.id, name: appMember.scimExternalId },
+    }).then((team) => TeamMember.findOne({ where: { TeamId: team.id, UserId: user.id } }));
+
+    expect(result.role).toBe('manager');
+  });
 });
 
 describe('getSCIMUser', () => {
