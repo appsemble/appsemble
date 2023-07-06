@@ -8,7 +8,8 @@ import { Methods, setAppName } from './methods.js';
 const appName = 'testApp';
 
 setAppName(appName);
-const dbDir = await globalCacheDir(`appsemble-${appName}`);
+const cacheDir = await globalCacheDir('appsemble');
+const dbDir = join(cacheDir, appName);
 const dbPath = join(dbDir, 'db.json');
 
 describe('methods', () => {
@@ -154,114 +155,294 @@ describe('methods', () => {
       });
 
       describe('that contain a comparison', () => {
-        it('for greater than', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesGt = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { gt: 25 } }],
+        describe('for greater than', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { gt: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesGt).toStrictEqual([
-            { id: 1, name: 'Alice', age: 30 },
-            { id: 4, name: 'Charlie', age: 35 },
-          ]);
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', age: 30 },
+              { id: 4, name: 'Charlie', age: 35 },
+            ]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { gt: '2023-07-04T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', birthDate: new Date('2023-07-05T13:18:26.870Z') },
+            ]);
+          });
         });
 
-        it('for greater than or equal', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesGte = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { gte: 25 } }],
+        describe('for greater than or equal', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesGte = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { gte: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesGte).toStrictEqual([
-            { id: 1, name: 'Alice', age: 30 },
-            { id: 3, name: 'Bob', age: 25 },
-            { id: 4, name: 'Charlie', age: 35 },
-          ]);
+              '/person',
+            );
+            expect(entitiesGte).toStrictEqual([
+              { id: 1, name: 'Alice', age: 30 },
+              { id: 3, name: 'Bob', age: 25 },
+              { id: 4, name: 'Charlie', age: 35 },
+            ]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"},{"id":2,"name":"Bob","birthDate":"2023-07-04T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { gte: '2023-07-04T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', birthDate: new Date('2023-07-05T13:18:26.870Z') },
+              { id: 2, name: 'Bob', birthDate: new Date('2023-07-04T13:18:26.870Z') },
+            ]);
+          });
         });
 
-        it('for less than', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesLt = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { lt: 25 } }],
+        describe('for less than', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesLt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { lt: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesLt).toStrictEqual([{ id: 2, name: 'Alice', age: 20 }]);
+              '/person',
+            );
+            expect(entitiesLt).toStrictEqual([{ id: 2, name: 'Alice', age: 20 }]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { lt: '2023-07-06T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', birthDate: new Date('2023-07-05T13:18:26.870Z') },
+            ]);
+          });
         });
 
-        it('for less than or equal', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesLt = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { lte: 25 } }],
+        describe('for less than or equal', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesLt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { lte: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesLt).toStrictEqual([
-            { id: 2, name: 'Alice', age: 20 },
-            { id: 3, name: 'Bob', age: 25 },
-          ]);
+              '/person',
+            );
+            expect(entitiesLt).toStrictEqual([
+              { id: 2, name: 'Alice', age: 20 },
+              { id: 3, name: 'Bob', age: 25 },
+            ]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"},{"id":2,"name":"Bob","birthDate":"2023-07-04T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { lte: '2023-07-05T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', birthDate: new Date('2023-07-05T13:18:26.870Z') },
+              { id: 2, name: 'Bob', birthDate: new Date('2023-07-04T13:18:26.870Z') },
+            ]);
+          });
         });
 
-        it('for equal', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesEq = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { eq: 25 } }],
+        describe('for equal', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesEq = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { eq: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesEq).toStrictEqual([{ id: 3, name: 'Bob', age: 25 }]);
+              '/person',
+            );
+            expect(entitiesEq).toStrictEqual([{ id: 3, name: 'Bob', age: 25 }]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"},{"id":2,"name":"Bob","birthDate":"2023-07-04T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { eq: '2023-07-04T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 2, name: 'Bob', birthDate: new Date('2023-07-04T13:18:26.870Z') },
+            ]);
+          });
+
+          it('for boolean values', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","married":false},{"id":2,"name":"Bob","married":true}]}',
+            );
+            const entitiesEq = await Methods.findAll(
+              {
+                where: {
+                  or: [{ married: { eq: true } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesEq).toStrictEqual([{ id: 2, name: 'Bob', married: true }]);
+          });
+
+          it('for strings', async () => {
+            await writeFile(dbPath, '{"person":[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]}');
+            const entitiesEq = await Methods.findAll(
+              {
+                where: {
+                  or: [{ name: { eq: 'Alice' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesEq).toStrictEqual([{ id: 1, name: 'Alice' }]);
+          });
         });
 
-        it('for not equal', async () => {
-          await writeFile(
-            dbPath,
-            '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
-          );
-          const entitiesNe = await Methods.findAll(
-            {
-              where: {
-                or: [{ age: { ne: 25 } }],
+        describe('for not equal', () => {
+          it('for numbers', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","age":30},{"id":2,"name":"Alice","age":20},{"id":3,"name":"Bob","age":25},{"id":4,"name":"Charlie","age":35}]}',
+            );
+            const entitiesNe = await Methods.findAll(
+              {
+                where: {
+                  or: [{ age: { ne: 25 } }],
+                },
               },
-            },
-            '/person',
-          );
-          expect(entitiesNe).toStrictEqual([
-            { id: 1, name: 'Alice', age: 30 },
-            { id: 2, name: 'Alice', age: 20 },
-            { id: 4, name: 'Charlie', age: 35 },
-          ]);
+              '/person',
+            );
+            expect(entitiesNe).toStrictEqual([
+              { id: 1, name: 'Alice', age: 30 },
+              { id: 2, name: 'Alice', age: 20 },
+              { id: 4, name: 'Charlie', age: 35 },
+            ]);
+          });
+
+          it('for dates', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","birthDate":"2023-07-05T13:18:26.870Z"},{"id":2,"name":"Bob","birthDate":"2023-07-04T13:18:26.870Z"}]}',
+            );
+            const entitiesGt = await Methods.findAll(
+              {
+                where: {
+                  or: [{ birthDate: { ne: '2023-07-04T13:18:26.870Z' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesGt).toStrictEqual([
+              { id: 1, name: 'Alice', birthDate: new Date('2023-07-05T13:18:26.870Z') },
+            ]);
+          });
+
+          it('for boolean values', async () => {
+            await writeFile(
+              dbPath,
+              '{"person":[{"id":1,"name":"Alice","married":false},{"id":2,"name":"Bob","married":true}]}',
+            );
+            const entitiesEq = await Methods.findAll(
+              {
+                where: {
+                  or: [{ married: { ne: true } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesEq).toStrictEqual([{ id: 1, name: 'Alice', married: false }]);
+          });
+
+          it('for strings', async () => {
+            await writeFile(dbPath, '{"person":[{"id":1,"name":"Alice"},{"id":2,"name":"Bob"}]}');
+            const entitiesEq = await Methods.findAll(
+              {
+                where: {
+                  or: [{ name: { ne: 'Alice' } }],
+                },
+              },
+              '/person',
+            );
+            expect(entitiesEq).toStrictEqual([{ id: 2, name: 'Bob' }]);
+          });
         });
       });
     });

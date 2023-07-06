@@ -1,6 +1,6 @@
 import { createReadStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
-import { basename, extname, join, parse, relative, resolve } from 'node:path';
+import { basename, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
 import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
@@ -232,7 +232,7 @@ export async function traverseAppDirectory(
       case 'icon.png':
       case 'icon.svg':
         iconPath = filepath;
-        gatheredData.iconUrl = basename(filepath, extname(filepath));
+        gatheredData.iconUrl = filepath;
         return;
 
       case 'maskable-icon.png':
