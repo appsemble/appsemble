@@ -36,7 +36,7 @@ function parseValue(value: string): Date | boolean | number | string {
 
   const toDate = Date.parse(value);
   if (!Number.isNaN(toDate)) {
-    return new Date(toDate).toISOString();
+    return toDate;
   }
 
   if (value === 'false' || value === 'true') {
