@@ -31,7 +31,7 @@ type Expression = (typeof expressions)[number];
 function applyQuery<M>(
   entity: M,
   key: string,
-  query: Record<Comparator | Expression, unknown>,
+  query: Record<Comparator | Expression, string>,
 ): boolean {
   if (query == null && entity[key as keyof M] == null) {
     return true;
