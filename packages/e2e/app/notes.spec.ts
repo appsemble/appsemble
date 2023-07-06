@@ -11,13 +11,17 @@ test.describe('Notes', () => {
     await loginApp();
     await page.waitForSelector('.button.is-rounded');
     await page.click('.button.is-rounded');
+
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
+
     await page.fill('#title', `Title ${date}`);
     await page.fill('#body', `Body ${date}`);
     await page.click('button[type="submit"]');
     const entry = page.locator(`text=Title ${date}`);
     await expect(entry).toBeVisible();
     await entry.click();
-    expect(await page.getByPlaceholder('title').inputValue()).toBe(`Title ${date}`);
-    expect(await page.getByPlaceholder('body').inputValue()).toBe(`Body ${date}`);
+    await expect(page.getByPlaceholder('title')).toHaveValue(`Title ${date}`);
+    await expect(page.getByPlaceholder('body')).toHaveValue(`Body ${date}`);
   });
 });
