@@ -28,10 +28,28 @@ type Comparator = (typeof comparators)[number];
 const expressions = ['and', 'or'] as const;
 type Expression = (typeof expressions)[number];
 
+function parseValue(value: string): Date | boolean | number | string {
+  const toNumber = Number(value);
+  if (!Number.isNaN(toNumber)) {
+    return toNumber;
+  }
+
+  const toDate = Date.parse(value);
+  if (!Number.isNaN(toDate)) {
+    return new Date(toDate).toISOString();
+  }
+
+  if (value === 'false' || value === 'true') {
+    return Boolean(value);
+  }
+
+  return value;
+}
+
 function applyQuery<M>(
   entity: M,
   key: string,
-  query: Record<Comparator | Expression, string>,
+  query: Record<Comparator | Expression, string> | string,
 ): boolean {
   if (query == null && entity[key as keyof M] == null) {
     return true;
@@ -39,6 +57,12 @@ function applyQuery<M>(
 
   if (query === undefined && entity[key as keyof M] === undefined) {
     return true;
+  }
+
+  const parsedEntityValue = parseValue(entity[key as keyof M] as string);
+
+  if (typeof query === 'string') {
+    return parsedEntityValue === parseValue(query as string);
   }
 
   if (query.or && Array.isArray(query.or)) {
@@ -54,43 +78,27 @@ function applyQuery<M>(
   }
 
   if (query.gt) {
-    return entity[key as keyof M] > query.gt;
+    return parsedEntityValue > parseValue(query.gt);
   }
 
   if (query.gte) {
-    return entity[key as keyof M] >= query.gte;
+    return parsedEntityValue >= parseValue(query.gte);
   }
 
   if (query.lt) {
-    return entity[key as keyof M] < query.lt;
+    return parsedEntityValue < parseValue(query.lt);
   }
 
   if (query.lte) {
-    return entity[key as keyof M] <= query.lte;
+    return parsedEntityValue <= parseValue(query.lte);
   }
 
   if (query.eq || query.eq === '') {
-    const value = entity[key as keyof M];
-    switch (query.eq) {
-      case 'false':
-        return value === false;
-      case 'true':
-        return value === true;
-      default:
-        return value === String(query.eq);
-    }
+    return parsedEntityValue === parseValue(query.eq);
   }
 
   if (query.ne || query.ne === '') {
-    const value = entity[key as keyof M];
-    switch (query.ne) {
-      case 'false':
-        return value !== false;
-      case 'true':
-        return value !== true;
-      default:
-        return value !== String(query.ne);
-    }
+    return parsedEntityValue !== parseValue(query.ne);
   }
 
   return entity[key as keyof M] === query;
