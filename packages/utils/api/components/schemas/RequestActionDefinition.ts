@@ -44,7 +44,7 @@ If not specified, the raw input data is used.
     },
     proxy: {
       type: 'boolean',
-      default: 'false',
+      default: true,
       description: `By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
