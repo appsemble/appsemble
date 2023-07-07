@@ -59,7 +59,9 @@ export function IndexPage(): ReactElement {
           type="search"
         />
         <SelectField className="mb-0" icon="sort" name="sort" onChange={onSortChange}>
-          <option hidden>{formatMessage(messages.sort)}</option>
+          <option hidden>{`${formatMessage(messages.ratings)} (${formatMessage(
+            messages.descending,
+          )})`}</option>
           <option value="rating.asc">
             {`${formatMessage(messages.ratings)} (${formatMessage(messages.ascending)})`}
           </option>
