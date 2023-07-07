@@ -1356,7 +1356,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -1470,7 +1470,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -1565,7 +1565,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -1660,7 +1660,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -1755,7 +1755,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -1854,7 +1854,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -2221,7 +2221,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -2316,7 +2316,7 @@ If not specified, the raw input data is used.
                     "onError": {},
                     "onSuccess": {},
                     "proxy": {
-                      "default": "false",
+                      "default": true,
                       "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5490,7 +5490,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5604,7 +5604,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5699,7 +5699,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5794,7 +5794,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5889,7 +5889,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -5988,7 +5988,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -6355,7 +6355,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
@@ -6450,7 +6450,7 @@ If not specified, the raw input data is used.
             "onError": {},
             "onSuccess": {},
             "proxy": {
-              "default": "false",
+              "default": true,
               "description": "By default requests will be proxied through the Appsemble API.
 
 This allows to protect user data and ensures
