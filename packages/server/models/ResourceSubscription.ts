@@ -2,6 +2,7 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   Table,
@@ -13,17 +14,17 @@ import { AppSubscription, Resource } from './index.js';
 @Table({ tableName: 'ResourceSubscription' })
 export class ResourceSubscription extends Model {
   @ForeignKey(() => Resource)
-  @Column
+  @Column(DataType.INTEGER)
   ResourceId: number;
 
-  @Column
+  @Column(DataType.STRING)
   action: 'create' | 'delete' | 'update';
 
-  @Column
+  @Column(DataType.STRING)
   type: string;
 
   @ForeignKey(() => AppSubscription)
-  @Column
+  @Column(DataType.INTEGER)
   AppSubscriptionId: number;
 
   @BelongsTo(() => AppSubscription)

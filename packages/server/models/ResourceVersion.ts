@@ -20,7 +20,7 @@ export class ResourceVersion extends Model {
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)
-  @Column
+  @Column(DataType.STRING)
   id: string;
 
   @Column(DataType.JSON)
@@ -28,7 +28,7 @@ export class ResourceVersion extends Model {
 
   @ForeignKey(() => Resource)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   ResourceId: number;
 
   @BelongsTo(() => Resource)

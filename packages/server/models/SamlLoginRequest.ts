@@ -19,47 +19,47 @@ export class SamlLoginRequest extends Model {
    * The SAML login ID that is sent to the SAML server.
    */
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   id: string;
 
   /**
    * The OAuth2 scope the app requested in the login request.
    */
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   scope: string;
 
   /**
    * The OAuth2 state the app specified in the login request.
    */
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   state: string;
 
   /**
    * The email address the user is linking.
    */
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
   /**
    * The nameId that’s stored if the authorization is being linked to the user.
    */
-  @Column
+  @Column(DataType.STRING)
   nameId: string;
 
   /**
    * The OAuth2 redirect URI the app specified in the login request.
    */
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   redirectUri: string;
 
   /**
    * The timezone of the browser used during the login flow.
    */
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   timezone: string;
 
   /**
@@ -67,7 +67,7 @@ export class SamlLoginRequest extends Model {
    */
   @ForeignKey(() => AppSamlSecret)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppSamlSecretId: number;
 
   /**

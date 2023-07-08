@@ -33,7 +33,7 @@ import { App } from './index.js';
 export class AppSamlSecret extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
@@ -41,15 +41,15 @@ export class AppSamlSecret extends Model {
   idpCertificate: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   entityId: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   ssoUrl: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @AllowNull(false)
@@ -68,10 +68,10 @@ export class AppSamlSecret extends Model {
   @Column(DataType.TEXT)
   spCertificate: string;
 
-  @Column
+  @Column(DataType.STRING)
   emailAttribute: string;
 
-  @Column
+  @Column(DataType.STRING)
   nameAttribute: string;
 
   /**
@@ -79,7 +79,7 @@ export class AppSamlSecret extends Model {
    */
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

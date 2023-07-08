@@ -4,6 +4,7 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
   ForeignKey,
   Model,
   PrimaryKey,
@@ -17,23 +18,23 @@ import { App } from './index.js';
 export class AppScreenshot extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.BLOB)
   screenshot: Buffer;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   width: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   height: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   mime: string;
 
   @UpdatedAt
@@ -44,7 +45,7 @@ export class AppScreenshot extends Model {
 
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

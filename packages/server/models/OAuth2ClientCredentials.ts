@@ -15,22 +15,22 @@ import { User } from './index.js';
 @Table({ tableName: 'OAuth2ClientCredentials', updatedAt: false })
 export class OAuth2ClientCredentials extends Model {
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   id: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   description: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   secret: string;
 
-  @Column
+  @Column(DataType.DATE)
   expires: Date;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   scopes: string;
 
   @CreatedAt

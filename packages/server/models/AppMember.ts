@@ -27,39 +27,39 @@ export class AppMember extends Model {
   id: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   role: string;
 
   @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
   @Default(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   emailVerified: boolean;
 
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
-  @Column
+  @Column(DataType.STRING)
   password: string;
 
-  @Column
+  @Column(DataType.STRING)
   emailKey: string;
 
-  @Column
+  @Column(DataType.STRING)
   resetKey: string;
 
-  @Column
+  @Column(DataType.DATE)
   consent: Date;
 
-  @Column
+  @Column(DataType.BLOB)
   picture?: Buffer;
 
   @Column(DataType.JSON)
   properties?: Record<string, string>;
 
-  @Column
+  @Column(DataType.STRING)
   locale?: string;
 
   @CreatedAt
@@ -71,7 +71,7 @@ export class AppMember extends Model {
   @ForeignKey(() => App)
   @Unique('UniqueAppMemberIndex')
   @Index({ name: 'UniqueAppMemberEmailIndex', type: 'UNIQUE' })
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

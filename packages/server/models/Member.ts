@@ -28,7 +28,7 @@ export class Member extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
-  @Column
+  @Column(DataType.STRING)
   OrganizationId: string;
 
   @AllowNull(false)

@@ -18,14 +18,14 @@ import { App } from './index.js';
 export class AppServiceSecret extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
-  @Column
+  @Column(DataType.STRING)
   serviceName: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   urlPatterns: string;
 
   @AllowNull(false)
@@ -49,30 +49,30 @@ export class AppServiceSecret extends Model {
   /**
    * Can be a parameter-, header-, cookie, client secret, password, or private key.
    */
-  @Column
+  @Column(DataType.BLOB)
   secret: Buffer;
 
   /**
    * Used for the client-credentials flow.
    */
-  @Column
+  @Column(DataType.STRING)
   tokenUrl: string;
 
   /**
    * The client-credentials access token used to authenticate outgoing requests.
    */
-  @Column
+  @Column(DataType.BLOB)
   accessToken: Buffer;
 
   /**
    * When the client-credentials `accessToken` expires.
    */
-  @Column
+  @Column(DataType.DATE)
   expiresAt: Date;
 
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

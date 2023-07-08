@@ -19,14 +19,14 @@ export class OAuthAuthorization extends Model {
    * The subject id of the user on the remote authorization server.
    */
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   sub: string;
 
   /**
    * The authorization URL where the user needs to approve Appsemble to access their account.
    */
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   authorizationUrl: string;
 
   /**
@@ -39,7 +39,7 @@ export class OAuthAuthorization extends Model {
   /**
    * The expiration date of the access token.
    */
-  @Column
+  @Column(DataType.DATE)
   expiresAt: Date;
 
   /**

@@ -17,15 +17,15 @@ import { User } from './index.js';
 @Table({ tableName: 'EmailAuthorization' })
 export class EmailAuthorization extends Model {
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
   @Default(false)
   @AllowNull(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   verified: boolean;
 
-  @Column
+  @Column(DataType.STRING)
   key: string;
 
   @CreatedAt

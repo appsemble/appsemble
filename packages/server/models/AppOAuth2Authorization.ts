@@ -19,12 +19,12 @@ export class AppOAuth2Authorization extends Model {
    * The subject id of the user on the remote authorization server.
    */
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   sub: string;
 
   @PrimaryKey
   @ForeignKey(() => AppOAuth2Secret)
-  @Column
+  @Column(DataType.INTEGER)
   AppOAuth2SecretId: number;
 
   @BelongsTo(() => AppOAuth2Secret)
@@ -40,7 +40,7 @@ export class AppOAuth2Authorization extends Model {
   /**
    * The expiration date of the access token.
    */
-  @Column
+  @Column(DataType.DATE)
   expiresAt: Date;
 
   /**

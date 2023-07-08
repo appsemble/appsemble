@@ -20,12 +20,12 @@ export class TeamInvite extends Model {
   @PrimaryKey
   @ForeignKey(() => Team)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   TeamId: number;
 
   @PrimaryKey
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
   @AllowNull(false)
@@ -34,7 +34,7 @@ export class TeamInvite extends Model {
   role: TeamMember['role'];
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   key: string;
 
   @BelongsTo(() => Team)
