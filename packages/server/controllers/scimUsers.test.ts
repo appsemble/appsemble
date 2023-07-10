@@ -393,6 +393,7 @@ describe('createSCIMUser', () => {
       ],
       uSeRnAmE: 'spgb@krustykrab.example',
       eXtErNaLiD: 'spgb',
+      active: true,
       mEtA: {
         rEsOuRcEtYpE: 'User',
       },

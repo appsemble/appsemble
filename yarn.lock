@@ -13541,6 +13541,11 @@ schema-utils@^4.0.0, schema-utils@^4.0.1:
     ajv-formats "^2.1.1"
     ajv-keywords "^5.1.0"
 
+scim2-parse-filter@^0.2.8:
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/scim2-parse-filter/-/scim2-parse-filter-0.2.8.tgz#12e836514b9a55ae51218dd6e7fbea91daccfa4d"
+  integrity sha512-1V+6FIMIiP+gDiFkC3dIw86KfoXhnQRXhfPaiQImeeFukpLtEkTtYq/Vmy1yDgHQcIHQxQQqOWyGLKX0FTvvaA==
+
 "semver@2 || 3 || 4 || 5", semver@^5.3.0:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"

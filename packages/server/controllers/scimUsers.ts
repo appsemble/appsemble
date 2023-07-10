@@ -1,5 +1,6 @@
 import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
+import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
 import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
@@ -207,12 +208,7 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
     queryParams: { count = 50, filter, startIndex = 1 },
   } = ctx;
 
-  interface QueryFilter {
-    target: string;
-    operator: string;
-    value: string;
-  }
-
+  const parsedFilter = filter ? (parse(filter) as Compare) : undefined;
   const include = [
     {
       model: User,
@@ -232,26 +228,26 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
     },
   ];
 
-  async function getUserResources(queryFilter: string): Promise<{
+  async function getUserResources(queryFilter: Compare): Promise<{
     count: number;
     rows: AppMember[];
   }> {
-    const filterData: QueryFilter = {
-      target: (queryFilter.split(' ')[0] || '').toLowerCase(),
-      operator: (queryFilter.split(' ')[1] || '').toLowerCase(),
-      value: (queryFilter.split('"')[1] || '').toLowerCase(),
-    };
     const whereClause: WhereOptions<any> = {};
+    const attribute = queryFilter.attrPath.toLowerCase();
+    const value =
+      typeof queryFilter.compValue === 'string'
+        ? queryFilter.compValue.toLowerCase()
+        : queryFilter.compValue;
 
-    if (filterData.operator !== 'eq') {
+    if (queryFilter.op !== 'eq') {
       return { count: 0, rows: [] };
     }
 
-    if (filterData.target === 'username') {
-      whereClause.email = where(fn('LOWER', col('email')), filterData.value);
+    if (attribute === 'username') {
+      whereClause.email = where(fn('LOWER', col('email')), value);
     }
-    if (filterData.target === 'externalid') {
-      whereClause.scimExternalId = filterData.value;
+    if (attribute === 'externalid') {
+      whereClause.scimExternalId = value;
     }
 
     if (Object.keys(whereClause).length > 0) {
@@ -269,8 +265,8 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
     return { count: 0, rows: [] };
   }
 
-  const members = filter
-    ? await getUserResources(filter)
+  const members = parsedFilter
+    ? await getUserResources(parsedFilter)
     : await AppMember.findAndCountAll({
         limit: count,
         offset: startIndex - 1,
@@ -495,7 +491,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     if (managerId != null) {
       let teamManager: string;
       try {
-        teamManager = member.User.TeamMembers[0].Team.getDataValue('name');
+        teamManager = member.User.TeamMembers[0].Team.name;
       } catch {
         // Do nothing
       }
