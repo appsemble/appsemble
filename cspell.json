@@ -170,6 +170,7 @@
     "DTEND",
     "CALSCALE",
     "superadmin",
-    "messageformat"
+    "messageformat",
+    "cobertura"
   ]
 }

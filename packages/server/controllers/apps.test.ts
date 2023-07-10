@@ -39,6 +39,7 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv(argv);
   const server = await createServer({
     argv,
@@ -50,8 +51,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
-
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -74,6 +76,10 @@ beforeEach(async () => {
       },
     },
   });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('queryApps', () => {
@@ -473,7 +479,7 @@ describe('getAppById', () => {
       OrganizationId: organization.id,
     });
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
-    import.meta.jest.advanceTimersByTime(3600);
+    vi.advanceTimersByTime(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
     const response = await request.get(`/api/apps/${app.id}`);
 
@@ -3861,7 +3867,7 @@ describe('getAppSnapshots', () => {
       UserId: user.id,
       yaml: "name: Test App\ndefaultPage: 'Test Page'",
     });
-    import.meta.jest.advanceTimersByTime(60_000);
+    vi.advanceTimersByTime(60_000);
     await AppSnapshot.create({
       AppId: app.id,
       UserId: user.id,
@@ -4329,7 +4335,7 @@ describe('createAppScreenshot', () => {
   });
 
   // XXX: Re-enable this test when updating Koas 🧀
-  // eslint-disable-next-line jest/no-disabled-tests
+  // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should not accept empty arrays of screenshots', async () => {
     const app = await App.create({
       definition: {},

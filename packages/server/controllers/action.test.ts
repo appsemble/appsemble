@@ -1,6 +1,7 @@
 import { createServer } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
 
@@ -91,7 +92,7 @@ describe('handleRequestProxy', () => {
   let app: App;
 
   beforeEach(async () => {
-    import.meta.jest.useFakeTimers({ now: 0 });
+    vi.useFakeTimers();
     proxiedApp = new Koa().use((ctx) => {
       ctx.body = { message: 'I’m a teapot' };
       ctx.status = 418;
@@ -650,28 +651,44 @@ describe('handleRequestProxy', () => {
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
     authorizeApp(app);
 
+    const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
+
     await AppServiceSecret.create({
       serviceName: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-credentials',
       identifier: 'id',
       secret: encrypt('secret', argv.aesSecret),
-      tokenUrl: `${proxiedRequest.defaults.baseURL}/oauth/token`,
-      accessToken: encrypt('abcd', argv.aesSecret),
+      tokenUrl,
+      accessToken: encrypt('test', argv.aesSecret),
       expiresAt: 6 * 1e5,
       AppId: app.id,
     });
 
     let outgoingRequestConfig: InternalAxiosRequestConfig;
 
-    const interceptor = axios.interceptors.request.use((config) => {
+    const mock = new MockAdapter(axios);
+
+    mock.onPost(tokenUrl).reply(200, {
+      access_token: 'abcd',
+      expires_in: 3600,
+    });
+    mock.onGet(proxiedRequest.defaults.baseURL).reply(418, { message: 'I’m a teapot' });
+
+    const requestInterceptor = axios.interceptors.request.use((config) => {
       outgoingRequestConfig = config;
       return config;
     });
 
+    const responseInterceptor = axios.interceptors.response.use((response) => {
+      mock.restore();
+      return response;
+    });
+
     const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
 
-    axios.interceptors.request.eject(interceptor);
+    axios.interceptors.request.eject(requestInterceptor);
+    axios.interceptors.request.eject(responseInterceptor);
 
     expect(outgoingRequestConfig.headers.Authorization).toBe('Bearer abcd');
     expect(outgoingRequestConfig.httpsAgent).toBeUndefined();
@@ -713,7 +730,7 @@ describe('handleRequestProxy', () => {
       authenticationMethod: 'client-credentials',
       identifier: 'id',
       secret: encrypt('secret', argv.aesSecret),
-      tokenUrl: `${proxiedRequest.defaults.baseURL}/oauth/token`,
+      tokenUrl: `${proxiedRequest.defaults.baseURL}oauth/token`,
       accessToken: encrypt('abcd', argv.aesSecret),
       expiresAt: 6 * 1e5,
       AppId: app.id,
@@ -1168,7 +1185,7 @@ describe('handleEmail', () => {
   });
 
   it('should send emails', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
 
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Body',
@@ -1206,7 +1223,7 @@ describe('handleEmail', () => {
   });
 
   it('should send mails using CC', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Test',
       cc: ['test@example.com', 'John Doe <test2@example.com>'],
@@ -1243,7 +1260,7 @@ describe('handleEmail', () => {
   });
 
   it('should send mails using BCC', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       body: 'Test',
       bcc: ['test@example.com', 'John Doe <test2@example.com>'],
@@ -1306,7 +1323,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach URLs', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
@@ -1344,7 +1361,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach using objects', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const buffer = Buffer.from(JSON.stringify({ test: 'test' }));
     const asset = await Asset.create({
       AppId: 1,
@@ -1407,7 +1424,7 @@ describe('handleEmail', () => {
   });
 
   it('should accept assets from content', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',
@@ -1444,7 +1461,7 @@ describe('handleEmail', () => {
   });
 
   it('should attach existing assets', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const buffer = Buffer.from('test');
     const asset = await Asset.create({
       AppId: 1,
@@ -1489,7 +1506,7 @@ describe('handleEmail', () => {
   });
 
   it('should not attach non-existant assets', async () => {
-    const spy = import.meta.jest.spyOn(server.context.mailer, 'sendEmail');
+    const spy = vi.spyOn(server.context.mailer, 'sendEmail');
     const response = await request.post('/api/apps/1/action/pages.0.blocks.0.actions.email', {
       to: 'test@example.com',
       body: 'Body',

@@ -1,14 +1,16 @@
+import { type Mock } from 'vitest';
+
 import { type ShowDialogParams } from '../../types.js';
 import { createTestAction } from '../makeActions.js';
 
 describe('dialog', () => {
-  let close: jest.Mock<void, []>;
+  let close: Mock<[], void>;
   let options: ShowDialogParams;
-  let showDialog: jest.Mock<() => void, [ShowDialogParams]>;
+  let showDialog: Mock<[ShowDialogParams], () => void>;
 
   beforeEach(() => {
-    close = import.meta.jest.fn();
-    showDialog = import.meta.jest.fn().mockImplementation((opts) => {
+    close = vi.fn();
+    showDialog = vi.fn().mockImplementation((opts) => {
       options = opts;
       return close;
     });

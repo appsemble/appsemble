@@ -1,4 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
+import { type Mock } from 'vitest';
 
 import { migrate, type Migration } from './migrate.js';
 import { useTestDatabase } from './test/testSchema.js';
@@ -15,12 +16,12 @@ let migrations: Migration[];
 useTestDatabase(import.meta);
 
 beforeEach(() => {
-  m000 = { key: '0.0.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
-  m001 = { key: '0.0.1', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
-  m002 = { key: '0.0.2', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
-  m003 = { key: '0.0.3', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
-  m010 = { key: '0.1.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
-  m100 = { key: '1.0.0', up: import.meta.jest.fn(), down: import.meta.jest.fn() };
+  m000 = { key: '0.0.0', up: vi.fn(), down: vi.fn() };
+  m001 = { key: '0.0.1', up: vi.fn(), down: vi.fn() };
+  m002 = { key: '0.0.2', up: vi.fn(), down: vi.fn() };
+  m003 = { key: '0.0.3', up: vi.fn(), down: vi.fn() };
+  m010 = { key: '0.1.0', up: vi.fn(), down: vi.fn() };
+  m100 = { key: '1.0.0', up: vi.fn(), down: vi.fn() };
   migrations = [m000, m001, m002, m003, m010, m100];
 });
 
@@ -34,7 +35,7 @@ it('should fail if multiple meta entries are found', async () => {
 });
 
 it('should sync the database if no meta version is present', async () => {
-  import.meta.jest.spyOn(getDB(), 'sync');
+  vi.spyOn(getDB(), 'sync');
   await migrate('1.0.0', migrations);
   expect(getDB().sync).toHaveBeenCalledWith();
   const meta = await Meta.findAll({ raw: true });
@@ -94,7 +95,7 @@ it('should upgrade if the given version is higher than the database meta version
 it('should run downgrades in sequence', async () => {
   await Meta.create({ version: '0.0.3' });
   let resolve: () => void;
-  (m003.down as jest.Mock).mockReturnValue(
+  (m003.down as Mock).mockReturnValue(
     new Promise<void>((r) => {
       resolve = r;
     }),
@@ -109,7 +110,7 @@ it('should run downgrades in sequence', async () => {
 it('should run upgrades in sequence', async () => {
   await Meta.create({ version: '0.0.1' });
   let resolve: () => void;
-  (m001.up as jest.Mock).mockReturnValue(
+  (m001.up as Mock).mockReturnValue(
     new Promise<void>((r) => {
       resolve = r;
     }),

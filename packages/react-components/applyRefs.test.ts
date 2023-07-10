@@ -3,7 +3,7 @@ import { createRef } from 'react';
 import { applyRefs } from './applyRefs.js';
 
 it('should apply function refs', () => {
-  const spy = import.meta.jest.fn();
+  const spy = vi.fn();
   applyRefs('callback value', (value) => spy(value));
   expect(spy).toHaveBeenCalledWith('callback value');
 });
@@ -19,7 +19,7 @@ it('should ignore null refs', () => {
 });
 
 it('should apply multiple refs', () => {
-  const spy = import.meta.jest.fn();
+  const spy = vi.fn();
   const ref = createRef();
   applyRefs('multi value', (value) => spy(value), ref);
   expect(spy).toHaveBeenCalledWith('multi value');

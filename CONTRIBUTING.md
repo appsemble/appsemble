@@ -59,10 +59,11 @@ yarn script extract-messages
 
 ### Testing
 
-Appsemble uses [![](https://jestjs.io/img/favicon/favicon-16x16.png) Jest](https://jestjs.io) for
+Appsemble uses
+[![](https://avatars.githubusercontent.com/u/95747107?s=16&v=4) vitest](https://vitest.dev/) for
 unit testing. Test files are placed in the same location as the file that’s under test, except that
 the test file has a _.test_ suffix. Not everything is tested yet. However, please make sure existing
-tests keep working. To run tests, simply run the command below. Any jest arguments are supported.
+tests keep working. To run tests, simply run the command below. Any Vitest arguments are supported.
 
 ```sh
 yarn test
@@ -74,7 +75,7 @@ To run tests for a single file, run
 yarn test path/to/file
 ```
 
-Appsemble uses jest snapshots to assert large serializable objects like block manifests, HTTP
+Appsemble uses vitest snapshots to assert large serializable objects like block manifests, HTTP
 responses and some react-components. These need
 [manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
 which can simply be done by running the commands mentioned with the `-u` argument.

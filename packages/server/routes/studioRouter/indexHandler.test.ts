@@ -15,7 +15,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  import.meta.jest.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
+  vi.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
 });
 
 it('should serve the studio index page with correct headers', async () => {

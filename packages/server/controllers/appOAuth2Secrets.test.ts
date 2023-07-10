@@ -26,6 +26,7 @@ let member: Member;
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer({
     argv,
@@ -37,7 +38,9 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   mock = new MockAdapter(axios);
 });
 
@@ -62,6 +65,11 @@ beforeEach(async () => {
     },
   });
   member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+});
+
+// https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('createAppOAuth2Secret', () => {

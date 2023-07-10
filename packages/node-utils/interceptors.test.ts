@@ -12,10 +12,8 @@ function h(content: string): string {
 let instance: AxiosInstance;
 let mock: MockAdapter;
 
-import.meta.jest.mock('os');
-
 beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  vi.useFakeTimers({ now: 0 });
 });
 
 describe('formData', () => {
@@ -59,7 +57,7 @@ describe('requestLogger', () => {
   });
 
   it('should log requests', async () => {
-    import.meta.jest.spyOn(logger, 'verbose');
+    vi.spyOn(logger, 'verbose');
     await instance.get('/');
     expect(logger.verbose).toHaveBeenCalledWith(`> 0 ${h('GET / HTTP/1.1')}`);
   });
@@ -74,7 +72,7 @@ describe('responseLogger', () => {
   });
 
   it('should log responses', async () => {
-    import.meta.jest.spyOn(logger, 'verbose');
+    vi.spyOn(logger, 'verbose');
     await instance.get('/');
     expect(logger.verbose).toHaveBeenCalledWith(expect.any(String));
   });
@@ -82,12 +80,13 @@ describe('responseLogger', () => {
 
 describe('configureAxios', () => {
   beforeEach(() => {
-    import.meta.jest.spyOn(axios.interceptors.request, 'use').mockImplementation();
-    import.meta.jest.spyOn(axios.interceptors.response, 'use').mockImplementation();
+    vi.spyOn(axios.interceptors.request, 'use').mockImplementation(null);
+    vi.spyOn(axios.interceptors.response, 'use').mockImplementation(null);
   });
 
   it('should set the correct user agent', () => {
     configureAxios('TestClient', '1.2.3');
+
     expect(axios.defaults.headers.common['user-agent']).toBe(
       `TestClient/1.2.3 (Linux x64; Node ${process.version})`,
     );
@@ -95,6 +94,7 @@ describe('configureAxios', () => {
 
   it('should apply all interceptors', () => {
     configureAxios('TestClient', '1.2.3');
+
     expect(axios.interceptors.request.use).toHaveBeenCalledWith(formData);
     expect(axios.interceptors.request.use).toHaveBeenCalledWith(requestLogger);
     expect(axios.interceptors.response.use).toHaveBeenCalledWith(responseLogger);

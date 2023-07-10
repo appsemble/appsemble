@@ -14,7 +14,7 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules vitest"
   },
   "dependencies": {
     "@appsemble/sdk": "0.20.45"

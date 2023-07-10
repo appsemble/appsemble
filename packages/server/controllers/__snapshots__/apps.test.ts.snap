@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`patchApp should not allow invalid shared stylesheets when updating an app 1`] = `
+exports[`patchApp > should not allow invalid shared stylesheets when updating an app 1`] = `
 HTTP/1.1 400 Bad Request
 Content-Type: application/json; charset=utf-8
 
@@ -1412,7 +1412,7 @@ instructed to contact the app owner to get permissions.
 }
 `;
 
-exports[`patchApp should not allow invalid shared stylesheets when updating an app 2`] = `
+exports[`patchApp > should not allow invalid shared stylesheets when updating an app 2`] = `
 HTTP/1.1 400 Bad Request
 Content-Type: application/json; charset=utf-8
 
@@ -2824,7 +2824,7 @@ instructed to contact the app owner to get permissions.
 }
 `;
 
-exports[`setAppBlockStyle should not allow to update an app using non-existent blocks 1`] = `
+exports[`setAppBlockStyle > should not allow to update an app using non-existent blocks 1`] = `
 HTTP/1.1 400 Bad Request
 Content-Type: application/json; charset=utf-8
 

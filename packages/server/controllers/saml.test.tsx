@@ -178,6 +178,7 @@ function createSamlResponse({
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer({
     argv,
@@ -188,11 +189,10 @@ beforeAll(async () => {
   await setTestApp(server);
 });
 
-beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
-});
-
 beforeEach(async () => {
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -215,6 +215,10 @@ beforeEach(async () => {
     spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
     spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
   });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('createAuthnRequest', () => {

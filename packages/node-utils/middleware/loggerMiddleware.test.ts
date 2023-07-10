@@ -13,10 +13,11 @@ class TestError extends Error {
 let app: Koa;
 
 beforeEach(async () => {
-  import.meta.jest.spyOn(logger, 'info').mockImplementation(() => logger);
-  import.meta.jest.spyOn(logger, 'log').mockImplementation(() => logger);
-  import.meta.jest.useFakeTimers({ now: 0 });
+  vi.spyOn(logger, 'info').mockImplementation(() => logger);
+  vi.spyOn(logger, 'log').mockImplementation(() => logger);
+  vi.useFakeTimers();
   app = new Koa();
+
   app.use(async (ctx, next) => {
     Object.defineProperty(ctx.request, 'origin', {
       value: 'https://example.com:1337',
@@ -45,7 +46,7 @@ it('should log requests', async () => {
 
 it('should log success responses as info', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     ctx.status = 200;
   });
   await request.get('/fries');
@@ -59,7 +60,7 @@ it('should log success responses as info', async () => {
 
 it('should log redirect responses as info', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(33);
+    vi.advanceTimersByTime(33);
     ctx.redirect('/');
   });
   await request.get('/fries');
@@ -73,7 +74,7 @@ it('should log redirect responses as info', async () => {
 
 it('should log bad responses as warn', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(3);
+    vi.advanceTimersByTime(3);
     ctx.status = 400;
   });
   await request.get('/burrito');
@@ -87,7 +88,7 @@ it('should log bad responses as warn', async () => {
 
 it('should log error responses as error', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(53);
+    vi.advanceTimersByTime(53);
     ctx.status = 503;
   });
   await request.get('/wrap');
@@ -101,7 +102,7 @@ it('should log error responses as error', async () => {
 
 it('should log long request lengths yellow', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(400);
+    vi.advanceTimersByTime(400);
     ctx.status = 200;
   });
   await request.get('/banana');
@@ -115,7 +116,7 @@ it('should log long request lengths yellow', async () => {
 
 it('should log extremely long request lengths red', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(1337);
+    vi.advanceTimersByTime(1337);
     ctx.status = 200;
   });
   await request.get('/pepperoni');
@@ -128,12 +129,12 @@ it('should log extremely long request lengths red', async () => {
 });
 
 it('should log errors as internal server errors and rethrow', async () => {
-  const spy = import.meta.jest.fn();
+  const spy = vi.fn();
   const error = new Error('fail');
   let context;
   app.on('error', spy);
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(86);
+    vi.advanceTimersByTime(86);
     context = ctx;
     throw error;
   });
@@ -149,7 +150,7 @@ it('should log errors as internal server errors and rethrow', async () => {
 
 it('should append the response length if it is defined', async () => {
   app.use((ctx) => {
-    import.meta.jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     ctx.status = 200;
     ctx.body = '{}';
   });
@@ -164,7 +165,7 @@ it('should append the response length if it is defined', async () => {
 
 it('should log handled errors correctly', async () => {
   app.use(() => {
-    import.meta.jest.advanceTimersByTime(15);
+    vi.advanceTimersByTime(15);
     throw new TestError();
   });
   await request.get('potatoes');

@@ -16,6 +16,7 @@ let user: User;
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer({
     argv,
@@ -27,7 +28,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -48,6 +51,10 @@ beforeEach(async () => {
     },
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('submitAppRating', () => {
@@ -85,7 +92,7 @@ describe('submitAppRating', () => {
       rating: 5,
     });
 
-    import.meta.jest.advanceTimersByTime(20e3);
+    vi.advanceTimersByTime(20e3);
 
     const response = await request.post(`/api/apps/${app.id}/ratings`, {
       description: 'Updated description',

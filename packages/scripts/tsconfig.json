@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "types": ["jest", "node"]
+    "types": ["vitest/globals", "node"]
   }
 }

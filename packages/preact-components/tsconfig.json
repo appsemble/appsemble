@@ -4,6 +4,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["css-modules", "jest"]
+    "types": ["css-modules", "vitest/globals"]
   }
 }

@@ -698,7 +698,7 @@ describe('inviteTeamMember', () => {
       },
     });
 
-    import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+    vi.spyOn(server.context.mailer, 'sendTemplateEmail');
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {

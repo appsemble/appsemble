@@ -153,7 +153,7 @@ export async function applyAppServiceSecrets({
             headers: {
               'user-agent': `AppsembleServer/${pkg.version}`,
               'content-type': 'application/x-www-form-urlencoded',
-              authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
+              Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
             },
             httpsAgent,
           });

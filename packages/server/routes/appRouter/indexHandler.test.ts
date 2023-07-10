@@ -14,8 +14,12 @@ let requestURL: URL;
 
 useTestDatabase(import.meta);
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
 beforeEach(() => {
-  import.meta.jest.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
+  vi.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
 });
 
 beforeEach(async () => {
@@ -145,8 +149,14 @@ beforeEach(async () => {
 });
 
 beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   requestURL = new URL('http://app.test.host.example');
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 it('should render the index page', async () => {

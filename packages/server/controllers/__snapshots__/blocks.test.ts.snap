@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`publishBlock should validate block examples 1`] = `
+exports[`publishBlock > should validate block examples 1`] = `
 HTTP/1.1 400 Bad Request
 Content-Type: application/json; charset=utf-8
 

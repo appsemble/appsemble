@@ -7,7 +7,7 @@ beforeEach(() => {
   Object.defineProperty(window, 'location', {
     configurable: true,
     writable: true,
-    value: { assign: import.meta.jest.fn() },
+    value: { assign: vi.fn() },
   });
 });
 

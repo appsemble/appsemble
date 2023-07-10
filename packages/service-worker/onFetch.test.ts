@@ -3,10 +3,9 @@ import makeServiceWorkerEnv from 'service-worker-mock';
 import { onFetch } from './onFetch.js';
 import * as utils from './utils.js';
 
-import.meta.jest.mock('./utils');
+vi.mock('./utils');
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('onFetch', () => {
+describe('onFetch', () => {
   beforeEach(() => {
     const env = makeServiceWorkerEnv();
     Object.assign(global, env);
@@ -47,22 +46,17 @@ describe.skip('onFetch', () => {
     const request = new Request('/');
     await trigger('fetch', request);
     expect(utils.cacheFirst).not.toHaveBeenCalled();
-    expect(utils.requestFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        url: 'http://localhost/',
-      }),
-    );
+    expect(utils.requestFirst).toHaveBeenCalledWith(request);
   });
 
   it('should remap nested app URLs', async () => {
     const request = new Request('/@foo/asd/foo/bar-1');
     await trigger('fetch', request);
     expect(utils.cacheFirst).not.toHaveBeenCalled();
-    expect(utils.requestFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        url: 'http://localhost/',
-      }),
-    );
+    expect(utils.requestFirst).toHaveBeenCalledWith({
+      ...request,
+      url: 'https://www.test.com/',
+    });
   });
 
   it('should try to request app related content first', async () => {

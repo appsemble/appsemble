@@ -11,10 +11,11 @@ let context: Context;
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost:1337' });
-  platformMiddleware = import.meta.jest.fn();
-  appMiddleware = import.meta.jest.fn();
+  platformMiddleware = vi.fn();
+  appMiddleware = vi.fn();
   fakeHostname = 'localhost';
   const app = new Koa();
+
   app.use((ctx, next) => {
     Object.defineProperty(ctx, 'hostname', { value: fakeHostname });
     context = ctx;

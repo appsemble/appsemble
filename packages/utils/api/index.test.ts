@@ -95,7 +95,7 @@ describe('schemas', () => {
       expect(schema).not.toHaveProperty('uniqueItems');
       if (schema.required && !schema.additionalProperties) {
         for (const name of schema.required as string[]) {
-          // eslint-disable-next-line jest/no-conditional-expect
+          // eslint-disable-next-line vitest/no-conditional-expect
           expect(schema.properties).toHaveProperty(name);
         }
       }

@@ -17,6 +17,7 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv(argv);
   const server = await createServer({
     argv,
@@ -28,7 +29,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: new Date(date) });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(date);
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -59,6 +62,10 @@ beforeEach(async () => {
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
   authorizeStudio();
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('addAppServiceSecret', () => {

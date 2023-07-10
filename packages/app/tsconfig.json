@@ -3,6 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["css-modules", "gtag.js", "jest", "webpack-env"]
+    "types": ["css-modules", "gtag.js", "vitest/globals", "webpack-env"]
   }
 }

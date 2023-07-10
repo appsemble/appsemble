@@ -7,10 +7,10 @@ import { logger } from './logger.js';
 let yargs: Argv;
 
 beforeEach(() => {
-  yargs = { showHelp: import.meta.jest.fn() } as Partial<Argv> as Argv;
-  import.meta.jest.spyOn(console, 'error').mockImplementation();
-  import.meta.jest.spyOn(process, 'exit').mockImplementation();
-  import.meta.jest.spyOn(logger, 'error').mockImplementation();
+  yargs = { showHelp: vi.fn<any>() } as Partial<Argv> as Argv;
+  vi.spyOn(console, 'error').mockImplementation(null);
+  vi.spyOn(process, 'exit').mockImplementation(() => null as never);
+  vi.spyOn(logger, 'error').mockImplementation(null);
 });
 
 it('should show the help message if it is passed a yargs message', () => {
