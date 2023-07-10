@@ -4,6 +4,7 @@ import {
   type MutableRefObject,
   type ReactElement,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import { type Document, type Node, type ParsedNode } from 'yaml';
@@ -91,6 +92,14 @@ export function PageProperty({
       }
     }
   }, [addIn, changeIn, currentPageName, currentPageType, docRef, push, selectedPage]);
+
+  useEffect(() => {
+    setCurrentPageName(
+      selectedPage === -1
+        ? 'Page name'
+        : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
+    );
+  }, [docRef, selectedPage]);
 
   return (
     <div>

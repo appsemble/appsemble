@@ -1,5 +1,4 @@
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { normalizeBlockName } from '@appsemble/utils/blockUtils.js';
 import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
@@ -155,7 +154,7 @@ export function PagesTab({
   const changeBlockType = (blockType: BlockManifest): void => {
     const doc = docRef.current;
     const newBlockType = {
-      type: normalizeBlockName(blockType.name),
+      type: blockType.name,
       version: blockType.version,
       parameters: generateData(blockType.parameters.definitions, blockType.parameters),
     } as BlockDefinition;
@@ -165,7 +164,7 @@ export function PagesTab({
   const handleDrop = (): void => {
     setDropzoneActive(false);
     const newBlock = {
-      type: normalizeBlockName(blockManifest.name),
+      type: blockManifest.name,
       version: blockManifest.version,
       parameters: generateData(blockManifest.parameters.definitions, blockManifest.parameters),
     } as BlockDefinition;
