@@ -282,7 +282,9 @@ export default function EditPage(): ReactElement {
     return unsavedChanges.join('');
   }, [app.definition, index, saveStack]);
 
-  useBeforeUnload(docRef.current !== saveStack[index]);
+  const unsavedChanges = getUnsavedChanges().length !== 0;
+
+  useBeforeUnload(unsavedChanges);
 
   useEffect(() => {
     updateAppPreview();
@@ -291,7 +293,6 @@ export default function EditPage(): ReactElement {
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
   }
-  const unsavedChanges = getUnsavedChanges().length === 0;
 
   return (
     <div className="container is-fluid">
@@ -324,8 +325,8 @@ export default function EditPage(): ReactElement {
         <Button
           className={
             unsavedChanges
-              ? 'is-align-content-flex-end'
-              : `is-align-content-flex-end ${styles.highLight}`
+              ? `is-align-content-flex-end ${styles.highLight}`
+              : 'is-align-content-flex-end'
           }
           // Optional: disabled={getUnsavedChanges().length === 0}
           icon="save"
