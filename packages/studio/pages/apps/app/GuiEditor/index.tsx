@@ -203,31 +203,31 @@ export default function EditPage(): ReactElement {
 
   // eslint-disable-next-line unicorn/consistent-function-scoping
   const equalityCheck = (old: object, cur: object): string => {
-    // If both have no theme
+    // If objects are equal
     if (old === cur) {
       return '';
     }
-    // If theme was added
+    // If object was added
     if (cur && !old) {
       return 'added';
     }
-    // If theme was removed
+    // If object was removed
     if (!cur && old) {
       return 'removed';
     }
-    // If both exist and are not equal
-    let changes = 'Changed: ';
+    // If both exist and changes are present
+    let changes = '';
     for (const key in old) {
       if (cur[key] !== old[key]) {
-        changes += `${key}, `;
+        changes += `${key}: ${cur[key]}, `;
       }
     }
     for (const key in cur) {
       if (cur[key] && !old[key]) {
-        changes += `${key}, `;
+        changes += `${key}: ${cur[key]}, `;
       }
     }
-    if (changes !== 'Changed: ') {
+    if (changes !== '') {
       return changes;
     }
   };
@@ -246,20 +246,13 @@ export default function EditPage(): ReactElement {
     if (old.defaultPage !== cur.defaultPage) {
       unsavedChanges.push(`Default page: ${cur.defaultPage}\n`);
     }
-    if (old.layout.login !== cur.layout.login) {
-      unsavedChanges.push(`Login: ${cur.layout.login}\n`);
+    let changeString = equalityCheck(old.layout, cur.layout);
+    if (changeString) {
+      unsavedChanges.push(`Layout ${changeString}\n`);
     }
-    if (old.layout.settings !== cur.layout.settings) {
-      unsavedChanges.push(`Settings: ${cur.layout.settings}\n`);
-    }
-    if (old.layout.feedback !== cur.layout.feedback) {
-      unsavedChanges.push(`Feedback: ${cur.layout.feedback}\n`);
-    }
-    if (old.layout.navigation !== cur.layout.navigation) {
-      unsavedChanges.push(`Navigation: ${cur.layout.navigation}\n`);
-    }
+
     // Theme tab
-    let changeString = equalityCheck(old.theme, cur.theme);
+    changeString = equalityCheck(old.theme, cur.theme);
     if (changeString) {
       unsavedChanges.push(`Default theme ${changeString}\n`);
     }
@@ -268,6 +261,17 @@ export default function EditPage(): ReactElement {
       changeString = equalityCheck(old.pages[pageIndex].theme, page.theme);
       if (changeString) {
         unsavedChanges.push(`Page '${page.name}' theme ${changeString}\n`);
+      }
+    });
+
+    // Pages tab
+    // eslint-disable-next-line unicorn/no-array-for-each
+    cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
+      if (page.name !== old.pages[pageIndex].name) {
+        unsavedChanges.push(`Pagename '${page.name}'\n`);
+      }
+      if (page.type !== old.pages[pageIndex].type) {
+        unsavedChanges.push(`Pagename '${page.type}'\n`);
       }
     });
 
@@ -287,6 +291,7 @@ export default function EditPage(): ReactElement {
   if (!location.pathname || !tabs.some((tab) => tab.path === tabPath)) {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
   }
+  const unsavedChanges = getUnsavedChanges().length === 0;
 
   return (
     <div className="container is-fluid">
@@ -317,8 +322,12 @@ export default function EditPage(): ReactElement {
         </ul>
         <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={saveStack.length} />
         <Button
-          className="is-align-content-flex-end"
-          disabled={getUnsavedChanges().length < 0}
+          className={
+            unsavedChanges
+              ? 'is-align-content-flex-end'
+              : `is-align-content-flex-end ${styles.highLight}`
+          }
+          // Optional: disabled={getUnsavedChanges().length === 0}
           icon="save"
           onClick={handleSave}
           title={getUnsavedChanges()}

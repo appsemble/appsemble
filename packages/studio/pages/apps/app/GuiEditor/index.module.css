@@ -63,3 +63,23 @@
   overflow-x: hidden;
   padding: 0;
 }
+
+.highLight {
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+  animation-name: color;
+}
+
+@keyframes color {
+  10% {
+    background-color: hsl(0deg 0% 100%);
+  }
+
+  50% {
+    background-color: hsl(218deg 100% 66%);
+  }
+
+  90% {
+    background-color: hsl(0deg 0% 100%);
+  }
+}
