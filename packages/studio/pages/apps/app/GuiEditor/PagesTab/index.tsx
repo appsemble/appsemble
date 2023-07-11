@@ -1,3 +1,4 @@
+import { useMessages } from '@appsemble/react-components';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
@@ -33,6 +34,7 @@ export function PagesTab({
   isOpenRight,
 }: PagesTabProps): ReactElement {
   const { app } = useApp();
+  const push = useMessages();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
@@ -131,9 +133,32 @@ export function PagesTab({
     const doc = docRef.current;
     const newBlockNode = doc.createNode(nb);
     const pageBlocks = getPagesBlocks();
-    const newBlockIndex = pageBlocks.items.length;
-    addIn(getBlockPath(), newBlockNode);
-    onChangePagesBlocks(selectedPage, selectedSubParent, newBlockIndex);
+    try {
+      const newBlockIndex = pageBlocks.items.length;
+
+      addIn(getBlockPath(), newBlockNode);
+      onChangePagesBlocks(selectedPage, selectedSubParent, newBlockIndex);
+    } catch {
+      if (selectedPage === -1) {
+        push({
+          body: 'Please select a page to add the new block into',
+          color: 'danger',
+        });
+      } else if (
+        doc.getIn(['pages', selectedPage, 'type']) &&
+        doc.getIn(['pages', selectedPage, 'type']) !== 'page'
+      ) {
+        push({
+          body: 'A block can only be added into a sub-page',
+          color: 'danger',
+        });
+      } else {
+        push({
+          body: 'An unexpected error occured while adding a new block',
+          color: 'danger',
+        });
+      }
+    }
   };
 
   const deleteBlock = useCallback(() => {

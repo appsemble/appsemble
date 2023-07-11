@@ -116,7 +116,11 @@ export function PageProperty({
         value={currentPageType}
       />
       <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
-        {selectedPage === -1 ? 'Create page' : 'Save page'}
+        {selectedPage === -1
+          ? 'Create page'
+          : currentPageType === 'page'
+          ? 'Save page'
+          : 'Create sub-page'}
       </Button>
     </div>
   );

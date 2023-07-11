@@ -215,6 +215,26 @@ export default function EditPage(): ReactElement {
     if (old.defaultPage !== cur.defaultPage) {
       unsavedChanges.push(`Default page: ${cur.defaultPage}\n`);
     }
+    if (old.layout.login !== cur.layout.login) {
+      unsavedChanges.push(`Login: ${cur.layout.login}\n`);
+    }
+    if (old.layout.settings !== cur.layout.settings) {
+      unsavedChanges.push(`Settings: ${cur.layout.settings}\n`);
+    }
+    if (old.layout.feedback !== cur.layout.feedback) {
+      unsavedChanges.push(`Feedback: ${cur.layout.feedback}\n`);
+    }
+    if (old.layout.navigation !== cur.layout.navigation) {
+      unsavedChanges.push(`Navigation: ${cur.layout.navigation}\n`);
+    }
+    // Theme tab
+    // TODO: create a function that loops through all themable objects and returns changes
+    // if (old.theme.themeColor !== cur.theme.themeColor) {
+    //   unsavedChanges.push(`Theme Color: ${cur.theme.themeColor}\n`);
+    // }
+    // if (old.theme.splashColor !== cur.theme.splashColor) {
+    //   unsavedChanges.push(`Splash Color: ${cur.theme.splashColor}\n`);
+    // }
 
     // Empty the array when there are no unsaved changes.
     if (unsavedChanges.length === 1) {
