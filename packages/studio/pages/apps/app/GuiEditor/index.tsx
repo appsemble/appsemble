@@ -258,20 +258,24 @@ export default function EditPage(): ReactElement {
     }
     // eslint-disable-next-line unicorn/no-array-for-each
     cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
-      changeString = equalityCheck(old.pages[pageIndex].theme, page.theme);
-      if (changeString) {
-        unsavedChanges.push(`Page '${page.name}' theme ${changeString}\n`);
+      if (old.pages[pageIndex]) {
+        changeString = equalityCheck(old.pages[pageIndex].theme, page.theme);
+        if (changeString) {
+          unsavedChanges.push(`Page '${page.name}' theme ${changeString}\n`);
+        }
       }
     });
 
     // Pages tab
     // eslint-disable-next-line unicorn/no-array-for-each
     cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
-      if (page.name !== old.pages[pageIndex].name) {
-        unsavedChanges.push(`Pagename '${page.name}'\n`);
-      }
-      if (page.type !== old.pages[pageIndex].type) {
-        unsavedChanges.push(`Pagename '${page.type}'\n`);
+      if (old.pages[pageIndex]) {
+        if (page.name !== old.pages[pageIndex].name) {
+          unsavedChanges.push(`Pagename '${page.name}'\n`);
+        }
+        if (page.type !== old.pages[pageIndex].type) {
+          unsavedChanges.push(`Pagename '${page.type}'\n`);
+        }
       }
     });
 

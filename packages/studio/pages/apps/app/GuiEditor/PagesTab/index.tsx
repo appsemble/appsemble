@@ -233,6 +233,7 @@ export function PagesTab({
               deletePage={deletePage}
               docRef={docRef}
               selectedPage={selectedPage}
+              selectedSubPage={selectedSubParent}
             />
           ) : null}
           {editBlockView ? (

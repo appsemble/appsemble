@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { type Document, type Node, type ParsedNode } from 'yaml';
+import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
@@ -18,6 +18,7 @@ interface PagePropertyProps {
   deletePage: () => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
+  selectedSubPage: number;
 }
 
 const pageTypes = ['page', 'flow', 'tabs'] as const;
@@ -27,6 +28,7 @@ export function PageProperty({
   deletePage,
   docRef,
   selectedPage,
+  selectedSubPage,
 }: PagePropertyProps): ReactElement {
   const push = useMessages();
   const [currentPageName, setCurrentPageName] = useState(
@@ -35,6 +37,7 @@ export function PageProperty({
       : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
   const [currentPageType, setCurrentPageType] = useState<(typeof pageTypes)[number]>('page');
+  const [currentSubPage, setCurrentSubPage] = useState<number>(selectedSubPage);
 
   const onChangePageName = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
@@ -52,7 +55,7 @@ export function PageProperty({
 
   const onChangePage = useCallback(() => {
     const doc = docRef.current;
-    if (selectedPage === -1) {
+    if (selectedPage === -1 && currentSubPage === -1) {
       // Create new page
       if (doc.toJS().pages.some((page: any) => page.name === currentPageName)) {
         push({ body: 'Page name already exists', color: 'danger' });
@@ -67,6 +70,9 @@ export function PageProperty({
       }
       if (currentPageType === 'flow') {
         addIn(['pages'], doc.createNode({ name: currentPageName, type: 'flow', steps: [] }));
+        setCurrentSubPage(
+          (doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1,
+        );
       }
       if (currentPageType === 'tabs') {
         addIn(['pages'], doc.createNode({ name: currentPageName, type: 'tabs', tabs: [] }));
@@ -91,7 +97,27 @@ export function PageProperty({
         changeIn(['pages', selectedPage, 'type'], doc.createNode(currentPageType));
       }
     }
-  }, [addIn, changeIn, currentPageName, currentPageType, docRef, push, selectedPage]);
+  }, [
+    addIn,
+    changeIn,
+    currentPageName,
+    currentPageType,
+    currentSubPage,
+    docRef,
+    push,
+    selectedPage,
+  ]);
+
+  const onCreateSubPage = useCallback(() => {
+    const doc = docRef.current;
+    if (currentPageType === 'flow') {
+      addIn(['pages', selectedPage, 'steps'], doc.createNode({ name: 'Sub-page', blocks: [] }));
+      setCurrentSubPage((doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1);
+    } else {
+      addIn(['pages', selectedPage, 'tabs'], doc.createNode({ name: 'Sub-page', blocks: [] }));
+    }
+    onChangePage();
+  }, [addIn, currentPageType, docRef, onChangePage, selectedPage]);
 
   useEffect(() => {
     setCurrentPageName(
@@ -116,12 +142,13 @@ export function PageProperty({
         value={currentPageType}
       />
       <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
-        {selectedPage === -1
-          ? 'Create page'
-          : currentPageType === 'page'
-          ? 'Save page'
-          : 'Create sub-page'}
+        {selectedPage === -1 ? 'Create page' : 'Save page'}
       </Button>
+      {currentPageType !== 'page' && selectedPage !== -1 && (
+        <Button className="is-primary" component="a" icon="add" onClick={onCreateSubPage}>
+          Create sub-page
+        </Button>
+      )}
     </div>
   );
 }
