@@ -149,6 +149,7 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
           email: userName,
           name: formattedName,
           scimExternalId: externalId,
+          scimActive: active,
         },
         { transaction },
       );
@@ -357,7 +358,7 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
   await transactional(async (transaction) => {
     const promises: Promise<unknown>[] = [
       member.update(
-        { email: userName, name: formattedName, scimExternalId: externalId },
+        { email: userName, name: formattedName, scimExternalId: externalId, scimActive: active },
         { transaction },
       ),
       member.User.update({ timezone, locale, name: formattedName }, { transaction }),
@@ -441,6 +442,8 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.timezone = value;
     } else if (lower === 'username') {
       member.email = value;
+    } else if (lower === 'active') {
+      member.scimActive = Boolean(value);
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
       if (!value || typeof value === 'string') {
         managerId = value;
@@ -488,34 +491,44 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.save({ transaction }),
       member.User.save({ transaction }),
     ];
-    if (managerId != null) {
-      let teamManager: string;
-      try {
-        teamManager = member.User.TeamMembers[0].Team.name;
-      } catch {
-        // Do nothing
-      }
-
-      const team = await Team.findOne({ where: { AppId: appId, name: teamManager || managerId } });
-      if (managerId === '') {
-        if (team) {
+    if (managerId != null || '') {
+      const teamManager = await AppMember.findByPk(managerId);
+      if (teamManager) {
+        const existingTeam = await Team.findOne({ where: { AppId: appId, name: managerId } });
+        // Checks if user is already in the team
+        if (
+          existingTeam &&
+          !(await TeamMember.findOne({
+            where: { TeamId: existingTeam.id, UserId: member.UserId },
+          }))
+        ) {
           promises.push(
-            TeamMember.destroy({ where: { TeamId: team.id, UserId: member.User.id }, transaction }),
+            TeamMember.create(
+              {
+                TeamId: existingTeam.id,
+                UserId: member.UserId,
+              },
+              { transaction },
+            ),
           );
-        }
-      } else {
-        if (team) {
-          if (await TeamMember.findOne({ where: { TeamId: team.id, UserId: member.User.id } })) {
-            promises.push(team.update({ name: managerId }, { transaction }));
-          } else {
-            promises.push(
-              TeamMember.create({ TeamId: team.id, UserId: member.User.id }, { transaction }),
-            );
-          }
         } else {
+          const newTeam = await Team.create({ AppId: appId, name: managerId }, { transaction });
+
           promises.push(
-            Team.create({ AppId: appId, name: managerId }, { transaction }).then((t) =>
-              TeamMember.create({ TeamId: t.id, UserId: member.User.id }, { transaction }),
+            TeamMember.create(
+              {
+                TeamId: newTeam.id,
+                UserId: member.UserId,
+              },
+              { transaction },
+            ),
+            TeamMember.create(
+              {
+                TeamId: newTeam.id,
+                UserId: teamManager.UserId,
+                role: 'manager',
+              },
+              { transaction },
             ),
           );
         }
