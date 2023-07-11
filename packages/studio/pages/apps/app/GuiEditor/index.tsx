@@ -5,7 +5,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App, type AppDefinition } from '@appsemble/types';
+import { type App, type AppDefinition, type PageDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
@@ -201,6 +201,37 @@ export default function EditPage(): ReactElement {
     sharedStyle,
   ]);
 
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const equalityCheck = (old: object, cur: object): string => {
+    // If both have no theme
+    if (old === cur) {
+      return '';
+    }
+    // If theme was added
+    if (cur && !old) {
+      return 'added';
+    }
+    // If theme was removed
+    if (!cur && old) {
+      return 'removed';
+    }
+    // If both exist and are not equal
+    let changes = 'Changed: ';
+    for (const key in old) {
+      if (cur[key] !== old[key]) {
+        changes += `${key}, `;
+      }
+    }
+    for (const key in cur) {
+      if (cur[key] && !old[key]) {
+        changes += `${key}, `;
+      }
+    }
+    if (changes !== 'Changed: ') {
+      return changes;
+    }
+  };
+
   const getUnsavedChanges = useCallback(() => {
     const unsavedChanges: string[] = ['Unsaved changes:\n'];
     const old = app.definition;
@@ -228,13 +259,17 @@ export default function EditPage(): ReactElement {
       unsavedChanges.push(`Navigation: ${cur.layout.navigation}\n`);
     }
     // Theme tab
-    // TODO: create a function that loops through all themable objects and returns changes
-    // if (old.theme.themeColor !== cur.theme.themeColor) {
-    //   unsavedChanges.push(`Theme Color: ${cur.theme.themeColor}\n`);
-    // }
-    // if (old.theme.splashColor !== cur.theme.splashColor) {
-    //   unsavedChanges.push(`Splash Color: ${cur.theme.splashColor}\n`);
-    // }
+    let changeString = equalityCheck(old.theme, cur.theme);
+    if (changeString) {
+      unsavedChanges.push(`Default theme ${changeString}\n`);
+    }
+    // eslint-disable-next-line unicorn/no-array-for-each
+    cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
+      changeString = equalityCheck(old.pages[pageIndex].theme, page.theme);
+      if (changeString) {
+        unsavedChanges.push(`Page '${page.name}' theme ${changeString}\n`);
+      }
+    });
 
     // Empty the array when there are no unsaved changes.
     if (unsavedChanges.length === 1) {
