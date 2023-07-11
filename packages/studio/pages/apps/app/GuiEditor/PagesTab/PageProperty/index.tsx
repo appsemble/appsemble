@@ -130,6 +130,28 @@ export function PageProperty({
         deleteIn(['pages', selectedPage]);
         addIn(['pages'], doc.createNode({ name: pageName, blocks: subPageBlocks }));
       }
+      // From flow to tab or vice versa
+      const pageType = doc.getIn(['pages', selectedPage, 'type']);
+      if (pageType !== inputPageType) {
+        const subPages = doc.getIn([
+          'pages',
+          selectedPage,
+          pageType === 'flow' ? 'steps' : 'tabs',
+        ]) as YAMLSeq;
+        if (subPages.items.length < 2) {
+          push({
+            body: 'A flow page must have at least two sub-pages',
+            color: 'danger',
+          });
+        } else {
+          changeIn(['pages', selectedPage, 'type'], doc.createNode(inputPageType));
+          deleteIn(['pages', selectedPage, pageType === 'flow' ? 'steps' : 'tabs']);
+          addIn(
+            ['pages', selectedPage, inputPageType === 'flow' ? 'steps' : 'tabs'],
+            doc.createNode(subPages),
+          );
+        }
+      }
     }
   }, [
     addIn,
