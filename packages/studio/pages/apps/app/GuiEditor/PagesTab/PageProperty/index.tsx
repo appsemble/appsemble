@@ -15,6 +15,7 @@ import { InputString } from '../../Components/InputString/index.js';
 interface PagePropertyProps {
   addIn: (path: Iterable<unknown>, value: Node) => void;
   changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
   deletePage: () => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
@@ -25,6 +26,7 @@ const pageTypes = ['page', 'flow', 'tabs'] as const;
 export function PageProperty({
   addIn,
   changeIn,
+  deleteIn,
   deletePage,
   docRef,
   selectedPage,
@@ -36,7 +38,7 @@ export function PageProperty({
       ? 'Page Name'
       : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
-  const [currentPageType, setCurrentPageType] = useState<(typeof pageTypes)[number]>('page');
+  const [inputPageType, setInputPageType] = useState<(typeof pageTypes)[number]>('page');
   const [currentSubPage, setCurrentSubPage] = useState<number>(selectedSubPage);
 
   const onChangePageName = useCallback(
@@ -48,9 +50,9 @@ export function PageProperty({
 
   const onChangePageType = useCallback(
     (index: number) => {
-      setCurrentPageType(pageTypes[index]);
+      setInputPageType(pageTypes[index]);
     },
-    [setCurrentPageType],
+    [setInputPageType],
   );
 
   const onChangePage = useCallback(() => {
@@ -65,19 +67,19 @@ export function PageProperty({
         push({ body: 'Page name cannot be empty', color: 'danger' });
         return;
       }
-      if (currentPageType === 'page') {
+      if (inputPageType === 'page') {
         addIn(['pages'], doc.createNode({ name: currentPageName, blocks: [] }));
       }
-      if (currentPageType === 'flow') {
+      if (inputPageType === 'flow') {
         addIn(['pages'], doc.createNode({ name: currentPageName, type: 'flow', steps: [] }));
         setCurrentSubPage(
           (doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1,
         );
       }
-      if (currentPageType === 'tabs') {
+      if (inputPageType === 'tabs') {
         addIn(['pages'], doc.createNode({ name: currentPageName, type: 'tabs', tabs: [] }));
       }
-    } else {
+    } else if (selectedPage !== -1 && currentSubPage === -1) {
       // Update page
       if (
         doc
@@ -93,16 +95,49 @@ export function PageProperty({
         return;
       }
       changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName));
-      if (currentPageType !== 'page') {
-        changeIn(['pages', selectedPage, 'type'], doc.createNode(currentPageType));
+
+      // Change page type from page to flow/tab (move blocks into steps/tabs)
+      if (inputPageType !== 'page' && !doc.getIn(['pages', selectedPage, 'type'])) {
+        changeIn(['pages', selectedPage, 'type'], doc.createNode(inputPageType));
+        const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']);
+        addIn(
+          ['pages', selectedPage, inputPageType === 'flow' ? 'steps' : 'tabs', 0, 'name'],
+          doc.createNode('Sub-page'),
+        );
+        addIn(
+          ['pages', selectedPage, inputPageType === 'flow' ? 'steps' : 'tabs', 0, 'blocks'],
+          doc.createNode(pageBlocks),
+        );
+        deleteIn(['pages', selectedPage, 'blocks']);
+      }
+      // From flow/tab to page
+      if (
+        (doc.getIn(['pages', selectedPage, 'type']) === 'flow' ||
+          doc.getIn(['pages', selectedPage, 'type']) === 'tabs') &&
+        inputPageType === 'page'
+      ) {
+        const subPageBlocks = (
+          doc.getIn([
+            'pages',
+            selectedPage,
+            doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+          ]) as YAMLSeq
+        ).items.flatMap((subPage: any) =>
+          subPage.getIn(['blocks']).items.map((block: any) => block),
+        );
+
+        const pageName = doc.getIn(['pages', selectedPage, 'name']);
+        deleteIn(['pages', selectedPage]);
+        addIn(['pages'], doc.createNode({ name: pageName, blocks: subPageBlocks }));
       }
     }
   }, [
     addIn,
     changeIn,
     currentPageName,
-    currentPageType,
+    inputPageType,
     currentSubPage,
+    deleteIn,
     docRef,
     push,
     selectedPage,
@@ -110,14 +145,40 @@ export function PageProperty({
 
   const onCreateSubPage = useCallback(() => {
     const doc = docRef.current;
-    if (currentPageType === 'flow') {
-      addIn(['pages', selectedPage, 'steps'], doc.createNode({ name: 'Sub-page', blocks: [] }));
+    if (inputPageType === 'flow') {
+      addIn(
+        ['pages', selectedPage, 'steps'],
+        doc.createNode({
+          name: 'Sub-page',
+          blocks: [
+            // Add a action-button as a hack to prevent empty sub-page
+            {
+              type: 'action-button',
+              version: '0.20.42',
+              parameters: { icon: 'fas fa-home', title: 'title' },
+            },
+          ],
+        }),
+      );
       setCurrentSubPage((doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1);
     } else {
-      addIn(['pages', selectedPage, 'tabs'], doc.createNode({ name: 'Sub-page', blocks: [] }));
+      addIn(
+        ['pages', selectedPage, 'tabs'],
+        doc.createNode({
+          name: 'Sub-page',
+          blocks: [
+            {
+              type: 'action-button',
+              version: '0.20.42',
+              parameters: { icon: 'fas fa-home', title: 'title' },
+            },
+          ],
+        }),
+      );
+      setCurrentSubPage((doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length - 1);
     }
     onChangePage();
-  }, [addIn, currentPageType, docRef, onChangePage, selectedPage]);
+  }, [addIn, inputPageType, docRef, onChangePage, selectedPage]);
 
   useEffect(() => {
     setCurrentPageName(
@@ -139,12 +200,12 @@ export function PageProperty({
         label="Type"
         onChange={onChangePageType}
         options={pageTypes}
-        value={currentPageType}
+        value={inputPageType}
       />
       <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
         {selectedPage === -1 ? 'Create page' : 'Save page'}
       </Button>
-      {currentPageType !== 'page' && selectedPage !== -1 && (
+      {inputPageType !== 'page' && selectedPage !== -1 && (
         <Button className="is-primary" component="a" icon="add" onClick={onCreateSubPage}>
           Create sub-page
         </Button>

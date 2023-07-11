@@ -230,6 +230,7 @@ export function PagesTab({
             <PageProperty
               addIn={addIn}
               changeIn={changeIn}
+              deleteIn={deleteIn}
               deletePage={deletePage}
               docRef={docRef}
               selectedPage={selectedPage}
