@@ -34,6 +34,7 @@ theme/name
 URI/URL
 uncategorize/categorize
 unconfigure/reconfigure
+validator
 workspace/mare
 
 # Technical slang and libraries
@@ -53,6 +54,7 @@ CORS
 CSS
 CSV
 cronjob/job
+customappsso
 DNS
 Dnsmasq
 DOM
@@ -79,6 +81,7 @@ localhost
 MacOS
 MD5
 NodeJS
+ngrok
 npm
 npmjs
 OAuth
@@ -97,6 +100,8 @@ Redux
 SAML
 SAML2.0
 SCIM
+scim
+scimExternalId
 SDK
 SMTP
 SSL
