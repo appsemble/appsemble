@@ -38,27 +38,26 @@ export function generateDefaultValidity(
             data,
             utils,
             defaultError,
-            defaultValues[field.name] as Values,
+            defaultValues?.[field.name] as Values,
             prefix ? `${prefix}.${field.name}` : field.name,
           );
-    } else {
-      if (!isRequired(field, utils, data) && value === defaultValues?.[field.name]) {
-        // If the user has entered something and then reverted it to its default value,
-        // it should be treated as if it’s pristine.
-        continue;
-      }
+    }
+    if (!isRequired(field, utils, data) && value === defaultValues?.[field.name]) {
+      // If the user has entered something and then reverted it to its default value,
+      // it should be treated as if it’s pristine.
+      continue;
+    }
 
-      const fieldValidity = validate(
-        field,
-        data,
-        utils,
-        defaultError,
-        defaultValues?.[field.name],
-        prefix,
-      );
-      if (typeof fieldValidity === 'string' || typeof fieldValidity === 'boolean') {
-        validity[field.name] = fieldValidity;
-      }
+    const fieldValidity = validate(
+      field,
+      data,
+      utils,
+      defaultError,
+      defaultValues?.[field.name],
+      prefix,
+    );
+    if (typeof fieldValidity === 'string' || typeof fieldValidity === 'boolean') {
+      validity[field.name] = fieldValidity;
     }
   }
   return validity;
