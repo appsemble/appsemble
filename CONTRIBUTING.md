@@ -48,6 +48,15 @@ CSS styles are linted using
 Markdown documents are linted using
 [![](https://avatars.githubusercontent.com/u/16309564?s=16) Remark lint](https://github.com/remarkjs/remark-lint)
 
+#### Message validation
+
+The pipeline will automatically detect if newly added messages are missing in the i18n directory. To
+automatically extract these messages from the source files run:
+
+```sh
+yarn script extract-messages
+```
+
 ### Testing
 
 Appsemble uses [![](https://jestjs.io/img/favicon/favicon-16x16.png) Jest](https://jestjs.io) for
