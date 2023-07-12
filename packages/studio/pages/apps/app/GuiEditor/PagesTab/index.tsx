@@ -9,6 +9,7 @@ import { BlockStore } from './BlockStore/index.js';
 import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
+import SubPageProperty from './SubPageProperty/index.js';
 import { useApp } from '../../index.js';
 import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
@@ -39,6 +40,7 @@ export function PagesTab({
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
   const [editPageView, setEditPageView] = useState<boolean>(false);
+  const [editSubPageView, setEditSubPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
   const [blockManifest, setBlockManifest] = useState<BlockManifest>(null);
@@ -63,11 +65,18 @@ export function PagesTab({
       if (block !== -1) {
         setEditPageView(false);
         setEditBlockView(true);
+        setEditSubPageView(false);
         return;
       }
-      if (page !== -1 && block === -1) {
+      if (page !== -1 && block === -1 && subParent === -1) {
         setEditPageView(true);
         setEditBlockView(false);
+        setEditSubPageView(false);
+      }
+      if (page !== -1 && block === -1 && subParent !== -1) {
+        setEditPageView(false);
+        setEditBlockView(false);
+        setEditSubPageView(true);
       }
     },
     [setSelectedPage, setSelectedBlock, setSelectedSubParent],
@@ -226,6 +235,15 @@ export function PagesTab({
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
+          {editSubPageView ? (
+            <SubPageProperty
+              changeIn={changeIn}
+              deletePage={deletePage}
+              docRef={docRef}
+              selectedPage={selectedPage}
+              selectedSubPage={selectedSubParent}
+            />
+          ) : null}
           {editPageView ? (
             <PageProperty
               addIn={addIn}

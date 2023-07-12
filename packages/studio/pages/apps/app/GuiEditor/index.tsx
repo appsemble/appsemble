@@ -218,13 +218,13 @@ export default function EditPage(): ReactElement {
     // If both exist and changes are present
     let changes = '';
     for (const key in old) {
-      if (cur[key] !== old[key]) {
-        changes += `${key}: ${cur[key]}, `;
+      if (cur[key as keyof object] !== old[key as keyof object]) {
+        changes += `${key}: ${cur[key as keyof object]}, `;
       }
     }
     for (const key in cur) {
-      if (cur[key] && !old[key]) {
-        changes += `${key}: ${cur[key]}, `;
+      if (cur[key as keyof object] && !old[key as keyof object]) {
+        changes += `${key}: ${cur[key as keyof object]}, `;
       }
     }
     if (changes !== '') {

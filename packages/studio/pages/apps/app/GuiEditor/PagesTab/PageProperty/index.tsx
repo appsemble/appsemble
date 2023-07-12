@@ -154,15 +154,15 @@ export function PageProperty({
       }
     }
   }, [
-    addIn,
-    changeIn,
+    docRef,
+    selectedPage,
+    currentSubPage,
     currentPageName,
     inputPageType,
-    currentSubPage,
-    deleteIn,
-    docRef,
     push,
-    selectedPage,
+    addIn,
+    changeIn,
+    deleteIn,
   ]);
 
   const onCreateSubPage = useCallback(() => {

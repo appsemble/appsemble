@@ -187,6 +187,13 @@ export function ElementsList({
     [onChange],
   );
 
+  const onSelectSubPage = useCallback(
+    (pageIndex: number, subParentIndex: number) => {
+      onChange(pageIndex, subParentIndex, -1);
+    },
+    [onChange],
+  );
+
   const onSelectBlock = useCallback(
     (parentIndex: number, subParentIndex: number, blockIndex: number) => {
       onChange(parentIndex, subParentIndex, blockIndex);
@@ -267,9 +274,9 @@ export function ElementsList({
                           ? 'is-info'
                           : ''
                       }`}
-                      draggable
+                      // TODO make sub pages draggable (by adding draggable property)
                       key={block.block}
-                      onClick={() => onSelectBlock(block.parent, block.subParent, block.block)}
+                      onClick={() => onSelectSubPage(block.parent, block.subParent)}
                       onDragOver={(e) => e.preventDefault()}
                       onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
                       onDrop={(e) => handleDrop(e, block.block, pageIndex, block.subParent)}
