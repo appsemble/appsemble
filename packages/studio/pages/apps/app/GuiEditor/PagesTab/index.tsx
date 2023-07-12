@@ -180,6 +180,17 @@ export function PagesTab({
     onChangePagesBlocks(selectedPage - 1, selectedSubParent, selectedBlock);
   }, [deleteIn, onChangePagesBlocks, selectedBlock, selectedPage, selectedSubParent]);
 
+  const deleteSubPage = useCallback(() => {
+    const doc = docRef.current;
+    deleteIn([
+      'pages',
+      selectedPage,
+      doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+      selectedSubParent,
+    ]);
+    onChangePagesBlocks(selectedPage, selectedSubParent - 1, selectedBlock);
+  }, [deleteIn, docRef, onChangePagesBlocks, selectedBlock, selectedPage, selectedSubParent]);
+
   const changeProperty = (parameters: JsonObject): void => {
     const doc = docRef.current;
     changeIn([...getBlockPath(), selectedBlock, 'parameters'], doc.createNode(parameters) as Node);
@@ -235,21 +246,21 @@ export function PagesTab({
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
-          {editSubPageView ? (
-            <SubPageProperty
-              changeIn={changeIn}
-              deletePage={deletePage}
-              docRef={docRef}
-              selectedPage={selectedPage}
-              selectedSubPage={selectedSubParent}
-            />
-          ) : null}
           {editPageView ? (
             <PageProperty
               addIn={addIn}
               changeIn={changeIn}
               deleteIn={deleteIn}
               deletePage={deletePage}
+              docRef={docRef}
+              selectedPage={selectedPage}
+              selectedSubPage={selectedSubParent}
+            />
+          ) : null}
+          {editSubPageView ? (
+            <SubPageProperty
+              changeIn={changeIn}
+              deletePage={deleteSubPage}
               docRef={docRef}
               selectedPage={selectedPage}
               selectedSubPage={selectedSubParent}

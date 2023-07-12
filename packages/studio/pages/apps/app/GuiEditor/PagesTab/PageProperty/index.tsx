@@ -94,7 +94,12 @@ export function PageProperty({
         push({ body: 'Page name cannot be empty', color: 'danger' });
         return;
       }
-      changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName));
+      // Check if the changed page is the default page  TODO check if pagename is used anywhere else
+      const oldName = doc.toJS().pages[selectedPage].name.trim();
+      if (doc.toJS().defaultPage.trim() === oldName) {
+        changeIn(['defaultPage'], doc.createNode(currentPageName.trim()));
+      }
+      changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName.trim()));
 
       // Change page type from page to flow/tab (move blocks into steps/tabs)
       if (inputPageType !== 'page' && !doc.getIn(['pages', selectedPage, 'type'])) {
@@ -132,7 +137,7 @@ export function PageProperty({
       }
       // From flow to tab or vice versa
       const pageType = doc.getIn(['pages', selectedPage, 'type']);
-      if (pageType !== inputPageType) {
+      if (pageType !== inputPageType && pageType) {
         const subPages = doc.getIn([
           'pages',
           selectedPage,

@@ -152,7 +152,7 @@ export default function EditPage(): ReactElement {
           );
         }
       });
-      if (empty) {
+      if (empty.includes(true)) {
         return 'A page must have at least one block';
       }
       if (definition.errors.length > 0) {
