@@ -4,6 +4,7 @@ import {
   type MutableRefObject,
   type ReactElement,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import { type Document, type Node, type ParsedNode } from 'yaml';
@@ -44,6 +45,20 @@ export function SubPageProperty({
     },
     [setCurrentSubPageName],
   );
+
+  useEffect(() => {
+    setCurrentSubPageName(
+      (
+        docRef.current.getIn([
+          'pages',
+          selectedPage,
+          docRef.current.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+          selectedSubPage,
+          'name',
+        ]) as string
+      ).trim(),
+    );
+  }, [docRef, selectedPage, selectedSubPage]);
 
   const onChangePage = useCallback(() => {
     const doc = docRef.current;

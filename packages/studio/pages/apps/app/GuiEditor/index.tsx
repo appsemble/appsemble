@@ -236,6 +236,7 @@ export default function EditPage(): ReactElement {
     const unsavedChanges: string[] = ['Unsaved changes:\n'];
     const old = app.definition;
     const cur = saveStack[index].toJS();
+
     // General tab changes
     if (old.name !== cur.name) {
       unsavedChanges.push(`Name:  ${cur.name}\n`);
@@ -271,10 +272,10 @@ export default function EditPage(): ReactElement {
     cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
       if (old.pages[pageIndex]) {
         if (page.name !== old.pages[pageIndex].name) {
-          unsavedChanges.push(`Pagename '${page.name}'\n`);
+          unsavedChanges.push(`Page name: '${page.name}'\n`);
         }
         if (page.type !== old.pages[pageIndex].type) {
-          unsavedChanges.push(`Pagename '${page.type}'\n`);
+          unsavedChanges.push(`Page type: '${page.type ?? 'page'}'\n`);
         }
       }
     });

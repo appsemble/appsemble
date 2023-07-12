@@ -128,6 +128,7 @@ export function ElementsList({
           doc.createNode(blockList),
         );
       }
+      // Cross page block dragging
     } else if (targetPageIndex !== dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
       const targetBlockList = getBlocks(targetPageIndex);
@@ -142,12 +143,25 @@ export function ElementsList({
         changeIn(['pages', dragPageIndex, 'blocks'], doc.createNode(blockList));
       } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
         // TODO: change subParent index (0) to match actual subParent
-        changeIn(['pages', targetPageIndex, 'steps', 0, 'blocks'], doc.createNode(targetBlockList));
-        changeIn(['pages', dragPageIndex, 'steps', 0, 'blocks'], doc.createNode(blockList));
+        changeIn(
+          ['pages', targetPageIndex, 'steps', targetSubPageIndex, 'blocks'],
+          doc.createNode(targetBlockList),
+        );
+        changeIn(
+          ['pages', dragPageIndex, 'steps', selectedSubParent, 'blocks'],
+          doc.createNode(blockList),
+        );
       } else {
-        changeIn(['pages', targetPageIndex, 'tabs', 0, 'blocks'], doc.createNode(targetBlockList));
-        changeIn(['pages', dragPageIndex, 'tabs', 0, 'blocks'], doc.createNode(blockList));
+        changeIn(
+          ['pages', targetPageIndex, 'tabs', targetSubPageIndex, 'blocks'],
+          doc.createNode(targetBlockList),
+        );
+        changeIn(
+          ['pages', dragPageIndex, 'tabs', selectedSubParent, 'blocks'],
+          doc.createNode(blockList),
+        );
       }
+      // Page dragging
     } else if (targetPageIndex !== dragPageIndex && dragItem === -1) {
       const dragPage = doc.getIn(['pages', dragPageIndex]) as YAMLSeq;
       const targetPage = doc.getIn(['pages', targetPageIndex]) as YAMLSeq;
