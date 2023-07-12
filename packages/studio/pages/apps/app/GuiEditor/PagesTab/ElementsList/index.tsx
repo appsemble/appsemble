@@ -207,7 +207,7 @@ export function ElementsList({
         <div key={page}>
           <Button
             className={`${styles.parentTop} ${
-              selectedPage === pageIndex && selectedBlock === -1
+              selectedPage === pageIndex && selectedBlock === -1 && selectedSubParent === -1
                 ? 'is-link'
                 : selectedPage === pageIndex && selectedBlock >= 0
                 ? 'is-info'
@@ -270,7 +270,11 @@ export function ElementsList({
                       className={`${styles.subParent} ${
                         block.subParent === selectedSubParent &&
                         selectedPage === pageIndex &&
-                        selectedBlock !== -1
+                        selectedBlock === -1
+                          ? 'is-link'
+                          : selectedPage === pageIndex &&
+                            block.subParent === selectedSubParent &&
+                            selectedBlock !== -1
                           ? 'is-info'
                           : ''
                       }`}
