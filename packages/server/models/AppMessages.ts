@@ -18,14 +18,14 @@ import { App } from './index.js';
 export class AppMessages extends Model implements MessagesType {
   @PrimaryKey
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)
   App: Awaited<App>;
 
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   language: string;
 
   @Column(DataType.JSON)

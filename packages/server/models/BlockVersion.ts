@@ -27,21 +27,21 @@ export class BlockVersion extends Model {
   @Unique('blockVersionComposite')
   @ForeignKey(() => Organization)
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   OrganizationId: string;
 
   @Unique('blockVersionComposite')
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @Unique('blockVersionComposite')
-  @Column
+  @Column(DataType.STRING)
   version: string;
 
   @Column(DataType.STRING)
   layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 
-  @Column
+  @Column(DataType.BLOB)
   icon: Buffer;
 
   @Column(DataType.TEXT)

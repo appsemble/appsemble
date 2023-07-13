@@ -2,6 +2,7 @@ import {
   BelongsToMany,
   Column,
   CreatedAt,
+  DataType,
   DeletedAt,
   ForeignKey,
   HasMany,
@@ -17,22 +18,22 @@ import { App, BlockVersion, Member, OrganizationInvite, User } from './index.js'
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model {
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   id: string;
 
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
-  @Column
+  @Column(DataType.STRING)
   description: string;
 
-  @Column
+  @Column(DataType.STRING)
   website: string;
 
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
-  @Column
+  @Column(DataType.BLOB)
   icon: Buffer;
 
   @BelongsToMany(() => User, () => Member)
@@ -45,7 +46,7 @@ export class Organization extends Model {
   OrganizationInvites: OrganizationInvite[];
 
   @ForeignKey(() => Organization)
-  @Column
+  @Column(DataType.STRING)
   OrganizationId: string;
 
   @HasOne(() => Organization)

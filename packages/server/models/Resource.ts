@@ -35,11 +35,11 @@ interface ResourceToJsonOptions {
 export class Resource extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   type: string;
 
   @AllowNull(false)
@@ -51,7 +51,7 @@ export class Resource extends Model {
   @Column(DataType.BOOLEAN)
   clonable: boolean;
 
-  @Column
+  @Column(DataType.DATE)
   expires: Date;
 
   @CreatedAt
@@ -62,7 +62,7 @@ export class Resource extends Model {
 
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

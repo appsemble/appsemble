@@ -19,12 +19,12 @@ import { Team, User } from './index.js';
 export class TeamMember extends Model {
   @PrimaryKey
   @ForeignKey(() => Team)
-  @Column
+  @Column(DataType.INTEGER)
   TeamId: number;
 
   @PrimaryKey
   @ForeignKey(() => User)
-  @Column
+  @Column(DataType.UUID)
   UserId: string;
 
   @Default(TeamRole.Member)

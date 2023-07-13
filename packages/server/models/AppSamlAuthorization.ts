@@ -19,7 +19,7 @@ export class AppSamlAuthorization extends Model {
    * The name id of the user on the identity provider.
    */
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   nameId: string;
 
   /**
@@ -27,7 +27,7 @@ export class AppSamlAuthorization extends Model {
    */
   @PrimaryKey
   @ForeignKey(() => AppSamlSecret)
-  @Column
+  @Column(DataType.INTEGER)
   AppSamlSecretId: number;
 
   /**

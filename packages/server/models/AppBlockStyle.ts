@@ -18,7 +18,7 @@ export class AppBlockStyle extends Model {
   @PrimaryKey
   @AllowNull(false)
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   /**
@@ -29,7 +29,7 @@ export class AppBlockStyle extends Model {
    */
   @PrimaryKey
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   block: string;
 
   @Column({ type: DataType.TEXT })

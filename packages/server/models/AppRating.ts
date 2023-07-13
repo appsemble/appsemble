@@ -17,7 +17,7 @@ import { App, User } from './index.js';
 @Table({ tableName: 'AppRating' })
 export class AppRating extends Model {
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   rating: number;
 
   @Column(DataType.TEXT)
@@ -27,7 +27,7 @@ export class AppRating extends Model {
   @AllowNull(false)
   @Unique('UniqueRatingIndex')
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

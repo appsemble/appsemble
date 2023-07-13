@@ -20,11 +20,11 @@ import { Organization, User } from './index.js';
 export class OrganizationInvite extends Model {
   @PrimaryKey
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   email: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   key: string;
 
   @Default('Member')
@@ -43,7 +43,7 @@ export class OrganizationInvite extends Model {
   @PrimaryKey
   @ForeignKey(() => Organization)
   @Unique('EmailOrganizationIndex')
-  @Column
+  @Column(DataType.STRING)
   OrganizationId: string;
 
   @BelongsTo(() => Organization)

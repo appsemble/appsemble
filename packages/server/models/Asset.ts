@@ -19,21 +19,21 @@ import { App, Resource, User } from './index.js';
 export class Asset extends Model {
   @PrimaryKey
   @Default(DataType.UUIDV4)
-  @Column
+  @Column(DataType.STRING)
   id: string;
 
-  @Column
+  @Column(DataType.STRING)
   mime: string;
 
-  @Column
+  @Column(DataType.STRING)
   filename: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.BLOB)
   data: Buffer;
 
   @Unique('UniqueAssetNameIndex')
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @CreatedAt
@@ -44,7 +44,7 @@ export class Asset extends Model {
 
   @ForeignKey(() => App)
   @Unique('UniqueAssetNameIndex')
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)
@@ -58,7 +58,7 @@ export class Asset extends Model {
   User: Awaited<User>;
 
   @ForeignKey(() => Resource)
-  @Column
+  @Column(DataType.INTEGER)
   ResourceId: number;
 
   @BelongsTo(() => Resource)
