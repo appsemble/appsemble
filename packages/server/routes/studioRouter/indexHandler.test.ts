@@ -31,7 +31,7 @@ it('should serve the studio index page with correct headers', async () => {
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={"enableRegistration":true,"logins":[]}</script>",
+        "settings": "<script>window.settings={\\"enableRegistration\\":true,\\"logins\\":[]}</script>",
       },
       "filename": "studio/index.html",
     }

@@ -2528,7 +2528,7 @@ describe('createResource', () => {
             {
               "argument": "foo",
               "instance": {},
-              "message": "requires property "foo"",
+              "message": "requires property \\"foo\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2577,7 +2577,7 @@ describe('createResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "foo"",
+              "stack": "instance requires property \\"foo\\"",
             },
           ],
         },
@@ -3341,7 +3341,7 @@ describe('updateResource', () => {
               "instance": {
                 "bar": 123,
               },
-              "message": "requires property "foo"",
+              "message": "requires property \\"foo\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3390,7 +3390,7 @@ describe('updateResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "foo"",
+              "stack": "instance requires property \\"foo\\"",
             },
             {
               "argument": [

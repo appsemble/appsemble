@@ -8683,6 +8683,11 @@ jake@^10.8.5:
     filelist "^1.0.4"
     minimatch "^3.1.2"
 
+jest-axios-snapshot@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/jest-axios-snapshot/-/jest-axios-snapshot-1.0.1.tgz#7c44089d210c53686744da59ba9113d40f9051b4"
+  integrity sha512-QIO0HPR9S//6hggVJ5II22fpeQkzbpDTTTegtt9LF92NgZXkzBblOJ8R3FsGoodOkMxvOoPoNzQqmccvgSiKgQ==
+
 jest-diff@^29.6.1:
   version "29.6.1"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-29.6.1.tgz#13df6db0a89ee6ad93c747c75c85c70ba941e545"

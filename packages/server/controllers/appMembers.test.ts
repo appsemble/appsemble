@@ -1183,7 +1183,7 @@ describe('registerMemberEmail', () => {
           {
             "argument": "email",
             "instance": "foo",
-            "message": "does not conform to the "email" format",
+            "message": "does not conform to the \\"email\\" format",
             "name": "format",
             "path": [
               "email",
@@ -1193,7 +1193,7 @@ describe('registerMemberEmail', () => {
               "format": "email",
               "type": "string",
             },
-            "stack": "instance.email does not conform to the "email" format",
+            "stack": "instance.email does not conform to the \\"email\\" format",
           },
           {
             "argument": 8,

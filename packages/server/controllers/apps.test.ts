@@ -1082,7 +1082,7 @@ describe('createApp', () => {
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1105,7 +1105,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1148,14 +1148,14 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
           {
             "argument": "yaml",
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1178,7 +1178,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1221,7 +1221,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1263,7 +1263,7 @@ describe('createApp', () => {
             - type: test
               version: 0.0.1",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1286,7 +1286,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1329,7 +1329,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1804,9 +1804,9 @@ describe('createApp', () => {
             "instance": {
               "OrganizationId": "testorganization",
               "coreStyle": "this is invalid css",
-              "definition": "{"name":"Test App","defaultPage":"Test Page","pages":[{"name":"Test Page","blocks":[{"type":"test","version":"0.0.0"}]}]}",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"test\\",\\"version\\":\\"0.0.0\\"}]}]}",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1829,7 +1829,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1872,7 +1872,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1909,10 +1909,10 @@ describe('createApp', () => {
             "argument": "yaml",
             "instance": {
               "OrganizationId": "testorganization",
-              "definition": "{"name":"Test App","defaultPage":"Test Page","path":"a","pages":[{"name":"Test Page","blocks":[{"type":"testblock"}]}]}",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"path\\":\\"a\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"testblock\\"}]}]}",
               "sharedStyle": "this is invalid css",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1935,7 +1935,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1978,7 +1978,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -2365,7 +2365,7 @@ describe('createApp', () => {
                   },
                 ],
               },
-              "message": "requires property "name"",
+              "message": "requires property \\"name\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2498,7 +2498,7 @@ describe('createApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "name"",
+              "stack": "instance requires property \\"name\\"",
             },
           ],
         },
@@ -2963,7 +2963,7 @@ describe('patchApp', () => {
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -2986,7 +2986,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3029,14 +3029,14 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
           {
             "argument": "yaml",
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -3059,7 +3059,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3102,7 +3102,7 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -3141,7 +3141,7 @@ describe('patchApp', () => {
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property "defaultPage"",
+              "message": "requires property \\"defaultPage\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3274,14 +3274,14 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "defaultPage"",
+              "stack": "instance requires property \\"defaultPage\\"",
             },
             {
               "argument": "pages",
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property "pages"",
+              "message": "requires property \\"pages\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3414,7 +3414,7 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "pages"",
+              "stack": "instance requires property \\"pages\\"",
             },
           ],
         },
