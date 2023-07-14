@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "NODE_OPTIONS=--experimental-vm-modules vitest"
+    "test": "vitest"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.20.45",
