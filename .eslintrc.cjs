@@ -71,16 +71,6 @@ module.exports = {
       },
     },
     {
-      // These rules are disabled for the root vitest.config.ts, because sharp is not in
-      // the root package.json, and it cannot be because it will fail when importing production.
-      files: ['vitest.config.ts'],
-      rules: {
-        'import/no-extraneous-dependencies': 'off',
-
-        'n/no-extraneous-import': 'off',
-      },
-    },
-    {
       // https://github.com/remcohaszing/eslint-config-remcohaszing/blob/v8.0.1/vitest.js
       files: ['*.test.*'],
       extends: ['remcohaszing/dev'],

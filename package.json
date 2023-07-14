@@ -91,6 +91,7 @@
     "retext-repeated-words": "^4.0.0",
     "retext-spell": "^5.0.0",
     "retext-syntax-urls": "^3.0.0",
+    "sharp": "^0.32.0",
     "style-search": "^0.1.0",
     "stylelint": "^15.0.0",
     "stylelint-color-format": "^1.0.0",
