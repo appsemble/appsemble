@@ -1,5 +1,4 @@
 import { setFixtureBase, setLogLevel } from '@appsemble/node-utils';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import axiosSnapshotSerializer, { setResponseTransformer } from 'jest-axios-snapshot';
 // https://vitest.dev/guide/snapshot.html#image-snapshots
 // eslint-disable-next-line import/no-extraneous-dependencies

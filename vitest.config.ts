@@ -1,4 +1,4 @@
-// // https://github.com/vitest-dev/vitest/issues/740#issuecomment-1254766751
+// https://github.com/vitest-dev/vitest/issues/740#issuecomment-1254766751
 import 'sharp';
 import { defineConfig } from 'vitest/config';
 
