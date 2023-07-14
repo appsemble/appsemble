@@ -199,11 +199,7 @@ async function validate(
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
-  assert(
-    pkg.scripts?.test === 'NODE_OPTIONS=--experimental-vm-modules vitest',
-    'package.json',
-    'Test script should be "NODE_OPTIONS=--experimental-vm-modules vitest"',
-  );
+  assert(pkg.scripts?.test === 'vitest', 'package.json', 'Test script should be "vitest"');
   for (const version of Object.values({ ...pkg.dependencies, ...pkg.devDependencies })) {
     if (version.startsWith('@appsemnle/')) {
       assert(
