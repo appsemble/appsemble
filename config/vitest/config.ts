@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { defineProject, type UserProjectConfigExport } from 'vitest/config';
+import { type UserProjectConfigExport } from 'vitest/config';
 
 /**
  * Generate a proper Vitest configuration based on a project context.
@@ -23,7 +23,7 @@ export function createVitestConfig({ url }: ImportMeta): UserProjectConfigExport
     setupFilesAfterEnv.push(fileURLToPath(setup));
   }
 
-  return defineProject({
+  return {
     test: {
       globals: true,
       clearMocks: true,
@@ -42,5 +42,5 @@ export function createVitestConfig({ url }: ImportMeta): UserProjectConfigExport
         },
       },
     },
-  });
+  };
 }
