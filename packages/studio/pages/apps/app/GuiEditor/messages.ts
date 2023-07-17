@@ -9,4 +9,6 @@ export const messages = defineMessages({
   securityTab: 'Security',
   saved: 'Saved app.',
   failed: 'Failed to save.',
+  undo: 'Undo last change (ctrl+z)',
+  redo: 'Redo last undo (ctrl+y)',
 });

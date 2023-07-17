@@ -27,7 +27,6 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
-import { UndoRedo } from './UndoRedo/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
@@ -262,7 +261,18 @@ export default function EditPage(): ReactElement {
             </li>
           ))}
         </ul>
-        <UndoRedo index={index} onRedo={onRedo} onUndo={onUndo} stackSize={saveStack.length} />
+        <Button
+          disabled={index < 1}
+          icon="rotate-left"
+          onClick={onUndo}
+          title={`${formatMessage(messages.undo)}\n ${unsaved.slice(-1)}`}
+        />
+        <Button
+          disabled={index >= saveStack.length - 1}
+          icon="rotate-right"
+          onClick={onRedo}
+          title={`${formatMessage(messages.redo)}\n ${unsaved.slice(-1)}`}
+        />
         <Button
           className={
             unsavedChanges
