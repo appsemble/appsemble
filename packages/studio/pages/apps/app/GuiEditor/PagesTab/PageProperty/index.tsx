@@ -94,7 +94,7 @@ export function PageProperty({
         push({ body: 'Page name cannot be empty', color: 'danger' });
         return;
       }
-      // Check if the changed page is the default page  TODO check if pagename is used anywhere else
+      // Check if the changed page is the default page TODO check if page name is used anywhere else
       const oldName = doc.toJS().pages[selectedPage].name.trim();
       if (doc.toJS().defaultPage.trim() === oldName) {
         changeIn(['defaultPage'], doc.createNode(currentPageName.trim()));

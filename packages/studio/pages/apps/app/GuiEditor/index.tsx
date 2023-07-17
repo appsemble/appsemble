@@ -156,7 +156,7 @@ export default function EditPage(): ReactElement {
         return 'A page must have at least one block';
       }
       if (definition.errors.length > 0) {
-        return 'A YAML error has occured';
+        return 'A YAML error has occurred';
       }
       return error;
     },
