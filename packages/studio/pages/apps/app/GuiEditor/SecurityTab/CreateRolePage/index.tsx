@@ -1,17 +1,27 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import { type RoleDefinition } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import { messages } from './messages.js';
-import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
 import { OptionalList } from '../../Components/OptionalList/index.js';
 
-export function CreateRolePage(): ReactElement {
-  const { app, setApp } = useApp();
+interface CreateRolePageProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
+}
+
+export function CreateRolePage({ changeIn, docRef }: CreateRolePageProps): ReactElement {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [createRoleName, setCreateRoleName] = useState<string>('');
@@ -28,10 +38,10 @@ export function CreateRolePage(): ReactElement {
       if (pageNr === 0) {
         setCreateRoleDefaultPage(null);
       } else {
-        setCreateRoleDefaultPage(app.definition.pages[pageNr - 1].name);
+        setCreateRoleDefaultPage(docRef.current.getIn(['pages', pageNr - 1, 'name']) as string);
       }
     },
-    [app],
+    [docRef],
   );
 
   const onChangeInheritance = useCallback(
@@ -46,11 +56,12 @@ export function CreateRolePage(): ReactElement {
   }, []);
 
   const onRoleCreate = useCallback(() => {
+    const doc = docRef.current;
     if (!createRoleName || createRoleName.trim() === '') {
       push({ body: formatMessage(messages.roleNameMissing), color: 'danger' });
       return;
     }
-    if (app.definition.security?.roles[createRoleName]) {
+    if (doc.getIn(['security', 'roles', createRoleName])) {
       push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
       return;
     }
@@ -59,30 +70,21 @@ export function CreateRolePage(): ReactElement {
       ...(createRoleInherits.length > 0 && { inherits: createRoleInherits }),
       ...(createRoleDefaultPage && { defaultPage: createRoleDefaultPage }),
     };
-    if (!app.definition.security) {
-      app.definition.security = {
-        roles: {},
-        default: {
-          role: createRoleName,
-        },
-      };
-    }
-    app.definition.security.roles[createRoleName] = newRole;
-    setApp({ ...app });
+    changeIn(['security', 'roles', createRoleName], doc.createNode(newRole));
     push({ body: formatMessage(messages.roleCreated), color: 'success' });
     setCreateRoleDefaultPage(null);
     setCreateRoleDescription('');
     setCreateRoleInherits([]);
     setCreateRoleName('');
   }, [
-    app,
+    changeIn,
     createRoleDefaultPage,
     createRoleDescription,
     createRoleInherits,
     createRoleName,
+    docRef,
     formatMessage,
     push,
-    setApp,
   ]);
 
   return (
@@ -100,7 +102,9 @@ export function CreateRolePage(): ReactElement {
         labelPosition="top"
         onChange={(pageNr) => onCreateRoleDefaultPage(pageNr)}
         options={[formatMessage(messages.noneLabel)].concat(
-          app.definition.pages.map((option) => option.name),
+          (docRef.current.getIn(['pages']) as YAMLSeq).items.map((option: any) =>
+            option.getIn(['name']),
+          ),
         )}
         value={createRoleDefaultPage || formatMessage(messages.noneLabel)}
       />
@@ -112,13 +116,13 @@ export function CreateRolePage(): ReactElement {
         onChange={(event, value) => onCreateRoleDescription(value)}
         value={createRoleDescription}
       />
-      {Object.entries(app.definition.security?.roles || []).length > 0 && (
+      {Object.entries(docRef.current.getIn(['security', 'roles']) || []).length > 0 && (
         <OptionalList
           addNewItemLabel={formatMessage(messages.addInheritanceLabel)}
           label={formatMessage(messages.inheritsLabel)}
           labelPosition="top"
           onNewSelected={onChangeInheritance}
-          options={Object.entries(app.definition.security?.roles || [])
+          options={Object.entries(docRef.current.getIn(['security', 'roles']) || [])
             .map(([key]) => key)
             .filter((role) => !createRoleInherits.includes(role))}
           selected={createRoleInherits}

@@ -1,40 +1,44 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type MutableRefObject, type ReactElement, useCallback } from 'react';
 import { useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode } from 'yaml';
 
 import { messages } from './messages.js';
-import { useApp } from '../../../index.js';
 import { InputList } from '../../Components/InputList/index.js';
 import { type tabChangeOptions } from '../index.js';
 
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
 
 interface DefaultPageProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
-export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
-  const { app, setApp } = useApp();
+export function DefaultPage({ changeIn, docRef, onChangeTab }: DefaultPageProps): ReactElement {
   const { formatMessage } = useIntl();
 
   const onChangeDefaultPolicy = useCallback(
     (index: number) => {
-      app.definition.security.default.policy = policyOptions[index];
-      setApp({ ...app });
+      changeIn(['security', 'default', 'policy'], docRef.current.createNode(policyOptions[index]));
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
   const onChangeDefaultRole = useCallback(
     (index: number) => {
-      app.definition.security.default.role = Object.entries(
-        app.definition.security?.roles || [],
-      ).map(([key]) => key)[index];
-      setApp({ ...app });
+      changeIn(
+        ['security', 'default', 'role'],
+        docRef.current.createNode(
+          Object.entries(docRef.current.getIn(['security', 'roles']) || []).map(([key]) => key)[
+            index
+          ],
+        ),
+      );
     },
-    [app, setApp],
+    [changeIn, docRef],
   );
 
-  if (!app.definition.security?.roles) {
+  if (!docRef.current.getIn(['security', 'roles'])) {
     return (
       <>
         <p className="help is-danger">{formatMessage(messages.noRoles)}</p>
@@ -51,15 +55,17 @@ export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
         label={formatMessage(messages.defaultRoleLabel)}
         labelPosition="top"
         onChange={onChangeDefaultRole}
-        options={Object.entries(app.definition.security.roles || []).map(([key]) => key)}
-        value={app.definition.security?.default.role || ''}
+        options={Object.entries(docRef.current.getIn(['security', 'roles']) || []).map(
+          ([key]) => key,
+        )}
+        value={(docRef.current.getIn(['security', 'default', 'role']) as string) || ''}
       />
       <InputList
         label={formatMessage(messages.defaultPolicyLabel)}
         labelPosition="top"
         onChange={onChangeDefaultPolicy}
         options={policyOptions}
-        value={app.definition.security?.default.policy || ''}
+        value={(docRef.current.getIn(['security', 'default', 'policy']) as string) || ''}
       />
     </>
   );

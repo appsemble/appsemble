@@ -128,19 +128,19 @@ export default function EditPage(): ReactElement {
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
-  const deleteIn = (path: Iterable<unknown>): void => {
+  const deleteIn = (path: Iterable<string>): void => {
     docRef.current.deleteIn(path);
     addSaveState();
     addToUnsaved(`Deleted: ${[...path].findLast((item) => typeof item === 'string')}\n`);
   };
 
-  const addIn = (path: Iterable<unknown>, value: Node): void => {
+  const addIn = (path: Iterable<string>, value: Node): void => {
     docRef.current.addIn(path, value);
     addSaveState();
     addToUnsaved(`${[...path].findLast((item) => typeof item === 'string')}\n`);
   };
 
-  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+  const changeIn = (path: Iterable<string>, value: Node): void => {
     docRef.current.setIn(path, value);
     addSaveState();
     addToUnsaved(`${[...path].findLast((item) => typeof item === 'string')}\n`);
@@ -337,7 +337,14 @@ export default function EditPage(): ReactElement {
           />
         )}
         {currentTab.tabName === 'security' && (
-          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
+          <SecurityTab
+            changeIn={changeIn}
+            deleteIn={deleteIn}
+            docRef={docRef}
+            frameRef={frame}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+          />
         )}
       </div>
     </div>

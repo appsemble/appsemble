@@ -11,8 +11,15 @@ import {
   type ResourceCall,
   type ResourceDefinition,
 } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import {
+  type ChangeEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -23,6 +30,9 @@ import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
 
 interface RolesPageProps {
+  changeIn: (path: Iterable<unknown>, value: Node) => void;
+  deleteIn: (path: Iterable<unknown>) => void;
+  docRef: MutableRefObject<Document<ParsedNode>>;
   selectedRole: string;
 }
 interface RoleReferences {
@@ -38,7 +48,12 @@ interface RoleReferences {
   blockRolesReferences: string[];
 }
 
-export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
+export function RolesPage({
+  changeIn,
+  deleteIn,
+  docRef,
+  selectedRole,
+}: RolesPageProps): ReactElement {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
   const [editRoleName, setEditRoleName] = useState<string>(null);
@@ -50,48 +65,67 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
 
   const onRoleNameChange = useCallback(
     (oldRole: string, newRole: string) => {
-      if (app.definition.security) {
+      const doc = docRef.current;
+      if (doc.getIn(['security'])) {
         // Rename role
-        for (const [key, value] of Object.entries(app.definition.security.roles || [])) {
+        for (const [key, value] of Object.entries(doc.getIn(['security', 'roles']) || [])) {
           if (key === oldRole) {
-            app.definition.security.roles[newRole] = value;
-            delete app.definition.security.roles[oldRole];
+            changeIn(['security', 'roles', newRole], doc.createNode(value));
+            deleteIn(['security', 'roles', oldRole]);
           }
         }
         // Rename every reference to the role
         // Rename role is roles that view page
-        if (app.definition.roles) {
-          app.definition.roles = app.definition.roles.map((role) =>
-            role === oldRole ? newRole : role,
+        if (doc.getIn(['roles'])) {
+          changeIn(
+            ['roles'],
+            doc.createNode(
+              (doc.getIn(['roles']) as YAMLSeq).items.map((role) =>
+                role === oldRole ? newRole : role,
+              ),
+            ),
           );
         }
         // Rename role in default policy
-        if (app.definition.security.default.role === oldRole) {
-          app.definition.security.default.role = newRole;
+        if (doc.getIn(['security', 'default', 'role'])) {
+          changeIn(['security', 'default', 'role'], doc.createNode(newRole));
         }
         // Rename roles in security inheritance
-        for (const [roleKey, value] of Object.entries(app.definition.security.roles || [])) {
+        for (const [roleKey, value] of Object.entries(doc.getIn(['security', 'roles']) || [])) {
           if (value.inherits) {
-            app.definition.security.roles[roleKey].inherits = value.inherits.map((role) =>
-              role === oldRole ? newRole : role,
+            changeIn(
+              ['security', 'roles', roleKey, 'inherits'],
+              doc.createNode(
+                value.inherits.map((role: any) => (role === oldRole ? newRole : role)),
+              ),
             );
           }
         }
         // Rename roles in teams
         if (
-          app.definition.security.teams?.create &&
-          app.definition.security.teams?.create.length > 0
+          doc.getIn(['security', 'teams', 'create']) &&
+          (doc.getIn(['security', 'teams', 'create']) as YAMLSeq).items.length > 0
         ) {
-          app.definition.security.teams.create = app.definition.security.teams.create.map((role) =>
-            role === oldRole ? newRole : role,
+          changeIn(
+            ['security', 'teams', 'create'],
+            doc.createNode(
+              (doc.getIn(['security', 'teams', 'create']) as YAMLSeq).items.map((role) =>
+                role === oldRole ? newRole : role,
+              ),
+            ),
           );
         }
         if (
-          app.definition.security.teams?.invite &&
-          app.definition.security.teams?.invite.length > 0
+          doc.getIn(['security', 'teams', 'invite']) &&
+          (doc.getIn(['security', 'teams', 'invite']) as YAMLSeq).items.length > 0
         ) {
-          app.definition.security.teams.invite = app.definition.security.teams.invite.map((role) =>
-            role === oldRole ? newRole : role,
+          changeIn(
+            ['security', 'teams', 'invite'],
+            doc.createNode(
+              (doc.getIn(['security', 'teams', 'invite']) as YAMLSeq).items.map((role) =>
+                role === oldRole ? newRole : role,
+              ),
+            ),
           );
         }
         // Rename role in resources
@@ -128,57 +162,74 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
             }
           }
         }
-        // Rename role in pages
-        app.definition.pages.map((page) =>
-          page.roles?.includes(oldRole)
-            ? page.roles.map((role) => (role === oldRole ? newRole : role))
-            : page.roles,
+        // Rename role in pages, lacks null check for roles
+        (doc.getIn(['pages']) as YAMLSeq).items.map((page: any, index: number) =>
+          page.getIn(['roles']).items.includes(oldRole)
+            ? page
+                .getIn(['roles'])
+                .items.map((role: any) =>
+                  role === oldRole
+                    ? changeIn(['pages', index, 'roles', role], doc.createNode(newRole))
+                    : null,
+                )
+            : null,
         );
         // Rename roles in blocks
-        app.definition.pages.map((page) => {
-          if (!page.type || page.type === 'page') {
-            return (page as BasicPageDefinition).blocks.map((block) =>
-              block.roles?.includes(oldRole)
-                ? block.roles.map((role) => (role === oldRole ? newRole : role))
-                : block.roles,
-            );
+        (doc.getIn(['pages']) as YAMLSeq).items.map((page: any, index: number) => {
+          if (!page.getIn('type') || page.getIn('type') === 'page') {
+            return page
+              .getIn('blocks')
+              .items.map((block: any, blockIndex: number) =>
+                block.getIn(['roles']).includes(oldRole)
+                  ? block
+                      .getIn(['roles'])
+                      .items.map((role: string) =>
+                        role === oldRole
+                          ? changeIn(
+                              ['pages', index, 'blocks', blockIndex, 'roles', role],
+                              doc.createNode(newRole),
+                            )
+                          : null,
+                      )
+                  : null,
+              );
           }
           return page;
         });
-        setApp({ ...app });
-
-        /* Send API request to server to rename roles from users currently using it */
       }
     },
-    [app, setApp],
+    [app.definition.resources, changeIn, deleteIn, docRef],
   );
 
   const onRoleChangeDefaultPage = useCallback(
     (key: string, pageNr: number) => {
-      if (app.definition.security?.roles[key]) {
+      const doc = docRef.current;
+      if (doc.getIn(['security', 'roles', key])) {
         if (pageNr === 0) {
-          delete app.definition.security.roles[key].defaultPage;
+          deleteIn(['security', 'roles', key, 'defaultPage']);
         } else {
-          app.definition.security.roles[key].defaultPage = app.definition.pages[pageNr - 1].name;
+          changeIn(
+            ['security', 'roles', key, 'defaultPage'],
+            doc.createNode(doc.getIn(['pages', pageNr - 1, 'name'])),
+          );
         }
-        setApp({ ...app });
       }
     },
-    [app, setApp],
+    [changeIn, deleteIn, docRef],
   );
 
   const onRoleDescriptionChange = useCallback(
     (key: string, value: string) => {
-      if (app.definition.security?.roles[key]) {
+      const doc = docRef.current;
+      if (doc.getIn(['security', 'roles', key])) {
         if (value === '') {
-          delete app.definition.security.roles[key].description;
+          deleteIn(['security', 'roles', key, 'description']);
         } else {
-          app.definition.security.roles[key].description = value;
+          changeIn(['security', 'roles', key, 'description'], doc.createNode(value));
         }
-        setApp({ ...app });
       }
     },
-    [app, setApp],
+    [changeIn, deleteIn, docRef],
   );
 
   const onOpenEditRoleName = useCallback(
@@ -205,7 +256,9 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
   const onEditRoleNameSubmit = useCallback(() => {
     if (editRoleName && newRoleName !== '' && editRoleName !== newRoleName) {
       if (
-        Object.entries(app.definition.security?.roles || []).some(([key]) => key === newRoleName)
+        Object.entries(docRef.current.getIn(['security', 'roles']) || []).some(
+          ([key]) => key === newRoleName,
+        )
       ) {
         push({ body: formatMessage(messages.roleAlreadyExists), color: 'danger' });
       } else {
@@ -215,25 +268,31 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       /* Send API request to server to rename roles from users currently using it */
     }
     closeEditRoleName();
-  }, [editRoleName, closeEditRoleName, app, newRoleName, onRoleNameChange, push, formatMessage]);
+  }, [editRoleName, newRoleName, closeEditRoleName, docRef, push, formatMessage, onRoleNameChange]);
 
   const onRoleDelete = useCallback(
     (key: string) => {
+      const doc = docRef.current;
       // Search for any references to this role
       const inheritReferences: string[] = [];
       // Search in roles
-      for (const [roleKey, role] of Object.entries(app.definition.security?.roles || [])) {
+      for (const [roleKey, role] of Object.entries(doc.getIn(['security', 'roles']) || [])) {
         if (role.inherits?.includes(key)) {
           inheritReferences.push(roleKey);
         }
       }
       // Search in app roles
-      const foundInAppRoles = app.definition.roles?.includes(key);
+      const foundInAppRoles = (doc.getIn(['security', 'roles']) as YAMLSeq).items.includes(key);
       // Search in default security settings
-      const foundInDefaultRole = app.definition.security.default.role === key;
+      const foundInDefaultRole =
+        (doc.getIn(['security', 'default', 'role']) as string).trim() === key;
       // Search in teams
-      const foundInTeamsCreate = app.definition.security.teams?.create?.includes(key);
-      const foundInTeamsInvite = app.definition.security.teams?.invite?.includes(key);
+      const foundInTeamsCreate = (
+        doc.getIn(['security', 'teams', 'create']) as YAMLSeq
+      ).items.includes(key);
+      const foundInTeamsInvite = (
+        doc.getIn(['security', 'teams', 'invite']) as YAMLSeq
+      ).items.includes(key);
       // Search in resources
       const resourceRolesReferences: string[] = [];
       const resourceViewsRolesReferences: string[] = [];
@@ -267,8 +326,8 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       // Search in pages
       const pageRolesReferences: string[] = [];
       const blockRolesReferences: string[] = [];
-      for (const page of app.definition.pages) {
-        if (page.roles?.includes(key)) {
+      for (const page of doc.toJS().pages) {
+        if (page.roles.includes(key)) {
           pageRolesReferences.push(page.name);
         }
         // Search in blocks
@@ -311,11 +370,11 @@ export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
       /* Send API request to server to delete roles from users currently using it,
       give the user a dropdown to select which
       role to replace it with instead before it deletes */
-      delete app.definition.security.roles[key];
+      deleteIn(['security', 'roles', key]);
       setApp({ ...app });
       push({ body: formatMessage(messages.roleDeleted, { name: key }), color: 'success' });
     },
-    [app, formatMessage, modalDeleteRole, push, setApp],
+    [app, deleteIn, docRef, formatMessage, modalDeleteRole, push, setApp],
   );
 
   const onCloseDeleteRole = useCallback(() => {
