@@ -252,25 +252,27 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
         // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
         // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
         // account.
-        user =
-          loginRequest.User ||
-          (await User.create(
+        user = loginRequest.User;
+        if (!user && app.scimEnabled) {
+          member = await AppMember.findOne({
+            where: { AppId: appId, scimExternalId: objectId },
+            attributes: { exclude: ['picture'] },
+          });
+          user = await User.findOne({ where: { id: member.UserId } });
+        } else {
+          user = await User.create(
             {
               name: name || nameId,
               timezone: loginRequest.timezone,
             },
             { transaction },
-          ));
-        member = await AppMember.findOne({
-          where: { UserId: user.id, AppId: appId },
-          attributes: { exclude: ['picture'] },
-        });
-        if (!member && app.scimEnabled) {
+          );
           member = await AppMember.findOne({
-            where: { AppId: appId, scimExternalId: objectId },
+            where: { UserId: user.id, AppId: appId },
             attributes: { exclude: ['picture'] },
           });
         }
+
         if (!member) {
           member = await AppMember.create(
             {
