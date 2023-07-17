@@ -143,6 +143,12 @@ The Appsemble CLI can be used to create and update apps. For example, to create 
 appsemble app create apps/my-app
 ```
 
+Similarly, to update an app using an app directory, run the following command:
+
+```sh
+appsemble app update --id <app-id> <path/to/updated app>.
+```
+
 For a more in depth explanation of how to build apps, use our
 [app building guide](https://appsemble.app/docs/guide).
 
