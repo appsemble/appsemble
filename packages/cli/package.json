@@ -63,7 +63,7 @@
     "postcss-url": "^10.0.0",
     "raw-body": "^2.0.0",
     "read-pkg-up": "^9.0.0",
-    "sharp": "^0.31.0",
+    "sharp": "^0.32.0",
     "ts-json-schema-generator": "^1.0.0",
     "type-fest": "^3.0.0",
     "webpack": "^5.0.0",
