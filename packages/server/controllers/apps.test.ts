@@ -39,6 +39,7 @@ const argv = { host: 'http://localhost', secret: 'test', aesSecret: 'testSecret'
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv(argv);
   const server = await createServer({
     argv,
@@ -50,8 +51,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
-
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -74,6 +76,10 @@ beforeEach(async () => {
       },
     },
   });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('queryApps', () => {
@@ -473,7 +479,7 @@ describe('getAppById', () => {
       OrganizationId: organization.id,
     });
     await AppSnapshot.create({ AppId: app.id, yaml: 'name: Test App\ndefaultPage Test Page\n' });
-    import.meta.jest.advanceTimersByTime(3600);
+    vi.advanceTimersByTime(3600);
     await AppSnapshot.create({ AppId: app.id, yaml: '{ name: Test App, defaultPage Test Page }' });
     const response = await request.get(`/api/apps/${app.id}`);
 
@@ -1076,7 +1082,7 @@ describe('createApp', () => {
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1099,7 +1105,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1142,14 +1148,14 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
           {
             "argument": "yaml",
             "instance": {
               "coreStyle": "body { color: red; }",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1172,7 +1178,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1215,7 +1221,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1257,7 +1263,7 @@ describe('createApp', () => {
             - type: test
               version: 0.0.1",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1280,7 +1286,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1323,7 +1329,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1798,9 +1804,9 @@ describe('createApp', () => {
             "instance": {
               "OrganizationId": "testorganization",
               "coreStyle": "this is invalid css",
-              "definition": "{"name":"Test App","defaultPage":"Test Page","pages":[{"name":"Test Page","blocks":[{"type":"test","version":"0.0.0"}]}]}",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"test\\",\\"version\\":\\"0.0.0\\"}]}]}",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1823,7 +1829,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1866,7 +1872,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -1903,10 +1909,10 @@ describe('createApp', () => {
             "argument": "yaml",
             "instance": {
               "OrganizationId": "testorganization",
-              "definition": "{"name":"Test App","defaultPage":"Test Page","path":"a","pages":[{"name":"Test Page","blocks":[{"type":"testblock"}]}]}",
+              "definition": "{\\"name\\":\\"Test App\\",\\"defaultPage\\":\\"Test Page\\",\\"path\\":\\"a\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"testblock\\"}]}]}",
               "sharedStyle": "this is invalid css",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -1929,7 +1935,7 @@ describe('createApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -1972,7 +1978,7 @@ describe('createApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -2359,7 +2365,7 @@ describe('createApp', () => {
                   },
                 ],
               },
-              "message": "requires property "name"",
+              "message": "requires property \\"name\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2492,7 +2498,7 @@ describe('createApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "name"",
+              "stack": "instance requires property \\"name\\"",
             },
           ],
         },
@@ -2957,7 +2963,7 @@ describe('patchApp', () => {
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property "OrganizationId"",
+            "message": "requires property \\"OrganizationId\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -2980,7 +2986,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3023,14 +3029,14 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "OrganizationId"",
+            "stack": "instance requires property \\"OrganizationId\\"",
           },
           {
             "argument": "yaml",
             "instance": {
               "foo": "bar",
             },
-            "message": "requires property "yaml"",
+            "message": "requires property \\"yaml\\"",
             "name": "required",
             "path": [],
             "property": "instance",
@@ -3053,7 +3059,7 @@ describe('patchApp', () => {
                 },
                 "iconBackground": {
                   "description": "The background color to use for the maskable icon.",
-                  "pattern": "^#[\\dA-Fa-f]{6}$",
+                  "pattern": "^#[\\\\dA-Fa-f]{6}$",
                   "type": "string",
                 },
                 "longDescription": {
@@ -3096,7 +3102,7 @@ describe('patchApp', () => {
               ],
               "type": "object",
             },
-            "stack": "instance requires property "yaml"",
+            "stack": "instance requires property \\"yaml\\"",
           },
         ],
         "message": "Invalid content types found",
@@ -3135,7 +3141,7 @@ describe('patchApp', () => {
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property "defaultPage"",
+              "message": "requires property \\"defaultPage\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3268,14 +3274,14 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "defaultPage"",
+              "stack": "instance requires property \\"defaultPage\\"",
             },
             {
               "argument": "pages",
               "instance": {
                 "name": "Foo",
               },
-              "message": "requires property "pages"",
+              "message": "requires property \\"pages\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3408,7 +3414,7 @@ describe('patchApp', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "pages"",
+              "stack": "instance requires property \\"pages\\"",
             },
           ],
         },
@@ -3861,7 +3867,7 @@ describe('getAppSnapshots', () => {
       UserId: user.id,
       yaml: "name: Test App\ndefaultPage: 'Test Page'",
     });
-    import.meta.jest.advanceTimersByTime(60_000);
+    vi.advanceTimersByTime(60_000);
     await AppSnapshot.create({
       AppId: app.id,
       UserId: user.id,
@@ -4329,7 +4335,7 @@ describe('createAppScreenshot', () => {
   });
 
   // XXX: Re-enable this test when updating Koas 🧀
-  // eslint-disable-next-line jest/no-disabled-tests
+  // eslint-disable-next-line vitest/no-disabled-tests
   it.skip('should not accept empty arrays of screenshots', async () => {
     const app = await App.create({
       definition: {},

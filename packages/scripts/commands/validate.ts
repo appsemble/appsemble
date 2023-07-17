@@ -199,11 +199,7 @@ async function validate(
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
-  assert(
-    pkg.scripts?.test === 'NODE_OPTIONS=--experimental-vm-modules jest',
-    'package.json',
-    'Test script should be "NODE_OPTIONS=--experimental-vm-modules jest"',
-  );
+  assert(pkg.scripts?.test === 'vitest', 'package.json', 'Test script should be "vitest"');
   for (const version of Object.values({ ...pkg.dependencies, ...pkg.devDependencies })) {
     if (version.startsWith('@appsemnle/')) {
       assert(
@@ -233,12 +229,12 @@ async function validate(
   }
 
   /**
-   * Validate jest.config.js exists
+   * Validate vitest.config.ts exists
    */
   assert(
-    existsSync(join(dir, 'jest.config.js')),
-    'jest.config.js',
-    'Projects should have a Jest configuration',
+    existsSync(join(dir, 'vitest.config.ts')),
+    'vitest.config.ts',
+    'Projects should have a vitest configuration',
   );
 
   /**

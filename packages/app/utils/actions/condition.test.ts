@@ -4,8 +4,8 @@ import { createTestAction } from '../makeActions.js';
 
 describe('condition', () => {
   it('call then if the condition is true', async () => {
-    const ok = import.meta.jest.fn().mockReturnValue('ok');
-    const error = import.meta.jest.fn().mockReturnValue('error');
+    const ok = vi.fn().mockReturnValue('ok');
+    const error = vi.fn().mockReturnValue('error');
 
     const action = createTestAction({
       definition: {
@@ -30,8 +30,8 @@ describe('condition', () => {
   });
 
   it('call else if the condition is false', async () => {
-    const ok = import.meta.jest.fn().mockReturnValue('ok');
-    const error = import.meta.jest.fn().mockReturnValue('error');
+    const ok = vi.fn().mockReturnValue('ok');
+    const error = vi.fn().mockReturnValue('error');
 
     const action = createTestAction({
       definition: {

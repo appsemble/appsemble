@@ -7,7 +7,7 @@ beforeEach(() => {
   originalCurrentScript = document.currentScript;
   Object.defineProperty(document, 'currentScript', {
     value: {
-      dispatchEvent: import.meta.jest.fn((e) => {
+      dispatchEvent: vi.fn((e) => {
         event = e;
       }),
     },
@@ -25,7 +25,7 @@ afterEach(() => {
 
 describe('bootstrap', () => {
   it('should dispatch the AppsembleBootstrap event', () => {
-    const fn = import.meta.jest.fn();
+    const fn = vi.fn();
     bootstrap(fn);
     expect(document.currentScript.dispatchEvent).toHaveBeenCalledWith(new CustomEvent(''));
     expect(event.type).toBe('AppsembleBootstrap');

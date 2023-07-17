@@ -28,7 +28,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  vi.useFakeTimers();
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',

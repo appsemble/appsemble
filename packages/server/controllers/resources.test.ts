@@ -263,6 +263,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer({
     argv,
@@ -275,7 +276,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -290,6 +293,7 @@ beforeEach(async () => {
 
 afterAll(() => {
   webpush.sendNotification = originalSendNotification;
+  vi.useRealTimers();
 });
 
 describe('getResourceById', () => {
@@ -638,7 +642,7 @@ describe('getResourceById', () => {
     );
 
     // The resource expires after 10 minutes.
-    import.meta.jest.advanceTimersByTime(601e3);
+    vi.advanceTimersByTime(601e3);
 
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testExpirableResource/${id}`,
@@ -1170,7 +1174,7 @@ describe('queryResources', () => {
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    import.meta.jest.advanceTimersByTime(20e3);
+    vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1377,7 +1381,7 @@ describe('queryResources', () => {
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
-    import.meta.jest.advanceTimersByTime(20e3);
+    vi.advanceTimersByTime(20e3);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1463,7 +1467,7 @@ describe('queryResources', () => {
     const responseA = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
     // The resource A expires after 5 minutes.
-    import.meta.jest.advanceTimersByTime(301e3);
+    vi.advanceTimersByTime(301e3);
 
     const responseB = await request.get(`/api/apps/${app.id}/resources/testExpirableResource`);
 
@@ -2524,7 +2528,7 @@ describe('createResource', () => {
             {
               "argument": "foo",
               "instance": {},
-              "message": "requires property "foo"",
+              "message": "requires property \\"foo\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -2573,7 +2577,7 @@ describe('createResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "foo"",
+              "stack": "instance requires property \\"foo\\"",
             },
           ],
         },
@@ -2665,7 +2669,7 @@ describe('createResource', () => {
 
   it('should not set resource expiration if given date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -2798,7 +2802,7 @@ describe('createResource', () => {
             {
               "argument": "binary",
               "instance": "0",
-              "message": "does not conform to the "binary" format",
+              "message": "does not conform to the \\"binary\\" format",
               "name": "format",
               "path": [
                 "file2",
@@ -2808,7 +2812,7 @@ describe('createResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file2 does not conform to the "binary" format",
+              "stack": "instance.file2 does not conform to the \\"binary\\" format",
             },
           ],
         },
@@ -2933,7 +2937,7 @@ describe('createResource', () => {
             {
               "argument": "binary",
               "instance": "1",
-              "message": "does not conform to the "binary" format",
+              "message": "does not conform to the \\"binary\\" format",
               "name": "format",
               "path": [
                 "file",
@@ -2943,7 +2947,7 @@ describe('createResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file does not conform to the "binary" format",
+              "stack": "instance.file does not conform to the \\"binary\\" format",
             },
           ],
         },
@@ -3105,7 +3109,7 @@ describe('updateResource', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    import.meta.jest.advanceTimersByTime(20e3);
+    vi.advanceTimersByTime(20e3);
 
     authorizeStudio();
     const response = await request.put(
@@ -3337,7 +3341,7 @@ describe('updateResource', () => {
               "instance": {
                 "bar": 123,
               },
-              "message": "requires property "foo"",
+              "message": "requires property \\"foo\\"",
               "name": "required",
               "path": [],
               "property": "instance",
@@ -3386,7 +3390,7 @@ describe('updateResource', () => {
                 ],
                 "type": "object",
               },
-              "stack": "instance requires property "foo"",
+              "stack": "instance requires property \\"foo\\"",
             },
             {
               "argument": [
@@ -3499,7 +3503,7 @@ describe('updateResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const app = await exampleApp(organization.id);
     const {
@@ -3642,7 +3646,7 @@ describe('updateResource', () => {
             {
               "argument": "binary",
               "instance": "1",
-              "message": "does not conform to the "binary" format",
+              "message": "does not conform to the \\"binary\\" format",
               "name": "format",
               "path": [
                 "file",
@@ -3652,7 +3656,7 @@ describe('updateResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file does not conform to the "binary" format",
+              "stack": "instance.file does not conform to the \\"binary\\" format",
             },
           ],
         },
@@ -4002,7 +4006,7 @@ describe('patchResource', () => {
       data: { foo: 'I am Foo.', bar: 'I am Bar.' },
     });
 
-    import.meta.jest.advanceTimersByTime(20e3);
+    vi.advanceTimersByTime(20e3);
 
     authorizeStudio();
     const response = await request.patch(
@@ -4342,7 +4346,7 @@ describe('patchResource', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const app = await exampleApp(organization.id);
     const {
@@ -4485,7 +4489,7 @@ describe('patchResource', () => {
             {
               "argument": "binary",
               "instance": "1",
-              "message": "does not conform to the "binary" format",
+              "message": "does not conform to the \\"binary\\" format",
               "name": "format",
               "path": [
                 "file",
@@ -4495,7 +4499,7 @@ describe('patchResource', () => {
                 "format": "binary",
                 "type": "string",
               },
-              "stack": "instance.file does not conform to the "binary" format",
+              "stack": "instance.file does not conform to the \\"binary\\" format",
             },
           ],
         },

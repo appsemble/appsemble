@@ -113,11 +113,21 @@ const exampleApp = (orgId: string, action: ActionDefinition, path = 'test-app'):
     },
   } as Partial<App>);
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
 beforeEach(async () => {
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   setArgv({ host: 'https://example.com' });
   mailer = new Mailer(argv);
   await Organization.create({ id: 'testorg' });
-  import.meta.jest.useFakeTimers({ now: 0 });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('resource.query', () => {
@@ -528,7 +538,7 @@ describe('resource.create', () => {
 
   it('should not set resource expiration if given date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const action: ActionDefinition = {
       type: 'resource.create',
@@ -1006,7 +1016,7 @@ describe('resource.update', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const action: ActionDefinition = {
       type: 'resource.update',
@@ -1679,7 +1689,7 @@ describe('resource.patch', () => {
 
   it('should not set $expires if the date has already passed', async () => {
     // 10 minutes
-    import.meta.jest.advanceTimersByTime(600e3);
+    vi.advanceTimersByTime(600e3);
 
     const action: ActionDefinition = {
       type: 'resource.patch',

@@ -12,7 +12,7 @@ describe('createEvents', () => {
   beforeEach(() => {
     // eslint-disable-next-line unicorn/prefer-event-target
     ee = new EventEmitter();
-    import.meta.jest.spyOn(ee, 'emit');
+    vi.spyOn(ee, 'emit');
     promise = new Promise((resolvePromise) => {
       // A tick is needed for the promise to actually be resolved. The simplest solution is to just
       // await ready. This is why it was made async.
@@ -83,7 +83,7 @@ describe('createEvents', () => {
   describe('on', () => {
     it('should listen on events', () => {
       const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
-      const listener = import.meta.jest.fn();
+      const listener = vi.fn();
       const implemented = events.on.foo(listener);
       ee.emit('bar', 'data');
       expect(implemented).toBe(true);
@@ -108,7 +108,7 @@ describe('createEvents', () => {
         { listen: { $any: {} } },
         { listen: { foo: 'bar' } },
       );
-      const listener = import.meta.jest.fn();
+      const listener = vi.fn();
       const implemented = events.on.foo(listener);
       ee.emit('bar', 'data');
       expect(implemented).toBe(true);
@@ -132,7 +132,7 @@ describe('createEvents', () => {
   describe('off', () => {
     it('should be possible to unregister event listeners', () => {
       const events = createEvents(ee, promise, { listen: { foo: {} } }, { listen: { foo: 'bar' } });
-      const listener = import.meta.jest.fn();
+      const listener = vi.fn();
       events.on.foo(listener);
       const implemented = events.off.foo(listener);
       expect(implemented).toBe(true);
@@ -158,7 +158,7 @@ describe('createEvents', () => {
         { listen: { $any: {} } },
         { listen: { foo: 'bar' } },
       );
-      const listener = import.meta.jest.fn();
+      const listener = vi.fn();
       events.on.foo(listener);
       const implemented = events.off.foo(listener);
       expect(implemented).toBe(true);

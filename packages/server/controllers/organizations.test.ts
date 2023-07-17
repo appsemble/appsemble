@@ -34,6 +34,7 @@ let user: User;
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   server = await createServer({
     argv,
@@ -46,7 +47,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -58,7 +61,11 @@ beforeEach(async () => {
     id: 'appsemble',
     name: 'Appsemble',
   });
-  import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+  vi.spyOn(server.context.mailer, 'sendTemplateEmail');
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('getOrganizations', () => {
@@ -637,7 +644,7 @@ describe('createOrganization', () => {
 
   it('should not create an organization with the same identifier', async () => {
     // This prevents the test from hanging and timing out
-    import.meta.jest.useRealTimers();
+    vi.useRealTimers();
 
     authorizeStudio();
     await request.post('/api/organizations', createFormData({ id: 'foo', name: 'Foooo' }));

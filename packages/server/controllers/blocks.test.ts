@@ -835,7 +835,8 @@ describe('getBlockVersion', () => {
   });
 
   it('should use the organization icon in the iconUrl if the block does not have one', async () => {
-    import.meta.jest.useFakeTimers({ now: 0 });
+    vi.clearAllTimers();
+    vi.setSystemTime(0);
     await Organization.update(
       { icon: await readFixture('nodejs-logo.png') },
       { where: { id: 'xkcd' } },
@@ -862,7 +863,6 @@ describe('getBlockVersion', () => {
       '/api/organizations/xkcd/icon?updated=1970-01-01T00%3A00%3A00.000Z',
     );
     expect(status).toBe(200);
-    import.meta.jest.useRealTimers();
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {

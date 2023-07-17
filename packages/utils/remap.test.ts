@@ -169,7 +169,7 @@ describe('context', () => {
 
 describe('date.now', () => {
   beforeEach(() => {
-    import.meta.jest.useFakeTimers({ now: 0 });
+    vi.useFakeTimers({ now: 0 });
   });
 
   runTests({
@@ -183,7 +183,7 @@ describe('date.now', () => {
 
 describe('date.add', () => {
   beforeEach(() => {
-    import.meta.jest.useFakeTimers({ now: 0 });
+    vi.useFakeTimers({ now: 0 });
   });
 
   runTests({
@@ -242,9 +242,9 @@ describe('date.format', () => {
 
 describe('log', () => {
   beforeEach(() => {
-    import.meta.jest.spyOn(console, 'error').mockImplementation();
-    import.meta.jest.spyOn(console, 'info').mockImplementation();
-    import.meta.jest.spyOn(console, 'warn').mockImplementation();
+    vi.spyOn(console, 'error').mockImplementation(null);
+    vi.spyOn(console, 'info').mockImplementation(null);
+    vi.spyOn(console, 'warn').mockImplementation(null);
   });
 
   function runLogTests(tests: Record<string, TestCase>): void {
@@ -962,7 +962,7 @@ describe('random.choice', () => {
 
 describe('random.integer', () => {
   beforeEach(() => {
-    import.meta.jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
   });
 
   runTests({
@@ -976,7 +976,7 @@ describe('random.integer', () => {
 
 describe('random.float', () => {
   beforeEach(() => {
-    import.meta.jest.spyOn(Math, 'random').mockReturnValue(0.5);
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
   });
 
   runTests({
@@ -990,8 +990,7 @@ describe('random.float', () => {
 
 describe('random.string', () => {
   beforeEach(() => {
-    import.meta.jest
-      .spyOn(Math, 'random')
+    vi.spyOn(Math, 'random')
       .mockReturnValueOnce(0)
       .mockReturnValueOnce(0.4)
       .mockReturnValueOnce(0.5)

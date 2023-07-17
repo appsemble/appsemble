@@ -2,14 +2,14 @@ import { IntlMessageFormat } from 'intl-messageformat';
 
 import { createTestAction } from '../makeActions.js';
 
-const navigate = import.meta.jest.fn();
-import.meta.jest.mock('react-router-dom', () => ({
-  ...(import.meta.jest.requireActual('react-router-dom') as any),
+const navigate = vi.fn();
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as typeof import('react-router-dom')),
   useNavigate: () => navigate,
 }));
 
 beforeEach(() => {
-  import.meta.jest.spyOn(window, 'open').mockImplementation();
+  vi.spyOn(window, 'open').mockImplementation(() => window);
 });
 
 describe('link', () => {

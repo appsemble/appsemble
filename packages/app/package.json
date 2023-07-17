@@ -22,7 +22,7 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
     "@appsemble/react-components": "0.20.45",
@@ -60,6 +60,7 @@
     "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
-    "fake-indexeddb": "^4.0.0"
+    "fake-indexeddb": "^4.0.0",
+    "vitest": "^0.33.0"
   }
 }

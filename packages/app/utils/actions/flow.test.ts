@@ -5,11 +5,11 @@ let flowActions: FlowActions;
 
 beforeEach(() => {
   flowActions = {
-    back: import.meta.jest.fn().mockReturnValue({ value: 'back value' }),
-    cancel: import.meta.jest.fn().mockReturnValue({ value: 'cancel value' }),
-    finish: import.meta.jest.fn().mockReturnValue({ value: 'finish value' }),
-    next: import.meta.jest.fn().mockReturnValue({ value: 'next value' }),
-    to: import.meta.jest.fn().mockReturnValue({ value: 'to value' }),
+    back: vi.fn().mockReturnValue({ value: 'back value' }),
+    cancel: vi.fn().mockReturnValue({ value: 'cancel value' }),
+    finish: vi.fn().mockReturnValue({ value: 'finish value' }),
+    next: vi.fn().mockReturnValue({ value: 'next value' }),
+    to: vi.fn().mockReturnValue({ value: 'to value' }),
   };
 });
 

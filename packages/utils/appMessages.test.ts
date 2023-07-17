@@ -418,7 +418,7 @@ describe('extractAppMessages', () => {
   });
 
   it('should append any messages returned by onBlock', () => {
-    const onBlock = import.meta.jest.fn().mockReturnValue({ foo: 'bar' });
+    const onBlock = vi.fn().mockReturnValue({ foo: 'bar' });
     const result = extractAppMessages(
       {
         defaultPage: '',

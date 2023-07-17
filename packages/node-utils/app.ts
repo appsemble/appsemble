@@ -1,16 +1,16 @@
 import { type App, type UserInfo } from '@appsemble/types';
 import { defaultLocale, has, objectCache, type RemapperContext } from '@appsemble/utils';
-import memoize from '@formatjs/fast-memoize';
+import { memoize } from '@formatjs/fast-memoize';
 import { IntlMessageFormat } from 'intl-messageformat';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
 import { type Options } from './server/types.js';
 
-const getNumberFormat = memoize.default(
+const getNumberFormat = memoize(
   (locale: string, opts: Intl.NumberFormatOptions) => new Intl.NumberFormat(locale, opts),
 );
 
-const getPluralRules = memoize.default(
+const getPluralRules = memoize(
   (locale: string, opts: Intl.PluralRulesOptions) => new Intl.PluralRules(locale, opts),
 );
 
@@ -49,7 +49,7 @@ export async function getRemapperContext(
           // @ts-expect-error intl-messageformat types are wrong
           getNumberFormat,
           getPluralRules,
-          getDateTimeFormat: memoize.default(
+          getDateTimeFormat: memoize(
             (locale: string, opts: Intl.DateTimeFormatOptions) =>
               new Intl.DateTimeFormat(locale, { ...opts, timeZone: userInfo?.zoneinfo }),
           ),

@@ -62,7 +62,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-  import.meta.jest.useRealTimers();
+  vi.useRealTimers();
 });
 
 describe('getResourceHistory', () => {
@@ -127,22 +127,22 @@ describe('getResourceHistory', () => {
   });
 
   it('should return the resource history if history is set to true', async () => {
-    import.meta.jest.useFakeTimers();
-    import.meta.jest.setSystemTime(new Date('2000-01-01T00:00:00Z'));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2000-01-01T00:00:00Z'));
     const resource = await Resource.create({
       AppId: 1,
       type: 'yesHistory',
       data: { version: 'old' },
     });
-    import.meta.jest.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
     await ResourceVersion.create({
       UserId: user.id,
       ResourceId: resource.id,
       data: { version: 'new' },
     });
-    import.meta.jest.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
     await ResourceVersion.create({ ResourceId: resource.id, data: { version: 'newer' } });
-    import.meta.jest.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000);
     await resource.update({ EditorId: user.id, data: { version: 'newest' } });
 
     const response = await request.get(`/api/apps/1/resources/yesHistory/${resource.id}/history`);

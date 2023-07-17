@@ -3,6 +3,6 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "noUnusedLocals": true,
-    "types": ["jest"]
+    "types": ["vitest/globals"]
   }
 }

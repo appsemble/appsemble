@@ -23,7 +23,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
     "@appsemble/types": "0.20.45",
@@ -52,7 +52,6 @@
     "react-transition-group": "^4.0.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.0.0",
     "@testing-library/react": "^14.0.0"
   }
 }

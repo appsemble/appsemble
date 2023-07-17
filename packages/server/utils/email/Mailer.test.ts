@@ -3,6 +3,7 @@ import { defaultLocale } from '@appsemble/utils';
 import { setTestApp } from 'axios-test-instance';
 import { type ImapFlow } from 'imapflow';
 import { type Transporter } from 'nodemailer';
+import { type Mock } from 'vitest';
 
 import { Mailer } from './Mailer.js';
 import * as controllers from '../../controllers/index.js';
@@ -43,7 +44,7 @@ describe('verify', () => {
 describe('sendEmail', () => {
   it('should send emails with a name', async () => {
     mailer.transport = {
-      sendMail: import.meta.jest.fn(() => null),
+      sendMail: vi.fn(() => null),
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com', name: 'Me' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
@@ -61,7 +62,7 @@ describe('sendEmail', () => {
 
   it('should send emails without a name', async () => {
     mailer.transport = {
-      sendMail: import.meta.jest.fn(() => null),
+      sendMail: vi.fn(() => null),
     } as Partial<Transporter> as Transporter;
     await mailer.sendTemplateEmail({ email: 'test@example.com' }, 'resend', {
       url: 'https://example.appsemble.app/verify?code=test',
@@ -144,7 +145,7 @@ describe('sendTranslatedEmail', () => {
 
   beforeEach(() => {
     mailer.transport = {
-      sendMail: import.meta.jest.fn(),
+      sendMail: vi.fn(),
     } as Partial<Transporter> as Transporter;
   });
 
@@ -467,9 +468,9 @@ _Test App_
 
         expect(mailer.transport.sendMail).toHaveBeenCalledTimes(1);
         // The subject
-        expect((mailer.transport.sendMail as jest.Mock).mock.calls[0][2]).toMatchSnapshot();
+        expect((mailer.transport.sendMail as Mock).mock.calls[0][2]).toMatchSnapshot();
         // The body
-        expect((mailer.transport.sendMail as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
+        expect((mailer.transport.sendMail as Mock).mock.calls[0][0]).toMatchSnapshot();
       });
     });
   });
@@ -477,28 +478,27 @@ _Test App_
 
 describe('copyToSentFolder', () => {
   beforeAll(() => {
-    import.meta.jest.useFakeTimers({
-      advanceTimers: true,
+    vi.useFakeTimers({
+      shouldAdvanceTime: true,
       now: 0,
     });
   });
 
   afterAll(() => {
-    import.meta.jest.runOnlyPendingTimers();
-    import.meta.jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
   it('should copy the email to the sent folder', async () => {
-    const appendMock = import.meta.jest.fn<
-      ReturnType<ImapFlow['append']>,
-      [string, string, string[]]
-    >(() => Promise.resolve() as any);
+    const appendMock = vi.fn<[string, string, string[]], ReturnType<ImapFlow['append']>>(
+      () => Promise.resolve() as any,
+    );
     mailer.transport = {
-      sendMail: import.meta.jest.fn(() => Promise.resolve() as any),
+      sendMail: vi.fn(() => Promise.resolve() as any),
     } as Partial<Transporter> as Transporter;
     mailer.imap = {
       append: appendMock,
-      connect: import.meta.jest.fn(() => Promise.resolve() as any),
+      connect: vi.fn(() => Promise.resolve() as any),
     } as Partial<ImapFlow> as ImapFlow;
     await mailer.sendEmail({
       to: 'Me <test@example.com>',

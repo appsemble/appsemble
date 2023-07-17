@@ -2,16 +2,13 @@ import { cleanupDNS, configureDNS, restoreDNS } from './index.js';
 import * as kubernetes from './kubernetes.js';
 import { setArgv } from '../argv.js';
 
-// XXX These tests are skipped, because we currently can’t mock relative ESM imports in jest.
-
 beforeEach(() => {
-  import.meta.jest.spyOn(kubernetes, 'configureDNS').mockResolvedValue(null);
-  import.meta.jest.spyOn(kubernetes, 'cleanupDNS').mockResolvedValue(null);
-  import.meta.jest.spyOn(kubernetes, 'restoreDNS').mockResolvedValue(null);
+  vi.spyOn(kubernetes, 'configureDNS').mockResolvedValue(null);
+  vi.spyOn(kubernetes, 'cleanupDNS').mockResolvedValue(null);
+  vi.spyOn(kubernetes, 'restoreDNS').mockResolvedValue(null);
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('configureDNS', () => {
+describe('configureDNS', () => {
   it('should delegate configureDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
     setArgv({ appDomainStrategy: 'kubernetes-ingress' });
     await configureDNS();
@@ -30,8 +27,7 @@ describe.skip('configureDNS', () => {
   });
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('cleanupDNS', () => {
+describe('cleanupDNS', () => {
   it('should delegate cleanupDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
     setArgv({ appDomainStrategy: 'kubernetes-ingress' });
     await cleanupDNS();
@@ -50,8 +46,7 @@ describe.skip('cleanupDNS', () => {
   });
 });
 
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('restoreDNS', () => {
+describe('restoreDNS', () => {
   it('should delegate restoreDNS to kubernetes if the app domain strategy is kubernetes-ingress', async () => {
     setArgv({ appDomainStrategy: 'kubernetes-ingress' });
     await restoreDNS();

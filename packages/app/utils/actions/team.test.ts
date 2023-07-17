@@ -1,16 +1,17 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { type Mock } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 import { apiUrl } from '../settings.js';
 
 describe('team.join', () => {
   let mock: MockAdapter;
-  let updateTeam: jest.Mock;
+  let updateTeam: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    updateTeam = import.meta.jest.fn();
+    updateTeam = vi.fn();
   });
 
   it('should join a team and update the state', async () => {

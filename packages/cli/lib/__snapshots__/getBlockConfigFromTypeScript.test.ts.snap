@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`getBlockConfigFromTypeScript official blocks action-button 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > action-button 1`] = `
 {
   "actions": {
     "onClick": {
@@ -33,7 +33,7 @@ Describe what the button does. This helps with accessibility for people using sc
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks audio 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > audio 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -64,7 +64,7 @@ The result must be either a audio URL or an object containing a property \`url\`
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks barcode-scan 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > barcode-scan 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -106,7 +106,7 @@ barcode event only holds the object with property barcode.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks button-list 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > button-list 1`] = `
 {
   "actions": {
     "$any": {
@@ -234,7 +234,7 @@ Describe what the button does. This helps with accessibility for people using sc
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks chart 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > chart 1`] = `
 {
   "actions": {
     "onClick": {
@@ -267,7 +267,7 @@ Refer to the block description for more information on the supported data format
     "definitions": {
       "Color": {
         "description": "A hexadecimal color.",
-        "pattern": "^#[a-fA-F\\d]{6}$",
+        "pattern": "^#[a-fA-F\\\\d]{6}$",
         "type": "string",
       },
       "Font": {
@@ -384,7 +384,7 @@ By default the primary color of the theme will be used.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks control-buttons 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > control-buttons 1`] = `
 {
   "actions": {
     "onBack": {
@@ -460,7 +460,7 @@ Set to \`false\` to hide forward button.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks data-loader 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > data-loader 1`] = `
 {
   "actions": {
     "onLoad": {
@@ -505,7 +505,7 @@ By setting this to \`true\`, this won’t happen.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks data-notifier 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > data-notifier 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -576,7 +576,7 @@ This will be called with the \`count\` parameter, which refers to the amount of 
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks detail-viewer 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > detail-viewer 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -900,7 +900,7 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks feed 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > feed 1`] = `
 {
   "actions": {
     "onAvatarClick": {
@@ -1148,7 +1148,7 @@ If not defined, the Asset API will be used instead.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks filter 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > filter 1`] = `
 {
   "actions": {
     "onLoad": {
@@ -1185,7 +1185,7 @@ exports[`getBlockConfigFromTypeScript official blocks filter 1`] = `
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
-      "AbstractField<"date",string>": {
+      "AbstractField<\\"date\\",string>": {
         "additionalProperties": false,
         "properties": {
           "defaultValue": {
@@ -1466,7 +1466,7 @@ This means this field will be displayed directly on the screen instead of in the
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks form 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > form 1`] = `
 {
   "actions": {
     "$any": {
@@ -3032,7 +3032,7 @@ Note that for \`integer\` type fields are rounded _down_.",
 
 For example, the [\`regex\`](#RegexRequirement) requirement type allows you to validate a field using [Regular Expressions](https://learnxinyminutes.com/docs/pcre/). So for example if you want a string field that requires a field to be an email address that ends with “@appsemble.com”, you could enforce this like so:
 
-\`\`\`yaml type: string requirements:   - regex: \\w+@appsemble\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
+\`\`\`yaml type: string requirements:   - regex: \\\\w+@appsemble\\\\.com     errorMessage: Value does not end with “@appsemble.com” \`\`\`",
         "properties": {
           "defaultValue": {
             "description": "The default value of the field.",
@@ -3230,7 +3230,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "examples": [
               "15:20",
             ],
-            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
             "type": "string",
           },
           "minTime": {
@@ -3239,7 +3239,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "examples": [
               "15:20",
             ],
-            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            "pattern": "^([01]\\\\d|2[0-3]):([0-5]\\\\d)$",
             "type": "string",
           },
         },
@@ -3333,7 +3333,7 @@ By setting this to \`true\`, this won’t happen.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks html 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > html 1`] = `
 {
   "actions": {
     "$any": {
@@ -3384,7 +3384,7 @@ All elements specifying \`data-content\` will be updated each time this event is
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks image 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > image 1`] = `
 {
   "actions": undefined,
   "events": undefined,
@@ -3434,7 +3434,7 @@ Note that this is ignored if the onImage event listener is set.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks list 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > list 1`] = `
 {
   "actions": {
     "onClick": {
@@ -3531,7 +3531,7 @@ This can be either a full image path or an asset id.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks map 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > map 1`] = `
 {
   "actions": {
     "onMarkerClick": {
@@ -3752,7 +3752,7 @@ Decreasing will make more, smaller clusters. One can also use a function that ac
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks markdown 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > markdown 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -3797,7 +3797,7 @@ If defined, a loader will be shown until this event is triggered.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks qr-scan 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > qr-scan 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -3834,7 +3834,7 @@ foundQr event only holds the string of the QR.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > stats 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -3892,7 +3892,7 @@ exports[`getBlockConfigFromTypeScript official blocks stats 1`] = `
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks table 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > table 1`] = `
 {
   "actions": {
     "$any": {
@@ -4326,7 +4326,7 @@ If this isn’t specified, no label will be shown. If no fields have a label, th
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks tiles 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > tiles 1`] = `
 {
   "actions": {
     "onClick": {
@@ -4378,7 +4378,7 @@ This takes precedence over an icon.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks timer 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > timer 1`] = `
 {
   "actions": undefined,
   "events": {
@@ -4407,7 +4407,7 @@ exports[`getBlockConfigFromTypeScript official blocks timer 1`] = `
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks video 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > video 1`] = `
 {
   "actions": {
     "onFinish": {
@@ -4481,7 +4481,7 @@ Note that this is ignored if the onVideo event listener is set.",
 }
 `;
 
-exports[`getBlockConfigFromTypeScript official blocks wordcloud 1`] = `
+exports[`getBlockConfigFromTypeScript > official blocks > wordcloud 1`] = `
 {
   "actions": undefined,
   "events": {

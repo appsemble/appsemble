@@ -55,7 +55,7 @@ describe('readData', () => {
 
 describe('opendirSafe', () => {
   it('should read a directory', async () => {
-    const onFile = import.meta.jest.fn();
+    const onFile = vi.fn();
     await opendirSafe(resolveFixture('test'), onFile);
     expect(onFile).toHaveBeenCalledTimes(3);
     expect(onFile).toHaveBeenCalledWith(
@@ -73,7 +73,7 @@ describe('opendirSafe', () => {
   });
 
   it('should read a directory recursively if specified', async () => {
-    const onFile = import.meta.jest.fn();
+    const onFile = vi.fn();
     await opendirSafe(resolveFixture('test'), onFile, { recursive: true });
     expect(onFile).toHaveBeenCalledTimes(5);
     expect(onFile).toHaveBeenCalledWith(
@@ -100,21 +100,21 @@ describe('opendirSafe', () => {
 
   it('should throw if the path is not a directory', async () => {
     const path = resolveFixture('hello.txt');
-    await expect(opendirSafe(path, import.meta.jest.fn())).rejects.toThrow(
+    await expect(opendirSafe(path, vi.fn())).rejects.toThrow(
       new AppsembleError(`Expected ${path} to be a directory`),
     );
   });
 
   it('should throw if the path doesn’t exist', async () => {
     const path = resolveFixture('non-existent');
-    await expect(opendirSafe(path, import.meta.jest.fn())).rejects.toThrow(
+    await expect(opendirSafe(path, vi.fn())).rejects.toThrow(
       new AppsembleError(`Expected ${path} to be a directory`),
     );
   });
 
   it('should not throw if the path doesn’t exist and allowMissing is true', async () => {
     const path = resolveFixture('non-existent');
-    const result = await opendirSafe(path, import.meta.jest.fn(), { allowMissing: true });
+    const result = await opendirSafe(path, vi.fn(), { allowMissing: true });
     expect(result).toBeUndefined();
   });
 });

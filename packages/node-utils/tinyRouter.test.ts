@@ -50,7 +50,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
 });
 
 it('should fall back to the any handler if it exists', async () => {
-  const any = import.meta.jest.fn();
+  const any = vi.fn();
   app.use(
     tinyRouter([
       {
@@ -64,8 +64,8 @@ it('should fall back to the any handler if it exists', async () => {
 });
 
 it('should pick method specific middleware over any', async () => {
-  const any = import.meta.jest.fn();
-  const get = import.meta.jest.fn();
+  const any = vi.fn();
+  const get = vi.fn();
   app.use(
     tinyRouter([
       {
@@ -81,7 +81,7 @@ it('should pick method specific middleware over any', async () => {
 });
 
 it('should not call next if there are matching routes', async () => {
-  const middleware = import.meta.jest.fn();
+  const middleware = vi.fn();
   app.use(
     tinyRouter([
       {
@@ -96,7 +96,7 @@ it('should not call next if there are matching routes', async () => {
 });
 
 it('should call next if there are no matching routes', async () => {
-  const middleware = import.meta.jest.fn();
+  const middleware = vi.fn();
   app.use(tinyRouter([]));
   app.use(middleware);
   await request.get('/');

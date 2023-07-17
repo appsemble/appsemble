@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Loader should match its snapshot 1`] = `
+exports[`Loader > should match its snapshot 1`] = `
 <div>
   <div
     class="loader appsemble-loader"

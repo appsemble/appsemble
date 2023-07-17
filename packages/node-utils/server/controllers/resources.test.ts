@@ -9,6 +9,7 @@ import {
 import { defaultLocale, remap } from '@appsemble/utils';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 import { type PathParams, type QueryParams } from 'koas-parameters';
+import { type Mock } from 'vitest';
 
 import {
   createCountResources,
@@ -32,34 +33,32 @@ import {
   type VerifyResourceActionPermissionParams,
 } from '../types.js';
 
-const { jest } = import.meta;
-
-let mockGetApp: jest.Mock<Promise<App>, [GetAppParams]>;
-let mockGetAppResources: jest.Mock<Promise<Resource[]>, [GetAppResourcesParams]>;
-let mockGetAppResource: jest.Mock<Promise<Resource>, [GetAppResourceParams]>;
-let mockVerifyResourceActionPermission: jest.Mock<
-  Promise<Record<string, any>>,
-  [VerifyResourceActionPermissionParams]
+let mockGetApp: Mock<[GetAppParams], Promise<App>>;
+let mockGetAppResources: Mock<[GetAppResourcesParams], Promise<Resource[]>>;
+let mockGetAppResource: Mock<[GetAppResourceParams], Promise<Resource>>;
+let mockVerifyResourceActionPermission: Mock<
+  [VerifyResourceActionPermissionParams],
+  Promise<Record<string, any>>
 >;
-let mockParseQuery: jest.Mock<ParsedQuery, [ParseQueryParams]>;
-let mockGetAppUrl: jest.Mock<Promise<URL>, [GetAppSubEntityParams]>;
-let mockGetAppMessages: jest.Mock<Promise<AppMessages[]>, [GetAppMessagesParams]>;
-let mockCreateAppResourcesWithAssets: jest.Mock<
-  Promise<Resource[]>,
-  [CreateAppResourcesWithAssetsParams]
+let mockParseQuery: Mock<[ParseQueryParams], ParsedQuery>;
+let mockGetAppUrl: Mock<[GetAppSubEntityParams], Promise<URL>>;
+let mockGetAppMessages: Mock<[GetAppMessagesParams], Promise<AppMessages[]>>;
+let mockCreateAppResourcesWithAssets: Mock<
+  [CreateAppResourcesWithAssetsParams],
+  Promise<Resource[]>
 >;
 
 let mockCtx: ParameterizedContext<DefaultState, DefaultContext>;
-let mockCtxIs: jest.Mock<string, []>;
+let mockCtxIs: Mock<[], string>;
 
 describe('createQueryResources', () => {
   beforeEach(() => {
-    mockGetApp = jest.fn();
-    mockGetAppResources = jest.fn();
-    mockVerifyResourceActionPermission = jest.fn();
-    mockParseQuery = jest.fn();
-    mockGetAppUrl = jest.fn();
-    mockGetAppMessages = jest.fn();
+    mockGetApp = vi.fn();
+    mockGetAppResources = vi.fn();
+    mockVerifyResourceActionPermission = vi.fn();
+    mockParseQuery = vi.fn();
+    mockGetAppUrl = vi.fn();
+    mockGetAppMessages = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -101,7 +100,7 @@ describe('createQueryResources', () => {
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockGetApp).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -200,7 +199,7 @@ describe('createQueryResources', () => {
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(mockResources);
   });
@@ -264,7 +263,7 @@ describe('createQueryResources', () => {
 
     const middleware = createQueryResources(options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(remappedResources);
   });
@@ -272,10 +271,10 @@ describe('createQueryResources', () => {
 
 describe('createCountResources', () => {
   beforeEach(() => {
-    mockGetApp = jest.fn();
-    mockGetAppResources = jest.fn();
-    mockVerifyResourceActionPermission = jest.fn();
-    mockParseQuery = jest.fn();
+    mockGetApp = vi.fn();
+    mockGetAppResources = vi.fn();
+    mockVerifyResourceActionPermission = vi.fn();
+    mockParseQuery = vi.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       queryParams: {} as QueryParams,
@@ -316,7 +315,7 @@ describe('createCountResources', () => {
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockGetApp).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -403,7 +402,7 @@ describe('createCountResources', () => {
       parseQuery: mockParseQuery as (params: ParseQueryParams) => ParsedQuery,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(mockResources.length);
   });
@@ -411,11 +410,11 @@ describe('createCountResources', () => {
 
 describe('createGetResourceById', () => {
   beforeEach(() => {
-    mockGetApp = jest.fn();
-    mockGetAppResource = jest.fn();
-    mockVerifyResourceActionPermission = jest.fn();
-    mockGetAppUrl = jest.fn();
-    mockGetAppMessages = jest.fn();
+    mockGetApp = vi.fn();
+    mockGetAppResource = vi.fn();
+    mockVerifyResourceActionPermission = vi.fn();
+    mockGetAppUrl = vi.fn();
+    mockGetAppMessages = vi.fn();
 
     mockCtx = {
       pathParams: { appId: 1, resourceId: 1, resourceType: 'mockResourceType' } as PathParams,
@@ -445,7 +444,7 @@ describe('createGetResourceById', () => {
       ) => Promise<Record<string, any>>,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockGetApp).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -518,7 +517,7 @@ describe('createGetResourceById', () => {
       ) => Promise<Record<string, any>>,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(mockResource);
   });
@@ -573,7 +572,7 @@ describe('createGetResourceById', () => {
 
     const middleware = createGetResourceById(options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockCtx.body).toStrictEqual(remappedResource);
   });
@@ -581,11 +580,11 @@ describe('createGetResourceById', () => {
 
 describe('createCreateResource', () => {
   beforeEach(() => {
-    mockGetApp = jest.fn();
-    mockVerifyResourceActionPermission = jest.fn();
-    mockCreateAppResourcesWithAssets = jest.fn();
+    mockGetApp = vi.fn();
+    mockVerifyResourceActionPermission = vi.fn();
+    mockCreateAppResourcesWithAssets = vi.fn();
 
-    mockCtxIs = jest.fn();
+    mockCtxIs = vi.fn();
     mockCtx = {
       pathParams: { appId: 1, resourceType: 'mockResourceType' } as PathParams,
       user: { id: 'mockUserId', name: 'John Doe', primaryEmail: 'john@example.com' } as UtilsUser,
@@ -621,7 +620,7 @@ describe('createCreateResource', () => {
       ) => Promise<Record<string, any>>,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockGetApp).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -694,7 +693,7 @@ describe('createCreateResource', () => {
       ) => Promise<Record<string, any>>,
     } as Options);
 
-    await middleware(mockCtx, jest.fn());
+    await middleware(mockCtx, vi.fn());
 
     expect(mockGetApp).toHaveBeenCalledWith(
       expect.objectContaining({
