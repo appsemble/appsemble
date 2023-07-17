@@ -102,4 +102,19 @@ export enum Permission {
    * The permission to view the list of members in an organization.
    */
   ViewMembers,
+
+  /**
+   * The permission to create collections.
+   */
+  CreateCollections,
+
+  /**
+   * The permission to delete collections.
+   */
+  DeleteCollections,
+
+  /**
+   * The permission to edit collections.
+   */
+  EditCollections,
 }

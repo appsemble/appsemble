@@ -29,3 +29,4 @@ export * from './scimServiceProviderConfig.js';
 export * from './scimUsers.js';
 export * from './user.js';
 export * from './teams.js';
+export * from './appCollections.js';

@@ -16,6 +16,7 @@ export * from './asset.js';
 export * from './authentication.js';
 export * from './author.js';
 export * from './bulma.js';
+export * from './appCollection.js';
 export * from './http.js';
 export * from './cli.js';
 export * from './snapshot.js';

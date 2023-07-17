@@ -3,6 +3,8 @@ import { Sequelize } from 'sequelize-typescript';
 
 import { App } from './App.js';
 import { AppBlockStyle } from './AppBlockStyle.js';
+import { AppCollection } from './AppCollection.js';
+import { AppCollectionApp } from './AppCollectionApp.js';
 import { AppEmailQuotaLog } from './AppEmailQuotaLog.js';
 import { AppMember } from './AppMember.js';
 import { AppMessages } from './AppMessages.js';
@@ -55,6 +57,8 @@ export {
   App,
   AppServiceSecret,
   AppBlockStyle,
+  AppCollection,
+  AppCollectionApp,
   AppEmailQuotaLog,
   AppMember,
   AppOAuth2Authorization,
@@ -110,6 +114,8 @@ export function initDB({
       App,
       AppServiceSecret,
       AppBlockStyle,
+      AppCollection,
+      AppCollectionApp,
       AppEmailQuotaLog,
       AppMember,
       AppOAuth2Authorization,
