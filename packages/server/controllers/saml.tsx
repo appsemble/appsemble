@@ -132,7 +132,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   }
 
   const secret = await AppSamlSecret.findOne({
-    attributes: ['entityId', 'idpCertificate'],
+    attributes: ['entityId', 'idpCertificate', 'objectIdAttribute'],
     where: { AppId: appId, id: appSamlSecretId },
   });
 
@@ -206,7 +206,10 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
       {
         model: AppSamlSecret,
         include: [
-          { model: App, attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId'] },
+          {
+            model: App,
+            attributes: ['definition', 'domain', 'id', 'path', 'OrganizationId', 'scimEnabled'],
+          },
         ],
       },
       {
@@ -231,8 +234,11 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
       (el) => [el.getAttribute('Name')?.trim(), el.firstChild?.textContent?.trim()],
     ),
   );
+
+  // These have to be specified within the SAML secret configuration
   const email = secret.emailAttribute && attributes.get(secret.emailAttribute)?.toLowerCase();
   const name = secret.nameAttribute && attributes.get(secret.nameAttribute);
+  const objectId = secret.objectIdAttribute && attributes.get(secret.objectIdAttribute);
   const role = app.definition.security?.default?.role;
   let member: AppMember;
   let user: User;
@@ -255,18 +261,30 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
             },
             { transaction },
           ));
-
         member = await AppMember.findOne({
           where: { UserId: user.id, AppId: appId },
           attributes: { exclude: ['picture'] },
         });
+        if (!member && app.scimEnabled) {
+          member = await AppMember.findOne({
+            where: { AppId: appId, scimExternalId: objectId },
+            attributes: { exclude: ['picture'] },
+          });
+        }
         if (!member) {
           member = await AppMember.create(
-            { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
+            {
+              UserId: user.id,
+              AppId: appId,
+              role,
+              email,
+              name,
+              emailVerified: true,
+              scimExternalId: objectId,
+            },
             { transaction },
           );
         }
-
         // The logged in account is linked to a new SAML authorization for next time.
         await AppSamlAuthorization.create(
           { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
@@ -278,7 +296,6 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
       return prompt('emailconflict', { email, id: loginRequest.id });
     }
   }
-
   const { code } = await createOAuth2AuthorizationCode(
     app,
     loginRequest.redirectUri,

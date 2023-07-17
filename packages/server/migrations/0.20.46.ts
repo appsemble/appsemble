@@ -27,8 +27,11 @@ export async function up(db: Sequelize): Promise<void> {
   logger.info('Adding column `scimExternalId` to `AppMember`');
   await queryInterface.addColumn('AppMember', 'scimExternalId', { type: DataTypes.STRING });
 
-  logger.info('Adding column `scimEnabled` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'scimEnabled', { type: DataTypes.BOOLEAN });
+  logger.info('Adding column `scimActive` to `AppMember`');
+  await queryInterface.addColumn('AppMember', 'scimActive', { type: DataTypes.BOOLEAN });
+
+  logger.info('Adding column `objectIdAttribute` to `AppSamlSecret`');
+  await queryInterface.addColumn('AppSamlSecret', 'objectIdAttribute', { type: DataTypes.STRING });
 }
 
 /**
@@ -51,6 +54,9 @@ export async function down(db: Sequelize): Promise<void> {
   logger.warn('Removing column `App`.`scimEnabled`');
   await queryInterface.removeColumn('App', 'scimEnabled');
 
-  logger.info('Removing column `scimEnabled`.`AppMember`');
-  await queryInterface.removeColumn('AppMember', 'scimEnabled');
+  logger.warn('Removing column `AppMember`.`scimActive`');
+  await queryInterface.removeColumn('AppMember', 'scimActive');
+
+  logger.warn('Removing column `AppSamlSecret`.`objectIdAttribute`');
+  await queryInterface.removeColumn('AppSamlSecret', 'objectIdAttribute');
 }

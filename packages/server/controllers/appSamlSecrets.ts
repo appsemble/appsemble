@@ -78,7 +78,16 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   const {
     pathParams: { appId, appSamlSecretId },
     request: {
-      body: { emailAttribute, entityId, icon, idpCertificate, name, nameAttribute, ssoUrl },
+      body: {
+        emailAttribute,
+        entityId,
+        icon,
+        idpCertificate,
+        name,
+        nameAttribute,
+        objectIdAttribute,
+        ssoUrl,
+      },
     },
   } = ctx;
 
@@ -107,6 +116,7 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
     idpCertificate,
     name,
     nameAttribute,
+    objectIdAttribute,
     ssoUrl,
   });
 }

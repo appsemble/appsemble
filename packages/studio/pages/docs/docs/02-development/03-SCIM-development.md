@@ -60,7 +60,7 @@ At the moment, Appsemble supports the following “customappsso Attributes”:
 | externalId                                                         | `AppMember`.scimExternalId             |
 | userName                                                           | `AppMember`.email                      |
 | active                                                             | `AppMember`.scimActive                 |
-| name.formatted                                                     | `AppMember`.name & `User`.name &       |
+| name.formatted                                                     | `AppMember`.name & `User`.name         |
 | locale                                                             | `User`.locale                          |
 | timezone                                                           | `User`.timezone                        |
 | urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:manager | `Team`.name = (Manager) `AppMember`.id |
