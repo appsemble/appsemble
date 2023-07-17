@@ -5,7 +5,7 @@ import {
   useMessages,
   useMeta,
 } from '@appsemble/react-components';
-import { type App, type AppDefinition, type PageDefinition } from '@appsemble/types';
+import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
@@ -88,6 +88,7 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [unsaved, setUnsaved] = useState<string[]>(['Unsaved changes:\n']);
 
   const match = useMatch('/:lang/apps/:id/edit/gui/*');
   const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
@@ -103,6 +104,23 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
+  const getUnsavedChanges = useCallback(() => {
+    const unsavedChanges: string[] = unsaved;
+    return unsavedChanges;
+  }, [unsaved]);
+
+  const addToUnsaved = useCallback(
+    (change: string): void => {
+      const newList = unsaved;
+      if (newList.includes(change)) {
+        return;
+      }
+      newList.push(change);
+      setUnsaved(newList);
+    },
+    [unsaved],
+  );
+
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     const clone = docRef.current.clone();
@@ -114,16 +132,19 @@ export default function EditPage(): ReactElement {
   const deleteIn = (path: Iterable<unknown>): void => {
     docRef.current.deleteIn(path);
     addSaveState();
+    addToUnsaved(`Deleted: ${[...path].findLast((item) => typeof item === 'string')}\n`);
   };
 
   const addIn = (path: Iterable<unknown>, value: Node): void => {
     docRef.current.addIn(path, value);
     addSaveState();
+    addToUnsaved(`${[...path].findLast((item) => typeof item === 'string')}\n`);
   };
 
   const changeIn = (path: Iterable<unknown>, value: Node): void => {
     docRef.current.setIn(path, value);
     addSaveState();
+    addToUnsaved(`${[...path].findLast((item) => typeof item === 'string')}\n`);
   };
 
   const onUndo = (): void => {
@@ -174,6 +195,7 @@ export default function EditPage(): ReactElement {
 
   const handleSave = useCallback(async () => {
     const ymlString = stringify(saveStack[index]);
+    setUnsaved(['Unsaved changes:\n']);
     try {
       const formData = new FormData();
       formData.append('yaml', ymlString);
@@ -201,93 +223,7 @@ export default function EditPage(): ReactElement {
     sharedStyle,
   ]);
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const equalityCheck = (old: object, cur: object): string => {
-    // If objects are equal
-    if (old === cur) {
-      return '';
-    }
-    // If object was added
-    if (cur && !old) {
-      return 'added';
-    }
-    // If object was removed
-    if (!cur && old) {
-      return 'removed';
-    }
-    // If both exist and changes are present
-    let changes = '';
-    for (const key in old) {
-      if (cur[key as keyof object] !== old[key as keyof object]) {
-        changes += `${key}: ${cur[key as keyof object]}, `;
-      }
-    }
-    for (const key in cur) {
-      if (cur[key as keyof object] && !old[key as keyof object]) {
-        changes += `${key}: ${cur[key as keyof object]}, `;
-      }
-    }
-    if (changes !== '') {
-      return changes;
-    }
-  };
-
-  const getUnsavedChanges = useCallback(() => {
-    const unsavedChanges: string[] = ['Unsaved changes:\n'];
-    const old = app.definition;
-    const cur = saveStack[index].toJS();
-
-    // General tab changes
-    if (old.name !== cur.name) {
-      unsavedChanges.push(`Name:  ${cur.name}\n`);
-    }
-    if (old.description !== cur.description) {
-      unsavedChanges.push(`Description: ${cur.description}\n`);
-    }
-    if (old.defaultPage !== cur.defaultPage) {
-      unsavedChanges.push(`Default page: ${cur.defaultPage}\n`);
-    }
-    let changeString = equalityCheck(old.layout, cur.layout);
-    if (changeString) {
-      unsavedChanges.push(`Layout ${changeString}\n`);
-    }
-
-    // Theme tab
-    changeString = equalityCheck(old.theme, cur.theme);
-    if (changeString) {
-      unsavedChanges.push(`Default theme ${changeString}\n`);
-    }
-    // eslint-disable-next-line unicorn/no-array-for-each
-    cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
-      if (old.pages[pageIndex]) {
-        changeString = equalityCheck(old.pages[pageIndex].theme, page.theme);
-        if (changeString) {
-          unsavedChanges.push(`Page '${page.name}' theme ${changeString}\n`);
-        }
-      }
-    });
-
-    // Pages tab
-    // eslint-disable-next-line unicorn/no-array-for-each
-    cur.pages.forEach((page: PageDefinition, pageIndex: number) => {
-      if (old.pages[pageIndex]) {
-        if (page.name !== old.pages[pageIndex].name) {
-          unsavedChanges.push(`Page name: '${page.name}'\n`);
-        }
-        if (page.type !== old.pages[pageIndex].type) {
-          unsavedChanges.push(`Page type: '${page.type ?? 'page'}'\n`);
-        }
-      }
-    });
-
-    // Empty the array when there are no unsaved changes.
-    if (unsavedChanges.length === 1) {
-      unsavedChanges.pop();
-    }
-    return unsavedChanges.join('');
-  }, [app.definition, index, saveStack]);
-
-  const unsavedChanges = getUnsavedChanges().length !== 0;
+  const unsavedChanges = getUnsavedChanges().length !== 1;
 
   useBeforeUnload(unsavedChanges);
 
@@ -336,7 +272,7 @@ export default function EditPage(): ReactElement {
           // Optional: disabled={getUnsavedChanges().length === 0}
           icon="save"
           onClick={handleSave}
-          title={getUnsavedChanges()}
+          title={getUnsavedChanges().join('')}
         />
         <div className={styles.panelTopRight}>
           <Button
