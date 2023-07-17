@@ -163,7 +163,7 @@ export function PagesTab({
         });
       } else {
         push({
-          body: 'An unexpected error occured while adding a new block',
+          body: 'An unexpected error occurred while adding a new block',
           color: 'danger',
         });
       }
