@@ -87,7 +87,7 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [unsaved, setUnsaved] = useState<string[]>(['Unsaved changes:\n']);
+  const [unsaved, setUnsaved] = useState<string[]>(['unsaved changes:\n']);
 
   const match = useMatch('/:lang/apps/:id/edit/gui/*');
   const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
@@ -178,9 +178,12 @@ export default function EditPage(): ReactElement {
       if (definition.errors.length > 0) {
         return 'A YAML error has occurred';
       }
-      return error;
+      if (error) {
+        return `There is an error in ${unsaved.join('')}`;
+      }
+      return 'Unkown error';
     },
-    [index, saveStack],
+    [index, saveStack, unsaved],
   );
 
   const updateAppPreview = useCallback(() => {
@@ -194,7 +197,7 @@ export default function EditPage(): ReactElement {
 
   const handleSave = useCallback(async () => {
     const ymlString = stringify(saveStack[index]);
-    setUnsaved(['Unsaved changes:\n']);
+
     try {
       const formData = new FormData();
       formData.append('yaml', ymlString);
@@ -203,6 +206,7 @@ export default function EditPage(): ReactElement {
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
+      setUnsaved(['unsaved changes:\n']);
     } catch (error: any) {
       const message = getErrorMessage(error);
       push({
