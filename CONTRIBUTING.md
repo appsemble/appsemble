@@ -75,10 +75,12 @@ To run tests for a single file, run
 yarn test path/to/file
 ```
 
-Appsemble uses vitest snapshots to assert large serializable objects like block manifests, HTTP
+Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
 responses and some react-components. These need
 [manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
-which can simply be done by running the commands mentioned with the `-u` argument.
+(we use vitest, but this is essentially the same) which can simply be done by running the commands
+mentioned with the `-u` argument. Or when in watch mode by pressing the
+[u key](https://vitest.dev/guide/snapshot.html#updating-snapshots) in the terminal.
 
 ```sh
 yarn test -u
