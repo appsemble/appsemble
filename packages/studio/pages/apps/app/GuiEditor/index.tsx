@@ -128,19 +128,19 @@ export default function EditPage(): ReactElement {
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
-  const deleteIn = (path: Iterable<unknown>): void => {
+  const deleteIn = (path: Iterable<any>): void => {
     docRef.current.deleteIn(path);
     addSaveState();
     addToUnsaved(`Deleted: ${[...path].findLast((item: any) => typeof item === 'string')}\n`);
   };
 
-  const addIn = (path: Iterable<unknown>, value: Node): void => {
+  const addIn = (path: Iterable<any>, value: Node): void => {
     docRef.current.addIn(path, value);
     addSaveState();
     addToUnsaved(`${[...path].findLast((item: any) => typeof item === 'string')}\n`);
   };
 
-  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+  const changeIn = (path: Iterable<any>, value: Node): void => {
     docRef.current.setIn(path, value);
     addSaveState();
     addToUnsaved(`${[...path].findLast((item: any) => typeof item === 'string')}\n`);
