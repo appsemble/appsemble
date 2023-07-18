@@ -128,22 +128,35 @@ export default function EditPage(): ReactElement {
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
-  const deleteIn = (path: Iterable<any>): void => {
+  const deleteIn = (path: Iterable<number | string>): void => {
     docRef.current.deleteIn(path);
     addSaveState();
-    addToUnsaved(`Deleted: ${[...path].findLast((item: any) => typeof item === 'string')}\n`);
+
+    addToUnsaved(
+      `Deleted: ${Array.from(path)
+        .reverse()
+        .findLast((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
-  const addIn = (path: Iterable<any>, value: Node): void => {
+  const addIn = (path: Iterable<number | string>, value: Node): void => {
     docRef.current.addIn(path, value);
     addSaveState();
-    addToUnsaved(`${[...path].findLast((item: any) => typeof item === 'string')}\n`);
+    addToUnsaved(
+      `${Array.from(path)
+        .reverse()
+        .find((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
-  const changeIn = (path: Iterable<any>, value: Node): void => {
+  const changeIn = (path: Iterable<number | string>, value: Node): void => {
     docRef.current.setIn(path, value);
     addSaveState();
-    addToUnsaved(`${[...path].findLast((item: any) => typeof item === 'string')}\n`);
+    addToUnsaved(
+      `${Array.from(path)
+        .reverse()
+        .find((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
   const onUndo = (): void => {
@@ -283,10 +296,13 @@ export default function EditPage(): ReactElement {
               ? `is-align-content-flex-end ${styles.highLight}`
               : 'is-align-content-flex-end'
           }
-          // Optional: disabled={getUnsavedChanges().length === 0}
           icon="save"
           onClick={handleSave}
-          title={getUnsavedChanges().join('')}
+          title={
+            getUnsavedChanges().join('') === 'unsaved changes:\n'
+              ? ''
+              : getUnsavedChanges().join('')
+          }
         />
         <div className={styles.panelTopRight}>
           <Button
