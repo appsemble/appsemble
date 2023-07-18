@@ -135,7 +135,7 @@ export default function EditPage(): ReactElement {
     addToUnsaved(
       `Deleted: ${Array.from(path)
         .reverse()
-        .findLast((item: number | string) => typeof item === 'string')}\n`,
+        .find((item: number | string) => typeof item === 'string')}\n`,
     );
   };
 
