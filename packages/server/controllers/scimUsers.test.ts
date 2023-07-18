@@ -811,6 +811,7 @@ describe('patchSCIMUser', () => {
         { op: 'replace', path: 'NaMe.FoRmAtTeD', value: 'Patrick Star' },
         { op: 'replace', path: 'TiMeZoNe', value: 'Etc/UTC' },
         { op: 'replace', path: 'locale', value: 'nl_NL' },
+        { op: 'replace', path: 'active', value: 'False' },
       ],
     });
 
@@ -821,7 +822,7 @@ describe('patchSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "active": true,
+        "active": false,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",

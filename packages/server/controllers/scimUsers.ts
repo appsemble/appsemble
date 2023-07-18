@@ -441,7 +441,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     } else if (lower === 'username') {
       member.email = value;
     } else if (lower === 'active') {
-      member.scimActive = Boolean(value);
+      member.scimActive = value.toLowerCase() === 'true';
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
       if (!value || typeof value === 'string') {
         managerId = value;
