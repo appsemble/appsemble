@@ -337,14 +337,7 @@ export default function EditPage(): ReactElement {
           />
         )}
         {currentTab.tabName === 'security' && (
-          <SecurityTab
-            changeIn={changeIn}
-            deleteIn={deleteIn}
-            docRef={docRef}
-            frameRef={frame}
-            isOpenLeft={leftPanelOpen}
-            isOpenRight={rightPanelOpen}
-          />
+          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
         )}
       </div>
     </div>
