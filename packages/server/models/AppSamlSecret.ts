@@ -75,7 +75,7 @@ export class AppSamlSecret extends Model {
   nameAttribute: string;
 
   // Unique identifier of the external user
-  @Column
+  @Column(DataType.STRING)
   objectIdAttribute: string;
 
   /**
