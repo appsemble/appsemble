@@ -6,7 +6,6 @@ import { Readable } from 'node:stream';
 
 import {
   AppsembleError,
-  createServer,
   type ExtendedTeam,
   logger,
   opendirSafe,
@@ -37,16 +36,16 @@ import { type Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
+import { createApiServer, createStaticServer } from '../lib/createServers.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
-import * as controllers from '../server/controllers/index.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
-import { appRouter } from '../server/routes/appRouter/index.js';
 import { type BaseArguments } from '../types.js';
 
 interface ServeArguments extends BaseArguments {
   path: string;
   port: number;
+  'api-port': number;
   'user-role': string;
   'team-role': string;
   'overwrite-block-cache': boolean;
@@ -61,9 +60,14 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'The path to the app to publish.',
     })
     .option('port', {
-      desc: 'The HTTP server port to use.',
+      desc: 'The static HTTP server port to use. This is the port where the app is accessible.',
       type: 'number',
-      default: 9999,
+      default: 9090,
+    })
+    .option('api-port', {
+      desc: 'The Appsemble development HTTP server port to use. This is the port where the Appsemble development API endpoints are available.',
+      type: 'number',
+      default: 9191,
     })
     .option('user-role', {
       desc: 'The role to set to the mocked authenticated user.',
@@ -316,12 +320,38 @@ export async function handler(argv: ServeArguments): Promise<void> {
     $updated: new Date().toISOString(),
   } as App;
 
-  const server = await createServer({
+  const api = createApiServer({
     argv,
-    appRouter,
-    controllers,
     context: {
-      appHost: `http://${appName}.localhost:${argv.port}`,
+      appsembleApp: stubbedApp,
+      appBlocks,
+      appMessages,
+      ...(appSecurity
+        ? {
+            appMembers,
+            appUserInfo,
+            appTeams,
+          }
+        : {}),
+      appAssets,
+      blockConfigs: localBlocksConfigs,
+    },
+  });
+
+  api.on('error', (err) => {
+    if (err.expose) {
+      return;
+    }
+    logger.error(err);
+  });
+
+  const appsemble = http.createServer(api.callback());
+
+  const server = await createStaticServer({
+    argv,
+    context: {
+      apiUrl: `http://localhost:${argv['api-port']}`,
+      appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
@@ -345,15 +375,14 @@ export async function handler(argv: ServeArguments): Promise<void> {
     logger.error(err);
   });
 
-  const callback = server.callback();
-  const httpServer = http.createServer(callback);
+  const httpServer = http.createServer(server.callback());
+
+  appsemble.listen(argv['api-port'], '::', () => {
+    logger.info(asciiLogo);
+    logger.info(`The api can be found on\n> http://localhost:${argv['api-port']}`);
+  });
 
   httpServer.listen(argv.port, '::', () => {
-    logger.info(asciiLogo);
-    logger.info(
-      `The app can be found on\n> http://${normalize(appsembleApp.definition.name)}.localhost:${
-        argv.port
-      }`,
-    );
+    logger.info(`\nThe app can be found on\n> http://localhost:${argv.port}`);
   });
 }

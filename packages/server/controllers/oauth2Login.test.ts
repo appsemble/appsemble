@@ -1,15 +1,11 @@
-import { createServer } from '@appsemble/node-utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
 
-import * as controllers from './index.js';
 import { EmailAuthorization, OAuthAuthorization, User } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
 import { argv, setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
-import { Mailer } from '../utils/email/Mailer.js';
+import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -20,13 +16,7 @@ useTestDatabase(import.meta);
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-    context: { mailer: new Mailer(argv) },
-  });
+  const server = await createServer();
   await setTestApp(server);
   user = await createTestUser();
 });

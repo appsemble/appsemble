@@ -1,10 +1,8 @@
-import { createServer } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import * as controllers from './index.js';
 import { getDB } from '../models/index.js';
-import { appRouter } from '../routes/index.js';
-import { argv, setArgv } from '../utils/argv.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 useTestDatabase(import.meta);
@@ -12,11 +10,7 @@ useTestDatabase(import.meta);
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
 
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-  });
+  const server = await createServer();
   await setTestApp(server);
 });
 

@@ -1,4 +1,4 @@
-import { getRemapperContext, getResourceDefinition } from '@appsemble/node-utils';
+import { getRemapperContext, getResourceDefinition, type QueryParams } from '@appsemble/node-utils';
 import {
   type ResourceCreateActionDefinition,
   type ResourceDeleteActionDefinition,
@@ -8,7 +8,6 @@ import {
   type ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { type QueryParams } from 'koas-parameters';
 import { Op } from 'sequelize';
 
 import { type ServerActionParameters } from './index.js';

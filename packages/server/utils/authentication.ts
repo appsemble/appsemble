@@ -1,9 +1,9 @@
-import { type AuthenticationCheckers } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
+import { type AuthenticationCheckers } from './createServer.js';
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
 
 export function authentication(): AuthenticationCheckers {

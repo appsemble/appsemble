@@ -1,4 +1,9 @@
-import { getRemapperContext, handleValidatorResult, type Options } from '@appsemble/node-utils';
+import {
+  getRemapperContext,
+  handleValidatorResult,
+  type Options,
+  type QueryParams,
+} from '@appsemble/node-utils';
 import {
   type NotificationDefinition,
   type ResourceDefinition,
@@ -8,7 +13,6 @@ import { defaultLocale, remap } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { ValidationError, Validator } from 'jsonschema';
 import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
-import { type QueryParams } from 'koas-parameters';
 import parseDuration from 'parse-duration';
 import { Op, type Order, type WhereOptions } from 'sequelize';
 

@@ -1,8 +1,7 @@
-import { createFixtureStream, createServer, getAppsembleMessages } from '@appsemble/node-utils';
+import { createFixtureStream, getAppsembleMessages } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
-import * as controllers from './index.js';
 import {
   App,
   AppMessages,
@@ -12,9 +11,8 @@ import {
   Organization,
   type User,
 } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
-import { argv, setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 import {
   authorizeClientCredentials,
   authorizeStudio,
@@ -29,12 +27,7 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-  });
+  const server = await createServer();
   await setTestApp(server);
 });
 

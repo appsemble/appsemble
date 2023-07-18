@@ -1,9 +1,7 @@
-import { createServer } from '@appsemble/node-utils';
 import { type AppMessages as AppMessagesType, type App as AppType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { parse } from 'yaml';
 
-import * as controllers from './index.js';
 import {
   App,
   AppBlockStyle,
@@ -13,9 +11,8 @@ import {
   Organization,
   Resource,
 } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
-import { argv, setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -26,12 +23,7 @@ useTestDatabase(import.meta);
 beforeAll(async () => {
   vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-  });
+  const server = await createServer();
   await setTestApp(server);
 });
 
