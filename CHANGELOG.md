@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.20.45](https://gitlab.com/appsemble/appsemble/-/releases/0.20.45)] - 2023-06-07
+
+### Added
+
+- Block(`barcode-scan`): Initial release.
+- Block(`barcode-scan`): Supports scanning code from image file.
+- Block(`form`): Support default value for date fields.
+- Block(`image`): The Image block now has width and height (in pixel) properties.
+- App: Added `team.members` action.
+- Server: Add `resource.patch` action to server.
+- Server: Added specific `getTeamMember` endpoint.
+
+### Changed
+
+- Utils: **Breaking** Change not remapper to, compute then invert `null` and `singular` values.
+
+### Fixed
+
+- Block(`filter`): Fix filtering for `date` and `date-range` fields.
+- Block(`form`): Support not passing fields to block.
+- Server: Implement `resource.create` action instead of reusing the `request` action.
+- Server: Implement `resource.delete` action instead of reusing the `request` action.
+- Server: Implement `resource.get` action instead of reusing the `request` action.
+- Server: Implement `resource.update` action instead of reusing the `request` action.
+
+## \[[0.20.44](https://gitlab.com/appsemble/appsemble/-/releases/0.20.44)] - 2023-05-12
+
+## \[[0.20.43](https://gitlab.com/appsemble/appsemble/-/releases/0.20.43)] - 2023-05-11
+
+### Added
+
+- Block(`table`): Support custom size of image in table cell.
+- Block(`table`): Support images in table cell.
+- Server: Support authentication for the `request action` using app service secrets when proxied.
+- Studio: Add service secrets to app secrets page.
+- Utils: Add `log` remapper.
+- Utils: Add `match` remapper.
+- Utils: Add `not` remapper.
+
+### Changed
+
+- Block(`form`): The form block now uses actions to `autofill` form fields.
+
+### Fixed
+
+- Block(`form`): Resolve date fields and boolean field missing form values when remapping in
+  `required` requirement.
+
 ## \[[0.20.42](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)] - 2023-04-04
 
 ## \[[0.20.41](https://gitlab.com/appsemble/appsemble/-/releases/0.20.41)] - 2023-03-24
@@ -15,6 +63,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Server: Set missing `userinfo` fields (`locale` and `zoneinfo`) in the `userinfo` API.
+- Server: Implement `resource.query` action instead of reusing the `request` action.
 
 ## \[[0.20.40](https://gitlab.com/appsemble/appsemble/-/releases/0.20.40)] - 2023-03-06
 

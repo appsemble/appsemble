@@ -32,6 +32,7 @@ import {
   AppRating,
   AppSamlSecret,
   AppScreenshot,
+  AppServiceSecret,
   AppSnapshot,
   AppSubscription,
   Asset,
@@ -45,7 +46,7 @@ import { resolveIconUrl } from '../utils/model.js';
 export class App extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
@@ -66,17 +67,17 @@ export class App extends Model {
   @Column({ type: DataType.TEXT })
   sslKey: string;
 
-  @Column
+  @Column(DataType.BLOB)
   icon?: Buffer;
 
-  @Column
+  @Column(DataType.BLOB)
   maskableIcon?: Buffer;
 
-  @Column
+  @Column(DataType.STRING)
   iconBackground: string;
 
   @Unique('UniquePathIndex')
-  @Column
+  @Column(DataType.STRING)
   path: string;
 
   @AllowNull(false)
@@ -86,12 +87,12 @@ export class App extends Model {
 
   @AllowNull(false)
   @Default(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   showAppDefinition: boolean;
 
   @AllowNull(false)
   @Default(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   template: boolean;
 
   @Column(DataType.TEXT)
@@ -104,52 +105,52 @@ export class App extends Model {
   sharedStyle: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   vapidPublicKey: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   vapidPrivateKey: string;
 
   @Default(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   locked: boolean;
 
   @Default(true)
-  @Column
+  @Column(DataType.BOOLEAN)
   showAppsembleOAuth2Login: boolean;
 
   @Default(false)
-  @Column
+  @Column(DataType.BOOLEAN)
   showAppsembleLogin: boolean;
 
-  @Column
+  @Column(DataType.STRING)
   emailName: string;
 
-  @Column
+  @Column(DataType.STRING)
   emailHost: string;
 
-  @Column
+  @Column(DataType.STRING)
   emailUser: string;
 
-  @Column
+  @Column(DataType.BLOB)
   emailPassword: Buffer;
 
   @Default(587)
-  @Column
+  @Column(DataType.INTEGER)
   emailPort: number;
 
   @Default(true)
-  @Column
+  @Column(DataType.BOOLEAN)
   emailSecure: boolean;
 
-  @Column
+  @Column(DataType.STRING)
   googleAnalyticsID: string;
 
-  @Column
+  @Column(DataType.STRING)
   sentryDsn: string;
 
-  @Column
+  @Column(DataType.STRING)
   sentryEnvironment: string;
 
   @UpdatedAt
@@ -164,7 +165,7 @@ export class App extends Model {
   @AllowNull(false)
   @ForeignKey(() => Organization)
   @Unique('UniquePathIndex')
-  @Column
+  @Column(DataType.STRING)
   OrganizationId: string;
 
   @HasMany(() => AppBlockStyle)
@@ -203,6 +204,9 @@ export class App extends Model {
   @HasMany(() => Team)
   Teams: Team[];
 
+  @HasMany(() => AppServiceSecret)
+  AppServiceSecrets: AppServiceSecret[];
+
   @HasMany(() => AppSnapshot, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   AppSnapshots: AppSnapshot[];
 
@@ -236,6 +240,8 @@ export class App extends Model {
       iconBackground: this.iconBackground || '#ffffff',
       iconUrl: resolveIconUrl(this),
       longDescription: this.longDescription,
+      coreStyle: this.coreStyle == null ? undefined : this.coreStyle,
+      sharedStyle: this.sharedStyle == null ? undefined : this.sharedStyle,
       definition,
       yaml: omittedValues.includes('yaml')
         ? undefined

@@ -46,6 +46,12 @@ export function RadioButton<T>({
     (event: JSX.TargetedEvent<HTMLInputElement>) => onChange(event, value),
     [onChange, value],
   );
+  const handleClick = useCallback((event: JSX.TargetedEvent<HTMLInputElement>) => {
+    const radioButton = event.target as HTMLInputElement;
+    if (radioButton.readOnly) {
+      event.preventDefault();
+    }
+  }, []);
 
   return (
     <div className={wrapperClassName}>
@@ -56,6 +62,7 @@ export function RadioButton<T>({
         id={id}
         name={name}
         onChange={handleChange}
+        onClick={handleClick}
         type="radio"
         value={valueToString(value)}
       />

@@ -11,6 +11,7 @@ export function appMapper(platformMiddleware: Middleware, appMiddleware: Middlew
     if (new URL(argv.host).hostname === hostname || isIP(hostname)) {
       return platformMiddleware(ctx, next);
     }
+
     return appMiddleware(ctx, next);
   };
 }

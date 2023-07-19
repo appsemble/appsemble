@@ -1,8 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  settings: 'Settings',
-  feedback: 'Feedback',
-  login: 'Login',
-  logout: 'Logout',
+  settings: {
+    id: 'app.D3idYv',
+    defaultMessage: 'Settings',
+  },
+  feedback: {
+    id: 'app.Ejhdi4',
+    defaultMessage: 'Feedback',
+  },
+  login: {
+    id: 'app.AyGauy',
+    defaultMessage: 'Login',
+  },
+  logout: {
+    id: 'app.C81/uG',
+    defaultMessage: 'Logout',
+  },
 });

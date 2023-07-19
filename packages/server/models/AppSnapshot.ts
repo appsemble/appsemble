@@ -17,7 +17,7 @@ import { App, User } from './index.js';
 export class AppSnapshot extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
@@ -29,7 +29,7 @@ export class AppSnapshot extends Model {
 
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

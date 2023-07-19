@@ -15,19 +15,19 @@ import { App, User } from './index.js';
 export class OAuth2AuthorizationCode extends Model {
   @PrimaryKey
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   code: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   redirectUri: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   scope: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.DATE)
   expires: Date;
 
   @AllowNull(false)
@@ -40,7 +40,7 @@ export class OAuth2AuthorizationCode extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App, { onDelete: 'CASCADE' })

@@ -24,18 +24,18 @@ import { BlockVersion } from './index.js';
 export class BlockAsset extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.BLOB)
   content: Buffer;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   filename: string;
 
-  @Column
+  @Column(DataType.STRING)
   mime: string;
 
   @AllowNull(false)

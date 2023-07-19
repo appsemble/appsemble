@@ -2,14 +2,14 @@
   "app": {
     "description": "Une application simple qui récupère des informations sur les vacances pour différents pays.",
     "name": "Vacances",
-    "pages.holidays-in-europe": "Vacances en Europe",
-    "pages.holidays-in-europe.tabs.0": "Pays-Bas",
-    "pages.holidays-in-europe.tabs.1": "Allemagne",
-    "pages.holidays-in-europe.tabs.2": "Espagne",
     "pages.holidays-in-america": "Vacances en Amérique",
     "pages.holidays-in-america.tabs.0": "États-Unis",
     "pages.holidays-in-america.tabs.1": "Canada",
-    "pages.holidays-in-america.tabs.2": "Mexique"
+    "pages.holidays-in-america.tabs.2": "Mexique",
+    "pages.holidays-in-europe": "Vacances en Europe",
+    "pages.holidays-in-europe.tabs.0": "Pays-Bas",
+    "pages.holidays-in-europe.tabs.1": "Allemagne",
+    "pages.holidays-in-europe.tabs.2": "Espagne"
   },
   "messageIds": {
     "date": "Date",

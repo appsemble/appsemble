@@ -24,7 +24,7 @@ it('should render its children if no errors are thrown', () => {
 });
 
 it('should render its fallback when errors are thrown', () => {
-  import.meta.jest.spyOn(console, 'error').mockImplementation();
+  vi.spyOn(console, 'error').mockImplementation(null);
   const Child = (): ReactElement => {
     throw new Error('test');
   };

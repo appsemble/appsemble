@@ -14,6 +14,7 @@ Fontys
 ICT
 Manny
 maskable/editable
+MDX
 middleware/mare
 preconfigure/reconfigure
 prepend/append
@@ -36,6 +37,7 @@ unconfigure/reconfigure
 workspace/mare
 
 # Technical slang and libraries
+.editorconfig
 AES
 API/URL
 Airbnb
@@ -57,6 +59,7 @@ DOM
 DSN
 dropdown
 EAA
+EditorConfig
 ESLint
 falsy
 fieldset
@@ -86,6 +89,7 @@ PEM
 Preact
 prerelease/release
 PWA
+proxied
 remapper/mapper
 Redux
 SAML
@@ -157,9 +161,12 @@ noninteractive
 rehype
 formatjs
 geocoordinates
+whitespace
 # LGPL specific
 4d0
 4d1
 GPL
 LGPL
 macOS
+i18n
+vitest

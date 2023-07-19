@@ -19,23 +19,23 @@ import { App, ResourceSubscription, User } from './index.js';
 export class AppSubscription extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   endpoint: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   p256dh: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   auth: string;
 
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

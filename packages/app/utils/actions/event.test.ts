@@ -8,7 +8,7 @@ describe('event', () => {
   beforeEach(() => {
     // eslint-disable-next-line unicorn/prefer-event-target
     ee = new EventEmitter();
-    import.meta.jest.spyOn(ee, 'once');
+    vi.spyOn(ee, 'once');
   });
 
   afterEach(() => {

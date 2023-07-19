@@ -1,9 +1,9 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.42/config/assets/logo.svg) Appsemble Server
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.45/config/assets/logo.svg) Appsemble Server
 
 > The official Appsemble Docker image
 
 [![](https://img.shields.io/docker/v/appsemble/appsemble)](https://hub.docker.com/r/appsemble/appsemble)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.45/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.45)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
@@ -37,30 +37,36 @@ docker pull appsemble/appsemble:$VERSION
 The Appsemble Docker image can be configured using environment variables. Each variable can also be
 passed as a command line parameter instead, if desired.
 
-| Variable               | Default      | Description                                                                                                            |
-| ---------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_HOST`        | `postgresql` | The host of the database to connect to. This defaults to the connected PostgreSQL container.                           |
-| `DATABASE_PORT`        | `3306`       | The port of the database to connect to.                                                                                |
-| `DATABASE_NAME`        |              | The name of the database to connect to.                                                                                |
-| `DATABASE_USER`        |              | The user to use to login to the database.                                                                              |
-| `DATABASE_PASSWORD`    |              | The password to use to login to the database.                                                                          |
-| `DATABASE_URL`         |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
-| `SENTRY_DSN`           |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
-| `GITHUB_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
-| `GITHUB_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |
-| `GITLAB_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with GitLab in Appsemble Studio.                                              |
-| `GITLAB_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with GitLab in Appsemble Studio.                                          |
-| `GOOGLE_CLIENT_ID`     |              | The OAuth2 client ID used for logging in with Google in Appsemble Studio.                                              |
-| `GOOGLE_CLIENT_SECRET` |              | The OAuth2 client secret used for logging in with Google in Appsemble Studio.                                          |
-| `SMTP_HOST`            |              | The host of the SMTP server to connect to.                                                                             |
-| `SMTP_PORT`            |              | The port of the SMTP server to connect to.                                                                             |
-| `SMTP_SECURE`          | `false`      | Use TLS when connecting to the SMTP server.                                                                            |
-| `SMTP_USER`            |              | The user to use to login to the SMTP server.                                                                           |
-| `SMTP_PASS`            |              | The password to use to login to the SMTP server.                                                                       |
-| `SMTP_FROM`            |              | The address to use when sending emails.                                                                                |
-| `DISABLE_REGISTRATION` | `false`      | If specified, user registration will be disabled on the server                                                         |
-| `HOST`                 |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
-| `REMOTE`               | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
+| Variable                   | Default      | Description                                                                                                            |
+| -------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_HOST`            | `postgresql` | The host of the database to connect to. This defaults to the connected PostgreSQL container.                           |
+| `DATABASE_PORT`            | `3306`       | The port of the database to connect to.                                                                                |
+| `DATABASE_NAME`            |              | The name of the database to connect to.                                                                                |
+| `DATABASE_USER`            |              | The user to use to login to the database.                                                                              |
+| `DATABASE_PASSWORD`        |              | The password to use to login to the database.                                                                          |
+| `DATABASE_URL`             |              | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
+| `SENTRY_DSN`               |              | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
+| `GITHUB_CLIENT_ID`         |              | The OAuth2 client ID used for logging in with GitHub in Appsemble Studio.                                              |
+| `GITHUB_CLIENT_SECRET`     |              | The OAuth2 client secret used for logging in with GitHub in Appsemble Studio.                                          |
+| `GITLAB_CLIENT_ID`         |              | The OAuth2 client ID used for logging in with GitLab in Appsemble Studio.                                              |
+| `GITLAB_CLIENT_SECRET`     |              | The OAuth2 client secret used for logging in with GitLab in Appsemble Studio.                                          |
+| `GOOGLE_CLIENT_ID`         |              | The OAuth2 client ID used for logging in with Google in Appsemble Studio.                                              |
+| `GOOGLE_CLIENT_SECRET`     |              | The OAuth2 client secret used for logging in with Google in Appsemble Studio.                                          |
+| `SMTP_HOST`                |              | The host of the SMTP server to connect to.                                                                             |
+| `SMTP_PORT`                |              | The port of the SMTP server to connect to.                                                                             |
+| `SMTP_SECURE`              | `false`      | Use TLS when connecting to the SMTP server.                                                                            |
+| `SMTP_USER`                |              | The user to use to login to the SMTP server.                                                                           |
+| `SMTP_PASS`                |              | The password to use to login to the SMTP server.                                                                       |
+| `SMTP_FROM`                |              | The address to use when sending emails.                                                                                |
+| `IMAP_HOST`                |              | The host of the IMAP server to connect to.                                                                             |
+| `IMAP_PORT`                |              | The port of the IMAP server to connect to.                                                                             |
+| `IMAP_SECURE`              | `false`      | Use TLS when connecting to the IMAP server.                                                                            |
+| `IMAP_USER`                |              | The user to use to login to the IMAP server.                                                                           |
+| `IMAP_PASS`                |              | The password to use to login to the IMAP server.                                                                       |
+| `IMAP_COPY_TO_SENT_FOLDER` | `false`      | If specified, sent email will be copied to the IMAP server's "Sent" folder.                                            |
+| `DISABLE_REGISTRATION`     | `false`      | If specified, user registration will be disabled on the server                                                         |
+| `HOST`                     |              | The external host on which the server is available. This should include the protocol, hostname, and optionally port.   |
+| `REMOTE`                   | `null`       | A remote Appsemble server to connect to in order to synchronize blocks.                                                |
 
 ## Setting up Social Login
 
@@ -121,5 +127,5 @@ Check the `read_user` scope, and click _Save application_.
 
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.42/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.45/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

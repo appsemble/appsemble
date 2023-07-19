@@ -9,14 +9,14 @@ import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { type MinifyOptions } from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeMdxCodeProps from 'rehype-mdx-code-props';
 import rehypeMdxTitle from 'rehype-mdx-title';
+import rehypeMermaid from 'rehype-mermaidjs';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
-import remarkMdxCodeMeta from 'remark-mdx-code-meta';
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
 import remarkMdxImages from 'remark-mdx-images';
-import remarkMermaid from 'remark-mermaidjs';
 import { type Options } from 'sass';
 import UnusedWebpackPlugin from 'unused-webpack-plugin';
 import { type Configuration } from 'webpack';
@@ -106,7 +106,8 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
           '**/types.ts',
           '*.config.js',
           'mdx.ts',
-          'jest.setup.ts',
+          'vitest.setup.ts',
+          'vitest.config.ts',
           'node_modules',
           'tsconfig.json',
         ],
@@ -171,18 +172,13 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                 remarkPlugins: [
                   remarkFrontmatter,
                   remarkGfm,
-                  production && [
-                    remarkMermaid,
-                    {
-                      launchOptions: { executablePath: process.env.CHROME_BIN || 'google-chrome' },
-                    },
-                  ],
-                  remarkMdxCodeMeta,
                   remarkMdxFrontmatter,
                   remarkMdxImages,
                   remarkRewriteLinks,
-                ].filter(Boolean),
+                ],
                 rehypePlugins: [
+                  production && rehypeMermaid,
+                  rehypeMdxCodeProps,
                   rehypeMdxTitle,
                   rehypeSlug,
                   [
@@ -198,19 +194,10 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
                     },
                   ],
                   rehypeSearchIndex,
-                ],
+                ].filter(Boolean),
               },
             },
           ],
-        },
-        {
-          test: /[/\\]messages\.ts$/,
-          loader: 'babel-loader',
-          options: {
-            plugins: [
-              ['babel-plugin-react-intl-auto', { filebase: false, removePrefix: 'packages/' }],
-            ],
-          },
         },
         {
           test: /\.tsx?$/,

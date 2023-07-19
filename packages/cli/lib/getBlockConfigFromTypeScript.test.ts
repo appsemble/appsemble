@@ -8,7 +8,7 @@ import { ts } from 'ts-json-schema-generator';
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 
 beforeEach(() => {
-  import.meta.jest.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
+  vi.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
 });
 
 describe('getBlockConfigFromTypeScript', () => {
@@ -55,7 +55,7 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   it('should not use TypeScript if all metadata is present in the original config', () => {
-    import.meta.jest.spyOn(ts, 'createProgram');
+    vi.spyOn(ts, 'createProgram');
     const input = {
       actions: {},
       events: { emit: { foo: {} }, listen: { bar: {} } },

@@ -7,7 +7,7 @@ let baseDir: string;
 /**
  * Set the test fixture base path. This folder should contain a folder named `__fixtures__`.
  *
- * This is typically called in `jest.setup.ts`.
+ * This is typically called in `vitest.setup.ts`.
  *
  * @param meta The module meta object
  * @example

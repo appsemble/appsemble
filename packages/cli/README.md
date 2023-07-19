@@ -1,20 +1,24 @@
-# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.42/config/assets/logo.svg) Appsemble CLI
+# ![](https://gitlab.com/appsemble/appsemble/-/raw/0.20.45/config/assets/logo.svg) Appsemble CLI
 
 > Manage apps and blocks from the command line.
 
 [![npm](https://img.shields.io/npm/v/@appsemble/cli)](https://www.npmjs.com/package/@appsemble/cli)
-[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.42/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.42)
+[![GitLab CI](https://gitlab.com/appsemble/appsemble/badges/0.20.45/pipeline.svg)](https://gitlab.com/appsemble/appsemble/-/releases/0.20.45)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Development server](#development-server)
   - [Authentication](#authentication)
   - [Organizations](#organizations)
   - [Apps](#apps)
   - [Blocks](#blocks)
+  - [Teams](#teams)
   - [Assets](#assets)
+  - [Resources](#resources)
+  - [Cronjobs](#cronjobs)
 - [License](#license)
 
 ## Installation
@@ -32,6 +36,76 @@ appsemble --help
 ```
 
 Every subcommand also supports the `--help` flag.
+
+### Development server
+
+The development server can create an app from a specified folder containing an `app-definition.yml`
+file. It will check what blocks are needed for the app and will try to load them from the local
+workspaces, listed in the `package.json` file in the root of the project, if they are present. This
+way, all default Appsemble blocks shipped with Appsemble are loaded automatically.
+
+Once the development server is started, making a change to a block’s code or styles will reflect in
+the browser immediately after refreshing the page, without the need of increasing the block’s
+version. Running docker database containers, creating a user account and creating an organization
+are not needed.
+
+The Appsemble CLI can be used to start the development server. For example, the following command
+serves `my-app`:
+
+```sh
+appsemble serve <path-to-app-directory>
+```
+
+This will serve the app on `http://localhost:9090`.
+
+A different port can be specified with the `--port` parameter.
+
+The following option allows you to view the app with a specified role:
+
+```sh
+appsemble serve <path-to-app-directory> --user-role test
+```
+
+The following option allows you to view the app as a Manager of a team:
+
+```sh
+appsemble serve <path-to-app-directory> --team-role Manager
+```
+
+App data is stored within a `db.json` file in your machine’s cache directory. Each app has their own
+directory `<my-app>`.
+
+```sh
+MacOS - /Users/<my-name>/Library/Caches/appsemble/<my-app>
+Linux - /home/<my-name>/.cache/appsemble/<my-app>
+Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\<my-app>
+```
+
+App assets will be served from the local file system.
+
+The development server will automatically fetch all blocks that are needed for the served app but
+are missing from the local workspaces. These are typically third-party or proprietary blocks. The
+development server will use `https://appsemble.app` as the default remote server to fetch blocks
+from. The following option allows you to specify a different remote server:
+
+```sh
+appsemble serve <path-to-app-directory> --remote <remote>
+```
+
+The development server will use the corresponding block directory in your machine’s cache directory
+to store and read block manifests and assets.
+
+```sh
+MacOS - /Users/<my-name>/Library/Caches/appsemble/blocks/<organisation>/<block-name>/<block-version>
+Linux - /home/<my-name>/.cache/appsemble/blocks/<organisation>/<block-name>/<block-version>
+Windows - C:\Users\<my-name>\AppData\Local\appsemble\Cache\blocks\<organisation>\<block-name>\<block-version>
+```
+
+You can overwrite the existing block cache with the following option:
+
+```sh
+appsemble serve <path-to-app-directory> --remote <remote> --overwrite-block-cache
+```
 
 ### Authentication
 
@@ -69,6 +143,12 @@ The Appsemble CLI can be used to create and update apps. For example, to create 
 appsemble app create apps/my-app
 ```
 
+Similarly, to update an app using an app directory, run the following command:
+
+```sh
+appsemble app update --id <app-id> <path/to/updated app>.
+```
+
 For a more in depth explanation of how to build apps, use our
 [app building guide](https://appsemble.app/docs/guide).
 
@@ -94,6 +174,15 @@ npm install webpack@webpack-4 @appsemble/webpack-config
 For a more in-depth explanation of how to build apps, use our
 [block development guide](https://appsemble.app/docs/development/developing-blocks).
 
+### Teams
+
+The Appsemble CLI can be used to manage teams for apps. For example, the following command creates a
+new team named `My Team`:
+
+```sh
+appsemble team create 'My Team' --app-id 1 --context development
+```
+
 ### Assets
 
 The Appsemble CLI can be used to upload assets from disk. For example, the following command creates
@@ -103,7 +192,60 @@ an asset named `example-asset`:
 appsemble asset create --app-id 1 path/to/example-asset.png
 ```
 
+### Resources
+
+The Appsemble CLI can be used to create a resource from a JSON file or directory:
+
+```json
+[
+  {
+    "title": "My Resource",
+    "description": "This record is an example."
+  }
+]
+```
+
+```sh
+appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/my-resource.json
+```
+
+```sh
+appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+```
+
+And resources can also be updated when they contain an id in the JSON file.
+
+```json
+[
+  {
+    "id": 1,
+    "title": "My Updated Resource",
+    "description": "This will be the updated content of the first my-resource record."
+  }
+]
+```
+
+```sh
+appsemble resource update --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+```
+
+### Cronjobs
+
+The Appsemble CLI can be used to run app cronjobs. The following command runs all cronjobs that were
+scheduled to run in the past 5 minutes:
+
+```sh
+appsemble run-cronjobs
+```
+
+How often jobs are run (more accurately how far back the job can be scheduled for it to run) the
+time interval (in minutes) can also be set with:
+
+```sh
+appsemble run-cronjobs --interval 30
+```
+
 ## License
 
-[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.42/LICENSE.md) ©
+[LGPL-3.0-only](https://gitlab.com/appsemble/appsemble/-/blob/0.20.45/LICENSE.md) ©
 [Appsemble](https://appsemble.com)

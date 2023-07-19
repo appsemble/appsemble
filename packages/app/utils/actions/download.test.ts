@@ -3,14 +3,14 @@ import { createTestAction } from '../makeActions.js';
 let anchor: HTMLAnchorElement;
 
 beforeEach(() => {
-  import.meta.jest
-    .spyOn(URL, 'createObjectURL')
-    .mockReturnValue(`blob:${window.location.origin}/12345678-90ab-cdef-1234-567890abcdef`);
-  import.meta.jest.spyOn(URL, 'revokeObjectURL');
-  import.meta.jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+  vi.spyOn(URL, 'createObjectURL').mockReturnValue(
+    `blob:${window.location.origin}/12345678-90ab-cdef-1234-567890abcdef`,
+  );
+  vi.spyOn(URL, 'revokeObjectURL');
+  vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
     anchor = {
       tagName: tagName.toUpperCase(),
-      click: import.meta.jest.fn(),
+      click: vi.fn(),
     } as Partial<HTMLElement> as HTMLAnchorElement;
     return anchor;
   });

@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Reset Password',
+  title: {
+    id: 'studio.xl27nc',
+    defaultMessage: 'Reset Password',
+  },
 });

@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.20.42",
+  "version": "0.20.45",
   "description": "A simple wrapper for @appsemble/cli",
   "keywords": [
     "app",
@@ -27,9 +27,9 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/cli": "0.20.42"
+    "@appsemble/cli": "0.20.45"
   }
 }

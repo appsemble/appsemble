@@ -1,0 +1,5 @@
+parameters:
+  type: file
+events:
+  emit:
+    foundBarcode: number

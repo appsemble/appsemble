@@ -1,4 +1,4 @@
-import { createFixtureStream } from '@appsemble/node-utils';
+import { createFixtureStream, getAppsembleMessages } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
@@ -13,7 +13,6 @@ import {
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { getAppsembleMessages } from '../utils/getAppsembleMessages.js';
 import {
   authorizeClientCredentials,
   authorizeStudio,

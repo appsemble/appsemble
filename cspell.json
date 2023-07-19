@@ -20,6 +20,7 @@
     "return[^;]*"
   ],
   "ignoreWords": [
+    "domcontentloaded",
     "viewports",
     "msedge",
     "enableTime",
@@ -76,7 +77,6 @@
     "appmembers",
     "appnotifications",
     "appratings",
-    "babelignore",
     "proxying",
     "bulmahandler",
     "dvcm",
@@ -153,6 +153,7 @@
     "cacheability",
     "unprefixed",
     "icalendar",
+    "Squidward",
     "Spongebob",
     "Squarepants",
     "DTSTAMP",
@@ -169,6 +170,7 @@
     "DTEND",
     "CALSCALE",
     "superadmin",
-    "messageformat"
+    "messageformat",
+    "cobertura"
   ]
 }

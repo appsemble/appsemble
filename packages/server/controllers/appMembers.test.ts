@@ -51,14 +51,16 @@ function createDefaultApp(org: Organization): Promise<App> {
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
-
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   organization = await Organization.create({
     id: 'testorganization',
@@ -80,6 +82,10 @@ beforeEach(async () => {
       },
     },
   });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('getAppMembers', () => {
@@ -1163,7 +1169,7 @@ describe('registerMemberEmail', () => {
           {
             "argument": "email",
             "instance": "foo",
-            "message": "does not conform to the "email" format",
+            "message": "does not conform to the \\"email\\" format",
             "name": "format",
             "path": [
               "email",
@@ -1173,7 +1179,7 @@ describe('registerMemberEmail', () => {
               "format": "email",
               "type": "string",
             },
-            "stack": "instance.email does not conform to the "email" format",
+            "stack": "instance.email does not conform to the \\"email\\" format",
           },
           {
             "argument": 8,

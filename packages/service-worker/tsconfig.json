@@ -2,6 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["esnext", "webworker"],
-    "types": ["jest", "node"]
+    "types": ["vitest/globals", "node"]
   }
 }

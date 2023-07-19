@@ -2,12 +2,11 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["esnext"],
     "module": "esnext",
     "moduleDetection": "force",
-    "moduleResolution": "Node",
+    "moduleResolution": "node16",
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -16,7 +15,7 @@
     "strictFunctionTypes": false,
     "strictNullChecks": false,
     "target": "es2019",
-    "types": ["jest"]
+    "types": ["vitest/globals"]
   },
   "ts-node": {
     "experimentalResolver": true

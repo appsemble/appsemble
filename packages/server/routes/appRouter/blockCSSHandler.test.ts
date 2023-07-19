@@ -1,8 +1,8 @@
+import { boomMiddleware } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { appRouter } from './index.js';
-import { boomMiddleware } from '../../middleware/boom.js';
 import { App, AppBlockStyle, Organization } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';

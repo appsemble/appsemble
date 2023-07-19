@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.20.42",
+  "version": "0.20.45",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -22,22 +22,20 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.42",
-    "@appsemble/types": "0.20.42",
-    "@appsemble/utils": "0.20.42",
-    "@appsemble/webpack-core": "0.20.42",
-    "@babel/core": "^7.0.0",
+    "@appsemble/node-utils": "0.20.45",
+    "@appsemble/types": "0.20.45",
+    "@appsemble/utils": "0.20.45",
+    "@appsemble/webpack-core": "0.20.45",
+    "@formatjs/cli-lib": "^6.0.0",
     "@types/fs-extra": "^11.0.0",
     "@types/lodash-es": "^4.0.0",
     "@types/mdast": "^3.0.0",
     "@types/normalize-path": "^3.0.0",
     "@types/semver": "^7.0.0",
     "axios": "^1.0.0",
-    "babel-plugin-formatjs": "^10.0.0",
-    "babel-plugin-react-intl-auto": "^3.0.0",
     "date-fns": "^2.0.0",
     "fs-extra": "^11.0.0",
     "globby": "^13.0.0",
@@ -48,6 +46,7 @@
     "normalize-path": "^3.0.0",
     "prettier": "^2.0.0",
     "semver": "^7.0.0",
+    "sort-keys": "^5.0.0",
     "twitter-api-v2": "^1.0.0",
     "type-fest": "^3.0.0",
     "unist-util-visit": "^4.0.0",

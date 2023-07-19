@@ -12,10 +12,26 @@ New languages can be added [here](https://hosted.weblate.org/projects/appsemble/
 
 ## Development
 
+### Apps
+
+When building apps you can also use GitLab to maintain your app, and use CI/CD pipelines for
+validation and deployment.
+
+To get started head over to our [Template](https://gitlab.com/appsemble/apps/template) repository
+for further instructions.
+
 ### Style guide
 
 The entire code base is formatted using
 [![](https://avatars.githubusercontent.com/u/25822731?s=16) Prettier](https://prettier.io).
+
+Please install the
+[![](https://avatars.githubusercontent.com/u/1165674?s=16&v=4) EditorConfig](https://editorconfig.org)
+extension for your editor of choice if it doesn’t support so out of the box.
+
+This is to ensure stricter whitespace related rules from the
+[.editorconfig](https://gitlab.com/appsemble/appsemble/-/blob/main/.editorconfig) file which aren’t
+covered by CI.
 
 #### JavaScript / TypeScript
 
@@ -32,12 +48,42 @@ CSS styles are linted using
 Markdown documents are linted using
 [![](https://avatars.githubusercontent.com/u/16309564?s=16) Remark lint](https://github.com/remarkjs/remark-lint)
 
+#### Message validation
+
+To add new messages, follow the following format:
+
+```
+myMessage: {
+  id: '',
+  defaultMessage: 'Your message here',
+}
+```
+
+To generate an ID for the message run:
+
+```sh
+yarn eslint --fix path/to/my-file
+```
+
+This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for
+`eslint`. A message ID is a base64 encoded hash of the `defaultMessage` and prefixed with the
+package name. This is to avoid duplicate messages, i.e., two different messages with similar
+`defaultMessage` value will have the same ID and the prefix helps determine where it came from.
+
+The pipeline will automatically detect if newly added messages are missing in the i18n directory. To
+automatically extract these messages from the source files run:
+
+```sh
+yarn script extract-messages
+```
+
 ### Testing
 
-Appsemble uses [![](https://jestjs.io/img/favicon/favicon-16x16.png) Jest](https://jestjs.io) for
+Appsemble uses
+[![](https://avatars.githubusercontent.com/u/95747107?s=16&v=4) vitest](https://vitest.dev/) for
 unit testing. Test files are placed in the same location as the file that’s under test, except that
 the test file has a _.test_ suffix. Not everything is tested yet. However, please make sure existing
-tests keep working. To run tests, simply run the command below. Any jest arguments are supported.
+tests keep working. To run tests, simply run the command below. Any Vitest arguments are supported.
 
 ```sh
 yarn test
@@ -49,10 +95,12 @@ To run tests for a single file, run
 yarn test path/to/file
 ```
 
-Appsemble uses jest snapshots to assert large serializable objects like block manifests, HTTP
+Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
 responses and some react-components. These need
 [manual updating](https://jestjs.io/docs/snapshot-testing#are-snapshots-written-automatically-on-continuous-integration-ci-systems)
-which can simply be done by running the commands mentioned with the `-u` argument.
+(we use vitest, but this is essentially the same) which can simply be done by running the commands
+mentioned with the `-u` argument. Or when in watch mode by pressing the
+[u key](https://vitest.dev/guide/snapshot.html#updating-snapshots) in the terminal.
 
 ```sh
 yarn test -u
@@ -61,12 +109,12 @@ yarn test -u
 #### End 2 End Tests
 
 The end 2 end tests are run using
-[![](https://playwright.dev/img/playwright-logo.svg) Playwright](https://playwright.dev). They
-reside in [`packages/e2e`](packages/e2e).
+[![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
+They reside in [`packages/e2e`](packages/e2e).
 
 ### Changelog
 
-Every block and package has a `changes` directory. This directory contains the following folders:
+Every block and package has a `changed` directory. This directory contains the following folders:
 
 - `added`
 - `changed`

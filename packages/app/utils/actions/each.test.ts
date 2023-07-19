@@ -4,7 +4,7 @@ import { createTestAction } from '../makeActions.js';
 
 describe('each', () => {
   it('call do for each entry in an array', async () => {
-    const ok = import.meta.jest.fn().mockReturnValue('ok');
+    const ok = vi.fn().mockReturnValue('ok');
 
     const action = createTestAction({
       definition: {
@@ -24,7 +24,7 @@ describe('each', () => {
   });
 
   it('call treat non-array input as a single item array.', async () => {
-    const ok = import.meta.jest.fn().mockReturnValue('ok');
+    const ok = vi.fn().mockReturnValue('ok');
 
     const action = createTestAction({
       definition: {

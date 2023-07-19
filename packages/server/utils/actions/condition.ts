@@ -1,3 +1,4 @@
+import { getRemapperContext } from '@appsemble/node-utils';
 import { type ConditionActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { Op } from 'sequelize';
@@ -5,12 +6,13 @@ import { Op } from 'sequelize';
 import { actions, type ServerActionParameters } from './index.js';
 import { EmailAuthorization } from '../../models/index.js';
 import { handleAction } from '../action.js';
-import { getRemapperContext } from '../app.js';
 
 export async function condition({
   action,
   app,
+  context,
   data,
+  options,
   user,
   ...params
 }: ServerActionParameters<ConditionActionDefinition>): Promise<any> {
@@ -28,8 +30,8 @@ export async function condition({
     ],
   });
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     user && {
       sub: user.id,
@@ -38,9 +40,19 @@ export async function condition({
       email_verified: Boolean(user.EmailAuthorizations?.[0]?.verified),
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
 
-  const actionDefinition = remap(action.if, data, context) ? action.then : action.else;
+  const actionDefinition = remap(action.if, data, remapperContext) ? action.then : action.else;
   const implementation = actions[actionDefinition.type];
-  return handleAction(implementation, { app, user, action: actionDefinition, data, ...params });
+  return handleAction(implementation, {
+    app,
+    user,
+    action: actionDefinition,
+    data,
+    options,
+    context,
+    ...params,
+  });
 }

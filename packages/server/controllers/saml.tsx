@@ -173,7 +173,6 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   }
 
   sig.keyInfoProvider = {
-    file: null,
     getKeyInfo: null,
     getKey: () => Buffer.from(idpCertificate || secret.idpCertificate),
   };
@@ -322,7 +321,7 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
     loginRequest.AppSamlSecret.App,
     loginRequest.redirectUri,
     loginRequest.scope,
-    loginRequest.User ?? user,
+    loginRequest.User ?? (user as User),
   );
   const redirect = new URL(loginRequest.redirectUri);
   redirect.searchParams.set('code', code);

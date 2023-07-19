@@ -204,7 +204,7 @@ describe('combineSchemas', () => {
 
 describe('iterJSONSchema', () => {
   it('should handle properties', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'object',
       properties: {
@@ -220,7 +220,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle additionalProperties', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'object',
       additionalProperties: { description: 'foo' },
@@ -234,7 +234,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle an items object', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       items: { description: 'foo' },
@@ -248,7 +248,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle an items array', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       items: [{ description: 'foo' }, { description: 'bar' }],
@@ -263,7 +263,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle additionalItems', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       additionalItems: { description: 'foo' },
@@ -277,7 +277,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle anyOf', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       anyOf: [{ description: 'foo' }],
@@ -291,7 +291,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle oneOf', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       oneOf: [{ description: 'foo' }],
@@ -305,7 +305,7 @@ describe('iterJSONSchema', () => {
   });
 
   it('should handle allOf', () => {
-    const onSchema = import.meta.jest.fn();
+    const onSchema = vi.fn();
     const schema = {
       type: 'array',
       allOf: [{ description: 'foo' }],

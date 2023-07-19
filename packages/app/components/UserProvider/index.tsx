@@ -18,7 +18,7 @@ import {
 
 import { type UpdateTeam } from '../../types.js';
 import { oauth2Scope } from '../../utils/constants.js';
-import { apiUrl, appId } from '../../utils/settings.js';
+import { apiUrl, appId, development } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface JwtPayload {
@@ -114,6 +114,10 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    * @param params Additional parameters, which depend on the grant type.
    */
   const fetchToken = useCallback(async (grantType: string, params: Record<string, string>) => {
+    if (development) {
+      return ['', { sub: '1' }] as const;
+    }
+
     const {
       data: { access_token: accessToken, refresh_token: rt },
     } = await axios.post<TokenResponse>(
@@ -125,6 +129,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         ...params,
       }),
     );
+    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const payload = jwtDecode<JwtPayload>(accessToken);
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;
@@ -198,6 +203,13 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     [login],
   );
 
+  /**
+   * Login using the development server.
+   *
+   * @param credentials The username and password.
+   */
+  const developmentLogin = useCallback(() => login('development', {}), [login]);
+
   const updateTeam: UpdateTeam = useCallback((team) => {
     setState(({ teams, ...oldState }) => {
       const newTeams = teams.map((t) => (t.id === team.id ? { ...t, role: team.role } : t));
@@ -218,6 +230,10 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       return;
     }
 
+    if (development) {
+      developmentLogin();
+    }
+
     const rt = localStorage.getItem(REFRESH_TOKEN);
     if (rt) {
       // If a refresh token is known, start a new session.
@@ -227,7 +243,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       logout();
       setIsLoading(false);
     }
-  }, [definition, login, logout]);
+  }, [definition, developmentLogin, login, logout]);
 
   // Handle refreshing access tokens
   useEffect(() => {
@@ -284,6 +300,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
     () => ({
       authorizationCodeLogin,
       passwordLogin,
+      developmentLogin,
       logout,
       updateTeam,
       setUserInfo,
@@ -291,7 +308,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       userInfoRef,
       ...state,
     }),
-    [authorizationCodeLogin, passwordLogin, logout, updateTeam, userInfo, state],
+    [authorizationCodeLogin, passwordLogin, developmentLogin, logout, updateTeam, userInfo, state],
   );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents

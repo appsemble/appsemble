@@ -566,6 +566,27 @@ describe('getTeamMembers', () => {
   });
 });
 
+describe('getTeamMember', () => {
+  it('should return specified member', async () => {
+    const team = await Team.create({ name: 'Test team', AppId: app.id });
+    await TeamMember.create({
+      TeamId: team.id,
+      UserId: user.id,
+      role: TeamRole.Member,
+    });
+
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/teams/${team.id}/members/${user.id}`);
+
+    expect(response.data).toStrictEqual({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+      role: TeamRole.Member,
+    });
+  });
+});
+
 describe('inviteTeamMember', () => {
   beforeEach(() => {
     authorizeApp(app);
@@ -667,7 +688,7 @@ describe('inviteTeamMember', () => {
       },
     });
 
-    import.meta.jest.spyOn(server.context.mailer, 'sendTemplateEmail');
+    vi.spyOn(server.context.mailer, 'sendTemplateEmail');
     const team = await Team.create({ name: 'A', AppId: app.id });
     await TeamMember.create({ TeamId: team.id, UserId: user.id, role: 'member' });
     const response = await request.post(`/api/apps/${app.id}/teams/${team.id}/invite`, {

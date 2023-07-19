@@ -9,6 +9,7 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
+
   const server = await createServer();
   await setTestApp(server);
 });
@@ -28,7 +29,7 @@ describe('checkHealth', () => {
   });
 
   it('should fail if the database is disconnected', async () => {
-    import.meta.jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
+    vi.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
     const response = await request.get('/api/health');
 
     expect(response).toMatchInlineSnapshot(`

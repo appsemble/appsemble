@@ -35,21 +35,21 @@ export class User extends Model {
   @Column(DataType.UUID)
   id: string;
 
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @ForeignKey(() => EmailAuthorization)
-  @Column
+  @Column(DataType.STRING)
   primaryEmail: string;
 
-  @Column
+  @Column(DataType.STRING)
   password: string;
 
-  @Column
+  @Column(DataType.STRING)
   locale: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   timezone: string;
 
   @BelongsToMany(() => Organization, () => Member)

@@ -16,7 +16,7 @@ import { User } from './index.js';
 @Table({ tableName: 'ResetPasswordToken' })
 export class ResetPasswordToken extends Model {
   @PrimaryKey
-  @Column
+  @Column(DataType.STRING)
   token: string;
 
   @AllowNull(false)

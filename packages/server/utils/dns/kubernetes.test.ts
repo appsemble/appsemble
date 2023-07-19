@@ -14,8 +14,7 @@ const mock = new MockAdapter(axios);
 const ca = `-----BEGIN CERTIFICATE-----
 -----END CERTIFICATE-----`;
 
-// @ts-expect-error this is fine actually
-import.meta.jest.unstable_mockModule('node:fs/promises', () => fs.promises);
+vi.mock('node:fs/promises', () => fs.promises);
 
 useTestDatabase(import.meta);
 

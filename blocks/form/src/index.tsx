@@ -1,6 +1,6 @@
 import { bootstrap } from '@appsemble/preact';
 import { Button, Form, FormButtons, Message } from '@appsemble/preact-components';
-import { mapValues } from '@appsemble/utils';
+import { identity } from '@appsemble/utils';
 import classNames from 'classnames';
 import { recursive } from 'merge';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -10,7 +10,6 @@ import styles from './index.module.css';
 import { debounce } from './utils/debounce.js';
 import { generateDefaultValidity } from './utils/generateDefaultValidity.js';
 import { generateDefaultValues } from './utils/generateDefaultValues.js';
-import { getNestedByKey } from './utils/getNested.js';
 import { isFormValid } from './utils/validity.js';
 import { type FieldEventParameters, type Values } from '../block.js';
 
@@ -34,7 +33,7 @@ bootstrap(
     utils,
   }) => {
     const initialLoad = useRef(true);
-    const [fields, setFields] = useState(initialFields);
+    const [fields, setFields] = useState(initialFields ?? []);
     const defaultValues = useMemo<Values>(() => {
       const valuesFromData = generateDefaultValues(fields);
 
@@ -225,35 +224,27 @@ bootstrap(
 
     const debouncedRequest = useMemo(
       () =>
-        debounce(async (params) => {
-          const response = await fetch(`${autofill?.route}?${params}`);
-          if (response.ok && autofill) {
-            const body = await response.json();
-            const remappedValues = mapValues(autofill.response, (mapper) =>
-              utils.remap(mapper, body),
-            );
-            for (const [key] of Object.entries(remappedValues)) {
-              remappedValues[key] ??= defaultValues[key];
+        debounce(async (fieldValues: Values) => {
+          await actions[autofill.action](fieldValues).then((response) => {
+            if (typeof response === 'object' && !Array.isArray(response)) {
+              const newValues = response as Record<string, unknown>;
+              for (const [key] of Object.entries(newValues)) {
+                newValues[key] ??= defaultValues[key];
+              }
+              setValues((prevValues) => ({ ...prevValues, ...newValues }));
+              setLastChanged(null);
             }
-            setValues((prev) => ({ ...prev, ...remappedValues }));
-            setLastChanged(null);
-          }
+            // TODO: Handle errors appropriately
+          }, identity);
         }, autofill?.delay),
-      [autofill, defaultValues, utils],
+      [actions, defaultValues, autofill],
     );
 
     useEffect(() => {
-      if (autofill?.params && getNestedByKey(autofill.params, 'prop').includes(lastChanged)) {
-        const params = new URLSearchParams(
-          mapValues(autofill.params, (mapper) => utils.remap(mapper, values)) as Record<
-            string,
-            string
-          >,
-        );
-
-        debouncedRequest(params);
+      if (autofill?.names.includes(lastChanged)) {
+        debouncedRequest(values);
       }
-    }, [values, autofill, lastChanged, utils, debouncedRequest]);
+    }, [lastChanged, debouncedRequest, values, autofill]);
 
     useEffect(() => {
       // If a listener is present, wait until data has been received

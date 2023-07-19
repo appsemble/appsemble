@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.20.42",
+  "version": "0.20.45",
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",
@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
     "@fortawesome/fontawesome-common-types": "^6.0.0",

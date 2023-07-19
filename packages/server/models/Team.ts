@@ -19,11 +19,11 @@ import { App, TeamMember, User } from './index.js';
 export class Team extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @Column(DataType.JSON)
@@ -31,7 +31,7 @@ export class Team extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => App)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

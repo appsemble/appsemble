@@ -1,3 +1,4 @@
+import { getRemapperContext } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
 import { badRequest } from '@hapi/boom';
@@ -6,7 +7,6 @@ import { type SendMailOptions } from 'nodemailer';
 
 import { type ServerActionParameters } from './index.js';
 import { AppMember, Asset } from '../../models/index.js';
-import { getRemapperContext } from '../app.js';
 import { iterTable } from '../database.js';
 import { renderEmail } from '../email/renderEmail.js';
 
@@ -47,15 +47,17 @@ function isTargetAttachment(attachment: unknown): attachment is TargetAttachment
 export async function email({
   action,
   app,
+  context,
   data,
   mailer,
+  options,
   user,
 }: ServerActionParameters<EmailActionDefinition>): Promise<any> {
   const appMember =
     user && (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
 
-  const context = await getRemapperContext(
-    app,
+  const remapperContext = await getRemapperContext(
+    app.toJSON(),
     app.definition.defaultLanguage || defaultLocale,
     appMember && {
       sub: user.id,
@@ -64,14 +66,17 @@ export async function email({
       email_verified: appMember.emailVerified,
       zoneinfo: user.timezone,
     },
+    options,
+    context,
   );
 
-  const to = remap(action.to, data, context) as string;
-  const from = (remap(action.from, data, context) as string) || app.emailName || 'Appsemble';
-  const cc = remap(action.cc, data, context) as string[] | string;
-  const bcc = remap(action.bcc, data, context) as string[] | string;
-  const body = remap(action.body, data, context) as string;
-  const sub = remap(action.subject, data, context) as string;
+  const to = remap(action.to, data, remapperContext) as string;
+  const from =
+    (remap(action.from, data, remapperContext) as string) || app.emailName || 'Appsemble';
+  const cc = remap(action.cc, data, remapperContext) as string[] | string;
+  const bcc = remap(action.bcc, data, remapperContext) as string[] | string;
+  const body = remap(action.body, data, remapperContext) as string;
+  const sub = remap(action.subject, data, remapperContext) as string;
 
   if (!to && !cc?.length && !bcc?.length) {
     // Continue as normal without doing anything
@@ -84,7 +89,7 @@ export async function email({
 
   const attachments: SendMailOptions['attachments'] = [];
   const assetSelectors: TargetAttachment[] = [];
-  for (const remapped of [remap(action.attachments, data, context)].flat()) {
+  for (const remapped of [remap(action.attachments, data, remapperContext)].flat()) {
     const attachment = typeof remapped === 'string' ? { target: String(remapped) } : remapped;
     if (isTargetAttachment(attachment)) {
       if (attachment.target.startsWith('http')) {

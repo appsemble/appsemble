@@ -37,29 +37,29 @@ import { App } from './index.js';
 export class AppOAuth2Secret extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column
+  @Column(DataType.INTEGER)
   id: number;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   authorizationUrl: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   tokenUrl: string;
 
-  @Column
+  @Column(DataType.STRING)
   userInfoUrl: string;
 
   @Column(DataType.JSON)
   remapper: Remapper;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   clientId: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   clientSecret: string;
 
   @AllowNull(false)
@@ -67,11 +67,11 @@ export class AppOAuth2Secret extends Model {
   icon: IconName;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   name: string;
 
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   scope: string;
 
   @CreatedAt
@@ -85,7 +85,7 @@ export class AppOAuth2Secret extends Model {
    */
   @ForeignKey(() => App)
   @AllowNull(false)
-  @Column
+  @Column(DataType.INTEGER)
   AppId: number;
 
   @BelongsTo(() => App)

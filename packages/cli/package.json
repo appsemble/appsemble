@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.20.42",
+  "version": "0.20.45",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -31,22 +31,37 @@
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.42",
-    "@appsemble/types": "0.20.42",
-    "@appsemble/utils": "0.20.42",
+    "@appsemble/node-utils": "0.20.45",
+    "@appsemble/types": "0.20.45",
+    "@appsemble/utils": "0.20.45",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
+    "@hapi/boom": "^10.0.0",
+    "@koa/cors": "^4.0.0",
+    "@odata/parser": "^0.2.0",
     "axios": "^1.0.0",
     "chalk": "^4.0.0",
     "comment-parser": "^1.0.0",
     "cosmiconfig": "^7.0.0",
+    "csvtojson": "^2.0.0",
     "fast-glob": "^3.0.0",
     "form-data": "^4.0.0",
+    "global-cache-dir": "^5.0.0",
     "inquirer": "^9.0.0",
     "jsonschema": "^1.0.0",
     "koa": "^2.0.0",
+    "koa-compose": "^4.0.0",
+    "koa-compress": "^5.0.0",
+    "koa-range": "^0.3.0",
+    "koas-core": "^0.7.0",
+    "koas-operations": "^0.7.0",
+    "koas-status-code": "^0.7.0",
+    "language-tags": "^1.0.0",
+    "lodash-es": "^4.0.0",
+    "mime-types": "^2.0.0",
+    "node-json-db": "^2.0.0",
     "normalize-path": "^3.0.0",
     "open": "^9.0.0",
     "postcss": "^8.0.0",
@@ -55,6 +70,7 @@
     "postcss-url": "^10.0.0",
     "raw-body": "^2.0.0",
     "read-pkg-up": "^9.0.0",
+    "sharp": "^0.32.0",
     "ts-json-schema-generator": "^1.0.0",
     "type-fest": "^3.0.0",
     "webpack": "^5.0.0",
@@ -62,7 +78,7 @@
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.20.42",
+    "@appsemble/types": "0.20.45",
     "@types/concat-stream": "^2.0.0",
     "@types/inquirer": "^9.0.0",
     "@types/normalize-path": "^3.0.0",
@@ -70,6 +86,7 @@
     "@types/postcss-url": "^10.0.0",
     "concat-stream": "^2.0.0"
   },
+  "peerDependencies": {},
   "optionalDependencies": {
     "keytar": "^7.0.0"
   },

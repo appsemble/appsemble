@@ -2,10 +2,10 @@
   "app": {
     "description": "Een app waarin zwerfafval kan worden gemeld en weergegeven op een interactieve kaart.",
     "name": "Opgeruimd Staat Netjes",
-    "pages.report-litter": "Afval rapporteren",
-    "pages.litter-overview": "Afvaloverzicht",
     "pages.litter-details": "Afvaldetails",
-    "pages.litter-list": "Afvallijst"
+    "pages.litter-list": "Afvallijst",
+    "pages.litter-overview": "Afvaloverzicht",
+    "pages.report-litter": "Afval rapporteren"
   },
   "messageIds": {
     "date": "Datum",

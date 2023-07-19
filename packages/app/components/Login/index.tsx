@@ -19,6 +19,7 @@ import {
   apiUrl,
   appId,
   appUpdated,
+  development,
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
@@ -58,7 +59,7 @@ export function Login(): ReactElement {
     return <Navigate to={redirect || normalize(defaultPageName)} />;
   }
 
-  if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin) {
+  if (!logins.length && !showAppsembleOAuth2Login && !showAppsembleLogin && !development) {
     return (
       <Content padding>
         <Message color="danger">

@@ -134,9 +134,43 @@ export interface StringField extends AbstractField {
 }
 
 /**
+ * Allows render video.
+ */
+export interface VideoField extends AbstractField {
+  /**
+   * Height of the video element.
+   *
+   * @default 350
+   */
+  height?: number;
+
+  /**
+   * Image that will be there at the start of the video.
+   */
+  thumbnail?: Remapper;
+
+  /**
+   * The name of the type of the field.
+   */
+  type: 'video';
+
+  /**
+   * Other platform the video is taken from.
+   */
+  platform?: 'vimeo' | 'youtube';
+
+  /**
+   * Width of the video element.
+   *
+   * @default 350
+   */
+  width?: number;
+}
+
+/**
  * All supported types of fields.
  */
-export type Field = FileField | GeoCoordinatesField | StringField;
+export type Field = FileField | GeoCoordinatesField | StringField | VideoField;
 
 /**
  * A group of fields that is repeated for each item in it value.
@@ -162,13 +196,6 @@ export interface RendererProps<F extends Field> {
 
 declare module '@appsemble/sdk' {
   interface Parameters {
-    /**
-     * The base URL of the associated files.
-     *
-     * If not defined, Appsemble’s Asset API will be used instead.
-     */
-    fileBase?: string;
-
     /**
      * A list of fields to display based on the name from the schema.
      */

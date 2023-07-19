@@ -29,7 +29,7 @@ export async function submitAppRating(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(AppId, { attributes: ['id'] });
-  await user.reload({ attributes: ['name'] });
+  await (user as User).reload({ attributes: ['name'] });
 
   if (!app) {
     throw notFound('App not found');

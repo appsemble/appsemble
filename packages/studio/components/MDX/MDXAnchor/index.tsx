@@ -26,5 +26,13 @@ export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
       </a>
     );
   }
-  return <Link to={href.startsWith('#') ? href : `/${lang}${href}`}>{children}</Link>;
+  return (
+    <Link
+      to={
+        href.startsWith('#') ? href : `/${lang}${href.replace('/packages/studio/pages/docs', '')}`
+      }
+    >
+      {children}
+    </Link>
+  );
 }

@@ -64,12 +64,12 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer();
+  const server = await createServer({});
   await setTestApp(server);
 });
 
 beforeEach(async () => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  vi.useFakeTimers();
 
   user = await createTestUser();
   organization = await Organization.create({

@@ -22,3 +22,14 @@ body {
   max-width: 196px;
   width: 50%;
 }
+
+/**
+ * Fix mermaid styles that conflict with Bulma.
+ */
+/* stylelint-disable-next-line selector-max-attribute */
+[id^='mermaid-'] .label {
+  display: unset !important;
+  font-size: unset;
+  font-weight: unset;
+  line-height: 1;
+}

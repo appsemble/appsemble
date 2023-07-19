@@ -75,7 +75,7 @@ export function Fieldset({
                 name={`${name}.${index}`}
                 onChange={changeArray}
               />
-              {!minLength || formValues.length > minLength ? (
+              {!minLength || localValues.length > minLength ? (
                 <FormButtons>
                   <Button icon="minus" name={String(index)} onClick={removeEntry}>
                     {utils.remap(field.removeLabel ?? 'Remove', val) as string}
@@ -84,7 +84,7 @@ export function Fieldset({
               ) : null}
             </div>
           ))}
-          {!maxLength || formValues.length < maxLength ? (
+          {!maxLength || localValues.length < maxLength ? (
             <FormButtons className="mt-2">
               <Button icon="plus" onClick={addEntry}>
                 {utils.remap(field.addLabel ?? 'Add', localValues) as string}

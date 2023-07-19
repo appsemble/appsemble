@@ -12,7 +12,7 @@ import { createJWTResponse } from '../utils/createJWTResponse.js';
 export async function getUser(ctx: Context): Promise<void> {
   const { user } = ctx;
 
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: Organization,
@@ -31,18 +31,20 @@ export async function getUser(ctx: Context): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    organizations: user.Organizations.map((org) => ({
+    organizations: (user as User).Organizations.map((org: Organization) => ({
       id: org.id,
       name: org.name,
       iconUrl: org.get('hasIcon')
         ? `/api/organizations/${org.id}/icon?updated=${org.updated.toISOString()}`
         : null,
     })),
-    emails: user.EmailAuthorizations.map(({ email, verified }) => ({
-      email,
-      verified,
-      primary: user.primaryEmail === email,
-    })),
+    emails: user.EmailAuthorizations.map(
+      ({ email, verified }: { email: string; verified: boolean }) => ({
+        email,
+        verified,
+        primary: user.primaryEmail === email,
+      }),
+    ),
     locale: user.locale,
     timezone: user.timezone,
   };
@@ -64,7 +66,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
     include: [{ model: User, where: { id: user.id } }],
   });
 
-  ctx.body = organizations.map((org) => ({
+  ctx.body = organizations.map((org: Organization) => ({
     id: org.id,
     name: org.name,
     role: org.Users[0].Member.role,
@@ -143,7 +145,7 @@ export async function addEmail(ctx: Context): Promise<void> {
     throw conflict('This email has already been registered.');
   }
 
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: EmailAuthorization,
@@ -169,7 +171,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
   const { request, user } = ctx;
 
   const email = request.body.email.toLowerCase();
-  await user.reload({
+  await (user as User).reload({
     include: [
       {
         model: EmailAuthorization,
@@ -186,7 +188,7 @@ export async function removeEmail(ctx: Context): Promise<void> {
     throw notFound('This email address is not associated with your account.');
   }
 
-  if (user.EmailAuthorizations.length === 1 && !user.OAuthAuthorizations.length) {
+  if (user.EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length) {
     throw notAcceptable('Deleting this email results in the inability to access this account.');
   }
 

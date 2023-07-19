@@ -3,12 +3,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": [
-      "@testing-library/jest-dom",
-      "babel-plugin-react-intl-auto",
-      "css-modules",
-      "jest",
-      "webpack-env"
-    ]
+    "types": ["css-modules", "vitest/globals", "webpack-env"]
   }
 }

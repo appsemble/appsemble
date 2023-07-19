@@ -28,8 +28,7 @@ interface CreateSamlResponseOptions {
 /**
  * Create SAML response object for testing.
  *
- * The response was generated using `flask-saml2`. The response was then converted to hyperscript
- * using Babel.
+ * The response was generated using `flask-saml2`.
  *
  * @param options Options for the SAML response
  * @returns the base64 encoded SAML response object.
@@ -177,16 +176,16 @@ function createSamlResponse({
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
 
-beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
-});
-
 beforeEach(async () => {
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -209,6 +208,10 @@ beforeEach(async () => {
     spPrivateKey: await readFixture('saml/sp-private-key.pem', 'utf8'),
     spPublicKey: await readFixture('saml/sp-public-key.pem', 'utf8'),
   });
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('createAuthnRequest', () => {

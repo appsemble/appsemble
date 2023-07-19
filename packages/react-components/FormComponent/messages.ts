@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  optional: 'Optional',
+  optional: {
+    id: 'react-components.InWqys',
+    defaultMessage: 'Optional',
+  },
 });

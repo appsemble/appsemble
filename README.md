@@ -12,6 +12,7 @@
     - [Registering an Organization](#registering-an-organization)
     - [Publishing Blocks](#publishing-blocks)
     - [Publishing App templates](#publishing-app-templates)
+  - [Development Server](#development-server)
   - [Tests](#tests)
   - [Building](#building)
 - [Contributing](#contributing)
@@ -21,7 +22,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in [here](docs/05-deployment/helm.md).
+be found in [here](packages/studio/pages/docs/docs/04-deployment/helm.md).
 
 ### Live Environments
 
@@ -150,6 +151,16 @@ yarn appsemble app create --context development apps/*
 
 The published apps will be displayed on the `App store` page.
 
+### Development Server
+
+The development server can be started by running:
+
+```sh
+yarn appsemble serve <path-to-app-directory>
+```
+
+See the [CLI readme](packages/cli/README.md#development-server)
+
 ### Tests
 
 Tests can be run using the following command.
@@ -158,7 +169,7 @@ Tests can be run using the following command.
 yarn test
 ```
 
-The tests are ran using jest, meaning all [jest CLI options][] can be passed.
+The tests are ran using vitest, meaning all [vitest CLI options][] can be passed.
 
 By default, database tests are run against the database as specified in
 [docker-compose.yml](docker-compose.yml). The database can be overridden by setting the
@@ -191,6 +202,6 @@ Please read our [security policy](./SECURITY.md).
 
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
-[jest cli options]: https://jestjs.io/docs/en/cli
+[vitest cli options]: https://vitest.dev/guide/cli.html#options
 [nodejs]: https://nodejs.org
 [yarn]: https://yarnpkg.com

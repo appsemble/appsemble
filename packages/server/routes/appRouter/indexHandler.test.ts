@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
+import { App, AppMessages, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
 import { setArgv } from '../../utils/argv.js';
 import { createServer } from '../../utils/createServer.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
@@ -12,8 +12,12 @@ let requestURL: URL;
 
 useTestDatabase(import.meta);
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
 beforeEach(() => {
-  import.meta.jest.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
+  vi.spyOn(crypto, 'randomBytes').mockImplementation((size) => Buffer.alloc(size));
 });
 
 beforeEach(async () => {
@@ -140,12 +144,18 @@ beforeEach(async () => {
 });
 
 beforeEach(() => {
-  import.meta.jest.useFakeTimers({ now: 0 });
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   requestURL = new URL('http://app.test.host.example');
 });
 
+afterAll(() => {
+  vi.useRealTimers();
+});
+
 it('should render the index page', async () => {
-  await App.create({
+  const app = await App.create({
     OrganizationId: 'test',
     definition: {
       name: 'Test App',
@@ -179,18 +189,47 @@ it('should render the index page', async () => {
     path: 'app',
     vapidPublicKey: '',
     vapidPrivateKey: '',
+    coreStyle: '',
+    sharedStyle: '',
   });
+  await AppMessages.bulkCreate([
+    {
+      AppId: app.id,
+      language: 'en',
+      messages: '{ greet: Hi! }',
+    },
+    {
+      AppId: app.id,
+      language: 'nl',
+      messages: '{ greet: Hoi! }',
+    },
+  ]);
+
   const response = await request.get('/');
+
+  const nonce = 'AAAAAAAAAAAAAAAAAAAAAA==';
+
+  response.data.data = {
+    ...response.data.data,
+    nonce,
+  };
+
+  const csp = response.headers['content-security-policy'] as string;
+  const responseNonce = csp.slice(csp.indexOf('nonce-') + 6, csp.indexOf('nonce-') + 30);
+  response.headers['content-security-policy'] = csp.replace(responseNonce, nonce);
+
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-ZIQmAQ5kLTM8kPLxm2ZIAGxGWL4fBbf21DH0NuLeuVw=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-NY+8423FfvonYcU4vZSwy1Nju0N1cBB6jv7CR/77gG0=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
 
     {
       "data": {
         "app": {
+          "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "test",
+          "coreStyle": "",
           "definition": {
             "name": "Test App",
             "pages": [
@@ -242,6 +281,7 @@ it('should render the index page', async () => {
             ],
           },
           "domain": null,
+          "emailName": null,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -249,16 +289,20 @@ it('should render the index page', async () => {
           "iconUrl": null,
           "id": 1,
           "locked": false,
+          "longDescription": null,
           "path": "app",
           "sentryDsn": null,
           "sentryEnvironment": null,
+          "sharedStyle": "",
+          "showAppDefinition": false,
           "showAppsembleLogin": false,
           "showAppsembleOAuth2Login": true,
+          "visibility": "unlisted",
           "yaml": "name: Test App
     pages:
       - name: Test Page
         blocks:
-          - type: "@test/a"
+          - type: \\"@test/a\\"
             version: 0.0.0
           - type: a
             version: 0.1.0
@@ -275,7 +319,7 @@ it('should render the index page', async () => {
                 actions:
                   whatever:
                     blocks:
-                      - type: "@test/b"
+                      - type: \\"@test/b\\"
                         version: 0.0.2
     ",
         },
@@ -285,9 +329,11 @@ it('should render the index page', async () => {
         "faURL": "/fa/6.4.0/css/all.min.css",
         "host": "http://host.example",
         "locale": "en",
-        "locales": [],
+        "locales": [
+          "nl",
+        ],
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={"apiUrl":"http://host.example","blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"showAppsembleLogin":false,"showAppsembleOAuth2Login":true,"appUpdated":"1970-01-01T00:00:00.000Z"}</script>",
+        "settings": "<script>window.settings={\\"apiUrl\\":\\"http://host.example\\",\\"blockManifests\\":[{\\"name\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"b2.js\\",\\"b2.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.1\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a1.js\\",\\"a1.css\\"]}],\\"id\\":1,\\"languages\\":[\\"en\\",\\"nl\\"],\\"logins\\":[],\\"vapidPublicKey\\":\\"\\",\\"definition\\":{\\"name\\":\\"Test App\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"}]},{\\"name\\":\\"Test Page with Flow\\",\\"type\\":\\"flow\\",\\"steps\\":[{\\"blocks\\":[{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.1\\",\\"actions\\":{\\"whatever\\":{\\"blocks\\":[{\\"type\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\"}]}}}]}]}]},\\"showAppsembleLogin\\":false,\\"showAppsembleOAuth2Login\\":true,\\"appUpdated\\":\\"1970-01-01T00:00:00.000Z\\"}</script>",
         "themeColor": "#ffffff",
       },
       "filename": "app/index.html",

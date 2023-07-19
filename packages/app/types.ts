@@ -78,6 +78,7 @@ declare global {
       showAppsembleLogin: boolean;
       showAppsembleOAuth2Login: boolean;
       appUpdated: string;
+      development: boolean;
     };
   }
 }

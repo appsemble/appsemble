@@ -1,0 +1,72 @@
+import { useIntl } from 'react-intl';
+import { roles, Permission } from '@appsemble/utils';
+import { messages } from '@appsemble/studio/pages/organizations/messages';
+
+# Organizations
+
+An organization represents a collective name for groups of apps, blocks and users. In order to
+publish new blocks or to create and manage apps, the user needs to be in an organization.
+
+## Creating an organization
+
+Organizations can be freely made in the Appsemble studio by visiting the settings page and clicking
+on “Organizations” in the menu. From here you can view a list of organizations that you are already
+part of, as well as create new organizations. When creating a new organization note that the
+organization ID **must** be unique and cannot be changed after it has been created. This ID is used
+to determine which blocks are used in an app, as well as where the app should be hosted by default.
+
+## Organization members
+
+After creating an organization, members can be added via email. This email will contain a link that
+the recipient can click on in order to accept or decline joining the organization.
+
+Organization members can be assigned roles that affect which parts of the studio they have access
+to. Each role has all the permissions of the previous role in the list.
+
+These roles are the following:
+
+- `Member`: The default role for new members. Organization members are able to view private apps
+  that belong to the organization.
+- `API Reader`: A role that has permissions to view the app’s resources and assets. Particularly
+  useful if the user wants to use the app’s API.
+- `API User`: Similar to `API Reader`, but with additional write permissions for the app’s resources
+  and assets.
+- `AppEditor`: App editors are allowed to edit existing apps, manage an app’s resources, provide
+  translations, as well as sending manual push notifications.
+- `Maintainer`: Maintainers can publish new blocks, create new apps, change an app’s settings,
+  create and delete apps, as well as invite other users to the organization.
+- `Owner`: Owners are allowed to manage members by assigning roles or removing them from the
+  organization, as well as update the name and icon of the organization.
+
+<table>
+  <thead>
+    <tr>
+      <th>Permissions</th>
+      <th />
+      {Object.keys(roles).map((role) => (
+        <th key={role}>{role}</th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {Object.keys(Permission)
+      .filter((permission) => isNaN(Number(permission)))
+      .map((permission) => (
+        <tr key={permission}>
+          <td>{permission}</td>
+          <td>
+            <i
+              title={useIntl().formatMessage(messages[permission])}
+              flow="right"
+              className="fa fa-circle-question"
+            />
+          </td>
+          {Object.keys(roles).map((role) => (
+            <td key={role} align="center">
+              {roles[role].includes(Permission[permission]) ? '✓' : ''}
+            </td>
+          ))}
+        </tr>
+      ))}
+  </tbody>
+</table>

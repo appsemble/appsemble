@@ -2,10 +2,10 @@
   "app": {
     "description": "Program za prijavljivanje i prikazivanje smeća na interaktivnoj karti.",
     "name": "Čistoća",
-    "pages.report-litter": "Prijavi smeće",
-    "pages.litter-overview": "Pregled smeća",
     "pages.litter-details": "Detalji o smeću",
-    "pages.litter-list": "Popis smeća"
+    "pages.litter-list": "Popis smeća",
+    "pages.litter-overview": "Pregled smeća",
+    "pages.report-litter": "Prijavi smeće"
   },
   "messageIds": {
     "date": "Datum",

@@ -1,10 +1,10 @@
-import { badRequest, forbidden, notFound } from '@hapi/boom';
+import { createGetUserInfo } from '@appsemble/node-utils';
+import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
-import { literal, Op } from 'sequelize';
+import { Op } from 'sequelize';
 
-import { App, AppMember, EmailAuthorization, Member, User } from '../models/index.js';
-import { argv } from '../utils/argv.js';
-import { getGravatarUrl } from '../utils/gravatar.js';
+import { App, AppMember, EmailAuthorization, Member, type User } from '../models/index.js';
+import { options } from '../options/options.js';
 import { createOAuth2AuthorizationCode } from '../utils/model.js';
 
 async function checkIsAllowed(app: App, user: User): Promise<boolean> {
@@ -26,74 +26,7 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
   }
 }
 
-export async function getUserInfo(ctx: Context): Promise<void> {
-  const { client, user } = ctx;
-
-  if (client && 'app' in client) {
-    const appMember = await AppMember.findOne({
-      attributes: [
-        [literal('"AppMember"."picture" IS NOT NULL'), 'hasPicture'],
-        'email',
-        'emailVerified',
-        'name',
-        'updated',
-      ],
-      where: { UserId: user.id, AppId: client.app.id },
-      include: [User],
-    });
-
-    if (!appMember) {
-      // The authenticated user may have been deleted.
-      throw forbidden();
-    }
-
-    ctx.body = {
-      email: appMember.email,
-      email_verified: appMember.emailVerified,
-      name: appMember.name,
-      picture: appMember.hasPicture
-        ? new URL(
-            `/api/apps/${client.app.id}/members/${
-              user.id
-            }/picture?updated=${appMember.updated.getTime()}`,
-            argv.host,
-          )
-        : getGravatarUrl(appMember.email),
-      sub: user.id,
-      locale: appMember.User.locale,
-      zoneinfo: appMember.User.timezone,
-    };
-  } else {
-    await user.reload({
-      attributes: ['primaryEmail', 'name', 'locale', 'timezone'],
-      include: [
-        {
-          required: false,
-          model: EmailAuthorization,
-          attributes: ['verified'],
-          where: {
-            email: { [Op.col]: 'User.primaryEmail' },
-          },
-        },
-      ],
-    });
-
-    if (!user) {
-      // The authenticated user may have been deleted.
-      throw forbidden();
-    }
-
-    ctx.body = {
-      email: user.primaryEmail,
-      email_verified: user.primaryEmail ? user.EmailAuthorizations[0].verified : false,
-      name: user.name,
-      picture: getGravatarUrl(user.primaryEmail),
-      sub: user.id,
-      locale: user.locale,
-      zoneinfo: user.timezone,
-    };
-  }
-}
+export const getUserInfo = createGetUserInfo(options);
 
 export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
   const {
@@ -112,7 +45,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  const isAllowed = await checkIsAllowed(app, user);
+  const isAllowed = await checkIsAllowed(app, user as User);
 
   if (!isAllowed) {
     throw badRequest('User is not allowed to login due to the app’s security policy', {
@@ -129,7 +62,7 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
   }
 
   ctx.body = {
-    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user)),
+    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User)),
     isAllowed: true,
   };
 }
@@ -151,7 +84,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
     throw notFound('App not found');
   }
 
-  if (!(await checkIsAllowed(app, user))) {
+  if (!(await checkIsAllowed(app, user as User))) {
     throw badRequest('User is not allowed to login due to the app’s security policy', {
       appName: app.definition.name,
       isAllowed: false,
@@ -161,7 +94,7 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
   if (app.AppMembers.length) {
     await AppMember.update({ consent: new Date() }, { where: { id: app.AppMembers[0].id } });
   } else {
-    await user.reload({
+    await (user as User).reload({
       include: [
         {
           model: EmailAuthorization,
@@ -180,5 +113,5 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
       consent: new Date(),
     });
   }
-  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user);
+  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User);
 }

@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { logger } from '@appsemble/node-utils';
+import { createGetAppMember, logger, serveIcon } from '@appsemble/node-utils';
 import {
   type AppAccount,
   type AppMember as AppMemberType,
@@ -30,12 +30,12 @@ import {
   transactional,
   User,
 } from '../models/index.js';
+import { options } from '../options/options.js';
 import { applyAppMessages, getAppUrl, parseLanguage } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
 import { checkRole } from '../utils/checkRole.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
 import { getGravatarUrl } from '../utils/gravatar.js';
-import { serveIcon } from '../utils/icon.js';
 
 /**
  * Create an app member as JSON output from an app.
@@ -193,45 +193,7 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   ctx.body = appMembers;
 }
 
-export async function getAppMember(ctx: Context): Promise<void> {
-  const {
-    pathParams: { appId, memberId },
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: ['definition'],
-    include: [
-      {
-        model: AppMember,
-        attributes: {
-          exclude: ['picture'],
-        },
-        where: { UserId: memberId },
-        required: false,
-      },
-    ],
-  });
-  if (!app) {
-    throw notFound('App not found');
-  }
-
-  if (app.definition.security === undefined) {
-    throw notFound('App does not have a security definition');
-  }
-
-  if (app.AppMembers.length !== 1) {
-    throw notFound('App member not found');
-  }
-
-  const [member] = app.AppMembers;
-
-  ctx.body = {
-    id: member.UserId,
-    name: member.name,
-    primaryEmail: member.email,
-    role: member.role,
-  };
-}
+export const getAppMember = createGetAppMember(options);
 
 export async function setAppMember(ctx: Context): Promise<void> {
   const {
@@ -299,7 +261,7 @@ export async function getAppAccounts(ctx: Context): Promise<void> {
   const { user } = ctx;
   const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
 
-  const apps = await App.findAll(createAppAccountQuery(user, query));
+  const apps = await App.findAll(createAppAccountQuery(user as User, query));
 
   ctx.body = apps.map((app) => outputAppMember(app, language, baseLanguage));
 }
@@ -313,7 +275,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
-    ...createAppAccountQuery(user, query),
+    ...createAppAccountQuery(user as User, query),
   });
 
   if (!app) {
@@ -336,7 +298,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
 
   const app = await App.findOne({
     where: { id: appId },
-    ...createAppAccountQuery(user, query),
+    ...createAppAccountQuery(user as User, query),
   });
 
   if (!app) {

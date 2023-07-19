@@ -1,31 +1,100 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: 'Secrets',
-  appsembleLogin: 'Appsemble Login',
-  displayAppsembleLogin: 'Display Appsemble login method',
-  displayAppsembleOAuth2Login: 'Display Appsemble OAuth2 login method',
-  emailSettings: 'Email settings',
-  emailName: 'Email name',
-  emailNameDescription:
-    "The name displayed for emails sent for this app. For example: John Doe '<'test@example.com'>', or just ‘test@example.com’",
-  emailUser: 'Email username',
-  emailUserDescription: 'The username used for authentication for the custom SMTP server.',
-  emailHost: 'Email host',
-  emailHostDescription: 'The hostname for the custom SMTP server. For example: smtp.gmail.com',
-  emailPassword: 'Email password',
-  emailPasswordDescription:
-    'The password used for authentication for the custom SMTP server. This will be encrypted upon submitting.',
-  emailPort: 'Email port',
-  emailPortDescription:
-    'The port for the custom SMTP server. By default this is 587 for secure SMTP and 25 for standard SMTP.',
-  emailSecure: 'Secure',
-  emailSecureDescription:
-    'Whether SSL should be used for the custom SMTP server. Leave checked if you’re not sure.',
-  emailUpdateSuccess: 'Successfully updated email settings',
-  emailSettingsError: 'Something went wrong when trying to fetch the email settings',
-  emailLoading: 'Loading email settings…',
-  submit: 'Submit',
-  submitError: 'Something went wrong when trying to update the email settings',
-  ssl: 'SSL',
+  title: {
+    id: 'studio.WKtGHy',
+    defaultMessage: 'Secrets',
+  },
+  appsembleLogin: {
+    id: 'studio.T0V0Ht',
+    defaultMessage: 'Appsemble Login',
+  },
+  displayAppsembleLogin: {
+    id: 'studio.mXGY9/',
+    defaultMessage: 'Display Appsemble login method',
+  },
+  displayAppsembleOAuth2Login: {
+    id: 'studio.NbKWvJ',
+    defaultMessage: 'Display Appsemble OAuth2 login method',
+  },
+  emailSettings: {
+    id: 'studio.ONdhzp',
+    defaultMessage: 'Email settings',
+  },
+  emailName: {
+    id: 'studio.25w127',
+    defaultMessage: 'Email name',
+  },
+  emailNameDescription: {
+    id: 'studio.hj7ydT',
+    defaultMessage:
+      "The name displayed for emails sent for this app. For example: John Doe '<'test@example.com'>', or just ‘test@example.com’",
+  },
+  emailUser: {
+    id: 'studio.T2uuVK',
+    defaultMessage: 'Email username',
+  },
+  emailUserDescription: {
+    id: 'studio.Jx1BPg',
+    defaultMessage: 'The username used for authentication for the custom SMTP server.',
+  },
+  emailHost: {
+    id: 'studio.MoWiAL',
+    defaultMessage: 'Email host',
+  },
+  emailHostDescription: {
+    id: 'studio.Mf7tW7',
+    defaultMessage: 'The hostname for the custom SMTP server. For example: smtp.gmail.com',
+  },
+  emailPassword: {
+    id: 'studio.FJJ/BR',
+    defaultMessage: 'Email password',
+  },
+  emailPasswordDescription: {
+    id: 'studio.Rba9By',
+    defaultMessage:
+      'The password used for authentication for the custom SMTP server. This will be encrypted upon submitting.',
+  },
+  emailPort: {
+    id: 'studio.o0NC6H',
+    defaultMessage: 'Email port',
+  },
+  emailPortDescription: {
+    id: 'studio.35INhb',
+    defaultMessage:
+      'The port for the custom SMTP server. By default this is 587 for secure SMTP and 25 for standard SMTP.',
+  },
+  emailSecure: {
+    id: 'studio.xr3EHZ',
+    defaultMessage: 'Secure',
+  },
+  emailSecureDescription: {
+    id: 'studio.c6JUlO',
+    defaultMessage:
+      'Whether SSL should be used for the custom SMTP server. Leave checked if you’re not sure.',
+  },
+  emailUpdateSuccess: {
+    id: 'studio.ONK4Gi',
+    defaultMessage: 'Successfully updated email settings',
+  },
+  emailSettingsError: {
+    id: 'studio.m0jOVR',
+    defaultMessage: 'Something went wrong when trying to fetch the email settings',
+  },
+  emailLoading: {
+    id: 'studio.4seAx1',
+    defaultMessage: 'Loading email settings…',
+  },
+  submit: {
+    id: 'studio.wSZR47',
+    defaultMessage: 'Submit',
+  },
+  submitError: {
+    id: 'studio.N/9y2I',
+    defaultMessage: 'Something went wrong when trying to update the email settings',
+  },
+  ssl: {
+    id: 'studio.WhIybZ',
+    defaultMessage: 'SSL',
+  },
 });

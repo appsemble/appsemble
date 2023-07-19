@@ -1,6 +1,6 @@
 import { createReadStream, existsSync } from 'node:fs';
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises';
-import { basename, join, relative, resolve as resolvePath } from 'node:path';
+import { basename, extname, join, relative, resolve as resolvePath } from 'node:path';
 import { inspect } from 'node:util';
 
 import {
@@ -11,7 +11,7 @@ import {
   readData,
   writeData,
 } from '@appsemble/node-utils';
-import { type BlockConfig } from '@appsemble/types';
+import { type BlockConfig, type BlockManifest } from '@appsemble/types';
 import { compareStrings } from '@appsemble/utils';
 import axios from 'axios';
 import chalk from 'chalk';
@@ -120,10 +120,11 @@ export async function discoverBlocks(root: string): Promise<BlockConfig[]> {
  * @param config The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
-export async function makePayload(config: BlockConfig): Promise<FormData> {
+export async function makePayload(config: BlockConfig): Promise<[FormData, BlockManifest]> {
   const { dir, output } = config;
   const distPath = resolvePath(dir, output);
   const form = new FormData();
+  const gatheredData: BlockManifest = {} as BlockManifest;
   const { description, layout, longDescription, name, version, visibility } = config;
   const { actions, events, messages, parameters } = getBlockConfigFromTypeScript(config);
   const files = await readdir(dir);
@@ -140,21 +141,39 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
   }
 
   append('actions', actions);
+  gatheredData.actions = actions;
+
   append('description', description);
+  gatheredData.description = description;
+
   append('longDescription', longDescription);
+  gatheredData.longDescription = longDescription;
+
   append('events', events);
+  gatheredData.events = events;
+
   append('layout', layout);
+  gatheredData.layout = layout;
+
   if (visibility) {
     append('visibility', visibility);
+    gatheredData.visibility = visibility;
   }
+
   append('name', name);
+  gatheredData.name = name;
+
   append('parameters', parameters);
+  gatheredData.parameters = parameters;
+
   append('version', version);
+  gatheredData.version = version;
 
   if (icon) {
     const iconPath = join(dir, icon);
     logger.info(`Using icon: ${iconPath}`);
     form.append('icon', createReadStream(iconPath));
+    gatheredData.iconUrl = basename(iconPath, extname(iconPath));
   }
 
   if (messages) {
@@ -201,6 +220,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
     }
 
     form.append('messages', JSON.stringify(messagesResult));
+    gatheredData.messages = messagesResult;
   }
 
   if (files.includes('examples')) {
@@ -212,6 +232,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
         }
         logger.info(`Adding example file ${file}`);
         form.append('examples', await readFile(file, 'utf8'));
+        gatheredData.examples = [...(gatheredData.examples || []), basename(file, extname(file))];
       },
       { allowMissing: true },
     );
@@ -229,11 +250,12 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
       form.append('files', createReadStream(fullpath), {
         filename: encodeURIComponent(relativePath),
       });
+      gatheredData.files = [...(gatheredData.files || []), relativePath];
     },
     { recursive: true },
   );
 
-  return form;
+  return [form, gatheredData];
 }
 
 /**
@@ -244,7 +266,7 @@ export async function makePayload(config: BlockConfig): Promise<FormData> {
  */
 export async function publishBlock(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
   logger.info(`Publishing ${config.name}@${config.version}…`);
-  const form = await makePayload(config);
+  const [form] = await makePayload(config);
 
   try {
     await axios.post('/api/blocks', form);

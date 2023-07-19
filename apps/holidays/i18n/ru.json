@@ -1,15 +1,15 @@
 {
   "app": {
     "description": "Простое приложение, которое собирает информацию о праздниках для разных стран.",
-    "name": "Holidays",
-    "pages.holidays-in-europe": "Праздники Европы",
-    "pages.holidays-in-europe.tabs.0": "Нидерланды",
-    "pages.holidays-in-europe.tabs.1": "Германия",
-    "pages.holidays-in-europe.tabs.2": "Испания",
+    "name": "Праздники",
     "pages.holidays-in-america": "Праздники в америке",
     "pages.holidays-in-america.tabs.0": "США",
     "pages.holidays-in-america.tabs.1": "Канада",
-    "pages.holidays-in-america.tabs.2": "Мексика"
+    "pages.holidays-in-america.tabs.2": "Мексика",
+    "pages.holidays-in-europe": "Праздники Европы",
+    "pages.holidays-in-europe.tabs.0": "Нидерланды",
+    "pages.holidays-in-europe.tabs.1": "Германия",
+    "pages.holidays-in-europe.tabs.2": "Испания"
   },
   "messageIds": {
     "date": "Дата",

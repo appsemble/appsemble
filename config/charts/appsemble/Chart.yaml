@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.42
-appVersion: 0.20.42
+version: 0.20.45
+appVersion: 0.20.45
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,41 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(barcode-scan): Initial release."
+    - kind: added
+      description: "Block(barcode-scan): Supports scanning code from image file."
+    - kind: added
+      description: "Block(form): Support default value for date fields."
+    - kind: added
+      description: "Block(image): The Image block now has width and height (in pixel)
+        properties."
+    - kind: added
+      description: "App: Added team.members action."
+    - kind: added
+      description: "Server: Add resource.patch action to server."
+    - kind: added
+      description: "Server: Added specific getTeamMember endpoint."
+    - kind: changed
+      description: "Utils: Breaking Change not remapper to, compute then invert null
+        and singular values."
+    - kind: fixed
+      description: "Block(filter): Fix filtering for date and date-range fields."
+    - kind: fixed
+      description: "Block(form): Support not passing fields to block."
+    - kind: fixed
+      description: "Server: Implement resource.create action instead of reusing the
+        request action."
+    - kind: fixed
+      description: "Server: Implement resource.delete action instead of reusing the
+        request action."
+    - kind: fixed
+      description: "Server: Implement resource.get action instead of reusing the
+        request action."
+    - kind: fixed
+      description: "Server: Implement resource.update action instead of reusing the
+        request action."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

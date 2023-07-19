@@ -1,38 +1,134 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  header: 'Resource {resourceName}',
-  resources: 'Resources',
-  actions: 'Actions',
-  cancelButton: 'Cancel',
-  createButton: 'Create',
-  deleteButton: 'Delete',
-  delete: 'Delete {amount} {amount, plural, one {resource} other {resources}}',
-  newTitle: 'Creating new {resource}',
-  createError: 'Something went wrong when creating a new resource.',
-  importSuccess: 'Successfully imported resources {ids}',
-  importError: 'Something went wrong when creating the new resources.',
-  empty: 'Currently there are no {type} resources available.',
-  loading: 'Loading {type} resources',
-  loadError: 'Something went wrong when loading this resource.',
-  createSuccess: 'Successfully created resource {id}.',
-  export: 'Export as CSV',
-  import: 'Import from file',
-  id: 'ID',
-  author: 'Author',
-  editor: 'Editor',
-  hideButton: 'Hide columns ({count}/{total})',
-  apply: 'Apply',
-  hideProperties: 'Hide properties',
-  hideExplanation:
-    'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
-  created: 'Created',
-  updated: 'Updated',
-  clonable: 'Clonable',
-  resourceWarningTitle: 'Deletion Warning',
-  resourceWarning:
-    'Are you sure you want to delete {amount, plural, one {this resource} other {these resources}}? Deleted resources can not be recovered.',
-  deleteSuccess: 'Successfully deleted the selected resources.',
-  deleteError: 'Something went wrong when deleting the selected resources.',
-  api: 'API',
+  header: {
+    id: 'studio.Ts6YUb',
+    defaultMessage: 'Resource {resourceName}',
+  },
+  resources: {
+    id: 'studio.c/KktL',
+    defaultMessage: 'Resources',
+  },
+  actions: {
+    id: 'studio.wL7VAE',
+    defaultMessage: 'Actions',
+  },
+  cancelButton: {
+    id: 'studio.47FYwb',
+    defaultMessage: 'Cancel',
+  },
+  createButton: {
+    id: 'studio.VzzYJk',
+    defaultMessage: 'Create',
+  },
+  deleteButton: {
+    id: 'studio.K3r6DQ',
+    defaultMessage: 'Delete',
+  },
+  delete: {
+    id: 'studio.zX/a3U',
+    defaultMessage: 'Delete {amount} {amount, plural, one {resource} other {resources}}',
+  },
+  newTitle: {
+    id: 'studio.S3AgyI',
+    defaultMessage: 'Creating new {resource}',
+  },
+  createError: {
+    id: 'studio.5lOKUP',
+    defaultMessage: 'Something went wrong when creating a new resource.',
+  },
+  importSuccess: {
+    id: 'studio.RN522K',
+    defaultMessage: 'Successfully imported resources {ids}',
+  },
+  importError: {
+    id: 'studio.bK7FfL',
+    defaultMessage: 'Something went wrong when creating the new resources.',
+  },
+  empty: {
+    id: 'studio.w3ATo0',
+    defaultMessage: 'Currently there are no {type} resources available.',
+  },
+  loading: {
+    id: 'studio.QQDup8',
+    defaultMessage: 'Loading {type} resources',
+  },
+  loadError: {
+    id: 'studio.gzNgBA',
+    defaultMessage: 'Something went wrong when loading this resource.',
+  },
+  createSuccess: {
+    id: 'studio.cil1uU',
+    defaultMessage: 'Successfully created resource {id}.',
+  },
+  export: {
+    id: 'studio.GJT9SF',
+    defaultMessage: 'Export as CSV',
+  },
+  import: {
+    id: 'studio.pr6SmF',
+    defaultMessage: 'Import from file',
+  },
+  id: {
+    id: 'studio.qlcuNQ',
+    defaultMessage: 'ID',
+  },
+  author: {
+    id: 'studio.tWkQ2J',
+    defaultMessage: 'Author',
+  },
+  editor: {
+    id: 'studio.fWKwFM',
+    defaultMessage: 'Editor',
+  },
+  hideButton: {
+    id: 'studio.kiTtTY',
+    defaultMessage: 'Hide columns ({count}/{total})',
+  },
+  apply: {
+    id: 'studio.EWw/tK',
+    defaultMessage: 'Apply',
+  },
+  hideProperties: {
+    id: 'studio.om8L5e',
+    defaultMessage: 'Hide properties',
+  },
+  hideExplanation: {
+    id: 'studio.9hSnRE',
+    defaultMessage:
+      'Hide properties from the table. Hidden properties will also be hidden when exporting the properties as CSV.',
+  },
+  created: {
+    id: 'studio.ORGv1Q',
+    defaultMessage: 'Created',
+  },
+  updated: {
+    id: 'studio.xrk6zg',
+    defaultMessage: 'Updated',
+  },
+  clonable: {
+    id: 'studio.4xEqDf',
+    defaultMessage: 'Clonable',
+  },
+  resourceWarningTitle: {
+    id: 'studio.bEmJ9Y',
+    defaultMessage: 'Deletion Warning',
+  },
+  resourceWarning: {
+    id: 'studio.0D+2Vq',
+    defaultMessage:
+      'Are you sure you want to delete {amount, plural, one {this resource} other {these resources}}? Deleted resources can not be recovered.',
+  },
+  deleteSuccess: {
+    id: 'studio.gV6QCp',
+    defaultMessage: 'Successfully deleted the selected resources.',
+  },
+  deleteError: {
+    id: 'studio.CqWqJp',
+    defaultMessage: 'Something went wrong when deleting the selected resources.',
+  },
+  api: {
+    id: 'studio.xwEc8K',
+    defaultMessage: 'API',
+  },
 });

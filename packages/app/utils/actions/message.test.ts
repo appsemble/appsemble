@@ -4,7 +4,7 @@ import { createTestAction } from '../makeActions.js';
 
 describe('message', () => {
   it('should return the input data', async () => {
-    const showMessage = import.meta.jest.fn();
+    const showMessage = vi.fn();
     const action = createTestAction({
       definition: { type: 'message', body: '' },
       remap,
@@ -15,7 +15,7 @@ describe('message', () => {
   });
 
   it('should show the remapped message', async () => {
-    const showMessage = import.meta.jest.fn();
+    const showMessage = vi.fn();
     const action = createTestAction({
       definition: { type: 'message', body: { 'string.case': 'upper' } },
       remap,
@@ -31,7 +31,7 @@ describe('message', () => {
   });
 
   it('should support customizations', async () => {
-    const showMessage = import.meta.jest.fn();
+    const showMessage = vi.fn();
     const action = createTestAction({
       definition: {
         type: 'message',

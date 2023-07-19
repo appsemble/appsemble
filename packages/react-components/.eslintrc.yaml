@@ -3,5 +3,8 @@ extends:
   - remcohaszing/web
 rules:
   n/no-unpublished-import: off
+  formatjs/enforce-id:
+    - error
+    - idInterpolationPattern: 'react-components.[sha512:contenthash:base64:6]'
   react/prop-types: off
   react/require-default-props: off

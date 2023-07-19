@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { createGetTeams } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { badRequest, forbidden, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
@@ -14,6 +15,7 @@ import {
   transactional,
   User,
 } from '../models/index.js';
+import { options } from '../options/options.js';
 import { getAppUrl } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
@@ -139,34 +141,7 @@ export async function getTeam(ctx: Context): Promise<void> {
   };
 }
 
-export async function getTeams(ctx: Context): Promise<void> {
-  const {
-    pathParams: { appId },
-    user,
-  } = ctx;
-
-  const app = await App.findByPk(appId, {
-    attributes: [],
-    include: [
-      {
-        model: Team,
-        include: [{ model: User, required: false }],
-        order: [['name', 'ASC']],
-      },
-    ],
-  });
-  if (!app) {
-    throw notFound('App not found.');
-  }
-
-  ctx.body = app.Teams.map((team) => ({
-    id: team.id,
-    name: team.name,
-    size: team.Users.length,
-    role: team.Users.find((u) => u.id === user.id)?.TeamMember.role,
-    annotations: team.annotations ?? {},
-  }));
-}
+export const getTeams = createGetTeams(options);
 
 export async function patchTeam(ctx: Context): Promise<void> {
   const {
@@ -242,6 +217,34 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
     primaryEmail: user.primaryEmail,
     role: user.TeamMember.role,
   }));
+}
+
+export async function getTeamMember(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberId, teamId },
+  } = ctx;
+
+  const team = await Team.findOne({
+    where: { id: teamId, AppId: appId },
+    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
+  });
+
+  if (!team) {
+    throw notFound('Team not found.');
+  }
+
+  const teamMember = team.Users.find((user) => user.id === memberId);
+
+  if (!teamMember) {
+    throw notFound('User not found in team');
+  }
+
+  ctx.body = {
+    id: teamMember.id,
+    name: teamMember.name,
+    primaryEmail: teamMember.primaryEmail,
+    role: teamMember.TeamMember.role,
+  };
 }
 
 export async function inviteTeamMember(ctx: Context): Promise<void> {

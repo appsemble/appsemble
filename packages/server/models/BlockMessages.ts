@@ -22,7 +22,7 @@ export class BlockMessages extends Model {
 
   @PrimaryKey
   @AllowNull(false)
-  @Column
+  @Column(DataType.STRING)
   language: string;
 
   @AllowNull(false)

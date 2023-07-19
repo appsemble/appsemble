@@ -1,16 +1,17 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { type Mock } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
 import { apiUrl, appId } from '../settings.js';
 
 describe('user.register', () => {
   let mock: MockAdapter;
-  let passwordLogin: jest.Mock;
+  let passwordLogin: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    passwordLogin = import.meta.jest.fn();
+    passwordLogin = vi.fn();
   });
 
   it('should call the API to register a new user', async () => {
@@ -61,10 +62,10 @@ describe('user.register', () => {
 });
 
 describe('user.login', () => {
-  let passwordLogin: jest.Mock;
+  let passwordLogin: Mock;
 
   beforeEach(() => {
-    passwordLogin = import.meta.jest.fn();
+    passwordLogin = vi.fn();
   });
 
   it('should log the user in', async () => {
@@ -108,11 +109,11 @@ describe('user.login', () => {
 
 describe('user.update', () => {
   let mock: MockAdapter;
-  let setUserInfo: jest.Mock;
+  let setUserInfo: Mock;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-    setUserInfo = import.meta.jest.fn();
+    setUserInfo = vi.fn();
   });
 
   it('should call the API for updating the user', async () => {

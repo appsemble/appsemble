@@ -4,6 +4,6 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "null",
-    "types": ["jest", "node"]
+    "types": ["vitest/globals", "node"]
   }
 }

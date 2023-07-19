@@ -19,7 +19,7 @@ import * as resource from './resource.js';
 import { share } from './share.js';
 import { staticAction } from './static.js';
 import * as storage from './storage.js';
-import { teamInvite, teamJoin, teamList } from './team.js';
+import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
 import { login, register, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
@@ -93,6 +93,7 @@ export const actionCreators: ActionCreators = {
   'team.invite': teamInvite,
   'team.join': teamJoin,
   'team.list': teamList,
+  'team.members': teamMembers,
   throw: throwAction,
   'user.login': login,
   'user.register': register,

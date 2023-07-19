@@ -9,11 +9,11 @@ import styles from './index.module.css';
 import { FormComponent, Input, type SharedFormComponentProps } from '../index.js';
 import { useCombinedRefs } from '../useCombinedRefs.js';
 
-type Weekdays = flatpickr.CustomLocale['weekdays']['shorthand'];
-type Months = flatpickr.CustomLocale['months']['shorthand'];
+type Weekdays = flatpickr.default.CustomLocale['weekdays']['shorthand'];
+type Months = flatpickr.default.CustomLocale['months']['shorthand'];
 
 type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> &
-  Pick<flatpickr.Options.Options, 'enableTime' | 'mode'> &
+  Pick<flatpickr.default.Options.Options, 'enableTime' | 'mode'> &
   SharedFormComponentProps & {
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
@@ -62,9 +62,10 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
     const { formatDate } = useIntl();
     const inputRef = useRef<HTMLInputElement>();
     const combinedRef = useCombinedRefs(ref, inputRef);
-    const [picker, setPicker] = useState<flatpickr.Instance>(null);
+    const [picker, setPicker] = useState<flatpickr.default.Instance>(null);
 
     useEffect(() => {
+      // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
       const p = flatpickr(inputRef.current, {
         static: true,
         enableTime,
@@ -80,6 +81,7 @@ export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(
           },
         },
         mode,
+        // @ts-expect-error https://github.com/flatpickr/flatpickr/pull/2857
         formatDate: (date) =>
           formatDate(date, {
             year: 'numeric',

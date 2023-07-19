@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.20.42",
+  "version": "0.20.45",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -23,37 +23,36 @@
   "type": "module",
   "scripts": {
     "prepack": "tsc --noEmit false",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.42",
-    "@appsemble/utils": "0.20.42",
+    "@appsemble/node-utils": "0.20.45",
+    "@appsemble/utils": "0.20.45",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@mdx-js/loader": "^2.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",
     "@types/hast": "^2.0.0",
     "@types/mdast": "^3.0.0",
     "@types/unused-webpack-plugin": "^2.0.0",
-    "babel-loader": "^9.0.0",
     "bulma": "0.9.3",
     "case-sensitive-paths-webpack-plugin": "^2.0.0",
     "css-loader": "^6.0.0",
     "css-minimizer-webpack-plugin": "^5.0.0",
-    "estree-util-value-to-estree": "^2.0.0",
+    "estree-util-value-to-estree": "^3.0.0",
     "hast-util-to-text": "^3.0.0",
     "html-webpack-plugin": "^5.0.0",
     "mdast-util-mdx": "^2.0.0",
     "mini-css-extract-plugin": "^2.0.0",
     "postcss-loader": "^7.0.0",
     "rehype-autolink-headings": "^6.0.0",
+    "rehype-mdx-code-props": "^1.0.0",
     "rehype-mdx-title": "^2.0.0",
+    "rehype-mermaidjs": "^1.0.0",
     "rehype-slug": "^5.0.0",
     "remark-frontmatter": "^4.0.0",
     "remark-gfm": "^3.0.0",
-    "remark-mdx-code-meta": "^2.0.0",
-    "remark-mdx-frontmatter": "^2.0.0",
+    "remark-mdx-frontmatter": "^3.0.0",
     "remark-mdx-images": "2.0.0",
-    "remark-mermaidjs": "^4.0.0",
     "sass": "^1.0.0",
     "sass-loader": "^13.0.0",
     "svgo-loader": "^4.0.0",
@@ -63,7 +62,7 @@
     "unused-webpack-plugin": "^2.0.0",
     "url": "^0.11.0",
     "webpack": "^5.0.0",
-    "workbox-webpack-plugin": "^6.0.0"
+    "workbox-webpack-plugin": "^7.0.0"
   },
   "engines": {
     "node": ">=18"

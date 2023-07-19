@@ -2,8 +2,8 @@ import { fireEvent, render } from '@testing-library/react';
 
 import { Modal } from './index.js';
 
-import.meta.jest.mock('react-intl', () => {
-  const reactIntl = jest.requireActual('react-intl');
+vi.mock('react-intl', async () => {
+  const reactIntl = (await vi.importActual('react-intl')) as typeof import('react-intl');
   const intl = reactIntl.createIntl({
     locale: 'en',
   });
@@ -25,7 +25,7 @@ it('should render a bulma modal when it is active', () => {
 });
 
 it('should close the modal when the close button is clicked', () => {
-  const onClose = import.meta.jest.fn();
+  const onClose = vi.fn();
   const { getByLabelText } = render(
     <Modal closeButtonLabel="Test close" isActive onClose={() => onClose()}>
       test
@@ -36,7 +36,7 @@ it('should close the modal when the close button is clicked', () => {
 });
 
 it('should close the modal when the background is clicked', () => {
-  const onClose = import.meta.jest.fn();
+  const onClose = vi.fn();
   const { getByRole } = render(
     <Modal isActive onClose={() => onClose()}>
       test
@@ -47,7 +47,7 @@ it('should close the modal when the background is clicked', () => {
 });
 
 it('should close the modal escape is pressed on the background', () => {
-  const onClose = import.meta.jest.fn();
+  const onClose = vi.fn();
   const { getByRole } = render(
     <Modal isActive onClose={() => onClose()}>
       test
@@ -58,7 +58,7 @@ it('should close the modal escape is pressed on the background', () => {
 });
 
 it('should not close the modal another key is pressed on the background', () => {
-  const onClose = import.meta.jest.fn();
+  const onClose = vi.fn();
   const { getByRole } = render(
     <Modal isActive onClose={() => onClose()}>
       test

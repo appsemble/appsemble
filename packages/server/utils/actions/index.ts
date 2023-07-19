@@ -1,5 +1,7 @@
+import { type Options } from '@appsemble/node-utils';
 import { type ActionDefinition } from '@appsemble/types';
 import { type RemapperContext } from '@appsemble/utils';
+import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
 
 import { condition } from './condition.js';
 import { each } from './each.js';
@@ -21,6 +23,8 @@ export interface ServerActionParameters<T extends ActionDefinition = ActionDefin
   mailer: Mailer;
   data: unknown;
   internalContext?: RemapperContext;
+  options: Options;
+  context: ParameterizedContext<DefaultState, DefaultContext, any>;
 }
 
 export const actions = {
@@ -47,12 +51,12 @@ export const actions = {
   noop,
   notify,
   request,
-  'resource.create': noop,
-  'resource.delete': noop,
-  'resource.get': noop,
+  'resource.create': resource.create,
+  'resource.delete': resource.remove,
+  'resource.get': resource.get,
   'resource.query': resource.query,
-  'resource.update': noop,
-  'resource.patch': noop,
+  'resource.update': resource.update,
+  'resource.patch': resource.patch,
   'resource.count': noop,
   'resource.subscription.status': noop,
   'resource.subscription.subscribe': noop,
@@ -69,6 +73,7 @@ export const actions = {
   'team.invite': noop,
   'team.join': noop,
   'team.list': noop,
+  'team.members': noop,
   throw: throwAction,
   'user.register': noop,
   'user.login': noop,

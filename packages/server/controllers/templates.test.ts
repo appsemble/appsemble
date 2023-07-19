@@ -21,12 +21,16 @@ let templates: App[];
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
+  vi.useFakeTimers();
   setArgv({ host: 'http://localhost', secret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
 
 beforeEach(async () => {
+  // https://github.com/vitest-dev/vitest/issues/1154#issuecomment-1138717832
+  vi.clearAllTimers();
+  vi.setSystemTime(0);
   const user = await createTestUser();
   const organization = await Organization.create({
     id: 'testorganization',
@@ -37,7 +41,6 @@ beforeEach(async () => {
     name: 'Test Organization 2',
   });
   await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
-  import.meta.jest.useFakeTimers({ now: 0 });
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";
@@ -99,7 +102,7 @@ beforeEach(async () => {
     UserId: user.id,
     yaml: '',
   });
-  import.meta.jest.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(1000);
   t1.AppSnapshots = [
     snapshot1,
     await AppSnapshot.create({
@@ -125,6 +128,10 @@ beforeEach(async () => {
   ];
 
   templates = [t1, t2, t3];
+});
+
+afterAll(() => {
+  vi.useRealTimers();
 });
 
 describe('getAppTemplates', () => {
@@ -173,7 +180,6 @@ describe('createTemplateApp', () => {
           name: 'Test app',
           pages: [],
         },
-        domain: null,
         iconUrl: null,
         id: response.data.id,
         path: 'test-app',

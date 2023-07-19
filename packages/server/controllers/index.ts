@@ -20,5 +20,6 @@ export * from './resourceHistory.js';
 export * from './resources.js';
 export * from './saml.js';
 export * from './templates.js';
+export * from './appServiceSecrets.js';
 export * from './user.js';
 export * from './teams.js';

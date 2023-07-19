@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.20.42)
+description: This app contains every Remapper currently in Appsemble as of (0.20.45)
 defaultPage: Introduction
 
 security:
@@ -25,11 +25,14 @@ resources:
         email:
           type: string
 
+anchors:
+  - &block-version 0.20.45
+
 pages:
   - name: Introduction
     blocks:
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         parameters:
           content: |
             # Welcome
@@ -42,9 +45,12 @@ pages:
               - [Arrays](/arrays)
               - [Data](/data)
               - [History](/history)
-
+              - [Conditionals](/conditionals)
+              - [Dates](/dates)
+              - [Randomness](/randomness)
+              - [Other](/other)
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.query
@@ -67,7 +73,7 @@ pages:
           emit:
             data: peopleInEindhoven
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -80,13 +86,13 @@ pages:
     blocks:
       # string.case
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## string.case
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label:
@@ -95,13 +101,13 @@ pages:
 
       # string.format
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## string.format
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: noop
@@ -112,7 +118,7 @@ pages:
           emit:
             data: lotteryResults
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - value:
@@ -126,13 +132,13 @@ pages:
 
       # string.replace
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## string.replace
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: noop
@@ -144,7 +150,7 @@ pages:
           emit:
             data: stringReplaceData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - value: { root }
@@ -156,13 +162,13 @@ pages:
     blocks:
       # object.from
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## object.from
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -184,7 +190,7 @@ pages:
           emit:
             data: objectFromData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: { prop: username }
@@ -199,13 +205,13 @@ pages:
 
       # object.assign
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## object.assign
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -219,7 +225,7 @@ pages:
           emit:
             data: objectAssignData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: { prop: title }
@@ -234,13 +240,13 @@ pages:
 
       # object.omit
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## object.omit
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -262,7 +268,7 @@ pages:
           emit:
             data: objectOmitData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: { prop: title }
@@ -275,13 +281,13 @@ pages:
     blocks:
       # array.from
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## array.from
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -296,7 +302,7 @@ pages:
           emit:
             data: arrayFromData
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -309,13 +315,13 @@ pages:
 
       # array.map
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## array.map
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -337,7 +343,7 @@ pages:
           emit:
             data: arrayMapData1
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -349,7 +355,7 @@ pages:
             data: arrayMapData1
 
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -377,7 +383,7 @@ pages:
           emit:
             data: arrayMapData2
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -390,13 +396,13 @@ pages:
 
       ## array.append
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## array.append
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -419,7 +425,7 @@ pages:
           emit:
             data: arrayAppendData
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -432,13 +438,13 @@ pages:
 
       ## array.omit
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## array.omit
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -462,7 +468,7 @@ pages:
           emit:
             data: arrayOmitData1
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -473,7 +479,7 @@ pages:
           listen:
             data: arrayOmitData1
       - type: table
-        version: 0.20.42
+        version: *block-version
         events:
           listen:
             data: arrayOmitData1
@@ -508,13 +514,13 @@ pages:
 
       ## array.unique
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## array.unique
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -544,7 +550,7 @@ pages:
           emit:
             data: arrayUniqueData
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -559,13 +565,13 @@ pages:
     blocks:
       # root
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## root
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.query
@@ -586,7 +592,7 @@ pages:
           emit:
             data: rootData
       - type: table
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: Name
@@ -601,13 +607,13 @@ pages:
 
       # history
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## history
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -628,7 +634,7 @@ pages:
           emit:
             data: 1historyData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: { prop: title }
@@ -639,13 +645,13 @@ pages:
 
       # app
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## app
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -661,7 +667,7 @@ pages:
           emit:
             data: appData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - value:
@@ -685,13 +691,13 @@ pages:
 
       # page
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## page
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: noop
@@ -705,7 +711,7 @@ pages:
           emit:
             data: pageData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - value:
@@ -724,13 +730,13 @@ pages:
 
       # user
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## user
       - type: html
-        version: 0.20.42
+        version: *block-version
         parameters:
           placeholders:
             sub: { user: sub }
@@ -755,13 +761,13 @@ pages:
 
       # context
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## context
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             remapBefore:
@@ -780,7 +786,7 @@ pages:
           emit:
             data: contextData
       - type: table
-        version: 0.20.42
+        version: *block-version
         events:
           listen:
             data: contextData
@@ -802,13 +808,13 @@ pages:
 
       # translate
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## translate
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         parameters:
           fields:
             - label: { translate: weatherTitle }
@@ -818,13 +824,13 @@ pages:
     blocks:
       # history
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## history
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.query
@@ -843,7 +849,7 @@ pages:
           emit:
             data: historyData1
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           fields:
@@ -853,7 +859,7 @@ pages:
           listen:
             data: historyData1
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.query
@@ -872,7 +878,7 @@ pages:
           emit:
             data: historyData2
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           fields:
@@ -882,7 +888,7 @@ pages:
           listen:
             data: historyData2
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.query
@@ -897,7 +903,7 @@ pages:
           emit:
             data: historyData3
       - type: table
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           fields:
@@ -911,13 +917,13 @@ pages:
 
       # from.history
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## from.history
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: noop
@@ -946,7 +952,7 @@ pages:
           emit:
             data: fromHistoryData
       - type: detail-viewer
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           fields:
@@ -957,7 +963,7 @@ pages:
           listen:
             data: fromHistoryData
       - type: table
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           fields:
@@ -973,13 +979,13 @@ pages:
 
       # assign.history
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## assign.history
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: resource.count
@@ -1009,7 +1015,7 @@ pages:
           emit:
             data: assignHistoryData
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         parameters:
           content:
             string.format:
@@ -1033,13 +1039,13 @@ pages:
 
       # omit.history
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         layout: static
         parameters:
           content: |
             * ## omit.history
       - type: data-loader
-        version: 0.20.42
+        version: *block-version
         actions:
           onLoad:
             type: noop
@@ -1071,7 +1077,7 @@ pages:
           emit:
             data: omitHistoryData
       - type: markdown
-        version: 0.20.42
+        version: *block-version
         parameters:
           content:
             string.format:
@@ -1092,3 +1098,541 @@ pages:
         events:
           listen:
             data: omitHistoryData
+  - name: Conditionals
+    blocks:
+      # if: equals
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## if: equals
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: number
+              label: Guess the number
+              name: number
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            remapBefore:
+              if:
+                condition:
+                  equals:
+                    - prop: number
+                    - 4
+                then:
+                  static: You guessed right!
+                else:
+                  static: You guessed wrong!
+            type: message
+            body: { root: null }
+
+      # if: not
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## if: not
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: number
+              label: Guess the number
+              name: number
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            remapBefore:
+              if:
+                condition:
+                  not:
+                    - prop: number
+                    - 4
+                then:
+                  static: You guessed wrong!
+                else:
+                  static: You guessed right!
+            type: message
+            body: { root: null }
+
+      # if: gt (greater than)
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## if: gt (greater than)
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              array.from:
+                - object.from:
+                    item: Chair
+                    stock: 12
+                - object.from:
+                    item: Desk
+                    stock: 2
+                - object.from:
+                    item: Fridge
+                    stock: 6
+            type: noop
+        events:
+          emit:
+            data: warehouseStock
+      - type: table
+        version: *block-version
+        events:
+          listen:
+            data: warehouseStock
+        parameters:
+          fields:
+            - label: Item
+              value: { prop: item }
+            - label: Stock
+              value: { prop: stock }
+            - label: Check stock
+              onClick: checkStock
+              button:
+                label: Check
+        actions:
+          checkStock:
+            remapBefore:
+              if:
+                condition:
+                  gt:
+                    - prop: stock
+                    - 5
+                then:
+                  static: This item has plenty of stock
+                else:
+                  static: This item is running low on stock
+            type: message
+            body: { root: null }
+
+      # if: lt (lesser than)
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## if: lt (lesser than)
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              array.from:
+                - object.from:
+                    item: Chair
+                    stock: 12
+                - object.from:
+                    item: Desk
+                    stock: 2
+                - object.from:
+                    item: Fridge
+                    stock: 6
+            type: noop
+        events:
+          emit:
+            data: warehouseStock
+      - type: table
+        version: *block-version
+        events:
+          listen:
+            data: warehouseStock
+        parameters:
+          fields:
+            - label: Item
+              value: { prop: item }
+            - label: Stock
+              value: { prop: stock }
+            - label: Check stock
+              onClick: checkStock
+              button:
+                label: Check
+        actions:
+          checkStock:
+            remapBefore:
+              if:
+                condition:
+                  lt:
+                    - prop: stock
+                    - 5
+                then:
+                  static: This item is running low on stock
+                else:
+                  static: This item has plenty of stock
+            type: message
+            body: { root: null }
+
+      # match
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## match
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - name: Gem
+              label: { prop: label }
+              type: enum
+              action: getGems
+        actions:
+          getGems:
+            type: noop
+            remapAfter:
+              array.from:
+                - object.from:
+                    label: Diamond
+                    value: Diamond
+                - object.from:
+                    label: Ruby
+                    value: Ruby
+                - object.from:
+                    label: Gold
+                    value: Gold
+                - object.from:
+                    label: Sapphire
+                    value: Sapphire
+          onSubmit:
+            remapBefore:
+              object.from:
+                type: { prop: Gem }
+                value:
+                  match:
+                    - case: { equals: [{ prop: Gem }, Diamond] }
+                      value: 100
+                    - case: { equals: [{ prop: Gem }, Ruby] }
+                      value: 75
+                    - case: { equals: [{ prop: Gem }, Gold] }
+                      value: 50
+                    - case: { equals: [{ prop: Gem }, Sapphire] }
+                      value: 25
+            type: message
+            body:
+              string.format:
+                template: Your {gem} is worth €{value},-
+                values:
+                  gem: { prop: type }
+                  value: { prop: value }
+  - name: Dates
+    blocks:
+      # date.parse
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## date.parse
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: date
+              name: unparsedDate
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            remapBefore:
+              object.from:
+                parsedDate: [{ prop: unparsedDate }, { date.parse: yyyy-MM-dd }]
+            type: log
+
+      # date.format
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## date.format
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: date
+              name: unformattedDate
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            remapBefore:
+              object.from:
+                formattedDate: [{ prop: unformattedDate }, { date.format: null }]
+            type: message
+            body:
+              string.format:
+                template: Formatted date = {date}
+                values:
+                  date: { prop: formattedDate }
+
+      # date.add
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## date.add
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: date
+              name: startDate
+              label: Select when you want to start your week off
+              requirements:
+                - required: true
+        actions:
+          onSubmit:
+            remapBefore:
+              object.assign:
+                vacationEnd:
+                  [
+                    { prop: startDate },
+                    { date.parse: yyyy-MM-dd },
+                    { date.add: 1w },
+                    { date.format },
+                  ]
+            type: message
+            body:
+              string.format:
+                template: Your vacation runs from {start} to {end}
+                values:
+                  start: { prop: startDate }
+                  end: { prop: vacationEnd }
+
+      # date.now
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## date.now
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: What date is it?
+              onClick: checkDay
+        actions:
+          checkDay:
+            remapBefore:
+              object.from:
+                currentDay: [{ date.now }, { date.format }]
+            type: message
+            body:
+              string.format:
+                template: The current date is {date}
+                values:
+                  date: { prop: currentDay }
+  - name: Randomness
+    blocks:
+      # random.choice
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## random.choice
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Get random number from list
+              onClick: randomNumber
+            - label: Get random name from list
+              onClick: randomName
+        actions:
+          randomNumber:
+            remapBefore:
+              - array.from: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              - random.choice: null
+            type: message
+            body: { root }
+          randomName:
+            remapBefore:
+              - array.from: ['Peter', 'Patrick', 'Michael', 'Harry']
+              - random.choice: null
+            type: message
+            body: { root }
+
+      # random.integer
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## random.integer
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Get random number between 1 - 1000
+              onClick: randomNumber
+        actions:
+          randomNumber:
+            remapBefore:
+              random.integer:
+                - 0
+                - 1000
+            type: message
+            body: { root }
+
+      # random.float
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## random.float
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Get random float value between 0 - 1
+              onClick: randomFloat
+        actions:
+          randomFloat:
+            remapBefore:
+              random.float:
+                - 0
+                - 1
+            type: message
+            body: { root }
+
+      # random.string
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## random.string
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Generate a random 6 letter word
+              onClick: randomFloat
+        actions:
+          randomFloat:
+            remapBefore:
+              random.string:
+                choice: abcdefghijklmnopqrstuvwxyz0123456789
+                length: 6
+            type: message
+            body: { root }
+
+  - name: Other
+    blocks:
+      # ics
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## ics
+      - type: form
+        version: *block-version
+        parameters:
+          fields:
+            - type: string
+              name: title
+              requirements:
+                - required: true
+            - type: date
+              name: startDate
+              label: Start
+              requirements:
+                - required: true
+            - type: date
+              name: endDate
+              label: End
+            - type: string
+              name: duration
+            - type: string
+              name: description
+            - type: string
+              name: url
+            - type: string
+              name: locationDescription
+            - type: geocoordinates
+              name: coordinates
+        actions:
+          onSubmit:
+            remapBefore:
+              ics:
+                start: { prop: startDate }
+                title: { prop: title }
+                end: { prop: endDate }
+                duration: { prop: duration }
+                description: { prop: description }
+                url: { prop: url }
+                location: { prop: locationDescription }
+                coordinates: { prop: coordinates }
+            type: download
+            filename: test.ics
+
+      # null.strip
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## null.strip
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Strip null values
+              onClick: stripNulls
+        actions:
+          stripNulls:
+            remapBefore:
+              - array.from: [0, 4, null, null, 'Peter', 0.4234, null]
+              - null.strip: null
+            type: message
+            body: { root }
+
+      # log
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## log
+      - type: button-list
+        version: *block-version
+        parameters:
+          buttons:
+            - label: Create log
+              onClick: logValues
+        actions:
+          logValues:
+            remapBefore:
+              array.from: [0, 4, null, null, 'Peter', 0.4234, null]
+            type: noop
+            remapAfter:
+              object.from:
+                name: Peter
+                age: 49
+            onSuccess:
+              type: noop
+              remapAfter:
+                object.assign:
+                  birthday: 07-08-2023
+              onSuccess:
+                type: noop
+                remapAfter:
+                  log: info

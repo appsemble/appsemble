@@ -143,7 +143,7 @@ test node 18:
   script:
     - yarn --frozen-lockfile
     - yarn test --coverage --shard=$CI_NODE_INDEX/$CI_NODE_TOTAL
-  parallel: 5
+  parallel: 3
   artifacts:
     paths:
       - coverage
@@ -377,7 +377,7 @@ cleanup k8s jobs:
     - kubectl config set-context --current --namespace review
     - kubectl delete jobs.batch --field-selector 'status.successful=1'
 
-# Delete all successful jobs for review environments nightly
+# Update lockfile and fix formatting where possible
 update dependencies:
   extends: .yarn
   stage: deploy
@@ -678,6 +678,7 @@ lighthouse:
     when: always
     paths:
       - .lighthouseci
+
 playwright:
   stage: end 2 end
   extends: .yarn
@@ -693,7 +694,7 @@ playwright:
   script:
     - yarn playwright install
     - yarn scripts wait-for-ssl
-    - yarn workspace @appsemble/e2e run e2e
+    - yarn e2e --max-failures 6
   artifacts:
     expose_as: Playwright videos
     when: always

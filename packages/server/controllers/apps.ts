@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
 import { type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
   type IdentifiableBlock,
@@ -41,8 +41,6 @@ import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
-import { serveIcon } from '../utils/icon.js';
-import { handleValidatorResult } from '../utils/jsonschema.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
