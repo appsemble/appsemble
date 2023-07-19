@@ -50,6 +50,26 @@ Markdown documents are linted using
 
 #### Message validation
 
+To add new messages, follow the following format:
+
+```
+myMessage: {
+  id: '',
+  defaultMessage: 'Your message here',
+}
+```
+
+To generate an ID for the message run:
+
+```sh
+yarn eslint --fix path/to/my-file
+```
+
+This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for
+`eslint`. A message ID is a base64 encoded hash of the `defaultMessage` and prefixed with the
+package name. This is to avoid duplicate messages, i.e., two different messages with similar
+`defaultMessage` value will have the same ID and the prefix helps determine where it came from.
+
 The pipeline will automatically detect if newly added messages are missing in the i18n directory. To
 automatically extract these messages from the source files run:
 
