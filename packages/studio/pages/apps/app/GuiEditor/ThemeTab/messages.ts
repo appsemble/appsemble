@@ -1,5 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  defaultTheme: 'Default Theme',
+  defaultTheme: {
+    id: 'studio.owyfG1',
+    defaultMessage: 'Default Theme',
+  },
 });

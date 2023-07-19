@@ -1,3 +1,6 @@
 export const messages = {
-  blockLogo: 'Logo',
+  blockLogo: {
+    id: '',
+    defaultMessage: 'Logo',
+  },
 };
