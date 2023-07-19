@@ -3,8 +3,8 @@ import {
   type ChangeEvent,
   type MutableRefObject,
   type ReactElement,
+  type Ref,
   useCallback,
-  useRef,
   useState,
 } from 'react';
 import { useIntl } from 'react-intl';
@@ -23,6 +23,7 @@ export interface GeneralTabProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
   deleteIn: (path: Iterable<unknown>) => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
+  frameRef: Ref<HTMLIFrameElement>;
   isOpenLeft: boolean;
   isOpenRight: boolean;
 }
@@ -60,11 +61,11 @@ export function GeneralTab({
   changeIn,
   deleteIn,
   docRef,
+  frameRef,
   isOpenLeft,
   isOpenRight,
 }: GeneralTabProps): ReactElement {
   const { app } = useApp();
-  const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();
 
@@ -166,7 +167,7 @@ export function GeneralTab({
         </>
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frame} />
+        <Preview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <>

@@ -15,11 +15,15 @@ export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps
   return (
     <>
       <Sidebar isOpen={isOpenLeft} type="left">
-        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
+        <span className="text-2xl font-bold">{}</span>
       </Sidebar>
-      <div className={styles.root}>{formatMessage(tab.title)}</div>
+      <div className={styles.root}>
+        {`${formatMessage(
+          tab.title,
+        )} will be added in a future version.\n Please use the code editor to create and edit resources.`}
+      </div>
       <Sidebar isOpen={isOpenRight} type="right">
-        <span className="text-2xl font-bold">{formatMessage(tab.title)}</span>
+        <span className="text-2xl font-bold">{}</span>
       </Sidebar>
     </>
   );

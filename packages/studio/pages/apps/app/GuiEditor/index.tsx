@@ -1,10 +1,24 @@
-import { Button, useData, useMessages, useMeta } from '@appsemble/react-components';
-import { type App } from '@appsemble/types';
+import {
+  Button,
+  useBeforeUnload,
+  useData,
+  useMessages,
+  useMeta,
+} from '@appsemble/react-components';
+import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
-import { type Document, type Node, type ParsedNode, parseDocument, stringify } from 'yaml';
+import {
+  type Document,
+  type Node,
+  type ParsedNode,
+  parseDocument,
+  stringify,
+  type YAMLMap,
+  type YAMLSeq,
+} from 'yaml';
 
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
@@ -73,6 +87,9 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [unsaved, setUnsaved] = useState<string[]>([
+    `${formatMessage(messages.unsavedChanges)}:\n`,
+  ]);
 
   const match = useMatch('/:lang/apps/:id/edit/gui/*');
   const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
@@ -88,6 +105,23 @@ export default function EditPage(): ReactElement {
     setRightPanelOpen((open) => !open);
   }, []);
 
+  const getUnsavedChanges = useCallback(() => {
+    const unsavedChanges: string[] = unsaved;
+    return unsavedChanges;
+  }, [unsaved]);
+
+  const addToUnsaved = useCallback(
+    (change: string): void => {
+      const newList = unsaved;
+      if (newList.includes(change)) {
+        return;
+      }
+      newList.push(change);
+      setUnsaved(newList);
+    },
+    [unsaved],
+  );
+
   const addSaveState = useCallback((): void => {
     const copy = saveStack.slice(0, index + 1);
     const clone = docRef.current.clone();
@@ -96,19 +130,35 @@ export default function EditPage(): ReactElement {
     setIndex(copy.length - 1);
   }, [docRef, saveStack, index, setIndex, setSaveStack]);
 
-  const deleteIn = (path: Iterable<unknown>): void => {
+  const deleteIn = (path: Iterable<number | string>): void => {
     docRef.current.deleteIn(path);
     addSaveState();
+
+    addToUnsaved(
+      `Deleted: ${Array.from(path)
+        .reverse()
+        .find((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
-  const addIn = (path: Iterable<unknown>, value: Node): void => {
+  const addIn = (path: Iterable<number | string>, value: Node): void => {
     docRef.current.addIn(path, value);
     addSaveState();
+    addToUnsaved(
+      `${Array.from(path)
+        .reverse()
+        .find((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
-  const changeIn = (path: Iterable<unknown>, value: Node): void => {
+  const changeIn = (path: Iterable<number | string>, value: Node): void => {
     docRef.current.setIn(path, value);
     addSaveState();
+    addToUnsaved(
+      `${Array.from(path)
+        .reverse()
+        .find((item: number | string) => typeof item === 'string')}\n`,
+    );
   };
 
   const onUndo = (): void => {
@@ -119,8 +169,40 @@ export default function EditPage(): ReactElement {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
   };
 
+  const getErrorMessage = useCallback(
+    (error: any): string => {
+      const definition = saveStack[index];
+      const empty = (definition.getIn(['pages']) as YAMLSeq).items.map((page: YAMLMap) => {
+        if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
+          return page.getIn(['blocks']) === 0;
+        }
+        if (page.getIn(['type']) === 'flow') {
+          return (page.getIn(['steps']) as YAMLSeq).items.flatMap(
+            (subPage: any) => subPage.getIn(['blocks']) === 0,
+          );
+        }
+        if (page.getIn(['type']) === 'tabs') {
+          return (page.getIn(['tabs']) as YAMLSeq).items.flatMap(
+            (subPage: any) => subPage.getIn(['blocks']) === 0,
+          );
+        }
+      });
+      if (empty.includes(true)) {
+        return formatMessage(messages.noBlocks);
+      }
+      if (definition.errors.length > 0) {
+        return formatMessage(messages.yamlError);
+      }
+      if (error) {
+        return `${formatMessage(messages.errorIn)} ${unsaved.join('')}`;
+      }
+      return formatMessage(messages.unknownError);
+    },
+    [formatMessage, index, saveStack, unsaved],
+  );
+
   const updateAppPreview = useCallback(() => {
-    const definition = saveStack[index].toJS();
+    const definition = saveStack[index].toJS() as AppDefinition;
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
       { type: 'editor/gui/EDIT_SUCCESS', definition, coreStyle, sharedStyle },
@@ -130,6 +212,7 @@ export default function EditPage(): ReactElement {
 
   const handleSave = useCallback(async () => {
     const ymlString = stringify(saveStack[index]);
+
     try {
       const formData = new FormData();
       formData.append('yaml', ymlString);
@@ -138,13 +221,29 @@ export default function EditPage(): ReactElement {
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
+      setUnsaved([`${formatMessage(messages.unsavedChanges)}\n`]);
     } catch (error: any) {
+      const message = getErrorMessage(error);
       push({
-        body: `${formatMessage(messages.failed)} ${error}`,
+        body: `${formatMessage(messages.failed)} ${message}`,
         color: 'danger',
       });
     }
-  }, [app.id, coreStyle, formatMessage, index, push, saveStack, setApp, sharedStyle]);
+  }, [
+    app.id,
+    coreStyle,
+    formatMessage,
+    getErrorMessage,
+    index,
+    push,
+    saveStack,
+    setApp,
+    sharedStyle,
+  ]);
+
+  const unsavedChanges = getUnsavedChanges().length !== 1;
+
+  useBeforeUnload(unsavedChanges);
 
   useEffect(() => {
     updateAppPreview();
@@ -181,8 +280,33 @@ export default function EditPage(): ReactElement {
             </li>
           ))}
         </ul>
+        <Button
+          disabled={index < 1}
+          icon="rotate-left"
+          onClick={onUndo}
+          title={`${formatMessage(messages.undo)}\n ${unsaved.slice(-1)}`}
+        />
+        <Button
+          disabled={index >= saveStack.length - 1}
+          icon="rotate-right"
+          onClick={onRedo}
+          title={`${formatMessage(messages.redo)}\n ${unsaved.slice(-1)}`}
+        />
+        <Button
+          className={
+            unsavedChanges
+              ? `is-align-content-flex-end ${styles.highLight}`
+              : 'is-align-content-flex-end'
+          }
+          icon="save"
+          onClick={handleSave}
+          title={
+            getUnsavedChanges().join('') === `${formatMessage(messages.unsavedChanges)}:\n`
+              ? ''
+              : getUnsavedChanges().join('')
+          }
+        />
         <div className={styles.panelTopRight}>
-          <Button className="is-align-content-flex-end" icon="save" onClick={handleSave} />
           <Button
             className="is-primary"
             icon={rightPanelOpen ? 'angles-right' : 'angles-left'}
@@ -201,6 +325,7 @@ export default function EditPage(): ReactElement {
             changeIn={changeIn}
             deleteIn={deleteIn}
             docRef={docRef}
+            frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
           />
@@ -215,12 +340,8 @@ export default function EditPage(): ReactElement {
             deleteIn={deleteIn}
             docRef={docRef}
             frameRef={frame}
-            index={index}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
-            onRedo={onRedo}
-            onUndo={onUndo}
-            stackSize={saveStack.length}
           />
         )}
         {currentTab.tabName === 'theme' && (
@@ -228,6 +349,7 @@ export default function EditPage(): ReactElement {
             changeIn={changeIn}
             deleteIn={deleteIn}
             docRef={docRef}
+            frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
           />
