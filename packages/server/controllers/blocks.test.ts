@@ -1,15 +1,13 @@
-import { createFixtureStream, createServer, readFixture } from '@appsemble/node-utils';
+import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import { omit } from 'lodash-es';
 import stripIndent from 'strip-indent';
 
-import * as controllers from './index.js';
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
-import { argv, setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 import { authorizeClientCredentials, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -17,12 +15,7 @@ useTestDatabase(import.meta);
 
 beforeEach(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-  });
+  const server = await createServer();
   const user = await createTestUser();
   const organization = await Organization.create({
     id: 'xkcd',

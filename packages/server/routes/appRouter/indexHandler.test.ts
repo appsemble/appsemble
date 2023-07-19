@@ -1,13 +1,11 @@
 // eslint-disable-next-line unicorn/import-style
 import crypto from 'node:crypto';
 
-import { createServer } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { appRouter } from './index.js';
-import * as controllers from '../../controllers/index.js';
 import { App, AppMessages, BlockAsset, BlockVersion, Organization } from '../../models/index.js';
-import { argv, setArgv } from '../../utils/argv.js';
+import { setArgv } from '../../utils/argv.js';
+import { createServer } from '../../utils/createServer.js';
 import { useTestDatabase } from '../../utils/test/testSchema.js';
 
 let requestURL: URL;
@@ -136,9 +134,6 @@ beforeEach(async () => {
   ]);
   setArgv({ host: 'http://host.example', secret: 'test' });
   const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
     middleware(ctx, next) {
       Object.defineProperty(ctx, 'origin', { get: () => requestURL.origin });
       Object.defineProperty(ctx, 'hostname', { get: () => requestURL.hostname });

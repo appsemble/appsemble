@@ -1,16 +1,10 @@
-import {
-  createFixtureStream,
-  createFormData,
-  createServer,
-  readFixture,
-} from '@appsemble/node-utils';
+import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
 import { type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import stripIndent from 'strip-indent';
 
-import * as controllers from './index.js';
 import {
   App,
   AppBlockStyle,
@@ -24,9 +18,8 @@ import {
   Organization,
   User,
 } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
 import { setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
+import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
@@ -41,12 +34,7 @@ useTestDatabase(import.meta);
 beforeAll(async () => {
   vi.useFakeTimers();
   setArgv(argv);
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-  });
+  const server = await createServer();
   await setTestApp(server);
 });
 

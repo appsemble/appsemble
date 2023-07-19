@@ -1,9 +1,7 @@
-import { createServer } from '@appsemble/node-utils';
 import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import type Koa from 'koa';
 
-import * as controllers from './index.js';
 import {
   App,
   AppMember,
@@ -14,10 +12,8 @@ import {
   TeamMember,
   User,
 } from '../models/index.js';
-import { appRouter } from '../routes/appRouter/index.js';
-import { argv, setArgv } from '../utils/argv.js';
-import { authentication } from '../utils/authentication.js';
-import { Mailer } from '../utils/email/Mailer.js';
+import { setArgv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -30,13 +26,7 @@ useTestDatabase(import.meta);
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-    authentication: authentication(),
-    context: { mailer: new Mailer(argv) },
-  });
+  server = await createServer();
   await setTestApp(server);
 });
 

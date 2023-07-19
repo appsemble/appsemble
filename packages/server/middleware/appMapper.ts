@@ -2,11 +2,9 @@ import { isIP } from 'node:net';
 
 import { type Middleware } from 'koa';
 
-export function appMapper(
-  platformMiddleware: Middleware,
-  appMiddleware: Middleware,
-  argv: Record<string, any>,
-): Middleware {
+import { argv } from '../utils/argv.js';
+
+export function appMapper(platformMiddleware: Middleware, appMiddleware: Middleware): Middleware {
   return (ctx, next) => {
     const { hostname } = ctx;
 

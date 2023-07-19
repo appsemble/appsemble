@@ -56,7 +56,7 @@ serves `my-app`:
 appsemble serve <path-to-app-directory>
 ```
 
-This will serve the app on `http://<my-app>.localhost:9999`
+This will serve the app on `http://localhost:9090`.
 
 A different port can be specified with the `--port` parameter.
 

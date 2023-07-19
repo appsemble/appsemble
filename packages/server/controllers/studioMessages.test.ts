@@ -1,19 +1,12 @@
-import { createServer } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import * as controllers from './index.js';
 import { setArgv } from '../index.js';
 import { type AppMessages } from '../models/index.js';
-import { appRouter } from '../routes/index.js';
-import { argv } from '../utils/argv.js';
+import { createServer } from '../utils/createServer.js';
 
 beforeAll(async () => {
   setArgv({ host: 'http://localhost', secret: 'test' });
-  const server = await createServer({
-    argv,
-    appRouter,
-    controllers,
-  });
+  const server = await createServer();
   await setTestApp(server);
 });
 
