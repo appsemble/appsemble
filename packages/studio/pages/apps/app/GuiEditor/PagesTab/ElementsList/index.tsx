@@ -6,9 +6,11 @@ import {
   useCallback,
   useState,
 } from 'react';
+import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
 import styles from './index.module.css';
+import { messages } from '../../messages.js';
 
 interface PagesListProps {
   changeIn: (path: Iterable<unknown>, value: Node) => void;
@@ -32,9 +34,11 @@ export function ElementsList({
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
   const [dragItem, setDragItem] = useState<number>(-1);
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
+  const { formatMessage } = useIntl();
 
   const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
-    (page: any, pageIndex: number) => docRef.current.getIn(['pages', pageIndex, 'name']) as string,
+    (page: YAMLSeq, pageIndex: number) =>
+      docRef.current.getIn(['pages', pageIndex, 'name']) as string,
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
@@ -369,7 +373,7 @@ export function ElementsList({
         </div>
       ))}
       <Button className={styles.addNewElement} onClick={onCreatePage}>
-        Add Page
+        {formatMessage(messages.createPage)}
         <Icon className="mx-2" icon="plus" />
       </Button>
     </>

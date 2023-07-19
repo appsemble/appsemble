@@ -87,7 +87,9 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [unsaved, setUnsaved] = useState<string[]>(['unsaved changes:\n']);
+  const [unsaved, setUnsaved] = useState<string[]>([
+    `${formatMessage(messages.unsavedChanges)}:\n`,
+  ]);
 
   const match = useMatch('/:lang/apps/:id/edit/gui/*');
   const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
@@ -186,17 +188,17 @@ export default function EditPage(): ReactElement {
         }
       });
       if (empty.includes(true)) {
-        return 'A page must have at least one block';
+        return formatMessage(messages.noBlocks);
       }
       if (definition.errors.length > 0) {
-        return 'A YAML error has occurred';
+        return formatMessage(messages.yamlError);
       }
       if (error) {
-        return `There is an error in ${unsaved.join('')}`;
+        return `${formatMessage(messages.errorIn)} ${unsaved.join('')}`;
       }
-      return 'Unkown error';
+      return formatMessage(messages.unknownError);
     },
-    [index, saveStack, unsaved],
+    [formatMessage, index, saveStack, unsaved],
   );
 
   const updateAppPreview = useCallback(() => {
@@ -219,7 +221,7 @@ export default function EditPage(): ReactElement {
       const { data } = await axios.patch<App>(`/api/apps/${app.id}`, formData);
       setApp(data);
       push({ body: formatMessage(messages.saved), color: 'success' });
-      setUnsaved(['unsaved changes:\n']);
+      setUnsaved([`${formatMessage(messages.unsavedChanges)}\n`]);
     } catch (error: any) {
       const message = getErrorMessage(error);
       push({
@@ -299,7 +301,7 @@ export default function EditPage(): ReactElement {
           icon="save"
           onClick={handleSave}
           title={
-            getUnsavedChanges().join('') === 'unsaved changes:\n'
+            getUnsavedChanges().join('') === `${formatMessage(messages.unsavedChanges)}:\n`
               ? ''
               : getUnsavedChanges().join('')
           }

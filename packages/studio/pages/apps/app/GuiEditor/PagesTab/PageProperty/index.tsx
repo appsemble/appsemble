@@ -7,15 +7,17 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import { InputList } from '../../Components/InputList/index.js';
 import { InputString } from '../../Components/InputString/index.js';
+import { messages } from '../../messages.js';
 
 interface PagePropertyProps {
-  addIn: (path: Iterable<unknown>, value: Node) => void;
-  changeIn: (path: Iterable<unknown>, value: Node) => void;
-  deleteIn: (path: Iterable<unknown>) => void;
+  addIn: (path: Iterable<number | string>, value: Node) => void;
+  changeIn: (path: Iterable<number | string>, value: Node) => void;
+  deleteIn: (path: Iterable<number | string>) => void;
   deletePage: () => void;
   docRef: MutableRefObject<Document<ParsedNode>>;
   selectedPage: number;
@@ -33,9 +35,10 @@ export function PageProperty({
   selectedSubPage,
 }: PagePropertyProps): ReactElement {
   const push = useMessages();
+  const { formatMessage } = useIntl();
   const [currentPageName, setCurrentPageName] = useState(
     selectedPage === -1
-      ? 'Page Name'
+      ? formatMessage(messages.pageName)
       : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
   const [inputPageType, setInputPageType] = useState<(typeof pageTypes)[number]>('page');
@@ -60,11 +63,11 @@ export function PageProperty({
     if (selectedPage === -1 && currentSubPage === -1) {
       // Create new page
       if (doc.toJS().pages.some((page: any) => page.name === currentPageName)) {
-        push({ body: 'Page name already exists', color: 'danger' });
+        push({ body: formatMessage(messages.pageNameExists), color: 'danger' });
         return;
       }
       if (!currentPageName) {
-        push({ body: 'Page name cannot be empty', color: 'danger' });
+        push({ body: formatMessage(messages.pageNameEmpty), color: 'danger' });
         return;
       }
       if (inputPageType === 'page') {
@@ -87,11 +90,11 @@ export function PageProperty({
           .pages.filter((value: any, index: any) => index !== selectedPage)
           .some((page: any) => page.name === currentPageName)
       ) {
-        push({ body: 'Page name already exists', color: 'danger' });
+        push({ body: formatMessage(messages.pageNameExists), color: 'danger' });
         return;
       }
       if (!currentPageName) {
-        push({ body: 'Page name cannot be empty', color: 'danger' });
+        push({ body: formatMessage(messages.pageNameEmpty), color: 'danger' });
         return;
       }
       // Check if the changed page is the default page TODO check if page name is used anywhere else
@@ -145,7 +148,7 @@ export function PageProperty({
         ]) as YAMLSeq;
         if (subPages.items.length < 2) {
           push({
-            body: 'A flow page must have at least two sub-pages',
+            body: String(formatMessage(messages.flowPageWarning)),
             color: 'danger',
           });
         } else {
@@ -168,6 +171,7 @@ export function PageProperty({
     addIn,
     changeIn,
     deleteIn,
+    formatMessage,
   ]);
 
   const onCreateSubPage = useCallback(() => {
@@ -210,16 +214,16 @@ export function PageProperty({
   useEffect(() => {
     setCurrentPageName(
       selectedPage === -1
-        ? 'Page name'
+        ? formatMessage(messages.pageName)
         : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
     );
-  }, [docRef, selectedPage]);
+  }, [docRef, formatMessage, selectedPage]);
 
   return (
     <div>
       {selectedPage !== -1 && (
         <Button className="is-danger" component="a" icon="trash" onClick={() => deletePage()}>
-          Delete Page
+          {formatMessage(messages.deletePage)}
         </Button>
       )}
       <InputString label="Name" onChange={onChangePageName} value={currentPageName} />
@@ -230,11 +234,13 @@ export function PageProperty({
         value={inputPageType}
       />
       <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
-        {selectedPage === -1 ? 'Create page' : 'Save page'}
+        {selectedPage === -1
+          ? formatMessage(messages.createPage)
+          : formatMessage(messages.savePage)}
       </Button>
       {inputPageType !== 'page' && selectedPage !== -1 && (
         <Button className="is-primary" component="a" icon="add" onClick={onCreateSubPage}>
-          Create sub-page
+          {formatMessage(messages.createSubPage)}
         </Button>
       )}
     </div>
