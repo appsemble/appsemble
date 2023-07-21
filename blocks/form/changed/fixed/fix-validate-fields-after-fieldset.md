@@ -1,1 +1,1 @@
-Fix validation of fields which are going after fieldset
+Fix validation of fields which come after a fieldset
