@@ -323,6 +323,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const api = createApiServer({
     argv,
     context: {
+      appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
