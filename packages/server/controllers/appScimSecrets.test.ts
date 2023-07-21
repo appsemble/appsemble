@@ -1,8 +1,9 @@
 import { request, setTestApp } from 'axios-test-instance';
 
 import { App, Member, Organization } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
+import { argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
+import { decrypt, encrypt } from '../utils/crypto.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -11,7 +12,7 @@ let app: App;
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
+  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
   const server = await createServer();
   await setTestApp(server);
 });
@@ -60,7 +61,7 @@ describe('getAppScimSecret', () => {
 
   it('should get the SCIM token', async () => {
     authorizeStudio();
-    await app.update({ scimEnabled: true, scimToken: '1234' });
+    await app.update({ scimEnabled: true, scimToken: encrypt('1234', argv.aesSecret) });
 
     const response = await request.get(`/api/apps/${app.id}/secrets/scim`);
 
@@ -121,6 +122,6 @@ describe('updateAppScimSecret', () => {
     `);
 
     await app.reload();
-    expect(app.scimToken).toBe('6789');
+    expect(decrypt(app.scimToken, argv.aesSecret)).toBe('6789');
   });
 });

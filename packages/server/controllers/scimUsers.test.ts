@@ -2,7 +2,9 @@ import { request, setTestApp } from 'axios-test-instance';
 
 import { setArgv } from '../index.js';
 import { App, AppMember, Organization, Team, TeamMember, User } from '../models/index.js';
+import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
+import { encrypt } from '../utils/crypto.js';
 import { authorizeScim } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
@@ -12,7 +14,7 @@ useTestDatabase(import.meta);
 vi.useFakeTimers().setSystemTime(new Date('2000-01-01'));
 
 beforeAll(async () => {
-  setArgv({ host: 'http://localhost', secret: 'test' });
+  setArgv({ host: 'http://localhost', secret: 'test', aesSecret: 'test' });
   const server = await createServer();
   request.defaults.headers['content-type'] = 'application/scim+json';
   await setTestApp(server);
@@ -27,7 +29,7 @@ beforeEach(async () => {
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
     scimEnabled: true,
-    scimToken,
+    scimToken: encrypt(scimToken, argv.aesSecret),
   });
   authorizeScim(scimToken);
 });

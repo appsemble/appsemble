@@ -22,7 +22,7 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info('Adding column `scimToken` to `App`');
-  await queryInterface.addColumn('App', 'scimToken', { type: DataTypes.STRING });
+  await queryInterface.addColumn('App', 'scimToken', { type: DataTypes.BLOB });
 
   logger.info('Adding column `scimExternalId` to `AppMember`');
   await queryInterface.addColumn('AppMember', 'scimExternalId', { type: DataTypes.STRING });

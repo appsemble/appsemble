@@ -158,8 +158,8 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   scimEnabled: boolean;
 
-  @Column(DataType.STRING)
-  scimToken: string;
+  @Column(DataType.BLOB)
+  scimToken: Buffer;
 
   @UpdatedAt
   updated: Date;
