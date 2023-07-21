@@ -5,14 +5,14 @@
     "description": "Ovaj program sadrži sve trenutačne Remappere u Appsembleu od (0.20.40)",
     "name": "Remappers",
     "pages.arrays": "Nizovi",
-    "pages.conditionals": "",
+    "pages.conditionals": "Uvjetne naredbe",
     "pages.data": "Podaci",
-    "pages.dates": "",
+    "pages.dates": "Datumi",
     "pages.history": "Povijest",
     "pages.introduction": "Uvod",
     "pages.objects": "Objekti",
-    "pages.other": "",
-    "pages.randomness": "",
+    "pages.other": "Drugo",
+    "pages.randomness": "Slučajnost",
     "pages.strings": "Izrazi"
   },
   "messageIds": {
