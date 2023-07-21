@@ -12,6 +12,16 @@ const schemas: Omit<ScimSchema, 'meta'>[] = [
     description: 'User Account',
     attributes: [
       {
+        name: 'active',
+        type: 'boolean',
+        multiValued: false,
+        description: 'A boolean indicating whether or not the user is active',
+        required: true,
+        mutability: 'readWrite',
+        returned: 'always',
+        uniqueness: 'none',
+      },
+      {
         name: 'externalId',
         type: 'string',
         multiValued: false,

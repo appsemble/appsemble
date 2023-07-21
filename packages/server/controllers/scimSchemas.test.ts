@@ -47,6 +47,16 @@ describe('getSCIMSchemas', () => {
           {
             "attributes": [
               {
+                "description": "A boolean indicating whether or not the user is active",
+                "multiValued": false,
+                "mutability": "readWrite",
+                "name": "active",
+                "required": true,
+                "returned": "always",
+                "type": "boolean",
+                "uniqueness": "none",
+              },
+              {
                 "caseExact": true,
                 "description": "The ID of the user on the SCIM client",
                 "multiValued": false,

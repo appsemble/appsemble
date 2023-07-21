@@ -152,7 +152,7 @@ export interface ScimSchemaAttribute {
    * attribute values **MAY** be compared against filter values see
    * [Section 3.4.2.2 of [RFC7644]](https://datatracker.ietf.org/doc/html/rfc7644#section-3.4.2.2)).
    */
-  caseExact: boolean;
+  caseExact?: boolean;
 
   /**
    * A single keyword indicating the circumstances under which the value of the attribute can be
