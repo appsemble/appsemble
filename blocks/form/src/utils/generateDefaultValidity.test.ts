@@ -215,4 +215,49 @@ describe('generate default validity', () => {
       ],
     });
   });
+
+  it('should validate fields after fieldset', () => {
+    const fields = [
+      {
+        type: 'fieldset',
+        name: 'a',
+        fields: [
+          {
+            type: 'string',
+            name: 'b',
+            requirements: [{ required: true }],
+          },
+          {
+            type: 'string',
+            name: 'c',
+            requirements: [{ required: true }],
+          },
+        ],
+      },
+      {
+        type: 'string',
+        name: 'd',
+        requirements: [{ required: true }],
+      },
+    ] as Field[];
+    const data: Values = {
+      a: {
+        b: 'b',
+        c: 'c',
+      },
+      d: '',
+    };
+    const defaultError = 'the value is invalid';
+    const defaultValues: Values = { string: '' };
+
+    const errors = generateDefaultValidity(
+      fields,
+      data,
+      { remap } as unknown as Utils,
+      defaultError,
+      defaultValues,
+    );
+
+    expect(errors).toStrictEqual({ a: {}, d: 'the value is invalid' });
+  });
 });

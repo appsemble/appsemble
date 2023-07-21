@@ -38,12 +38,10 @@ export function generateDefaultValidity(
             data,
             utils,
             defaultError,
-            defaultValues[field.name] as Values,
+            defaultValues?.[field.name] as Values,
             prefix ? `${prefix}.${field.name}` : field.name,
           );
-      return validity;
     }
-
     if (!isRequired(field, utils, data) && value === defaultValues?.[field.name]) {
       // If the user has entered something and then reverted it to its default value,
       // it should be treated as if it’s pristine.
