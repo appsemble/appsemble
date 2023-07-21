@@ -320,9 +320,10 @@ export async function handler(argv: ServeArguments): Promise<void> {
     $updated: new Date().toISOString(),
   } as App;
 
-  const api = createApiServer({
+  const appsembleApiServer = createApiServer({
     argv,
     context: {
+      appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
@@ -338,16 +339,16 @@ export async function handler(argv: ServeArguments): Promise<void> {
     },
   });
 
-  api.on('error', (err) => {
+  appsembleApiServer.on('error', (err) => {
     if (err.expose) {
       return;
     }
     logger.error(err);
   });
 
-  const appsemble = http.createServer(api.callback());
+  const api = http.createServer(appsembleApiServer.callback());
 
-  const server = await createStaticServer({
+  const staticServer = await createStaticServer({
     argv,
     context: {
       apiUrl: `http://localhost:${argv['api-port']}`,
@@ -368,21 +369,21 @@ export async function handler(argv: ServeArguments): Promise<void> {
     webpackConfigs,
   });
 
-  server.on('error', (err) => {
+  staticServer.on('error', (err) => {
     if (err.expose) {
       return;
     }
     logger.error(err);
   });
 
-  const httpServer = http.createServer(server.callback());
+  const app = http.createServer(staticServer.callback());
 
-  appsemble.listen(argv['api-port'], '::', () => {
+  api.listen(argv['api-port'], '::', () => {
     logger.info(asciiLogo);
     logger.info(`The api can be found on\n> http://localhost:${argv['api-port']}`);
   });
 
-  httpServer.listen(argv.port, '::', () => {
+  app.listen(argv.port, '::', () => {
     logger.info(`\nThe app can be found on\n> http://localhost:${argv.port}`);
   });
 }
