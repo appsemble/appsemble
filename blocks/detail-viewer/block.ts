@@ -182,6 +182,38 @@ export interface FieldGroup extends AbstractField {
   fields: Field[];
 }
 
+/**
+ * A group of fields showed in bullet points.
+ */
+export interface BulletPoints extends AbstractField {
+  /**
+   * Bullet decoration for the list.
+   *
+   * @default none
+   */
+  bulletType?:
+    | 'circle'
+    | 'decimal-leading-zero'
+    | 'decimal'
+    | 'disc'
+    | 'horizontal'
+    | 'lower-alpha'
+    | 'lower-roman'
+    | 'none'
+    | 'numbered'
+    | 'square'
+    | 'upper-alpha'
+    | 'upper-roman';
+
+  /**
+   * Each bullet contains a heading and description.
+   */
+  bullets: {
+    heading: Field;
+    description?: Field;
+  };
+}
+
 export interface RendererProps<F extends Field> {
   /**
    * Structure used to define the field.
@@ -199,7 +231,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display based on the name from the schema.
      */
-    fields: (Field | FieldGroup)[];
+    fields: (BulletPoints | Field | FieldGroup)[];
 
     /**
      * Custom icon configuration for geocoordinate fields.

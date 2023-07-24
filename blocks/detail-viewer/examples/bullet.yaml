@@ -1,0 +1,15 @@
+parameters:
+  fields:
+    - value: { prop: name }
+      label: Name
+    - value: { prop: allergies }
+      label: Allergy
+      bulletType: horizontal
+      bullets:
+        heading:
+          value: { prop: name }
+        description:
+          value: { prop: description }
+events:
+  listen:
+    data: data
