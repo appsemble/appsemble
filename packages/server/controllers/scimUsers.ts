@@ -477,7 +477,11 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       replace(path, value);
     } else if (typeof value === 'object' && value != null) {
       for (const [key, val] of Object.entries(value)) {
-        replace(key, val);
+        if (typeof val === 'string') {
+          replace(key, val);
+        } else if (typeof val === 'boolean') {
+          replace(key, String(val));
+        }
       }
     } else {
       ctx.throw('Expected value to be string or object', 400);
