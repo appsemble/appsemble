@@ -489,7 +489,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.save({ transaction }),
       member.User.save({ transaction }),
     ];
-    if (managerId != null || '') {
+    if (managerId != null && managerId !== '') {
       const teamManager = await AppMember.findByPk(managerId);
       if (teamManager) {
         const existingTeam = await Team.findOne({ where: { AppId: appId, name: managerId } });
