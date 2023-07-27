@@ -1,19 +1,6 @@
-.createAppButton {
-  margin-left: auto;
-}
-
 .content {
   max-width: 960px;
   width: 100%;
-}
-
-.appList {
-  display: grid;
-  grid-auto-rows: 1fr;
-  grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  justify-content: center;
-  margin: 0 auto;
 }
 
 .navbarTitle,
@@ -21,17 +8,4 @@
 .navbarTitle:hover {
   color: inherit;
   text-decoration: none;
-}
-
-.noAppsIcon {
-  font-size: 6em;
-}
-
-.noApps {
-  display: grid;
-  margin: 0 auto;
-}
-
-.gap {
-  gap: 1rem;
 }

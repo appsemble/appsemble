@@ -1,119 +1,63 @@
-import { Content, InputField, SelectField } from '@appsemble/react-components';
+import { Content, useData } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { type ReactElement, useCallback, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
-import { CollapsibleAppList } from './CollapsibleAppList/index.js';
-import { CreateAppButton } from './CreateAppButton/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AppList } from '../../../components/AppList/index.js';
+import {
+  AppListControls,
+  type AppSortFunctionName,
+  sortFunctions,
+} from '../../../components/AppListControls/index.js';
+import { Collapsible } from '../../../components/Collapsible/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
-
-const sortFunctions = {
-  organization: (a: App, b: App) => a.OrganizationId.localeCompare(b.OrganizationId),
-  rating(a: App, b: App) {
-    const ratingA = a.rating ?? { average: 0, count: 0 };
-    const ratingB = b.rating ?? { average: 0, count: 0 };
-
-    return ratingA.average === ratingB.average
-      ? ratingA.count - ratingB.count
-      : ratingA.average - ratingB.average;
-  },
-  $created: (a: App, b: App) => a.$created.localeCompare(b.$created),
-  $updated: (a: App, b: App) => a.$updated.localeCompare(b.$updated),
-  name: (a: App, b: App) => a.definition.name.localeCompare(b.definition.name),
-};
 
 export function IndexPage(): ReactElement {
   const [filter, setFilter] = useState('');
-  const [sort, setSort] = useState<{ name: keyof typeof sortFunctions; reverse: boolean }>({
+  const [sort, setSort] = useState<{ name: AppSortFunctionName; reverse: boolean }>({
     name: 'rating',
     reverse: true,
   });
-  const { formatMessage } = useIntl();
   const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
-
-  const onFilterChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setFilter(event.currentTarget.value);
+  const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
+  const appsResult = useData<App[]>(`/api/apps?language=${lang}`);
+  const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
+    setSort({ name, reverse });
   }, []);
-
-  const onSortChange = useCallback(
-    ({ currentTarget: { value } }: ChangeEvent<HTMLSelectElement>): void => {
-      const [name, direction] = value.split('.');
-      setSort({ name: name as keyof typeof sortFunctions, reverse: direction === 'desc' });
-    },
-    [],
-  );
 
   return (
     <Content className={styles.content} main>
-      <div className={`is-flex-desktop ${styles.gap}`}>
-        <InputField
-          className="mb-0 is-fullwidth"
-          icon="search"
-          name="search"
-          onChange={onFilterChange}
-          placeholder={formatMessage(messages.search)}
-          type="search"
-        />
-        <SelectField className="mb-0" icon="sort" name="sort" onChange={onSortChange}>
-          <option hidden>{`${formatMessage(messages.ratings)} (${formatMessage(
-            messages.descending,
-          )})`}</option>
-          <option value="rating.asc">
-            {`${formatMessage(messages.ratings)} (${formatMessage(messages.ascending)})`}
-          </option>
-          <option value="rating.desc">
-            {`${formatMessage(messages.ratings)} (${formatMessage(messages.descending)})`}
-          </option>
-          <option value="name.asc">
-            {`${formatMessage(messages.name)} (${formatMessage(messages.ascending)})`}
-          </option>
-          <option value="name.desc">
-            {`${formatMessage(messages.name)} (${formatMessage(messages.descending)})`}
-          </option>
-          <option value="organization.asc">
-            {`${formatMessage(messages.organization)} (${formatMessage(messages.ascending)})`}
-          </option>
-          <option value="organization.desc">
-            {`${formatMessage(messages.organization)} (${formatMessage(messages.descending)})`}
-          </option>
-          <option value="$created.asc">
-            {`${formatMessage(messages.created)} (${formatMessage(messages.ascending)})`}
-          </option>
-          <option value="$created.desc">
-            {`${formatMessage(messages.created)} (${formatMessage(messages.descending)})`}
-          </option>
-          <option value="$updated.asc">
-            {`${formatMessage(messages.updated)} (${formatMessage(messages.ascending)})`}
-          </option>
-          <option value="$updated.desc">
-            {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
-          </option>
-        </SelectField>
-        {userInfo ? <CreateAppButton className={styles.createAppButton} /> : null}
-      </div>
+      <AppListControls
+        filter={filter}
+        onFilterChange={setFilter}
+        onSortChange={onSortChange}
+        reverse={sort?.reverse}
+        sort={sort?.name}
+      />
 
       {userInfo ? (
-        <CollapsibleAppList
-          filter={filter}
-          reverse={sort?.reverse}
-          sortFunction={sortFunctions[sort?.name]}
-          target={`/api/user/apps?language=${lang}`}
-          title={<FormattedMessage {...messages.myApps} />}
-          userApps
-        />
+        <Collapsible title={<FormattedMessage {...messages.myApps} />}>
+          <AppList
+            filter={filter}
+            result={myAppsResult}
+            reverse={sort?.reverse}
+            sortFunction={sortFunctions[sort?.name]}
+          />
+        </Collapsible>
       ) : null}
       <br />
-      <CollapsibleAppList
-        filter={filter}
-        reverse={sort?.reverse}
-        sortFunction={sortFunctions[sort?.name]}
-        target={`/api/apps?language=${lang}`}
-        title={<FormattedMessage {...messages.allApps} />}
-      />
+      <Collapsible title={<FormattedMessage {...messages.allApps} />}>
+        <AppList
+          filter={filter}
+          result={appsResult}
+          reverse={sort?.reverse}
+          sortFunction={sortFunctions[sort?.name]}
+        />
+      </Collapsible>
     </Content>
   );
 }
