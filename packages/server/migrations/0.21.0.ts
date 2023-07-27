@@ -28,7 +28,10 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.addColumn('AppMember', 'scimExternalId', { type: DataTypes.STRING });
 
   logger.info('Adding column `scimActive` to `AppMember`');
-  await queryInterface.addColumn('AppMember', 'scimActive', { type: DataTypes.BOOLEAN });
+  await queryInterface.addColumn('AppMember', 'scimActive', {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  });
 
   logger.info('Adding column `objectIdAttribute` to `AppSamlSecret`');
   await queryInterface.addColumn('AppSamlSecret', 'objectIdAttribute', { type: DataTypes.STRING });
