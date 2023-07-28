@@ -42,10 +42,11 @@ have an Azure Active Directory already set up and filled with users.
 ### 2. Appsemble setup
 
 1. Firstly, to configure your Appsemble application so that individual users can log in, your app
-   definition needs to contain a basic [security definition](/security#security-definition).
+   definition needs to contain a basic
+   [security definition](/docs/03-guide/security#security-definition).
 
-   **(Optional)** If your application wants to use the [Teams](/teams) functionality, this security
-   definition also has to contain a [teams definition](/security#teams).
+   **(Optional)** If your application wants to use the [Teams](/docs/03-guide/teams) functionality,
+   this security definition also has to contain a [teams definition](/docs/03-guide/security#teams).
 
 2. In your application, go to **Secrets** -> **SCIM**.
 
