@@ -98,6 +98,7 @@
     "remark-rehype": "^10.0.0",
     "remark-stringify": "^10.0.0",
     "sass": "^1.0.0",
+    "scim2-parse-filter": "^0.2.8",
     "semver": "^7.0.0",
     "sequelize": "^6.0.0",
     "sequelize-typescript": "^2.0.0",

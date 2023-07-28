@@ -61,6 +61,7 @@ declare module 'koas-security' {
     app: UtilsUser;
     basic: UtilsUser;
     cli: UtilsUser;
+    scim: UtilsUser;
     studio: UtilsUser;
   }
 }
@@ -80,21 +81,27 @@ declare module 'koas-parameters' {
     path: string;
     resourceId: number;
     resourceType: string;
+    resourceTypeId: string;
+    schemaId: string;
     screenshotId: number;
     snapshotId: number;
     teamId: string;
     token: string;
     appServiceId: number;
+    userId: string;
   }
 
   interface QueryParams {
     domains: string[];
     $filter?: string;
+    filter: string;
     $orderby?: string;
     $select: string;
     $top: number;
     $skip: number;
     code: string;
+    count: number;
+    startIndex: number;
     view: string;
   }
 }

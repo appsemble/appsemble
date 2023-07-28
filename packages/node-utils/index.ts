@@ -24,6 +24,7 @@ export * from './app.js';
 export * from './mergeMessages.js';
 export * from './jsonschema.js';
 export * from './organizationBlocklist.js';
+export * from './scim.js';
 export * from './server/routes/appRouter/index.js';
 export * from './server/routes/appRouter/iconHandler.js';
 export * from './server/controllers/index.js';

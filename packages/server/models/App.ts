@@ -153,6 +153,14 @@ export class App extends Model {
   @Column(DataType.STRING)
   sentryEnvironment: string;
 
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  scimEnabled: boolean;
+
+  @Column(DataType.BLOB)
+  scimToken: Buffer;
+
   @UpdatedAt
   updated: Date;
 

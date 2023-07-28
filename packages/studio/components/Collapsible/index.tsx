@@ -8,7 +8,7 @@ interface CollapsibleProps {
   /**
    * The clickable title that is used to toggle showing or hiding the content.
    */
-  title: ReactElement | string;
+  title: ReactNode;
 
   /**
    * The class to apply to the title.

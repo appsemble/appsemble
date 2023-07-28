@@ -1,6 +1,8 @@
 import { type Boom } from '@hapi/boom';
 import { type Middleware } from 'koa';
 
+import { SCIMError } from '../scim.js';
+
 /**
  * Koa middleware for handling Boom errors.
  *
@@ -11,6 +13,11 @@ export function boomMiddleware(): Middleware {
     try {
       await next();
     } catch (error: unknown) {
+      if (error instanceof SCIMError) {
+        ctx.status = Number(error.status);
+        ctx.body = error;
+        return;
+      }
       const err = error as Boom;
       if (!err.isBoom) {
         throw err;

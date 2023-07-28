@@ -157,6 +157,14 @@ export function SamlModal({
         name="nameAttribute"
       />
       <SimpleFormField
+        datalist={['http://schemas.microsoft.com/identity/claims/objectidentifier']}
+        disabled={app.locked}
+        help={<FormattedMessage {...messages.objectIdAttributeHelp} />}
+        icon="user"
+        label={<FormattedMessage {...messages.objectIdAttributeLabel} />}
+        name="objectIdAttribute"
+      />
+      <SimpleFormField
         className={styles.certificate}
         component={TextAreaField}
         disabled={app.locked}

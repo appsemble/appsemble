@@ -110,6 +110,17 @@ export function authorizeStudio(user = testUser): TokenResponse {
 }
 
 /**
+ * Authorize the default axios test instance as if its using an app SCIM token.
+ *
+ * @param token The SCIM token to use
+ * @returns The SCIM token response.
+ */
+export function authorizeScim(token: string): string {
+  request.defaults.headers.common.authorization = `Bearer ${token}`;
+  return token;
+}
+
+/**
  * Logout the default axios test instance.
  */
 export function unauthorize(): void {
