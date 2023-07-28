@@ -10,7 +10,6 @@ export const messages = defineMessages({
     id: 'studio.xoo3WL',
     defaultMessage: 'There was a problem saving the SCIM settings',
   },
-  submitSuccess: { id: 'studio.qyDtDE', defaultMessage: 'SSL credentials saved successfully' },
   enabledLabel: { id: 'studio.3p36Vm', defaultMessage: 'Enable SCIM' },
   enabledHelp: { id: 'studio.dXuEkZ', defaultMessage: 'Check to enable SCIM for this app' },
   tenantUrlLabel: { id: 'studio.cB7Zdd', defaultMessage: 'Tenant URL' },
