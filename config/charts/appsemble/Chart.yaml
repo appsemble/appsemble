@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.20.45
-appVersion: 0.20.45
+version: 0.21.0
+appVersion: 0.21.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,39 +25,45 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "Block(barcode-scan): Initial release."
+      description: "Block(barcode-scan): Allow block to scan other type of codes."
     - kind: added
-      description: "Block(barcode-scan): Supports scanning code from image file."
+      description: "Block(barcode-scan): Allow user to set patch size of stream or image file."
     - kind: added
-      description: "Block(form): Support default value for date fields."
+      description: "Block(barcode-scan): Allow user to set up resolution to make
+        scanner get code more precise."
     - kind: added
-      description: "Block(image): The Image block now has width and height (in pixel)
-        properties."
+      description: "Block(barcode-scan): New icon for the block."
     - kind: added
-      description: "App: Added team.members action."
+      description: "Block(detail-viewer): Allow to extract image from URL and asset."
     - kind: added
-      description: "Server: Add resource.patch action to server."
+      description: "Block(detail-viewer): Allow to render videos."
     - kind: added
-      description: "Server: Added specific getTeamMember endpoint."
+      description: "Block(video): Allows video from URL and asset."
+    - kind: added
+      description: "Block(video): Allows video from YouTube."
+    - kind: added
+      description: "Cli: Initial release of the development server introducing the new
+        command serve."
+    - kind: added
+      description: "Server: Add SCIM support."
     - kind: changed
-      description: "Utils: Breaking Change not remapper to, compute then invert null
-        and singular values."
+      description: "Block(barcode-scan): New description of block and its parameters."
+    - kind: changed
+      description: "Block(form): Support inline fields within fieldsets."
+    - kind: changed
+      description: "Block(qr-scan): Emits code as object instead of string."
+    - kind: changed
+      description: "Studio: Moved remapper documentation into its own section."
+    - kind: changed
+      description: "Utils: Separate remappers into sections."
+    - kind: removed
+      description: "Block(detail-viewer): Remove file base parameter."
     - kind: fixed
-      description: "Block(filter): Fix filtering for date and date-range fields."
+      description: "Block(form): Display buttons for fieldset when min/max length is specified."
     - kind: fixed
-      description: "Block(form): Support not passing fields to block."
+      description: "Block(form): Fix validation of fields which come after a fieldset."
     - kind: fixed
-      description: "Server: Implement resource.create action instead of reusing the
-        request action."
-    - kind: fixed
-      description: "Server: Implement resource.delete action instead of reusing the
-        request action."
-    - kind: fixed
-      description: "Server: Implement resource.get action instead of reusing the
-        request action."
-    - kind: fixed
-      description: "Server: Implement resource.update action instead of reusing the
-        request action."
+      description: "Studio: Fixed code highlighting not working in MDX files."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

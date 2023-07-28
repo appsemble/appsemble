@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.21.0](https://gitlab.com/appsemble/appsemble/-/releases/0.21.0)] - 2023-07-28
+
+### Added
+
+- Block(`barcode-scan`): Allow block to scan other type of codes.
+- Block(`barcode-scan`): Allow user to set patch size of stream or image file.
+- Block(`barcode-scan`): Allow user to set up resolution to make scanner get code more precise.
+- Block(`barcode-scan`): New icon for the block.
+- Block(`detail-viewer`): Allow to extract image from URL and asset.
+- Block(`detail-viewer`): Allow to render videos.
+- Block(`video`): Allows video from URL and asset.
+- Block(`video`): Allows video from YouTube.
+- Cli: Initial release of the development server introducing the new command `serve`.
+- Server: Add SCIM support.
+
+### Changed
+
+- Block(`barcode-scan`): New description of block and its parameters.
+- Block(`form`): Support inline fields within fieldsets.
+- Block(`qr-scan`): Emits code as object instead of string.
+- Studio: Moved remapper documentation into its own section.
+- Utils: Separate remappers into sections.
+
+### Removed
+
+- Block(`detail-viewer`): Remove file base parameter.
+
+### Fixed
+
+- Block(`form`): Display buttons for fieldset when min/max length is specified.
+- Block(`form`): Fix validation of fields which come after a fieldset.
+- Studio: Fixed code highlighting not working in MDX files.
+
 ## \[[0.20.45](https://gitlab.com/appsemble/appsemble/-/releases/0.20.45)] - 2023-06-07
 
 ### Added

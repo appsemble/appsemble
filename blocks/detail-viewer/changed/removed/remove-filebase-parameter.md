@@ -1,1 +1,0 @@
-Remove file base parameter.

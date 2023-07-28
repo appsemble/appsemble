@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.20.45",
+  "version": "0.21.0",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "keywords": [
@@ -25,10 +25,10 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.45",
-    "@appsemble/types": "0.20.45",
-    "@appsemble/utils": "0.20.45",
-    "@appsemble/webpack-core": "0.20.45",
+    "@appsemble/node-utils": "0.21.0",
+    "@appsemble/types": "0.21.0",
+    "@appsemble/utils": "0.21.0",
+    "@appsemble/webpack-core": "0.21.0",
     "@formatjs/cli-lib": "^6.0.0",
     "@types/fs-extra": "^11.0.0",
     "@types/lodash-es": "^4.0.0",
