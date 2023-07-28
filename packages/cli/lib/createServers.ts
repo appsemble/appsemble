@@ -20,15 +20,11 @@ import { statusCode } from 'koas-status-code';
 import { type Configuration } from 'webpack';
 
 import pkg from '../package.json' assert { type: 'json' };
+import { argv } from '../server/argv.js';
 import * as controllers from '../server/controllers/index.js';
 import { appRouter } from '../server/routes/appRouter/index.js';
 
 interface CreateServerOptions {
-  /**
-   * Server arguments
-   */
-  argv: Record<string, any>;
-
   /**
    * Additional context to append to the server.
    */
@@ -41,7 +37,6 @@ interface CreateServerOptions {
 }
 
 export async function createStaticServer({
-  argv,
   context,
   webpackConfigs,
 }: CreateServerOptions): Promise<Koa> {
@@ -66,7 +61,7 @@ export async function createStaticServer({
   return app;
 }
 
-export function createApiServer({ argv, context }: CreateServerOptions): Koa {
+export function createApiServer({ context }: CreateServerOptions): Koa {
   const app = new Koa();
 
   app.use(loggerMiddleware());
