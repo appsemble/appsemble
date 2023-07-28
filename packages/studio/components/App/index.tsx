@@ -20,6 +20,7 @@ import { ErrorFallback } from '../ErrorFallback/index.js';
 import { HighlightedCode } from '../HighlightedCode/index.js';
 import { MDXAnchor, MDXWrapper } from '../MDX/index.js';
 import { createHeader } from '../MDX/MDXHeader/index.js';
+import { PageHeaderProvider } from '../PageHeader/index.js';
 import { SideMenuBase } from '../SideMenuBase/index.js';
 import { SideMenuBottom } from '../SideMenuBottom/index.js';
 import { StudioMessagesProvider } from '../StudioMessagesProvider/index.js';
@@ -54,8 +55,10 @@ const studioContent = (
                     <VerifyBanner />
                     <EmailQuotaBanners />
                     <BreadCrumbsDecorationProvider>
-                      <Breadcrumbs />
-                      <TopLevelRoutes />
+                      <PageHeaderProvider>
+                        <Breadcrumbs />
+                        <TopLevelRoutes />
+                      </PageHeaderProvider>
                     </BreadCrumbsDecorationProvider>
                   </div>
                 </SideMenuProvider>
