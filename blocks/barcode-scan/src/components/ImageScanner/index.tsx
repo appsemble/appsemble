@@ -22,21 +22,22 @@ export function ImageScanner({
 
   function runBarcodeDetection(image: any): void {
     // @ts-expect-error Quagga types are wrong
-    Quagga.decodeSingle({
-      src: image,
-      inputStream: {
-        type: 'ImageStream',
-        size: resolution,
-        singleChannel: false,
+    Quagga.decodeSingle(
+      {
+        src: image,
+        inputStream: {
+          type: 'ImageStream',
+          size: resolution,
+          singleChannel: false,
+        },
+        ...config,
       },
-      ...config,
-    });
+      onDetected,
+    );
     // @ts-expect-error Quagga types are wrong
     Quagga.onProcessed(() => {
       setBarcode(null);
     });
-    // @ts-expect-error Quagga types are wrong
-    Quagga.onDetected(onDetected);
   }
 
   useEffect(() => {
