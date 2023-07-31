@@ -38,11 +38,12 @@ import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
 import { createApiServer, createStaticServer } from '../lib/createServers.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
+import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
-import { type BaseArguments } from '../types.js';
 
-interface ServeArguments extends BaseArguments {
+export interface ServeArguments {
+  remote: string;
   path: string;
   port: number;
   'api-port': number;
@@ -90,6 +91,7 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(argv: ServeArguments): Promise<void> {
+  setArgv(argv);
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
@@ -321,7 +323,6 @@ export async function handler(argv: ServeArguments): Promise<void> {
   } as App;
 
   const appsembleApiServer = createApiServer({
-    argv,
     context: {
       appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,
@@ -349,7 +350,6 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const api = http.createServer(appsembleApiServer.callback());
 
   const staticServer = await createStaticServer({
-    argv,
     context: {
       apiUrl: `http://localhost:${argv['api-port']}`,
       appHost: `http://localhost:${argv.port}`,
