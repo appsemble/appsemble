@@ -55,4 +55,6 @@ to the server, updating the app.
 
 ## Further reading
 
+For more information on YAML, feel free to check out [YAML syntax](yaml-syntax.md)
+
 - [Create a basic app](basic-app.md)
