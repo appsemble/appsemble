@@ -68,9 +68,11 @@ export const test = base.extend<Fixtures>({
           return;
         }
       }
+      await page.waitForLoadState('domcontentloaded');
+      const allowButton = await page.$('button:has-text("Allow")');
 
-      if (page.url().includes('/connect/authorize?')) {
-        page.getByRole('button', { name: 'Allow' }).click();
+      if (allowButton) {
+        await allowButton.click();
       }
     });
   },
