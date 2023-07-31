@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.21.1](https://gitlab.com/appsemble/appsemble/-/releases/0.21.1)] - 2023-07-31
+
+### Fixed
+
+- Cli: Add missing default arguments.
+- Cli: Include missing Bulma dependency to resolve crash.
+
 ## \[[0.21.0](https://gitlab.com/appsemble/appsemble/-/releases/0.21.0)] - 2023-07-28
 
 ### Added

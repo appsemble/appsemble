@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.21.0
-appVersion: 0.21.0
+version: 0.21.1
+appVersion: 0.21.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,47 +23,11 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(barcode-scan): Allow block to scan other type of codes."
-    - kind: added
-      description: "Block(barcode-scan): Allow user to set patch size of stream or image file."
-    - kind: added
-      description: "Block(barcode-scan): Allow user to set up resolution to make
-        scanner get code more precise."
-    - kind: added
-      description: "Block(barcode-scan): New icon for the block."
-    - kind: added
-      description: "Block(detail-viewer): Allow to extract image from URL and asset."
-    - kind: added
-      description: "Block(detail-viewer): Allow to render videos."
-    - kind: added
-      description: "Block(video): Allows video from URL and asset."
-    - kind: added
-      description: "Block(video): Allows video from YouTube."
-    - kind: added
-      description: "Cli: Initial release of the development server introducing the new
-        command serve."
-    - kind: added
-      description: "Server: Add SCIM support."
-    - kind: changed
-      description: "Block(barcode-scan): New description of block and its parameters."
-    - kind: changed
-      description: "Block(form): Support inline fields within fieldsets."
-    - kind: changed
-      description: "Block(qr-scan): Emits code as object instead of string."
-    - kind: changed
-      description: "Studio: Moved remapper documentation into its own section."
-    - kind: changed
-      description: "Utils: Separate remappers into sections."
-    - kind: removed
-      description: "Block(detail-viewer): Remove file base parameter."
+  artifacthub.io/changes: |
     - kind: fixed
-      description: "Block(form): Display buttons for fieldset when min/max length is specified."
+      description: "Cli: Add missing default arguments."
     - kind: fixed
-      description: "Block(form): Fix validation of fields which come after a fieldset."
-    - kind: fixed
-      description: "Studio: Fixed code highlighting not working in MDX files."
+      description: "Cli: Include missing Bulma dependency to resolve crash."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
