@@ -17,3 +17,4 @@ continue on this basic app to add more advanced features.
 7. [Teams](teams.md)
 8. [Analytics](analytics.md)
 9. [Custom dependencies](custom-dependencies.md)
+10. [YAML syntax](yaml-syntax.md)
