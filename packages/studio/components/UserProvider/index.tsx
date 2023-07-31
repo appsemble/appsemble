@@ -24,7 +24,7 @@ import {
 import { type Role } from '../../types.js';
 
 interface UserProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**

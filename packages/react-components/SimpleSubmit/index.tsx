@@ -3,7 +3,7 @@ import { type ComponentPropsWithoutRef, type ReactChild, type ReactElement } fro
 import { Button, useSimpleForm } from '../index.js';
 
 interface SimpleSubmitProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onChange'> {
-  children?: ReactChild;
+  readonly children?: ReactChild;
 }
 
 export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactElement {

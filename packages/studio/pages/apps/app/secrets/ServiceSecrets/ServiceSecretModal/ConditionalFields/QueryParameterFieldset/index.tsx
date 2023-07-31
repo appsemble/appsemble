@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 
 interface QueryParameterFieldsetProps {
-  disabled: boolean;
+  readonly disabled: boolean;
 }
 
 export function QueryParameterFieldset({ disabled }: QueryParameterFieldsetProps): ReactElement {

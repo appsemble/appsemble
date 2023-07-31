@@ -4,8 +4,8 @@ import { type ComponentChildren, toChildArray, type VNode } from 'preact';
 import styles from './index.module.css';
 
 interface FormButtonsProps {
-  children: ComponentChildren;
-  className?: string;
+  readonly children: ComponentChildren;
+  readonly className?: string;
 }
 
 /**

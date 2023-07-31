@@ -7,8 +7,8 @@ import { messages } from './messages.js';
 import { type ShowShareDialogParams } from '../../../types.js';
 
 export interface ShareDialogParams {
-  shareDialogParams: ShareDialogState;
-  setShareDialogParams: Dispatch<SetStateAction<ShareDialogState>>;
+  readonly shareDialogParams: ShareDialogState;
+  readonly setShareDialogParams: Dispatch<SetStateAction<ShareDialogState>>;
 }
 
 export interface ShareDialogState {

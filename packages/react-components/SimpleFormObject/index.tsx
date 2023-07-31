@@ -6,12 +6,12 @@ interface SimpleFormObjectProps {
   /**
    * The children to provide the context for.
    */
-  children: ReactChild | ReactChild[];
+  readonly children: ReactChild | ReactChild[];
 
   /**
    * The name of the property that is used to store the values of the object.
    */
-  name: string;
+  readonly name: string;
 }
 
 /**

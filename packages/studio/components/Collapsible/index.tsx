@@ -8,36 +8,36 @@ interface CollapsibleProps {
   /**
    * The clickable title that is used to toggle showing or hiding the content.
    */
-  title: ReactNode;
+  readonly title: ReactNode;
 
   /**
    * The class to apply to the title.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The header level.
    *
    * By default this is determined by the size.
    */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  readonly level?: 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
    * The size of the title.
    *
    * @default 4
    */
-  size?: 3 | 4 | 5 | 6;
+  readonly size?: 3 | 4 | 5 | 6;
 
   /**
    * Whether the component should start out collapsed.
    */
-  collapsed?: boolean;
+  readonly collapsed?: boolean;
 
   /**
    * The content to display.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**

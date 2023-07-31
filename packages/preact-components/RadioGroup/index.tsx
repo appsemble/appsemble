@@ -4,37 +4,37 @@ import { FormComponent, type SharedFormComponentProps, ValuePickerProvider } fro
 
 type RadioGroupProps = Omit<JSX.HTMLAttributes<HTMLInputElement>, 'label' | 'onChange' | 'value'> &
   SharedFormComponentProps & {
-    children: VNode<JSX.HTMLAttributes<HTMLInputElement>>[];
+    readonly children: VNode<JSX.HTMLAttributes<HTMLInputElement>>[];
 
     /**
      * An error message to render.
      */
-    error?: ComponentChild;
+    readonly error?: ComponentChild;
 
     /**
      * The label to display above the checkbox.
      */
-    label?: ComponentChild;
+    readonly label?: ComponentChild;
 
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: Event, value: any) => void;
+    readonly onChange: (event: Event, value: any) => void;
 
     /**
      * The current value.
      */
-    value: any;
+    readonly value: any;
 
     /**
      * The label to display if the input group is optional.
      */
-    optionalLabel?: ComponentChild;
+    readonly optionalLabel?: ComponentChild;
 
     /**
      * The tag to display to the right of the label.
      */
-    tag?: ComponentChild;
+    readonly tag?: ComponentChild;
   };
 
 export function RadioGroup({

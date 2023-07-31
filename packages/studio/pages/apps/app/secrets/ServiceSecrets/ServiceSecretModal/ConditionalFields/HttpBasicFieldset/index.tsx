@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 
 interface HttpBasicFieldsetProps {
-  disabled: boolean;
+  readonly disabled: boolean;
 }
 
 export function HttpBasicFieldset({ disabled }: HttpBasicFieldsetProps): ReactElement {

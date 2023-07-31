@@ -7,7 +7,7 @@ interface ActionTableProps {
   /**
    * The block manifest to use for displaying the available actions.
    */
-  manifest: BlockManifest;
+  readonly manifest: BlockManifest;
 }
 
 /**

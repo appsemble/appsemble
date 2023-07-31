@@ -7,7 +7,7 @@ import { type ExtendedOAuth2State } from '../../types.js';
 import { oauth2Redirect } from '../../utils/oauth2Utils.js';
 
 interface OAuth2AppCallbackProps {
-  session: ExtendedOAuth2State;
+  readonly session: ExtendedOAuth2State;
 }
 
 export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactElement {

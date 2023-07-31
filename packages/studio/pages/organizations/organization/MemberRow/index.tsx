@@ -18,33 +18,33 @@ interface MemberRowProps {
   /**
    * Whether the user may delete members.
    */
-  mayEdit: boolean;
+  readonly mayEdit: boolean;
 
   /**
    * Whether the user has the permission to edit other user’s roles.
    */
-  mayEditRole: boolean;
+  readonly mayEditRole: boolean;
 
   /**
    * The member represented by this row.
    */
-  member: Member;
+  readonly member: Member;
 
   /**
    * This is called when the member data has changed.
    *
    * @param member The member that has been changed.
    */
-  onChanged: (member: Member) => void;
+  readonly onChanged: (member: Member) => void;
 
   /**
    * This is called when the member has been deleted.
    *
    * @param member The member that has been deleted.
    */
-  onDeleted: (member: Member) => void;
+  readonly onDeleted: (member: Member) => void;
 
-  ownerCount: number;
+  readonly ownerCount: number;
 }
 
 /**

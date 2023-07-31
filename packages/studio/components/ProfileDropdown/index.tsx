@@ -18,7 +18,7 @@ interface LanguageDropdownProps {
   /**
    * An optional class name to add to the root element.
    */
-  className?: string;
+  readonly className?: string;
 }
 
 export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElement {

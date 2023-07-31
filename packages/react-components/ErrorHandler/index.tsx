@@ -5,12 +5,12 @@ interface ErrorHandlerProps {
   /**
    * Children to render.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * The fallback to render in case an error occurs rendering children.
    */
-  fallback: ElementType<ErrorHandlerState | { resetErrorBoundary: () => void }>;
+  readonly fallback: ElementType<ErrorHandlerState | { resetErrorBoundary: () => void }>;
 }
 
 interface ErrorHandlerState {

@@ -9,7 +9,7 @@ import { type Item } from '../../../block.js';
 import { ListItemWrapper } from '../ListItemWrapper/index.js';
 
 interface ListItemProps {
-  item: Item;
+  readonly item: Item;
 }
 
 export function ListItem({ item }: ListItemProps): VNode {

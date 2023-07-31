@@ -7,12 +7,12 @@ type CheckboxFieldProps = Omit<ComponentPropsWithoutRef<typeof Checkbox>, 'error
     /**
      * The title to display right of the checkbox.
      */
-    title?: ReactNode;
+    readonly title?: ReactNode;
 
     /**
      * The class used for the FormComponent wrapper.
      */
-    wrapperClassName?: string;
+    readonly wrapperClassName?: string;
   };
 
 /**

@@ -9,7 +9,7 @@ interface AnyOfSchemaProps extends SchemaProps {
   /**
    * Whether this component is rendering the anyOf property or the oneOf property.
    */
-  type: 'anyOf' | 'oneOf';
+  readonly type: 'anyOf' | 'oneOf';
 }
 
 export function AnyOfSchema({ schema, type, ...props }: AnyOfSchemaProps): ReactElement {

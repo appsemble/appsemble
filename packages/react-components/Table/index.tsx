@@ -5,37 +5,37 @@ interface TableProps {
   /**
    * Add borders to all the cells.
    */
-  bordered?: boolean;
+  readonly bordered?: boolean;
 
   /**
    * A `<thead />`, `<tbody />` and `<tfoot />` element.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An optional class name to add to the table container.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * You can have a fullwidth table.
    */
-  fullwidth?: boolean;
+  readonly fullwidth?: boolean;
 
   /**
    * You can add a hover effect on each row.
    */
-  hoverable?: boolean;
+  readonly hoverable?: boolean;
 
   /**
    * Make the cells narrower.
    */
-  narrow?: boolean;
+  readonly narrow?: boolean;
 
   /**
    * Add stripes to the table.
    */
-  striped?: boolean;
+  readonly striped?: boolean;
 }
 
 /**

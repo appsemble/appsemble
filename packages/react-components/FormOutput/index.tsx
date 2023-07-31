@@ -10,17 +10,17 @@ interface FormOutputProps
   /**
    * The message to display if there was a problem copying the content.
    */
-  copyErrorMessage: string;
+  readonly copyErrorMessage: string;
 
   /**
    * The message to display if the contents have been copied successfully.
    */
-  copySuccessMessage: string;
+  readonly copySuccessMessage: string;
 
   /**
    * If true, a textarea element will be rendered instead of an input element.
    */
-  multiline?: boolean;
+  readonly multiline?: boolean;
 }
 
 /**

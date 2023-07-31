@@ -13,7 +13,7 @@ import {
 import { MenuItem } from '../MenuItem/index.js';
 
 interface CollapsibleMenuSectionProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface CollapsedContextInterface {

@@ -27,22 +27,22 @@ interface AppSecretCardProps {
    * @param newProvider The new provider values.
    * @param oldProvider The old provider values to replace..
    */
-  onSubmit: (values: AppSamlSecret) => Promise<void>;
+  readonly onSubmit: (values: AppSamlSecret) => Promise<void>;
 
   /**
    * The current provider values.
    */
-  secret: AppSamlSecret;
+  readonly secret: AppSamlSecret;
 
   /**
    * The toggle used for managing the modal.
    */
-  toggle: Toggle;
+  readonly toggle: Toggle;
 
   /**
    * Called when the secret has been updated successfully.
    */
-  onDeleted?: (secret: AppSamlSecret) => void;
+  readonly onDeleted?: (secret: AppSamlSecret) => void;
 }
 
 const certificateRows = 14;

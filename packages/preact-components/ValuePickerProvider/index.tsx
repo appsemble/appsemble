@@ -5,23 +5,23 @@ interface ValuePickerContext<T> {
   /**
    * The name of the field.
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The change handler for if a value changes.
    */
-  onChange: (event: JSX.TargetedEvent<HTMLElement>, value: T) => void;
+  readonly onChange: (event: JSX.TargetedEvent<HTMLElement>, value: T) => void;
 
   /**
    * The current value.
    */
-  value: T;
+  readonly value: T;
 }
 
 const Context = createContext<ValuePickerContext<unknown>>(null);
 
 export interface ValuePickerProviderProps<T> extends ValuePickerContext<T> {
-  children: ComponentChildren;
+  readonly children: ComponentChildren;
 }
 
 /**

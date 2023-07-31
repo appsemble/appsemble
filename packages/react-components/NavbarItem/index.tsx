@@ -8,7 +8,7 @@ type NavbarItemProps = ComponentPropsWithoutRef<typeof ButtonChildren> &
     /**
      * The click event handler.
      */
-    onClick?: MouseEventHandler<HTMLButtonElement>;
+    readonly onClick?: MouseEventHandler<HTMLButtonElement>;
   };
 
 /**

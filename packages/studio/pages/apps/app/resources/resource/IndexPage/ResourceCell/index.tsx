@@ -11,9 +11,9 @@ const firstLineRegex = /^(.*)\n?/;
 const whitespaceRegex = /^\s+$/;
 
 interface ResourceCellProps {
-  required: boolean;
-  schema: Schema;
-  value: unknown;
+  readonly required: boolean;
+  readonly schema: Schema;
+  readonly value: unknown;
 }
 
 export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactElement {

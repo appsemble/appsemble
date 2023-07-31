@@ -9,27 +9,27 @@ interface SideNavLinkProps {
   /**
    * The title text to apply to the link.
    */
-  title?: string;
+  readonly title?: string;
 
   /**
    * If true, only highlight on an exact match.
    */
-  exact?: boolean;
+  readonly exact?: boolean;
 
   /**
    * Child navigation items to render.
    */
-  children?: ReactNode;
+  readonly children?: ReactNode;
 
   /**
    * The icon to render.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * Where to navigate to.
    */
-  to: string;
+  readonly to: string;
 }
 
 /**

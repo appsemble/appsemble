@@ -10,27 +10,27 @@ interface DropdownItemProps extends ComponentProps<'td'> {
   /**
    * The item to display.
    */
-  item: unknown;
+  readonly item: unknown;
 
   /**
    * The data of the record that item is a part of.
    */
-  record: unknown;
+  readonly record: unknown;
 
   /**
    * The option that is being rendered.
    */
-  option: DropdownOptionType;
+  readonly option: DropdownOptionType;
 
   /**
    * The index of the row that was clicked.
    */
-  index: number;
+  readonly index: number;
 
   /**
    * The index of the sub row that was clicked.
    */
-  repeatedIndex: number;
+  readonly repeatedIndex: number;
 }
 
 /**

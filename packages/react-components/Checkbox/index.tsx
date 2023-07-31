@@ -18,39 +18,39 @@ type CheckboxProps = Omit<
   /**
    * If true, tender an error color.
    */
-  error?: boolean;
+  readonly error?: boolean;
 
   /**
    * This is fired when the input value has changed.
    */
-  onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
+  readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => void;
 
   /**
    * The title to display right of the checkbox.
    */
-  label?: ReactNode;
+  readonly label?: ReactNode;
 
   /**
    * Whether or not the checkbox is checked.
    */
-  value?: boolean;
+  readonly value?: boolean;
 
   /**
    * Whether the component should render as a switch or as a square checkbox.
    */
-  switch?: boolean;
+  readonly switch?: boolean;
 
   /**
    * Whether the label should be displayed to the right of the checkbox or to the left.
    *
    * By default (false), the label will be rendered after the checkbox.
    */
-  rtl?: boolean;
+  readonly rtl?: boolean;
 
   /**
    * Sets the indeterminate state on the checkbox.
    */
-  indeterminate?: boolean;
+  readonly indeterminate?: boolean;
 };
 
 /**

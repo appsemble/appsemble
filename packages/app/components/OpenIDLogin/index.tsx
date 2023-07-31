@@ -8,7 +8,7 @@ import { oauth2Scope } from '../../utils/constants.js';
 import { apiUrl, appId, logins, showAppsembleOAuth2Login } from '../../utils/settings.js';
 
 interface OpenIDLoginProps {
-  disabled: boolean;
+  readonly disabled: boolean;
 }
 
 export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {

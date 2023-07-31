@@ -11,16 +11,16 @@ interface InviteRowProps {
   /**
    * The invite represented by this row.
    */
-  invite: OrganizationInvite;
+  readonly invite: OrganizationInvite;
 
-  mayInvite: boolean;
+  readonly mayInvite: boolean;
 
   /**
    * This is called when the invite has been deleted.
    *
    * @param invite The invite that has been deleted.
    */
-  onDeleted: (invite: OrganizationInvite) => void;
+  readonly onDeleted: (invite: OrganizationInvite) => void;
 }
 
 /**

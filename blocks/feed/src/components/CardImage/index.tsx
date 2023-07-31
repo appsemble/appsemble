@@ -7,17 +7,17 @@ interface CardImageProps {
   /**
    * The alt text for the image.
    */
-  alt: string;
+  readonly alt: string;
 
   /**
    * The class name that is applied to the figure.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The image source.
    */
-  src: string;
+  readonly src: string;
 }
 
 export function CardImage({ alt, className, src }: CardImageProps): VNode {

@@ -6,12 +6,12 @@ export interface HighlightedCodeProps {
   /**
    * A class name to add to the `pre` element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The code to render.
    */
-  children: string;
+  readonly children: string;
 }
 
 const languageRegex = /\blanguage-(\w+)/;

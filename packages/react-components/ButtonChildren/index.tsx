@@ -8,29 +8,29 @@ interface ButtonChildrenProps {
   /**
    * Children to render
    */
-  children?: ReactNode;
+  readonly children?: ReactNode;
 
   /**
    * A Font Awesome icon name to render left of the button text.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * The position of the icon.
    *
    * @default 'left'
    */
-  iconPosition?: 'left' | 'right';
+  readonly iconPosition?: 'left' | 'right';
 
   /**
    * The size that should be used for the button’s icons.
    */
-  iconSize?: Exclude<BulmaSize, 'normal'>;
+  readonly iconSize?: Exclude<BulmaSize, 'normal'>;
 
   /**
    * The size modifier that should be used for the button’s icons.
    */
-  iconSizeModifier?: '2x' | '3x' | 'lg';
+  readonly iconSizeModifier?: '2x' | '3x' | 'lg';
 }
 
 /**

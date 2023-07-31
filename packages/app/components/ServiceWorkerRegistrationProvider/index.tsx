@@ -15,8 +15,8 @@ import { type Permission, type ServiceWorkerRegistrationContextType } from '../.
 import { apiUrl, appId, vapidPublicKey } from '../../utils/settings.js';
 
 interface ServiceWorkerRegistrationProviderProps {
-  children: ReactNode;
-  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+  readonly children: ReactNode;
+  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
 
 const Context = createContext<ServiceWorkerRegistrationContextType>(null);

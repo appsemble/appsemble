@@ -5,11 +5,11 @@ import { useCallback } from 'preact/hooks';
 import { Button, useValuePicker } from '../index.js';
 
 interface ButtonOptionProps extends Omit<ComponentProps<typeof Button>, 'value'> {
-  activeClassName: string;
+  readonly activeClassName: string;
 
-  multiple?: boolean;
+  readonly multiple?: boolean;
 
-  value: unknown;
+  readonly value: unknown;
 }
 
 export function ButtonOption({

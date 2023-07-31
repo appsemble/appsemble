@@ -8,7 +8,7 @@ import { BlockList } from '../BlockList/index.js';
 
 interface PageDialogProps
   extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks' | 'prefix' | 'prefixIndex'> {
-  dialog: ShowDialogParams;
+  readonly dialog: ShowDialogParams;
 }
 
 /**

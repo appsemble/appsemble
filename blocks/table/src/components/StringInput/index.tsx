@@ -6,22 +6,22 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { type StringField } from '../../../block.js';
 
 interface StringFieldProps {
-  field: StringField;
+  readonly field: StringField;
 
   /**
    * The data to display.
    */
-  item: unknown;
+  readonly item: unknown;
 
   /**
    * The index of the row that was clicked.
    */
-  index: number;
+  readonly index: number;
 
   /**
    * The index of the sub row that was clicked.
    */
-  repeatedIndex: number;
+  readonly repeatedIndex: number;
 }
 
 export function StringInput({ field, index, item, repeatedIndex }: StringFieldProps): VNode {

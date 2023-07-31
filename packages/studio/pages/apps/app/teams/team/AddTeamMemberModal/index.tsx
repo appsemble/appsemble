@@ -16,9 +16,9 @@ import { type Member, type TeamMember } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 
 interface AddTeamMemberModalProps {
-  teamMembers: TeamMember[];
-  toggle: Toggle;
-  onAdd: (id: string) => Promise<void>;
+  readonly teamMembers: TeamMember[];
+  readonly toggle: Toggle;
+  readonly onAdd: (id: string) => Promise<void>;
 }
 
 export function AddTeamMemberModal({

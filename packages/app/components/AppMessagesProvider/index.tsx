@@ -29,7 +29,7 @@ import { apiUrl, appId, languages } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 
 interface IntlMessagesProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface AppMessageContext {

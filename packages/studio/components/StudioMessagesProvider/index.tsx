@@ -8,7 +8,7 @@ import { Navigate, useParams } from 'react-router-dom';
 import { supportedLanguages } from '../../utils/constants.js';
 
 interface IntlMessagesProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface Messages {

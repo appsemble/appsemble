@@ -48,8 +48,8 @@ export function usePrompt(message: string, when = true): void {
 }
 
 interface PromptProps {
-  message: string;
-  when?: boolean;
+  readonly message: string;
+  readonly when?: boolean;
 }
 
 export function Prompt({ message, when }: PromptProps): ReactElement {

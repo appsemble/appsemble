@@ -8,12 +8,12 @@ interface DiagnosticProps {
   /**
    * The diagnostic marker to render.
    */
-  marker: editor.IMarker;
+  readonly marker: editor.IMarker;
 
   /**
    * The Monaco editor instance to which the diagnostic applies.
    */
-  monaco: editor.IStandaloneCodeEditor;
+  readonly monaco: editor.IStandaloneCodeEditor;
 }
 
 /**

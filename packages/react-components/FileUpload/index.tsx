@@ -13,12 +13,12 @@ type FileUploadProps = Omit<
   keyof SharedFormComponentProps | 'onChange' | 'value'
 > &
   SharedFormComponentProps & {
-    fileButtonLabel?: ReactNode;
-    fileLabel?: ReactNode;
-    preview?: ReactNode;
-    onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
-    formComponentClassName?: string;
-    value?: File;
+    readonly fileButtonLabel?: ReactNode;
+    readonly fileLabel?: ReactNode;
+    readonly preview?: ReactNode;
+    readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
+    readonly formComponentClassName?: string;
+    readonly value?: File;
   };
 
 export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(

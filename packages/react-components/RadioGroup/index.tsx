@@ -9,27 +9,27 @@ import { FormComponent, ValuePickerProvider } from '../index.js';
 
 interface RadioGroupProps
   extends Omit<ComponentPropsWithoutRef<'input'>, 'label' | 'onChange' | 'value'> {
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An error message to render.
    */
-  error?: ReactNode;
+  readonly error?: ReactNode;
 
   /**
    * The label to display above the checkbox.
    */
-  label?: ReactNode;
+  readonly label?: ReactNode;
 
   /**
    * This is fired when the input value has changed.
    */
-  onChange: (event: ChangeEvent<HTMLInputElement>, value: any) => void;
+  readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: any) => void;
 
   /**
    * The current value.
    */
-  value: any;
+  readonly value: any;
 }
 
 export function RadioGroup({

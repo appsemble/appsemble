@@ -9,27 +9,27 @@ interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
   /**
    * A custom class name to add to the button.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The bulma color to apply to the button.
    */
-  color?: BulmaColor;
+  readonly color?: BulmaColor;
 
   /**
    * A Font Awesome icon name to render left of the button text.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * Set to true to invert the colors.
    */
-  inverted?: boolean;
+  readonly inverted?: boolean;
 
   /**
    * Set to true to indicate the button is in a loading state.
    */
-  loading?: boolean;
+  readonly loading?: boolean;
 }
 
 /**

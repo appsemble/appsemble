@@ -12,11 +12,11 @@ interface AssetRowProps {
   /**
    * The asset to render a row fow.
    */
-  asset: Asset;
+  readonly asset: Asset;
 
-  onSelect: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+  readonly onSelect: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 
-  isSelected: boolean;
+  readonly isSelected: boolean;
 }
 
 /**

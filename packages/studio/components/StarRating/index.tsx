@@ -9,33 +9,33 @@ export interface StarRatingProps {
   /**
    * An optional additional class name to add to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * An optional rating count.
    *
    * This will be rendered wrapped in brackets after the stars.
    */
-  count?: number;
+  readonly count?: number;
 
   /**
    * The name for the buttons.
    *
    * This is useful if the component is used as a form element.
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The change event that is triggered if a star is clicked.
    *
    * Specifying this makes the component interactive.
    */
-  onChange?: (event: MouseEvent<HTMLButtonElement>, value: number) => void;
+  readonly onChange?: (event: MouseEvent<HTMLButtonElement>, value: number) => void;
 
   /**
    * The current rating value.
    */
-  value?: number;
+  readonly value?: number;
 }
 
 /**

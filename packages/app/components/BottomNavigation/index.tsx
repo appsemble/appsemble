@@ -15,7 +15,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface BottomNavigationProps {
-  pages: PageDefinition[];
+  readonly pages: PageDefinition[];
 }
 
 /**

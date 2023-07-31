@@ -8,8 +8,8 @@ import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
 
 interface AppScreenshotProps {
-  url: string;
-  mayManageScreenshots: boolean;
+  readonly url: string;
+  readonly mayManageScreenshots: boolean;
 }
 export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactElement {
   const { app, setApp } = useApp();

@@ -12,7 +12,7 @@ const keyPlaceholder = `-----BEGIN PRIVATE KEY-----
 -----END PRIVATE KEY-----`;
 
 interface ClientCertificateFieldsetProps {
-  disabled: boolean;
+  readonly disabled: boolean;
 }
 
 export function ClientCertificateFieldset({

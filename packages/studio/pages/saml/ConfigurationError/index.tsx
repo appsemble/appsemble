@@ -5,7 +5,7 @@ import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 import { messages } from './messages.js';
 
 interface ConfigurationErrorProps {
-  message: MessageDescriptor;
+  readonly message: MessageDescriptor;
 }
 
 export function ConfigurationError({ message }: ConfigurationErrorProps): ReactElement {

@@ -30,17 +30,17 @@ interface MonacoEditorProps {
   /**
    * A class name to apply to the monaco editor element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The current value of the editor.
    */
-  value?: string;
+  readonly value?: string;
 
   /**
    * The language of the editor.
    */
-  language: string;
+  readonly language: string;
 
   /**
    * This is called whenever the value of the editor changes.
@@ -49,7 +49,7 @@ interface MonacoEditorProps {
    * @param value The new value.
    * @param model The monaco model which changed.
    */
-  onChange?: (
+  readonly onChange?: (
     event: editor.IModelContentChangedEvent,
     value: string,
     model: editor.ITextModel,
@@ -58,22 +58,22 @@ interface MonacoEditorProps {
   /**
    * Called when Ctrl-S is pressed.
    */
-  onSave?: () => void;
+  readonly onSave?: () => void;
 
   /**
    * Whether or not the editor is on read-only mode.
    */
-  readOnly?: boolean;
+  readonly readOnly?: boolean;
 
   /**
    * If true, render editor diagnostics in a pane below the editor.
    */
-  showDiagnostics?: boolean;
+  readonly showDiagnostics?: boolean;
 
   /**
    * The filename of the resource.
    */
-  uri: string;
+  readonly uri: string;
 }
 
 /**

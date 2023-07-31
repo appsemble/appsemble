@@ -21,14 +21,14 @@ interface JSONFieldProps
    * @param event The original event.
    * @param value The new value.
    */
-  onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
+  readonly onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: any) => void;
 
   /**
    * The current value to render.
    *
    * If this changes and doesn’t match the old value, a stringified value of this rendered.
    */
-  value?: any;
+  readonly value?: any;
 }
 
 /**

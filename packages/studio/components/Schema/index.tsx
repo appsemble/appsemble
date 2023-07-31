@@ -21,37 +21,37 @@ export interface SchemaProps {
   /**
    * If this is true, anchors will be rendered for all properties.
    */
-  anchors?: boolean;
+  readonly anchors?: boolean;
 
   /**
    * If specified, use this prefix for the generated title ID.
    */
-  idPrefix?: string;
+  readonly idPrefix?: string;
 
   /**
    * The JSON schema to render
    */
-  schema: SchemaType;
+  readonly schema: SchemaType;
 
   /**
    * The name of the property to render for nested a nested schema.
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * Whether or not the schema is nested.
    */
-  nested?: boolean;
+  readonly nested?: boolean;
 
   /**
    * A component used to render found JSON references.
    */
-  renderRef?: FC<RenderRefProps>;
+  readonly renderRef?: FC<RenderRefProps>;
 
   /**
    * Whether or not the schema is required by its parent schema.
    */
-  required?: boolean;
+  readonly required?: boolean;
 }
 
 /**

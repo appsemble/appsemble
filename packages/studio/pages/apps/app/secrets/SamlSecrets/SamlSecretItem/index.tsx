@@ -16,17 +16,17 @@ interface SamlSecretItemProps {
    * @param newProvider The new provider values.
    * @param oldProvider The old provider values to replace..
    */
-  onUpdated: (newProvider: AppSamlSecret, oldProvider: AppSamlSecret) => void;
+  readonly onUpdated: (newProvider: AppSamlSecret, oldProvider: AppSamlSecret) => void;
 
   /**
    * The current provider values.
    */
-  secret: AppSamlSecret;
+  readonly secret: AppSamlSecret;
 
   /**
    * Called when secret has been deleted successfully.
    */
-  onDeleted: (secret: AppSamlSecret) => void;
+  readonly onDeleted: (secret: AppSamlSecret) => void;
 }
 
 /**

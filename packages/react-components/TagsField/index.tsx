@@ -7,9 +7,9 @@ import { InputField, useCombinedRefs } from '../index.js';
 
 type TagsFieldProps = Omit<ComponentPropsWithoutRef<typeof InputField>, 'onChange' | 'value'> &
   Pick<BulmaTagsInputOptions, 'delimiter'> & {
-    onChange: (event: NamedEvent<HTMLInputElement>, value: string[]) => void;
+    readonly onChange: (event: NamedEvent<HTMLInputElement>, value: string[]) => void;
 
-    value?: string[];
+    readonly value?: string[];
   };
 
 export const TagsField = forwardRef<HTMLInputElement, TagsFieldProps>(

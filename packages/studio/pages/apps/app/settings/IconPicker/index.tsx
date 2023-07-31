@@ -4,10 +4,10 @@ import { type ChangeEvent, type ReactElement, type ReactNode, useCallback } from
 import styles from './index.module.css';
 
 interface IconPickerProps {
-  children: ReactNode;
-  name: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
-  disabled?: boolean;
+  readonly children: ReactNode;
+  readonly name: string;
+  readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: File) => void;
+  readonly disabled?: boolean;
 }
 
 export function IconPicker({ children, disabled, name, onChange }: IconPickerProps): ReactElement {

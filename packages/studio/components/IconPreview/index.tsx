@@ -10,7 +10,7 @@ interface IconPreviewProps {
   /**
    * The organization to render the icon preview for.
    */
-  organization: Organization;
+  readonly organization: Organization;
 }
 
 export function IconPreview({ organization }: IconPreviewProps): ReactElement {

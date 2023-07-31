@@ -5,7 +5,7 @@ interface FormProps extends Omit<ComponentProps<'form'>, 'noValidate'> {
   /**
    * The submit event handler for the form.
    */
-  onSubmit: (event: Event) => void;
+  readonly onSubmit: (event: Event) => void;
 }
 
 /**

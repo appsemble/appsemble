@@ -9,7 +9,7 @@ interface TabContentProps extends ComponentPropsWithoutRef<typeof BlockList> {
    *
    * This will be set in the document title.
    */
-  name: string;
+  readonly name: string;
 }
 
 /**

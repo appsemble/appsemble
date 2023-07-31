@@ -10,7 +10,7 @@ interface FormProps extends Omit<ComponentPropsWithoutRef<'form'>, 'noValidate'>
   /**
    * The submit event handler for the form.
    */
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  readonly onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
 /**

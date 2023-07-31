@@ -9,7 +9,7 @@ interface ResendEmailButtonProps extends ComponentProps<typeof Button> {
   /**
    * The email address to send the email verification to.
    */
-  email: string;
+  readonly email: string;
 }
 
 /**

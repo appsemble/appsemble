@@ -9,7 +9,7 @@ interface PicturePreviewProps {
   /**
    * The URL to the current picture.
    */
-  pictureUrl: string;
+  readonly pictureUrl: string;
 }
 
 export function PicturePreview({ pictureUrl }: PicturePreviewProps): ReactElement {

@@ -4,8 +4,8 @@ import { type ElementType, type ReactElement } from 'react';
 import styles from './index.module.css';
 
 interface LoaderProps {
-  className?: string;
-  component?: ElementType;
+  readonly className?: string;
+  readonly component?: ElementType;
 }
 
 export function Loader({

@@ -5,19 +5,19 @@ interface PaginationNumbersProps {
   /**
    * The maximum number of pages.
    */
-  maxPages: number;
+  readonly maxPages: number;
 
   /**
    * The current page.
    */
-  page: number;
+  readonly page: number;
 
   /**
    * The callback to invoke when a page is selected.
    *
    * @param page The page being selected.
    */
-  onPageChange: (page: number) => void;
+  readonly onPageChange: (page: number) => void;
 }
 
 /**

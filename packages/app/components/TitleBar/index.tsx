@@ -8,8 +8,8 @@ import { ProfileDropdown } from '../ProfileDropdown/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface AppBarProps {
-  children?: ReactChild;
-  hideName?: boolean;
+  readonly children?: ReactChild;
+  readonly hideName?: boolean;
 }
 
 /**

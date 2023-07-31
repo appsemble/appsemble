@@ -5,17 +5,17 @@ interface SubtitleProps {
   /**
    * The content to render inside the header element.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An additional class name to add.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The locale of the subtitle content.
    */
-  lang?: string;
+  readonly lang?: string;
 
   /**
    * The header level.
@@ -24,14 +24,14 @@ interface SubtitleProps {
    *
    * By default this is determined from the specified size.
    */
-  level?: 3 | 4 | 5 | 6;
+  readonly level?: 3 | 4 | 5 | 6;
 
   /**
    * The size of the header.
    *
    * @default 5
    */
-  size?: 4 | 5 | 6;
+  readonly size?: 4 | 5 | 6;
 }
 
 /**

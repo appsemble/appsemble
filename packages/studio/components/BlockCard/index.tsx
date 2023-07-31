@@ -10,7 +10,7 @@ interface BlockCardProps {
   /**
    * The block to display.
    */
-  block: BlockManifest;
+  readonly block: BlockManifest;
 }
 
 /**

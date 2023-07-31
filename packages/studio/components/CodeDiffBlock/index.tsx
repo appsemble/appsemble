@@ -5,22 +5,22 @@ interface CodeBlockProps {
   /**
    * A class name to add to the `div` element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The code to use as the original code before modification.
    */
-  original: string;
+  readonly original: string;
 
   /**
    * Modified version of the code.
    */
-  modified: string;
+  readonly modified: string;
 
   /**
    * The language to use for highlighting the code.
    */
-  language: string;
+  readonly language: string;
 }
 
 /**
