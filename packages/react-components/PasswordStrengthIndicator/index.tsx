@@ -13,8 +13,8 @@ interface PartialResult {
 }
 
 interface PasswordStrengthIndicatorProps {
-  name: string;
-  minLength: number;
+  readonly name: string;
+  readonly minLength: number;
 }
 
 const emptyResult: PartialResult = {

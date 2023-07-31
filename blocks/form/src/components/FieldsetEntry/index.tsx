@@ -8,7 +8,7 @@ interface FieldsetEntryProps extends InputProps<Values, Fieldset> {
   /**
    * If defined, the index is used in the change `onChange` handler instead of the field name.
    */
-  index?: number;
+  readonly index?: number;
 }
 
 /**

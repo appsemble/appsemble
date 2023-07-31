@@ -8,12 +8,12 @@ interface ItemRowProps {
   /**
    * The item to display a row of.
    */
-  item: any;
+  readonly item: any;
 
   /**
    * The index of the item being rendered.
    */
-  index: number;
+  readonly index: number;
 }
 
 /**

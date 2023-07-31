@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.css';
 
 interface ListButtonProps {
-  alt?: string;
-  description?: ReactNode;
-  icon?: IconName;
-  image?: string;
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  subtitle?: ReactNode;
-  title?: ReactNode;
-  to?: string;
+  readonly alt?: string;
+  readonly description?: ReactNode;
+  readonly icon?: IconName;
+  readonly image?: string;
+  readonly onClick?: MouseEventHandler<HTMLButtonElement>;
+  readonly subtitle?: ReactNode;
+  readonly title?: ReactNode;
+  readonly to?: string;
 }
 
 export function ListButton({

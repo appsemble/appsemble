@@ -9,36 +9,36 @@ export interface PaginationNavigatorProps {
   /**
    * An array of amounts of rows to display per page. Infinity represents all rows.
    */
-  rowsPerPageOptions: number[];
+  readonly rowsPerPageOptions: number[];
 
   /**
    * The amount of rows to display per page.
    */
-  rowsPerPage: number;
+  readonly rowsPerPage: number;
 
   /**
    * The maximum number of entries.
    */
-  count: number;
+  readonly count: number;
 
   /**
    * The current page to display.
    */
-  page: number;
+  readonly page: number;
 
   /**
    * The callback to invoke when the page changes.
    *
    * @param page
    */
-  onPageChange: (page: number) => void;
+  readonly onPageChange: (page: number) => void;
 
   /**
    * The callback to invoke when the amount of rows per page changes.
    *
    * @param rowsPerPage
    */
-  onRowsPerPageChange: (rowsPerPage: number) => void;
+  readonly onRowsPerPageChange: (rowsPerPage: number) => void;
 }
 
 /**

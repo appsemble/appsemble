@@ -12,12 +12,12 @@ interface AppPreviewProps {
   /**
    * The app to render.
    */
-  app: App;
+  readonly app: App;
 
   /**
    * A ref to the iframe. This allows to update the app.
    */
-  iframeRef: Ref<HTMLIFrameElement>;
+  readonly iframeRef: Ref<HTMLIFrameElement>;
 }
 
 /**

@@ -15,9 +15,9 @@ import { Button, Form, FormButtons } from '../index.js';
 const Context = createContext<StepperProps>(null);
 
 interface StepperProps {
-  children: ReactElement | ReactElement[];
-  onFinish: () => void;
-  onCancel: () => void;
+  readonly children: ReactElement | ReactElement[];
+  readonly onFinish: () => void;
+  readonly onCancel: () => void;
 }
 
 export function Stepper({ children, onCancel, onFinish }: StepperProps): ReactElement {

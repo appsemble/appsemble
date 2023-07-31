@@ -4,8 +4,8 @@ import { type JSX, type VNode } from 'preact';
 import { type Item } from '../../../block.js';
 
 type ListItemWrapperProps = {
-  actions: BootstrapParams['actions'];
-  item: Item;
+  readonly actions: BootstrapParams['actions'];
+  readonly item: Item;
 } & (JSX.HTMLAttributes<HTMLAnchorElement> | JSX.HTMLAttributes<HTMLButtonElement>);
 
 export function ListItemWrapper({

@@ -12,21 +12,21 @@ interface TitleProps extends ComponentPropsWithoutRef<HeadingComponentType> {
   /**
    * If the title has a title and `anchor` is true, an anchor will be rendered.
    */
-  anchor?: boolean;
+  readonly anchor?: boolean;
 
   /**
    * The header level.
    *
    * By default this is determined from the specified size.
    */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  readonly level?: 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
    * The size of the header.
    *
    * @default 3
    */
-  size?: 3 | 4 | 5 | 6;
+  readonly size?: 3 | 4 | 5 | 6;
 }
 
 /**

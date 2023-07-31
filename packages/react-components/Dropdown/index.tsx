@@ -10,29 +10,29 @@ interface DropdownProps {
    *
    * Typically these are nodes that have the `dropdown-item` or `dropdown-divider` class.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An optional class name to add to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The label to render on the menu toggle button.
    */
-  label: ReactNode;
+  readonly label: ReactNode;
 
   /**
    * The icon to display next to the label.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * The icon used for the dropdown icon next to the label.
    *
    * @default 'angle-down'
    */
-  dropdownIcon?: IconName;
+  readonly dropdownIcon?: IconName;
 }
 
 /**

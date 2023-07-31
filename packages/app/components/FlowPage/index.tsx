@@ -29,18 +29,18 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 import { useUser } from '../UserProvider/index.js';
 
 interface FlowPageProps {
-  data: unknown;
-  definition: AppDefinition;
-  ee: EventEmitter;
-  page: FlowPageDefinition | LoopPageDefinition;
-  appStorage: AppStorage;
-  prefix: string;
-  prefixIndex: string;
-  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
-  setData: (data: unknown) => void;
-  showDialog: ShowDialogAction;
-  showShareDialog: ShowShareDialog;
-  stepRef: MutableRefObject<unknown>;
+  readonly data: unknown;
+  readonly definition: AppDefinition;
+  readonly ee: EventEmitter;
+  readonly page: FlowPageDefinition | LoopPageDefinition;
+  readonly appStorage: AppStorage;
+  readonly prefix: string;
+  readonly prefixIndex: string;
+  readonly remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
+  readonly setData: (data: unknown) => void;
+  readonly showDialog: ShowDialogAction;
+  readonly showShareDialog: ShowShareDialog;
+  readonly stepRef: MutableRefObject<unknown>;
 }
 
 export function FlowPage({

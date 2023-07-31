@@ -23,7 +23,7 @@ interface AppDefinitionContext {
 }
 
 interface AppDefinitionProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 function replaceStyle(id: string, style: string): void {

@@ -8,8 +8,8 @@ import { checkRole } from '../../utils/checkRole.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface ProtectedRouteProps {
-  permission?: Permission;
-  organization?: Organization;
+  readonly permission?: Permission;
+  readonly organization?: Organization;
 }
 
 export function ProtectedRoute({ organization, permission }: ProtectedRouteProps): ReactElement {

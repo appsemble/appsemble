@@ -13,32 +13,32 @@ interface CodeBlockProps {
   /**
    * A class name to add to the `pre` element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * If specified, a button is added for copying the code.
    */
-  copy?: boolean;
+  readonly copy?: boolean;
 
   /**
    * The code to render.
    */
-  children: ReactElement<HighlightedCodeProps> | string;
+  readonly children: ReactElement<HighlightedCodeProps> | string;
 
   /**
    * If specified, a button is added for downloading the code using the given filename.
    */
-  filename?: string;
+  readonly filename?: string;
 
   /**
    * Indent the code by this number of spaces.
    */
-  indent?: number;
+  readonly indent?: number;
 
   /**
    * The language to use for highlighting the code.
    */
-  language?: string;
+  readonly language?: string;
 }
 
 /**

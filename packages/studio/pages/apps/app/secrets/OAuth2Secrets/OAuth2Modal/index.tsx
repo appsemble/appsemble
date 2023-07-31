@@ -29,22 +29,22 @@ interface AppSecretCardProps {
    * @param newProvider The new provider values.
    * @param oldProvider The old provider values to replace..
    */
-  onSubmit: (values: AppOAuth2Secret) => Promise<void>;
+  readonly onSubmit: (values: AppOAuth2Secret) => Promise<void>;
 
   /**
    * The current provider values.
    */
-  secret: AppOAuth2Secret;
+  readonly secret: AppOAuth2Secret;
 
   /**
    * The toggle used for managing the modal.
    */
-  toggle: Toggle;
+  readonly toggle: Toggle;
 
   /**
    * Called when the secret has been updated successfully.
    */
-  onDeleted?: (secret: AppOAuth2Secret) => void;
+  readonly onDeleted?: (secret: AppOAuth2Secret) => void;
 }
 
 /**

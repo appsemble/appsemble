@@ -19,22 +19,22 @@ interface MarkdownContentProps {
   /**
    * An optional classname to add to the wrapper component.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The markdown content to render.
    */
-  content: string;
+  readonly content: string;
 
   /**
    * The locale of the markdown content.
    */
-  lang?: string;
+  readonly lang?: string;
 }
 
 interface PreProps {
-  className?: string;
-  children: string;
+  readonly className?: string;
+  readonly children: string;
 }
 
 function Pre(props: PreProps): ReactElement {

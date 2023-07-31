@@ -5,12 +5,12 @@ interface MDXAnchorProps {
   /**
    * The content of the link.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * The Markdown link reference that is being rendered.
    */
-  href: string;
+  readonly href: string;
 }
 
 /**

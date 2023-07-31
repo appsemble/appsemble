@@ -6,7 +6,7 @@ interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
   /**
    * If specified, the link is only considered active if it’s an exact match.
    */
-  exact?: boolean;
+  readonly exact?: boolean;
 }
 
 /**

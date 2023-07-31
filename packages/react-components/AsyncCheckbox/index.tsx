@@ -12,7 +12,7 @@ interface AsyncCheckboxProps extends ComponentPropsWithoutRef<typeof Checkbox> {
   /**
    * This is fired when the input value has changed.
    */
-  onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => Promise<void>;
+  readonly onChange: (event: ChangeEvent<HTMLInputElement>, value: boolean) => Promise<void>;
 }
 
 /**

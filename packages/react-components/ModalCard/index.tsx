@@ -16,57 +16,57 @@ interface ModalCardProps<T extends ElementType> {
   /**
    * The child elements to render on the modal.
    */
-  children?: ReactNode;
+  readonly children?: ReactNode;
 
   /**
    * Whether the user is allowed to click on the close button or outside of the modal to close it.
    */
-  closable?: boolean;
+  readonly closable?: boolean;
 
   /**
    * The aria label to apply on the close button.
    */
-  closeButtonLabel?: string;
+  readonly closeButtonLabel?: string;
 
   /**
    * The React component to render as the root for the modal.
    */
-  component?: T;
+  readonly component?: T;
 
   /**
    * Wether or not the modal is currently active.
    */
-  isActive: boolean;
+  readonly isActive: boolean;
 
   /**
    * A function that will be called when the user closes the modal.
    */
-  onClose?: (event: KeyboardEvent | MouseEvent) => void;
+  readonly onClose?: (event: KeyboardEvent | MouseEvent) => void;
 
   /**
    * The title that is displayed at the top of the modal.
    */
-  title?: ReactNode;
+  readonly title?: ReactNode;
 
   /**
    * The CSS class applied to the card.
    */
-  cardClassName?: string;
+  readonly cardClassName?: string;
 
   /**
    * The CSS class applied to the card.
    */
-  wrapperClassName?: string;
+  readonly wrapperClassName?: string;
 
   /**
    * The CSS class applied to the body.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The footer to render on the modal.
    */
-  footer?: ReactNode;
+  readonly footer?: ReactNode;
 }
 
 /**

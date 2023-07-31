@@ -14,7 +14,7 @@ import { useAppMessages } from '../AppMessagesProvider/index.js';
 import { type BlockList } from '../BlockList/index.js';
 
 interface TabsPageProps extends Omit<ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
-  page: TabsPageDefinition;
+  readonly page: TabsPageDefinition;
 }
 
 export function TabsPage({

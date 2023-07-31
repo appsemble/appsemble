@@ -13,7 +13,7 @@ import { ServiceWorkerRegistrationProvider } from '../ServiceWorkerRegistrationP
 import { UserProvider } from '../UserProvider/index.js';
 
 interface AppProps {
-  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+  readonly serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
 
 /**

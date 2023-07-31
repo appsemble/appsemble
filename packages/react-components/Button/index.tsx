@@ -9,33 +9,33 @@ type ButtonProps<C extends ElementType = 'button'> = ComponentPropsWithoutRef<C>
     /**
      * The bulma color to apply to the button.
      */
-    color?: BulmaColor;
+    readonly color?: BulmaColor;
 
     /**
      * The component type to use. This is specifically useful to create links that look like
      * buttons.
      */
-    component?: C;
+    readonly component?: C;
 
     /**
      * Set to true to invert the colors.
      */
-    inverted?: boolean;
+    readonly inverted?: boolean;
 
     /**
      * Set to true to indicate the button is in a loading state.
      */
-    loading?: boolean;
+    readonly loading?: boolean;
 
     /**
      * The size that should be used for the button’s icons.
      */
-    iconSize?: Exclude<BulmaSize, 'normal'>;
+    readonly iconSize?: Exclude<BulmaSize, 'normal'>;
 
     /**
      * The size modifier that should be used for the button’s icons.
      */
-    iconSizeModifier?: '2x' | '3x' | 'lg';
+    readonly iconSizeModifier?: '2x' | '3x' | 'lg';
   };
 
 /**

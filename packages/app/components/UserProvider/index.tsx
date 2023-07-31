@@ -61,7 +61,7 @@ interface UserContext extends LoginState {
 }
 
 interface UserProviderProps {
-  children: ReactElement;
+  readonly children: ReactElement;
 }
 
 /**

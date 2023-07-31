@@ -12,22 +12,22 @@ interface NavbarDropdownProps {
    *
    * Typically these are nodes that have the `dropdown-item` or `dropdown-divider` class.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An optional class name to add to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The label to render on the menu toggle button.
    */
-  label: ReactNode;
+  readonly label: ReactNode;
 
   /**
    * The color applied to the toggle button.
    */
-  color?: BulmaColor;
+  readonly color?: BulmaColor;
 }
 
 export function NavbarDropdown({

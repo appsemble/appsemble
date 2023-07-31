@@ -20,7 +20,7 @@ export interface RegistrationFormValues {
 }
 
 interface RegisterProps {
-  onRegister: (values: RegistrationFormValues) => Promise<void>;
+  readonly onRegister: (values: RegistrationFormValues) => Promise<void>;
 }
 
 export function Register({ onRegister }: RegisterProps): ReactElement {

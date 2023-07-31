@@ -11,12 +11,12 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 
 interface AnnotationsTableProps {
-  disabled?: boolean;
-  error?: ReactNode;
-  name?: string;
-  value?: [string, string][];
-  onChange?: (event: any, value: [string, string][]) => void;
-  children?: ReactNode;
+  readonly disabled?: boolean;
+  readonly error?: ReactNode;
+  readonly name?: string;
+  readonly value?: [string, string][];
+  readonly onChange?: (event: any, value: [string, string][]) => void;
+  readonly children?: ReactNode;
 }
 
 export const AnnotationsTable = forwardRef<never, AnnotationsTableProps>(

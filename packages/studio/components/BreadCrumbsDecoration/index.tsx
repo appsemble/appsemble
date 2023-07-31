@@ -15,7 +15,7 @@ type BreadCrumbsDecorationContext = [ReactNode, Dispatch<SetStateAction<ReactNod
 const Context = createContext<BreadCrumbsDecorationContext>([null, noop]);
 
 export interface BreadCrumbsDecorationProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export function BreadCrumbsDecorationProvider({

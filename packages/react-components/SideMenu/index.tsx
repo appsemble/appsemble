@@ -38,17 +38,17 @@ interface SideMenuProviderProps {
   /**
    * The section of the side menu that’s always visible.
    */
-  base: ReactNode;
+  readonly base: ReactNode;
 
   /**
    * Content to render at the bottom of the side menu.
    */
-  bottom: ReactNode;
+  readonly bottom: ReactNode;
 
   /**
    * The main content to wrap.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**

@@ -14,61 +14,61 @@ export interface SharedFormComponentProps {
   /**
    * A Bulma addon to display left of the field.
    */
-  addonLeft?: ReactNode;
+  readonly addonLeft?: ReactNode;
 
   /**
    * A Bulma addon to display right of the field.
    */
-  addonRight?: ReactNode;
+  readonly addonRight?: ReactNode;
 
   /**
    * An additional control node to render right of the form field.
    */
-  control?: ReactElement;
+  readonly control?: ReactElement;
 
   /**
    * An error message to render. This will also make the help text red.
    */
-  error?: ReactNode;
+  readonly error?: ReactNode;
 
   /**
    * A help message to render.
    */
-  help?: ReactNode;
+  readonly help?: ReactNode;
 
   /**
    * A fontawesome icon to render on the left side of the input.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * The label element to render.
    */
-  label?: ReactNode;
+  readonly label?: ReactNode;
 }
 
 export interface FormComponentProps extends SharedFormComponentProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * A class name to pass to the field element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
    */
-  id?: string;
+  readonly id?: string;
 
   /**
    * An extra message to display right of the help text.
    */
-  helpExtra?: ReactNode;
+  readonly helpExtra?: ReactNode;
 
   /**
    * Whether or not the input is required.
    */
-  required?: boolean;
+  readonly required?: boolean;
 }
 
 /**

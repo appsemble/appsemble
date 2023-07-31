@@ -32,12 +32,12 @@ type SimpleFormFieldProps<C extends ComponentType> = Omit<
   ComponentPropsWithoutRef<C>,
   keyof InputComponentProps
 > & {
-  component?: C;
-  disabled?: boolean;
-  name: string;
-  onChange?: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
-  preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
-  validityMessages?: ValidityMessages;
+  readonly component?: C;
+  readonly disabled?: boolean;
+  readonly name: string;
+  readonly onChange?: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
+  readonly preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
+  readonly validityMessages?: ValidityMessages;
 };
 
 export function SimpleFormField<C extends ComponentType = typeof InputField>({

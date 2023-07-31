@@ -30,42 +30,42 @@ interface ResourceRowProps {
   /**
    * Whether or not the dropdown for actions should be up.
    */
-  dropdownUp: boolean;
+  readonly dropdownUp: boolean;
 
   /**
    * The resource to display the data of.
    */
-  resource: Resource;
+  readonly resource: Resource;
 
   /**
    * The callback for when an existing resource is edited.
    */
-  onEdit: (resource: Resource) => void;
+  readonly onEdit: (resource: Resource) => void;
 
   /**
    * The callback for when an existing resource is deleted.
    */
-  onDelete: (id: number) => void;
+  readonly onDelete: (id: number) => void;
 
   /**
    * The JSON schema of the resource.
    */
-  schema: OpenAPIV3.SchemaObject;
+  readonly schema: OpenAPIV3.SchemaObject;
 
   /**
    * Whether the checkbox for this resource row is selected.
    */
-  selected: boolean;
+  readonly selected: boolean;
 
   /**
    * A callback function that is triggered when the checkbox is changed.
    */
-  onSelected: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+  readonly onSelected: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 
   /**
    * The list of properties to hide.
    */
-  filter: Set<string>;
+  readonly filter: Set<string>;
 }
 
 const filteredKeys = new Set(['id', '$author']);

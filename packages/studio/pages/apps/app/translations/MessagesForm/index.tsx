@@ -23,17 +23,17 @@ interface MessagesFormProps {
   /**
    * The language ID to eit messages for.
    */
-  languageId: string;
+  readonly languageId: string;
 
   /**
    * The old app messages.
    */
-  appMessages: AppMessages;
+  readonly appMessages: AppMessages;
 
   /**
    * The default app messages without any modifications by the app.
    */
-  defaultAppMessages: AppMessages;
+  readonly defaultAppMessages: AppMessages;
 }
 
 /**

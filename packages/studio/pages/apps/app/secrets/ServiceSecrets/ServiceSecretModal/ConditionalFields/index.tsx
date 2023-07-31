@@ -9,8 +9,8 @@ import { HttpBasicFieldset } from './HttpBasicFieldset/index.js';
 import { QueryParameterFieldset } from './QueryParameterFieldset/index.js';
 
 interface SwitchFieldProps {
-  disabled: boolean;
-  method: ServiceAuthenticationMethod;
+  readonly disabled: boolean;
+  readonly method: ServiceAuthenticationMethod;
 }
 
 export function SwitchField({ disabled, method }: SwitchFieldProps): ReactElement {

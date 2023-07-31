@@ -13,11 +13,11 @@ import { Form } from '../index.js';
 
 interface SimpleFormProps<T>
   extends Omit<ComponentPropsWithoutRef<typeof Form>, 'onSubmit' | 'ref'> {
-  children: ReactNode;
-  defaultValues: T;
-  onSubmit: (values: T) => void;
-  preprocess?: (name: string, newValues: T, oldValues: T) => T;
-  resetOnSuccess?: boolean;
+  readonly children: ReactNode;
+  readonly defaultValues: T;
+  readonly onSubmit: (values: T) => void;
+  readonly preprocess?: (name: string, newValues: T, oldValues: T) => T;
+  readonly resetOnSuccess?: boolean;
 }
 
 type FormErrors = Record<string, ReactNode>;

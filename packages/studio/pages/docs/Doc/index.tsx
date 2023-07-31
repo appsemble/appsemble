@@ -5,12 +5,12 @@ interface DocProps {
   /**
    * The MDX component to render.
    */
-  component: ComponentType;
+  readonly component: ComponentType;
 
   /**
    * The title to display.
    */
-  title: string;
+  readonly title: string;
 }
 
 /**

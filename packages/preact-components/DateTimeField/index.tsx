@@ -30,20 +30,20 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
     /**
      * Whether the confirm button should be shown.
      */
-    confirm?: boolean;
+    readonly confirm?: boolean;
 
     /**
      * The text shown on the confirm button.
      *
      * @default 'Confirm'
      */
-    confirmLabel?: string;
+    readonly confirmLabel?: string;
 
     /**
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
      */
-    iso?: boolean;
+    readonly iso?: boolean;
 
     /**
      * The change handler.
@@ -52,17 +52,17 @@ type DateTimeFieldProps = Omit<ComponentProps<typeof Input>, 'error'> &
      *   element, to emulate an event.
      * @param value The value that was selected.
      */
-    onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
+    readonly onChange?: (event: JSX.TargetedEvent<HTMLInputElement>, value: Date | string) => void;
 
     /**
      * The current value as a Date object or an ISO8601 formatted string.
      */
-    value: Date | string;
+    readonly value: Date | string;
 
     /**
      * The remapper used for custom value labels.
      */
-    dateFormat?: Remapper;
+    readonly dateFormat?: Remapper;
   };
 
 export function DateTimeField({

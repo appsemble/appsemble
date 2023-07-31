@@ -7,36 +7,36 @@ interface SimpleModalFooterProps {
   /**
    * The label for the cancel button.
    */
-  cancelLabel: ReactNode;
+  readonly cancelLabel: ReactNode;
 
   /**
    * The Bulma color for the submit button.
    *
    * @default 'primary'
    */
-  color?: BulmaColor;
+  readonly color?: BulmaColor;
 
   /**
    * The function to call when the modal is closed using the close button.
    */
-  onClose: MouseEventHandler<HTMLButtonElement>;
+  readonly onClose: MouseEventHandler<HTMLButtonElement>;
 
   /**
    * The label for the submit button.
    */
-  submitLabel: ReactNode;
+  readonly submitLabel: ReactNode;
 
   /**
    * If true, disable the submit button if no values have been changed.
    *
    * @default true
    */
-  allowPristine?: boolean;
+  readonly allowPristine?: boolean;
 
   /**
    * Whether the submit button should be disabled.
    */
-  disabled?: boolean;
+  readonly disabled?: boolean;
 }
 
 /**

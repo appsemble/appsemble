@@ -9,22 +9,22 @@ interface ImageFieldProps {
   /**
    * The definition used to render out the field.
    */
-  field: Image;
+  readonly field: Image;
 
   /**
    * The index of the row that was clicked.
    */
-  index: number;
+  readonly index: number;
 
   /**
    * The data to display.
    */
-  item: unknown;
+  readonly item: unknown;
 
   /**
    * The index of the sub row that was clicked.
    */
-  repeatedIndex: number;
+  readonly repeatedIndex: number;
 }
 
 export function ImageField({ field, index, item, repeatedIndex }: ImageFieldProps): VNode {

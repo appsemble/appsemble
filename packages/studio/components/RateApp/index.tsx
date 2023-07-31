@@ -16,9 +16,9 @@ import { messages } from './messages.js';
 import { RatingField } from '../RatingField/index.js';
 
 interface RateAppProps {
-  app: App;
-  className: string;
-  onRate: (rate: Rating) => void;
+  readonly app: App;
+  readonly className: string;
+  readonly onRate: (rate: Rating) => void;
 }
 
 export function RateApp({ app, onRate }: RateAppProps): ReactElement {

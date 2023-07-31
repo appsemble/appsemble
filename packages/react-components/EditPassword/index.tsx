@@ -18,7 +18,7 @@ export interface EditPasswordValues {
 }
 
 interface EditPasswordProps {
-  onSubmit: (values: EditPasswordValues) => Promise<void>;
+  readonly onSubmit: (values: EditPasswordValues) => Promise<void>;
 }
 
 export function EditPassword({ onSubmit }: EditPasswordProps): ReactElement {

@@ -12,7 +12,7 @@ interface AsyncButtonProps extends ComponentPropsWithoutRef<typeof Button> {
   /**
    * The asynchronous action to perform when the button is clicked.
    */
-  onClick: (event: MouseEvent<HTMLButtonElement>) => Promise<void>;
+  readonly onClick: (event: MouseEvent<HTMLButtonElement>) => Promise<void>;
 }
 
 /**

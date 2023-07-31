@@ -12,7 +12,7 @@ interface AsyncSelectProps extends ComponentPropsWithoutRef<typeof Select> {
   /**
    * The asynchronous action to perform when the value has changed.
    */
-  onChange: (event: ChangeEvent<HTMLSelectElement>, value: string) => Promise<void>;
+  readonly onChange: (event: ChangeEvent<HTMLSelectElement>, value: string) => Promise<void>;
 }
 
 /**

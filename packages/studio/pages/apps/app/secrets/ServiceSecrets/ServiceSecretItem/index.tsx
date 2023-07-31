@@ -17,17 +17,17 @@ interface ServiceSecretItemProps {
    * @param oldSecret The old secret values to replace.
    */
 
-  onUpdated: (newSecret: AppServiceSecret, oldSecret: AppServiceSecret) => void;
+  readonly onUpdated: (newSecret: AppServiceSecret, oldSecret: AppServiceSecret) => void;
 
   /**
    * The current service secret values.
    */
-  secret: AppServiceSecret;
+  readonly secret: AppServiceSecret;
 
   /**
    * Called when the service secret has been deleted successfully.
    */
-  onDeleted: (secret: AppServiceSecret) => void;
+  readonly onDeleted: (secret: AppServiceSecret) => void;
 }
 
 /**

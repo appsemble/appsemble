@@ -83,7 +83,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import { type VNode } from 'preact';
 
 interface MyButtonProps {
-  name: string;
+  readonly name: string;
 }
 
 export function MyButton({ name }: MyButtonProps): VNode {

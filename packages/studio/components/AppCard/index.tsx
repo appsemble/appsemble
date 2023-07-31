@@ -12,14 +12,14 @@ interface AppCardProps {
   /**
    * The app to render a card for.
    */
-  app: App;
+  readonly app: App;
 
   /**
    * An alternative place to link to.
    *
    * By default a link is generated towards the app’s store page.
    */
-  href?: string;
+  readonly href?: string;
 }
 
 /**

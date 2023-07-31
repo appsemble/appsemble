@@ -4,9 +4,9 @@ import { type ComponentChildren, type VNode } from 'preact';
 import styles from './index.module.css';
 
 export interface CardProps {
-  onAvatarClick: (event: Event) => void;
-  action: Action;
-  children: ComponentChildren;
+  readonly onAvatarClick: (event: Event) => void;
+  readonly action: Action;
+  readonly children: ComponentChildren;
 }
 
 export function AvatarWrapper({ action, children, onAvatarClick }: CardProps): VNode {

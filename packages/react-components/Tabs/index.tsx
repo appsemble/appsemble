@@ -8,22 +8,22 @@ interface TabsProps<T> extends ValuePickerProviderProps<T> {
   /**
    * Make the tabs boxed.
    */
-  boxed?: boolean;
+  readonly boxed?: boolean;
 
   /**
    * Center the tabs
    */
-  centered?: boolean;
+  readonly centered?: boolean;
 
   /**
    * An additional class name to apply to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * An optional size for the tabs
    */
-  size?: 'large' | 'medium' | 'small';
+  readonly size?: 'large' | 'medium' | 'small';
 }
 
 /**

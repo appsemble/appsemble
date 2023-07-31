@@ -10,7 +10,7 @@ import { Ref } from '../Ref/index.js';
 export function RemapperPage({
   remappers,
 }: {
-  remappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;
+  readonly remappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;
 }): ReactElement {
   useMeta(messages.title, messages.description);
   return (

@@ -20,10 +20,10 @@ export interface LoginFormValues {
 }
 
 interface LoginProps {
-  enableRegistration: boolean;
-  onPasswordLogin: (credentials: LoginFormValues) => Promise<void>;
-  registerLink: string;
-  resetPasswordLink: string;
+  readonly enableRegistration: boolean;
+  readonly onPasswordLogin: (credentials: LoginFormValues) => Promise<void>;
+  readonly registerLink: string;
+  readonly resetPasswordLink: string;
 }
 
 export function Login({
