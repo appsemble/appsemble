@@ -6,8 +6,11 @@ const dir = '/resources';
 
 export class Resource {
   id: number;
+
   $clonable: boolean;
+
   $created: string;
+
   $updated: string;
 
   [key: string]: unknown;

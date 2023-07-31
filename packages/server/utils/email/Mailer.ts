@@ -107,6 +107,7 @@ type MailerArgs = Partial<
  */
 export class Mailer {
   transport: Transporter;
+
   imap: ImapFlow;
 
   constructor({

@@ -513,9 +513,9 @@ describe('copyToSentFolder', () => {
     expect(mailer.imap.connect).toHaveBeenCalledWith();
     expect(appendMock.mock.calls[0][0]).toBe('Sent');
     const appendCallBody = appendMock.mock.calls[0][1]
-      .replace(/^\s*boundary=.*$/gm, '')
-      .replace(/^Message-ID: <.*@example\.com>$/gm, '')
-      .replace(/^-{4}_NmP-.*-Part_1(?:--)?$/gm, '');
+      .replaceAll(/^\s*boundary=.*$/gm, '')
+      .replaceAll(/^Message-ID: <.*@example\.com>$/gm, '')
+      .replaceAll(/^-{4}_NmP-.*-Part_1(?:--)?$/gm, '');
     expect(appendCallBody).toMatchSnapshot();
     expect(appendMock.mock.calls[0][2]).toStrictEqual(['\\Seen']);
   });

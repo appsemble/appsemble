@@ -1,7 +1,6 @@
 .wrapper {
   display: grid;
   grid-gap: 0.25rem;
-  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
   grid-template-rows: auto;
   margin: 0.25rem;

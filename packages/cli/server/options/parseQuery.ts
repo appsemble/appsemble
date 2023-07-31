@@ -102,7 +102,7 @@ export function parseQuery({ $filter, $orderby }: ParseQueryParams): ParsedQuery
   return {
     where: parseOdataFilter($filter),
     order: parseOdataOrder(
-      $orderby ? $orderby.replace(/(^|\B)\$author\/id(\b|$)/g, '$author') : undefined,
+      $orderby ? $orderby.replaceAll(/(^|\B)\$author\/id(\b|$)/g, '$author') : undefined,
     ),
   };
 }

@@ -219,9 +219,13 @@ export class App extends Model {
   AppSnapshots: AppSnapshot[];
 
   RatingAverage?: number;
+
   RatingCount?: number;
+
   hasIcon?: boolean;
+
   hasMaskableIcon?: boolean;
+
   messages?: AppsembleMessages;
 
   /**

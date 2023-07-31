@@ -6,16 +6,27 @@ const dir = '/themes';
 
 export class Theme {
   bulmaVersion: string;
+
   primaryColor: string;
+
   linkColor: string;
+
   successColor: string;
+
   infoColor: string;
+
   warningColor: string;
+
   dangerColor: string;
+
   themeColor: string;
+
   splashColor: string;
+
   fontFamily: string;
+
   fontSource: string;
+
   css: string;
 
   static create(values: Record<string, unknown>): Promise<Theme | null> {

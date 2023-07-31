@@ -35,7 +35,7 @@
   "dependencies": {
     "@appsemble/node-utils": "0.21.0",
     "inquirer": "^9.0.0",
-    "type-fest": "^3.0.0",
+    "type-fest": "^4.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {

@@ -325,17 +325,17 @@ export function parseQuery({ $filter, $orderby }: Pick<QueryParams, '$filter' | 
   const order = $orderby
     ? odataOrderbyToSequelize(
         $orderby
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__'),
+          .replaceAll(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replaceAll(/(^|\B)\$updated(\b|$)/g, '__updated__'),
         renameOData,
       )
     : undefined;
   const query = $filter
     ? odataFilterToSequelize(
         $filter
-          .replace(/(^|\B)\$created(\b|$)/g, '__created__')
-          .replace(/(^|\B)\$updated(\b|$)/g, '__updated__')
-          .replace(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
+          .replaceAll(/(^|\B)\$created(\b|$)/g, '__created__')
+          .replaceAll(/(^|\B)\$updated(\b|$)/g, '__updated__')
+          .replaceAll(/(^|\B)\$author\/id(\b|$)/g, '__author__'),
         Resource,
         renameOData,
       )

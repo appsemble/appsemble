@@ -209,7 +209,7 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
     Object.entries(changes).flatMap(([kind, entries]) =>
       entries.map((entry: ListItem) => ({
         kind,
-        description: toString(entry).replace(/\s+/g, ' '),
+        description: toString(entry).replaceAll(/\s+/g, ' '),
       })),
     ),
   );

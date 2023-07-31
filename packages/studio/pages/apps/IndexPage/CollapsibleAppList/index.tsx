@@ -69,7 +69,9 @@ export function CollapsibleAppList({
             ? apps.filter(
                 (app) =>
                   app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
-                  app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
+                  app.OrganizationId.toLowerCase().includes(
+                    filter.toLowerCase().replaceAll('@', ''),
+                  ),
               )
             : apps
         ).sort((a, b) => (reverse ? sortFunction(b, a) : sortFunction(a, b)));

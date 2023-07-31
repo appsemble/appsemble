@@ -1,5 +1,7 @@
 .screenshotWrapper {
-  box-shadow: 0 0.5em 1em -0.125em hsl(0deg 0% 29% / 10%), 0 0 0 1px hsl(0deg 0% 29% / 2%);
+  box-shadow:
+    0 0.5em 1em -0.125em hsl(0deg 0% 29% / 10%),
+    0 0 0 1px hsl(0deg 0% 29% / 2%);
   display: inline-block;
   height: 100%;
   position: relative;

@@ -55,4 +55,4 @@ rules:
   order/properties-alphabetical-order: true
 
   # Make sure our CSS works in older browsers.
-  plugin/no-unsupported-browser-features: true
+  plugin/no-unsupported-browser-features: [true, { ignore: css-nesting }]

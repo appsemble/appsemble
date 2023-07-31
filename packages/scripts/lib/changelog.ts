@@ -30,7 +30,7 @@ export async function getReleaseNotes(): Promise<string> {
   ast.children.splice(0, sectionStart + 1);
   visit(ast, 'text', (node: Text) => {
     // eslint-disable-next-line no-param-reassign
-    node.value = node.value.replace(/\n+/g, (match) => (match.length === 1 ? ' ' : '\n\n'));
+    node.value = node.value.replaceAll(/\n+/g, (match) => (match.length === 1 ? ' ' : '\n\n'));
   });
   return toMarkdown(ast, { bullet: '-', listItemIndent: 'one', strong: '_' });
 }

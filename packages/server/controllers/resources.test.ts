@@ -2216,7 +2216,7 @@ describe('updateResources', () => {
         ${resources[1].id},A,1337,false,9.8,{},[]\r
       `)
         .replace(/^\s+/, '')
-        .replace(/ +$/g, ''),
+        .replaceAll(/ +$/g, ''),
       { headers: { 'content-type': 'text/csv' } },
     );
     expect(response).toMatchInlineSnapshot(`
@@ -3056,7 +3056,7 @@ describe('createResource', () => {
         A,B,1337,false,9.8,{},[]\r
       `)
         .replace(/^\s+/, '')
-        .replace(/ +$/g, ''),
+        .replaceAll(/ +$/g, ''),
       { headers: { 'content-type': 'text/csv' } },
     );
     expect(response).toMatchInlineSnapshot(`

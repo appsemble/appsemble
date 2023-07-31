@@ -93,7 +93,7 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     }
     const descriptions = breadcrumbs.map((breadcrumb) => breadcrumb?.description).filter(Boolean);
     descriptionNode.current.content = descriptions.length
-      ? descriptions[descriptions.length - 1]
+      ? descriptions.at(-1)
       : typeof description === 'string'
       ? description
       : formatMessage(description);

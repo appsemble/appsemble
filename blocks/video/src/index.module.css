@@ -3,6 +3,7 @@
 }
 
 .container > div {
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   display: contents;
   height: 100%;
 }
