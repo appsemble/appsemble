@@ -30,7 +30,7 @@ export function highlight(haystack: string, needle: string): ReactNode[] | undef
     // Make it lower case
     .toLowerCase()
     // Remove two letter words, the word `the`, and whitespace
-    .replace(normalizeRegex, '');
+    .replaceAll(normalizeRegex, '');
 
   while (remainingNeedle.length >= minRangeLength) {
     const index = remainingHaystack.indexOf(remainingNeedle.slice(0, minRangeLength));

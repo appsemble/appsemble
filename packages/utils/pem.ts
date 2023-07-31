@@ -1,8 +1,8 @@
 export function stripPem(pem: string, removeNewlines = false): string {
   return pem
-    .replace(/^[\s-]*BEGIN [A-Z]+[\s-]*/g, '')
-    .replace(/[\s-]*END [A-Z]+[\s-]*$/g, '')
-    .replace(/\r?\n/g, removeNewlines ? '' : '\n')
+    .replaceAll(/^[\s-]*BEGIN [A-Z]+[\s-]*/g, '')
+    .replaceAll(/[\s-]*END [A-Z]+[\s-]*$/g, '')
+    .replaceAll(/\r?\n/g, removeNewlines ? '' : '\n')
     .trim();
 }
 

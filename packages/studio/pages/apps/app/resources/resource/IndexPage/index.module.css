@@ -10,7 +10,6 @@
 
 .hideCheckboxes {
   display: grid;
-  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   grid-template-columns: 1fr 1fr;
   row-gap: 1rem;
 }

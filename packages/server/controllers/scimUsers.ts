@@ -27,7 +27,7 @@ function toScimUser(member: AppMember): ScimUser {
     locale: member.locale || member.User.locale,
     'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.User.TeamMembers?.length
       ? {
-          manager: { value: member.User.TeamMembers[member.User.TeamMembers.length - 1].Team.name },
+          manager: { value: member.User.TeamMembers.at(-1).Team.name },
         }
       : undefined,
     meta: {

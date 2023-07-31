@@ -89,7 +89,7 @@ const functions: Record<string, MethodConverter> = {
 function processName(token: Token, model: PartialModel, rename: Rename): Col | Json {
   // OData uses `/` as a path separator, but Sequelize uses `.`.
   // https://sequelize.org/master/manual/other-data-types.html#jsonb--postgresql-only-
-  const name = rename(token.raw).replace(/\//g, '.');
+  const name = rename(token.raw).replaceAll('/', '.');
   return name.includes('.') ? json(name) : col(`${model.tableName}.${name}`);
 }
 

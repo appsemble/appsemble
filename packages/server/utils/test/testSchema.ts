@@ -27,8 +27,8 @@ export function useTestDatabase(meta: ImportMeta, options: InitDBParams = {}): v
 
     dbName = rootDB
       .escape(`appsemble_${parse(meta.url).name}_${new Date().toISOString()}`)
-      .replace(/'/g, '')
-      .replace(/\W+/g, '_')
+      .replaceAll("'", '')
+      .replaceAll(/\W+/g, '_')
       .slice(0, 63)
       .toLowerCase();
 

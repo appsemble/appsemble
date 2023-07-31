@@ -50,5 +50,6 @@ export class AppRating extends Model {
   updated: Date;
 
   RatingAverage?: number;
+
   RatingCount?: number;
 }

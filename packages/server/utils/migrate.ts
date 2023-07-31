@@ -16,7 +16,7 @@ export interface Migration {
 export async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
   const db = getDB();
   await Meta.sync();
-  const to = toVersion === 'next' ? migrations[migrations.length - 1].key : toVersion;
+  const to = toVersion === 'next' ? migrations.at(-1).key : toVersion;
   const metas = await Meta.findAll();
   if (metas.length > 1) {
     throw new AppsembleError('Multiple Meta entries found. The database requires a manual fix.');
@@ -26,7 +26,7 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
     logger.warn('No old database meta information was found.');
     logger.info('Synchronizing database models as-is.');
     await db.sync();
-    meta = await Meta.create({ version: migrations[migrations.length - 1].key });
+    meta = await Meta.create({ version: migrations.at(-1).key });
   } else {
     [meta] = metas;
   }
