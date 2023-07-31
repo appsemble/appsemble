@@ -427,6 +427,7 @@ review:
   variables:
     GIT_STRATEGY: none
   script:
+    - kubectl config get-contexts
     - kubectl config use-context "$CI_PROJECT_PATH:development"
     - kubectl config set-context --current --namespace review
     # This is the only way to make sure the review environment can be overwritten
