@@ -4,6 +4,7 @@ import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';
 
+import { ExpertPage } from './ExpertPage/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 
@@ -37,6 +38,7 @@ export function CollectionRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={collection?.name}>
+      <Route element={<ExpertPage collection={collection} />} path="/expert" />
       <Route element={<IndexPage collection={collection} />} path="/" />
     </MetaSwitch>
   );

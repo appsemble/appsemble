@@ -1,0 +1,8 @@
+.expertDescription img {
+  float: right;
+}
+
+.expertDescription li::marker {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
