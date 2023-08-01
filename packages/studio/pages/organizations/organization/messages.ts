@@ -29,4 +29,8 @@ export const messages = defineMessages({
     id: 'studio.+a+2ug',
     defaultMessage: 'Members',
   },
+  collections: {
+    id: 'studio.ulh3kf',
+    defaultMessage: 'Collections',
+  },
 });

@@ -10,6 +10,7 @@ import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
+import { CollectionsRoutes } from './collections/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { MembersPage } from './MembersPage/index.js';
 import { messages } from './messages.js';
@@ -41,6 +42,11 @@ export function OrganizationRoutes(): ReactElement {
         {userOrganization ? (
           <MenuItem exact icon="users" to={`${url}/members`}>
             <FormattedMessage {...messages.members} />
+          </MenuItem>
+        ) : null}
+        {userOrganization ? (
+          <MenuItem icon="folder" to={`${url}/collections`}>
+            <FormattedMessage {...messages.collections} />
           </MenuItem>
         ) : null}
         {mayEdit ? (
@@ -84,6 +90,12 @@ export function OrganizationRoutes(): ReactElement {
               path="/settings"
             />
           </Route>
+
+          {userOrganization ? (
+            <Route element={<ProtectedRoute organization={userOrganization} />}>
+              <Route element={<CollectionsRoutes />} path="/collections/*" />
+            </Route>
+          ) : null}
 
           {userOrganization ? (
             <Route element={<ProtectedRoute organization={userOrganization} />}>

@@ -1,0 +1,10 @@
+.headerImage {
+  background-position: center;
+  background-size: cover;
+  min-height: 200px;
+  min-width: 50vw;
+}
+
+.headerTitle {
+  text-shadow: 0 0 10px rgb(0 0 0 / 50%);
+}
