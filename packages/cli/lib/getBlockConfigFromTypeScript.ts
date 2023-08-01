@@ -63,7 +63,6 @@ function processInterface<T>(
           const comments = commentRanges?.map((r) => source.slice(r.pos, r.end)) ?? [];
           const [block] = parse(comments[0]);
           const processedDescription = block.source
-            // @ts-expect-error https://github.com/syavorsky/comment-parser/pull/163
             .map((src) => src.tokens.description)
             .join('\n')
             .replaceAll(/^\s+|\s+$/g, '');
