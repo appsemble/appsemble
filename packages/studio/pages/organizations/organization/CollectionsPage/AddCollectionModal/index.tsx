@@ -9,6 +9,7 @@ import {
   SimpleModalFooter,
   TextAreaField,
   type Toggle,
+  useToggle,
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import axios from 'axios';
@@ -17,6 +18,7 @@ import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
+import { AvatarEditorModal } from '../../../../../components/AvatarEditorModal/index.js';
 
 interface AddCollectionModalProps {
   /**
@@ -45,6 +47,8 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
 
   const { organizationId } = useParams<{ organizationId: string }>();
 
+  const avatarModalToggle = useToggle();
+
   const closeModal = useCallback(() => {
     setUploadingHeader(null);
     setUploadingExpertPhoto(null);
@@ -71,9 +75,15 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
   const onHeaderChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setUploadingHeader(event.currentTarget.files[0]);
   }, []);
-  const onExpertPhotoChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setUploadingExpertPhoto(event.currentTarget.files[0]);
-  }, []);
+  const onExpertPhotoChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setUploadingExpertPhoto(event.currentTarget.files[0]);
+      if (event.currentTarget.files[0]) {
+        avatarModalToggle.enable();
+      }
+    },
+    [avatarModalToggle],
+  );
 
   return (
     <ModalCard
@@ -82,6 +92,7 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
       footer={
         <SimpleModalFooter
           cancelLabel={<FormattedMessage {...messages.cancel} />}
+          disabled={!uploadingHeader || !uploadingExpertPhoto}
           onClose={closeModal}
           submitLabel={<FormattedMessage {...messages.create} />}
         />
@@ -158,15 +169,21 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
           }}
         />
       </Message>
-      <SimpleFormField
+      <FileUpload
         accept="image/png,image/jpeg,image/tiff,image/webp"
-        component={FileUpload}
         fileButtonLabel={<FormattedMessage {...messages.expertPhoto} />}
         fileLabel={uploadingExpertPhoto?.name ?? <FormattedMessage {...messages.noFile} />}
         label={<FormattedMessage {...messages.expertPhoto} />}
         name="expertProfileImage"
         onChange={onExpertPhotoChange}
         required
+        value={uploadingExpertPhoto}
+      />
+      <AvatarEditorModal
+        onCanceled={() => setUploadingExpertPhoto(null)}
+        onCompleted={setUploadingExpertPhoto}
+        photo={uploadingExpertPhoto}
+        state={avatarModalToggle}
       />
     </ModalCard>
   );
