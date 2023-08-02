@@ -1,4 +1,4 @@
-import { type IconName, type Remapper } from '@appsemble/sdk';
+import { type BulmaColor, type BulmaSize, type IconName, type Remapper } from '@appsemble/sdk';
 
 /**
  * An object representing how a data field should be displayed.
@@ -79,6 +79,89 @@ declare module '@appsemble/sdk' {
      * This can be either a full image path or an asset id.
      */
     image?: Remapper;
+
+    /**
+     * The definition of the contents and styling of the button.
+     */
+    button: {
+      /**
+       * Whether the content of the cell should be aligned left, right, or centered
+       */
+      alignment?: 'center' | 'left' | 'right';
+
+      /**
+       * The name of the action to trigger when clicking on this field.
+       *
+       * @format action
+       */
+      onClick?: string;
+
+      /**
+       * The color of the button.
+       *
+       * @default "primary"
+       */
+      color?: BulmaColor;
+
+      /**
+       * Whether the button should be disabled.
+       *
+       * If the resulting remapper value is truthy, the button will be disabled.
+       */
+      disabled?: Remapper;
+
+      /**
+       * The size of the button.
+       *
+       * @default "normal"
+       */
+      size?: BulmaSize;
+
+      /**
+       * The label to display inside of the button.
+       */
+      label?: Remapper;
+
+      /**
+       * An optional FontAwesome icon to display inside of the button.
+       */
+      icon?: IconName;
+
+      /**
+       * When set to true, the ‘light’ set of Bulma colors are used.
+       */
+      light?: boolean;
+
+      /**
+       * Whether the button should be rounded.
+       */
+      rounded?: boolean;
+
+      /**
+       * Whether the button should be full width or not.
+       *
+       * By default buttons only take up as much space as needed.
+       */
+      fullwidth?: boolean;
+
+      /**
+       * Whether the text and background colors should be inverted.
+       */
+      inverted?: boolean;
+
+      /**
+       * Whether the button should display its colors in the outlines.
+       */
+      outlined?: boolean;
+
+      /**
+       * The title for the button.
+       *
+       * Describe what the button does. This helps with accessibility for people using screen
+       * readers.
+       */
+      title?: Remapper;
+    };
   }
 
   interface Actions {
@@ -88,6 +171,11 @@ declare module '@appsemble/sdk' {
      * If defined, an indicator will show up to show that the list item has a click action.
      */
     onClick: never;
+
+    /**
+     * Custom action mapping.
+     */
+    [key: string]: never;
   }
 
   interface EventListeners {

@@ -1,8 +1,8 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon, isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import { type VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { Fragment, type VNode } from 'preact';
+import { useCallback, useMemo } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Item } from '../../../block.js';
@@ -15,7 +15,27 @@ interface ListItemProps {
 export function ListItem({ item }: ListItemProps): VNode {
   const {
     actions,
-    parameters: { fields, header, icon, image },
+    parameters: {
+      button: {
+        alignment,
+        color,
+        fullwidth,
+        icon: buttonIcon,
+        inverted,
+        label: buttonLabel,
+        light,
+        onClick: onClickButton,
+        outlined,
+        rounded,
+        size: buttonSize = 'normal',
+        title,
+        ...button
+      },
+      fields,
+      header,
+      icon,
+      image,
+    },
     utils: { asset, remap },
   } = useBlock();
 
@@ -29,6 +49,36 @@ export function ListItem({ item }: ListItemProps): VNode {
 
   const headerValue = remap(header, item);
   const img = remap(image, item) as string;
+
+  const disabled = useMemo(
+    () => Boolean(remap(button.disabled, item)),
+    [button.disabled, item, remap],
+  );
+  const action = actions[onClickButton];
+  const className = classNames('button', `is-${buttonSize}`, {
+    'is-rounded': rounded,
+    'is-fullwidth': fullwidth,
+    [`is-${color}`]: color,
+    'is-light': light,
+    'is-inverted': inverted,
+    'is-outlined': outlined,
+  });
+  const remappedTitle = remap(title, item) as string;
+
+  const content = (
+    <Fragment>
+      {icon ? <Icon icon={icon} /> : null}
+      <span>{remap(buttonLabel, item) as string}</span>
+    </Fragment>
+  );
+
+  const onClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+
+    action(item);
+  }, [action, disabled, item]);
 
   return (
     <ListItemWrapper
@@ -47,6 +97,17 @@ export function ListItem({ item }: ListItemProps): VNode {
           <div className={classNames({ [styles.header]: fields?.length })}>
             {isPreactChild(icon) ? <Icon icon={icon} /> : null}
             {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
+            {button ? (
+              <button
+                className={className}
+                disabled={disabled}
+                onClick={onClick}
+                title={remappedTitle}
+                type="button"
+              >
+                {content}
+              </button>
+            ) : null}
           </div>
         ) : null}
         {fields?.map((field) => {
@@ -81,7 +142,7 @@ export function ListItem({ item }: ListItemProps): VNode {
           );
         })}
       </div>
-      {actions.onClick.type !== 'noop' && (
+      {actions.onClick.type !== 'noop' && button == null && (
         <Icon className={`${styles.button} mx-0 my-0 px-0 py-0`} icon="angle-right" size="large" />
       )}
     </ListItemWrapper>

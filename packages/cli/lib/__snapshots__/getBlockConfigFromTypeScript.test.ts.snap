@@ -3585,6 +3585,9 @@ Note that remappers must be used if the image is received through the data event
 exports[`getBlockConfigFromTypeScript > official blocks > list 1`] = `
 {
   "actions": {
+    "$any": {
+      "description": "Custom action mapping.",
+    },
     "onClick": {
       "description": "Action that gets triggered when clicking on a list item.
 
@@ -3613,6 +3616,29 @@ Compatible data that is received will be displayed. Must be a set of data.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "definitions": {
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "BulmaSize": {
+        "enum": [
+          "large",
+          "medium",
+          "normal",
+          "small",
+        ],
+        "type": "string",
+      },
       "Field": {
         "additionalProperties": false,
         "description": "An object representing how a data field should be displayed.",
@@ -3647,6 +3673,80 @@ No value will be rendered if undefined.",
 If not defined, received data will be treated as an array.",
         "type": "string",
       },
+      "button": {
+        "additionalProperties": false,
+        "description": "The definition of the contents and styling of the button.",
+        "properties": {
+          "alignment": {
+            "description": "Whether the content of the cell should be aligned left, right, or centered",
+            "enum": [
+              "center",
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "default": "primary",
+            "description": "The color of the button.",
+          },
+          "disabled": {
+            "description": "Whether the button should be disabled.
+
+If the resulting remapper value is truthy, the button will be disabled.",
+            "format": "remapper",
+          },
+          "fullwidth": {
+            "description": "Whether the button should be full width or not.
+
+By default buttons only take up as much space as needed.",
+            "type": "boolean",
+          },
+          "icon": {
+            "description": "An optional FontAwesome icon to display inside of the button.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inverted": {
+            "description": "Whether the text and background colors should be inverted.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label to display inside of the button.",
+            "format": "remapper",
+          },
+          "light": {
+            "description": "When set to true, the ‘light’ set of Bulma colors are used.",
+            "type": "boolean",
+          },
+          "onClick": {
+            "description": "The name of the action to trigger when clicking on this field.",
+            "format": "action",
+            "type": "string",
+          },
+          "outlined": {
+            "description": "Whether the button should display its colors in the outlines.",
+            "type": "boolean",
+          },
+          "rounded": {
+            "description": "Whether the button should be rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "$ref": "#/definitions/BulmaSize",
+            "default": "normal",
+            "description": "The size of the button.",
+          },
+          "title": {
+            "description": "The title for the button.
+
+Describe what the button does. This helps with accessibility for people using screen readers.",
+            "format": "remapper",
+          },
+        },
+        "type": "object",
+      },
       "fields": {
         "description": "A list of fields to display.",
         "items": {
@@ -3674,6 +3774,9 @@ This can be either a full image path or an asset id.",
         "format": "remapper",
       },
     },
+    "required": [
+      "button",
+    ],
     "type": "object",
   },
 }
