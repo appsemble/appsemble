@@ -2,7 +2,6 @@ import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
-import { omit } from 'lodash-es';
 import stripIndent from 'strip-indent';
 
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
@@ -66,7 +65,7 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: apple } = await request.post<BlockManifest>('/api/blocks', formDataA);
+    await request.post<BlockManifest>('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/pen');
@@ -77,13 +76,40 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
+    await request.post<BlockManifest>('/api/blocks', formDataB);
 
     const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
-    expect(bam).toMatchObject([
-      omit(apple, ['files', 'languages']),
-      omit(pen, ['files', 'languages']),
-    ]);
+    expect(bam).toHaveLength(2);
+    expect(bam).toMatchInlineSnapshot(`
+      [
+        {
+          "actions": null,
+          "description": "I’ve got a pen.",
+          "events": null,
+          "examples": [],
+          "iconUrl": null,
+          "layout": null,
+          "longDescription": null,
+          "name": "@xkcd/pen",
+          "parameters": null,
+          "version": "0.0.0",
+          "wildcardActions": false,
+        },
+        {
+          "actions": null,
+          "description": "I’ve got an apple.",
+          "events": null,
+          "examples": [],
+          "iconUrl": null,
+          "layout": null,
+          "longDescription": null,
+          "name": "@xkcd/apple",
+          "parameters": null,
+          "version": "0.0.0",
+          "wildcardActions": false,
+        },
+      ]
+    `);
   });
 
   it('should not include unlisted blocks', async () => {

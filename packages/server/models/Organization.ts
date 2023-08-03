@@ -4,9 +4,7 @@ import {
   CreatedAt,
   DataType,
   DeletedAt,
-  ForeignKey,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -39,18 +37,8 @@ export class Organization extends Model {
   @BelongsToMany(() => User, () => Member)
   Users: User[];
 
-  @HasMany(() => Organization)
-  Organizations: Organization[];
-
   @HasMany(() => OrganizationInvite)
   OrganizationInvites: OrganizationInvite[];
-
-  @ForeignKey(() => Organization)
-  @Column(DataType.STRING)
-  OrganizationId: string;
-
-  @HasOne(() => Organization)
-  Organization: Awaited<Organization>;
 
   @HasMany(() => App)
   Apps: App[];
