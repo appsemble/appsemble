@@ -31,7 +31,7 @@ export async function handler(): Promise<void> {
   });
   logger.info('Tweeting:');
   logger.info(status);
-  const tweet = await twitter.v1.tweet(status);
+  const tweet = await twitter.v2.tweet(status);
   logger.info('Tweeted successfully');
-  logger.info(`https://twitter.com/Appsemble_/status/${tweet.id}`);
+  logger.info(`https://twitter.com/Appsemble_/status/${tweet.data.id}`);
 }
