@@ -2,6 +2,7 @@ import { createFixtureStream, readFixture } from '@appsemble/node-utils';
 import { type BlockManifest } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
+import { omit } from 'lodash-es';
 import stripIndent from 'strip-indent';
 
 import { BlockAsset, BlockMessages, BlockVersion, Member, Organization } from '../models/index.js';
@@ -65,7 +66,7 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    await request.post<BlockManifest>('/api/blocks', formDataA);
+    const { data: apple } = await request.post<BlockManifest>('/api/blocks', formDataA);
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/pen');
@@ -76,40 +77,15 @@ describe('queryBlocks', () => {
     });
 
     await authorizeClientCredentials('blocks:write');
-    await request.post<BlockManifest>('/api/blocks', formDataB);
+    const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
 
     const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
-    expect(bam).toHaveLength(2);
-    expect(bam).toMatchInlineSnapshot(`
-      [
-        {
-          "actions": null,
-          "description": "I’ve got a pen.",
-          "events": null,
-          "examples": [],
-          "iconUrl": null,
-          "layout": null,
-          "longDescription": null,
-          "name": "@xkcd/pen",
-          "parameters": null,
-          "version": "0.0.0",
-          "wildcardActions": false,
-        },
-        {
-          "actions": null,
-          "description": "I’ve got an apple.",
-          "events": null,
-          "examples": [],
-          "iconUrl": null,
-          "layout": null,
-          "longDescription": null,
-          "name": "@xkcd/apple",
-          "parameters": null,
-          "version": "0.0.0",
-          "wildcardActions": false,
-        },
-      ]
-    `);
+    expect(bam).toStrictEqual(
+      expect.arrayContaining([
+        omit(apple, ['files', 'languages']),
+        omit(pen, ['files', 'languages']),
+      ]),
+    );
   });
 
   it('should not include unlisted blocks', async () => {
