@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.21.1
-appVersion: 0.21.1
+version: 0.21.2
+appVersion: 0.21.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,9 +25,7 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: fixed
-      description: "Cli: Add missing default arguments."
-    - kind: fixed
-      description: "Cli: Include missing Bulma dependency to resolve crash."
+      description: "Block(video): Vimeo player now react to customized sizes."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
