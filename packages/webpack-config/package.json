@@ -26,6 +26,7 @@
       "./index.js",
       "./index.ts"
     ],
+    "./types": "./types.d.ts",
     "./README.md": "./README.md"
   },
   "files": [
