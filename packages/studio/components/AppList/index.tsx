@@ -1,4 +1,4 @@
-import { type UseAxiosResult } from '@appsemble/react-components';
+import { type Toggle, type UseAxiosResult } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -30,9 +30,26 @@ export interface AppListProps {
    * Whether the sort function should be reversed.
    */
   readonly reverse: boolean;
+
+  /**
+   * Whether the app list should be in edit mode.
+   */
+  readonly editMode?: Toggle;
+
+  /**
+   * A function that returns the controls to be displayed in edit mode for each app.
+   */
+  readonly editModeCardControls?: (app: App) => ReactElement;
 }
 
-export function AppList({ filter, result, reverse, sortFunction }: AppListProps): ReactElement {
+export function AppList({
+  editMode,
+  editModeCardControls,
+  filter,
+  result,
+  reverse,
+  sortFunction,
+}: AppListProps): ReactElement {
   return (
     <AsyncDataView
       emptyMessage={<FormattedMessage {...messages.emptyApps} />}
@@ -60,7 +77,12 @@ export function AppList({ filter, result, reverse, sortFunction }: AppListProps)
         return (
           <div className={styles.list}>
             {filteredApps.map((app) => (
-              <AppCard app={app} key={app.id} />
+              <div className={styles.stack} key={app.id}>
+                <AppCard app={app} key={app.id} />
+                {editMode?.enabled ? (
+                  <div className={styles.cardControls}>{editModeCardControls?.(app)}</div>
+                ) : null}
+              </div>
             ))}
           </div>
         );
