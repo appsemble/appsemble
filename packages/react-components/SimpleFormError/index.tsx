@@ -5,7 +5,7 @@ import styles from './index.module.css';
 import { Message, useSimpleForm } from '../index.js';
 
 interface SimpleFormErrorProps {
-  children: ComponentType<{ error: Error }>;
+  readonly children: ComponentType<{ error: Error }>;
 }
 
 export function SimpleFormError({ children: Children }: SimpleFormErrorProps): ReactElement {

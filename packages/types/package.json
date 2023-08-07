@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/types",
-  "version": "0.20.45",
+  "version": "0.21.2",
   "description": "TypeScript definitions reused within Appsemble internally",
   "keywords": [
     "app",
@@ -22,6 +22,12 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "files": [
     "**/*.d.ts",
     "**/*.js",
@@ -35,6 +41,6 @@
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "jsonschema": "^1.0.0",
     "openapi-types": "^12.0.0",
-    "type-fest": "^3.0.0"
+    "type-fest": "^4.0.0"
   }
 }

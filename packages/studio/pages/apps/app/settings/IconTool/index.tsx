@@ -34,7 +34,7 @@ const shapes = {
 };
 
 interface IconToolProps {
-  disabled?: boolean;
+  readonly disabled?: boolean;
 }
 
 export function IconTool({ disabled }: IconToolProps): ReactElement {

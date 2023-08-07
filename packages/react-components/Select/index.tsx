@@ -5,22 +5,22 @@ export interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'o
   /**
    * Whether or not the select field has an error.
    */
-  error?: unknown;
+  readonly error?: unknown;
 
   /**
    * Whether or not the element should take as much space as it can.
    */
-  fullWidth?: boolean;
+  readonly fullWidth?: boolean;
 
   /**
    * Indicate the select box is in a loading state.
    */
-  loading?: boolean;
+  readonly loading?: boolean;
 
   /**
    * This is fired when the input value has changed.
    */
-  onChange?: (event: ChangeEvent<HTMLSelectElement>, value: string) => void;
+  readonly onChange?: (event: ChangeEvent<HTMLSelectElement>, value: string) => void;
 }
 
 /**

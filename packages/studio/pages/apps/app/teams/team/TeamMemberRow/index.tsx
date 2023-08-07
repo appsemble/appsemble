@@ -7,10 +7,10 @@ import { messages } from './messages.js';
 import { type TeamMember } from '../../../../../../types.js';
 
 interface TeamMemberRowProps {
-  member: TeamMember;
-  mayInvite: boolean;
-  onEdit: (member: TeamMember, role: TeamRole) => Promise<void>;
-  onRemove: (member: TeamMember) => Promise<void>;
+  readonly member: TeamMember;
+  readonly mayInvite: boolean;
+  readonly onEdit: (member: TeamMember, role: TeamRole) => Promise<void>;
+  readonly onRemove: (member: TeamMember) => Promise<void>;
 }
 
 export function TeamMemberRow({

@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.20.45",
+  "version": "0.21.2",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -21,15 +21,21 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.20.45",
-    "@appsemble/sdk": "0.20.45",
-    "@appsemble/types": "0.20.45",
-    "@appsemble/utils": "0.20.45",
-    "@appsemble/web-utils": "0.20.45",
+    "@appsemble/react-components": "0.21.2",
+    "@appsemble/sdk": "0.21.2",
+    "@appsemble/types": "0.21.2",
+    "@appsemble/utils": "0.21.2",
+    "@appsemble/web-utils": "0.21.2",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -56,7 +62,7 @@
     "react-dom": "^18.0.0",
     "react-intl": "^6.0.0",
     "react-router-dom": "^6.0.0",
-    "type-fest": "^3.0.0",
+    "type-fest": "^4.0.0",
     "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {

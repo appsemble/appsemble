@@ -504,7 +504,7 @@ const mapperImplementations: MapperImplementations = {
 
   'string.replace'(values, input) {
     const [[regex, replacer]] = Object.entries(values);
-    return String(input).replace(new RegExp(regex, 'gm'), replacer);
+    return String(input).replaceAll(new RegExp(regex, 'gm'), replacer);
   },
 
   translate(messageId, input, context) {

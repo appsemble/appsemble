@@ -3,6 +3,8 @@ import { paths as translations } from './appMessages.js';
 import { paths as appOAuth2Secrets } from './appOAuth2Secrets.js';
 import { paths as apps } from './apps.js';
 import { paths as appSamlSecrets } from './appSamlSecrets.js';
+import { paths as scimEndpoints } from './appScimEndpoints.js';
+import { paths as appScimSecrets } from './appScimSecrets.js';
 import { paths as appsembleMessages } from './appsembleMessages.js';
 import { paths as appServiceSecrets } from './appServiceSecrets.js';
 import { paths as appSSLSecrets } from './appSSLSecrets.js';
@@ -25,6 +27,8 @@ export const paths = {
   ...appOAuth2Secrets,
   ...apps,
   ...appSamlSecrets,
+  ...appScimSecrets,
+  ...scimEndpoints,
   ...appsembleMessages,
   ...appSSLSecrets,
   ...assets,

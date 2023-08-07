@@ -10,7 +10,7 @@ interface AppIconProps {
   /**
    * The app whose icon to render.
    */
-  app: App;
+  readonly app: App;
 }
 
 /**

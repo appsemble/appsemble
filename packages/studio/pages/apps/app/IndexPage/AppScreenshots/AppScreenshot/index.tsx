@@ -8,8 +8,8 @@ import { messages } from './messages.js';
 import { useApp } from '../../../index.js';
 
 interface AppScreenshotProps {
-  url: string;
-  mayManageScreenshots: boolean;
+  readonly url: string;
+  readonly mayManageScreenshots: boolean;
 }
 export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps): ReactElement {
   const { app, setApp } = useApp();
@@ -23,7 +23,7 @@ export function AppScreenshot({ mayManageScreenshots, url }: AppScreenshotProps)
     confirmLabel: <FormattedMessage {...messages.deleteConfirm} />,
     async action() {
       const split = url.split('/');
-      const id = split[split.length - 1];
+      const id = split.at(-1);
 
       await axios.delete(`/api/apps/${app.id}/screenshots/${id}`);
       setApp({ ...app, screenshotUrls: app.screenshotUrls.filter((u) => u !== url) });

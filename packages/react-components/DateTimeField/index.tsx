@@ -19,7 +19,7 @@ type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> 
      * If true, the value is emitted as an ISO8601 formatted string. Otherwise, a Date object is
      * used.
      */
-    iso?: boolean;
+    readonly iso?: boolean;
 
     /**
      * The change handler.
@@ -28,7 +28,7 @@ type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> 
      *   element, to emulate an event.
      * @param value The value that was selected.
      */
-    onChange?: (
+    readonly onChange?: (
       event: { target: HTMLInputElement; currentTarget: HTMLInputElement },
       value: Date | string,
     ) => void;
@@ -36,7 +36,7 @@ type DateTimeFieldProps = Omit<ComponentPropsWithoutRef<typeof Input>, 'error'> 
     /**
      * The current value as a Date object or an ISO8601 formatted string.
      */
-    value: Date | string;
+    readonly value: Date | string;
   };
 
 export const DateTimeField = forwardRef<HTMLInputElement, DateTimeFieldProps>(

@@ -28,7 +28,7 @@ interface CloneButtonProps {
   /**
    * The app to clone.
    */
-  app: App;
+  readonly app: App;
 }
 
 /**

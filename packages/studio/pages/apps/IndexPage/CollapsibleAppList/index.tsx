@@ -13,32 +13,32 @@ interface CollapsibleAppListProps {
   /**
    * The URL to fetch the data from.
    */
-  target: string;
+  readonly target: string;
 
   /**
    * The clickable title used to toggle displaying or hiding the apps.
    */
-  title: ReactElement | string;
+  readonly title: ReactElement | string;
 
   /**
    * The filter for the app’s name and organization ID.
    */
-  filter?: string;
+  readonly filter?: string;
 
   /**
    * The function used to sort the app list.
    */
-  sortFunction: (a: App, b: App) => number;
+  readonly sortFunction: (a: App, b: App) => number;
 
   /**
    * Whether the sort function should be reversed.
    */
-  reverse: boolean;
+  readonly reverse: boolean;
 
   /**
    * Whether the apps are user apps.
    */
-  userApps?: boolean;
+  readonly userApps?: boolean;
 }
 
 /**
@@ -69,7 +69,9 @@ export function CollapsibleAppList({
             ? apps.filter(
                 (app) =>
                   app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
-                  app.OrganizationId.toLowerCase().includes(filter.toLowerCase().replace(/@/g, '')),
+                  app.OrganizationId.toLowerCase().includes(
+                    filter.toLowerCase().replaceAll('@', ''),
+                  ),
               )
             : apps
         ).sort((a, b) => (reverse ? sortFunction(b, a) : sortFunction(a, b)));

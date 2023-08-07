@@ -39,6 +39,7 @@ export interface AuthenticationCheckers {
   basic: GetHttpUser<UtilsUser>;
   app: GetOAuth2User<UtilsUser>;
   cli: GetOAuth2User<UtilsUser>;
+  scim: GetApiKeyUser<UtilsUser>;
   studio: GetApiKeyUser<UtilsUser>;
 }
 

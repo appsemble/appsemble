@@ -44,7 +44,7 @@ interface ConfirmationOptions<T, A extends any[]> {
 }
 
 interface ConfirmationProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface DeferredConfirmationOptions extends ConfirmationOptions<any, any[]> {

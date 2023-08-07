@@ -7,7 +7,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useApp } from '../../index.js';
 
-export function AssetPreview({ asset }: { asset: Asset }): ReactElement {
+export function AssetPreview({ asset }: { readonly asset: Asset }): ReactElement {
   const { app } = useApp();
 
   if (!asset) {

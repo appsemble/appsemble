@@ -10,17 +10,17 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
   /**
    * The color for the icon.
    */
-  color?: BulmaColor;
+  readonly color?: BulmaColor;
 
   /**
    * The Fontawesome icon to render.
    */
-  icon: IconName;
+  readonly icon: IconName;
 
   /**
    * The Fontawesome prefix.
    */
-  prefix?: IconPrefix;
+  readonly prefix?: IconPrefix;
 }
 
 /**

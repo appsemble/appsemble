@@ -7,24 +7,24 @@ interface TabProps {
   /**
    * Child elements to render in the tab.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An additional class name to apply to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The `href` to apply on the anchor tag.
    *
    * The value will be ignored when clicked. This is for display purposes only.
    */
-  href?: string;
+  readonly href?: string;
 
   /**
    * The value to emit when this tab is selected.
    */
-  value: any;
+  readonly value: any;
 }
 
 /**

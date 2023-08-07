@@ -10,37 +10,37 @@ interface MenuButtonItemProps {
   /**
    * The title text to apply to the button.
    */
-  title?: string;
+  readonly title?: string;
 
   /**
    * Child navigation items to render.
    */
-  children?: ReactNode;
+  readonly children?: ReactNode;
 
   /**
    * Whether or not this menu item is a child.
    */
-  isChild?: boolean;
+  readonly isChild?: boolean;
 
   /**
    * The icon to render.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 
   /**
    * The color for the icon.
    */
-  iconColor?: BulmaColor;
+  readonly iconColor?: BulmaColor;
 
   /**
    * Click handler for the menu item.
    */
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  readonly onClick: MouseEventHandler<HTMLButtonElement>;
 
   /**
    * Whether the menu item should be active.
    */
-  active: boolean;
+  readonly active: boolean;
 }
 
 /**

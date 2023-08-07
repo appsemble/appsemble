@@ -23,8 +23,8 @@ import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
 import { type Member } from '../index.js';
 
 interface MemberRowProperties {
-  member: Member;
-  onChange: (member: Member) => void;
+  readonly member: Member;
+  readonly onChange: (member: Member) => void;
 }
 
 export function MemberRow({ member, onChange }: MemberRowProperties): ReactElement {

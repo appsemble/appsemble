@@ -4,8 +4,8 @@ import { type ComponentType, type VNode } from 'preact';
 import styles from './index.module.css';
 
 export interface LoaderProps {
-  className?: string;
-  component?: ComponentType<{ className: string }> | string;
+  readonly className?: string;
+  readonly component?: ComponentType<{ className: string }> | string;
 }
 
 export function Loader({ className, component: Component = 'div' }: LoaderProps): VNode {

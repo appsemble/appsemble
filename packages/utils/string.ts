@@ -5,7 +5,7 @@
  * @returns The input, but hyphenated.
  */
 export function camelToHyphen(string: string): string {
-  return string.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+  return string.replaceAll(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 }
 
 /**
@@ -27,5 +27,5 @@ export function toUpperCase(input: string): string {
  * @returns The escaped JSON pointer segment.
  */
 export function decodeJSONRef(ref: string): string {
-  return decodeURIComponent(ref).replace(/~1/g, '/').replace(/~0/g, '~');
+  return decodeURIComponent(ref).replaceAll('~1', '/').replaceAll('~0', '~');
 }

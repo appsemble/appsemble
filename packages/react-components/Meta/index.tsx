@@ -42,17 +42,17 @@ interface MetaProviderProps {
   /**
    * Children to be rendered within the context of this provider.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * The default page description.
    */
-  description: Text;
+  readonly description: Text;
 
   /**
    * The top level title to use.
    */
-  title: string;
+  readonly title: string;
 }
 
 /**
@@ -93,7 +93,7 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     }
     const descriptions = breadcrumbs.map((breadcrumb) => breadcrumb?.description).filter(Boolean);
     descriptionNode.current.content = descriptions.length
-      ? descriptions[descriptions.length - 1]
+      ? descriptions.at(-1)
       : typeof description === 'string'
       ? description
       : formatMessage(description);
@@ -150,17 +150,17 @@ interface MetaSwitchProps {
   /**
    * Child routes to render.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * The page description to use.
    */
-  description?: Text;
+  readonly description?: Text;
 
   /**
    * The page title to use.
    */
-  title?: Text;
+  readonly title?: Text;
 }
 
 /**

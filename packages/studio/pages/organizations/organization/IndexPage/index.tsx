@@ -17,7 +17,7 @@ import { type Organization } from '../../../../types.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
 interface IndexPageProps {
-  organization: Organization;
+  readonly organization: Organization;
 }
 
 export function IndexPage({ organization }: IndexPageProps): ReactElement {

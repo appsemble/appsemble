@@ -6,9 +6,9 @@ import { type VNode } from 'preact';
 import styles from './index.module.css';
 
 interface ImageFieldProps {
-  label?: unknown;
-  name?: Remapper;
-  source: Blob | string;
+  readonly label?: unknown;
+  readonly name?: Remapper;
+  readonly source: Blob | string;
 }
 
 export function ImageField({ label, name, source }: ImageFieldProps): VNode {

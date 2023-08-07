@@ -11,22 +11,22 @@ interface DropdownProps {
    *
    * Typically these are nodes that have the `dropdown-item` or `dropdown-divider` class.
    */
-  children: ComponentChildren;
+  readonly children: ComponentChildren;
 
   /**
    * An optional class name to add to the root element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The label to render on the menu toggle button.
    */
-  label: ComponentChild;
+  readonly label: ComponentChild;
 
   /**
    * The icon to display next to the label.
    */
-  icon?: IconName;
+  readonly icon?: IconName;
 }
 
 /**

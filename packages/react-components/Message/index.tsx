@@ -6,22 +6,22 @@ interface MessageProps {
   /**
    * The message content.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * Additional class names to assign to the message element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * The message type.
    */
-  color?: BulmaColor;
+  readonly color?: BulmaColor;
 
   /**
    * An optional header for the message.
    */
-  header?: ReactNode;
+  readonly header?: ReactNode;
 }
 
 export function Message({ children, className, color, header }: MessageProps): ReactElement {

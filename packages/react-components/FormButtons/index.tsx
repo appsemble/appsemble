@@ -4,8 +4,8 @@ import { Children, type ReactElement, type ReactNode } from 'react';
 import styles from './index.module.css';
 
 interface FormButtonsProps {
-  children: ReactNode;
-  className?: string;
+  readonly children: ReactNode;
+  readonly className?: string;
 }
 
 /**

@@ -4,12 +4,12 @@ interface SchemaDescriptorProps {
   /**
    * The label to describe the property.
    */
-  label: ReactElement | string;
+  readonly label: ReactElement | string;
 
   /**
    * The value to render
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 /**

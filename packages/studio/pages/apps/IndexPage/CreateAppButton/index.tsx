@@ -30,7 +30,7 @@ interface Template {
   resources: boolean;
 }
 
-export function CreateAppButton({ className }: { className: string }): ReactElement {
+export function CreateAppButton({ className }: { readonly className: string }): ReactElement {
   const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = useState(0);
 

@@ -10,27 +10,27 @@ interface DropdownFieldProps {
   /**
    * The definition used to render out the field.
    */
-  field: Field;
+  readonly field: Field;
 
   /**
    * The data to display.
    */
-  item: unknown;
+  readonly item: unknown;
 
   /**
    * The index of the row that was clicked.
    */
-  index: number;
+  readonly index: number;
 
   /**
    * The index of the sub row that was clicked.
    */
-  repeatedIndex: number;
+  readonly repeatedIndex: number;
 
   /**
    * The data of the record that item is a part of.
    */
-  record: unknown;
+  readonly record: unknown;
 }
 
 export function DropdownField({

@@ -92,8 +92,66 @@ barcode event only holds the object with property barcode.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "properties": {
+      "barcodeType": {
+        "default": "code_128",
+        "description": "The type of barcode that will be scanned by the block.
+
+Choosing 'multiple' will display a dropdown box to show list of code type to select from.
+
+It has to be configured according to the code image to allow scanning.",
+        "enum": [
+          "2of5",
+          "code_32",
+          "code_39_vin",
+          "code_39",
+          "code_93",
+          "code_128",
+          "ean_2",
+          "ean_5",
+          "ean_8",
+          "ean",
+          "i2of5",
+          "multiple",
+          "upc_e",
+          "upc",
+        ],
+        "type": "string",
+      },
+      "patchSize": {
+        "default": "x-large",
+        "description": "The type of patch size should depend on the size of code image.
+
+Choosing 'multiple' will display a dropdown box to show list of patch size to select from.
+
+It has to be configured according to the code image to allow scanning.",
+        "enum": [
+          "large",
+          "medium",
+          "multiple",
+          "small",
+          "x-large",
+          "x-small",
+        ],
+        "type": "string",
+      },
+      "resolution": {
+        "default": 800,
+        "description": "The resolution should allow scanning code to be precise.
+
+It has to be configured according to the code image to allow scanning.",
+        "type": "number",
+      },
+      "showBarcode": {
+        "default": false,
+        "description": "Option to show scanned code",
+        "type": "boolean",
+      },
       "type": {
-        "description": "Type is either camera or file",
+        "description": "Type is either camera or file
+
+Type 'file' allows to upload code image to scan.
+
+Type 'camera' allows to scan code using webcam.",
         "enum": [
           "camera",
           "file",
@@ -101,6 +159,9 @@ barcode event only holds the object with property barcode.",
         "type": "string",
       },
     },
+    "required": [
+      "type",
+    ],
     "type": "object",
   },
 }

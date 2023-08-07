@@ -6,36 +6,36 @@ export interface InputProps
   /**
    * If specified, a datalist element will be rendered to provided auto complete options.
    */
-  datalist?: string[];
+  readonly datalist?: string[];
 
   /**
    * Whether to render the input in an error state.
    */
-  error?: boolean;
+  readonly error?: boolean;
 
   /**
    * Indicate the select box is in a loading state.
    */
-  loading?: boolean;
+  readonly loading?: boolean;
 
   /**
    * This is fired when the input value has changed.
    *
    * If the input type is `number`, the value is a number, otherwise it is a string.
    */
-  onChange?: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
+  readonly onChange?: (event: ChangeEvent<HTMLInputElement>, value: number | string) => void;
 
   /**
    * A regular expression the input must match.
    */
-  pattern?: RegExp | string;
+  readonly pattern?: RegExp | string;
 
   /**
    * The HTML input type.
    *
    * This may be extended if necessary.
    */
-  type?:
+  readonly type?:
     | 'color'
     | 'date'
     | 'datetime-local'

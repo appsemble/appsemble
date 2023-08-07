@@ -20,12 +20,12 @@ interface SettingsPageProps {
   /**
    * The organization the settings belong to.
    */
-  organization: Organization;
+  readonly organization: Organization;
 
   /**
    * Change handler used to update the organization for the parent component.
    */
-  onChangeOrganization: (organization: Organization) => void;
+  readonly onChangeOrganization: (organization: Organization) => void;
 }
 
 /**

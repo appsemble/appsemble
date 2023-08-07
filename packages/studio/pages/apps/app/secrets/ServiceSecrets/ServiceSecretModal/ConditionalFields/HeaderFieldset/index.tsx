@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { messages } from './messages.js';
 
 interface HeaderFieldsetProps {
-  disabled: boolean;
+  readonly disabled: boolean;
 }
 
 export function HeaderFieldset({ disabled }: HeaderFieldsetProps): ReactElement {

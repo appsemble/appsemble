@@ -30,32 +30,32 @@ const FA_URL = [...document.styleSheets]
   .find((href) => href?.startsWith(`${window.location.origin}/fa/`));
 
 interface BlockProps {
-  data?: any;
-  ee: EventEmitter;
+  readonly data?: any;
+  readonly ee: EventEmitter;
 
   /**
    * The block to render.
    */
-  block: BlockDefinition;
-  extraCreators?: ActionCreators;
+  readonly block: BlockDefinition;
+  readonly extraCreators?: ActionCreators;
 
   /**
    * XXX: Define this type
    */
-  flowActions: any;
+  readonly flowActions: any;
 
   /**
    * The page in which the block is rendered.
    */
-  page: PageDefinition;
-  appStorage: AppStorage;
-  showDialog: ShowDialogAction;
-  showShareDialog: ShowShareDialog;
-  ready: (block: BlockDefinition) => void;
-  remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
-  pageReady: Promise<void>;
-  prefix: string;
-  prefixIndex: string;
+  readonly page: PageDefinition;
+  readonly appStorage: AppStorage;
+  readonly showDialog: ShowDialogAction;
+  readonly showShareDialog: ShowShareDialog;
+  readonly ready: (block: BlockDefinition) => void;
+  readonly remap: (remapper: Remapper, data: any, context?: Record<string, any>) => any;
+  readonly pageReady: Promise<void>;
+  readonly prefix: string;
+  readonly prefixIndex: string;
 }
 
 /**

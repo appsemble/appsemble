@@ -93,7 +93,7 @@ export async function writeData(
     prettierOptions.parser = inferredParser;
     buffer =
       inferredParser === 'yaml' ? stringify(sorted) : `${JSON.stringify(sorted, undefined, 2)}\n`;
-    buffer = prettier.format(buffer, prettierOptions);
+    buffer = await prettier.format(buffer, prettierOptions);
   } catch {
     const ext = extname(path);
     buffer =

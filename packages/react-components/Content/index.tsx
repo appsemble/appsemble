@@ -7,29 +7,29 @@ interface ContentProps {
   /**
    * An additional class name to append to the element.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * Children to render inside the content wrapper.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * If true, don’t apply a maximum width
    */
-  fullwidth?: boolean;
+  readonly fullwidth?: boolean;
 
   /**
    * If true, consider this to be the main content on the page.
    *
    * The difference is that a `<main />` element will be rendered instead of a `<div />`.
    */
-  main?: boolean;
+  readonly main?: boolean;
 
   /**
    * If true, add a padding of 12px.
    */
-  padding?: boolean;
+  readonly padding?: boolean;
 }
 
 /**

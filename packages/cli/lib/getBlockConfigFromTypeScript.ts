@@ -24,7 +24,7 @@ function getNodeComments(checker: ts.TypeChecker, node: ts.TypeElement): string 
   if (comments.length) {
     return comments
       .map((comment) =>
-        comment.kind === 'lineBreak' ? comment.text : comment.text.trim().replace(/\r\n/g, '\n'),
+        comment.kind === 'lineBreak' ? comment.text : comment.text.trim().replaceAll('\r\n', '\n'),
       )
       .join('');
   }
@@ -63,10 +63,9 @@ function processInterface<T>(
           const comments = commentRanges?.map((r) => source.slice(r.pos, r.end)) ?? [];
           const [block] = parse(comments[0]);
           const processedDescription = block.source
-            // @ts-expect-error https://github.com/syavorsky/comment-parser/pull/163
             .map((src) => src.tokens.description)
             .join('\n')
-            .replace(/^\s+|\s+$/g, '');
+            .replaceAll(/^\s+|\s+$/g, '');
 
           return convert(undefined, processedDescription);
         }

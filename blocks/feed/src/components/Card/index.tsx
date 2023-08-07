@@ -14,7 +14,7 @@ export interface CardProps {
   /**
    * The content for this specific card to render.
    */
-  content: {
+  readonly content: {
     id: number;
     status: string;
     photos: string[];
@@ -23,7 +23,7 @@ export interface CardProps {
   /**
    * Update function that can be called to update a single resource
    */
-  onUpdate: (data: unknown) => void;
+  readonly onUpdate: (data: unknown) => void;
 }
 
 /**

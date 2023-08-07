@@ -8,8 +8,8 @@ import { messages } from './messages.js';
 import { useApp } from '../../../../index.js';
 
 interface EndpointProps {
-  hasBody?: boolean;
-  type: '$count' | 'create' | 'delete' | 'get' | 'query' | 'update';
+  readonly hasBody?: boolean;
+  readonly type: '$count' | 'create' | 'delete' | 'get' | 'query' | 'update';
 }
 
 const methods = {

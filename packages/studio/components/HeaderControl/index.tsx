@@ -7,12 +7,12 @@ interface HeaderControlProps extends ComponentPropsWithoutRef<typeof Title> {
   /**
    * The control to render on the right.
    */
-  control: ReactNode;
+  readonly control: ReactNode;
 
   /**
    * The class to apply to the wrapper.
    */
-  className?: string;
+  readonly className?: string;
 }
 
 /**

@@ -29,7 +29,7 @@ interface MessagesProviderProps {
   /**
    * Children to which {@link useMessages} will be available.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface UniqueMessage extends Msg {

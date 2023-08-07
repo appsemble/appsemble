@@ -9,14 +9,6 @@ stages:
   - provision
   - end 2 end
 
-variables:
-  JEST_JUNIT_ADD_FILE_ATTRIBUTE: 'true'
-  JEST_JUNIT_CLASSNAME: '{classname}'
-  JEST_JUNIT_SUITE_NAME: '{filepath}'
-  JEST_JUNIT_TITLE: '{title}'
-  # Suppress Node.js warnings caused by jest using experimental APIs
-  NODE_NO_WARNINGS: 1
-
 workflow:
   rules:
     # By default, run jobs for every merge request.

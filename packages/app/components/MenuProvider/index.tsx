@@ -28,7 +28,7 @@ export interface BlockMenuItem {
 }
 
 interface MenuProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 interface MenuProviderContext {

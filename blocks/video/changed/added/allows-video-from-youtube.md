@@ -1,1 +1,0 @@
-Allows video from YouTube.

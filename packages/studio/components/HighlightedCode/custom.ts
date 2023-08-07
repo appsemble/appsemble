@@ -183,6 +183,7 @@ export default class MonacoConfigure {
   getLanguageConfig(): monaco.languages.LanguageConfiguration {
     return this.language ? languageConfiguration : null;
   }
+
   getTheme(): monaco.editor.IStandaloneThemeData {
     return this.language ? theme : null;
   }

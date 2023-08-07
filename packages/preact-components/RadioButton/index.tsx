@@ -10,22 +10,22 @@ interface RadioButtonProps<T>
   /**
    * The node to render as a label.
    */
-  children: ComponentChild;
+  readonly children: ComponentChild;
 
   /**
    * The value represented by this radio button.
    */
-  value: T;
+  readonly value: T;
 
   /**
    * A function which returns how to represent the value in the DOM.
    */
-  valueToString?: (value: T) => string;
+  readonly valueToString?: (value: T) => string;
 
   /**
    * The class used for the wrapper div.
    */
-  wrapperClassName?: string;
+  readonly wrapperClassName?: string;
 }
 
 /**

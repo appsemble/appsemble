@@ -7,22 +7,22 @@ import { useCallback, useMemo } from 'preact/hooks';
 import { type Button as ButtonFieldType } from '../../../block.js';
 
 interface ButtonFieldProps {
-  field: ButtonFieldType;
+  readonly field: ButtonFieldType;
 
   /**
    * The data to display.
    */
-  item: unknown;
+  readonly item: unknown;
 
   /**
    * The index of the row that was clicked.
    */
-  index: number;
+  readonly index: number;
 
   /**
    * The index of the sub row that was clicked.
    */
-  repeatedIndex: number;
+  readonly repeatedIndex: number;
 }
 
 export function ButtonField({

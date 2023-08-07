@@ -6,7 +6,7 @@
  * @returns the base64 content as a Uint8Array.
  */
 export function urlB64ToUint8Array(base64String: string): Uint8Array {
-  const base64 = base64String.replace(/-/g, '+').replace(/_/g, '/');
+  const base64 = base64String.replaceAll('-', '+').replaceAll('_', '/');
 
   return Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
 }

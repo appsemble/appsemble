@@ -21,7 +21,7 @@ import { logins } from '../../utils/settings.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface OAuth2StudioCallbackProps {
-  session: ExtendedOAuth2State;
+  readonly session: ExtendedOAuth2State;
 }
 
 /**

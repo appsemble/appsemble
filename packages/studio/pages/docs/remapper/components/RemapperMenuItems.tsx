@@ -1,4 +1,4 @@
-import { MenuItem } from '@appsemble/react-components/MenuItem/index.js';
+import { MenuItem } from '@appsemble/react-components';
 import { camelToHyphen } from '@appsemble/utils';
 import { type MDXContent } from 'mdx/types.js';
 import { type ReactElement } from 'react';

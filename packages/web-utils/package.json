@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/web-utils",
-  "version": "0.20.45",
+  "version": "0.21.2",
   "private": true,
   "description": "Browser specific utility functions used in Appsemble internally",
   "keywords": [
@@ -22,17 +22,23 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.45",
-    "@appsemble/utils": "0.20.45",
+    "@appsemble/types": "0.21.2",
+    "@appsemble/utils": "0.21.2",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@sentry/browser": "^7.0.0",
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^1.0.0",
-    "type-fest": "^3.0.0"
+    "type-fest": "^4.0.0"
   }
 }

@@ -34,6 +34,7 @@ theme/name
 URI/URL
 uncategorize/categorize
 unconfigure/reconfigure
+validator
 workspace/mare
 
 # Technical slang and libraries
@@ -53,6 +54,7 @@ CORS
 CSS
 CSV
 cronjob/job
+customappsso
 DNS
 Dnsmasq
 DOM
@@ -61,12 +63,14 @@ dropdown
 EAA
 EditorConfig
 ESLint
+externalid
 falsy
 fieldset
 fieldsets
 GDPR
 GitLab
 Gravatar
+HTTPS
 IDP
 JSON
 JSX
@@ -77,6 +81,7 @@ localhost
 MacOS
 MD5
 NodeJS
+ngrok
 npm
 npmjs
 OAuth
@@ -94,6 +99,9 @@ remapper/mapper
 Redux
 SAML
 SAML2.0
+SCIM
+scim
+scimExternalId
 SDK
 SMTP
 SSL

@@ -7,42 +7,42 @@ interface CardHeaderControlProps {
   /**
    * The title of the card. Will be wrapped in a Title component.
    */
-  title: ReactNode;
+  readonly title: ReactNode;
 
   /**
    * The level to specify on the title.
    */
-  titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  readonly titleLevel?: 1 | 2 | 3 | 4 | 5 | 6;
 
   /**
    * The subtitle of the card. Will be wrapped in a Subtitle component.
    */
-  subtitle: ReactNode;
+  readonly subtitle: ReactNode;
 
   /**
    * The description of the card.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Additional elements to display within the card’s header.
    */
-  details?: ReactNode;
+  readonly details?: ReactNode;
 
   /**
    * The icon of the card. Will be wrapped in a figure node.
    */
-  icon?: ReactNode;
+  readonly icon?: ReactNode;
 
   /**
    * A list of Button controls.
    */
-  controls?: ReactNode;
+  readonly controls?: ReactNode;
 
   /**
    * The body of the content of the card.
    */
-  children?: ReactNode;
+  readonly children?: ReactNode;
 }
 
 /**

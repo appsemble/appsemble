@@ -3,13 +3,14 @@
 }
 
 .container > div {
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   display: contents;
   height: 100%;
 }
 
 /* stylelint-disable-next-line selector-max-type */
 .container > div > iframe {
-  position: unset;
+  position: unset !important;
 }
 
 .error {

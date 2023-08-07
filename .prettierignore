@@ -1,17 +1,2 @@
 # Helm templates aren’t valid YAML files, so they can’t be formatted.
 /config/charts/*/templates
-
-# Build output for various packages
-dist/
-
-# Jest output
-coverage/
-
-# Playwright output
-playwright-report/
-
-# Use this prefix for GitLab reports
-/gl-*
-
-# Lighthouse reports
-/.lighthouseci/

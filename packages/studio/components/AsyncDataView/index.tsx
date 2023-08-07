@@ -11,27 +11,27 @@ interface AsyncDataViewProps<T> {
    *
    * @param data The resulting data from the axios result.
    */
-  children: (data: T) => ReactNode;
+  readonly children: (data: T) => ReactNode;
 
   /**
    * The message to display if the loaded data was empty.
    */
-  emptyMessage?: ReactNode;
+  readonly emptyMessage?: ReactNode;
 
   /**
    * The message to display if there was a problem loading the data.
    */
-  errorMessage: ReactNode;
+  readonly errorMessage: ReactNode;
 
   /**
    * The message to display if the data is being loaded.
    */
-  loadingMessage: ReactNode;
+  readonly loadingMessage: ReactNode;
 
   /**
    * The result from a `useAxios()` hook.
    */
-  result: UseAxiosResult<T>;
+  readonly result: UseAxiosResult<T>;
 }
 
 /**

@@ -5,11 +5,11 @@ import classNames from 'classnames';
 import { type ComponentProps, type ReactElement } from 'react';
 
 interface IconProps extends ComponentProps<'span'> {
-  color?: BulmaColor;
-  icon: IconName;
-  iconSize?: '2x' | '3x' | 'lg';
-  size?: Exclude<BulmaSize, 'normal'>;
-  solid?: boolean;
+  readonly color?: BulmaColor;
+  readonly icon: IconName;
+  readonly iconSize?: '2x' | '3x' | 'lg';
+  readonly size?: Exclude<BulmaSize, 'normal'>;
+  readonly solid?: boolean;
 }
 
 const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {

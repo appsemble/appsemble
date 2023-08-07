@@ -18,31 +18,31 @@ interface SentryFormProps {
   /**
    * The Sentry DSN to use.
    */
-  dsn: string;
+  readonly dsn: string;
 
   /**
    * The user email value that is filled in by default.
    */
-  email?: string;
+  readonly email?: string;
 
   /**
    * If an event has been captured, use pass the generated event ID here.
    *
    * If this is unspecified, a new event called will be generated called `Feedback`.
    */
-  eventId?: string;
+  readonly eventId?: string;
 
   /**
    * The user name value that is filled in by default.
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * A component that can be used to recover from the current situation.
    *
    * Typically this is a link button.
    */
-  recovery?: ReactNode;
+  readonly recovery?: ReactNode;
 }
 
 /**

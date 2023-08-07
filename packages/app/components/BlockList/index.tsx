@@ -20,18 +20,18 @@ import { Block } from '../Block/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface BlockListProps {
-  blocks: BlockDefinition[];
-  data?: any;
-  ee: EventEmitter;
-  extraCreators?: ActionCreators;
-  flowActions?: {};
-  page: PageDefinition;
-  prefix: string;
-  prefixIndex: string;
-  appStorage: AppStorage;
-  remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
-  showDialog: ShowDialogAction;
-  showShareDialog: ShowShareDialog;
+  readonly blocks: BlockDefinition[];
+  readonly data?: any;
+  readonly ee: EventEmitter;
+  readonly extraCreators?: ActionCreators;
+  readonly flowActions?: {};
+  readonly page: PageDefinition;
+  readonly prefix: string;
+  readonly prefixIndex: string;
+  readonly appStorage: AppStorage;
+  readonly remap: (remapper: Remapper, data: any, context: Record<string, any>) => any;
+  readonly showDialog: ShowDialogAction;
+  readonly showShareDialog: ShowShareDialog;
 }
 
 function filterBlocks(

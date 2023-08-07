@@ -16,7 +16,7 @@ export interface ResetPasswordValues {
 }
 
 interface ResetPasswordProps {
-  onSubmit: (email: string) => Promise<void>;
+  readonly onSubmit: (email: string) => Promise<void>;
 }
 
 export function ResetPassword({ onSubmit }: ResetPasswordProps): ReactElement {

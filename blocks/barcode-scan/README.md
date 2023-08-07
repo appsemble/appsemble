@@ -1,11 +1,2 @@
-This block was bootstrapped using the following command:
-
-```sh
-npm init appsemble block
-```
-
-This block renders a list of data entities that is emitted through an Appsemble block event. It uses
-[`preact`](https://preactjs.com) to define a block.
-
-This readme will be rendered on <https://appsemble.app> when the block is published. Replace the
-contents of this document with a useful block description.
+This block can be used to scan bar codes using the camera and by uploading code image file. It
+renders the video element on which displays the camera feed or option to choose the code image file.

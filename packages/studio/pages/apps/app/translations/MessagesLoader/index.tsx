@@ -12,7 +12,7 @@ interface MessagesLoaderProps {
   /**
    * The language ID to eit messages for.
    */
-  languageId: string;
+  readonly languageId: string;
 }
 
 /**

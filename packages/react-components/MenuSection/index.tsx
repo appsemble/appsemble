@@ -7,19 +7,19 @@ interface MenuSectionProps {
   /**
    * The class that is applied to the list container.
    */
-  className?: string;
+  readonly className?: string;
 
   /**
    * Menu items to render.
    *
    * Each child will be wrapped in a `<li>` element.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * An optional label to render on top of the menu list.
    */
-  label?: ReactNode;
+  readonly label?: ReactNode;
 }
 
 /**

@@ -14,10 +14,10 @@ export function normalize(input: string, stripTrailingHyphen = true): string {
   const normalized = input
     // Normalize accents. https://stackoverflow.com/a/37511463/1154610
     .normalize('NFD')
-    .replace(/[\u0300-\u036F]/g, '')
+    .replaceAll(/[\u0300-\u036F]/g, '')
     // Make it lower case.
     .toLowerCase()
     // Replace any non-alphanumeric with single hyphens them at the start.
-    .replace(/[^\da-z]+/g, (match, index) => (index ? '-' : ''));
+    .replaceAll(/[^\da-z]+/g, (match, index) => (index ? '-' : ''));
   return stripTrailingHyphen ? normalized.replace(/-$/, '') : normalized;
 }

@@ -1,2 +1,6 @@
 ci_access:
-  projects: []
+  groups:
+    - id: appsemble
+      environments:
+        - staging
+        - review/*

@@ -24,7 +24,7 @@ const DEFAULT_LEVEL = levels.indexOf('info');
 const padding = Math.max(...levels.map(({ length }) => length));
 
 function headerCase(header: string): string {
-  return header.replace(/(^|-)\w/g, (a) => a.toUpperCase());
+  return header.replaceAll(/(^|-)\w/g, (a) => a.toUpperCase());
 }
 
 function httpErrorToString(error: AxiosError): string {

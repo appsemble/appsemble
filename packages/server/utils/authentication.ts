@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 
 import { argv } from './argv.js';
 import { type AuthenticationCheckers } from './createServer.js';
+import { decrypt } from './crypto.js';
 import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models/index.js';
 
 export function authentication(): AuthenticationCheckers {
@@ -43,6 +44,24 @@ export function authentication(): AuthenticationCheckers {
         return;
       }
       return [new User({ id: sub }), { scope }];
+    },
+
+    async scim(scimToken, { path }) {
+      // This runs before the path parameter parsing, so we can’t use pathParams
+      const match = path.match(/^\/api\/apps\/(\d+)\/scim/);
+      if (!match) {
+        return;
+      }
+      const app = await App.findOne({
+        where: {
+          id: Number(match[1]),
+          scimEnabled: true,
+        },
+        attributes: ['id', 'scimToken'],
+      });
+      if (decrypt(app.scimToken, argv.aesSecret) === scimToken) {
+        return {} as User;
+      }
     },
 
     studio(accessToken) {

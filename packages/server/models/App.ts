@@ -153,6 +153,14 @@ export class App extends Model {
   @Column(DataType.STRING)
   sentryEnvironment: string;
 
+  @Default(false)
+  @AllowNull(false)
+  @Column(DataType.BOOLEAN)
+  scimEnabled: boolean;
+
+  @Column(DataType.BLOB)
+  scimToken: Buffer;
+
   @UpdatedAt
   updated: Date;
 
@@ -211,9 +219,13 @@ export class App extends Model {
   AppSnapshots: AppSnapshot[];
 
   RatingAverage?: number;
+
   RatingCount?: number;
+
   hasIcon?: boolean;
+
   hasMaskableIcon?: boolean;
+
   messages?: AppsembleMessages;
 
   /**

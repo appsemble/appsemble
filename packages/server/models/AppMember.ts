@@ -60,6 +60,13 @@ export class AppMember extends Model {
   properties?: Record<string, string>;
 
   @Column(DataType.STRING)
+  scimExternalId?: string;
+
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  scimActive?: boolean;
+
+  @Column(DataType.STRING)
   locale?: string;
 
   @CreatedAt

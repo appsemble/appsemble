@@ -6,12 +6,12 @@ export interface TextAreaProps
   /**
    * Whether to render the input in an error state.
    */
-  error?: boolean;
+  readonly error?: boolean;
 
   /**
    * Indicate the text area is in a loading state.
    */
-  loading?: boolean;
+  readonly loading?: boolean;
 
   /**
    * This is fired when the input value has changed.
@@ -19,7 +19,7 @@ export interface TextAreaProps
    * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
    * value is a number, otherwise it is a string.
    */
-  onChange?: (event: ChangeEvent<HTMLTextAreaElement>, value: string) => void;
+  readonly onChange?: (event: ChangeEvent<HTMLTextAreaElement>, value: string) => void;
 }
 
 /**

@@ -47,37 +47,37 @@ interface CreateOrganizationModalProps {
   /**
    * Whether the modal should be visible or not.
    */
-  isActive: Toggle['enabled'];
+  readonly isActive: Toggle['enabled'];
 
   /**
    * The function used to close the modal.
    */
-  onClose: Toggle['disable'];
+  readonly onClose: Toggle['disable'];
 
   /**
    * The callback that is called when a new organization is created.
    */
-  onCreateOrganization?: (organization: Organization) => void;
+  readonly onCreateOrganization?: (organization: Organization) => void;
 
   /**
    * The default values for the new organization.
    */
-  defaultValues?: Omit<Organization, 'iconUrl'>;
+  readonly defaultValues?: Omit<Organization, 'iconUrl'>;
 
   /**
    * Additional information that is rendered at the top of the SimpleForm.
    */
-  help?: ReactElement;
+  readonly help?: ReactElement;
 
   /**
    * Whether the form should be disabled.
    */
-  disabled?: boolean;
+  readonly disabled?: boolean;
 
   /**
    * The title to display for the modal.
    */
-  title: ReactElement;
+  readonly title: ReactElement;
 }
 
 const defaults = {

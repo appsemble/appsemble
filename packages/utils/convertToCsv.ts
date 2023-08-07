@@ -15,7 +15,7 @@ export function convertToCsv(body: any): string {
   const quoteRegex = new RegExp(quote, 'g');
   const escape = (value: string): string =>
     value.includes(separator) || value.includes(lineEnd) || value.includes(quote)
-      ? `${quote}${value.replace(quoteRegex, `${quote}${quote}`)}${quote}`
+      ? `${quote}${value.replaceAll(quoteRegex, `${quote}${quote}`)}${quote}`
       : value;
 
   if (body == null) {

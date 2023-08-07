@@ -28,14 +28,14 @@ interface AddMembersModalProps {
   /**
    * The state of the modal.
    */
-  state: Toggle;
+  readonly state: Toggle;
 
   /**
    * This is called when new people have been invited.
    *
    * @param invites The newly added invites.
    */
-  onInvited: (invites: OrganizationInvite[]) => void;
+  readonly onInvited: (invites: OrganizationInvite[]) => void;
 }
 
 const defaultInvite = {

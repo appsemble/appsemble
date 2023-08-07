@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.20.45",
+  "version": "0.21.2",
   "description": "Utility functions used in Appsemble internally",
   "keywords": [
     "app",
@@ -21,6 +21,12 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "files": [
     "**/*.d.ts",
     "**/*.js",
@@ -31,7 +37,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/types": "0.20.45",
+    "@appsemble/types": "0.21.2",
     "axios": "^1.0.0",
     "cron-parser": "^4.0.0",
     "date-fns": "^2.0.0",
@@ -45,7 +51,7 @@
     "openapi-types": "^12.0.0",
     "parse-duration": "^1.0.0",
     "postcss": "^8.0.0",
-    "type-fest": "^3.0.0"
+    "type-fest": "^4.0.0"
   },
   "devDependencies": {
     "@types/langmap": "^0.0.1",

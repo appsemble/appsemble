@@ -67,6 +67,15 @@ export const messages = defineMessages({
     defaultMessage:
       'If specified, this SAML attribute is used to determine the user’s display name',
   },
+  objectIdAttributeLabel: {
+    id: 'studio.7MMlMV',
+    defaultMessage: 'Object ID attribute',
+  },
+  objectIdAttributeHelp: {
+    id: 'studio.gM6Voq',
+    defaultMessage:
+      'If specified, this SAML attribute is used to determine the user’s object ID. Required if there is a SCIM connection present.',
+  },
   idpCertificateLabel: {
     id: 'studio.qGxjxU',
     defaultMessage: 'Identity provider certificate',

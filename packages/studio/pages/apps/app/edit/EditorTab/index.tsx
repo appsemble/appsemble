@@ -3,10 +3,10 @@ import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type ReactChild, type ReactElement } from 'react';
 
 interface EditorTabProps {
-  children: ReactChild;
-  errorCount: number;
-  icon: IconName;
-  value: string;
+  readonly children: ReactChild;
+  readonly errorCount: number;
+  readonly icon: IconName;
+  readonly value: string;
 }
 
 export function EditorTab({ children, errorCount, icon, value }: EditorTabProps): ReactElement {

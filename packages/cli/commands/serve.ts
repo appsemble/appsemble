@@ -38,11 +38,12 @@ import { traverseAppDirectory } from '../lib/app.js';
 import { buildBlock, getBlockConfig, makePayload } from '../lib/block.js';
 import { createApiServer, createStaticServer } from '../lib/createServers.js';
 import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
+import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
-import { type BaseArguments } from '../types.js';
 
-interface ServeArguments extends BaseArguments {
+export interface ServeArguments {
+  remote: string;
   path: string;
   port: number;
   'api-port': number;
@@ -90,6 +91,7 @@ export function builder(yargs: Argv): Argv<any> {
 }
 
 export async function handler(argv: ServeArguments): Promise<void> {
+  setArgv(argv);
   const appPath = join(process.cwd(), argv.path);
   const [, , , appsembleApp] = await traverseAppDirectory(appPath, 'development', new FormData());
 
@@ -320,9 +322,9 @@ export async function handler(argv: ServeArguments): Promise<void> {
     $updated: new Date().toISOString(),
   } as App;
 
-  const api = createApiServer({
-    argv,
+  const appsembleApiServer = createApiServer({
     context: {
+      appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,
       appBlocks,
       appMessages,
@@ -338,17 +340,16 @@ export async function handler(argv: ServeArguments): Promise<void> {
     },
   });
 
-  api.on('error', (err) => {
+  appsembleApiServer.on('error', (err) => {
     if (err.expose) {
       return;
     }
     logger.error(err);
   });
 
-  const appsemble = http.createServer(api.callback());
+  const api = http.createServer(appsembleApiServer.callback());
 
-  const server = await createStaticServer({
-    argv,
+  const staticServer = await createStaticServer({
     context: {
       apiUrl: `http://localhost:${argv['api-port']}`,
       appHost: `http://localhost:${argv.port}`,
@@ -368,21 +369,21 @@ export async function handler(argv: ServeArguments): Promise<void> {
     webpackConfigs,
   });
 
-  server.on('error', (err) => {
+  staticServer.on('error', (err) => {
     if (err.expose) {
       return;
     }
     logger.error(err);
   });
 
-  const httpServer = http.createServer(server.callback());
+  const app = http.createServer(staticServer.callback());
 
-  appsemble.listen(argv['api-port'], '::', () => {
+  api.listen(argv['api-port'], '::', () => {
     logger.info(asciiLogo);
     logger.info(`The api can be found on\n> http://localhost:${argv['api-port']}`);
   });
 
-  httpServer.listen(argv.port, '::', () => {
+  app.listen(argv.port, '::', () => {
     logger.info(`\nThe app can be found on\n> http://localhost:${argv.port}`);
   });
 }

@@ -14,17 +14,17 @@ interface OAuth2SecretItemProps {
    * @param newProvider The new provider values.
    * @param oldProvider The old provider values to replace..
    */
-  onUpdated: (newProvider: AppOAuth2Secret, oldProvider: AppOAuth2Secret) => void;
+  readonly onUpdated: (newProvider: AppOAuth2Secret, oldProvider: AppOAuth2Secret) => void;
 
   /**
    * The current provider values.
    */
-  secret: AppOAuth2Secret;
+  readonly secret: AppOAuth2Secret;
 
   /**
    * Called when secret has been deleted successfully.
    */
-  onDeleted: (secret: AppOAuth2Secret) => void;
+  readonly onDeleted: (secret: AppOAuth2Secret) => void;
 }
 
 /**

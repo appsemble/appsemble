@@ -1,1 +1,0 @@
-Allow to render videos.

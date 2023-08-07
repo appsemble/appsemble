@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.20.45",
+  "version": "0.21.2",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "keywords": [
     "app",
@@ -21,6 +21,13 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ],
+    "./README.md": "./README.md"
+  },
   "bin": {
     "appsemble": "index.js"
   },
@@ -34,9 +41,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.20.45",
-    "@appsemble/types": "0.20.45",
-    "@appsemble/utils": "0.20.45",
+    "@appsemble/node-utils": "0.21.2",
+    "@appsemble/types": "0.21.2",
+    "@appsemble/utils": "0.21.2",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@hapi/boom": "^10.0.0",
     "@koa/cors": "^4.0.0",
@@ -69,16 +76,16 @@
     "postcss-load-config": "^4.0.0",
     "postcss-url": "^10.0.0",
     "raw-body": "^2.0.0",
-    "read-pkg-up": "^9.0.0",
+    "read-pkg-up": "^10.0.0",
     "sharp": "^0.32.0",
     "ts-json-schema-generator": "^1.0.0",
-    "type-fest": "^3.0.0",
+    "type-fest": "^4.0.0",
     "webpack": "^5.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },
   "devDependencies": {
-    "@appsemble/types": "0.20.45",
+    "@appsemble/types": "0.21.2",
     "@types/concat-stream": "^2.0.0",
     "@types/inquirer": "^9.0.0",
     "@types/normalize-path": "^3.0.0",

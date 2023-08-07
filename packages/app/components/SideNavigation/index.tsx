@@ -14,8 +14,8 @@ import { type BlockMenuItem } from '../MenuProvider/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 interface SideNavigationProps {
-  pages: PageDefinition[];
-  blockMenus: BlockMenuItem[];
+  readonly pages: PageDefinition[];
+  readonly blockMenus: BlockMenuItem[];
 }
 
 /**

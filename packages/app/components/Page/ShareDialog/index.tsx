@@ -7,8 +7,8 @@ import { messages } from './messages.js';
 import { type ShowShareDialogParams } from '../../../types.js';
 
 export interface ShareDialogParams {
-  shareDialogParams: ShareDialogState;
-  setShareDialogParams: Dispatch<SetStateAction<ShareDialogState>>;
+  readonly shareDialogParams: ShareDialogState;
+  readonly setShareDialogParams: Dispatch<SetStateAction<ShareDialogState>>;
 }
 
 export interface ShareDialogState {
@@ -68,7 +68,7 @@ export function ShareDialog({
           href={createUrl('mailto:', {
             subject: title,
             body: text && url ? `${text}\n${url}` : text || url,
-          }).replace(/\+/g, '%20')}
+          }).replaceAll('+', '%20')}
           icon="envelope"
           onClick={resolveShareDialog}
         >

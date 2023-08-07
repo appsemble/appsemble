@@ -27,22 +27,22 @@ interface ServiceSecretCardProps {
    *
    * @param secret The relevant service secrets to save.
    */
-  submit: (secret: AppServiceSecret) => Promise<void>;
+  readonly submit: (secret: AppServiceSecret) => Promise<void>;
 
   /**
    * The current service secret values.
    */
-  secret: AppServiceSecret;
+  readonly secret: AppServiceSecret;
 
   /**
    * The toggle used for managing the modal.
    */
-  toggle: Toggle;
+  readonly toggle: Toggle;
 
   /**
    * Called when the service secret has been deleted successfully.
    */
-  onDeleted?: (secret: AppServiceSecret) => void;
+  readonly onDeleted?: (secret: AppServiceSecret) => void;
 }
 
 /**

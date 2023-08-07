@@ -4,8 +4,8 @@ import { type ReactElement } from 'react';
 import styles from './index.module.css';
 
 interface DotProgressBarProps {
-  amount: number;
-  active: number;
+  readonly amount: number;
+  readonly active: number;
 }
 
 export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
