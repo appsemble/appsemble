@@ -1,5 +1,14 @@
-import { Loader, Message, MetaSwitch, useData } from '@appsemble/react-components';
+import {
+  Loader,
+  MenuItem,
+  MenuSection,
+  Message,
+  MetaSwitch,
+  useData,
+  useSideMenu,
+} from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
+import { Permission } from '@appsemble/utils';
 import { type ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';
@@ -7,16 +16,44 @@ import { Route, useParams } from 'react-router-dom';
 import { ExpertPage } from './ExpertPage/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
+import { SettingsPage } from './SettingsPage/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
 
 export function CollectionRoutes(): ReactElement {
-  const { collectionId } = useParams<{
+  const { collectionId, lang, organizationId } = useParams<{
+    lang: string;
+    organizationId: string;
     collectionId: string;
   }>();
   const {
     data: collection,
     error,
     loading,
+    setData: setCollection,
   } = useData<AppCollection>(`/api/appCollections/${collectionId}`);
+
+  const { organizations } = useUser();
+  const userOrganization = organizations?.find((org) => org.id === organizationId);
+
+  const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
+
+  const url = `/${lang}/organizations/${organizationId}/collections/${collectionId}`;
+
+  useSideMenu(
+    collection && (
+      <MenuSection label={<span className="ml-2">{collection.name}</span>}>
+        <MenuItem exact icon="folder" to={url}>
+          <FormattedMessage {...messages.apps} />
+        </MenuItem>
+        {mayEdit ? (
+          <MenuItem icon="cog" to={`${url}/settings`}>
+            <FormattedMessage {...messages.settings} />
+          </MenuItem>
+        ) : null}
+      </MenuSection>
+    ),
+  );
 
   if (error) {
     return (
@@ -38,6 +75,10 @@ export function CollectionRoutes(): ReactElement {
 
   return (
     <MetaSwitch title={collection?.name}>
+      <Route
+        element={<SettingsPage collection={collection} setCollection={setCollection} />}
+        path="/settings"
+      />
       <Route element={<ExpertPage collection={collection} />} path="/expert" />
       <Route element={<IndexPage collection={collection} />} path="/" />
     </MetaSwitch>

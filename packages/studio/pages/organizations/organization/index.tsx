@@ -45,7 +45,7 @@ export function OrganizationRoutes(): ReactElement {
           </MenuItem>
         ) : null}
         {userOrganization ? (
-          <MenuItem icon="folder" to={`${url}/collections`}>
+          <MenuItem exact icon="folder" to={`${url}/collections`}>
             <FormattedMessage {...messages.collections} />
           </MenuItem>
         ) : null}

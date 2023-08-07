@@ -1,22 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
-  title: {
-    id: 'studio.O+3CZK',
-    defaultMessage: 'Create new collection',
-  },
-  cancel: {
-    id: 'studio.47FYwb',
-    defaultMessage: 'Cancel',
-  },
-  create: {
-    id: 'studio.9lnhZ4',
-    defaultMessage: 'Create collection',
-  },
-  error: {
-    id: 'studio.k+H5xE',
-    defaultMessage: 'Something went wrong when creating this collection.',
-  },
   expertName: {
     id: 'studio.EeE8+D',
     defaultMessage: 'Expert name',
@@ -37,10 +21,6 @@ export const messages = defineMessages({
     id: 'studio.vhBxKa',
     defaultMessage:
       'You can use {markdownLink} to format your description. To upload images, use a service like {imageHostingLink}.',
-  },
-  nameConflict: {
-    id: 'studio.TQLpqB',
-    defaultMessage: 'A collection with this name already exists in this organization.',
   },
   name: {
     id: 'studio.HAlOn1',

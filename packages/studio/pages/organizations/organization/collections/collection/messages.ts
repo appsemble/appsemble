@@ -5,6 +5,10 @@ export const messages = defineMessages({
     id: 'studio.C4dVmi',
     defaultMessage: 'Expert',
   },
+  apps: {
+    id: 'studio.gRiKLf',
+    defaultMessage: 'Apps',
+  },
   notFound: {
     id: 'studio.xYwpXF',
     defaultMessage: 'Collection not found',
@@ -12,6 +16,10 @@ export const messages = defineMessages({
   permissionError: {
     id: 'studio.QLncvR',
     defaultMessage: 'You do not have permission to view this collection.',
+  },
+  settings: {
+    id: 'studio.D3idYv',
+    defaultMessage: 'Settings',
   },
   uncaughtError: {
     id: 'studio.NJk0ms',

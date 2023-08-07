@@ -15,10 +15,10 @@ import { useParams } from 'react-router-dom';
 import { AddCollectionModal } from './AddCollectionModal/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { CollectionCard } from '../../../../components/CollectionCard/index.js';
-import { HeaderControl } from '../../../../components/HeaderControl/index.js';
-import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+import { CollectionCard } from '../../../../../components/CollectionCard/index.js';
+import { HeaderControl } from '../../../../../components/HeaderControl/index.js';
+import { useUser } from '../../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../../utils/checkRole.js';
 
 export function CollectionsPage(): ReactElement {
   const { formatMessage } = useIntl();
