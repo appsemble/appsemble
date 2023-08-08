@@ -27,6 +27,5 @@ export class AppEmailQuotaLog extends Model {
   App: Awaited<App>;
 
   @CreatedAt
-  @Column(DataType.DATE)
   created: Date;
 }
