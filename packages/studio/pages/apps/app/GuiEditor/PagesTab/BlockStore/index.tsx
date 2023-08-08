@@ -16,7 +16,7 @@ import { messages } from './messages.js';
  */
 
 interface BlockStoreProps {
-  dragEventListener: (data: BlockManifest) => void;
+  readonly dragEventListener: (data: BlockManifest) => void;
 }
 
 export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {

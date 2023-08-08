@@ -12,11 +12,11 @@ import { type Document, type Node, type ParsedNode } from 'yaml';
 import { InputString } from '../../Components/InputString/index.js';
 
 interface SubPagePropertyProps {
-  changeIn: (path: Iterable<unknown>, value: Node) => void;
-  deletePage: () => void;
-  docRef: MutableRefObject<Document<ParsedNode>>;
-  selectedPage: number;
-  selectedSubPage: number;
+  readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
+  readonly deletePage: () => void;
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly selectedPage: number;
+  readonly selectedSubPage: number;
 }
 
 export function SubPageProperty({

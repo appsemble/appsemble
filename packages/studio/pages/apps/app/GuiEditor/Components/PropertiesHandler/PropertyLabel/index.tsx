@@ -7,9 +7,9 @@ import { messages } from './messages.js';
 import { MarkdownContent } from '../../../../../../../components/MarkdownContent/index.js';
 
 interface PropertyLabelProps {
-  label: string;
-  description?: string;
-  required: boolean;
+  readonly label: string;
+  readonly description?: string;
+  readonly required: boolean;
 }
 
 export function PropertyLabel({ description, label, required }: PropertyLabelProps): ReactElement {

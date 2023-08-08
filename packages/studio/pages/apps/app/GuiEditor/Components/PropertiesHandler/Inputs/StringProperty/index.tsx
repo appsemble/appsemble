@@ -4,10 +4,10 @@ import { type OpenAPIV3 } from 'openapi-types';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 interface StringPropertyProps {
-  value: any;
-  schema: Schema;
-  onChange: (property: string, value: any) => void;
-  property: string;
+  readonly value: any;
+  readonly schema: Schema;
+  readonly onChange: (property: string, value: any) => void;
+  readonly property: string;
 }
 
 export function StringProperty({

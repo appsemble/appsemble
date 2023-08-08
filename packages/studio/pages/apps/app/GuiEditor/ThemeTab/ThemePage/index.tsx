@@ -31,12 +31,12 @@ interface InheritedTheme {
 }
 
 interface ThemePageProps {
-  changeIn: (path: Iterable<unknown>, value: Node) => void;
-  deleteIn: (path: Iterable<unknown>) => void;
-  docRef: MutableRefObject<Document<ParsedNode>>;
-  selectedPage: number;
-  selectedBlock: number;
-  selectedSubParent: number;
+  readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
+  readonly deleteIn: (path: Iterable<unknown>) => void;
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly selectedPage: number;
+  readonly selectedBlock: number;
+  readonly selectedSubParent: number;
 }
 
 const defaultFont: FontDefinition = { family: 'Open Sans', source: 'google' };

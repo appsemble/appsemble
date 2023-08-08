@@ -3,9 +3,9 @@ import { type ReactElement } from 'react';
 import styles from './index.module.css';
 
 interface SidebarProps {
-  children: ReactElement | ReactElement[];
-  type: 'left' | 'right';
-  isOpen: boolean;
+  readonly children: ReactElement | ReactElement[];
+  readonly type: 'left' | 'right';
+  readonly isOpen: boolean;
 }
 
 export function Sidebar({ children, isOpen, type }: SidebarProps): ReactElement {

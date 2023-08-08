@@ -10,7 +10,7 @@ import { type tabChangeOptions } from '../index.js';
 const policyOptions = ['everyone', 'organization', 'invite'] as const;
 
 interface DefaultPageProps {
-  onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
+  readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
 export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
   const { app, setApp } = useApp();

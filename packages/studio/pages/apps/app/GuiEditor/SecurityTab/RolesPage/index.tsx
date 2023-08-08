@@ -23,7 +23,7 @@ import { InputString } from '../../Components/InputString/index.js';
 import { InputTextArea } from '../../Components/InputTextArea/index.js';
 
 interface RolesPageProps {
-  selectedRole: string;
+  readonly selectedRole: string;
 }
 interface RoleReferences {
   inheritReferences: string[];

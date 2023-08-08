@@ -12,12 +12,12 @@ import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface ThemeTabProps {
-  changeIn: (path: Iterable<unknown>, value: Node) => void;
-  deleteIn: (path: Iterable<unknown>) => void;
-  docRef: MutableRefObject<Document<ParsedNode>>;
-  frameRef: Ref<HTMLIFrameElement>;
-  isOpenLeft: boolean;
-  isOpenRight: boolean;
+  readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
+  readonly deleteIn: (path: Iterable<unknown>) => void;
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly frameRef: Ref<HTMLIFrameElement>;
+  readonly isOpenLeft: boolean;
+  readonly isOpenRight: boolean;
 }
 export function ThemeTab({
   changeIn,

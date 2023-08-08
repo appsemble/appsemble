@@ -4,13 +4,13 @@ import { type ChangeEvent, type ReactElement, useCallback, useState } from 'reac
 import styles from './index.module.css';
 
 interface ColorPickerProps {
-  selectedColor: string;
-  onChange: (value: string) => void;
-  label?: string;
-  labelPosition?: 'left' | 'top';
-  inheritFrom?: string;
-  canReset: boolean;
-  onReset?: () => void;
+  readonly selectedColor: string;
+  readonly onChange: (value: string) => void;
+  readonly label?: string;
+  readonly labelPosition?: 'left' | 'top';
+  readonly inheritFrom?: string;
+  readonly canReset: boolean;
+  readonly onReset?: () => void;
 }
 export function ColorPicker({
   canReset,

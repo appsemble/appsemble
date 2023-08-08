@@ -6,9 +6,9 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { type GuiEditorTabs } from '../index.js';
 
 interface ResourcesTabProps {
-  tab: GuiEditorTabs;
-  isOpenLeft: boolean;
-  isOpenRight: boolean;
+  readonly tab: GuiEditorTabs;
+  readonly isOpenLeft: boolean;
+  readonly isOpenRight: boolean;
 }
 export function ResourcesTab({ isOpenLeft, isOpenRight, tab }: ResourcesTabProps): ReactElement {
   const { formatMessage } = useIntl();

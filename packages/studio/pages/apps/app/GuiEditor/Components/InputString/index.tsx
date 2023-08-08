@@ -6,19 +6,19 @@ import getAllowedChars from '../../Utils/getAllowedChars.js';
 import getCheckedString from '../../Utils/getCheckedString.js';
 
 interface InputStringProps {
-  label?: string;
-  labelPosition?: 'left' | 'top';
-  minLength?: number;
-  maxLength?: number;
-  allowUpperChars?: boolean;
-  allowSymbols?: boolean;
-  allowNumbers?: boolean;
-  allowSpaces?: boolean;
-  pattern?: RegExp;
-  onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
-  value: string;
-  readonly?: boolean;
-  onClick?: (value: string) => void;
+  readonly label?: string;
+  readonly labelPosition?: 'left' | 'top';
+  readonly minLength?: number;
+  readonly maxLength?: number;
+  readonly allowUpperChars?: boolean;
+  readonly allowSymbols?: boolean;
+  readonly allowNumbers?: boolean;
+  readonly allowSpaces?: boolean;
+  readonly pattern?: RegExp;
+  readonly onChange?: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
+  readonly value: string;
+  readonly readonly?: boolean;
+  readonly onClick?: (value: string) => void;
 }
 
 export function InputString({

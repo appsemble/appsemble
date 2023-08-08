@@ -8,9 +8,9 @@ import { useApp } from '../../../../index.js';
 import { InputList } from '../../../Components/InputList/index.js';
 
 interface RolesInheritanceListProps {
-  label?: string;
-  labelPosition?: 'left' | 'top';
-  roleKey: string;
+  readonly label?: string;
+  readonly labelPosition?: 'left' | 'top';
+  readonly roleKey: string;
 }
 export function RolesInheritanceList({
   label,
