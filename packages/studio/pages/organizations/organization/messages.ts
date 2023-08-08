@@ -30,7 +30,7 @@ export const messages = defineMessages({
     defaultMessage: 'Members',
   },
   collections: {
-    id: 'studio.ulh3kf',
-    defaultMessage: 'Collections',
+    id: 'studio.iKi9+h',
+    defaultMessage: 'App collections',
   },
 });

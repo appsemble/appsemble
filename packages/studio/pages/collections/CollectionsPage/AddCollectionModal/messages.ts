@@ -2,23 +2,23 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   title: {
-    id: 'studio.O+3CZK',
-    defaultMessage: 'Create new collection',
+    id: 'studio.K1y1Mm',
+    defaultMessage: 'Create new app collection',
   },
   cancel: {
     id: 'studio.47FYwb',
     defaultMessage: 'Cancel',
   },
   create: {
-    id: 'studio.9lnhZ4',
-    defaultMessage: 'Create collection',
+    id: 'studio.P1WzdG',
+    defaultMessage: 'Create app collection',
   },
   error: {
-    id: 'studio.k+H5xE',
-    defaultMessage: 'Something went wrong when creating this collection.',
+    id: 'studio.7BnPwg',
+    defaultMessage: 'Something went wrong when creating this app collection.',
   },
   nameConflict: {
-    id: 'studio.TQLpqB',
-    defaultMessage: 'A collection with this name already exists in this organization.',
+    id: 'studio.uRCjuc',
+    defaultMessage: 'An app collection with this name already exists in this organization.',
   },
 });

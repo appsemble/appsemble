@@ -2,23 +2,23 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   collections: {
-    id: 'studio.ulh3kf',
-    defaultMessage: 'Collections',
+    id: 'studio.iKi9+h',
+    defaultMessage: 'App collections',
   },
   collectionsError: {
-    id: 'studio.ssiX4J',
-    defaultMessage: 'There was a problem loading the collections of this organization.',
+    id: 'studio.mewjmo',
+    defaultMessage: 'There was a problem loading the app collections of this organization.',
   },
   search: {
     id: 'studio.xmcVZ0',
     defaultMessage: 'Search',
   },
   createCollection: {
-    id: 'studio.O+3CZK',
-    defaultMessage: 'Create new collection',
+    id: 'studio.K1y1Mm',
+    defaultMessage: 'Create new app collection',
   },
   notAllowed: {
-    id: 'studio.cEyln8',
-    defaultMessage: 'You don’t have sufficient permissions to create collections.',
+    id: 'studio.Uv9sdj',
+    defaultMessage: 'You don’t have sufficient permissions to create app collections.',
   },
 });

@@ -10,19 +10,19 @@ export const messages = defineMessages({
     defaultMessage: 'Apps',
   },
   notFound: {
-    id: 'studio.xYwpXF',
-    defaultMessage: 'Collection not found',
+    id: 'studio.4KGcV+',
+    defaultMessage: 'App collection not found',
   },
   permissionError: {
-    id: 'studio.QLncvR',
-    defaultMessage: 'You do not have permission to view this collection.',
+    id: 'studio.a8h0qp',
+    defaultMessage: 'You do not have permission to view this app collection.',
   },
   settings: {
     id: 'studio.D3idYv',
     defaultMessage: 'Settings',
   },
   uncaughtError: {
-    id: 'studio.NJk0ms',
-    defaultMessage: 'There was a problem loading the collection. Please try again.',
+    id: 'studio.sNygZC',
+    defaultMessage: 'There was a problem loading the app collection. Please try again.',
   },
 });

@@ -10,29 +10,29 @@ export const messages = defineMessages({
     defaultMessage: 'Dangerous actions',
   },
   delete: {
-    id: 'studio.m4GG4b',
-    defaultMessage: 'Delete collection',
+    id: 'studio.ZMqEzX',
+    defaultMessage: 'Delete app collection',
   },
   deleteWarningTitle: {
-    id: 'studio.A/E+T6',
-    defaultMessage: 'Deleting collection',
+    id: 'studio.5IOAHQ',
+    defaultMessage: 'Deleting app collection',
   },
   deleteWarning: {
-    id: 'studio.X16WjK',
+    id: 'studio.e/r+2g',
     defaultMessage:
-      'Are you sure you want to delete this collection? This action cannot be reverted.',
+      'Are you sure you want to delete this app collection? This action cannot be reverted.',
   },
   deleteError: {
-    id: 'studio.IMQvKY',
-    defaultMessage: 'Something went wrong trying to delete this collection',
+    id: 'studio.aajgdZ',
+    defaultMessage: 'Something went wrong trying to delete this app collection',
   },
   deleteHelp: {
-    id: 'studio.+I3P62',
-    defaultMessage: 'Deleting a collection cannot be undone.',
+    id: 'studio.zo9Szm',
+    defaultMessage: 'Deleting an app collection cannot be undone.',
   },
   deleteSuccess: {
-    id: 'studio.NnpOGa',
-    defaultMessage: 'Successfully deleted collection {name}',
+    id: 'studio.Xr50rl',
+    defaultMessage: 'Successfully deleted app collection {name}',
   },
   updateError: {
     id: 'studio.hJQLBM',

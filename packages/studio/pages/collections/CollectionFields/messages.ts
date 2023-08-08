@@ -35,7 +35,7 @@ export const messages = defineMessages({
     defaultMessage: 'Private',
   },
   privateExplanation: {
-    id: 'studio.wSxDPz',
-    defaultMessage: 'Hide this collection from the public list',
+    id: 'studio.mBPNep',
+    defaultMessage: 'Hide this app collection from the public list',
   },
 });
