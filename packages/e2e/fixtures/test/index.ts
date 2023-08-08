@@ -37,9 +37,9 @@ export const test = base.extend<Fixtures>({
       await page.waitForLoadState('domcontentloaded');
       await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
 
-      await page.fill('#email', process.env.BOT_ACCOUNT_EMAIL);
-      await page.fill('#password', process.env.BOT_ACCOUNT_PASSWORD);
-      await page.click('[type="submit"]');
+      await page.getByTestId('email').fill(process.env.BOT_ACCOUNT_EMAIL);
+      await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
+      await page.getByTestId('login').click();
       await expect(page).toHaveURL(redirect);
     });
   },
@@ -47,16 +47,16 @@ export const test = base.extend<Fixtures>({
   async loginApp({ page }, use) {
     await use(async () => {
       await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
-      await page.click('.appsemble-login > button');
+      await page.getByTestId('login-with-appsemble').click();
 
-      const emailInput = page.locator('#email');
+      const emailInput = page.getByTestId('email');
       await page.waitForLoadState('domcontentloaded');
       await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
 
       if (await emailInput.isVisible()) {
-        await page.fill('#email', 'bot@appsemble.com');
-        await page.fill('#password', process.env.BOT_ACCOUNT_PASSWORD);
-        await page.click('button[type="submit"]');
+        await page.getByTestId('email').fill('bot@appsemble.com');
+        await page.getByTestId('password').fill(process.env.BOT_ACCOUNT_PASSWORD);
+        await page.getByTestId('login').click();
 
         const response = await page.waitForResponse('/api/oauth2/consent/verify');
         if (response.ok()) {
@@ -64,14 +64,14 @@ export const test = base.extend<Fixtures>({
         }
         const responseBody = await response.text();
         if (responseBody.includes('User has not agreed to the requested scopes')) {
-          await page.click('.has-text-centered > .button.is-primary');
+          await page.getByTestId('allow').click();
           return;
         }
       }
-      await page.waitForLoadState('domcontentloaded');
-      const allowButton = await page.$('button:has-text("Allow")');
+      await page.waitForSelector('.appsemble-loader', { state: 'hidden' });
+      const allowButton = page.getByTestId('allow');
 
-      if (allowButton) {
+      if (await allowButton.isVisible()) {
         await allowButton.click();
       }
     });
