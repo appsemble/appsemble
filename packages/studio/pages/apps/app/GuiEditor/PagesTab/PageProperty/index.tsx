@@ -15,13 +15,13 @@ import { InputString } from '../../Components/InputString/index.js';
 import { messages } from '../../messages.js';
 
 interface PagePropertyProps {
-  addIn: (path: Iterable<number | string>, value: Node) => void;
-  changeIn: (path: Iterable<number | string>, value: Node) => void;
-  deleteIn: (path: Iterable<number | string>) => void;
-  deletePage: () => void;
-  docRef: MutableRefObject<Document<ParsedNode>>;
-  selectedPage: number;
-  selectedSubPage: number;
+  readonly addIn: (path: Iterable<number | string>, value: Node) => void;
+  readonly changeIn: (path: Iterable<number | string>, value: Node) => void;
+  readonly deleteIn: (path: Iterable<number | string>) => void;
+  readonly deletePage: () => void;
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly selectedPage: number;
+  readonly selectedSubPage: number;
 }
 
 const pageTypes = ['page', 'flow', 'tabs'] as const;
@@ -175,6 +175,7 @@ export function PageProperty({
   ]);
 
   const onCreateSubPage = useCallback(() => {
+    onChangePage();
     const doc = docRef.current;
     if (inputPageType === 'flow') {
       addIn(
@@ -208,7 +209,6 @@ export function PageProperty({
       );
       setCurrentSubPage((doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length - 1);
     }
-    onChangePage();
   }, [addIn, inputPageType, docRef, onChangePage, selectedPage]);
 
   useEffect(() => {

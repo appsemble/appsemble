@@ -9,10 +9,10 @@ import { InputList } from '../../Components/InputList/index.js';
 import PropertiesHandler from '../../Components/PropertiesHandler/index.js';
 
 interface BlockPropertyProps {
-  changeProperty: (parameters: JsonObject) => void;
-  changeType: (blockManifest: BlockManifest) => void;
-  deleteBlock: () => void;
-  selectedBlock: Document<ParsedNode>;
+  readonly changeProperty: (parameters: JsonObject) => void;
+  readonly changeType: (blockManifest: BlockManifest) => void;
+  readonly deleteBlock: () => void;
+  readonly selectedBlock: Document<ParsedNode>;
 }
 export function BlockProperty({
   changeProperty,
@@ -23,7 +23,7 @@ export function BlockProperty({
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
   const blockName = normalizeBlockName(
     stringify(selectedBlock.getIn(['type']))
-      .replace(/["']/g, '')
+      .replaceAll(/["']/g, '')
       .trim(),
   );
 
