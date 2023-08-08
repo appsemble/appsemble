@@ -31,15 +31,15 @@ export function ThemeTab({
   const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
-  const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
+  const [selectedSubPage, setSelectedSubPage] = useState<number>(-1);
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number) => {
       setSelectedPage(page);
       setSelectedBlock(block);
-      setSelectedSubParent(subParent);
+      setSelectedSubPage(subParent);
     },
-    [setSelectedPage, setSelectedBlock, setSelectedSubParent],
+    [setSelectedPage, setSelectedBlock, setSelectedSubPage],
   );
 
   return (
@@ -48,9 +48,7 @@ export function ThemeTab({
         <>
           <Button
             className={`${styles.sideBarButton} ${
-              selectedBlock === -1 && selectedSubParent === -1 && selectedPage === -1
-                ? 'is-link'
-                : ''
+              selectedBlock === -1 && selectedSubPage === -1 && selectedPage === -1 ? 'is-link' : ''
             }`}
             onClick={() => onChangePagesBlocks(-1, -1, -1)}
           >
@@ -60,7 +58,7 @@ export function ThemeTab({
             onChange={onChangePagesBlocks}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}
-            selectedSubParent={selectedSubParent}
+            selectedSubParent={selectedSubPage}
           />
         </>
       </Sidebar>
@@ -75,7 +73,7 @@ export function ThemeTab({
             docRef={docRef}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}
-            selectedSubParent={selectedSubParent}
+            selectedSubParent={selectedSubPage}
           />
         </div>
       </Sidebar>
