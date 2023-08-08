@@ -12,14 +12,14 @@ import { type Document, type Node, type ParsedNode, type YAMLMap, type YAMLSeq }
 import styles from './index.module.css';
 import { messages } from '../../messages.js';
 
-interface PagesListProps {
-  changeIn: (path: Iterable<unknown>, value: Node) => void;
-  docRef: MutableRefObject<Document<ParsedNode>>;
-  selectedPage: number;
-  selectedBlock: number;
-  selectedSubParent: number;
-  onChange: (page: number, subParent: number, block: number) => void;
-  onCreatePage: () => void;
+interface ElementsListProps {
+  readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly selectedPage: number;
+  readonly selectedBlock: number;
+  readonly selectedSubParent: number;
+  readonly onChange: (page: number, subParent: number, block: number) => void;
+  readonly onCreatePage: () => void;
 }
 export function ElementsList({
   changeIn,
@@ -29,7 +29,7 @@ export function ElementsList({
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: PagesListProps): ReactElement {
+}: ElementsListProps): ReactElement {
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
   const [dragItem, setDragItem] = useState<number>(-1);
