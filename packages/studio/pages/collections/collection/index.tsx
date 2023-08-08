@@ -17,11 +17,11 @@ import { ExpertPage } from './ExpertPage/index.js';
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 import { SettingsPage } from './SettingsPage/index.js';
-import { useUser } from '../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../utils/checkRole.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { checkRole } from '../../../utils/checkRole.js';
 
 export function CollectionRoutes(): ReactElement {
-  const { collectionId, lang, organizationId } = useParams<{
+  const { collectionId, lang } = useParams<{
     lang: string;
     organizationId: string;
     collectionId: string;
@@ -34,11 +34,12 @@ export function CollectionRoutes(): ReactElement {
   } = useData<AppCollection>(`/api/appCollections/${collectionId}`);
 
   const { organizations } = useUser();
+  const organizationId = collection?.OrganizationId;
   const userOrganization = organizations?.find((org) => org.id === organizationId);
 
   const mayEdit = userOrganization && checkRole(userOrganization.role, Permission.EditCollections);
 
-  const url = `/${lang}/organizations/${organizationId}/collections/${collectionId}`;
+  const url = `/${lang}/collections/${collectionId}`;
 
   useSideMenu(
     collection && (

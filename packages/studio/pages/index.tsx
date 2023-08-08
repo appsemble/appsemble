@@ -4,6 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AppsRoutes } from './apps/index.js';
 import { BlockRoutes } from './blocks/index.js';
 import { CallbackPage } from './callback/index.js';
+import { CollectionsRoutes } from './collections/index.js';
 import { ConnectRoutes } from './connect/index.js';
 import { DocsRoutes } from './docs/index.js';
 import { EditPasswordPage } from './edit-password/index.js';
@@ -34,6 +35,7 @@ export function TopLevelRoutes(): ReactElement {
         <Route element={<SettingsRoutes />} path="/settings/*" />
         <Route element={<FeedbackPage />} path="/feedback" />
       </Route>
+      <Route element={<CollectionsRoutes />} path="/collections/*" />
       <Route element={<ConnectRoutes />} path="/connect/authorize/*" />
       <Route element={<OrganizationInvitePage />} path="/organization-invite" />
       <Route element={<VerifyPage />} path="/verify" />

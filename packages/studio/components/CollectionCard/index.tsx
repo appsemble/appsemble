@@ -15,11 +15,7 @@ interface CollectionCardProps {
 export function CollectionCard({ collection }: CollectionCardProps): ReactElement {
   const { lang } = useParams<{ lang: string }>();
   return (
-    <Link
-      className="card"
-      title={collection.name}
-      to={`/${lang}/organizations/${collection.OrganizationId}/collections/${collection.id}`}
-    >
+    <Link className="card" title={collection.name} to={`/${lang}/collections/${collection.id}`}>
       <div className="card-content is-flex">
         <div className="media">
           <figure className={`image is-128x128 is-flex is-clipped is-rounded ${styles.figure}`}>

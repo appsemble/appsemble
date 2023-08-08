@@ -26,10 +26,7 @@ export function CollectionHeader({ collection }: CollectionHeaderProps): ReactEl
           {collection.name}
         </h1>
       </div>
-      <Link
-        className="m-auto"
-        to={`/${lang}/organizations/${collection.OrganizationId}/collections/${collection.id}/expert`}
-      >
+      <Link className="m-auto" to={`/${lang}/collections/${collection.id}/expert`}>
         <ExpertCard expert={collection.$expert} />
       </Link>
     </header>

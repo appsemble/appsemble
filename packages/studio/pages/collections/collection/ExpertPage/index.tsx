@@ -3,8 +3,8 @@ import { type AppCollection } from '@appsemble/types';
 import { type ReactElement } from 'react';
 
 import styles from './index.module.css';
-import { MarkdownContent } from '../../../../../../components/MarkdownContent/index.js';
-import { usePageHeader } from '../../../../../../components/PageHeader/index.js';
+import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
+import { usePageHeader } from '../../../../components/PageHeader/index.js';
 import { ExpertCard } from '../ExpertCard/index.js';
 import { messages } from '../messages.js';
 

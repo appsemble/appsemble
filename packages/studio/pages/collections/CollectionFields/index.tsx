@@ -11,7 +11,7 @@ import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
-import { AvatarEditorModal } from '../../../../../components/AvatarEditorModal/index.js';
+import { AvatarEditorModal } from '../../../components/AvatarEditorModal/index.js';
 
 interface CollectionFieldsProps {
   readonly header: File | null;

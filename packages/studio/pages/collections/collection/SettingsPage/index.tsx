@@ -8,6 +8,7 @@ import {
   SimpleSubmit,
   useConfirmation,
   useMessages,
+  useMeta,
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import axios from 'axios';
@@ -24,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { CollectionFields } from '../../CollectionFields/index.js';
+import { messages as collectionMessages } from '../messages.js';
 
 interface SettingsPageProps {
   readonly collection: AppCollection;
@@ -31,6 +33,7 @@ interface SettingsPageProps {
 }
 
 export function SettingsPage({ collection, setCollection }: SettingsPageProps): ReactElement {
+  useMeta(collectionMessages.settings);
   const defaultValues = useMemo(
     () => ({
       name: collection.name,

@@ -8,15 +8,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { CollectionHeader } from './CollectionHeader/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AppList } from '../../../../../../components/AppList/index.js';
+import { AppList } from '../../../../components/AppList/index.js';
 import {
   AppListControls,
   type AppSortFunctionName,
   sortFunctions,
-} from '../../../../../../components/AppListControls/index.js';
-import { usePageHeader } from '../../../../../../components/PageHeader/index.js';
-import { useUser } from '../../../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../../../utils/checkRole.js';
+} from '../../../../components/AppListControls/index.js';
+import { usePageHeader } from '../../../../components/PageHeader/index.js';
+import { useUser } from '../../../../components/UserProvider/index.js';
+import { checkRole } from '../../../../utils/checkRole.js';
 
 interface IndexPageProps {
   readonly collection: AppCollection;
