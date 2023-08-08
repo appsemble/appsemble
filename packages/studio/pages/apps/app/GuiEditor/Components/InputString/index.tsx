@@ -41,12 +41,9 @@ export function InputString({
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
-      if (pattern) {
-        if (pattern.test(input) || input === '') {
+        if (pattern?.test(input) || input === '') {
           onChange(event, input);
         }
-        return;
-      }
       const finalValue = getCheckedString(charsRegex, input);
       onChange(event, finalValue);
     },
