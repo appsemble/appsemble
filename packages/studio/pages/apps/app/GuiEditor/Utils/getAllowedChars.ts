@@ -1,4 +1,4 @@
-export default function getAllowedChars(
+export function getAllowedChars(
   allowSpace: boolean,
   allowSymbols: boolean,
   allowNumbers: boolean,
