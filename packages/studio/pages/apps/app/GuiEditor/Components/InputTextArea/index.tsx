@@ -2,19 +2,19 @@ import { TextArea } from '@appsemble/react-components';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
-import getAllowedChars from '../../Utils/getAllowedChars.js';
-import getCheckedString from '../../Utils/getCheckedString.js';
+import { getAllowedChars } from '../../Utils/getAllowedChars.js';
+import { getCheckedString } from '../../Utils/getCheckedString.js';
 
 interface InputStringProps {
-  label: string;
-  maxLength?: number;
-  minLength?: number;
-  allowUpperChars?: boolean;
-  allowSymbols?: boolean;
-  allowNumbers?: boolean;
-  allowSpaces?: boolean;
-  onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: string) => void;
-  value: string;
+  readonly label: string;
+  readonly maxLength?: number;
+  readonly minLength?: number;
+  readonly allowUpperChars?: boolean;
+  readonly allowSymbols?: boolean;
+  readonly allowNumbers?: boolean;
+  readonly allowSpaces?: boolean;
+  readonly onChange: (event: ChangeEvent<HTMLTextAreaElement>, value: string) => void;
+  readonly value: string;
 }
 
 export function InputTextArea({

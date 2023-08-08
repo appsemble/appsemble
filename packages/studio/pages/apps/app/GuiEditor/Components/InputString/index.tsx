@@ -2,8 +2,8 @@ import { Input } from '@appsemble/react-components';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
-import getAllowedChars from '../../Utils/getAllowedChars.js';
-import getCheckedString from '../../Utils/getCheckedString.js';
+import { getAllowedChars } from '../../Utils/getAllowedChars.js';
+import { getCheckedString } from '../../Utils/getCheckedString.js';
 
 interface InputStringProps {
   readonly label?: string;
@@ -41,9 +41,9 @@ export function InputString({
   const onInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       const input = event.target.value;
-        if (pattern?.test(input) || input === '') {
-          onChange(event, input);
-        }
+      if (pattern?.test(input) || input === '') {
+        onChange(event, input);
+      }
       const finalValue = getCheckedString(charsRegex, input);
       onChange(event, finalValue);
     },
