@@ -11,9 +11,9 @@ import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import SubPageProperty from './SubPageProperty/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { generateData } from '../../../../../utils/schemaGenerator.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
-import { generateData } from '../Utils/schemaGenerator.js';
 
 interface PagesTabProps {
   readonly addIn: (path: Iterable<unknown>, value: Node) => void;

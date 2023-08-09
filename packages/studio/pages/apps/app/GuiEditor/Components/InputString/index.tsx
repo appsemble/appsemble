@@ -2,8 +2,7 @@ import { Input } from '@appsemble/react-components';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
-import { getAllowedChars } from '../../Utils/getAllowedChars.js';
-import { getCheckedString } from '../../Utils/getCheckedString.js';
+import { getAllowedChars, getCheckedString } from '../../../../../../utils/stringValidator.js';
 
 interface InputStringProps {
   readonly label?: string;
