@@ -5,13 +5,11 @@
   overflow-x: hidden;
   padding: 0;
   position: relative;
-  scrollbar-width: none;
 }
 
 .root::-webkit-scrollbar {
   display: none;
   padding: 0;
-  scrollbar-width: none;
 }
 
 .leftBar {
@@ -34,7 +32,9 @@
 
 .isClosed {
   border-width: 0;
-  transition: width 0.35s ease-in-out, border-width 0.35s ease-in-out;
+  transition:
+    width 0.35s ease-in-out,
+    border-width 0.35s ease-in-out;
   width: 0;
 }
 
