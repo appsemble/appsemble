@@ -5,12 +5,32 @@ import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
 
 interface InputStringProps {
-  label?: string;
-  labelPosition?: 'left' | 'top';
-  onChange: (index: number) => void;
-  value: string;
-  options: readonly string[];
-  size?: 'large' | 'medium' | 'normal' | 'small';
+  readonly label?: string;
+  readonly labelPosition?: 'left' | 'top';
+  readonly onChange: (index: number) => void;
+  readonly value: string;
+  readonly options: readonly string[];
+  readonly size?: 'large' | 'medium' | 'normal' | 'small';
+}
+
+export function DropDownLabel(size: string, value: string): ReactElement {
+  const val = value;
+  let valueString;
+  switch (size) {
+    case 'large':
+      valueString = val.length > 15 ? `${val.slice(0, 15)}...` : val;
+      break;
+    case 'medium':
+      valueString = val.length > 10 ? `${val.slice(0, 10)}...` : val;
+      break;
+    case 'small':
+      valueString = val.length > 7 ? `${val.slice(0, 7)}...` : val;
+      break;
+    default:
+      valueString = val;
+      break;
+  }
+  return <span className="px-1">{valueString}</span>;
 }
 
 export function InputList({
@@ -28,26 +48,10 @@ export function InputList({
     [onChange],
   );
 
-  let valueString;
-  switch (size) {
-    case 'large':
-      valueString = value.length > 15 ? `${value.slice(0, 15)}...` : value;
-      break;
-    case 'medium':
-      valueString = value.length > 10 ? `${value.slice(0, 10)}...` : value;
-      break;
-    case 'small':
-      valueString = value.length > 7 ? `${value.slice(0, 7)}...` : value;
-      break;
-    default:
-      valueString = value;
-      break;
-  }
-
   if (!label) {
     return (
       <div className={`${styles.root} field`}>
-        <Dropdown className={styles.dropDown} label={<span className="px-1">{valueString}</span>}>
+        <Dropdown className={styles.dropDown} label={DropDownLabel(size, value)}>
           {options.map((option, index) => (
             <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
           ))}
@@ -63,7 +67,7 @@ export function InputList({
       }`}
     >
       <label className={styles.label}>{label}</label>
-      <Dropdown className={styles.dropDown} label={<span className="px-1">{valueString}</span>}>
+      <Dropdown className={styles.dropDown} label={DropDownLabel(size, value)}>
         {options.map((option, index) => (
           <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
         ))}
