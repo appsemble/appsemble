@@ -58,15 +58,17 @@ export function InputString({
 
   if (!label) {
     return (
-      <Input
-        className={styles.input}
-        maxLength={maxLength}
-        minLength={minLength}
-        onChange={onInputChange}
-        onClick={onClickInput}
-        readOnly={readonly}
-        value={value}
-      />
+      <div>
+        <Input
+          className={styles.input}
+          maxLength={maxLength}
+          minLength={minLength}
+          onChange={onInputChange}
+          onClick={onClickInput}
+          readOnly={readonly}
+          value={value}
+        />
+      </div>
     );
   }
 
