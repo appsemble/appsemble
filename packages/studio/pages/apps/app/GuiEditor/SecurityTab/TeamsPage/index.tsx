@@ -12,7 +12,7 @@ const teamsJoinOptions = ['anyone', 'invite'] as const;
 const teamsInviteOptions = ['$team:member', '$team:manager'] as const;
 
 interface TeamsPageProps {
-  onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
+  readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
 export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactElement {
   const { app, setApp } = useApp();

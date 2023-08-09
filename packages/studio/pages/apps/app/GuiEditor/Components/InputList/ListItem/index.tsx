@@ -4,9 +4,9 @@ import { type ReactElement, useCallback } from 'react';
 import styles from './index.module.css';
 
 interface ListItemProps {
-  index: number;
-  value: string;
-  onChange: (index: number) => void;
+  readonly index: number;
+  readonly value: string;
+  readonly onChange: (index: number) => void;
 }
 
 export function ListItem({ index, onChange, value }: ListItemProps): ReactElement {

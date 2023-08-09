@@ -10,10 +10,10 @@ import styles from './index.module.css';
 import { useApp } from '../../../index.js';
 
 interface PagesListProps {
-  selectedPage: number;
-  selectedBlock: number;
-  selectedSubParent: number;
-  onChange: (page: number, subParent: number, block: number) => void;
+  readonly selectedPage: number;
+  readonly selectedBlock: number;
+  readonly selectedSubParent: number;
+  readonly onChange: (page: number, subParent: number, block: number) => void;
 }
 export function PagesList({
   onChange,

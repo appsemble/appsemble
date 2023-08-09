@@ -14,12 +14,12 @@ interface BlockListProps {
    *
    * @param data The block that is being dragged
    */
-  dragEventListener: (data: BlockManifest) => void;
+  readonly dragEventListener: (data: BlockManifest) => void;
 
   /**
    * The filter for the app’s name and organization ID.
    */
-  filter?: string;
+  readonly filter?: string;
 }
 
 /**
@@ -46,7 +46,7 @@ export function BlockList({ dragEventListener, filter }: BlockListProps): ReactE
           parseBlockName(block.name)[1].toLowerCase().includes(filter.toLowerCase()) ||
           parseBlockName(block.name)[0]
             .toLowerCase()
-            .includes(filter.toLowerCase().replace(/@/g, '')),
+            .includes(filter.toLowerCase().replaceAll('@', '')),
       )
     : appsembleBlocks;
 

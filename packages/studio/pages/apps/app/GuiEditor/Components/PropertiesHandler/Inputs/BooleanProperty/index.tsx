@@ -3,10 +3,10 @@ import { type Schema } from 'jsonschema';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
 
 interface BooleanPropertyProps {
-  value: any;
-  schema: Schema;
-  property: string;
-  onChange: (property: string, value: any) => void;
+  readonly value: any;
+  readonly schema: Schema;
+  readonly property: string;
+  readonly onChange: (property: string, value: any) => void;
 }
 export function BooleanProperty({
   onChange,

@@ -14,8 +14,8 @@ import { Sidebar } from '../Components/Sidebar/index.js';
 import { TreeList } from '../Components/TreeList/index.js';
 
 interface SecurityTabProps {
-  isOpenLeft: boolean;
-  isOpenRight: boolean;
+  readonly isOpenLeft: boolean;
+  readonly isOpenRight: boolean;
 }
 
 const Tabs = [

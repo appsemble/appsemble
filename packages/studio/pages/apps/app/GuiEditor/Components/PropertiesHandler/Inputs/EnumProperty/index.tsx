@@ -6,10 +6,10 @@ import { useIntl } from 'react-intl';
 import { messages } from './messages.js';
 
 interface EnumPropertyProps {
-  value: any;
-  schema: Schema;
-  onChange: (property: string, value: any) => void;
-  property: string;
+  readonly value: any;
+  readonly schema: Schema;
+  readonly onChange: (property: string, value: any) => void;
+  readonly property: string;
 }
 export function EnumProperty({
   onChange,

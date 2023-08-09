@@ -4,12 +4,12 @@ import { type ReactElement } from 'react';
 import styles from './index.module.css';
 
 interface TreeListProps {
-  label: string;
-  options: readonly string[];
-  onChange: (index: number) => void;
-  isSelected: boolean;
-  onClick?: () => void;
-  value: string;
+  readonly label: string;
+  readonly options: readonly string[];
+  readonly onChange: (index: number) => void;
+  readonly isSelected: boolean;
+  readonly onClick?: () => void;
+  readonly value: string;
 }
 
 export function TreeList({

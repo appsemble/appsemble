@@ -6,10 +6,10 @@ import PropertyLabel from '../../PropertyLabel/index.js';
 import RecursiveProperties from '../../RecursiveProperties/index.js';
 
 interface ObjectPropertyProps {
-  value: JsonObject;
-  schema: Schema;
-  property: string;
-  onChange: (property: string, value: JsonObject) => void;
+  readonly value: JsonObject;
+  readonly schema: Schema;
+  readonly property: string;
+  readonly onChange: (property: string, value: JsonObject) => void;
 }
 export function ObjectProperty({
   onChange,

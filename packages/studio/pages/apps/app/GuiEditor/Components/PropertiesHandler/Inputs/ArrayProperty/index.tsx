@@ -8,10 +8,10 @@ import styles from './index.module.css';
 import RecursiveProperties from '../../RecursiveProperties/index.js';
 
 interface ArrayPropertyProps {
-  value: any[];
-  schema: Schema;
-  property: string;
-  onChange: (property: string, value: any) => void;
+  readonly value: any[];
+  readonly schema: Schema;
+  readonly property: string;
+  readonly onChange: (property: string, value: any) => void;
 }
 
 export function ArrayProperty({

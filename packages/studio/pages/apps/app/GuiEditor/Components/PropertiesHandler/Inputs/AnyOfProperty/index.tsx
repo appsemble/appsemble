@@ -8,10 +8,10 @@ import { SchemaDefinitionsContext } from '../../index.js';
 import RecursiveProperties from '../../RecursiveProperties/index.js';
 
 interface AnyOfPropertyProps {
-  value: any;
-  schema: Schema;
-  property: string;
-  onChange: (property: string, value: any) => void;
+  readonly value: any;
+  readonly schema: Schema;
+  readonly property: string;
+  readonly onChange: (property: string, value: any) => void;
 }
 
 export function AnyOfProperty({
