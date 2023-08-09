@@ -7,8 +7,8 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { PagesList } from './PagesList/index.js';
 import { ThemePage } from './ThemePage/index.js';
+import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 interface ThemeTabProps {
@@ -63,7 +63,7 @@ export function ThemeTab({
         </>
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frameRef} />
+        <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>

@@ -8,8 +8,8 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
 import { TeamsPage } from './TeamsPage/index.js';
+import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { TreeList } from '../Components/TreeList/index.js';
 
@@ -98,7 +98,7 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
         </>
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frame} />
+        <AppPreview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>

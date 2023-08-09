@@ -237,7 +237,9 @@ export default function EditPage(): ReactElement {
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      <AppPreview app={app} iframeRef={frame} />
+      <div className={`${styles.previewRoot} is-flex ml-1 px-5 py-5`}>
+        <AppPreview app={app} iframeRef={frame} />
+      </div>
     </div>
   );
 }

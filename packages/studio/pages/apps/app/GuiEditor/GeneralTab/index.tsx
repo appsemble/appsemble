@@ -12,11 +12,11 @@ import { type Document, type Node, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useApp } from '../../index.js';
 import { InputList } from '../Components/InputList/index.js';
 import { InputString } from '../Components/InputString/index.js';
 import { InputTextArea } from '../Components/InputTextArea/index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
 export interface GeneralTabProps {
@@ -167,7 +167,7 @@ export function GeneralTab({
         </>
       </Sidebar>
       <div className={styles.root}>
-        <Preview app={app} iframeRef={frameRef} />
+        <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <>

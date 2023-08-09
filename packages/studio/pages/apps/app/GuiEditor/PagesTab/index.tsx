@@ -10,8 +10,8 @@ import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import SubPageProperty from './SubPageProperty/index.js';
+import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { useApp } from '../../index.js';
-import { Preview } from '../Components/Preview/index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { generateData } from '../Utils/schemaGenerator.js';
 
@@ -242,7 +242,7 @@ export function PagesTab({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         />
-        <Preview app={app} iframeRef={frameRef} />
+        <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>

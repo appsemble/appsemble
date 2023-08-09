@@ -1,15 +1,14 @@
 .root {
-  background-color: hsl(0deg 0% 7%);
-  border-radius: 22px;
-  box-sizing: border-box;
-  flex: 0 0 40vw;
-  min-height: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 .appFrame {
   background-color: hsl(0deg 0% 100%);
   border: none;
   flex: 1;
+  height: 100%;
+  width: 100%;
 }
 
 .sslLoader {
