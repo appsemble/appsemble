@@ -13,10 +13,10 @@ import RemapperProperty from '../Inputs/RemapperProperty/index.js';
 import StringProperty from '../Inputs/StringProperty/index.js';
 
 interface RecursivePropertiesProps {
-  value: any;
-  schema: Schema;
-  property: string;
-  onChange: (property: string, value: JsonObject) => void;
+  readonly value: any;
+  readonly schema: Schema;
+  readonly property: string;
+  readonly onChange: (property: string, value: JsonObject) => void;
 }
 
 export function RecursiveProperties({

@@ -7,12 +7,12 @@ import { messages } from './messages.js';
 import { InputList } from '../InputList/index.js';
 
 interface OptionalListProps {
-  label?: string;
-  labelPosition?: 'left' | 'top';
-  addNewItemLabel?: string;
-  selected: string[];
-  options: readonly string[];
-  onNewSelected: (newSelected: string[]) => void;
+  readonly label?: string;
+  readonly labelPosition?: 'left' | 'top';
+  readonly addNewItemLabel?: string;
+  readonly selected: string[];
+  readonly options: readonly string[];
+  readonly onNewSelected: (newSelected: string[]) => void;
 }
 export function OptionalList({
   addNewItemLabel,
