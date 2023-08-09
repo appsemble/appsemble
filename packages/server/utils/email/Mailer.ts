@@ -253,7 +253,7 @@ export class Mailer {
       subject,
       html,
       text,
-      app,
+      app: app ? { ...app, id: app.id ?? appId } : undefined,
     };
 
     await this.sendEmail(email);
