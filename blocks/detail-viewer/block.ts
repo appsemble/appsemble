@@ -144,6 +144,11 @@ export interface StringField extends AbstractField {
    * The name of the type of the field.
    */
   type?: 'string';
+
+  /**
+   * The icon to be used.
+   */
+  icon?: IconName;
 }
 
 /**
