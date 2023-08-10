@@ -87,7 +87,8 @@ export function Block({
   const { blockManifests, definition } = useAppDefinition();
   const { getAppMessage, getBlockMessage } = useAppMessages();
 
-  const { passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } = useUser();
+  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfo, userInfoRef } =
+    useUser();
   const { setBlockMenu } = usePage();
 
   const ref = useRef<HTMLDivElement>();
@@ -141,6 +142,7 @@ export function Block({
       updateTeam,
       getUserInfo: () => userInfoRef.current,
       passwordLogin,
+      passwordLogout: logout,
       setUserInfo,
     });
     const theme = mergeThemes(definition.theme, page.theme, block.theme);
@@ -215,6 +217,7 @@ export function Block({
     pageReady,
     params,
     passwordLogin,
+    logout,
     prefix,
     prefixIndex,
     push,
