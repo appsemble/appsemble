@@ -21,7 +21,7 @@ import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
-import { login, register, update } from './user.js';
+import { login, logout, register, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -98,4 +98,5 @@ export const actionCreators: ActionCreators = {
   'user.login': login,
   'user.register': register,
   'user.update': update,
+  'user.logout': logout,
 };

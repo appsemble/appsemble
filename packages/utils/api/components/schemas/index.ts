@@ -112,6 +112,7 @@ export * from './Theme.js';
 export * from './ThrowActionDefinition.js';
 export * from './User.js';
 export * from './UserEmail.js';
+export * from './UserLogoutActionDefinition.js';
 export * from './UserLoginActionDefinition.js';
 export * from './UserRegisterActionDefinition.js';
 export * from './UserUpdateActionDefinition.js';

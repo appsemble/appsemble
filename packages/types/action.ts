@@ -90,6 +90,7 @@ export type Action =
   | BaseAction<'team.members'>
   | BaseAction<'throw'>
   | BaseAction<'user.login'>
+  | BaseAction<'user.logout'>
   | BaseAction<'user.register'>
   | BaseAction<'user.update'>
   | LinkAction

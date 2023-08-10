@@ -31,6 +31,7 @@ describe('makeActions', () => {
       updateTeam: null,
       getUserInfo: null,
       passwordLogin: null,
+      passwordLogout: null,
       setUserInfo: null,
     };
   });
