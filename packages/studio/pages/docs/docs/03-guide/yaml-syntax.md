@@ -1,4 +1,4 @@
-## Different types of YAML syntax
+# Different types of YAML syntax
 
 YAML supports different types of syntax. The following piece of code
 
@@ -15,7 +15,7 @@ condition:
     - 1
 ```
 
-### Best Practices
+## Best Practices
 
 There are several scenarios where one syntax format is better than the other. For example, if you
 have a very big statement, you shouldn’t write everything on one line as it hinders code
