@@ -30,3 +30,4 @@ export * from './server/routes/appRouter/iconHandler.js';
 export * from './server/controllers/index.js';
 export * from './server/types.js';
 export * from './koa.js';
+export * from './EmailQuotaExceededError.js';
