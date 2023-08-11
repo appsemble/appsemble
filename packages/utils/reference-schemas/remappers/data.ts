@@ -6,6 +6,40 @@ export const dataRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3
     description: `Get the current array.map’s index or length.
 
 Returns nothing when not in the context of \`array.map’s\`.
+
+For example:
+
+Input:
+\`\`\`json
+["a", "b", "c"]
+\`\`\`
+
+This remapper definition maps through the input array and creates an object with the length of the
+array and the current index of the loop:
+\`\`\`yaml
+array.map:
+  object.from:
+    length: { array: length }
+    index: { array: index }
+\`\`\`
+
+Result:
+\`\`\`json
+[
+  {
+    "index": 0,
+    "length": 3
+  },
+  {
+    "index": 1,
+    "length": 3
+  },
+  {
+    "index": 2,
+    "length": 3
+  }
+]
+\`\`\`
 `,
   },
   app: {
@@ -262,7 +296,18 @@ Result:
     `,
   },
   static: {
-    description: 'Use a static value.',
+    description: `Create a static value
+
+\`\`\`yaml
+static: Hello!
+\`\`\`
+
+Returns the following string:
+
+\`\`\`
+Hello!
+\`\`\`
+`,
   },
   translate: {
     type: 'string',
