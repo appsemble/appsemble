@@ -3522,7 +3522,16 @@ All elements specifying \`data-content\` will be updated each time this event is
 exports[`getBlockConfigFromTypeScript > official blocks > image 1`] = `
 {
   "actions": undefined,
-  "events": undefined,
+  "events": {
+    "emit": undefined,
+    "listen": {
+      "data": {
+        "description": "The event that is triggered when data is received.
+
+Compatible data that is received will be displayed.",
+      },
+    },
+  },
   "messages": undefined,
   "parameters": {
     "$schema": "http://json-schema.org/draft-07/schema#",
