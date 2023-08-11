@@ -131,7 +131,7 @@ export async function email({
     html,
     text,
     attachments,
-    app: { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser },
+    app: { emailHost, emailName, emailPassword, emailPort, emailSecure, emailUser, id: app.id },
   });
 
   return data;
