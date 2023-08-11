@@ -1,0 +1,23 @@
+.target {
+  height: 10px;
+}
+
+.connect {
+  background: hsl(0deg 0% 13%);
+}
+
+.handle {
+  border-radius: 50% !important;
+  height: 18px !important;
+  right: -9px !important;
+  top: -5px !important;
+  width: 18px !important;
+}
+
+.handle::before {
+  display: none;
+}
+
+.handle::after {
+  display: none;
+}

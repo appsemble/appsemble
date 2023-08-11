@@ -6,6 +6,8 @@ export * from './Checkbox/index.js';
 export * from './CheckboxField/index.js';
 export * from './DateTimeField/index.js';
 export * from './Dropdown/index.js';
+export * from './DualSlider/index.js';
+export * from './DualSliderField/index.js';
 export * from './Form/index.js';
 export * from './FormButtons/index.js';
 export * from './FormComponent/index.js';
