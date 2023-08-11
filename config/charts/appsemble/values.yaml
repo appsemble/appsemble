@@ -75,3 +75,9 @@ postgresql:
 postgresSSL: false
 
 remote: null
+
+quotas:
+  appEmail:
+    enabled: false
+    dailyLimit: 10
+    alertOrganizationOwner: false
