@@ -12,7 +12,7 @@ import axios from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
-import { EmailQuotaExceededError } from '../../../server/utils/email/EmailQuotaExceededError.js';
+import { EmailQuotaExceededError } from '../../EmailQuotaExceededError.js';
 import pkg from '../../package.json' assert { type: 'json' };
 
 /**

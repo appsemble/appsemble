@@ -1,4 +1,9 @@
-import { getAppsembleMessages, getSupportedLanguages, logger } from '@appsemble/node-utils';
+import {
+  EmailQuotaExceededError,
+  getAppsembleMessages,
+  getSupportedLanguages,
+  logger,
+} from '@appsemble/node-utils';
 import { defaultLocale, has } from '@appsemble/utils';
 import { startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -15,7 +20,6 @@ import MailComposer from 'nodemailer/lib/mail-composer/index.js';
 import { type Options } from 'nodemailer/lib/smtp-transport';
 import { Op } from 'sequelize';
 
-import { EmailQuotaExceededError } from './EmailQuotaExceededError.js';
 import { renderEmail } from './renderEmail.js';
 import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
 import { App, AppMessages, Member, Organization, transactional, User } from '../../models/index.js';
