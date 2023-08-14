@@ -3639,53 +3639,9 @@ Compatible data that is received will be displayed. Must be a set of data.",
         ],
         "type": "string",
       },
-      "Field": {
+      "Button": {
         "additionalProperties": false,
-        "description": "An object representing how a data field should be displayed.",
         "properties": {
-          "icon": {
-            "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
-
-Will not render if undefined.",
-            "format": "fontawesome",
-            "type": "string",
-          },
-          "label": {
-            "description": "The label to display.
-
-Will not render if undefined.",
-            "format": "remapper",
-          },
-          "value": {
-            "description": "The name of the field to read from to determine the value to show.
-
-No value will be rendered if undefined.",
-            "format": "remapper",
-          },
-        },
-        "type": "object",
-      },
-    },
-    "properties": {
-      "base": {
-        "description": "An optional name of the field that contains the data.
-
-If not defined, received data will be treated as an array.",
-        "type": "string",
-      },
-      "button": {
-        "additionalProperties": false,
-        "description": "The definition of the contents and styling of the button.",
-        "properties": {
-          "alignment": {
-            "description": "Whether the content of the cell should be aligned left, right, or centered",
-            "enum": [
-              "center",
-              "left",
-              "right",
-            ],
-            "type": "string",
-          },
           "color": {
             "$ref": "#/definitions/BulmaColor",
             "default": "primary",
@@ -3747,6 +3703,106 @@ Describe what the button does. This helps with accessibility for people using sc
         },
         "type": "object",
       },
+      "Dropdown": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "default": "right",
+            "description": "How the dropdown should be aligned.",
+            "enum": [
+              "left",
+              "right",
+            ],
+            "type": "string",
+          },
+          "icon": {
+            "description": "The icon to show in the dropdown button.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The text to show in the dropdown button.",
+            "format": "remapper",
+          },
+          "options": {
+            "description": "The list of options to display. Must have at least 1 option.",
+            "items": {
+              "$ref": "#/definitions/DropdownOption",
+            },
+            "minItems": 1,
+            "type": "array",
+          },
+        },
+        "required": [
+          "options",
+        ],
+        "type": "object",
+      },
+      "DropdownOption": {
+        "additionalProperties": false,
+        "properties": {
+          "icon": {
+            "description": "The icon to show in the option.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The text to show in the option.",
+            "format": "remapper",
+          },
+          "onClick": {
+            "description": "The action that will be called when selecting this option.",
+            "format": "action",
+            "type": "string",
+          },
+        },
+        "required": [
+          "onClick",
+        ],
+        "type": "object",
+      },
+      "Field": {
+        "additionalProperties": false,
+        "description": "An object representing how a data field should be displayed.",
+        "properties": {
+          "icon": {
+            "description": "The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
+
+Will not render if undefined.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label to display.
+
+Will not render if undefined.",
+            "format": "remapper",
+          },
+          "value": {
+            "description": "The name of the field to read from to determine the value to show.
+
+No value will be rendered if undefined.",
+            "format": "remapper",
+          },
+        },
+        "type": "object",
+      },
+    },
+    "properties": {
+      "base": {
+        "description": "An optional name of the field that contains the data.
+
+If not defined, received data will be treated as an array.",
+        "type": "string",
+      },
+      "button": {
+        "$ref": "#/definitions/Button",
+        "description": "The definition of the contents and styling of the button.",
+      },
+      "dropdown": {
+        "$ref": "#/definitions/Dropdown",
+        "description": "The definition of the contents and styling of the dropdown.",
+      },
       "fields": {
         "description": "A list of fields to display.",
         "items": {
@@ -3774,9 +3830,6 @@ This can be either a full image path or an asset id.",
         "format": "remapper",
       },
     },
-    "required": [
-      "button",
-    ],
     "type": "object",
   },
 }

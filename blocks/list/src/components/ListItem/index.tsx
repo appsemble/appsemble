@@ -2,40 +2,22 @@ import { useBlock } from '@appsemble/preact';
 import { Icon, isPreactChild } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Fragment, type VNode } from 'preact';
-import { useCallback, useMemo } from 'preact/hooks';
+import { useCallback } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type Item } from '../../../block.js';
-import { ListItemWrapper } from '../ListItemWrapper/index.js';
+import { ButtonComponent } from '../Button/index.js';
+import { DropdownComponent } from '../Dropdown/index.js';
 
 interface ListItemProps {
+  readonly index: number;
   readonly item: Item;
 }
 
-export function ListItem({ item }: ListItemProps): VNode {
+export function ListItem({ index, item }: ListItemProps): VNode {
   const {
     actions,
-    parameters: {
-      button: {
-        alignment,
-        color,
-        fullwidth,
-        icon: buttonIcon,
-        inverted,
-        label: buttonLabel,
-        light,
-        onClick: onClickButton,
-        outlined,
-        rounded,
-        size: buttonSize = 'normal',
-        title,
-        ...button
-      },
-      fields,
-      header,
-      icon,
-      image,
-    },
+    parameters: { button, dropdown, fields, header, icon, image },
     utils: { asset, remap },
   } = useBlock();
 
@@ -50,66 +32,53 @@ export function ListItem({ item }: ListItemProps): VNode {
   const headerValue = remap(header, item);
   const img = remap(image, item) as string;
 
-  const disabled = useMemo(
-    () => Boolean(remap(button.disabled, item)),
-    [button.disabled, item, remap],
-  );
-  const action = actions[onClickButton];
-  const className = classNames('button', `is-${buttonSize}`, {
-    'is-rounded': rounded,
-    'is-fullwidth': fullwidth,
-    [`is-${color}`]: color,
-    'is-light': light,
-    'is-inverted': inverted,
-    'is-outlined': outlined,
-  });
-  const remappedTitle = remap(title, item) as string;
-
-  const content = (
-    <Fragment>
-      {icon ? <Icon icon={icon} /> : null}
-      <span>{remap(buttonLabel, item) as string}</span>
-    </Fragment>
+  const headerHTML = (
+    <div className={classNames({ [styles.header]: fields?.length })}>
+      {isPreactChild(icon) ? <Icon icon={icon} /> : null}
+      {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
+    </div>
   );
 
-  const onClick = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
-    action(item);
-  }, [action, disabled, item]);
+  const contentHTML = (field: any, label: any, value: any): VNode => (
+    <span className={`${styles.itemField} mr-1 is-inline-block`}>
+      {field.icon ? <Icon icon={field.icon} /> : null}
+      {label == null ? null : (
+        <span>
+          {label}
+          {value ? ': ' : null}
+        </span>
+      )}
+      {value ? (
+        <strong className="has-text-bold">
+          {typeof value === 'string' ? value : JSON.stringify(value)}
+        </strong>
+      ) : null}
+    </span>
+  );
 
   return (
-    <ListItemWrapper
-      actions={actions}
-      className={`${styles.item} has-text-left is-block my-1 pt-4 pr-6 pb-4 pl-5`}
-      item={item}
-      onClick={onItemClick}
-    >
+    <div className={`${styles.item} has-text-left is-block my-1 pt-4 pr-6 pb-4 pl-5`}>
       {img ? (
         <figure className={`image is-48x48 mr-2 ${styles.image}`}>
           <img alt="list icon" src={/^(https?:)?\/\//.test(img) ? img : asset(img)} />
         </figure>
       ) : null}
-      <div className="is-inline-block">
+      <div className={`is-inline-block ${styles.headerWrapper}`}>
         {isPreactChild(icon) || isPreactChild(headerValue) ? (
-          <div className={classNames({ [styles.header]: fields?.length })}>
-            {isPreactChild(icon) ? <Icon icon={icon} /> : null}
-            {isPreactChild(headerValue) ? <h4>{headerValue}</h4> : null}
-            {button ? (
-              <button
-                className={className}
-                disabled={disabled}
-                onClick={onClick}
-                title={remappedTitle}
-                type="button"
-              >
-                {content}
+          <>
+            {actions.onClick.type === 'link' ? (
+              <a className={styles.item} href={actions.onClick.href(item)}>
+                {headerHTML}
+              </a>
+            ) : (
+              <button className={styles.item} onClick={onItemClick} type="button">
+                {headerHTML}
               </button>
-            ) : null}
-          </div>
+            )}
+            {button ? <ButtonComponent field={button} index={index} item={item} /> : null}
+          </>
         ) : null}
+
         {fields?.map((field) => {
           let value;
           let label;
@@ -124,27 +93,26 @@ export function ListItem({ item }: ListItemProps): VNode {
 
           return (
             // There is nothing that is guaranteed to be unique in these items.
-            // eslint-disable-next-line react/jsx-key
-            <span className={`${styles.itemField} mr-1 is-inline-block`}>
-              {field.icon ? <Icon icon={field.icon} /> : null}
-              {label == null ? null : (
-                <span>
-                  {label}
-                  {value ? ': ' : null}
-                </span>
+            <Fragment key={0}>
+              {actions.onClick.type === 'link' ? (
+                <a className={styles.item} href={actions.onClick.href(item)}>
+                  {contentHTML(field, label, value)}
+                </a>
+              ) : (
+                <button className={styles.item} onClick={onItemClick} type="button">
+                  {contentHTML(field, label, value)}
+                </button>
               )}
-              {value ? (
-                <strong className="has-text-bold">
-                  {typeof value === 'string' ? value : JSON.stringify(value)}
-                </strong>
+              {dropdown ? (
+                <DropdownComponent field={dropdown} index={index} item={item} record={item} />
               ) : null}
-            </span>
+            </Fragment>
           );
         })}
       </div>
       {actions.onClick.type !== 'noop' && button == null && (
         <Icon className={`${styles.button} mx-0 my-0 px-0 py-0`} icon="angle-right" size="large" />
       )}
-    </ListItemWrapper>
+    </div>
   );
 }

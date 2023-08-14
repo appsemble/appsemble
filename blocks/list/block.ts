@@ -33,6 +33,125 @@ export interface Item {
   id?: number;
 }
 
+export interface Button {
+  /**
+   * The color of the button.
+   *
+   * @default "primary"
+   */
+  color?: BulmaColor;
+
+  /**
+   * Whether the button should be disabled.
+   *
+   * If the resulting remapper value is truthy, the button will be disabled.
+   */
+  disabled?: Remapper;
+
+  /**
+   * The size of the button.
+   *
+   * @default "normal"
+   */
+  size?: BulmaSize;
+
+  /**
+   * The label to display inside of the button.
+   */
+  label?: Remapper;
+
+  /**
+   * An optional FontAwesome icon to display inside of the button.
+   */
+  icon?: IconName;
+
+  /**
+   * When set to true, the ‘light’ set of Bulma colors are used.
+   */
+  light?: boolean;
+
+  /**
+   * Whether the button should be rounded.
+   */
+  rounded?: boolean;
+
+  /**
+   * Whether the button should be full width or not.
+   *
+   * By default buttons only take up as much space as needed.
+   */
+  fullwidth?: boolean;
+
+  /**
+   * Whether the text and background colors should be inverted.
+   */
+  inverted?: boolean;
+
+  /**
+   * The name of the action to trigger when clicking on this field.
+   *
+   * @format action
+   */
+  onClick?: string;
+
+  /**
+   * Whether the button should display its colors in the outlines.
+   */
+  outlined?: boolean;
+
+  /**
+   * The title for the button.
+   *
+   * Describe what the button does. This helps with accessibility for people using screen readers.
+   */
+  title?: Remapper;
+}
+
+export interface Dropdown {
+  /**
+   * The text to show in the dropdown button.
+   */
+  label?: Remapper;
+
+  /**
+   * The icon to show in the dropdown button.
+   */
+  icon?: IconName;
+
+  /**
+   * The list of options to display. Must have at least 1 option.
+   *
+   * @minItems 1
+   */
+  options: DropdownOption[];
+
+  /**
+   * How the dropdown should be aligned.
+   *
+   * @default 'right'
+   */
+  alignment?: 'left' | 'right';
+}
+
+export interface DropdownOption {
+  /**
+   * The text to show in the option.
+   */
+  label?: Remapper;
+
+  /**
+   * The icon to show in the option.
+   */
+  icon?: IconName;
+
+  /**
+   * The action that will be called when selecting this option.
+   *
+   * @format action
+   */
+  onClick: string;
+}
+
 declare module '@appsemble/sdk' {
   interface Messages {
     /**
@@ -83,85 +202,12 @@ declare module '@appsemble/sdk' {
     /**
      * The definition of the contents and styling of the button.
      */
-    button: {
-      /**
-       * Whether the content of the cell should be aligned left, right, or centered
-       */
-      alignment?: 'center' | 'left' | 'right';
+    button?: Button;
 
-      /**
-       * The name of the action to trigger when clicking on this field.
-       *
-       * @format action
-       */
-      onClick?: string;
-
-      /**
-       * The color of the button.
-       *
-       * @default "primary"
-       */
-      color?: BulmaColor;
-
-      /**
-       * Whether the button should be disabled.
-       *
-       * If the resulting remapper value is truthy, the button will be disabled.
-       */
-      disabled?: Remapper;
-
-      /**
-       * The size of the button.
-       *
-       * @default "normal"
-       */
-      size?: BulmaSize;
-
-      /**
-       * The label to display inside of the button.
-       */
-      label?: Remapper;
-
-      /**
-       * An optional FontAwesome icon to display inside of the button.
-       */
-      icon?: IconName;
-
-      /**
-       * When set to true, the ‘light’ set of Bulma colors are used.
-       */
-      light?: boolean;
-
-      /**
-       * Whether the button should be rounded.
-       */
-      rounded?: boolean;
-
-      /**
-       * Whether the button should be full width or not.
-       *
-       * By default buttons only take up as much space as needed.
-       */
-      fullwidth?: boolean;
-
-      /**
-       * Whether the text and background colors should be inverted.
-       */
-      inverted?: boolean;
-
-      /**
-       * Whether the button should display its colors in the outlines.
-       */
-      outlined?: boolean;
-
-      /**
-       * The title for the button.
-       *
-       * Describe what the button does. This helps with accessibility for people using screen
-       * readers.
-       */
-      title?: Remapper;
-    };
+    /**
+     * The definition of the contents and styling of the dropdown.
+     */
+    dropdown?: Dropdown;
   }
 
   interface Actions {
