@@ -7,6 +7,7 @@ import {
 import { type ReactElement, useCallback, useState } from 'react';
 
 import styles from './index.module.css';
+import { PageItem } from './PageItem/PageItem.js';
 import { useApp } from '../../../index.js';
 
 interface PagesListProps {
@@ -58,17 +59,6 @@ export function PagesList({
       }
     });
 
-  const toggleDropdownPages = useCallback(
-    (pageIndex: number) => {
-      if (disabledPages.includes(pageIndex)) {
-        setDisabledPages(disabledPages.filter((p) => p !== pageIndex));
-      } else {
-        setDisabledPages([...disabledPages, pageIndex]);
-      }
-    },
-    [disabledPages],
-  );
-
   const toggleDropdownSubParents = useCallback(
     (subParentIndex: number) => {
       if (disabledSubParents.includes(subParentIndex)) {
@@ -78,13 +68,6 @@ export function PagesList({
       }
     },
     [disabledSubParents],
-  );
-
-  const onSelectPage = useCallback(
-    (pageIndex: number, subParentIndex: number) => {
-      onChange(pageIndex, subParentIndex, -1);
-    },
-    [onChange],
   );
 
   const onselectBlock = useCallback(
@@ -98,25 +81,16 @@ export function PagesList({
     <>
       {pages.map((page, pageIndex) => (
         <div key={page}>
-          <Button
-            className={`${styles.parentTop} ${
-              selectedPage === pageIndex && selectedBlock === -1
-                ? 'is-link'
-                : selectedPage === pageIndex && selectedBlock >= 0
-                ? 'is-info'
-                : ''
-            }`}
-            onClick={() => onSelectPage(pageIndex, -1)}
-          >
-            {page}
-            {blocks.some((block) => block.parent === pageIndex) && (
-              <Icon
-                className="mx-2"
-                icon={disabledPages.includes(pageIndex) ? 'chevron-up' : 'chevron-down'}
-                onClick={() => toggleDropdownPages(pageIndex)}
-              />
-            )}
-          </Button>
+          <PageItem
+            blocks={blocks}
+            disabledPages={disabledPages}
+            onChange={onChange}
+            page={page}
+            pageIndex={pageIndex}
+            selectedBlock={selectedBlock}
+            selectedPage={selectedPage}
+            setDisabledPages={setDisabledPages}
+          />
           {!disabledPages.includes(pageIndex) && (
             <>
               {blocks
