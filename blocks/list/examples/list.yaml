@@ -2,8 +2,10 @@ parameters:
   header: { prop: name }
   icon: fontawesomeIcon
   image:
-    - prop: photos
-    - prop: 0
+    file: photos
+    rounded: true
+    alignment: header
+    size: 64
   fields:
     - value: { prop: value }
 actions:

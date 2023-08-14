@@ -3642,6 +3642,16 @@ Compatible data that is received will be displayed. Must be a set of data.",
       "Button": {
         "additionalProperties": false,
         "properties": {
+          "alignment": {
+            "default": "top-right",
+            "description": "How the button should be aligned.",
+            "enum": [
+              "bottom-right",
+              "field",
+              "top-right",
+            ],
+            "type": "string",
+          },
           "color": {
             "$ref": "#/definitions/BulmaColor",
             "default": "primary",
@@ -3707,11 +3717,11 @@ Describe what the button does. This helps with accessibility for people using sc
         "additionalProperties": false,
         "properties": {
           "alignment": {
-            "default": "right",
+            "default": "bottom-right",
             "description": "How the dropdown should be aligned.",
             "enum": [
-              "left",
-              "right",
+              "bottom-right",
+              "top-right",
             ],
             "type": "string",
           },
@@ -3787,6 +3797,75 @@ No value will be rendered if undefined.",
         },
         "type": "object",
       },
+      "Image": {
+        "additionalProperties": false,
+        "properties": {
+          "alignment": {
+            "default": "default",
+            "description": "The alignment of the text content.",
+            "enum": [
+              "default",
+              "header",
+            ],
+            "type": "string",
+          },
+          "alt": {
+            "description": "The alt text of the image.",
+            "format": "remapper",
+          },
+          "file": {
+            "description": "The image to show in the cell.
+
+image can either be url or uploaded image",
+            "format": "remapper",
+          },
+          "rounded": {
+            "description": "Is image rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "default": 48,
+            "description": "The image is scaled with bulma sizes.",
+            "enum": [
+              16,
+              24,
+              32,
+              48,
+              64,
+              96,
+              128,
+            ],
+            "type": "number",
+          },
+        },
+        "required": [
+          "file",
+        ],
+        "type": "object",
+      },
+      "ToggleButton": {
+        "additionalProperties": false,
+        "properties": {
+          "falseButton": {
+            "$ref": "#/definitions/Button",
+            "description": "The button to show when value is set to false.",
+          },
+          "trueButton": {
+            "$ref": "#/definitions/Button",
+            "description": "The button to show when value is set to true.",
+          },
+          "value": {
+            "description": "Value should be true or false.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "value",
+          "trueButton",
+          "falseButton",
+        ],
+        "type": "object",
+      },
     },
     "properties": {
       "base": {
@@ -3824,10 +3903,14 @@ Will not render if undefined.",
         "type": "string",
       },
       "image": {
+        "$ref": "#/definitions/Image",
         "description": "The image that is shown to the left of the list item.
 
 This can be either a full image path or an asset id.",
-        "format": "remapper",
+      },
+      "toggleButton": {
+        "$ref": "#/definitions/ToggleButton",
+        "description": "The definition of the contents and styling of the toggle button.",
       },
     },
     "type": "object",

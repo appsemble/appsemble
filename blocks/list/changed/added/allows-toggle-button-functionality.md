@@ -1,0 +1,1 @@
+Allows toggle button functionality.

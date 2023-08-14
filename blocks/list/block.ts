@@ -35,6 +35,13 @@ export interface Item {
 
 export interface Button {
   /**
+   * How the button should be aligned.
+   *
+   * @default 'top-right'
+   */
+  alignment?: 'bottom-right' | 'field' | 'top-right';
+
+  /**
    * The color of the button.
    *
    * @default "primary"
@@ -107,6 +114,23 @@ export interface Button {
   title?: Remapper;
 }
 
+export interface ToggleButton {
+  /**
+   * Value should be true or false.
+   */
+  value: Remapper;
+
+  /**
+   * The button to show when value is set to true.
+   */
+  trueButton: Button;
+
+  /**
+   * The button to show when value is set to false.
+   */
+  falseButton: Button;
+}
+
 export interface Dropdown {
   /**
    * The text to show in the dropdown button.
@@ -128,9 +152,9 @@ export interface Dropdown {
   /**
    * How the dropdown should be aligned.
    *
-   * @default 'right'
+   * @default 'bottom-right'
    */
-  alignment?: 'left' | 'right';
+  alignment?: 'bottom-right' | 'top-right';
 }
 
 export interface DropdownOption {
@@ -150,6 +174,41 @@ export interface DropdownOption {
    * @format action
    */
   onClick: string;
+}
+
+export interface Image {
+  /**
+   * The image to show in the cell.
+   *
+   * image can either be url or uploaded image
+   */
+  file: Remapper;
+
+  /**
+   * The alt text of the image.
+   *
+   */
+  alt?: Remapper;
+
+  /**
+   * Is image rounded.
+   *
+   */
+  rounded?: boolean;
+
+  /**
+   * The alignment of the text content.
+   *
+   * @default 'default'
+   */
+  alignment?: 'default' | 'header';
+
+  /**
+   * The image is scaled with bulma sizes.
+   *
+   * @default 48
+   */
+  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
 }
 
 declare module '@appsemble/sdk' {
@@ -197,12 +256,17 @@ declare module '@appsemble/sdk' {
      *
      * This can be either a full image path or an asset id.
      */
-    image?: Remapper;
+    image?: Image;
 
     /**
      * The definition of the contents and styling of the button.
      */
     button?: Button;
+
+    /**
+     * The definition of the contents and styling of the toggle button.
+     */
+    toggleButton?: ToggleButton;
 
     /**
      * The definition of the contents and styling of the dropdown.

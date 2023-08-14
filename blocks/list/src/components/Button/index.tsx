@@ -59,8 +59,8 @@ export function ButtonComponent({
 
   const content = (
     <Fragment>
-      {icon ? <Icon icon={icon} /> : null}
-      <span>{remap(label, item, { index }) as string}</span>
+      {icon ? <Icon className="px-5" icon={icon} /> : null}
+      {label ? <span>{remap(label, item, { index }) as string}</span> : null}
     </Fragment>
   );
 
@@ -74,7 +74,7 @@ export function ButtonComponent({
 
   return (
     <button
-      className={className}
+      className={`${className} mt-3`}
       disabled={disabled}
       onClick={onClick}
       title={remappedTitle}
