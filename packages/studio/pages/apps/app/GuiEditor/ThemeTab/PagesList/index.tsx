@@ -1,13 +1,13 @@
-import { Button, Icon } from '@appsemble/react-components';
 import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 
-import styles from './index.module.css';
+import { BlockItem } from './BlockItem/index.js';
 import { PageItem } from './PageItem/PageItem.js';
+import { SubBlockItem } from './PageItem/SubBlockItem/index.js';
 import { useApp } from '../../../index.js';
 
 interface PagesListProps {
@@ -24,7 +24,6 @@ export function PagesList({
 }: PagesListProps): ReactElement {
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
-  const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
 
   const pages: string[] = app.definition.pages.map((page) => page.name);
   const blocks: { type: string; parent: number; subParent: number; block: number }[] =
@@ -59,24 +58,6 @@ export function PagesList({
       }
     });
 
-  const toggleDropdownSubParents = useCallback(
-    (subParentIndex: number) => {
-      if (disabledSubParents.includes(subParentIndex)) {
-        setDisabledSubParents(disabledSubParents.filter((p) => p !== subParentIndex));
-      } else {
-        setDisabledSubParents([...disabledSubParents, subParentIndex]);
-      }
-    },
-    [disabledSubParents],
-  );
-
-  const onselectBlock = useCallback(
-    (parentIndex: number, subParentIndex: number, blockIndex: number) => {
-      onChange(parentIndex, subParentIndex, blockIndex);
-    },
-    [onChange],
-  );
-
   return (
     <>
       {pages.map((page, pageIndex) => (
@@ -93,98 +74,23 @@ export function PagesList({
           />
           {!disabledPages.includes(pageIndex) && (
             <>
-              {blocks
-                .filter((block) => block.parent === pageIndex && block.subParent === -1)
-                .map((block) => (
-                  <Button
-                    className={`${styles.childItem} ${
-                      selectedBlock === block.block && selectedPage === pageIndex ? 'is-link' : ''
-                    }`}
-                    key={block.block}
-                    onClick={() => onselectBlock(block.parent, -1, block.block)}
-                  >
-                    {
-                      (app.definition.pages[block.parent] as BasicPageDefinition).blocks[
-                        block.block
-                      ].type
-                    }
-                  </Button>
-                ))}
-              {blocks
-                .filter(
-                  (block, index, self) =>
-                    block.parent === pageIndex &&
-                    block.subParent !== -1 &&
-                    self.findIndex(
-                      (b) => b.subParent === block.subParent && b.parent === block.parent,
-                    ) === index,
-                )
-                .map((block) => (
-                  <div key={`subParent-${block.subParent}`}>
-                    <Button
-                      className={`${styles.subParent} ${
-                        block.subParent === selectedSubParent &&
-                        selectedPage === pageIndex &&
-                        selectedBlock !== -1
-                          ? 'is-info'
-                          : ''
-                      }`}
-                    >
-                      {block.type === 'flow'
-                        ? (app.definition.pages[block.parent] as FlowPageDefinition).steps[
-                            block.subParent
-                          ].name
-                        : (app.definition.pages[block.parent] as TabsPageDefinition).tabs[
-                            block.subParent
-                          ].name}
-                      {blocks.some(
-                        (blockItem) =>
-                          blockItem.parent === pageIndex && blockItem.subParent === block.subParent,
-                      ) && (
-                        <Icon
-                          className="mx-2"
-                          icon={
-                            disabledSubParents.includes(block.subParent)
-                              ? 'chevron-up'
-                              : 'chevron-down'
-                          }
-                          onClick={() => toggleDropdownSubParents(block.subParent)}
-                        />
-                      )}
-                    </Button>
-                    {!disabledSubParents.includes(block.subParent) && (
-                      <>
-                        {blocks
-                          .filter(
-                            (subBlock) =>
-                              subBlock.parent === pageIndex &&
-                              subBlock.subParent === block.subParent,
-                          )
-                          .map((subBlock) => (
-                            <Button
-                              className={`${styles.childItem} ${
-                                selectedBlock === subBlock.block &&
-                                selectedPage === pageIndex &&
-                                selectedSubParent === subBlock.subParent
-                                  ? 'is-link'
-                                  : ''
-                              }`}
-                              key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
-                              onClick={() =>
-                                onselectBlock(subBlock.parent, subBlock.subParent, subBlock.block)
-                              }
-                            >
-                              {subBlock.type === 'flow'
-                                ? (app.definition.pages[subBlock.parent] as FlowPageDefinition)
-                                    .steps[subBlock.subParent].blocks[subBlock.block].type
-                                : (app.definition.pages[subBlock.parent] as TabsPageDefinition)
-                                    .tabs[subBlock.subParent].blocks[subBlock.block].type}
-                            </Button>
-                          ))}
-                      </>
-                    )}
-                  </div>
-                ))}
+              <BlockItem
+                app={app}
+                blocks={blocks}
+                onChange={onChange}
+                pageIndex={pageIndex}
+                selectedBlock={selectedBlock}
+                selectedPage={selectedPage}
+              />
+              <SubBlockItem
+                app={app}
+                blocks={blocks}
+                onChange={onChange}
+                pageIndex={pageIndex}
+                selectedBlock={selectedBlock}
+                selectedPage={selectedPage}
+                selectedSubParent={selectedSubParent}
+              />
             </>
           )}
         </div>

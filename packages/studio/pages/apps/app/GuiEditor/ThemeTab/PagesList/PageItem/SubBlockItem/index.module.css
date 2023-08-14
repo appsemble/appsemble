@@ -1,3 +1,14 @@
+.childItem {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  font-size: 14px;
+  height: 25px;
+  justify-content: flex-start;
+  padding-left: 2.5rem;
+  width: 100%;
+}
+
 .subParent {
   border: 0;
   border-bottom: 1px solid hsl(0deg 0% 88%);
@@ -8,16 +19,5 @@
   justify-content: flex-start;
   margin: 0;
   padding: 0 0 0 1.5rem;
-  width: 100%;
-}
-
-.childItem {
-  border: 0;
-  border-bottom: 1px solid hsl(0deg 0% 88%);
-  border-radius: 0;
-  font-size: 14px;
-  height: 25px;
-  justify-content: flex-start;
-  padding-left: 2.5rem;
   width: 100%;
 }

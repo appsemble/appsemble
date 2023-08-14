@@ -1,0 +1,10 @@
+.childItem {
+  border: 0;
+  border-bottom: 1px solid hsl(0deg 0% 88%);
+  border-radius: 0;
+  font-size: 14px;
+  height: 25px;
+  justify-content: flex-start;
+  padding-left: 2.5rem;
+  width: 100%;
+}
