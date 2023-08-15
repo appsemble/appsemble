@@ -1,27 +1,45 @@
 import { Button, Icon } from '@appsemble/react-components';
-import { type App, type FlowPageDefinition, type TabsPageDefinition } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import {
+  type DragEvent,
+  type MutableRefObject,
+  type ReactElement,
+  useCallback,
+  useState,
+} from 'react';
+import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
+import { SubPageBlockItem } from './SubPageBlockItem/index.js';
 
-interface SubBlockItemProps {
-  readonly app: App;
+interface SubPageItemProps {
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
   readonly pageIndex: number;
   readonly blocks: { type: string; parent: number; subParent: number; block: number }[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
+  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly onSelectSubPage?: (index: number, subParentIndex: number) => void;
+  readonly handleDrop?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    targetSubPageIndex?: number,
+  ) => void;
 }
-export function SubBlockItem({
-  app,
+export function SubPageItem({
   blocks,
+  docRef,
+  handleDragStart,
+  handleDrop,
   onChange,
+  onSelectSubPage,
   pageIndex,
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: SubBlockItemProps): ReactElement {
+}: SubPageItemProps): ReactElement {
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
 
   const toggleDropdownSubParents = useCallback(
@@ -33,13 +51,6 @@ export function SubBlockItem({
       }
     },
     [disabledSubParents],
-  );
-
-  const onselectBlock = useCallback(
-    (parentIndex: number, subParentIndex: number, blockIndex: number) => {
-      onChange(parentIndex, subParentIndex, blockIndex);
-    },
-    [onChange],
   );
 
   return (
@@ -58,16 +69,30 @@ export function SubBlockItem({
               className={`${styles.subParent} ${
                 block.subParent === selectedSubParent &&
                 selectedPage === pageIndex &&
-                selectedBlock !== -1
+                selectedBlock === -1
+                  ? 'is-link'
+                  : selectedPage === pageIndex &&
+                    block.subParent === selectedSubParent &&
+                    selectedBlock !== -1
                   ? 'is-info'
                   : ''
               }`}
+              // TODO make sub pages draggable (by adding draggable property)
+              key={block.block}
+              onClick={() => onSelectSubPage(block.parent, block.subParent)}
+              onDragOver={(e) => e.preventDefault()}
+              onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+              onDrop={(e) => handleDrop(e, block.block, pageIndex, block.subParent)}
             >
-              {block.type === 'flow'
-                ? (app.definition.pages[block.parent] as FlowPageDefinition).steps[block.subParent]
-                    .name
-                : (app.definition.pages[block.parent] as TabsPageDefinition).tabs[block.subParent]
-                    .name}
+              {
+                docRef.current.getIn([
+                  'pages',
+                  block.parent,
+                  block.type === 'flow' ? 'steps' : 'tabs',
+                  block.subParent,
+                  'name',
+                ]) as string
+              }
               {blocks.some(
                 (blockItem) =>
                   blockItem.parent === pageIndex && blockItem.subParent === block.subParent,
@@ -89,27 +114,17 @@ export function SubBlockItem({
                       subBlock.parent === pageIndex && subBlock.subParent === block.subParent,
                   )
                   .map((subBlock) => (
-                    <Button
-                      className={`${styles.childItem} ${
-                        selectedBlock === subBlock.block &&
-                        selectedPage === pageIndex &&
-                        selectedSubParent === subBlock.subParent
-                          ? 'is-link'
-                          : ''
-                      }`}
+                    <SubPageBlockItem
+                      block={block}
+                      docRef={docRef}
                       key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
-                      onClick={() =>
-                        onselectBlock(subBlock.parent, subBlock.subParent, subBlock.block)
-                      }
-                    >
-                      {subBlock.type === 'flow'
-                        ? (app.definition.pages[subBlock.parent] as FlowPageDefinition).steps[
-                            subBlock.subParent
-                          ].blocks[subBlock.block].type
-                        : (app.definition.pages[subBlock.parent] as TabsPageDefinition).tabs[
-                            subBlock.subParent
-                          ].blocks[subBlock.block].type}
-                    </Button>
+                      onChange={onChange}
+                      pageIndex={pageIndex}
+                      selectedBlock={selectedBlock}
+                      selectedPage={selectedPage}
+                      selectedSubParent={selectedSubParent}
+                      subBlock={subBlock}
+                    />
                   ))}
               </>
             )}

@@ -3,20 +3,23 @@ import {
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type ReactElement, useState } from 'react';
+import { type MutableRefObject, type ReactElement, useCallback, useState } from 'react';
+import { type Document, type ParsedNode } from 'yaml';
 
-import { BlockItem } from './BlockItem/index.js';
-import { PageItem } from './PageItem/PageItem.js';
-import { SubBlockItem } from './PageItem/SubBlockItem/index.js';
 import { useApp } from '../../../index.js';
+import { BlockItem } from '../../ElementsList/BlockItem/index.js';
+import { PageItem } from '../../ElementsList/PageItem/PageItem.js';
+import { SubPageItem } from '../../ElementsList/SubPageItem/index.js';
 
 interface PagesListProps {
+  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
-  readonly onChange: (page: number, subParent: number, block: number) => void;
 }
 export function PagesList({
+  docRef,
   onChange,
   selectedBlock,
   selectedPage,
@@ -58,6 +61,13 @@ export function PagesList({
       }
     });
 
+  const onSelectPage = useCallback(
+    (index: number, subParentIndex: number) => {
+      onChange(index, subParentIndex, -1);
+    },
+    [onChange],
+  );
+
   return (
     <>
       {pages.map((page, pageIndex) => (
@@ -65,7 +75,7 @@ export function PagesList({
           <PageItem
             blocks={blocks}
             disabledPages={disabledPages}
-            onChange={onChange}
+            onSelectPage={onSelectPage}
             page={page}
             pageIndex={pageIndex}
             selectedBlock={selectedBlock}
@@ -75,16 +85,16 @@ export function PagesList({
           {!disabledPages.includes(pageIndex) && (
             <>
               <BlockItem
-                app={app}
                 blocks={blocks}
+                docRef={docRef}
                 onChange={onChange}
                 pageIndex={pageIndex}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
               />
-              <SubBlockItem
-                app={app}
+              <SubPageItem
                 blocks={blocks}
+                docRef={docRef}
                 onChange={onChange}
                 pageIndex={pageIndex}
                 selectedBlock={selectedBlock}

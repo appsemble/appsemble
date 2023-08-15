@@ -6,7 +6,6 @@ import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
 import BlockProperty from './BlockProperty/index.js';
 import { BlockStore } from './BlockStore/index.js';
-import { ElementsList } from './ElementsList/index.js';
 import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import SubPageProperty from './SubPageProperty/index.js';
@@ -14,6 +13,7 @@ import { AppPreview } from '../../../../../components/AppPreview/index.js';
 import { generateData } from '../../../../../utils/schemaGenerator.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
+import { ElementsList } from '../ElementsList/index.js';
 
 interface PagesTabProps {
   readonly addIn: (path: Iterable<unknown>, value: Node) => void;

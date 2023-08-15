@@ -1,5 +1,5 @@
 import { Button, Icon } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type DragEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
 
@@ -10,26 +10,23 @@ interface PagesItemProps {
   readonly disabledPages: number[];
   readonly page: string;
   readonly blocks: { type: string; parent: number; subParent: number; block: number }[];
-  readonly onChange: (page: number, subParent: number, block: number) => void;
+  readonly onSelectPage: (index: number, subParentIndex: number) => void;
   readonly setDisabledPages: (pageList: number[]) => void;
+  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly handleDrop?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
 }
 export function PageItem({
   blocks,
   disabledPages,
-  onChange,
+  handleDragStart,
+  handleDrop,
+  onSelectPage,
   page,
   pageIndex,
   selectedBlock,
   selectedPage,
   setDisabledPages,
 }: PagesItemProps): ReactElement {
-  const onSelectPage = useCallback(
-    (index: number, subParentIndex: number) => {
-      onChange(index, subParentIndex, -1);
-    },
-    [onChange],
-  );
-
   const toggleDropdownPages = useCallback(
     (index: number) => {
       if (disabledPages.includes(pageIndex)) {
@@ -51,6 +48,9 @@ export function PageItem({
           : ''
       }`}
       onClick={() => onSelectPage(pageIndex, -1)}
+      onDragOver={(e) => e.preventDefault()}
+      onDragStart={(e) => handleDragStart(e, -1, pageIndex)}
+      onDrop={(e) => handleDrop(e, -1, pageIndex)}
     >
       {page}
       {blocks.some((block: any) => block.parent === pageIndex) && (

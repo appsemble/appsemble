@@ -55,6 +55,7 @@ export function ThemeTab({
             {formatMessage(messages.defaultTheme)}
           </Button>
           <PagesList
+            docRef={docRef}
             onChange={onChangePagesBlocks}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}
