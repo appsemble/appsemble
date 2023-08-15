@@ -9,7 +9,7 @@ import { type App, type AppDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
-import { Link, Navigate, useLocation, useMatch } from 'react-router-dom';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import {
   type Document,
   type Node,
@@ -90,11 +90,9 @@ export default function EditPage(): ReactElement {
   const [unsaved, setUnsaved] = useState<string[]>([
     `${formatMessage(messages.unsavedChanges)}:\n`,
   ]);
-
-  const match = useMatch('/:lang/apps/:id/edit/gui/*');
-  const matchTabPath = useMatch('/:lang/apps/:id/edit/gui/:tab/*');
-  const { id, lang } = match.params;
-  const tabPath = matchTabPath?.params.tab;
+  const params = useParams();
+  const { id, lang } = params;
+  const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
 
   const handleLeftPanelToggle = useCallback(() => {
