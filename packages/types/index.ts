@@ -306,9 +306,13 @@ export interface Remappers {
   'date.add': string;
 
   /**
-   * Format a date to an iso8601 / rfc3339 compatible string.
+   * Formats a date to an iso8601 / rfc3339 compatible string.
+   *
+   * An argument can also be specified to use a different output format.
+   *
+   * Please refer to https://date-fns.org/docs/format for the supported patterns.
    */
-  'date.format': null;
+  'date.format'?: string;
 
   /**
    * Compare all computed remapper values against each other.
