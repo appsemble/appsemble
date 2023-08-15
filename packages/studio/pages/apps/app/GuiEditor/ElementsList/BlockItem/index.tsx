@@ -40,7 +40,7 @@ export function BlockItem({
             className={`${styles.childItem} ${
               selectedBlock === block.block && selectedPage === pageIndex ? 'is-link' : ''
             }`}
-            draggable
+            draggable={handleDragStart != null}
             key={block.block}
             onClick={() => onSelectBlock(block.parent, -1, block.block)}
             onDragOver={(e) => e.preventDefault()}

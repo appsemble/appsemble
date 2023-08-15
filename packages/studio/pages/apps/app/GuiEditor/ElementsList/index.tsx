@@ -206,6 +206,8 @@ export function ElementsList({
               <BlockItem
                 blocks={blocks}
                 docRef={docRef}
+                handleDragStart={handleDragStart}
+                handleDrop={handleDrop}
                 onChange={onChange}
                 pageIndex={pageIndex}
                 selectedBlock={selectedBlock}
