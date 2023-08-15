@@ -41,7 +41,7 @@ Result:
 `,
   },
   'date.format': {
-    enum: [null],
+    enum: ['string', null],
     description: `Format a date according to the RFC3339 format.
 
 Here is an example of a RFC3339 complicit date:
@@ -49,7 +49,7 @@ Here is an example of a RFC3339 complicit date:
 
 In an app definition, it’s best to use this when you want to display a date in a specific format.
 For example, if your app has a form with a Datepicker field the incoming data will be formatted
-as a simple date format. If you want to format it tot he RFC3339 format, you can use this remapper.
+as a simple date format. If you want to format it to the RFC3339 format, you can use this remapper.
 
 When you submit a form with a DateField, the internal output looks like this:
 
@@ -65,7 +65,24 @@ date.format: null
 
 Result:
 \`\`\`js
-"2023-07-03T09:09:50.000Z"
+"2023-07-02T22:00:00.000Z"
+\`\`\`
+
+The remapper can also be used to format a date or timestamp using a custom format.
+
+\`\`\`js
+"2023-07-02T22:00:00.000Z"
+\`\`\`
+
+You can then format the date with any supported pattern, please refer to https://date-fns.org/docs/format for the supported patterns.
+
+\`\`\`yaml
+date.format: yyyy-MM-dd
+\`\`\`
+
+Result:
+\`\`\`js
+2023-07-03
 \`\`\`
 `,
   },

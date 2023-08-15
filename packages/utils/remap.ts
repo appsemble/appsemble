@@ -1,5 +1,5 @@
 import { type Remapper, type Remappers, type UserInfo } from '@appsemble/types';
-import { addMilliseconds, parse, parseISO } from 'date-fns';
+import { addMilliseconds, format, parse, parseISO } from 'date-fns';
 import equal from 'fast-deep-equal';
 import { createEvent, type EventAttributes } from 'ics';
 import { type IntlMessageFormat } from 'intl-messageformat';
@@ -390,8 +390,7 @@ const mapperImplementations: MapperImplementations = {
     return result;
   },
 
-  'date.parse': (format, input: string) =>
-    format ? parse(input, format, new Date()) : parseISO(input),
+  'date.parse': (fmt, input: string) => (fmt ? parse(input, fmt, new Date()) : parseISO(input)),
 
   'date.now': () => new Date(),
 
@@ -412,7 +411,8 @@ const mapperImplementations: MapperImplementations = {
         : typeof input === 'number'
         ? new Date(input)
         : parseISO(String(input));
-    return date.toJSON();
+
+    return args ? format(date, args) : date.toJSON();
   },
 
   'null.strip': (args, input) => stripNullValues(input, args || {}),
