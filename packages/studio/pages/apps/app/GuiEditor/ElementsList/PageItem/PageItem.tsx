@@ -47,6 +47,7 @@ export function PageItem({
           ? 'is-info'
           : ''
       }`}
+      draggable={handleDragStart != null}
       onClick={() => onSelectPage(pageIndex, -1)}
       onDragOver={(e) => e.preventDefault()}
       onDragStart={(e) => handleDragStart(e, -1, pageIndex)}
