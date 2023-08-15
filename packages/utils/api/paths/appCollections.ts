@@ -294,7 +294,19 @@ export const paths: OpenAPIV3.PathsObject = {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/App',
+                  allOf: [
+                    { $ref: '#/components/schemas/App' },
+                    {
+                      type: 'object',
+                      properties: {
+                        pinned: {
+                          type: 'string',
+                          format: 'date-time',
+                          nullable: true,
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -370,6 +382,75 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         204: {
           description: 'The app was removed from the app collection',
+        },
+      },
+      security: [{ studio: [] }],
+    },
+  },
+  '/api/appCollections/{appCollectionId}/apps/{appId}/pinned': {
+    post: {
+      tags: ['appCollection'],
+      description: 'Pin an app to an app collection',
+      operationId: 'pinAppToCollection',
+      parameters: [
+        {
+          name: 'appCollectionId',
+          in: 'path',
+          description: 'The id of the app collection to pin the app to',
+          required: true,
+          schema: { $ref: '#/components/schemas/AppCollection/properties/id' },
+        },
+        {
+          name: 'appId',
+          in: 'path',
+          description: 'The id of the app to pin',
+          required: true,
+          schema: { $ref: '#/components/schemas/App/properties/id' },
+        },
+      ],
+      responses: {
+        200: {
+          description: 'The app was pinned to the app collection',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  pinned: {
+                    type: 'string',
+                    format: 'date-time',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+    },
+    delete: {
+      tags: ['appCollection'],
+      description: 'Unpin an app from an app collection',
+      operationId: 'unpinAppFromCollection',
+      parameters: [
+        {
+          name: 'appCollectionId',
+          in: 'path',
+          description: 'The id of the app collection to unpin the app from',
+          required: true,
+          schema: { $ref: '#/components/schemas/AppCollection/properties/id' },
+        },
+        {
+          name: 'appId',
+          in: 'path',
+          description: 'The id of the app to unpin',
+          required: true,
+          schema: { $ref: '#/components/schemas/App/properties/id' },
+        },
+      ],
+      responses: {
+        204: {
+          description: 'The app was unpinned from the app collection',
         },
       },
       security: [{ studio: [] }],

@@ -782,4 +782,122 @@ describe('appCollectionApps', () => {
       }),
     );
   });
+
+  describe('pinned apps', () => {
+    it('should pin an app to an app collection', async () => {
+      const app1 = await AppCollectionApp.findByPk(apps[0].id);
+      expect(app1.pinnedAt).toBeNull();
+      await authorizeStudio(user);
+      const response = await request.post(
+        `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      );
+      expect(response.status).toBe(200);
+      expect(response.data).toStrictEqual({
+        pinnedAt: '1970-01-01T00:00:00.000Z',
+      });
+
+      const app2 = await AppCollectionApp.findByPk(apps[0].id);
+      expect(app2.pinnedAt).not.toBeNull();
+    });
+
+    it('should unpin an app from an app collection', async () => {
+      const app1 = await AppCollectionApp.findByPk(apps[0].id);
+      app1.update({ pinnedAt: new Date() });
+
+      await authorizeStudio(user);
+      const response = await request.delete(
+        `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      );
+      expect(response.status).toBe(204);
+
+      const app2 = await AppCollectionApp.findByPk(apps[0].id);
+      expect(app2.pinnedAt).toBeNull();
+    });
+
+    it('should include the pin status of an app in the app collection apps endpoint', async () => {
+      const response = await request.get(`/api/appCollections/${collections[0].id}/apps`);
+      expect(response.status).toBe(200);
+      expect(response.data).toContainEqual(
+        expect.objectContaining({
+          id: apps[0].id,
+          pinnedAt: null,
+        }),
+      );
+
+      await AppCollectionApp.update(
+        {
+          pinnedAt: new Date(),
+        },
+        {
+          where: {
+            AppCollectionId: collections[0].id,
+            AppId: apps[0].id,
+          },
+        },
+      );
+
+      const response2 = await request.get(`/api/appCollections/${collections[0].id}/apps`);
+      expect(response2.status).toBe(200);
+      expect(response2.data).toContainEqual(
+        expect.objectContaining({
+          id: apps[0].id,
+          pinnedAt: '1970-01-01T00:00:00.000Z',
+        }),
+      );
+    });
+
+    it('should not allow a user to pin or unpin an app to an app collection they do not own', async () => {
+      await authorizeStudio(unprivilegedUser);
+      const response = await request.post(
+        `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      );
+      expect(response.status).toBe(403);
+
+      const response2 = await request.delete(
+        `/api/appCollections/${collections[0].id}/apps/${apps[0].id}/pinned`,
+      );
+      expect(response2.status).toBe(403);
+    });
+
+    it('should show pinned apps first in the app collection apps endpoint', async () => {
+      await AppCollectionApp.create({
+        AppCollectionId: collections[0].id,
+        AppId: funAndProductivityApp.id,
+        pinnedAt: new Date(),
+      });
+
+      vi.advanceTimersByTime(60 * 1000);
+
+      await AppCollectionApp.update(
+        {
+          pinnedAt: new Date(),
+        },
+        {
+          where: {
+            AppCollectionId: collections[0].id,
+            AppId: apps[0].id,
+          },
+        },
+      );
+
+      await authorizeStudio(user);
+
+      const response = await request.get(`/api/appCollections/${collections[0].id}/apps`);
+      expect(response.status).toBe(200);
+      expect(response.data).toStrictEqual([
+        expect.objectContaining({
+          id: apps[0].id,
+          path: 'productivity-and-collaboration-app',
+        }),
+        expect.objectContaining({
+          id: funAndProductivityApp.id,
+          path: 'fun-and-productivity-app',
+        }),
+        expect.objectContaining({
+          id: apps[2].id,
+          path: 'productivity-app',
+        }),
+      ]);
+    });
+  });
 });

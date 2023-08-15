@@ -51,6 +51,7 @@ export async function up(db: Sequelize): Promise<void> {
       },
       unique: 'UniqueAppCollectionAppIndex',
     },
+    pinnedAt: { type: DataTypes.DATE },
     created: { allowNull: false, type: DataTypes.DATE },
     updated: { allowNull: false, type: DataTypes.DATE },
   });

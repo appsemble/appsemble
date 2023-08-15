@@ -1,4 +1,11 @@
-import { Button, Content, useConfirmation, useData, useToggle } from '@appsemble/react-components';
+import {
+  Button,
+  Content,
+  Icon,
+  useConfirmation,
+  useData,
+  useToggle,
+} from '@appsemble/react-components';
 import { type App, type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
@@ -8,7 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { CollectionHeader } from './CollectionHeader/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AppList } from '../../../../components/AppList/index.js';
+import { AppList, type AppSortFunction } from '../../../../components/AppList/index.js';
 import {
   AppListControls,
   type AppSortFunctionName,
@@ -22,6 +29,35 @@ interface IndexPageProps {
   readonly collection: AppCollection;
 }
 
+type PinnableApp = App & { pinnedAt: string };
+
+/**
+ * Wraps a sort function to sort pinned apps first and desceending by date of pinning no matter how
+ * the sort function sorts them.
+ *
+ * @param fn The sort function to wrap.
+ * @param reverse Whether the wrapped sort function is reversed.
+ * @returns The wrapped sort function.
+ */
+function pinnedFirstSortWrapper(
+  fn: AppSortFunction<PinnableApp>,
+  reverse: boolean,
+): AppSortFunction<PinnableApp> {
+  return (a, b) => {
+    const direction = reverse ? -1 : 1;
+    if (a.pinnedAt != null && b.pinnedAt == null) {
+      return -1 * direction;
+    }
+    if (b.pinnedAt != null && a.pinnedAt == null) {
+      return direction;
+    }
+    if (a.pinnedAt != null && b.pinnedAt != null) {
+      return (new Date(a.pinnedAt).getTime() - new Date(b.pinnedAt).getTime()) * direction;
+    }
+    return fn(a, b);
+  };
+}
+
 export function IndexPage({ collection }: IndexPageProps): ReactElement {
   const { formatMessage } = useIntl();
   const [filter, setFilter] = useState('');
@@ -30,7 +66,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactElement {
     reverse: true,
   });
 
-  const appsResult = useData<App[]>(`/api/appCollections/${collection.id}/apps`);
+  const appsResult = useData<PinnableApp[]>(`/api/appCollections/${collection.id}/apps`);
 
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });
@@ -46,6 +82,25 @@ export function IndexPage({ collection }: IndexPageProps): ReactElement {
       appsResult.setData((apps) => apps.filter((a) => a.id !== app.id));
     },
   });
+
+  const onPin = useCallback(
+    async (app: PinnableApp) => {
+      if (app.pinnedAt == null) {
+        const {
+          data: { pinnedAt },
+        } = await axios.post<{ pinnedAt: string }>(
+          `/api/appCollections/${collection.id}/apps/${app.id}/pinned`,
+        );
+        appsResult.setData((apps) => apps.map((a) => (a.id === app.id ? { ...a, pinnedAt } : a)));
+      } else {
+        await axios.delete(`/api/appCollections/${collection.id}/apps/${app.id}/pinned`);
+        appsResult.setData((apps) =>
+          apps.map((a) => (a.id === app.id ? { ...a, pinnedAt: null } : a)),
+        );
+      }
+    },
+    [collection.id, appsResult],
+  );
 
   usePageHeader(collection && <CollectionHeader collection={collection} />);
 
@@ -75,20 +130,31 @@ export function IndexPage({ collection }: IndexPageProps): ReactElement {
         reverse={sort?.reverse}
         sort={sort?.name}
       />
-      <AppList
+      <AppList<PinnableApp>
+        decorate={(app) =>
+          app.pinnedAt == null ? null : <Icon className={styles.pinnedAppIcon} icon="thumbtack" />
+        }
         editMode={editMode}
         editModeCardControls={(app) => (
-          <Button
-            className="has-text-danger"
-            icon="trash-can"
-            onClick={() => onDelete(app)}
-            title={formatMessage(messages.deleteAppFromCollection)}
-          />
+          <>
+            <Button
+              className={app.pinnedAt ? 'has-text-primary' : ''}
+              icon="thumbtack"
+              onClick={() => onPin(app)}
+              title={formatMessage(app.pinnedAt ? messages.unpinApp : messages.pinApp)}
+            />
+            <Button
+              className="has-text-danger"
+              icon="trash-can"
+              onClick={() => onDelete(app)}
+              title={formatMessage(messages.deleteAppFromCollection)}
+            />
+          </>
         )}
         filter={filter}
         result={appsResult}
-        reverse={sort?.reverse}
-        sortFunction={sortFunctions[sort?.name]}
+        reverse={sort.reverse}
+        sortFunction={pinnedFirstSortWrapper(sortFunctions[sort.name], sort.reverse)}
       />
     </Content>
   );

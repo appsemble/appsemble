@@ -222,7 +222,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
         },
       ],
     })
-  )?.Apps.map((app) => app.App);
+  )?.Apps;
 
   if (!apps) {
     throw notFound('Collection not found');
@@ -236,7 +236,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
           [fn('AVG', col('rating')), 'RatingAverage'],
           [fn('COUNT', col('AppId')), 'RatingCount'],
         ],
-        where: { AppId: apps.map((app) => app.id) },
+        where: { AppId: apps.map((app) => app.App.id) },
         group: ['AppId'],
       })
     ).map((rating) => [
@@ -250,7 +250,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
 
   ctx.response.status = 200;
   ctx.response.body = apps
-    .map((app) => {
+    .map(({ App: app, pinnedAt }) => {
       const rating = ratingsMap.get(app.id);
       if (rating) {
         Object.assign(app, {
@@ -258,10 +258,21 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
           RatingCount: rating.count,
         });
       }
-      return app;
+      return { app, pinnedAt };
     })
-    .sort(compareApps)
-    .map((app) => app.toJSON(['yaml']));
+    .sort(({ app: app1, pinnedAt: pinnedAt1 }, { app: app2, pinnedAt: pinnedAt2 }) => {
+      if (pinnedAt1 && !pinnedAt2) {
+        return -1;
+      }
+      if (!pinnedAt1 && pinnedAt2) {
+        return 1;
+      }
+      if (pinnedAt1 && pinnedAt2) {
+        return pinnedAt2.getTime() - pinnedAt1.getTime();
+      }
+      return compareApps(app1, app2);
+    })
+    .map(({ app, pinnedAt }) => Object.assign(app.toJSON(['yaml']), { pinnedAt }));
 }
 
 export async function addAppToCollection(ctx: Context): Promise<void> {
@@ -396,4 +407,68 @@ export async function updateCollection(ctx: Context): Promise<void> {
   });
   ctx.response.status = 200;
   ctx.response.body = updatedCollection.toJSON();
+}
+
+export async function pinAppToCollection(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appCollectionId, appId },
+  } = ctx;
+
+  const aca = await AppCollectionApp.findOne({
+    where: {
+      AppCollectionId: appCollectionId,
+      AppId: appId,
+    },
+    include: [
+      {
+        model: AppCollection,
+        attributes: ['OrganizationId'],
+      },
+    ],
+  });
+
+  if (!aca) {
+    throw notFound('App not found in collection');
+  }
+
+  await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
+
+  const pinnedAt = new Date();
+  await aca.update({
+    pinnedAt,
+  });
+
+  ctx.response.status = 200;
+  ctx.response.body = { pinnedAt };
+}
+
+export async function unpinAppFromCollection(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appCollectionId, appId },
+  } = ctx;
+
+  const aca = await AppCollectionApp.findOne({
+    where: {
+      AppCollectionId: appCollectionId,
+      AppId: appId,
+    },
+    include: [
+      {
+        model: AppCollection,
+        attributes: ['OrganizationId'],
+      },
+    ],
+  });
+
+  if (!aca) {
+    throw notFound('App not found in collection');
+  }
+
+  await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
+
+  await aca.update({
+    pinnedAt: null,
+  });
+
+  ctx.response.status = 204;
 }

@@ -37,6 +37,9 @@ export class AppCollectionApp extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
+  @Column(DataType.DATE)
+  pinnedAt?: Date;
+
   @CreatedAt
   created: Date;
 

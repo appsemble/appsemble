@@ -8,13 +8,13 @@ import { messages } from './messages.js';
 import { AppCard } from '../AppCard/index.js';
 import { AsyncDataView } from '../AsyncDataView/index.js';
 
-export type AppSortFunction = (a: App, b: App) => number;
+export type AppSortFunction<TApp extends App = App> = (a: TApp, b: TApp) => number;
 
-export interface AppListProps {
+export interface AppListProps<TApp extends App = App> {
   /**
    * The result from a `useAxios()` hook.
    */
-  readonly result: UseAxiosResult<App[]>;
+  readonly result: UseAxiosResult<TApp[]>;
 
   /**
    * The filter for the app’s name and organization ID.
@@ -24,7 +24,7 @@ export interface AppListProps {
   /**
    * The function used to sort the app list.
    */
-  readonly sortFunction: AppSortFunction;
+  readonly sortFunction: AppSortFunction<TApp>;
 
   /**
    * Whether the sort function should be reversed.
@@ -39,17 +39,20 @@ export interface AppListProps {
   /**
    * A function that returns the controls to be displayed in edit mode for each app.
    */
-  readonly editModeCardControls?: (app: App) => ReactElement;
+  readonly editModeCardControls?: (app: TApp) => ReactElement;
+
+  readonly decorate?: (app: TApp) => ReactElement;
 }
 
-export function AppList({
+export function AppList<TApp extends App = App>({
+  decorate,
   editMode,
   editModeCardControls,
   filter,
   result,
   reverse,
   sortFunction,
-}: AppListProps): ReactElement {
+}: AppListProps<TApp>): ReactElement {
   return (
     <AsyncDataView
       emptyMessage={<FormattedMessage {...messages.emptyApps} />}
@@ -81,6 +84,8 @@ export function AppList({
                 <AppCard app={app} key={app.id} />
                 {editMode?.enabled ? (
                   <div className={styles.cardControls}>{editModeCardControls?.(app)}</div>
+                ) : decorate ? (
+                  decorate(app)
                 ) : null}
               </div>
             ))}

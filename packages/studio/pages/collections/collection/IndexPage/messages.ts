@@ -22,8 +22,16 @@ export const messages = defineMessages({
     id: 'studio.wEQDC6',
     defaultMessage: 'Edit',
   },
+  pinApp: {
+    id: 'studio.FayXzX',
+    defaultMessage: 'Pin app to top of collection',
+  },
   stopEditing: {
     id: 'studio.M1v/6S',
     defaultMessage: 'Stop editing',
+  },
+  unpinApp: {
+    id: 'studio.2VvdnV',
+    defaultMessage: 'Unpin app from top of collection',
   },
 });
