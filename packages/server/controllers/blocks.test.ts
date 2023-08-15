@@ -80,10 +80,12 @@ describe('queryBlocks', () => {
     const { data: pen } = await request.post<BlockManifest>('/api/blocks', formDataB);
 
     const { data: bam } = await request.get<BlockManifest[]>('/api/blocks');
-    expect(bam).toMatchObject([
-      omit(apple, ['files', 'languages']),
-      omit(pen, ['files', 'languages']),
-    ]);
+    expect(bam).toStrictEqual(
+      expect.arrayContaining([
+        omit(apple, ['files', 'languages']),
+        omit(pen, ['files', 'languages']),
+      ]),
+    );
   });
 
   it('should not include unlisted blocks', async () => {

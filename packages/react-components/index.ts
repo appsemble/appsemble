@@ -40,6 +40,7 @@ export * from './NavbarDropdown/index.js';
 export * from './NavbarItem/index.js';
 export * from './NavLink/index.js';
 export * from './OAuth2LoginButton/index.js';
+export * from './PaginationNavigator/index.js';
 export * from './PasswordField/index.js';
 export * from './PasswordStrengthIndicator/index.js';
 export * from './Portal/index.js';

@@ -237,6 +237,21 @@ describe('date.format', () => {
       mappers: { 'date.format': null },
       expected: '1970-01-01T00:00:00.000Z',
     },
+    'format date objects to custom format': {
+      input: new Date('2020-01-02T03:04:05Z'),
+      mappers: { 'date.format': 'dd-MM-yyyy' },
+      expected: '02-01-2020',
+    },
+    'format date strings to custom format': {
+      input: '2020-01-02T03:04:05Z',
+      mappers: { 'date.format': 'yyyy-MM-dd' },
+      expected: '2020-01-02',
+    },
+    'format unix timestamps to custom format': {
+      input: 0,
+      mappers: { 'date.format': 'MM/dd/yyyy' },
+      expected: '01/01/1970',
+    },
   });
 });
 

@@ -7,11 +7,12 @@ import {
   type RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
-import { badGateway, badRequest, methodNotAllowed, notFound } from '@hapi/boom';
+import { badGateway, badRequest, methodNotAllowed, notFound, tooManyRequests } from '@hapi/boom';
 import axios from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
+import { EmailQuotaExceededError } from '../../EmailQuotaExceededError.js';
 import pkg from '../../package.json' assert { type: 'json' };
 
 /**
@@ -45,7 +46,14 @@ async function handleEmail(
   const { email, reloadUser } = options;
   await reloadUser({ context: ctx });
 
-  await email({ action, data, mailer, user, options, context: ctx });
+  try {
+    await email({ action, data, mailer, user, options, context: ctx });
+  } catch (error: unknown) {
+    if (error instanceof EmailQuotaExceededError) {
+      throw tooManyRequests(error.message);
+    }
+    throw error;
+  }
   ctx.status = 204;
 }
 

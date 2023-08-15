@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.21.1",
+  "version": "0.21.3",
   "private": true,
   "description": "The server that serves Appsemble in production environments",
   "keywords": [
@@ -21,6 +21,12 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "bin": {
     "appsemble": "bin.js"
   },
@@ -34,9 +40,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.21.1",
-    "@appsemble/types": "0.21.1",
-    "@appsemble/utils": "0.21.1",
+    "@appsemble/node-utils": "0.21.3",
+    "@appsemble/types": "0.21.3",
+    "@appsemble/utils": "0.21.3",
     "@formatjs/fast-memoize": "^2.0.0",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@fortawesome/fontawesome-free": "^6.0.0",
@@ -53,6 +59,7 @@
     "cron-parser": "^4.0.0",
     "csv-parse": "^5.0.0",
     "date-fns": "^2.0.0",
+    "date-fns-tz": "^2.0.0",
     "email-addresses": "^5.0.0",
     "form-data": "^4.0.0",
     "imapflow": "^1.0.0",

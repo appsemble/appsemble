@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.21.3](https://gitlab.com/appsemble/appsemble/-/releases/0.21.3)] - 2023-08-14
+
+### Added
+
+- Server: Add email quota rate limiting.
+- Studio: Add a notification for apps exceeding email quota.
+- Studio: Add support for viewing app quotas.
+
+### Fixed
+
+- App: Use correct prefix path when using the (proxied) request-, email- or notify action within the
+  match action.
+
+## \[[0.21.2](https://gitlab.com/appsemble/appsemble/-/releases/0.21.2)] - 2023-08-04
+
+### Fixed
+
+- Block(`video`): Vimeo player now react to customized sizes.
+
 ## \[[0.21.1](https://gitlab.com/appsemble/appsemble/-/releases/0.21.1)] - 2023-07-31
 
 ### Fixed

@@ -5,8 +5,29 @@ import { dataRemappers } from '../../../../../utils/reference-schemas/remappers/
 
 ## Introduction
 
-There are lots of points to get data from in Appsemble. There are a number of different remappers to
-get this data from certain places in an app definition.
+There are lots of points to get data from in Appsemble. We can divide it into a few sections:
+
+- Global data ([app](#app), [step](#step), [page](#page), [translate](#translate), [user](#user))
+
+These are accessible from everywhere and always contain the same data wherever it’s called from. For
+example, the `app` remapper contains information about the app, the `user` remapper contains
+information about the user, and the `translate` remapper allows you to access the app’s
+translations.
+
+- Remapper data ([array](#array), [history](#history), [prop](#prop), [root](#root))
+
+These only have data from within that remapper’s context. `array` only returns data from within the
+array it’s in, `history` contains the history of the entire remapper, etc.
+
+- Dynamic data ([context](#context), [static](#static))
+
+These are more dynamic depending on where the remapper is called. `context`, for example, will only
+return something if it’s within the action of a block and that block sends something to the context.
+
+It takes knowing all these types of data remappers to fully take advantage of your application and
+its surrounding data and ecosystem. You can more easily integrate your application with the
+surrounding Appsemble systems using the “Global data” remappers by adding translations or using a
+user’s locale to change what they see, for example.
 
 ## Remappers
 

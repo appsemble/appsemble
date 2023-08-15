@@ -3,15 +3,101 @@ import { type OpenAPIV3 } from 'openapi-types';
 export const dateRemappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject> = {
   'date.add': {
     type: 'string',
-    description: 'Add the specified value to a given date.',
+    description: `Adds a specified date value to the provided date.
+
+The value to add should be specified according to the
+[parse-duration](https://www.npmjs.com/package/parse-duration) API. If you want to add a day to a
+date for example, the syntax would be \`date.add: 1d\`.
+
+Full list of supported unit types:
+- nanoseconds (ns)
+- microseconds (μs)
+- milliseconds (ms)
+- seconds (s, sec)
+- minutes (m, min)
+- hours (h, hr)
+- days (d)
+- weeks (w, wk)
+- months
+- years (y, yr)
+
+For example:
+
+Date now:
+\`\`\`json
+2023-06-30T14:50:19.601Z
+\`\`\`
+
+Remapper definition:
+\`\`\`yaml
+[{ date.now: null }, { date.add: 1w } , { date.format: null }]
+\`\`\`
+
+Result:
+\`\`\`json
+2023-07-07T14:50:19.601Z
+\`\`\`
+
+`,
   },
   'date.format': {
-    enum: [null],
-    description: 'Format a date according to rfc3339.',
+    enum: ['string', null],
+    description: `Format a date according to the RFC3339 format.
+
+Here is an example of a RFC3339 complicit date:
+\`2002-10-02T15:00:00Z\`
+
+In an app definition, it’s best to use this when you want to display a date in a specific format.
+For example, if your app has a form with a Datepicker field the incoming data will be formatted
+as a simple date format. If you want to format it to the RFC3339 format, you can use this remapper.
+
+When you submit a form with a DateField, the internal output looks like this:
+
+\`\`\`js
+2023-07-03
+\`\`\`
+
+You can then format the date so that it uses the RFC3339 format.
+
+\`\`\`yaml
+date.format: null
+\`\`\`
+
+Result:
+\`\`\`js
+"2023-07-02T22:00:00.000Z"
+\`\`\`
+
+The remapper can also be used to format a date or timestamp using a custom format.
+
+\`\`\`js
+"2023-07-02T22:00:00.000Z"
+\`\`\`
+
+You can then format the date with any supported pattern, please refer to https://date-fns.org/docs/format for the supported patterns.
+
+\`\`\`yaml
+date.format: yyyy-MM-dd
+\`\`\`
+
+Result:
+\`\`\`js
+2023-07-03
+\`\`\`
+`,
   },
   'date.now': {
     enum: [null],
-    description: 'Returns the current date.',
+    description: `Returns the current date as a JavaScript Date object.
+\`\`\`yaml
+date.now: null
+\`\`\`
+
+Result:
+\`\`\`js
+"Mon Jul 03 2023 11:47:18 GMT+0200 (Midden-Europese zomertijd)"
+\`\`\`
+`,
   },
   'date.parse': {
     type: 'string',

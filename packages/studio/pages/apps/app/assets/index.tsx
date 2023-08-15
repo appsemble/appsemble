@@ -4,6 +4,7 @@ import {
   Content,
   FileUpload,
   ModalCard,
+  PaginationNavigator,
   SimpleForm,
   SimpleFormError,
   SimpleFormField,
@@ -16,7 +17,6 @@ import {
   useMeta,
   useToggle,
 } from '@appsemble/react-components';
-import { PaginationNavigator } from '@appsemble/react-components/PaginationNavigator';
 import { type Asset } from '@appsemble/types';
 import { compareStrings, normalize } from '@appsemble/utils';
 import axios from 'axios';

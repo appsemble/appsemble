@@ -17,7 +17,7 @@ export async function request({
   options,
   user,
 }: ServerActionParameters): Promise<any> {
-  let method: 'DELETE' | 'GET' | 'POST' | 'PUT';
+  let method: 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
   const definition = action as RequestLikeActionDefinition;
   const query: Remapper = []
     .concat(
@@ -31,6 +31,9 @@ export async function request({
     switch (action.type) {
       case 'resource.update':
         method = 'PUT';
+        break;
+      case 'resource.patch':
+        method = 'PATCH';
         break;
       case 'resource.delete':
         method = 'DELETE';

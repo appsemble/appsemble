@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/webpack-core",
-  "version": "0.21.1",
+  "version": "0.21.3",
   "private": true,
   "description": "The Webpack configuration for the Appsemble core",
   "keywords": [
@@ -21,13 +21,19 @@
   "license": "LGPL-3.0-only",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "type": "module",
+  "exports": {
+    ".": [
+      "./index.js",
+      "./index.ts"
+    ]
+  },
   "scripts": {
     "prepack": "tsc --noEmit false",
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.21.1",
-    "@appsemble/utils": "0.21.1",
+    "@appsemble/node-utils": "0.21.3",
+    "@appsemble/utils": "0.21.3",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@mdx-js/loader": "^2.0.0",
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0",

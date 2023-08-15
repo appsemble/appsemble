@@ -13,6 +13,7 @@ export function SimpleSubmit({ disabled, ...props }: SimpleSubmitProps): ReactEl
     <Button
       {...props}
       color="primary"
+      data-testid="login"
       disabled={
         disabled ||
         Object.values(pristine).every(Boolean) ||

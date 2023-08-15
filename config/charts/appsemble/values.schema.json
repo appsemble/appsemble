@@ -181,6 +181,30 @@
       "type": "boolean",
       "description": "If `true`, connect establish the PostgreSQL connection over SSL."
     },
+    "quotas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "appEmail": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "If specified, rate limiting will be applied to emails sent by apps without a custom mail server configured."
+            },
+            "dailyLimit": {
+              "type": "integer",
+              "description": "The maximum number of emails an app can send per day without a custom mail server configured."
+            },
+            "alertOrganizationOwner": {
+              "type": "boolean",
+              "description": "Whether to alert the app's organization owner when the daily email limit is reached."
+            }
+          }
+        }
+      }
+    },
     "remote": {
       "type": ["string", "null"],
       "description": "A remote Appsemble server to connect to in order to synchronize blocks.",

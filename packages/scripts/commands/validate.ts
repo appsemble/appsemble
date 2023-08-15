@@ -295,4 +295,8 @@ export async function handler(): Promise<void> {
     logger.error(`❌ ${relative(process.cwd(), join(workspace.dir, filename))}: ${message}`);
     process.exitCode = 1;
   }
+
+  if (invalid.length) {
+    logger.info('Please use `yarn scripts extract-messages` to resolve the issue(s).');
+  }
 }

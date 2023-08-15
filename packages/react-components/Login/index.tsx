@@ -59,6 +59,7 @@ export function Login({
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
       <SimpleFormField
         autoComplete="email"
+        data-testid="email"
         disabled={busy.enabled}
         icon="envelope"
         label={<FormattedMessage {...messages.emailLabel} />}
@@ -73,6 +74,7 @@ export function Login({
       <SimpleFormField
         autoComplete="current-password"
         component={PasswordField}
+        data-testid="password"
         disabled={busy.enabled}
         label={<FormattedMessage {...messages.passwordLabel} />}
         name="password"

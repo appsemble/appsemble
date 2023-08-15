@@ -1,5 +1,5 @@
 name: Remappers
-description: This app contains every Remapper currently in Appsemble as of (0.21.1)
+description: This app contains every Remapper currently in Appsemble as of (0.21.3)
 defaultPage: Introduction
 
 security:
@@ -26,7 +26,7 @@ resources:
           type: string
 
 anchors:
-  - &block-version 0.21.1
+  - &block-version 0.21.3
 
 pages:
   - name: Introduction
@@ -68,7 +68,7 @@ pages:
                     else: null
               - null.strip: null
             onSuccess:
-              type: log
+              type: noop
         events:
           emit:
             data: peopleInEindhoven
@@ -84,6 +84,48 @@ pages:
 
   - name: Strings
     blocks:
+      # Introduction
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## Introduction
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              array.from:
+                - object.from:
+                    firstName: Peter
+                    lastName: Parker
+                    department: Photography
+                - object.from:
+                    firstName: John
+                    lastName: Jameson
+                    department: Editor
+            type: noop
+        events:
+          emit:
+            data: dailyBugleEmployees
+      - type: list
+        version: *block-version
+        events:
+          listen:
+            data: dailyBugleEmployees
+        parameters:
+          header: [{ prop: firstName }, { string.case: upper }]
+          fields:
+            - label: Description
+              value:
+                string.format:
+                  template: '{firstName} {lastName} is an employee of the {department} department!'
+                  values:
+                    firstName: { prop: firstName }
+                    lastName: { prop: lastName }
+                    department: { prop: department }
+
       # string.case
       - type: markdown
         version: *block-version
@@ -160,6 +202,107 @@ pages:
 
   - name: Objects
     blocks:
+      # Introduction
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## Introduction
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              # For simplicity's sake, we mock the incoming data here. It's the same as you would get from Spotify however.
+              object.from:
+                acousticness: 0.346
+                analysis_url: https://api.spotify.com/v1/audio-analysis/2GfQhXyoUXYTkMHDXJhCU5
+                danceability: 0.565
+                duration_ms: 544518
+                energy: 0.906
+                id: 2GfQhXyoUXYTkMHDXJhCU5
+                instrumentalness: 0.00474
+                key: 9,
+                liveness: 0.0718
+                loudness: -5.229
+                mode: 0
+                speechiness: 0.124
+                tempo: 119.856
+                time_signature: 4
+                track_href: https://api.spotify.com/v1/tracks/2GfQhXyoUXYTkMHDXJhCU5
+                type: audio_features
+                uri: spotify:track:2GfQhXyoUXYTkMHDXJhCU5
+                valence: 0.38
+            type: noop
+            remapAfter:
+              object.from:
+                danceability: { prop: danceability }
+                liveness: { prop: liveness }
+                tempo: { prop: tempo }
+                time_signature: { prop: time_signature }
+            onSuccess:
+              type: noop
+              remapAfter:
+                # For simplicity's sake, we mock the incoming data here. It's the same as you would get from Spotify however.
+                object.from:
+                  disc_number: 1
+                  duration_ms: 544517
+                  explicit: false
+                  external_ids:
+                    object.from:
+                      isrc: AU2ZC2200022
+                  external_urls:
+                    object.from:
+                      spotify: https://open.spotify.com/track/2GfQhXyoUXYTkMHDXJhCU5
+                  href: https://api.spotify.com/v1/tracks/2GfQhXyoUXYTkMHDXJhCU5
+                  id: 2GfQhXyoUXYTkMHDXJhCU5
+                  name: Iron Lung
+                  popularity: 54
+                  preview_url: https://p.scdn.co/mp3-preview/3b764c5efea978ec265a6020ae688b21b78549e0?cid=0b297fa8a249464ba34f5861d4140e58
+                  track_number: 6
+                  type: track
+                  uri: spotify:track:2GfQhXyoUXYTkMHDXJhCU5
+                  is_local: false
+              onSuccess:
+                remapBefore:
+                  object.from:
+                    audio_features: { history: 1 }
+                    track_info:
+                      object.from:
+                        name: { prop: name }
+                        popularity: { prop: popularity }
+                        spotify_url: [{ prop: external_urls }, { prop: spotify }]
+                type: noop
+        events:
+          emit:
+            data: spotify_info
+      - type: markdown
+        version: *block-version
+        events:
+          listen:
+            data: spotify_info
+        parameters:
+          content:
+            string.format:
+              template: |
+                <br /> Danceability = {danceability}
+                <br /> Liveness = {liveness}
+                <br /> Tempo = {tempo}
+                <br /> Time signature = {time_signature}
+                <br /> Name = {name}
+                <br /> Popularity = {popularity}
+                <br /> Spotify link = {url}
+
+              values:
+                danceability: [{ prop: audio_features }, { prop: danceability }]
+                liveness: [{ prop: audio_features }, { prop: liveness }]
+                tempo: [{ prop: audio_features }, { prop: tempo }]
+                time_signature: [{ prop: audio_features }, { prop: time_signature }]
+                name: [{ prop: track_info }, { prop: name }]
+                popularity: [{ prop: track_info }, { prop: popularity }]
+                url: [{ prop: track_info }, { prop: spotify_url }]
+
       # object.from
       - type: markdown
         version: *block-version
@@ -279,6 +422,57 @@ pages:
 
   - name: Arrays
     blocks:
+      # Introduction
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## Introduction
+            ( See console for output )
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              - array.from:
+                  - object.from:
+                      name: Peter
+                      occupation: Delivery driver
+                      age: 19
+                  - object.from:
+                      name: Otto
+                      occupation: Scientist
+                      age: 50
+                  - object.from:
+                      name: Harry
+                      occupation: CEO
+                      age: 20
+              - array.map:
+                  - if:
+                      condition: { gt: [{ prop: age }, 40] }
+                      then:
+                        object.assign:
+                          title: Senior employee
+                      else:
+                        object.assign:
+                          title: Junior employee
+                  - object.omit:
+                      - age
+            type: noop
+            onSuccess:
+              remapBefore:
+                array.from:
+                  - { root: null }
+                  - array.from:
+                      - object.from:
+                          name: Peter 2
+                          occupation: Delivery driver
+                      - object.from:
+                          name: Harry 2
+                          occupation: CEO
+              type: log
+
       # array.from
       - type: markdown
         version: *block-version
@@ -463,7 +657,7 @@ pages:
                       occupation: News reporter
               - array.omit:
                   - 3
-            type: log
+            type: noop
         events:
           emit:
             data: arrayOmitData1
@@ -643,6 +837,39 @@ pages:
           listen:
             data: 1historyData
 
+      # array
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## array
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              - array.from:
+                  - a
+                  - b
+                  - c
+              - array.map:
+                  object.from:
+                    length: { array: length }
+                    index: { array: index }
+            type: noop
+        events:
+          emit:
+            data: arrayData
+      - type: detail-viewer
+        version: *block-version
+        parameters:
+          fields:
+            - value: { root }
+        events:
+          listen:
+            data: arrayData
+
       # app
       - type: markdown
         version: *block-version
@@ -805,6 +1032,20 @@ pages:
             body: { root }
             dismissable: true
             timeout: 4000
+
+      # static
+      - type: markdown
+        version: *block-version
+        layout: static
+        parameters:
+          content: |
+            * ## static
+      - type: detail-viewer
+        version: *block-version
+        parameters:
+          fields:
+            - label:
+                static: Hello!
 
       # translate
       - type: markdown
@@ -1130,7 +1371,6 @@ pages:
                   static: You guessed wrong!
             type: message
             body: { root: null }
-
       # if: not
       - type: markdown
         version: *block-version
@@ -1161,7 +1401,6 @@ pages:
                   static: You guessed right!
             type: message
             body: { root: null }
-
       # if: gt (greater than)
       - type: markdown
         version: *block-version
@@ -1217,7 +1456,6 @@ pages:
                   static: This item is running low on stock
             type: message
             body: { root: null }
-
       # if: lt (lesser than)
       - type: markdown
         version: *block-version
@@ -1273,7 +1511,6 @@ pages:
                   static: This item has plenty of stock
             type: message
             body: { root: null }
-
       # match
       - type: markdown
         version: *block-version
@@ -1350,7 +1587,6 @@ pages:
               object.from:
                 parsedDate: [{ prop: unparsedDate }, { date.parse: yyyy-MM-dd }]
             type: log
-
       # date.format
       - type: markdown
         version: *block-version
@@ -1377,7 +1613,6 @@ pages:
                 template: Formatted date = {date}
                 values:
                   date: { prop: formattedDate }
-
       # date.add
       - type: markdown
         version: *block-version
@@ -1420,23 +1655,37 @@ pages:
         parameters:
           content: |
             * ## date.now
+      - type: data-loader
+        version: *block-version
+        actions:
+          onLoad:
+            remapBefore:
+              date.now: null
+            type: noop
+        events:
+          listen:
+            refresh: refreshCurDay
+          emit:
+            data: currentDay
       - type: button-list
         version: *block-version
         parameters:
           buttons:
             - label: What date is it?
-              onClick: checkDay
+              onClick: refreshDay
         actions:
-          checkDay:
-            remapBefore:
-              object.from:
-                currentDay: [{ date.now }, { date.format }]
-            type: message
-            body:
-              string.format:
-                template: The current date is {date}
-                values:
-                  date: { prop: currentDay }
+          refreshDay:
+            type: event
+            event: refreshCurDay
+      - type: detail-viewer
+        version: *block-version
+        parameters:
+          fields:
+            - type: string
+              value: { root }
+        events:
+          listen:
+            data: currentDay
   - name: Randomness
     blocks:
       # random.choice
@@ -1454,6 +1703,8 @@ pages:
               onClick: randomNumber
             - label: Get random name from list
               onClick: randomName
+            - label: Get random name or number from list
+              onClick: randomNoN
         actions:
           randomNumber:
             remapBefore:
@@ -1464,6 +1715,13 @@ pages:
           randomName:
             remapBefore:
               - array.from: ['Peter', 'Patrick', 'Michael', 'Harry']
+              - random.choice: null
+            type: message
+            body: { root }
+          randomNoN:
+            remapBefore:
+              - array.from:
+                  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Peter', 'Patrick', 'Michael', 'Harry']
               - random.choice: null
             type: message
             body: { root }
@@ -1600,10 +1858,14 @@ pages:
         actions:
           stripNulls:
             remapBefore:
-              - array.from: [0, 4, null, null, 'Peter', 0.4234, null]
-              - null.strip: null
-            type: message
-            body: { root }
+              - object.from:
+                  - array.from: [0, null, 'Peter']
+                  - object.from:
+                      array2:
+                        array.from: [4, null, 0.4234, null]
+              - null.strip:
+                  depth: 2
+            type: log
 
       # log
       - type: markdown
