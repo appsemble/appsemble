@@ -67,6 +67,7 @@ name of the resource and how it should behave.
         properties: {
           resource: { type: 'string' },
           create: referenceAction,
+          patch: referenceAction,
           update: referenceAction,
           delete: referenceAction,
         },
@@ -166,6 +167,28 @@ name of the resource and how it should behave.
         method: {
           type: 'string',
           default: 'POST',
+          description: 'HTTP method to use for this type of request.',
+        },
+        url: {
+          type: 'string',
+          default: '/api/apps/{appId}/{resource}/{id}',
+          description: 'URL to use for this type of request.',
+        },
+        hooks: {
+          $ref: '#/components/schemas/ResourceHooksDefinition',
+        },
+      },
+    },
+    patch: {
+      type: 'object',
+      description: "Overrides for 'patch' requests.",
+      additionalProperties: false,
+      properties: {
+        roles,
+        query,
+        method: {
+          type: 'string',
+          default: 'PATCH',
           description: 'HTTP method to use for this type of request.',
         },
         url: {
