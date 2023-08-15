@@ -250,3 +250,124 @@ describe('refreshToken', () => {
     });
   });
 });
+
+describe('getSubscribedUsers', () => {
+  it('should return a list of subscribed users', async () => {
+    // Secret needs to be set, otherwise the test returns 401 by default
+    if (!process.env.ADMIN_API_SECRET) {
+      process.env.ADMIN_API_SECRET = 'testadminapisecret';
+    }
+
+    user.subscribed = new Date();
+    user.save();
+
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+    });
+
+    // Reset secret to '' if it hasn't been set, or to its previous value if it was
+    process.env.ADMIN_API_SECRET =
+      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
+
+    expect(response.status).toBe(200);
+    expect(
+      response.data.some((responseObj: any) =>
+        expect(responseObj).toStrictEqual({
+          email: user.primaryEmail,
+          name: user.name,
+          locale: user.locale,
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it('should return a 401 if admin API secret is not passed', async () => {
+    const response = await request.get('/api/subscribed');
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 401 if the provided admin api secret is wrong', async () => {
+    const wrongSecret = `${process.env.ADMIN_API_SECRET} + wrong secret`;
+
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${wrongSecret}` },
+    });
+
+    expect(response.status).toBe(401);
+  });
+});
+
+describe('unsubscribe', () => {
+  it('should unsubscribe a user already subscribed to the newsletter', async () => {
+    if (!process.env.ADMIN_API_SECRET) {
+      process.env.ADMIN_API_SECRET = 'testadminapisecret';
+    }
+
+    if (!user.subscribed) {
+      user.subscribed = new Date();
+      user.save();
+    }
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+      },
+    );
+    process.env.ADMIN_API_SECRET =
+      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
+
+    expect(response.status).toBe(201);
+    expect(response.data).toContain(user.primaryEmail);
+  });
+
+  it('should return 401 if the admin api secret is missing', async () => {
+    // Unsetting the secret should result in 401 regardless of whether the correct secret is passed
+    const secret = process.env.ADMIN_API_SECRET;
+    process.env.ADMIN_API_SECRET = '';
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${secret}` },
+      },
+    );
+    // Set to old value if the var was set initially
+    process.env.ADMIN_API_SECRET = secret;
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 401 if the provided admin api secret is wrong', async () => {
+    const wrongSecret = `${process.env.ADMIN_API_SECRET} + wrong secret`;
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${wrongSecret}` },
+      },
+    );
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 400 if the provided email does not match an existing user', async () => {
+    if (!process.env.ADMIN_API_SECRET) {
+      process.env.ADMIN_API_SECRET = 'testAdminAPIsecret';
+    }
+    const wrongEmail = 'wrongTestEmail';
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: wrongEmail },
+      {
+        headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+      },
+    );
+    process.env.ADMIN_API_SECRET =
+      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
+    expect(response.status).toBe(400);
+  });
+});

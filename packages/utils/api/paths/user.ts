@@ -478,4 +478,43 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/subscribed': {
+    get: {
+      tags: ['user'],
+      description: 'Get a list of active and verified users subscribed to the appsemble newsletter',
+      operationId: 'getSubscribedUsers',
+      responses: {
+        200: { description: 'List of subscribed users' },
+        401: { description: 'Invalid or missing admin API secret' },
+      },
+    },
+  },
+  '/api/unsubscribe': {
+    post: {
+      tags: ['user'],
+      description: 'Unsubscribe a user from the newsletter',
+      operationId: 'unsubscribe',
+      responses: {
+        201: { description: 'Unsubscribed successfully' },
+        401: { description: 'Invalid or missing admin API secret' },
+      },
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
