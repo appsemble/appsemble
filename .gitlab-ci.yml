@@ -528,6 +528,9 @@ staging:
       --set "sentry.allowedDomains={*.appsemble.review}"
       --set "sentry.environment=staging"
       --set "sentry.secret=sentry"
+      --set "quotas.appEmail.enabled=true"
+      --set "quotas.appEmail.dailyLimit=10"
+      --set "quotas.appEmail.alertOrganizationOwner=true"
 
 production:
   image: dtzar/helm-kubectl:3
@@ -568,6 +571,9 @@ production:
       --set "sentry.allowedDomains={*.appsemble.app, appsemble.app}"
       --set "sentry.environment=production"
       --set "sentry.secret=sentry"
+      --set "quotas.appEmail.enabled=true"
+      --set "quotas.appEmail.dailyLimit=10"
+      --set "quotas.appEmail.alertOrganizationOwner=true"
       --wait
 
 ###################################################################################################
