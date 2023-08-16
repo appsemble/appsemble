@@ -17,13 +17,13 @@ afterEach(() => {
   window.location = originalLocation;
 });
 
-it('no schema does not crash', () => {
+it('should not crash when schema is null', () => {
   const definitions: Record<string, Schema> = {};
   const result = generateData(definitions);
   expect(result).toBeUndefined();
 });
 
-it('should generate string value equal to the key in the schema for string properties', () => {
+it('should return empty string', () => {
   const result = generateData(null, { type: 'string' });
   expect(result).toBe('');
 });
