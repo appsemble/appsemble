@@ -1,4 +1,5 @@
 import { Button, useMessages } from '@appsemble/react-components';
+import { type BlockDefinition, type PageDefinition } from '@appsemble/types';
 import {
   type ChangeEvent,
   type MutableRefObject,
@@ -62,7 +63,7 @@ export function PageProperty({
     const doc = docRef.current;
     if (selectedPage === -1 && currentSubPage === -1) {
       // Create new page
-      if (doc.toJS().pages.some((page: any) => page.name === currentPageName)) {
+      if (doc.toJS().pages.some((page: PageDefinition) => page.name === currentPageName)) {
         push({ body: formatMessage(messages.pageNameExists), color: 'danger' });
         return;
       }
@@ -87,8 +88,8 @@ export function PageProperty({
       if (
         doc
           .toJS()
-          .pages.filter((value: any, index: any) => index !== selectedPage)
-          .some((page: any) => page.name === currentPageName)
+          .pages.filter((value: PageDefinition, index: number) => index !== selectedPage)
+          .some((page: PageDefinition) => page.name === currentPageName)
       ) {
         push({ body: formatMessage(messages.pageNameExists), color: 'danger' });
         return;
@@ -131,7 +132,7 @@ export function PageProperty({
             doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
           ]) as YAMLSeq
         ).items.flatMap((subPage: any) =>
-          subPage.getIn(['blocks']).items.map((block: any) => block),
+          subPage.getIn(['blocks']).items.map((block: BlockDefinition) => block),
         );
 
         const pageName = doc.getIn(['pages', selectedPage, 'name']);
