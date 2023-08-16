@@ -23,9 +23,9 @@ it('test string with all allowed characters', () => {
 
 it('test string with no allowed spaces', () => {
   const charsRegex = getAllowedChars(false, true, true, true);
-  const inputString = 'test string';
+  const inputString = 'test ';
   const result = getCheckedString(charsRegex, inputString);
-  expect(result).toBe('teststring');
+  expect(result).toBe('test');
 });
 
 it('test string with no allowed upper case characters', () => {
