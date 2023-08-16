@@ -1,4 +1,5 @@
 import { Button, Icon } from '@appsemble/react-components';
+import classNames from 'classnames';
 import {
   type DragEvent,
   type MutableRefObject,
@@ -10,6 +11,7 @@ import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { SubPageBlockItem } from './SubPageBlockItem/index.js';
+import { type Block } from '../../GuiTypes/index.js';
 
 interface SubPageItemProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
@@ -17,7 +19,7 @@ interface SubPageItemProps {
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
   readonly pageIndex: number;
-  readonly blocks: { type: string; parent: number; subParent: number; block: number }[];
+  readonly blocks: Block[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
   readonly onSelectSubPage?: (index: number, subParentIndex: number) => void;
@@ -66,17 +68,16 @@ export function SubPageItem({
         .map((block) => (
           <div key={`subParent-${block.subParent}`}>
             <Button
-              className={`${styles.subParent} ${
-                block.subParent === selectedSubParent &&
-                selectedPage === pageIndex &&
-                selectedBlock === -1
-                  ? 'is-link'
-                  : selectedPage === pageIndex &&
-                    block.subParent === selectedSubParent &&
-                    selectedBlock !== -1
-                  ? 'is-info'
-                  : ''
-              }`}
+              className={classNames(styles.subParent, {
+                'is-link':
+                  block.subParent === selectedSubParent &&
+                  selectedPage === pageIndex &&
+                  selectedBlock === -1,
+                'is-info':
+                  selectedPage === pageIndex &&
+                  block.subParent === selectedSubParent &&
+                  selectedBlock !== -1,
+              })}
               // TODO make sub pages draggable (by adding draggable property)
               key={block.block}
               onClick={() => onSelectSubPage(block.parent, block.subParent)}

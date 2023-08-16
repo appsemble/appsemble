@@ -1,7 +1,9 @@
 import { Button, Icon } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type DragEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
+import { type Block } from '../../GuiTypes/index.js';
 
 interface PagesItemProps {
   readonly selectedPage: number;
@@ -9,7 +11,7 @@ interface PagesItemProps {
   readonly pageIndex: number;
   readonly disabledPages: number[];
   readonly page: string;
-  readonly blocks: { type: string; parent: number; subParent: number; block: number }[];
+  readonly blocks: Block[];
   readonly onSelectPage: (index: number, subParentIndex: number) => void;
   readonly setDisabledPages: (pageList: number[]) => void;
   readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
@@ -40,13 +42,10 @@ export function PageItem({
 
   return (
     <Button
-      className={`${styles.parentTop} ${
-        selectedPage === pageIndex && selectedBlock === -1
-          ? 'is-link'
-          : selectedPage === pageIndex && selectedBlock >= 0
-          ? 'is-info'
-          : ''
-      }`}
+      className={classNames(styles.parentTop, {
+        'is-link': selectedPage === pageIndex && selectedBlock === -1,
+        'is-info': selectedPage === pageIndex && selectedBlock >= 0,
+      })}
       draggable={handleDragStart != null}
       onClick={() => onSelectPage(pageIndex, -1)}
       onDragOver={(e) => e.preventDefault()}

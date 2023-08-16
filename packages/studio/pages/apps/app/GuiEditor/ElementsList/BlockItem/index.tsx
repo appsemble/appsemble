@@ -1,15 +1,17 @@
 import { Button } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type DragEvent, type MutableRefObject, type ReactElement, useCallback } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
+import { type Block } from '../../GuiTypes/index.js';
 
 interface BlockItemProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly pageIndex: number;
-  readonly blocks: { type: string; parent: number; subParent: number; block: number }[];
+  readonly blocks: Block[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
   readonly handleDrop?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
@@ -37,9 +39,9 @@ export function BlockItem({
         .filter((block) => block.parent === pageIndex && block.subParent === -1)
         .map((block) => (
           <Button
-            className={`${styles.childItem} ${
-              selectedBlock === block.block && selectedPage === pageIndex ? 'is-link' : ''
-            }`}
+            className={classNames(styles.childItem, {
+              'is-link': selectedBlock === block.block && selectedPage === pageIndex,
+            })}
             draggable={handleDragStart != null}
             key={block.block}
             onClick={() => onSelectBlock(block.parent, -1, block.block)}

@@ -1,16 +1,13 @@
 import { Button } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type DragEvent, type MutableRefObject, type ReactElement, useCallback } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
+import { type Block } from '../../../GuiTypes/index.js';
 
 interface SubPageBlockItemProps {
-  readonly block: {
-    type: string;
-    parent: number;
-    subParent: number;
-    block: number;
-  };
+  readonly block: Block;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
@@ -52,13 +49,12 @@ export function SubPageBlockItem({
 
   return (
     <Button
-      className={`${styles.childItem} ${
-        selectedBlock === subBlock.block &&
-        selectedPage === pageIndex &&
-        selectedSubParent === subBlock.subParent
-          ? 'is-link'
-          : ''
-      }`}
+      className={classNames(styles.childItem, {
+        'is-link':
+          selectedBlock === subBlock.block &&
+          selectedPage === pageIndex &&
+          selectedSubParent === subBlock.subParent,
+      })}
       draggable
       onClick={() => onSelectBlock(subBlock.parent, subBlock.subParent, subBlock.block)}
       onDragOver={(e) => e.preventDefault()}

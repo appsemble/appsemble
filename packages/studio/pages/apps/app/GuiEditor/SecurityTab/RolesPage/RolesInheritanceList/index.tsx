@@ -1,4 +1,5 @@
 import { Button, useMessages } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type ReactElement, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -92,9 +93,10 @@ export function RolesInheritanceList({
 
   return (
     <div
-      className={`${styles.root} field ${
-        labelPosition === 'left' ? styles.leftLabel : styles.topLabel
-      }`}
+      className={classNames('field', styles.root, {
+        [styles.leftLabel]: labelPosition === 'left',
+        [styles.topLabel]: labelPosition !== 'left',
+      })}
     >
       <label className={styles.label}>{label}</label>
       <div className={styles.list}>
