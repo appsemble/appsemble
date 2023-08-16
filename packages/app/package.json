@@ -66,7 +66,10 @@
     "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.1",
     "fake-indexeddb": "^4.0.0",
+    "happy-dom": "^10.10.0",
+    "jsdom": "^22.1.0",
     "vitest": "^0.33.0"
   }
 }

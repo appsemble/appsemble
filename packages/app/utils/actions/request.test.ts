@@ -1,3 +1,6 @@
+// With jsdom, classes such as ArrayBuffer and Blob behave the same between tests and the tested code,
+// but are not referentially equal, meaning `instanceof` checks in the tested code and in the tests will fail. happy-dom does not have this issue
+// @vitest-environment happy-dom
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
