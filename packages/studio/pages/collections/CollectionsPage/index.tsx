@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { AddCollectionModal } from './AddCollectionModal/index.js';
@@ -35,6 +35,8 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
     setData: setCollections,
   } = useData<AppCollection[]>(target);
 
+  const [filter, setFilter] = useState('');
+
   const onCollectionCreated = useCallback(
     (newCollection: AppCollection) => setCollections([...collections, newCollection]),
     [collections, setCollections],
@@ -51,6 +53,13 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
       Permission.CreateCollections,
     );
 
+  const filteredCollections = (collections ?? []).filter(
+    (collection) =>
+      collection.name.toLowerCase().includes(filter.toLowerCase()) ||
+      collection.OrganizationName?.toLowerCase().includes(filter.toLowerCase()) ||
+      collection.$expert.name.toLowerCase().includes(filter.toLowerCase()),
+  );
+
   return (
     <>
       {collectionsLoading ? (
@@ -66,7 +75,9 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
               className="mb-0"
               icon="search"
               name="search"
+              onChange={(e) => setFilter(e.currentTarget.value)}
               placeholder={formatMessage(messages.search)}
+              value={filter}
             />
             <Button
               disabled={!mayCreateCollections}
@@ -80,7 +91,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
             <FormattedMessage {...messages.collections} />
           </HeaderControl>
           <div>
-            {collections?.map((collection) => (
+            {filteredCollections?.map((collection) => (
               <CollectionCard collection={collection} key={collection.id} />
             ))}
           </div>
