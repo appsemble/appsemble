@@ -1,6 +1,8 @@
-export const messages = {
+import { defineMessages } from 'react-intl';
+
+export const messages = defineMessages({
   blockLogo: {
-    id: '',
+    id: 'studio.k81S1y',
     defaultMessage: 'Logo',
   },
-};
+});
