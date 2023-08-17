@@ -11,7 +11,7 @@ import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { SubPageBlockItem } from './SubPageBlockItem/index.js';
-import { type Block } from '../../GuiTypes/index.js';
+import { type Block } from '../../../../../../types.js';
 
 interface SubPageItemProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;

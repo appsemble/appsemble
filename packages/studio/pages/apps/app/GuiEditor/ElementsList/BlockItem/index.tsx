@@ -4,7 +4,7 @@ import { type DragEvent, type MutableRefObject, type ReactElement, useCallback }
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
-import { type Block } from '../../GuiTypes/index.js';
+import { type Block } from '../../../../../../types.js';
 
 interface BlockItemProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;

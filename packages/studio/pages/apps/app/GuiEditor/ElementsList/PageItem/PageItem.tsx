@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { type DragEvent, type ReactElement, useCallback } from 'react';
 
 import styles from './index.module.css';
-import { type Block } from '../../GuiTypes/index.js';
+import { type Block } from '../../../../../../types.js';
 
 interface PagesItemProps {
   readonly selectedPage: number;
