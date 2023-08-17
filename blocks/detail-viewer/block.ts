@@ -85,6 +85,19 @@ export interface FileField extends AbstractField {
    * The name of the type of the field.
    */
   type: 'file';
+
+  /**
+   * Is image rounded.
+   *
+   */
+  rounded?: boolean;
+
+  /**
+   * The image is scaled with bulma sizes.
+   *
+   * @default 48
+   */
+  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
 }
 
 /**

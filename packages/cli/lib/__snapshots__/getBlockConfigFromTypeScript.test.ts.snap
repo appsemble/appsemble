@@ -819,6 +819,24 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
 If not set, the item itself is used as the url.",
             "format": "remapper",
           },
+          "rounded": {
+            "description": "Is image rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "default": 48,
+            "description": "The image is scaled with bulma sizes.",
+            "enum": [
+              16,
+              24,
+              32,
+              48,
+              64,
+              96,
+              128,
+            ],
+            "type": "number",
+          },
           "type": {
             "const": "file",
             "description": "The name of the type of the field.",
