@@ -1,3 +1,6 @@
+// With jsdom, classes such as ArrayBuffer and Blob behave the same between tests and the tested code,
+// but are not referentially equal, meaning `instanceof` checks in the tested code and in the tests will fail. happy-dom does not have this issue
+// @vitest-environment happy-dom
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -334,6 +337,130 @@ describe('request', () => {
         },
       ],
     });
+  });
+
+  it('should support deserializing a JSON response', async () => {
+    const data = {
+      title: 'Release notes from appsemble',
+      updated: '2021-03-31T17:09:00+02:00',
+      entries: [
+        {
+          content:
+            '<p>Release version 0.18.5</p> <p>See merge request appsemble/appsemble!1747</p>',
+          id: 'tag:github.com,2008:Repository/226361784/0.18.5',
+          title: "Merge branch 'release-0.18.5' into 'main'",
+          updated: '2021-03-31T17:09:00+02:00',
+        },
+        {
+          content:
+            '<p>Release version 0.18.4</p> <p>See merge request appsemble/appsemble!1734</p>',
+          id: 'tag:github.com,2008:Repository/226361784/0.18.4',
+          title: "Merge branch 'release-0.18.4' into 'main'",
+          updated: '2021-03-24T17:40:15+01:00',
+        },
+      ],
+    };
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      if (req.responseType === 'arraybuffer') {
+        return [
+          200,
+          new TextEncoder().encode(JSON.stringify(data)).buffer,
+          { 'content-type': 'application/json' },
+        ];
+      }
+      if (req.responseType === 'blob') {
+        return [
+          200,
+          new Blob([JSON.stringify(data)], { type: 'application/json' }),
+          { 'content-type': 'application/json' },
+        ];
+      }
+      return [200, data, { 'content-type': 'application/json' }];
+    });
+    const action = createTestAction({
+      definition: {
+        type: 'request',
+        proxy: false,
+        url: 'https://example.com',
+        schema: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+            updated: { type: 'string' },
+            entries: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  updated: { type: 'string' },
+                  title: { type: 'string' },
+                  content: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+      },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+    const result = await action({ hello: 'get' });
+    expect(result).toStrictEqual({
+      title: 'Release notes from appsemble',
+      updated: '2021-03-31T17:09:00+02:00',
+      entries: [
+        {
+          content:
+            '<p>Release version 0.18.5</p> <p>See merge request appsemble/appsemble!1747</p>',
+          id: 'tag:github.com,2008:Repository/226361784/0.18.5',
+          title: "Merge branch 'release-0.18.5' into 'main'",
+          updated: '2021-03-31T17:09:00+02:00',
+        },
+        {
+          content:
+            '<p>Release version 0.18.4</p> <p>See merge request appsemble/appsemble!1734</p>',
+          id: 'tag:github.com,2008:Repository/226361784/0.18.4',
+          title: "Merge branch 'release-0.18.4' into 'main'",
+          updated: '2021-03-24T17:40:15+01:00',
+        },
+      ],
+    });
+  });
+
+  it('should return a blob when the response cannot be parsed as a string', async () => {
+    // A minimal valid PNG file
+    const data = [
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44,
+      0x52, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x66,
+      0xbc, 0x3a, 0x25, 0x00, 0x00, 0x00, 0x03, 0x50, 0x4c, 0x54, 0x45, 0xb5, 0xd0, 0xd0, 0x63,
+      0x04, 0x16, 0xea, 0x00, 0x00, 0x00, 0x1f, 0x49, 0x44, 0x41, 0x54, 0x68, 0x81, 0xed, 0xc1,
+      0x01, 0x0d, 0x00, 0x00, 0x00, 0xc2, 0xa0, 0xf7, 0x4f, 0x6d, 0x0e, 0x37, 0xa0, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xbe, 0x0d, 0x21, 0x00, 0x00, 0x01, 0x9a, 0x60, 0xe1,
+      0xd5, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+    ];
+    const typedData = new Uint8Array(data);
+    const blob = new Blob([typedData], { type: 'image/png' });
+    mock.onAny(/.*/).reply((req) => {
+      request = req;
+      if (req.responseType === 'arraybuffer') {
+        return [200, typedData.buffer, { 'content-type': 'image/png' }];
+      }
+      if (req.responseType === 'blob') {
+        return [200, blob, { 'content-type': 'image/png' }];
+      }
+      return [200, new TextDecoder().decode(new Uint8Array(data)), { 'content-type': 'image/png' }];
+    });
+    mock.onAny(/.*/).reply(200, blob, { 'content-type': 'image/png' });
+    const action = createTestAction({
+      definition: { type: 'request', proxy: false, url: 'https://example.com' },
+      prefix: 'pages.test.blocks.0.actions.onClick',
+      prefixIndex: 'pages.0.blocks.0.actions.onClick',
+    });
+    const result = await action({ hello: 'get' });
+    expect(result).toBeInstanceOf(Blob);
+    expect(result).toStrictEqual(blob);
   });
 
   it('should set parameter as end of URL when presented as a single string', async () => {
