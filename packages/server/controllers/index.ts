@@ -1,5 +1,6 @@
 export * from './action.js';
 export * from './apps.js';
+export * from './appQuotas.js';
 export * from './appMembers.js';
 export * from './appRatings.js';
 export * from './appNotifications.js';

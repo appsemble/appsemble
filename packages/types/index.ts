@@ -25,6 +25,7 @@ export * from './team.js';
 export * from './template.js';
 export * from './theme.js';
 export * from './user.js';
+export * from './quota.js';
 
 /**
  * A representation of a generated OAuth2 authorization code response.
@@ -305,9 +306,13 @@ export interface Remappers {
   'date.add': string;
 
   /**
-   * Format a date to an iso8601 / rfc3339 compatible string.
+   * Formats a date to an iso8601 / rfc3339 compatible string.
+   *
+   * An argument can also be specified to use a different output format.
+   *
+   * Please refer to https://date-fns.org/docs/format for the supported patterns.
    */
-  'date.format': null;
+  'date.format'?: string;
 
   /**
    * Compare all computed remapper values against each other.
@@ -1317,6 +1322,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
+export type UserLogoutAction = BaseActionDefinition<'user.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1453,6 +1459,7 @@ export type ActionDefinition =
   | TeamInviteActionDefinition
   | TeamMembersActionDefinition
   | UserLoginAction
+  | UserLogoutAction
   | UserRegisterAction
   | UserUpdateAction;
 

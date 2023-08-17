@@ -77,5 +77,6 @@ export const actions = {
   throw: throwAction,
   'user.register': noop,
   'user.login': noop,
+  'user.logout': noop,
   'user.update': noop,
 };

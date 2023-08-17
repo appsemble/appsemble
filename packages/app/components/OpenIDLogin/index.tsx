@@ -31,6 +31,7 @@ export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
         <OAuth2LoginButton
           authorizationUrl={String(new URL('/connect/authorize', apiUrl))}
           className={buttonProps.className}
+          data-testid="login-with-appsemble"
           icon="user"
           {...buttonProps}
         >

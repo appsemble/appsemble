@@ -12,7 +12,10 @@ export async function email({
   user,
 }: EmailParams): Promise<void> {
   const { getApp } = options;
-  const app = await getApp({ context });
+  const {
+    pathParams: { appId },
+  } = context;
+  const app = await getApp({ context, query: { where: { id: appId } } });
 
   const persistedApp = await App.findByPk(app.id, {
     attributes: [

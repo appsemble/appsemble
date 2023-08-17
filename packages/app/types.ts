@@ -133,6 +133,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   showMessage: ShowMessage;
   getUserInfo: () => UserInfo;
   passwordLogin: (params: { username: string; password: string }) => Promise<void>;
+  passwordLogout: () => Promise<void>;
   setUserInfo: Dispatch<UserInfo>;
   updateTeam: UpdateTeam;
   teams: TeamMember[];

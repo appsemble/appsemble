@@ -1,35 +1,56 @@
 import { bootstrap } from '@appsemble/sdk';
 
-bootstrap(({ data, parameters: { alignment, alt, height, rounded, url, width }, utils }) => {
-  const node = document.createElement('figure');
-  const image = document.createElement('img');
-  node.append(image);
+bootstrap(
+  ({ data, events, parameters: { alignment, alt, height, rounded, url, width }, utils }) => {
+    const node = document.createElement('figure');
+    const image = document.createElement('img');
+    node.append(image);
 
-  node.classList.add('image');
+    node.classList.add('image');
 
-  if (rounded) {
-    image.classList.add('is-rounded');
-  }
-  image.alt = utils.remap(alt, data) as string;
-  image.src = utils.remap(url, data) as string;
+    if (rounded) {
+      image.classList.add('is-rounded');
+    }
 
-  if (height) {
-    image.style.height = `${height}px`;
-  }
+    function setImage(d: unknown): void {
+      const src = utils.remap(url, d);
+      const img = src as string;
 
-  if (width) {
-    image.style.width = `${width}px`;
-  }
+      image.alt = utils.remap(alt, data) as string;
 
-  const wrapper = document.createElement('div');
-  wrapper.append(node);
-  wrapper.classList.add('is-flex');
+      try {
+        image.src = /^(https?:)?\/\//.test(img) ? img : utils.asset(img);
+      } catch (error) {
+        if (error instanceof TypeError || error instanceof DOMException) {
+          image.src = img;
+        }
+      }
+    }
 
-  if (alignment) {
-    wrapper.classList.add(`is-justify-content-${alignment}`);
-  } else {
-    wrapper.classList.add('is-justify-content-left');
-  }
+    setImage(data);
 
-  return wrapper;
-});
+    events.on.data((d) => {
+      setImage(d);
+    });
+
+    if (height) {
+      image.style.height = `${height}px`;
+    }
+
+    if (width) {
+      image.style.width = `${width}px`;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.append(node);
+    wrapper.classList.add('is-flex');
+
+    if (alignment) {
+      wrapper.classList.add(`is-justify-content-${alignment}`);
+    } else {
+      wrapper.classList.add('is-justify-content-left');
+    }
+
+    return wrapper;
+  },
+);

@@ -41,6 +41,10 @@ export const messages = defineMessages({
     id: 'studio.WKtGHy',
     defaultMessage: 'Secrets',
   },
+  quotas: {
+    id: 'studio.4l+0pK',
+    defaultMessage: 'Quotas',
+  },
   snapshots: {
     id: 'studio.4y3rEL',
     defaultMessage: 'Snapshots',

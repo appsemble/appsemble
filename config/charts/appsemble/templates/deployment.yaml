@@ -189,6 +189,14 @@ spec:
             - name: CLUSTER_ISSUER
               value: {{ . | quote }}
             {{- end }}
+            {{- if .Values.quotas.appEmail.enabled }}
+            - name: ENABLE_APP_EMAIL_QUOTA
+              value: 'true'
+            - name: DAILY_APP_EMAIL_QUOTA
+              value: {{ .Values.quotas.appEmail.dailyLimit | quote }}
+            - name: ENABLE_APP_EMAIL_QUOTA_ALERTS
+              value: {{ .Values.quotas.appEmail.alertOrganizationOwner | quote }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -12,8 +12,8 @@ export const match: ActionCreator<'match'> = ({
     createAction({
       ...params,
       definition: c.action,
-      prefix: `${prefix}.case.${i}`,
-      prefixIndex: `${prefixIndex}.case.${i}`,
+      prefix: `${prefix}.match.${i}.action`,
+      prefixIndex: `${prefixIndex}.match.${i}.action`,
       remap,
     }),
   );

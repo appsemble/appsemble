@@ -22,6 +22,7 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
         <div className={classNames('container', styles.repeated)}>
           {((value || []) as string[]).map((v, index) => (
             <ImageField
+              field={field}
               // eslint-disable-next-line react/no-array-index-key
               key={index}
               label={label}
@@ -31,7 +32,9 @@ export function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
           ))}
         </div>
       ) : (
-        value && <ImageField label={label} name={field.value} source={value as string} />
+        value && (
+          <ImageField field={field} label={label} name={field.value} source={value as string} />
+        )
       )}
     </div>
   );

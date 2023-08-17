@@ -163,12 +163,18 @@ export function IndexPage(): ReactElement {
         </ul>
       </div>
       <div className="has-text-centered">
-        <Button className={`mx-3 my-3 ${styles.button}`} disabled={generating} onClick={onDeny}>
+        <Button
+          className={`mx-3 my-3 ${styles.button}`}
+          data-testid="deny"
+          disabled={generating}
+          onClick={onDeny}
+        >
           <FormattedMessage {...messages.deny} />
         </Button>
         <Button
           className={`mx-3 my-3 ${styles.button}`}
           color="primary"
+          data-testid="allow"
           disabled={generating}
           loading={generating}
           onClick={onAccept}

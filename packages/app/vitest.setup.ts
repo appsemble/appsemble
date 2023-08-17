@@ -1,5 +1,14 @@
 import { noop } from '@appsemble/utils';
 import 'fake-indexeddb/auto';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import jsdom from 'jsdom';
+
+// There is no support for application/xml in happy-dom's DOMParser yet
+// https://github.com/capricorn86/happy-dom/issues/282#issuecomment-1169355360
+const {
+  window: { DOMParser },
+} = new jsdom.JSDOM();
+window.DOMParser = DOMParser;
 
 URL.createObjectURL = () => '';
 URL.revokeObjectURL = noop;

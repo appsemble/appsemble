@@ -39,8 +39,7 @@ The app must have a security definition and app roles defined.
 Service secrets will not be applied without a security definition or app roles. The app service
 secrets will be applied based on the security policy.
 
-See [Security](http://localhost:9999/en/docs/03-guide/security) for more on the security definition
-and policies.
+See [Security](/docs/03-guide/security) for more on the security definition and policies.
 
 ## URL matching
 

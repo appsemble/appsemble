@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "private": true,
   "description": "The base for Appsemble apps",
   "keywords": [
@@ -31,11 +31,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/react-components": "0.21.2",
-    "@appsemble/sdk": "0.21.2",
-    "@appsemble/types": "0.21.2",
-    "@appsemble/utils": "0.21.2",
-    "@appsemble/web-utils": "0.21.2",
+    "@appsemble/react-components": "0.21.3",
+    "@appsemble/sdk": "0.21.3",
+    "@appsemble/types": "0.21.3",
+    "@appsemble/utils": "0.21.3",
+    "@appsemble/web-utils": "0.21.3",
     "@browser-logos/chrome": "^2.0.0",
     "@browser-logos/edge": "^2.0.0",
     "@browser-logos/firefox": "^3.0.0",
@@ -66,7 +66,10 @@
     "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.1",
     "fake-indexeddb": "^4.0.0",
+    "happy-dom": "^10.10.0",
+    "jsdom": "^22.1.0",
     "vitest": "^0.33.0"
   }
 }

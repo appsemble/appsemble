@@ -1,0 +1,1 @@
+Add `user.logout` action.

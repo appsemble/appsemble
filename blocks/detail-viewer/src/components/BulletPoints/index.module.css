@@ -1,0 +1,16 @@
+.horizontalList {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+}
+
+.horizontalList li {
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  text-align: center;
+}
+
+.horizontalList dd {
+  margin-top: 5px;
+}
