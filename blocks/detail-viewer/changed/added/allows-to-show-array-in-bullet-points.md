@@ -1,1 +1,1 @@
-Allows to show array of fields in bullet points.
+Support showing bullet point lists of fields.

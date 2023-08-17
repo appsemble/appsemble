@@ -1,1 +1,1 @@
-Allows image customization.
+Add image customization options.
