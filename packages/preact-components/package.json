@@ -42,6 +42,7 @@
     "flatpickr": "^4.0.0",
     "intl-messageformat": "^10.0.0",
     "leaflet": "~1.5.0",
+    "nouislider": "^15.0.0",
     "preact": "^10.0.0"
   }
 }
