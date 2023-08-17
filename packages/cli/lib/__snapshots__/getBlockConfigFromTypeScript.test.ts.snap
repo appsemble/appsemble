@@ -692,6 +692,59 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
         ],
         "type": "object",
       },
+      "BulletPoints": {
+        "additionalProperties": false,
+        "description": "A group of fields showed in bullet points.",
+        "properties": {
+          "bulletType": {
+            "default": "none",
+            "description": "Bullet decoration for the list.",
+            "enum": [
+              "circle",
+              "decimal-leading-zero",
+              "decimal",
+              "disc",
+              "horizontal",
+              "lower-alpha",
+              "lower-roman",
+              "none",
+              "numbered",
+              "square",
+              "upper-alpha",
+              "upper-roman",
+            ],
+            "type": "string",
+          },
+          "bullets": {
+            "additionalProperties": false,
+            "description": "Each bullet contains a heading and description.",
+            "properties": {
+              "description": {
+                "$ref": "#/definitions/Field",
+              },
+              "heading": {
+                "$ref": "#/definitions/Field",
+              },
+            },
+            "required": [
+              "heading",
+            ],
+            "type": "object",
+          },
+          "label": {
+            "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
+            "format": "remapper",
+          },
+          "value": {
+            "description": "The Remapper used to retrieve the data.",
+            "format": "remapper",
+          },
+        },
+        "required": [
+          "bullets",
+        ],
+        "type": "object",
+      },
       "BulmaColor": {
         "description": "A color known to Bulma.",
         "enum": [
@@ -765,6 +818,24 @@ The following special cases for [Font Awesome icon](https://fontawesome.com/icon
 
 If not set, the item itself is used as the url.",
             "format": "remapper",
+          },
+          "rounded": {
+            "description": "Is image rounded.",
+            "type": "boolean",
+          },
+          "size": {
+            "default": 48,
+            "description": "The image is scaled with bulma sizes.",
+            "enum": [
+              16,
+              24,
+              32,
+              48,
+              64,
+              96,
+              128,
+            ],
+            "type": "number",
           },
           "type": {
             "const": "file",
@@ -931,6 +1002,9 @@ If the content is an object it will be converted using \`JSON.stringify()\`.",
         "description": "A list of fields to display based on the name from the schema.",
         "items": {
           "anyOf": [
+            {
+              "$ref": "#/definitions/BulletPoints",
+            },
             {
               "$ref": "#/definitions/Field",
             },

@@ -4,14 +4,21 @@ import { type Remapper } from '@appsemble/sdk';
 import { type VNode } from 'preact';
 
 import styles from './index.module.css';
+import { type FileField } from '../../../block.js';
 
 interface ImageFieldProps {
+  readonly field: FileField;
   readonly label?: unknown;
   readonly name?: Remapper;
   readonly source: Blob | string;
 }
 
-export function ImageField({ label, name, source }: ImageFieldProps): VNode {
+export function ImageField({
+  field: { rounded = false, size = 128 },
+  label,
+  name,
+  source,
+}: ImageFieldProps): VNode {
   const { utils } = useBlock();
   const modal = useToggle();
   const img = source as string;
@@ -21,10 +28,10 @@ export function ImageField({ label, name, source }: ImageFieldProps): VNode {
   return (
     <>
       <button className={`${styles.button} ${styles.root}`} onClick={modal.enable} type="button">
-        <figure className={`image mr-3 ${styles.root}`}>
+        <figure className={`image mr-3 is-${size}x${size} ${styles.root}`}>
           <img
             alt={alt}
-            className={styles.img}
+            className={`${styles.img} ${rounded && 'is-rounded'}`}
             src={/^(https?:)?\/\//.test(img) ? img : utils.asset(img)}
           />
         </figure>

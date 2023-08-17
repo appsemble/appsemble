@@ -2,6 +2,7 @@ import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { useEffect, useState } from 'preact/hooks';
 
+import { BulletPoints } from './components/BulletPoints/index.js';
 import { Field } from './components/Field/index.js';
 import { FieldGroup } from './components/FieldGroup/index.js';
 import styles from './index.module.css';
@@ -28,6 +29,12 @@ bootstrap(({ data: blockData, events, parameters, ready }) => {
       {parameters.fields.map((field, index) => {
         if ('fields' in field) {
           return <FieldGroup data={data} field={field} key={field.value || field.label || index} />;
+        }
+
+        if ('bullets' in field) {
+          return (
+            <BulletPoints data={data} field={field} key={field.value || field.label || index} />
+          );
         }
 
         return (

@@ -85,6 +85,19 @@ export interface FileField extends AbstractField {
    * The name of the type of the field.
    */
   type: 'file';
+
+  /**
+   * Is image rounded.
+   *
+   */
+  rounded?: boolean;
+
+  /**
+   * The image is scaled with bulma sizes.
+   *
+   * @default 48
+   */
+  size?: 16 | 24 | 32 | 48 | 64 | 96 | 128;
 }
 
 /**
@@ -182,6 +195,38 @@ export interface FieldGroup extends AbstractField {
   fields: Field[];
 }
 
+/**
+ * A group of fields showed in bullet points.
+ */
+export interface BulletPoints extends AbstractField {
+  /**
+   * Bullet decoration for the list.
+   *
+   * @default none
+   */
+  bulletType?:
+    | 'circle'
+    | 'decimal-leading-zero'
+    | 'decimal'
+    | 'disc'
+    | 'horizontal'
+    | 'lower-alpha'
+    | 'lower-roman'
+    | 'none'
+    | 'numbered'
+    | 'square'
+    | 'upper-alpha'
+    | 'upper-roman';
+
+  /**
+   * Each bullet contains a heading and description.
+   */
+  bullets: {
+    heading: Field;
+    description?: Field;
+  };
+}
+
 export interface RendererProps<F extends Field> {
   /**
    * Structure used to define the field.
@@ -199,7 +244,7 @@ declare module '@appsemble/sdk' {
     /**
      * A list of fields to display based on the name from the schema.
      */
-    fields: (Field | FieldGroup)[];
+    fields: (BulletPoints | Field | FieldGroup)[];
 
     /**
      * Custom icon configuration for geocoordinate fields.
