@@ -1,1 +1,1 @@
-Added support for assets API.
+Add support for assets API.
