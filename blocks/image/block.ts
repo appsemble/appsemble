@@ -1,11 +1,20 @@
 import { type Remapper } from '@appsemble/sdk';
 
 declare module '@appsemble/sdk' {
+  interface EventListeners {
+    /**
+     * The event that is triggered when data is received.
+     *
+     * Compatible data that is received will be displayed.
+     */
+    data: never;
+  }
+
   interface Parameters {
     /**
      * The Url of the image.
      *
-     * Note that this is ignored if the onImage event listener is set.
+     * Note that remappers must be used if the image is received through the data event listener.
      */
     url: Remapper;
 
