@@ -201,6 +201,7 @@ export function createTestAction<T extends ActionDefinition['type']>(
     updateTeam: null,
     getUserInfo: null,
     passwordLogin: null,
+    passwordLogout: null,
     setUserInfo: null,
     ...params,
   });

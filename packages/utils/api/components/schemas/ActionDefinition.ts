@@ -78,6 +78,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/TeamMembersActionDefinition' },
         { $ref: '#/components/schemas/ThrowActionDefinition' },
         { $ref: '#/components/schemas/UserLoginActionDefinition' },
+        { $ref: '#/components/schemas/UserLogoutActionDefinition' },
         { $ref: '#/components/schemas/UserRegisterActionDefinition' },
         { $ref: '#/components/schemas/UserUpdateActionDefinition' },
       ],

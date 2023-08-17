@@ -62,7 +62,7 @@ export function FlowPage({
   const [currentStep, setCurrentStep] = useState(0);
   const pushNotifications = useServiceWorkerRegistration();
   const showMessage = useMessages();
-  const { passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
+  const { logout, passwordLogin, setUserInfo, teams, updateTeam, userInfoRef } = useUser();
   const { getAppMessage } = useAppMessages();
   const [steps, setSteps] = useState(page.type === 'flow' ? page.steps : undefined);
   const [error, setError] = useState(false);
@@ -228,6 +228,7 @@ export function FlowPage({
         updateTeam,
         getUserInfo: () => userInfoRef.current,
         passwordLogin,
+        passwordLogout: logout,
         setUserInfo,
       }),
     [
@@ -248,6 +249,7 @@ export function FlowPage({
       teams,
       updateTeam,
       passwordLogin,
+      logout,
       setUserInfo,
       userInfoRef,
       getAppMessage,

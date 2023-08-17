@@ -77,6 +77,12 @@ export const login: ActionCreator<'user.login'> = ({
   },
 ];
 
+export const logout: ActionCreator<'user.logout'> = ({ passwordLogout }) => [
+  async () => {
+    await passwordLogout();
+  },
+];
+
 export const update: ActionCreator<'user.update'> = ({
   definition,
   getUserInfo,

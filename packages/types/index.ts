@@ -1322,6 +1322,7 @@ export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.q
 export type ResourceCountActionDefinition = ResourceActionDefinition<'resource.count'>;
 export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 export type ResourcePatchActionDefinition = ResourceActionDefinition<'resource.patch'>;
+export type UserLogoutAction = BaseActionDefinition<'user.logout'>;
 
 export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
   extends BaseActionDefinition<T> {
@@ -1458,6 +1459,7 @@ export type ActionDefinition =
   | TeamInviteActionDefinition
   | TeamMembersActionDefinition
   | UserLoginAction
+  | UserLogoutAction
   | UserRegisterAction
   | UserUpdateAction;
 
