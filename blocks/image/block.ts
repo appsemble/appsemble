@@ -14,7 +14,7 @@ declare module '@appsemble/sdk' {
     /**
      * The Url of the image.
      *
-     * Note that this is ignored if the onImage event listener is set.
+     * Note that remappers must be used if the image is received through the data event listener.
      */
     url: Remapper;
 

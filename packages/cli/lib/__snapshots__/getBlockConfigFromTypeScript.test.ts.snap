@@ -3562,7 +3562,7 @@ Compatible data that is received will be displayed.",
       "url": {
         "description": "The Url of the image.
 
-Note that this is ignored if the onImage event listener is set.",
+Note that remappers must be used if the image is received through the data event listener.",
         "format": "remapper",
       },
       "width": {
