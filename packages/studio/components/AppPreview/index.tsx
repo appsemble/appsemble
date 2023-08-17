@@ -48,7 +48,7 @@ export function AppPreview({ app, iframeRef }: AppPreviewProps): ReactElement {
   const src = getAppUrl(app.OrganizationId, app.path);
 
   return (
-    <div className={`${styles.root} is-flex ml-1 px-5 py-5`}>
+    <div className={styles.root}>
       {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
         // eslint-disable-next-line react/iframe-missing-sandbox
         <iframe

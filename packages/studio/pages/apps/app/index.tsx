@@ -59,6 +59,7 @@ interface AppValueContext {
 const Context = createContext<AppValueContext>(null);
 
 const EditPage = lazy(() => import('./edit/index.js'));
+const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
 
 export function AppRoutes(): ReactElement {
   const { id, lang } = useParams<{ id: string; lang: string }>();
@@ -201,6 +202,14 @@ export function AppRoutes(): ReactElement {
         <Route
           element={<ProtectedRoute organization={organization} permission={Permission.EditApps} />}
         >
+          <Route
+            element={
+              <Suspense fallback={<Loader />}>
+                <GuiEditorPage />
+              </Suspense>
+            }
+            path="/edit/gui/*"
+          />
           <Route
             element={
               <Suspense fallback={<Loader />}>

@@ -66,9 +66,7 @@ export default function EditPage(): ReactElement {
 
   const onSave = useCallback(async () => {
     const definition = parse(appDefinition) as AppDefinition;
-
     const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
-
     // YAML and schema appear to be valid, send it to the app preview iframe
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
@@ -239,7 +237,9 @@ export default function EditPage(): ReactElement {
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      <AppPreview app={app} iframeRef={frame} />
+      <div className={`${styles.previewRoot} is-flex ml-1 px-5 py-5`}>
+        <AppPreview app={app} iframeRef={frame} />
+      </div>
     </div>
   );
 }

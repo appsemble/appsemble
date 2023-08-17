@@ -28,6 +28,13 @@ export interface Organization {
   iconUrl: string;
 }
 
+export interface Block {
+  type: string;
+  parent: number;
+  subParent: number;
+  block: number;
+}
+
 /**
  * This extended state is stored in `sessionStorage` during the login process with OAuth2.
  */
