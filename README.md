@@ -87,12 +87,13 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-A new account can be registered by going to `http://localhost:9999/register`. Later you can login on
-`http://localhost:9999/login`. If you use email registration to register an account, the email
-containing the verification link will be printed in the server logs. You need to click this link in
-order to use your account.
-
 #### CLI Login
+
+A new account can be registered by going to `http://localhost:9999/register`. Later you can login on
+`http://localhost:9999/login`. You can use any email address as long as it satisfies the email
+format of `user@email-provider.ext`. As the email is sent from the localhost environment, it is
+actually not received by the user instead the email containing the verification link will be printed
+in the server logs. You need to click this link in order to verify you email and use your account.
 
 To login using the Appsemble CLI, run the following command.
 
