@@ -156,6 +156,7 @@ async function handleRequestProxy(
   (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${pkg.version}`;
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
+  axiosConfig.decompress = false;
 
   let response;
   logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
