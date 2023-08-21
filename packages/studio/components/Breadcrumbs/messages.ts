@@ -13,4 +13,8 @@ export const messages = defineMessages({
     id: 'studio.7Znis6',
     defaultMessage: 'Switch to Code Editor',
   },
+  experimental: {
+    id: 'studio.GOx7x4',
+    defaultMessage: 'Experimental',
+  },
 });
