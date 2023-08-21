@@ -42,7 +42,9 @@ export function Breadcrumbs(): ReactElement {
           !breadcrumbs[2].url.includes('/gui') && (
             <Link relative="path" to={`${breadcrumbs[2].url}/gui`}>
               <Button className="button is-rounded is-transparent is-bordered is-small">
-                {formatMessage(messages.switchToGuiEditor)}
+                {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(
+                  messages.experimental,
+                )}`}
               </Button>
             </Link>
           )}
