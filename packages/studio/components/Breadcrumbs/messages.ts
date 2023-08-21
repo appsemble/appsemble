@@ -14,7 +14,7 @@ export const messages = defineMessages({
     defaultMessage: 'Switch to Code Editor',
   },
   experimental: {
-    id: 'studio.GOx7x4',
-    defaultMessage: 'Experimental',
+    id: 'studio.R1RMax',
+    defaultMessage: '- Experimental',
   },
 });

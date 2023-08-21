@@ -93,4 +93,8 @@ export const messages = defineMessages({
     id: 'studio.qDwvZ4',
     defaultMessage: 'Unknown error',
   },
+  reportBug: {
+    id: 'studio.d1OBbT',
+    defaultMessage: 'Report Bug',
+  },
 });

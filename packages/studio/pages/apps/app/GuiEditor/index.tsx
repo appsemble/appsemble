@@ -20,6 +20,7 @@ import {
   type YAMLSeq,
 } from 'yaml';
 
+import { BugButton } from './BugButton/index.js';
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -304,6 +305,7 @@ export default function EditPage(): ReactElement {
               : getUnsavedChanges().join('')
           }
         />
+        <BugButton />
         <div className={styles.panelTopRight}>
           <Button
             className="is-primary"
