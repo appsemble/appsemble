@@ -33,6 +33,7 @@ interface FormValues {
   description: string;
   expires: string;
   'blocks:write': boolean;
+  'blocks:delete': boolean;
   'organizations:write': boolean;
   'resources:read': boolean;
   'resources:write': boolean;
@@ -139,6 +140,7 @@ export function ClientCredentialsPage(): ReactElement {
           description: suggestedDescription,
           expires: '',
           'blocks:write': false,
+          'blocks:delete': false,
           'organizations:write': false,
           'resources:read': false,
           'resources:write': false,
@@ -197,6 +199,12 @@ export function ClientCredentialsPage(): ReactElement {
               label="blocks:write"
               name="blocks:write"
               title={<FormattedMessage {...messages['blocks:write']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="blocks:delete"
+              name="blocks:delete"
+              title={<FormattedMessage {...messages['blocks:delete']} />}
             />
             <SimpleFormField
               component={CheckboxField}

@@ -4,6 +4,7 @@
 export const scopes = [
   'apps:write',
   'blocks:write',
+  'blocks:delete',
   'organizations:write',
   'resources:read',
   'resources:write',

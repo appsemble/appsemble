@@ -104,6 +104,17 @@ export const paths: OpenAPIV3.PathsObject = {
         },
       },
     },
+    delete: {
+      tags: ['block', 'delete'],
+      description: 'Delete a single block version.',
+      operationId: 'removeBlockVersion',
+      responses: {
+        204: {
+          description: 'Block version has successfully been deleted',
+        },
+      },
+      security: [{ cli: ['blocks:delete'] }],
+    },
   },
   '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/asset': {
     parameters: [

@@ -74,6 +74,11 @@ export enum Permission {
   PublishBlocks,
 
   /**
+   * The permission to delete blocks for an organization.
+   */
+  DeleteBlocks,
+
+  /**
    * The permission to send manual push notifications for an app.
    */
   PushNotifications,

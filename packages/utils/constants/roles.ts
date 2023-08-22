@@ -23,6 +23,7 @@ const Maintainer = [
   Permission.InviteMember,
   Permission.ManageTeams,
   Permission.PublishBlocks,
+  Permission.DeleteBlocks,
 ];
 const Owner = [
   ...Maintainer,
