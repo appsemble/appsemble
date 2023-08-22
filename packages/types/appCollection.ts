@@ -52,6 +52,11 @@ export interface AppCollection {
   headerImage: string;
 
   /**
+   * A domain name on which this app collection should be served.
+   */
+  domain?: string;
+
+  /**
    * When the collection was first created as an ISO 8601 formatted string.
    */
   $created?: string;

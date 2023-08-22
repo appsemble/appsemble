@@ -15,7 +15,10 @@ import { getSentryClientSettings } from '../../utils/sentry.js';
  * @returns void
  */
 export function indexHandler(ctx: Context): Promise<void> {
-  const { hostname } = ctx;
+  const {
+    hostname,
+    state: { appCollectionId },
+  } = ctx;
   const { disableRegistration, githubClientId, gitlabClientId, googleClientId, host } = argv;
   const logins = [];
   if (githubClientId) {
@@ -53,6 +56,7 @@ export function indexHandler(ctx: Context): Promise<void> {
     logins,
     sentryDsn,
     sentryEnvironment,
+    customDomainAppCollection: appCollectionId ? { id: appCollectionId, realHost: host } : null,
   });
   const csp = makeCSP({
     'report-uri': [reportUri],

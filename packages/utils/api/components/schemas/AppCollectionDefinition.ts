@@ -36,5 +36,11 @@ export const AppCollectionDefinition: OpenAPIV3.NonArraySchemaObject = {
       format: 'binary',
       description: 'The header image of the app collection.',
     },
+    domain: {
+      anyOf: [
+        { type: 'string', maxLength: 0 },
+        { type: 'string', format: 'hostname', maxLength: 253 },
+      ],
+    },
   },
 };

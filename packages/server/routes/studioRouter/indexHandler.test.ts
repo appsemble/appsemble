@@ -25,13 +25,13 @@ it('should serve the studio index page with correct headers', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src *; default-src 'self'; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-BErq6rufCjnrmMVqhZgAEgNe89ZlGySvrhAElUMixDk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
 
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"enableRegistration\\":true,\\"logins\\":[]}</script>",
+        "settings": "<script>window.settings={\\"enableRegistration\\":true,\\"logins\\":[],\\"customDomainAppCollection\\":null}</script>",
       },
       "filename": "studio/index.html",
     }
@@ -50,13 +50,13 @@ it('should pass login options from argv to the studio', async () => {
   const response = await request.get('/');
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-55BH1zlzYBdLKuc8rxGYlA+gttOW/TiZC2YsrbcbG8Q=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src *; default-src 'self' https://sentry.io; font-src 'self' https://fonts.gstatic.com; frame-src *.localhost:9999 http://localhost:9999; img-src * blob: data:; report-uri https://sentry.io/api/path/security/?sentry_key=secret; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-8dYPnDBNRNIK86KD2V/qlP5xY9Uqz+Lnu/FeKaG8ZTk=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
 
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"enableRegistration\\":false,\\"logins\\":[{\\"authorizationUrl\\":\\"https://gitlab.com/oauth/authorize\\",\\"clientId\\":\\"GitLab secret\\",\\"icon\\":\\"gitlab\\",\\"name\\":\\"GitLab\\",\\"scope\\":\\"email openid profile\\"},{\\"authorizationUrl\\":\\"https://accounts.google.com/o/oauth2/auth\\",\\"clientId\\":\\"Google secret\\",\\"icon\\":\\"google\\",\\"name\\":\\"Google\\",\\"scope\\":\\"email openid profile\\"}],\\"sentryDsn\\":\\"https://secret@sentry.io/path\\"}</script>",
+        "settings": "<script>window.settings={\\"enableRegistration\\":false,\\"logins\\":[{\\"authorizationUrl\\":\\"https://gitlab.com/oauth/authorize\\",\\"clientId\\":\\"GitLab secret\\",\\"icon\\":\\"gitlab\\",\\"name\\":\\"GitLab\\",\\"scope\\":\\"email openid profile\\"},{\\"authorizationUrl\\":\\"https://accounts.google.com/o/oauth2/auth\\",\\"clientId\\":\\"Google secret\\",\\"icon\\":\\"google\\",\\"name\\":\\"Google\\",\\"scope\\":\\"email openid profile\\"}],\\"sentryDsn\\":\\"https://secret@sentry.io/path\\",\\"customDomainAppCollection\\":null}</script>",
       },
       "filename": "studio/index.html",
     }

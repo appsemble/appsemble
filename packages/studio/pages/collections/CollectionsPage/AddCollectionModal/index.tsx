@@ -33,6 +33,7 @@ const defaultValues = {
   isPrivate: false,
   expertName: '',
   expertDescription: '',
+  domain: null as string | null,
 };
 
 export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps): ReactElement {
@@ -47,7 +48,7 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
     state.disable();
   }, [state]);
   const onSubmit = useCallback(
-    async ({ expertDescription, expertName, isPrivate, name }: typeof defaultValues) => {
+    async ({ domain, expertDescription, expertName, isPrivate, name }: typeof defaultValues) => {
       const form = new FormData();
       form.append('name', name);
       form.append('visibility', isPrivate ? 'private' : 'public');
@@ -55,6 +56,9 @@ export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps
       form.append('expertDescription', expertDescription);
       form.append('headerImage', header, header.name);
       form.append('expertProfileImage', expertPhoto, expertPhoto.name);
+      if (domain) {
+        form.append('domain', domain);
+      }
       const { data } = await axios.post<AppCollection>(
         `/api/organizations/${organizationId}/appCollections`,
         form,

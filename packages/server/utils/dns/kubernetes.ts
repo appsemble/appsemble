@@ -10,7 +10,7 @@ import { escapeJsonPointer } from 'koas-core/lib/jsonRefs.js';
 import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
-import { App, Organization } from '../../models/index.js';
+import { App, AppCollection, Organization } from '../../models/index.js';
 import { argv } from '../argv.js';
 import { iterTable } from '../database.js';
 
@@ -398,7 +398,7 @@ export async function configureDNS(): Promise<void> {
   Organization.afterCreate('dns', ({ id }) => createIngress(`*.${id}.${hostname}`));
 
   /**
-   * Register a domain name for apps who have defined a custom domain name.
+   * Register a domain name for apps which have defined a custom domain name.
    */
   App.afterSave('dns', async (app) => {
     const { domain, sslCertificate, sslKey } = app;
@@ -408,6 +408,17 @@ export async function configureDNS(): Promise<void> {
       if (sslKey && sslCertificate) {
         await createSSLSecret(domain, sslCertificate, sslKey);
       }
+    }
+  });
+
+  /**
+   * Register a domain name for app collections which have defined a custom domain name.
+   */
+  AppCollection.afterSave('dns', async (collection) => {
+    const { domain } = collection;
+
+    if (domain) {
+      await createIngress(domain);
     }
   });
 }
@@ -450,6 +461,13 @@ export async function restoreDNS(): Promise<void> {
   }
 
   for await (const { domain } of iterTable(App, {
+    attributes: ['domain'],
+    where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
+  })) {
+    await createIngress(domain);
+  }
+
+  for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {

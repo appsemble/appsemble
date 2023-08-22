@@ -20,18 +20,23 @@ import { SettingsPage } from './SettingsPage/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 import { checkRole } from '../../../utils/checkRole.js';
 
-export function CollectionRoutes(): ReactElement {
+interface CollectionRoutesProps {
+  readonly fallbackCollectionId?: number;
+}
+
+export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps): ReactElement {
   const { collectionId, lang } = useParams<{
     lang: string;
     organizationId: string;
     collectionId: string;
   }>();
+  const id = Number.parseInt(collectionId) || fallbackCollectionId;
   const {
     data: collection,
     error,
     loading,
     setData: setCollection,
-  } = useData<AppCollection>(`/api/appCollections/${collectionId}`);
+  } = useData<AppCollection>(`/api/appCollections/${id}`);
 
   const { organizations } = useUser();
   const organizationId = collection?.OrganizationId;

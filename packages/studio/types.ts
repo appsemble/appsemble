@@ -65,6 +65,10 @@ declare global {
       logins: OAuth2Provider[];
       sentryDsn: string;
       sentryEnvironment: string;
+      customDomainAppCollection?: {
+        id: number;
+        realHost: string;
+      };
     };
   }
 }
