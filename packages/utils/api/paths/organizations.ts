@@ -128,6 +128,17 @@ export const paths: OpenAPIV3.PathsObject = {
       },
       security: [{ studio: [] }, { cli: ['organizations:write'] }],
     },
+    delete: {
+      tags: ['organization'],
+      description: 'Delete an organization.',
+      operationId: 'deleteOrganization',
+      responses: {
+        200: {
+          description: 'successfully deleted organization',
+        },
+      },
+      security: [{ studio: [] }, {}],
+    },
   },
   '/api/organizations/{organizationId}/icon': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],

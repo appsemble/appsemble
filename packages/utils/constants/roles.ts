@@ -27,6 +27,7 @@ const Maintainer = [
 const Owner = [
   ...Maintainer,
   Permission.EditOrganization,
+  Permission.DeleteOrganization,
   Permission.ManageMembers,
   Permission.ManageRoles,
 ];

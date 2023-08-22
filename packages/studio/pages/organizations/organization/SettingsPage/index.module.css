@@ -1,0 +1,4 @@
+.dangerZone {
+  border: 1px solid var(--danger-color);
+  box-sizing: border-box;
+}

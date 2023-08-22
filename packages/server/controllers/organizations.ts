@@ -241,6 +241,37 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
   });
 }
 
+export async function deleteOrganization(ctx: Context): Promise<void> {
+  const {
+    pathParams: { organizationId },
+  } = ctx;
+
+  const member = await checkRole(ctx, organizationId, Permission.DeleteOrganization, {
+    include: { model: Organization },
+  });
+  const organization = member.Organization;
+  if (!organization) {
+    throw notFound('Organization not found.');
+  }
+  await organization.reload({
+    include: [BlockVersion, App],
+  });
+
+  if (organization.BlockVersions.length !== 0) {
+    throw forbidden('Cannot delete an organization with associated blocks.');
+  }
+
+  organization.Apps.map(async (app) => {
+    await app.destroy();
+  });
+
+  await organization.destroy();
+
+  ctx.body = {
+    id: organization.id,
+  };
+}
+
 export async function patchOrganization(ctx: Context): Promise<void> {
   const {
     pathParams: { organizationId },
@@ -419,6 +450,10 @@ export async function getInvitation(ctx: Context): Promise<void> {
 
   if (!invite) {
     throw notFound('This token does not exist.');
+  }
+
+  if (!invite.organization) {
+    throw notFound('Organization not found');
   }
 
   ctx.body = {

@@ -17,6 +17,11 @@ export const messages = defineMessages({
     id: 'studio.pvtgR2',
     defaultMessage: 'Decline',
   },
+  deletedOrganization: {
+    id: 'studio.c99XhT',
+    defaultMessage:
+      'The organization you are trying to join could not be found. The organization might have been removed, if not, try again later.',
+  },
   invalidInvite: {
     id: 'studio.X8zYDn',
     defaultMessage: 'This invite is invalid. This may be caused by the invitation being retracted.',
