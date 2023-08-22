@@ -4,6 +4,7 @@ import { createFormData, organizationBlocklist, readFixture } from '@appsemble/n
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 import type Koa from 'koa';
+import { expect } from 'vitest';
 
 import {
   App,
@@ -510,6 +511,68 @@ describe('getOrganizationIcon', () => {
     });
 
     expect(response.data).toMatchImageSnapshot();
+  });
+});
+
+describe('deleteOrganization', () => {
+  it('should delete the organization if user is the owner', async () => {
+    const organization2 = await Organization.create({
+      id: 'testorganization2',
+      name: 'Test Organization',
+    });
+    authorizeStudio();
+    await Member.create({ OrganizationId: organization2.id, UserId: user.id, role: 'Owner' });
+    await request.delete(`/api/organizations/${organization2.id}`);
+    const response = await request.get(`/api/organizations/${organization2.id}`);
+    expect(response).toMatchObject({
+      status: 404,
+      data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
+    });
+  });
+
+  it('should not delete an organization, user is not owner', async () => {
+    await Member.update(
+      { role: 'Member' },
+      { where: { OrganizationId: organization.id, UserId: user.id } },
+    );
+    authorizeStudio();
+    const response = await request.delete(`/api/organizations/${organization.id}`);
+    expect(response).toMatchObject({
+      data: { message: 'User does not have sufficient permissions.' },
+      status: 403,
+    });
+
+    const organizationId = await Organization.findByPk(organization.id);
+    expect(organizationId.id).toBe(organization.id);
+  });
+
+  it('should not delete the organization with associated blocks', async () => {
+    const organization2 = await Organization.create({
+      id: 'testorganization2',
+      name: 'Test Organization',
+    });
+    await Member.create({ OrganizationId: organization2.id, UserId: user.id, role: 'Owner' });
+    await BlockVersion.create({
+      name: 'test',
+      version: '0.0.0',
+      OrganizationId: organization2.id,
+      parameters: {
+        properties: {
+          type: 'object',
+          foo: {
+            type: 'number',
+          },
+        },
+      },
+    });
+    authorizeStudio();
+    const response = await request.delete(`/api/organizations/${organization2.id}`);
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'Cannot delete an organization with associated blocks.' },
+    });
+    const organizationId = await Organization.findByPk(organization.id);
+    expect(organizationId.id).toBe(organization.id);
   });
 });
 

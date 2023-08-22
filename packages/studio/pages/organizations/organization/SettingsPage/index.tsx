@@ -1,16 +1,33 @@
 import {
+  Button,
+  Content,
   FileUpload,
+  Input,
+  Message,
   Select,
   SimpleForm,
   SimpleFormField,
   SimpleSubmit,
   Title,
+  useConfirmation,
+  useMessages,
   useMeta,
 } from '@appsemble/react-components';
+import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
 
+import styles from './index.module.css';
 import { messages } from './messages.js';
 import { IconPreview } from '../../../../components/IconPreview/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
@@ -47,6 +64,68 @@ export function SettingsPage({
 }: SettingsPageProps): ReactElement {
   const { setOrganizations } = useUser();
   const { formatMessage } = useIntl();
+  const push = useMessages();
+  const navigate = useNavigate();
+  const inputOrganization = useRef(null);
+  const [fetched, setFetched] = useState<App[]>([]);
+
+  const fetchApps = useCallback(async () => {
+    const fetchedApps = await axios.get(`/api/organizations/${organization.id}/apps`);
+    setFetched(fetchedApps.data);
+  }, [organization.id]);
+
+  useEffect(() => {
+    fetchApps();
+  }, [fetchApps]);
+  const deleteOrganization = async (id: string): Promise<void> => {
+    try {
+      await axios.delete(`/api/organizations/${id}`);
+      push({
+        body: formatMessage(messages.deleteSuccess, {
+          name: organization.name,
+        }),
+        color: 'info',
+      });
+      navigate('/apps');
+    } catch {
+      push(formatMessage(messages.errorDelete));
+    }
+  };
+
+  const deleteOrganizationBody = (): ReactNode => (
+    <div>
+      <FormattedMessage
+        {...messages.organizationIdLabel}
+        values={{ organizationId: organization.id, bold: (str) => <b>{str}</b> }}
+      />
+      <Input
+        onChange={(event) => {
+          inputOrganization.current = event.target.value;
+        }}
+        ref={inputOrganization}
+        type="text"
+      />
+      {fetched?.length === 0 ? (
+        <FormattedMessage {...messages.deleteWarning} />
+      ) : (
+        <FormattedMessage {...messages.deleteWithAppsWarning} values={{ apps: fetched?.length }} />
+      )}
+    </div>
+  );
+
+  const onDeleteOrganization = useConfirmation({
+    title: <FormattedMessage {...messages.deleteWarningTitle} />,
+    body: deleteOrganizationBody(),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    async action() {
+      if (inputOrganization.current === organization.id) {
+        await deleteOrganization(organization.id);
+      } else {
+        push(formatMessage(messages.notMatchingOrgIds));
+      }
+    },
+  });
 
   const onEditOrganization = useCallback(
     async ({ description, email, icon, name, website, websiteProtocol }: typeof defaultValues) => {
@@ -136,6 +215,24 @@ export function SettingsPage({
           <FormattedMessage {...messages.submit} />
         </SimpleSubmit>
       </SimpleForm>
+      {organization.role === 'Owner' ? (
+        <Content>
+          <Message
+            className={styles.dangerZone}
+            color="danger"
+            header={<FormattedMessage {...messages.dangerZone} />}
+          >
+            <p className="content">
+              <FormattedMessage {...messages.deleteHelp} />
+            </p>
+            <Button color="danger" icon="trash-alt" onClick={onDeleteOrganization}>
+              <FormattedMessage {...messages.delete} />
+            </Button>
+          </Message>
+        </Content>
+      ) : (
+        ''
+      )}
     </>
   );
 }

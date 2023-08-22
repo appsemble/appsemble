@@ -55,9 +55,13 @@ export function OrganizationInvitePage(): ReactElement {
         }
       } catch (err) {
         if (axios.isAxiosError(err)) {
-          const { status } = err.response;
+          const { data, status } = err.response;
           if (status === 404) {
-            push(formatMessage(messages.invalidInvite));
+            if (data.message === 'Organization not found') {
+              push(formatMessage(messages.deletedOrganization));
+            } else {
+              push(formatMessage(messages.invalidInvite));
+            }
           }
 
           if (status === 406) {
@@ -81,16 +85,21 @@ export function OrganizationInvitePage(): ReactElement {
   }
 
   if (error) {
+    const errorResponse = error as { response?: { data?: { message?: string } } };
     return (
       <Content className={`${styles.noInvite} has-text-centered`} padding>
         <Icon className={styles.noInviteIcon} icon="exclamation-circle" />
         <p>
-          <FormattedMessage
-            {...messages.noInvite}
-            values={{
-              link: (text) => <Link to={`/${lang}/apps`}>{text}</Link>,
-            }}
-          />
+          {errorResponse.response.data.message === 'Organization not found' ? (
+            <FormattedMessage {...messages.deletedOrganization} />
+          ) : (
+            <FormattedMessage
+              {...messages.noInvite}
+              values={{
+                link: (text) => <Link to={`/${lang}/apps`}>{text}</Link>,
+              }}
+            />
+          )}
         </p>
       </Content>
     );

@@ -33,6 +33,11 @@ export enum Permission {
   EditOrganization,
 
   /**
+   * The permission to delete an organization if it doesn't have any apps.
+   */
+  DeleteOrganization,
+
+  /**
    * The permission to invite new members into an organization,
    * removing existing invites, and resending invites.
    */
