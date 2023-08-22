@@ -1,3 +1,5 @@
+import { gzipSync } from 'node:zlib';
+
 import { type EmailActionDefinition } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -29,7 +31,6 @@ beforeEach(async () => {
   setArgv(argv);
   user = await createTestUser();
   server = await createServer({});
-
   await setTestApp(server);
 });
 
@@ -81,13 +82,18 @@ describe('handleRequestProxy', () => {
   let proxiedApp: Koa;
   let proxiedContext: ParameterizedContext;
   let proxiedRequest: AxiosTestInstance;
+  let proxiedBody: any;
+  let responseHeaders: Record<string, string>;
   let app: App;
 
   beforeEach(async () => {
     vi.useFakeTimers();
     proxiedApp = new Koa().use((ctx) => {
-      ctx.body = { message: 'I’m a teapot' };
+      ctx.body = proxiedBody || { message: 'I’m a teapot' };
       ctx.status = 418;
+      if (responseHeaders) {
+        ctx.set(responseHeaders);
+      }
       proxiedContext = ctx;
     });
     proxiedRequest = await createInstance(proxiedApp);
@@ -170,6 +176,8 @@ describe('handleRequestProxy', () => {
 
   afterEach(async () => {
     await proxiedRequest.close();
+    proxiedBody = undefined;
+    responseHeaders = undefined;
   });
 
   it('should proxy simple GET request actions', async () => {
@@ -274,6 +282,48 @@ describe('handleRequestProxy', () => {
       'accept-encoding': 'gzip, compress, deflate, br',
       'content-length': '2',
       'content-type': 'application/json',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${pkg.version}`,
+    });
+    expect(proxiedContext.path).toBe('/');
+  });
+
+  it('should not decompress responses', async () => {
+    responseHeaders = {
+      'content-encoding': 'gzip',
+      'content-type': 'application/json',
+    };
+    proxiedBody = gzipSync(
+      JSON.stringify({
+        message1: 'I’m a teapot',
+        message2: 'I’m a teapot',
+        message3: 'I’m a teapot',
+        message4: 'I’m a teapot',
+        message5: 'I’m a teapot',
+        message6: 'I’m a teapot',
+      }),
+    );
+
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data={}');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json
+
+      {
+        "message1": "I’m a teapot",
+        "message2": "I’m a teapot",
+        "message3": "I’m a teapot",
+        "message4": "I’m a teapot",
+        "message5": "I’m a teapot",
+        "message6": "I’m a teapot",
+      }
+    `);
+    expect(response.headers).toMatchObject({});
+    expect(proxiedContext.method).toBe('GET');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
     });
