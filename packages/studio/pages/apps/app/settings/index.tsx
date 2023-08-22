@@ -250,7 +250,11 @@ export function SettingsPage(): ReactElement {
                 {...messages.domainDescription}
                 values={{
                   link: (link) => (
-                    <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/guide/dns`}>
+                    <Link
+                      rel="noopener noreferrer"
+                      target="_blank"
+                      to={`/${lang}/docs/03-guide/dns`}
+                    >
                       {link}
                     </Link>
                   ),
