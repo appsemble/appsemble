@@ -123,7 +123,7 @@
     "gitlab-client-secret": "d2d8ce5f59cea983f51d2ce496d5cdcdf19d1de4104422c565acdc11b3f2358d",
     "host": "http://localhost:9999",
     "migrate-to": "next",
-    "remote": "https://appsemble.app",
+    "remote": "http://localhost:9999",
     "secret": "Local Appsemble development secret",
     "aes-secret": "Local Appsmeble development AES secret"
   }
