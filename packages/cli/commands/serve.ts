@@ -175,9 +175,11 @@ export async function handler(argv: ServeArguments): Promise<void> {
   const localBlocksPromises = localBlocksConfigs.map(async (blockConfig) => {
     await buildBlock(blockConfig);
     const [, blockManifest] = await makePayload(blockConfig);
+
     blockManifest.version = localIdentifiableBlocks.find(
       (identifiableBlock) => identifiableBlock.type === blockManifest.name,
     ).version;
+
     return blockManifest;
   });
 
@@ -357,6 +359,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
 
   const staticServer = await createStaticServer({
     context: {
+      appPath,
       apiUrl: `http://localhost:${argv['api-port']}`,
       appHost: `http://localhost:${argv.port}`,
       appsembleApp: stubbedApp,

@@ -36,6 +36,7 @@ declare module 'koa' {
   }
 
   interface DefaultContext {
+    appPath: string;
     appHost: string;
     appsembleApp: App;
     appBlocks: BlockManifest[];
