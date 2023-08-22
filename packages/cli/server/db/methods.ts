@@ -4,6 +4,7 @@ import { getDb } from './index.js';
 
 interface ResourceDefaults {
   AppId: number;
+  AuthorId: number;
   $created: Date;
   $updated: Date;
   expires: Date | null;
@@ -11,6 +12,7 @@ interface ResourceDefaults {
 
 const defaults: ResourceDefaults = {
   AppId: 1,
+  AuthorId: 1,
   $created: new Date(),
   $updated: new Date(),
   expires: null,
@@ -97,6 +99,10 @@ function applyQuery<M>(
     return parsedEntityValue === parseValue(query.eq);
   }
 
+  if (query.eq == null && entity[key as keyof M] === undefined) {
+    return true;
+  }
+
   if (query.ne || query.ne === '') {
     return parsedEntityValue !== parseValue(query.ne);
   }
@@ -177,7 +183,7 @@ function applyOrder<M>(entities: M[], order: OrderItem[]): void {
 }
 
 function clearEntity(entity: Record<string, unknown>): Record<string, unknown> {
-  const { AppId, type, ...cleanPayload } = entity;
+  const { AppId, AuthorId, type, ...cleanPayload } = entity;
 
   if (!cleanPayload.expires) {
     delete cleanPayload.expires;
