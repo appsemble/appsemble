@@ -34,7 +34,7 @@ export function BlockStoreElement({
       draggable
       key={name}
       onDragStart={handleDragStart}
-      title={name}
+      title={block.description}
     >
       <header className="px-2 py-2 is-flex">
         <figure className={`image is-64x64 ${styles.nogrow}`}>
