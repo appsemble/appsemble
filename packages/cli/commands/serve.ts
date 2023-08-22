@@ -199,33 +199,39 @@ export async function handler(argv: ServeArguments): Promise<void> {
     if (!cacheExists || (cacheExists && argv['overwrite-block-cache'])) {
       const blockUrl = `/api/blocks/@${organization}/${blockName}/versions/${identifiableBlock.version}`;
 
-      const { data: blockManifest }: { data: BlockManifest } = await axios.get(
-        String(new URL(blockUrl, argv.remote)),
-      );
-
-      await writeData(cachedBlockManifest, blockManifest);
-
-      const assetsDir = join(blockCacheDir, 'assets');
-      if (!existsSync(assetsDir)) {
-        await mkdir(assetsDir);
-      }
-
-      const blockFilesPromises = blockManifest.files.map(async (filename) => {
-        const writer = createWriteStream(join(assetsDir, filename));
-
-        const { data: content } = await axios.get(
-          String(new URL(`${blockUrl}/asset?filename=${filename}`, argv.remote)),
-          {
-            responseType: 'stream',
-          },
+      try {
+        const { data: blockManifest }: { data: BlockManifest } = await axios.get(
+          String(new URL(blockUrl, argv.remote)),
         );
 
-        content.pipe(writer);
-      });
+        await writeData(cachedBlockManifest, blockManifest);
 
-      await Promise.all(blockFilesPromises);
+        const assetsDir = join(blockCacheDir, 'assets');
+        if (!existsSync(assetsDir)) {
+          await mkdir(assetsDir);
+        }
 
-      return blockManifest;
+        const blockFilesPromises = blockManifest.files.map(async (filename) => {
+          const writer = createWriteStream(join(assetsDir, filename));
+
+          const { data: content } = await axios.get(
+            String(new URL(`${blockUrl}/asset?filename=${filename}`, argv.remote)),
+            {
+              responseType: 'stream',
+            },
+          );
+
+          content.pipe(writer);
+        });
+
+        await Promise.all(blockFilesPromises);
+
+        return blockManifest;
+      } catch {
+        throw new AppsembleError(
+          `The server was unable to fetch the "${blockName}" block\nThis could be due to a misconfigured remote\nMake sure the passed remote supports fetching blocks such as https://appsemble.app`,
+        );
+      }
     }
 
     const [blockManifest] = await readData(cachedBlockManifest);
