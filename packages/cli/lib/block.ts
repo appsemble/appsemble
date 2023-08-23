@@ -30,6 +30,14 @@ import { processCss } from './processCss.js';
  * @param config The config of the block to build.
  * @returns The Webpack stats object.
  */
+
+interface DeleteBlockVersionParams {
+  organization: string;
+  blockName: string;
+  blockVersion: string;
+  remote: string;
+}
+
 export async function buildBlock(config: BlockConfig): Promise<Stats> {
   const conf = await loadWebpackConfig(config, 'production', join(config.dir, config.output));
 
@@ -52,6 +60,18 @@ export async function buildBlock(config: BlockConfig): Promise<Stats> {
       }
     });
   });
+}
+
+export async function deleteBlock({
+  blockName,
+  blockVersion,
+  organization,
+  remote,
+}: DeleteBlockVersionParams): Promise<void> {
+  await axios.delete(`/api/blocks/@${organization}/${blockName}/versions/${blockVersion}`, {
+    baseURL: remote,
+  });
+  logger.info(`Successfully deleted ${blockName} block version.`);
 }
 
 /**

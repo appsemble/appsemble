@@ -111,6 +111,10 @@ export const messages = defineMessages({
     id: 'studio.BWpepv',
     defaultMessage: 'Publish blocks and block versions',
   },
+  'blocks:delete': {
+    id: 'studio.F9iKim',
+    defaultMessage: 'Delete block versions',
+  },
   'organizations:write': {
     id: 'studio.03J9iZ',
     defaultMessage: 'Create and manage organizations',

@@ -2,7 +2,7 @@ import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { EmailAuthorization, Member, Organization, type User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
+import { argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
@@ -254,20 +254,27 @@ describe('refreshToken', () => {
 describe('getSubscribedUsers', () => {
   it('should return a list of subscribed users', async () => {
     // Secret needs to be set, otherwise the test returns 401 by default
-    if (!process.env.ADMIN_API_SECRET) {
-      process.env.ADMIN_API_SECRET = 'testadminapisecret';
+    if (!argv.adminAPIsecret) {
+      setArgv({
+        ...argv,
+        adminAPIsecret: 'testAdminAPIsecret',
+      });
     }
 
     user.subscribed = new Date();
     user.save();
 
     const response = await request.get('/api/subscribed', {
-      headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+      headers: { authorization: `Bearer ${argv.adminAPIsecret}` },
     });
 
     // Reset secret to '' if it hasn't been set, or to its previous value if it was
-    process.env.ADMIN_API_SECRET =
-      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
+    if (argv.adminAPIsecret === 'testAdminAPIsecret') {
+      setArgv({
+        ...argv,
+        adminAPIsecret: '',
+      });
+    }
 
     expect(response.status).toBe(200);
     expect(
@@ -287,7 +294,7 @@ describe('getSubscribedUsers', () => {
   });
 
   it('should return 401 if the provided admin api secret is wrong', async () => {
-    const wrongSecret = `${process.env.ADMIN_API_SECRET} + wrong secret`;
+    const wrongSecret = `${argv.adminAPIsecret} + wrong secret`;
 
     const response = await request.get('/api/subscribed', {
       headers: { authorization: `Bearer ${wrongSecret}` },
@@ -299,8 +306,11 @@ describe('getSubscribedUsers', () => {
 
 describe('unsubscribe', () => {
   it('should unsubscribe a user already subscribed to the newsletter', async () => {
-    if (!process.env.ADMIN_API_SECRET) {
-      process.env.ADMIN_API_SECRET = 'testadminapisecret';
+    if (!argv.adminAPIsecret) {
+      setArgv({
+        ...argv,
+        adminAPIsecret: 'testAdminAPIsecret',
+      });
     }
 
     if (!user.subscribed) {
@@ -312,20 +322,27 @@ describe('unsubscribe', () => {
       '/api/unsubscribe',
       { email: user.primaryEmail },
       {
-        headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+        headers: { authorization: `Bearer ${argv.adminAPIsecret}` },
       },
     );
-    process.env.ADMIN_API_SECRET =
-      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
 
+    if (argv.adminAPIsecret === 'testAdminAPIsecret') {
+      setArgv({
+        ...argv,
+        adminAPIsecret: '',
+      });
+    }
     expect(response.status).toBe(201);
     expect(response.data).toContain(user.primaryEmail);
   });
 
   it('should return 401 if the admin api secret is missing', async () => {
     // Unsetting the secret should result in 401 regardless of whether the correct secret is passed
-    const secret = process.env.ADMIN_API_SECRET;
-    process.env.ADMIN_API_SECRET = '';
+    const secret = argv.adminAPIsecret;
+    setArgv({
+      ...argv,
+      adminAPIsecret: '',
+    });
 
     const response = await request.post(
       '/api/unsubscribe',
@@ -335,13 +352,16 @@ describe('unsubscribe', () => {
       },
     );
     // Set to old value if the var was set initially
-    process.env.ADMIN_API_SECRET = secret;
+    setArgv({
+      ...argv,
+      adminAPIsecret: secret,
+    });
 
     expect(response.status).toBe(401);
   });
 
   it('should return 401 if the provided admin api secret is wrong', async () => {
-    const wrongSecret = `${process.env.ADMIN_API_SECRET} + wrong secret`;
+    const wrongSecret = `${argv.adminAPIsecret} + wrong secret`;
 
     const response = await request.post(
       '/api/unsubscribe',
@@ -355,19 +375,26 @@ describe('unsubscribe', () => {
   });
 
   it('should return 400 if the provided email does not match an existing user', async () => {
-    if (!process.env.ADMIN_API_SECRET) {
-      process.env.ADMIN_API_SECRET = 'testAdminAPIsecret';
+    if (!argv.adminAPIsecret) {
+      setArgv({
+        ...argv,
+        adminAPIsecret: 'testAdminAPIsecret',
+      });
     }
     const wrongEmail = 'wrongTestEmail';
     const response = await request.post(
       '/api/unsubscribe',
       { email: wrongEmail },
       {
-        headers: { authorization: `Bearer ${process.env.ADMIN_API_SECRET}` },
+        headers: { authorization: `Bearer ${argv.adminAPIsecret}` },
       },
     );
-    process.env.ADMIN_API_SECRET =
-      process.env.ADMIN_API_SECRET === 'testAdminAPIsecret' ? '' : process.env.ADMIN_API_SECRET;
+    if (argv.adminAPIsecret === 'testAdminAPIsecret') {
+      setArgv({
+        ...argv,
+        adminAPIsecret: '',
+      });
+    }
     expect(response.status).toBe(400);
   });
 });

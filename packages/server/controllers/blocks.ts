@@ -1,7 +1,7 @@
 import { handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { has, Permission } from '@appsemble/utils';
-import { badRequest, conflict, notFound } from '@hapi/boom';
+import { getAppBlocks, has, Permission } from '@appsemble/utils';
+import { badRequest, conflict, forbidden, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
@@ -12,6 +12,7 @@ import { DatabaseError, literal, QueryTypes, UniqueConstraintError } from 'seque
 import { parse } from 'yaml';
 
 import {
+  App,
   BlockAsset,
   BlockMessages,
   BlockVersion,
@@ -355,6 +356,55 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
 
   ctx.body = blockVersionToJson(version);
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
+}
+
+async function findBlockInApps(
+  blockName: string,
+  blockVersion: string,
+  organizationId: string,
+): Promise<boolean> {
+  const apps: App[] = await App.findAll({
+    attributes: ['definition'],
+  });
+  for (const app of apps) {
+    const blocks = getAppBlocks(app.definition);
+    const usedBlocks = blocks.some(
+      (block) => block.version === blockVersion && block.type === `@${organizationId}/${blockName}`,
+    );
+    if (usedBlocks) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export async function removeBlockVersion(ctx: Context): Promise<void> {
+  const {
+    pathParams: { blockId, blockVersion, organizationId },
+  } = ctx;
+  const version = await BlockVersion.findOne({
+    attributes: ['id'],
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+  });
+  if (!version) {
+    throw notFound('Block version not found.');
+  }
+
+  await checkRole(ctx, organizationId, Permission.DeleteBlocks);
+  const usedBlocks = await findBlockInApps(blockId, blockVersion, organizationId);
+  if (usedBlocks) {
+    throw forbidden('Cannot delete blocks that are used by apps.');
+  }
+
+  await BlockAsset.destroy({
+    where: { BlockVersionId: version.id },
+  });
+
+  await BlockMessages.destroy({
+    where: { BlockVersionId: version.id },
+  });
+  await version.destroy();
+  ctx.status = 204;
 }
 
 export async function getBlockVersions(ctx: Context): Promise<void> {

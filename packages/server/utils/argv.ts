@@ -340,6 +340,15 @@ export interface Argv {
    * @default 5
    */
   interval: number;
+
+  /**
+   * Used to authenticate the admin users e.g., for newsletter-related endpoints.
+   *
+   * If not set, related operations will return 401.
+   *
+   * @default undefined
+   */
+  adminAPIsecret: string;
 }
 
 const defaults: Argv = {
@@ -394,6 +403,7 @@ const defaults: Argv = {
   googleClientSecret: undefined,
   disableRegistration: false,
   remote: null,
+  adminAPIsecret: undefined,
 };
 
 export const argv = { ...defaults };
