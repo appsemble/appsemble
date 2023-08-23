@@ -30,36 +30,28 @@ export function BlockStoreElement({
 
   return (
     <Button
-      className={`card is-flex ${styles.root}`}
+      className={styles.root}
       draggable
       key={name}
       onDragStart={handleDragStart}
       title={block.description}
     >
       <header className="px-2 py-2 is-flex">
-        <figure className={`image is-64x64 ${styles.nogrow}`}>
-          {block.iconUrl ? (
-            <img alt={`${name} ${messages.blockLogo}`} draggable={false} src={block.iconUrl} />
-          ) : (
-            <Icon className={styles.iconFallback} icon="cubes" />
-          )}
-        </figure>
-        <div className={`pl-3 pr-1 ${styles.header} ${styles.ellipsis}`}>
-          <Title
-            className={`${styles.ellipsis} ${styles.title}`}
-            lang={defaultLocale}
-            level={6}
-            size={6}
-          >
+        <div className={`pl-1 pr-1 ${styles.header} ${styles.ellipsis}`}>
+          <Title className={styles.ellipsis} lang={defaultLocale} level={6} size={6}>
             {name}
           </Title>
+          <figure className={`${styles.centerFigure} image is-64x64`}>
+            {block.iconUrl ? (
+              <img alt={`${name} ${messages.blockLogo}`} draggable={false} src={block.iconUrl} />
+            ) : (
+              <Icon className={styles.iconFallback} icon="cubes" />
+            )}
+          </figure>
           <Subtitle className={styles.ellipsis} lang={defaultLocale} level={6} size={6}>
-            <div className={styles.linkColor}>{`@${org}`}</div>
+            <div className={styles.link}>{`@${org}`}</div>
           </Subtitle>
         </div>
-        <span className={`${styles.versionNr} has-text-grey ${styles.nogrow}`}>
-          {block.version}
-        </span>
       </header>
     </Button>
   );
