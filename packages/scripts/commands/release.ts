@@ -276,9 +276,11 @@ export async function handler({ increment }: Args): Promise<void> {
     ],
     { absolute: true, gitignore: true },
   );
-  const templateDir = 'packages/create-appsemble/templates';
-  const templates = await readdir(templateDir);
-  await Promise.all(templates.map((t) => updatePkg(join(process.cwd(), templateDir, t), version)));
+  const blockTemplateDir = 'packages/create-appsemble/templates/blocks';
+  const templates = await readdir(blockTemplateDir);
+  await Promise.all(
+    templates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), version)),
+  );
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);
