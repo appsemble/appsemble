@@ -2,7 +2,7 @@ import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { EmailAuthorization, Member, Organization, type User } from '../models/index.js';
-import { setArgv } from '../utils/argv.js';
+import { argv, setArgv, updateArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
@@ -248,5 +248,128 @@ describe('refreshToken', () => {
         statusCode: 401,
       },
     });
+  });
+});
+
+describe('getSubscribedUsers', () => {
+  it('should return a list of subscribed users', async () => {
+    // Secret needs to be set, otherwise the test returns 401 by default
+    if (!argv.adminApiSecret) {
+      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
+    }
+
+    user.subscribed = new Date();
+    user.save();
+
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+    });
+
+    // Reset secret to '' if it hasn't been set, or to its previous value if it was
+    if (argv.adminApiSecret === 'testAdminAPIsecret') {
+      updateArgv({ adminApiSecret: '' });
+    }
+
+    expect(response.status).toBe(200);
+    expect(
+      response.data.some((responseObj: any) =>
+        expect(responseObj).toStrictEqual({
+          email: user.primaryEmail,
+          name: user.name,
+          locale: user.locale,
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it('should return a 401 if admin API secret is not passed', async () => {
+    const response = await request.get('/api/subscribed');
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 401 if the provided admin api secret is wrong', async () => {
+    const wrongSecret = `${argv.adminApiSecret} + wrong secret`;
+
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${wrongSecret}` },
+    });
+
+    expect(response.status).toBe(401);
+  });
+});
+
+describe('unsubscribe', () => {
+  it('should unsubscribe a user already subscribed to the newsletter', async () => {
+    if (!argv.adminApiSecret) {
+      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
+    }
+
+    if (!user.subscribed) {
+      user.subscribed = new Date();
+      user.save();
+    }
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+      },
+    );
+
+    if (argv.adminApiSecret === 'testAdminAPIsecret') {
+      updateArgv({ adminApiSecret: '' });
+    }
+    expect(response.status).toBe(201);
+    expect(response.data).toContain(user.primaryEmail);
+  });
+
+  it('should return 401 if the admin api secret is missing', async () => {
+    // Unsetting the secret should result in 401 regardless of whether the correct secret is passed
+    const secret = argv.adminApiSecret;
+    updateArgv({ adminApiSecret: '' });
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${secret}` },
+      },
+    );
+    updateArgv({ adminApiSecret: secret });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 401 if the provided admin api secret is wrong', async () => {
+    const wrongSecret = `${argv.adminApiSecret} + wrong secret`;
+
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${wrongSecret}` },
+      },
+    );
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 400 if the provided email does not match an existing user', async () => {
+    if (!argv.adminApiSecret) {
+      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
+    }
+    const wrongEmail = 'wrongTestEmail';
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: wrongEmail },
+      {
+        headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+      },
+    );
+    if (argv.adminApiSecret === 'testAdminAPIsecret') {
+      updateArgv({ adminApiSecret: '' });
+    }
+    expect(response.status).toBe(400);
   });
 });

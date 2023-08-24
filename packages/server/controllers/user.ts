@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
-import { literal } from 'sequelize';
+import { literal, Op } from 'sequelize';
 
 import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
@@ -215,4 +215,53 @@ export function refreshToken(ctx: Context): void {
   }
 
   ctx.body = createJWTResponse(sub);
+}
+
+export async function getSubscribedUsers(ctx: Context): Promise<void> {
+  const {
+    request: {
+      headers: { authorization },
+    },
+  } = ctx;
+
+  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
+    throw unauthorized('Invalid or missing admin API secret');
+  }
+  const users = await User.findAll({
+    include: {
+      model: EmailAuthorization,
+      where: { verified: true },
+    },
+    where: { deleted: null, subscribed: { [Op.ne]: null } },
+  });
+  const res = users.map((user) => ({
+    email: user.primaryEmail,
+    name: user.name,
+    locale: user.locale,
+  }));
+
+  ctx.body = res;
+}
+
+export async function unsubscribe(ctx: Context): Promise<void> {
+  const {
+    request: {
+      body: { email },
+      headers: { authorization },
+    },
+  } = ctx;
+
+  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
+    throw unauthorized('Invalid or missing admin API secret');
+  }
+  const user = await User.findOne({ where: { primaryEmail: email } });
+  if (user.subscribed == null) {
+    ctx.body = 'User is already unsubscribed';
+    return;
+  }
+
+  user.subscribed = null;
+  await user.save();
+
+  ctx.body = `User with email ${user.primaryEmail} unsubscribed successfully`;
 }

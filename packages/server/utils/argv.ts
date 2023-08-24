@@ -340,6 +340,15 @@ export interface Argv {
    * @default 5
    */
   interval: number;
+
+  /**
+   * Used to authenticate the admin users e.g., for newsletter-related endpoints.
+   *
+   * If not set, related operations will return 401.
+   *
+   * @default undefined
+   */
+  adminApiSecret: string;
 }
 
 const defaults: Argv = {
@@ -394,6 +403,7 @@ const defaults: Argv = {
   googleClientSecret: undefined,
   disableRegistration: false,
   remote: null,
+  adminApiSecret: undefined,
 };
 
 export const argv = { ...defaults };
@@ -408,4 +418,16 @@ export const argv = { ...defaults };
  */
 export function setArgv(options: Partial<Argv>): Argv {
   return Object.assign(argv, defaults, options);
+}
+
+/**
+ * Update `only` provided argv properties.
+ *
+ * As opposed to `setArgv`, unspecified options will keep their current values.
+ *
+ * @param options The argument overrides to set.
+ * @returns The argv instance.
+ */
+export function updateArgv(options: Partial<Argv>): Argv {
+  return Object.assign(argv, options);
 }
