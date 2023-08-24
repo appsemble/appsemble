@@ -8,7 +8,7 @@ import { type Argv } from 'yargs';
 
 import pkg from '../package.json' assert { type: 'json' };
 
-const templateDir = new URL('../templates/', import.meta.url);
+const templateDir = new URL('../templates/blocks/', import.meta.url);
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
@@ -24,7 +24,7 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
 
   return yargs
     .option('organization', {
-      describe: 'The ID the block should be created for.',
+      describe: 'The ID of the organization block should be created for.',
     })
     .option('name', {
       describe: 'The name of the block',
