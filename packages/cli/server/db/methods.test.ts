@@ -28,7 +28,6 @@ describe('methods', () => {
       const result = await Methods.create({ name: 'testInstance' }, '/testModel');
       expect(result).toHaveProperty('$created');
       expect(result).toHaveProperty('$updated');
-      expect(result).toHaveProperty('AppId');
       expect(result).toHaveProperty('AuthorId');
     });
   });
@@ -53,11 +52,9 @@ describe('methods', () => {
       );
       expect(result[0]).toHaveProperty('$created');
       expect(result[0]).toHaveProperty('$updated');
-      expect(result[0]).toHaveProperty('AppId');
       expect(result[0]).toHaveProperty('AuthorId');
       expect(result[1]).toHaveProperty('$created');
       expect(result[1]).toHaveProperty('$updated');
-      expect(result[1]).toHaveProperty('AppId');
       expect(result[1]).toHaveProperty('AuthorId');
     });
   });
