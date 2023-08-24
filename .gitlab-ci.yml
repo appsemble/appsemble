@@ -1,5 +1,5 @@
 default:
-  image: node:18-bullseye-slim
+  image: node:18-bookworm-slim
 
 stages:
   - test
