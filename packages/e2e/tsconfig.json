@@ -2,6 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["dom"],
+    "rootDir": ".",
     "types": ["node"]
   }
 }

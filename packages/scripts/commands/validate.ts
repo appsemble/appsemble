@@ -226,14 +226,19 @@ async function validate(
       'tsconfig.json',
       'Only specifies "extends" and "compilerOptions" with "extends" first',
     );
+    assert(
+      tsConfig.compilerOptions?.rootDir === '.',
+      'tsconfig.json',
+      'compilerOptions.rootDir should be "."',
+    );
   }
 
   /**
-   * Validate vitest.config.ts exists
+   * Validate vitest.config.js exists
    */
   assert(
-    existsSync(join(dir, 'vitest.config.ts')),
-    'vitest.config.ts',
+    existsSync(join(dir, 'vitest.config.js')),
+    'vitest.config.js',
     'Projects should have a vitest configuration',
   );
 

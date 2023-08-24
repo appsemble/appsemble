@@ -1,19 +1,16 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { type UserProjectConfigExport } from 'vitest/config';
-
 /**
  * Generate a proper Vitest configuration based on a project context.
  *
- * @param meta The import module meta object.
- * @returns A vitest configuration for the project.
+ * @param {ImportMeta} meta The import module meta object.
+ * @returns {import('vitest/config').UserProjectConfigExport} A vitest configuration for the project.
  */
-export function createVitestConfig({ url }: ImportMeta): UserProjectConfigExport {
-  const readJSON = (path: string): Record<string, any> =>
-    JSON.parse(readFileSync(new URL(path, url)) as unknown as string);
-
-  const { compilerOptions: { lib = [] } = {} } = readJSON('tsconfig.json');
+export function createVitestConfig({ url }) {
+  const { compilerOptions: { lib = [] } = {} } = JSON.parse(
+    readFileSync(new URL('tsconfig.json', url)),
+  );
 
   const setupFilesAfterEnv = [];
 
