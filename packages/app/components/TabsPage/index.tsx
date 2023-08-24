@@ -68,7 +68,7 @@ export function TabsPage({
             <Route
               element={
                 <TabContent
-                  key={prefix}
+                  key={`${prefix}.tabs.${normalize(name)}`}
                   {...blockListProps}
                   blocks={blocks}
                   name={translatedName}
