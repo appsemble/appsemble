@@ -42,7 +42,7 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
   }, [fields, utils]);
 
   useEffect(() => {
-    events.on.data((d: Item | Item[], err) => {
+    const callback = (d: Item | Item[], err: string): void => {
       if (err) {
         setError(true);
       } else {
@@ -51,8 +51,10 @@ bootstrap(({ events, parameters: { fields }, ready, utils }) => {
         setError(false);
       }
       setLoading(false);
-    });
+    };
+    events.on.data(callback);
     ready();
+    return () => events.off.data(callback);
   }, [events, ready, utils]);
 
   if (loading) {

@@ -15,8 +15,7 @@ test.describe('Holidays', () => {
     visitApp('holidays');
   });
 
-  // eslint-disable-next-line playwright/no-skipped-test
-  test.skip('should navigate to the second tab', async ({ page }) => {
+  test('should navigate to the second tab', async ({ page }) => {
     await page.waitForSelector('text=Eerste Kerstdag');
     await page.click('text=Germany');
     await page.waitForSelector('text=Mariä Himmelfahrt');
