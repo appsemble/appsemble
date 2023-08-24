@@ -19,6 +19,12 @@ export async function getAppBlockStyles({
   const [, blockName] = parseBlockName(name);
   let style = '';
 
+  const themeDirPath = join(appPath, 'theme');
+
+  if (!existsSync(themeDirPath)) {
+    return [{ style }];
+  }
+
   await opendirSafe(join(appPath, 'theme'), async (themeDir, themeStat) => {
     const blockDir = join(themeDir, blockName);
     if (themeStat.name.startsWith('@') && existsSync(blockDir)) {
