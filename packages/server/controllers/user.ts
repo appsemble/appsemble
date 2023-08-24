@@ -224,7 +224,7 @@ export async function getSubscribedUsers(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  if (authorization !== `Bearer ${argv.adminAPIsecret}` || !argv.adminAPIsecret) {
+  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
     throw unauthorized('Invalid or missing admin API secret');
   }
   const users = await User.findAll({
@@ -251,7 +251,7 @@ export async function unsubscribe(ctx: Context): Promise<void> {
     },
   } = ctx;
 
-  if (authorization !== `Bearer ${argv.adminAPIsecret}` || !argv.adminAPIsecret) {
+  if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
     throw unauthorized('Invalid or missing admin API secret');
   }
   const user = await User.findOne({ where: { primaryEmail: email } });

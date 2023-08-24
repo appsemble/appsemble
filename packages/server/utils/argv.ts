@@ -348,7 +348,7 @@ export interface Argv {
    *
    * @default undefined
    */
-  adminAPIsecret: string;
+  adminApiSecret: string;
 }
 
 const defaults: Argv = {
@@ -403,7 +403,7 @@ const defaults: Argv = {
   googleClientSecret: undefined,
   disableRegistration: false,
   remote: null,
-  adminAPIsecret: undefined,
+  adminApiSecret: undefined,
 };
 
 export const argv = { ...defaults };
@@ -418,4 +418,16 @@ export const argv = { ...defaults };
  */
 export function setArgv(options: Partial<Argv>): Argv {
   return Object.assign(argv, defaults, options);
+}
+
+/**
+ * Update `only` provided argv properties.
+ *
+ * As opposed to `setArgv`, unspecified options will keep their current values.
+ *
+ * @param options The argument overrides to set.
+ * @returns The argv instance.
+ */
+export function updateArgv(options: Partial<Argv>): Argv {
+  return Object.assign(argv, options);
 }
