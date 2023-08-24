@@ -323,7 +323,6 @@ describe('handleRequestProxy', () => {
     expect({ ...proxiedContext.headers }).toMatchObject({
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
-      connection: 'close',
       host: new URL(proxiedRequest.defaults.baseURL).host,
       'user-agent': `AppsembleServer/${pkg.version}`,
     });

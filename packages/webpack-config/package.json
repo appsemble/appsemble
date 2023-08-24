@@ -54,7 +54,7 @@
     "@types/case-sensitive-paths-webpack-plugin": "^2.0.0"
   },
   "peerDependencies": {
-    "typescript": "^4"
+    "typescript": "^5"
   },
   "engines": {
     "node": ">=18"

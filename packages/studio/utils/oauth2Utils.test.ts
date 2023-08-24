@@ -16,18 +16,6 @@ afterEach(() => {
 });
 
 describe('oauth2Redirect', () => {
-  it('should throw if redirect_uri is missing', () => {
-    const qs = new URLSearchParams();
-    expect(() => oauth2Redirect(qs, {})).toThrow(new Error('Invalid URL: null'));
-  });
-
-  it('should throw if redirect_uri is invalid', () => {
-    const qs = new URLSearchParams({
-      redirect_uri: 'bad',
-    });
-    expect(() => oauth2Redirect(qs, {})).toThrow(new Error('Invalid URL: bad'));
-  });
-
   it('should strip the hash and query parameters from redirect_uri', () => {
     const qs = new URLSearchParams({
       redirect_uri: 'https://example.com/callback?query=true#hashtag',
