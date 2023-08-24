@@ -6,6 +6,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
+import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
 import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
@@ -28,6 +29,7 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
@@ -200,11 +202,12 @@ export default function EditPage(): ReactElement {
     [formatMessage, index, saveStack, unsaved],
   );
 
-  const updateAppPreview = useCallback(() => {
+  const updateAppPreview = useCallback(async () => {
     const definition = saveStack[index].toJS() as AppDefinition;
+    const blockManifests = await getCachedBlockVersions(getAppBlocks(definition));
     delete definition.anchors;
     frame.current?.contentWindow.postMessage(
-      { type: 'editor/gui/EDIT_SUCCESS', definition, coreStyle, sharedStyle },
+      { type: 'editor/EDIT_SUCCESS', definition, blockManifests, coreStyle, sharedStyle },
       getAppUrl(app.OrganizationId, app.path),
     );
   }, [app.OrganizationId, app.path, coreStyle, index, saveStack, sharedStyle]);
