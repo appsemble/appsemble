@@ -18,10 +18,8 @@ const operators = new Map([
 
 function renameOData(name: string): string {
   switch (name) {
-    case '$author':
+    case '$author/id':
       return 'AuthorId';
-    case 'id':
-      return name;
     default:
       return name;
   }
@@ -83,8 +81,17 @@ function parseOdataFilter(query: Token | string): WhereOptions {
   if (!query) {
     return {};
   }
-  const ast = typeof query === 'string' ? defaultParser.filter(query) : query;
-  return processLogicalExpression(ast);
+
+  if (typeof query === 'string') {
+    const renamedQuery = query
+      .split(' ')
+      .map((queryItem) => renameOData(queryItem))
+      .join(' ');
+    const ast = defaultParser.filter(renamedQuery);
+    return processLogicalExpression(ast);
+  }
+
+  return processLogicalExpression(query);
 }
 
 function parseOdataOrder(query: string): OrderItem[] {
@@ -99,10 +106,9 @@ function parseOdataOrder(query: string): OrderItem[] {
 }
 
 export function parseQuery({ $filter, $orderby }: ParseQueryParams): ParsedQuery {
-  return {
-    where: parseOdataFilter($filter),
-    order: parseOdataOrder(
-      $orderby ? $orderby.replaceAll(/(^|\B)\$author\/id(\b|$)/g, '$author') : undefined,
-    ),
-  };
+  const where = parseOdataFilter($filter);
+
+  const order = parseOdataOrder($orderby);
+
+  return { where, order };
 }

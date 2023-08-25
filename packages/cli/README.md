@@ -85,8 +85,8 @@ App assets will be served from the local file system.
 
 The development server will automatically fetch all blocks that are needed for the served app but
 are missing from the local workspaces. These are typically third-party or proprietary blocks. The
-development server will use `https://appsemble.app` as the default remote server to fetch blocks
-from. The following option allows you to specify a different remote server:
+development server will use `http://localhost:9999` as the default remote server to fetch blocks
+from. The following option allows you to specify a different remote (e.g. `https://appsemble.app`):
 
 ```sh
 appsemble serve <path-to-app-directory> --remote <remote>
