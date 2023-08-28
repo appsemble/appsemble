@@ -6,6 +6,7 @@ export const key = '0.22.0';
 /**
  * Summary:
  * - Add column `subscribed` to table `User`
+ * - Unsubscribe SSO users
  *
  * @param db The sequelize database.
  */
@@ -14,11 +15,10 @@ export async function up(db: Sequelize): Promise<void> {
 
   logger.warn('Adding subscribed column to the users table');
   await queryInterface.addColumn('User', 'subscribed', {
-    type: DataTypes.DATE,
-    allowNull: true,
-    defaultValue: null,
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
   });
-  logger.warn('Setting SSO users to a subscribed state');
+  logger.warn('Unsubscribing SSO users');
   await queryInterface.bulkUpdate(
     'User',
     { subscribed: new Date() },
