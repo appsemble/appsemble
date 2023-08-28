@@ -1,9 +1,7 @@
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { logger } from '@appsemble/node-utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
-import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
+import { bulmaVersion, faVersion, logger } from '@appsemble/node-utils';
 import CaseSensitivePathsPlugin from 'case-sensitive-paths-webpack-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import HtmlWebpackPlugin, { type MinifyOptions } from 'html-webpack-plugin';
@@ -87,8 +85,8 @@ function shared(env: string, { mode }: CliConfigOptions): Configuration {
       new HtmlWebpackPlugin({
         template: fileURLToPath(new URL('index.html', projectURL)),
         templateParameters: {
-          bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
-          faURL: `/fa/${faPkg.version}/css/all.min.css`,
+          bulmaURL: `/bulma/${bulmaVersion}/bulma.min.css`,
+          faURL: `/fa/${faVersion}/css/all.min.css`,
         },
         filename: 'index.html',
         minify,

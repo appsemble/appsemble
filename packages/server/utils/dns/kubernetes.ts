@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { Agent } from 'node:https';
 import { join } from 'node:path';
 
-import { logger } from '@appsemble/node-utils';
+import { logger, version } from '@appsemble/node-utils';
 import { type SSLStatusMap } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
@@ -11,7 +11,6 @@ import { matcher } from 'matcher';
 import { Op } from 'sequelize';
 
 import { App, Organization } from '../../models/index.js';
-import pkg from '../../package.json' assert { type: 'json' };
 import { argv } from '../argv.js';
 import { iterTable } from '../database.js';
 
@@ -267,7 +266,7 @@ async function createIngressFunction(): Promise<
               'app.kubernetes.io/managed-by': serviceName,
               'app.kubernetes.io/name': 'appsemble',
               'app.kubernetes.io/part-of': serviceName,
-              'app.kubernetes.io/version': pkg.version,
+              'app.kubernetes.io/version': version,
             },
             name,
           },
@@ -355,7 +354,7 @@ async function createSSLSecretFunction(): Promise<
           'app.kubernetes.io/managed-by': serviceName,
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': serviceName,
-          'app.kubernetes.io/version': pkg.version,
+          'app.kubernetes.io/version': version,
         },
         name,
       },

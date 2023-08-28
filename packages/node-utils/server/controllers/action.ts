@@ -1,4 +1,4 @@
-import { getRemapperContext, logger, type Options } from '@appsemble/node-utils';
+import { getRemapperContext, logger, type Options, version } from '@appsemble/node-utils';
 import {
   type ActionDefinition,
   type App,
@@ -13,7 +13,6 @@ import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
 import { EmailQuotaExceededError } from '../../EmailQuotaExceededError.js';
-import pkg from '../../package.json' assert { type: 'json' };
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -153,7 +152,7 @@ async function handleRequestProxy(
     axiosConfig.data = data;
   }
 
-  (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${pkg.version}`;
+  (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${version}`;
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
   axiosConfig.decompress = false;

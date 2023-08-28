@@ -1,7 +1,14 @@
 import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, join, parse } from 'node:path';
 
-import { getWorkspaces, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
+import {
+  getWorkspaces,
+  logger,
+  opendirSafe,
+  readData,
+  version,
+  writeData,
+} from '@appsemble/node-utils';
 import { type AppsembleMessages } from '@appsemble/types';
 import { formatISO } from 'date-fns';
 import fsExtra from 'fs-extra';
@@ -23,7 +30,6 @@ import {
   createRoot,
   dumpMarkdown,
 } from '../lib/mdast.js';
-import pkg from '../package.json' assert { type: 'json' };
 
 export const command = 'release <increment>';
 export const description = 'Prepare files for a new release.';
@@ -45,9 +51,9 @@ interface Changes {
  * Update `package.json` in a directory.
  *
  * @param dir The directory whose `package.json` to update.
- * @param version The new version to set.
+ * @param newVersion The new version to set.
  */
-async function updatePkg(dir: string, version: string): Promise<void> {
+async function updatePkg(dir: string, newVersion: string): Promise<void> {
   const filepath = join(dir, 'package.json');
   logger.info(`Updating ${filepath}`);
   const [pack] = await readData<PackageJson>(filepath);
@@ -60,13 +66,13 @@ async function updatePkg(dir: string, version: string): Promise<void> {
     mapValues(pack, (value, key) => {
       switch (key) {
         case 'version':
-          return version;
+          return newVersion;
         case 'dependencies':
         case 'devDependencies':
         case 'optionalDependencies':
         case 'peerDependencies':
           return mapValues(value as PackageJson.Dependency, (v, dep) =>
-            dep.startsWith('@appsemble/') ? version : v,
+            dep.startsWith('@appsemble/') ? newVersion : v,
           );
         default:
           return value;
@@ -79,9 +85,9 @@ async function updatePkg(dir: string, version: string): Promise<void> {
 /**
  * Update `publiccode.yml`.
  *
- * @param version The software version to set
+ * @param newVersion The software version to set
  */
-async function updatePublicCodeYml(version: string): Promise<void> {
+async function updatePublicCodeYml(newVersion: string): Promise<void> {
   const [publicCode] = await readData<any>('publiccode.yml');
   const i18nFiles = await readdir('i18n');
   const availableLanguages = i18nFiles.map((f) => parse(f).name).sort();
@@ -90,7 +96,7 @@ async function updatePublicCodeYml(version: string): Promise<void> {
     mapValues(publicCode, (value, key) => {
       switch (key) {
         case 'softwareVersion':
-          return version;
+          return newVersion;
         case 'releaseDate':
           return formatISO(new Date(), { representation: 'date' });
         case 'localisation':
@@ -177,12 +183,12 @@ async function getAllChanges(directories: string[]): Promise<Changes> {
   return result;
 }
 
-async function updateChangelog(changesByCategory: Changes, version: string): Promise<void> {
+async function updateChangelog(changesByCategory: Changes, newVersion: string): Promise<void> {
   const changelog = fromMarkdown(await readFile('CHANGELOG.md', 'utf8'));
   const changesSection = [
     createHeading(2, [
       '[',
-      createLink(`https://gitlab.com/appsemble/appsemble/-/releases/${version}`, [version]),
+      createLink(`https://gitlab.com/appsemble/appsemble/-/releases/${newVersion}`, [newVersion]),
       '] - ',
       formatISO(new Date(), { representation: 'date' }),
     ]),
@@ -203,7 +209,7 @@ async function updateChangelog(changesByCategory: Changes, version: string): Pro
   await writeFile('CHANGELOG.md', await dumpMarkdown(changelog, 'CHANGELOG.md'));
 }
 
-async function updateHelmChart(changes: Changes, version: string): Promise<void> {
+async function updateHelmChart(changes: Changes, newVersion: string): Promise<void> {
   const [chart] = await readData<any>('config/charts/appsemble/Chart.yaml');
   const changelog = stringify(
     Object.entries(changes).flatMap(([kind, entries]) =>
@@ -219,7 +225,7 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
       switch (key) {
         case 'appVersion':
         case 'version':
-          return version;
+          return newVersion;
         case 'annotations':
           return mapValues(value, (val, k) => (k === 'artifacthub.io/changes' ? changelog : val));
         default:
@@ -230,7 +236,7 @@ async function updateHelmChart(changes: Changes, version: string): Promise<void>
   );
 }
 
-async function updateAppTranslations(version: string): Promise<void> {
+async function updateAppTranslations(newVersion: string): Promise<void> {
   await opendirSafe('apps', (appDir) =>
     opendirSafe(join(appDir, 'i18n'), async (i18nFile) => {
       const [content] = await readData<AppsembleMessages>(i18nFile);
@@ -243,7 +249,7 @@ async function updateAppTranslations(version: string): Promise<void> {
         }
         const [[oldVersion, messages]] = Object.entries(versions);
         delete versions[oldVersion];
-        versions[version] = messages;
+        versions[newVersion] = messages;
       }
       await writeData(i18nFile, content);
     }),
@@ -259,9 +265,9 @@ export function builder(yargs: Argv): Argv<any> {
 
 export async function handler({ increment }: Args): Promise<void> {
   const workspaces = await getWorkspaces(process.cwd());
-  logger.info(`Old version: ${pkg.version}`);
-  const version = semver.inc(pkg.version, increment);
-  logger.info(`New version: ${version}`);
+  logger.info(`Old version: ${version}`);
+  const newVersion = semver.inc(version, increment);
+  logger.info(`New version: ${newVersion}`);
   const paths = await globby(
     [
       'apps/*/index.html',
@@ -279,18 +285,18 @@ export async function handler({ increment }: Args): Promise<void> {
   const blockTemplateDir = 'packages/create-appsemble/templates/blocks';
   const blocksTemplates = await readdir(blockTemplateDir);
   await Promise.all(
-    blocksTemplates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), version)),
+    blocksTemplates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), newVersion)),
   );
 
   const appsTemplateDir = 'packages/create-appsemble/templates/apps';
   const appsTemplates = await globby([`${appsTemplateDir}/*/app-definition.yaml`]);
-  await Promise.all(appsTemplates.map((t) => replaceFile(t, pkg.version, version)));
-  await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
-  await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
-  await updatePkg(process.cwd(), version);
-  await updatePublicCodeYml(version);
+  await Promise.all(appsTemplates.map((t) => replaceFile(t, version, newVersion)));
+  await Promise.all(paths.map((filepath) => replaceFile(filepath, version, newVersion)));
+  await Promise.all(workspaces.map((workspace) => updatePkg(workspace, newVersion)));
+  await updatePkg(process.cwd(), newVersion);
+  await updatePublicCodeYml(newVersion);
   const changes = await getAllChanges(workspaces);
-  await updateChangelog(changes, version);
-  await updateHelmChart(changes, version);
-  await updateAppTranslations(version);
+  await updateChangelog(changes, newVersion);
+  await updateHelmChart(changes, newVersion);
+  await updateAppTranslations(newVersion);
 }

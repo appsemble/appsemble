@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-import { configureLogger, handleError } from '@appsemble/node-utils';
+import { configureLogger, handleError, version } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
 import * as app from './commands/app.js';
 import * as block from './commands/block.js';
-import pkg from './package.json' assert { type: 'json' };
 
 yargs()
-  .version(pkg.version)
+  .version(version)
   .option('verbose', {
     alias: 'v',
     describe: 'Increase verbosity',

@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "resolveJsonModule": true,
     "rootDir": ".",
     "types": ["css-modules", "gtag.js", "vitest/globals", "webpack-env"]
   }

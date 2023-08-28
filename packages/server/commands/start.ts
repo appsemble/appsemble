@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 
-import { logger, readFileOrString } from '@appsemble/node-utils';
+import { logger, readFileOrString, version } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import { captureException } from '@sentry/node';
 import { type Context } from 'koa';
@@ -11,7 +11,6 @@ import { type Argv } from 'yargs';
 import { databaseBuilder } from './builder/database.js';
 import { migrations } from '../migrations/index.js';
 import { initDB } from '../models/index.js';
-import pkg from '../package.json' assert { type: 'json' };
 import { argv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { configureDNS } from '../utils/dns/index.js';
@@ -182,6 +181,6 @@ export async function handler({ webpackConfigs }: AdditionalArguments = {}): Pro
 
   httpServer.listen(argv.port || PORT, '::', () => {
     logger.info(asciiLogo);
-    logger.info(api(pkg.version, argv).info.description);
+    logger.info(api(version, argv).info.description);
   });
 }

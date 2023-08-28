@@ -1,12 +1,10 @@
 import { cp, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { logger, readData, writeData } from '@appsemble/node-utils';
+import { logger, readData, version, writeData } from '@appsemble/node-utils';
 import inquirer from 'inquirer';
 import { type PackageJson } from 'type-fest';
 import { type Argv } from 'yargs';
-
-import pkg from '../package.json' assert { type: 'json' };
 
 const templateDir = new URL('../templates/blocks/', import.meta.url);
 
@@ -67,7 +65,6 @@ export async function handler(args: BlockArgs): Promise<void> {
   const template = answers.template || args.template;
   const path = answers.path || args.path || join(process.cwd(), 'blocks');
 
-  const { version } = pkg;
   const outputPath = join(path, name);
   const inputPath = new URL(`${template}/`, templateDir);
   const pkgPath = new URL('package.json', inputPath);

@@ -79,7 +79,7 @@ export default function createWebpackConfig(
           options: {
             transpileOnly: true,
             configFile,
-            compilerOptions: { module: 'esnext', sourceMap: true },
+            compilerOptions: { sourceMap: true },
           },
         },
         {
