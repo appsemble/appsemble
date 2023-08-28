@@ -1,0 +1,3 @@
+/*
+ * Shared styling gets applied to each individual block, as well as the Appsemble core. This is useful for applying styles to elements that can appear in both the core modules and blocks such as input fields. It can also be used to apply CSS variables.
+ */

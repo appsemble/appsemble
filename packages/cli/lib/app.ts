@@ -7,7 +7,9 @@ import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appse
 import {
   type App,
   type AppDefinition,
+  type AppsembleContext,
   type AppsembleMessages,
+  type AppsembleRC,
   type AppVisibility,
   type Messages,
 } from '@appsemble/types';
@@ -21,7 +23,6 @@ import { coerceRemote } from './coercers.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
 import { createResource } from './resource.js';
-import { type AppsembleContext, type AppsembleRC } from '../types.js';
 
 interface CreateAppParams {
   /**

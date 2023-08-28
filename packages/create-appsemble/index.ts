@@ -2,6 +2,7 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
+import * as app from './commands/app.js';
 import * as block from './commands/block.js';
 import pkg from './package.json' assert { type: 'json' };
 
@@ -19,6 +20,7 @@ yargs()
   })
   .middleware([configureLogger])
   .command(block as unknown as CommandModule)
+  .command(app as unknown as CommandModule)
   .demandCommand(1)
   .fail(handleError)
   .help()
