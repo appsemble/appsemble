@@ -232,7 +232,7 @@ export async function getSubscribedUsers(ctx: Context): Promise<void> {
       model: EmailAuthorization,
       where: { verified: true },
     },
-    where: { deleted: null, subscribed: { [Op.ne]: null } },
+    where: { deleted: null, subscribed: { [Op.eq]: true } },
   });
   const res = users.map((user) => ({
     email: user.primaryEmail,
@@ -255,12 +255,12 @@ export async function unsubscribe(ctx: Context): Promise<void> {
     throw unauthorized('Invalid or missing admin API secret');
   }
   const user = await User.findOne({ where: { primaryEmail: email } });
-  if (user.subscribed == null) {
+  if (!user.subscribed) {
     ctx.body = 'User is already unsubscribed';
     return;
   }
 
-  user.subscribed = null;
+  user.subscribed = false;
   await user.save();
 
   ctx.body = `User with email ${user.primaryEmail} unsubscribed successfully`;

@@ -52,9 +52,10 @@ export class User extends Model {
   @Column(DataType.STRING)
   timezone: string;
 
-  @AllowNull(true)
-  @Column(DataType.DATE)
-  subscribed: Date;
+  @AllowNull(false)
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  subscribed: boolean;
 
   @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];

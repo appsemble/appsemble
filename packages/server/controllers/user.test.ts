@@ -1,7 +1,7 @@
 import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { EmailAuthorization, Member, Organization, type User } from '../models/index.js';
+import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
 import { argv, setArgv, updateArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -252,37 +252,71 @@ describe('refreshToken', () => {
 });
 
 describe('getSubscribedUsers', () => {
-  it('should return a list of subscribed users', async () => {
-    // Secret needs to be set, otherwise the test returns 401 by default
-    if (!argv.adminApiSecret) {
-      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
-    }
+  beforeEach(() => {
+    updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
+  });
 
-    user.subscribed = new Date();
+  it('should return a list of subscribed users', async () => {
+    const user2 = await createTestUser('user2@example.com');
+
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveLength(2);
+    expect(response.data).toStrictEqual([
+      {
+        email: user.primaryEmail,
+        name: user.name,
+        locale: user.locale,
+      },
+      {
+        email: user2.primaryEmail,
+        name: user2.name,
+        locale: user2.locale,
+      },
+    ]);
+  });
+
+  it('should not subscribe deleted users', async () => {
+    const deletedUser = await User.create({
+      deleted: new Date(),
+      password: null,
+      name: 'Test User',
+      primaryEmail: 'deleted@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+    deletedUser.EmailAuthorizations = [
+      await EmailAuthorization.create({
+        UserId: deletedUser.id,
+        email: 'deleted@example.com',
+        verified: true,
+      }),
+    ];
+    deletedUser.save();
+
+    user.subscribed = true;
     user.save();
 
     const response = await request.get('/api/subscribed', {
       headers: { authorization: `Bearer ${argv.adminApiSecret}` },
     });
 
-    // Reset secret to '' if it hasn't been set, or to its previous value if it was
-    if (argv.adminApiSecret === 'testAdminAPIsecret') {
-      updateArgv({ adminApiSecret: '' });
-    }
-
     expect(response.status).toBe(200);
-    expect(
-      response.data.some((responseObj: any) =>
-        expect(responseObj).toStrictEqual({
-          email: user.primaryEmail,
-          name: user.name,
-          locale: user.locale,
-        }),
-      ),
-    ).toBe(true);
+    expect(response.data).toHaveLength(1);
+    expect(response.data).toStrictEqual([
+      {
+        email: user.primaryEmail,
+        name: user.name,
+        locale: user.locale,
+      },
+    ]);
   });
 
   it('should return a 401 if admin API secret is not passed', async () => {
+    updateArgv({ adminApiSecret: '' });
+
     const response = await request.get('/api/subscribed');
     expect(response.status).toBe(401);
   });
@@ -299,16 +333,11 @@ describe('getSubscribedUsers', () => {
 });
 
 describe('unsubscribe', () => {
+  beforeEach(() => {
+    updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
+  });
+
   it('should unsubscribe a user already subscribed to the newsletter', async () => {
-    if (!argv.adminApiSecret) {
-      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
-    }
-
-    if (!user.subscribed) {
-      user.subscribed = new Date();
-      user.save();
-    }
-
     const response = await request.post(
       '/api/unsubscribe',
       { email: user.primaryEmail },
@@ -317,9 +346,6 @@ describe('unsubscribe', () => {
       },
     );
 
-    if (argv.adminApiSecret === 'testAdminAPIsecret') {
-      updateArgv({ adminApiSecret: '' });
-    }
     expect(response.status).toBe(201);
     expect(response.data).toContain(user.primaryEmail);
   });
@@ -336,7 +362,6 @@ describe('unsubscribe', () => {
         headers: { authorization: `Bearer ${secret}` },
       },
     );
-    updateArgv({ adminApiSecret: secret });
 
     expect(response.status).toBe(401);
   });
@@ -356,9 +381,6 @@ describe('unsubscribe', () => {
   });
 
   it('should return 400 if the provided email does not match an existing user', async () => {
-    if (!argv.adminApiSecret) {
-      updateArgv({ adminApiSecret: 'testAdminAPIsecret' });
-    }
     const wrongEmail = 'wrongTestEmail';
     const response = await request.post(
       '/api/unsubscribe',
@@ -367,9 +389,7 @@ describe('unsubscribe', () => {
         headers: { authorization: `Bearer ${argv.adminApiSecret}` },
       },
     );
-    if (argv.adminApiSecret === 'testAdminAPIsecret') {
-      updateArgv({ adminApiSecret: '' });
-    }
+
     expect(response.status).toBe(400);
   });
 });
