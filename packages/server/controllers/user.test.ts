@@ -279,13 +279,15 @@ describe('getSubscribedUsers', () => {
     ]);
   });
 
-  it('should not subscribe deleted users', async () => {
+  it('should not get deleted users who are subscribed', async () => {
     const deletedUser = await User.create({
       deleted: new Date(),
       password: null,
       name: 'Test User',
       primaryEmail: 'deleted@example.com',
       timezone: 'Europe/Amsterdam',
+      // Should not be required but just in case to be explicit
+      subscribed: true,
     });
     deletedUser.EmailAuthorizations = [
       await EmailAuthorization.create({
@@ -296,8 +298,29 @@ describe('getSubscribedUsers', () => {
     ];
     deletedUser.save();
 
-    user.subscribed = true;
-    user.save();
+    const response = await request.get('/api/subscribed', {
+      headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveLength(1);
+    expect(response.data).toStrictEqual([
+      {
+        email: user.primaryEmail,
+        name: user.name,
+        locale: user.locale,
+      },
+    ]);
+  });
+
+  it('should not subscribe SSO users', async () => {
+    await User.create({
+      deleted: new Date(),
+      password: null,
+      name: 'Test User',
+      primaryEmail: 'deleted@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
 
     const response = await request.get('/api/subscribed', {
       headers: { authorization: `Bearer ${argv.adminApiSecret}` },

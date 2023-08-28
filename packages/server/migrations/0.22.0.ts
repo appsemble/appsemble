@@ -6,7 +6,7 @@ export const key = '0.22.0';
 /**
  * Summary:
  * - Add column `subscribed` to table `User`
- * - Set `subscribed` property to `true` for non-deleted users
+ * - Unsubscribe SSO users
  *
  * @param db The sequelize database.
  */
@@ -16,10 +16,14 @@ export async function up(db: Sequelize): Promise<void> {
   logger.warn('Adding subscribed column to the users table');
   await queryInterface.addColumn('User', 'subscribed', {
     type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    defaultValue: true,
   });
-  logger.warn('Setting SSO users to a subscribed state');
-  await queryInterface.bulkUpdate('User', { subscribed: true }, { deleted: null });
+  logger.warn('Unsubscribing SSO users');
+  await queryInterface.bulkUpdate(
+    'User',
+    { subscribed: new Date() },
+    { password: null, deleted: null },
+  );
 }
 
 /**
