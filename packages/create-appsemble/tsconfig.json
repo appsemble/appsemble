@@ -2,6 +2,9 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "rootDir": ".",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "null",
     "types": ["vitest/globals", "node"]
   }
 }

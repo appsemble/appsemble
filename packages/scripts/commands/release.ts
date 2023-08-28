@@ -277,10 +277,14 @@ export async function handler({ increment }: Args): Promise<void> {
     { absolute: true, gitignore: true },
   );
   const blockTemplateDir = 'packages/create-appsemble/templates/blocks';
-  const templates = await readdir(blockTemplateDir);
+  const blocksTemplates = await readdir(blockTemplateDir);
   await Promise.all(
-    templates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), version)),
+    blocksTemplates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), version)),
   );
+
+  const appsTemplateDir = 'packages/create-appsemble/templates/apps';
+  const appsTemplates = await globby([`${appsTemplateDir}/*/app-definition.yaml`]);
+  await Promise.all(appsTemplates.map((t) => replaceFile(t, pkg.version, version)));
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);
