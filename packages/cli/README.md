@@ -154,11 +154,31 @@ For a more in depth explanation of how to build apps, use our
 
 ### Blocks
 
-The Appsemble CLI can be used to publish Appsemble blocks. For example, to publish all blocks in the
-`blocks` directory, run:
+The Appsemble CLI can be used to publish and delete (although we don’t recommend doing it in
+production) Appsemble blocks. For example, to publish all blocks in the `blocks` directory, run:
 
 ```sh
 appsemble block publish blocks/*
+```
+
+or to publish a single block located in some other directory, run
+
+```sh
+appsemble block publish path/to/block/directory
+```
+
+Blocks can be deleted if they are not in use by any apps. To delete a block, run
+
+```sh
+appsemble block delete <block-name:block-version>
+```
+
+Organization id can be passed as an argument(default for which is “appsemble”).
+
+To know more about the block related commands, run
+
+```sh
+appsemble block --help
 ```
 
 Building blocks uses
