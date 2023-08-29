@@ -599,9 +599,9 @@ provision review:
       --icon packages/server/assets/appsemble.png
       --name Appsemble
       --website https://appsemble.com
-    - yarn create-appsemble block --organization appsemble --template vanilla --name template-vanilla
-    - yarn create-appsemble block --organization appsemble --template preact --name template-preact
-    - yarn create-appsemble block --organization appsemble --template mini-jsx --name template-mini-jsx
+    - yarn create-appsemble block --organization appsemble --template vanilla --name template-vanilla --path blocks
+    - yarn create-appsemble block --organization appsemble --template preact --name template-preact --path blocks
+    - yarn create-appsemble block --organization appsemble --template mini-jsx --name template-mini-jsx --path blocks
     - yarn appsemble -vv block publish blocks/*
     - yarn appsemble -vv app create apps/* --resources --modify-context
     - yarn appsemble -vv asset create --app apps/soundboard apps/soundboard/assets/*
