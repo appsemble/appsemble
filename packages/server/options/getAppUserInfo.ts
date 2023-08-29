@@ -16,6 +16,7 @@ export async function getAppUserInfo({ client, user }: GetAppUserInfoParams): Pr
         'emailVerified',
         'name',
         'updated',
+        'properties',
       ],
       where: { UserId: user.id, AppId: client.app.id },
       include: [User],
@@ -43,6 +44,7 @@ export async function getAppUserInfo({ client, user }: GetAppUserInfoParams): Pr
       sub: user.id,
       locale: appMember.User.locale,
       zoneinfo: appMember.User.timezone,
+      properties: appMember.properties ?? {},
     };
   }
   await (user as User).reload({
