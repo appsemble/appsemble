@@ -17,6 +17,10 @@ export const messages = defineMessages({
     id: 'studio.jNtX+C',
     defaultMessage: 'The permission to delete apps.',
   },
+  DeleteOrganization: {
+    id: 'studio.gXv9ZK',
+    defaultMessage: 'The permission to delete an organization.',
+  },
   EditAppMessages: {
     id: 'studio.773Bdo',
     defaultMessage: 'The permission to edit the app’s translations.',
@@ -61,6 +65,10 @@ export const messages = defineMessages({
   PublishBlocks: {
     id: 'studio.Z8Fm9O',
     defaultMessage: 'The permission to publish blocks for an organization.',
+  },
+  DeleteBlocks: {
+    id: 'studio.wz8voK',
+    defaultMessage: 'The permission to delete block versions.',
   },
   PushNotifications: {
     id: 'studio.+7+1T0',
