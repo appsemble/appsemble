@@ -16,6 +16,7 @@ export const description = 'Bootstrap a new Appsemble block.';
 interface BlockArgs {
   organization?: string;
   name?: string;
+  path?: string;
   template?: string;
 }
 
@@ -29,6 +30,9 @@ export async function builder(yargs: Argv): Promise<Argv<any>> {
     .option('name', {
       describe: 'The name of the block',
     })
+    .option('path', {
+      describe: 'Path of the folder where you want to put your block.',
+    })
     .option('template', {
       describe: 'The template to use.',
       choices,
@@ -41,9 +45,14 @@ export async function handler(args: BlockArgs): Promise<void> {
     [
       !args.organization && {
         name: 'organization',
-        message: 'For which organization is the block?',
+        message: 'For which organization is the block? (default "appsemble")',
       },
       !args.name && { name: 'name', message: 'What should be the name of the block?' },
+      !args.path && {
+        name: 'path',
+        message:
+          'Please enter the path for where you want the block folder to go (default "blocks").',
+      },
       !args.template && {
         name: 'template',
         type: 'list',
@@ -53,12 +62,13 @@ export async function handler(args: BlockArgs): Promise<void> {
     ].filter(Boolean),
   );
 
-  const organization = answers.organization || args.organization;
+  const organization = answers.organization || args.organization || 'appsemble';
   const name = answers.name || args.name;
   const template = answers.template || args.template;
+  const path = answers.path || args.path || join(process.cwd(), 'blocks');
 
   const { version } = pkg;
-  const outputPath = join(process.cwd(), 'blocks', name);
+  const outputPath = join(path, name);
   const inputPath = new URL(`${template}/`, templateDir);
   const pkgPath = new URL('package.json', inputPath);
   const [inputPkg] = await readData<PackageJson>(pkgPath);
