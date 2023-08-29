@@ -32,8 +32,7 @@
   "files": [
     "**/*.d.ts",
     "**/*.js",
-    "!*.config.js",
-    "templates"
+    "!*.config.js"
   ],
   "scripts": {
     "prepack": "tsc --noEmit false",

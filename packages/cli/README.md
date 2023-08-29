@@ -136,11 +136,19 @@ appsemble organization create my-organization --name 'My Organization' --icon ic
 
 ### Apps
 
+The Appsemble CLI allows you to bootstrap an Appsemble app into a standard Appsemble project layout.
+The command is followed by a series of interactive questions. You can also pass the values as
+arguments.
+
+```sh
+appsemble app create
+```
+
 The Appsemble CLI can be used to create and update apps. For example, to create an app in the
 `apps/my-app` directory, run:
 
 ```sh
-appsemble app create apps/my-app
+appsemble app publish apps/my-app
 ```
 
 Similarly, to update an app using an app directory, run the following command:
@@ -154,7 +162,14 @@ For a more in depth explanation of how to build apps, use our
 
 ### Blocks
 
-The Appsemble CLI can be used to publish and delete (although we don’t recommend doing it in
+The Appsemble CLI allows you to bootstrap an Appsemble block into a standard Appsemble project
+layout. The command is followed by a series of interactive questions.
+
+```sh
+appsemble block create
+```
+
+The Appsemble CLI can also be used to publish and delete (although we don’t recommend doing it in
 production) Appsemble blocks. For example, to publish all blocks in the `blocks` directory, run:
 
 ```sh

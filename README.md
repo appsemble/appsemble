@@ -150,7 +150,7 @@ as a starting point must be marked as templates. This can be done using the Apps
 logging in. To publish these apps, run the following command.
 
 ```sh
-yarn appsemble app create --context development apps/*
+yarn appsemble app publish --context development apps/*
 ```
 
 The published apps will be displayed on the `App store` page.

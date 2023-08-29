@@ -25,7 +25,7 @@ Next, publish the existing blocks following the instructions from the
 A new block can be bootstrapped by running the following command.
 
 ```sh copy
-yarn create-appsemble block
+yarn appsemble block create
 ```
 
 This will prompt some questions about the new block. In the final prompt, you will be prompted to
@@ -307,7 +307,8 @@ Also have a look at the npm packages we publish.
 - [`@appsemble/sdk`](/docs/packages/sdk) — Build your own blocks.
 - [`@appsemble/webpack-config`](/docs/packages/webpack-config) — An opinionated reusable Webpack
   configuration for block development.
-- [`create-appsemble`](/docs/packages/create-appsemble) — Bootstrap an Appsemble block.
+- [`create-appsemble`](/docs/packages/create-appsemble) — Bootstrap an Appsemble project (coming
+  soon).
 
 [bulma]: https://bulma.io
 [font awesome]: https://fontawesome.com

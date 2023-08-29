@@ -84,7 +84,7 @@ environment on your local machine.
    `yarn appsemble block publish blocks/{block name}`
 
 7. Upload the new app to your local environment with
-   `yarn appsemble app create --context development apps/{app name}`
+   `yarn appsemble app publish --context development apps/{app name}`
 
 # Common problems
 
