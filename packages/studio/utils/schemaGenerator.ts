@@ -48,7 +48,7 @@ export const generateData = (
     return schema.enum[0];
   }
   if (schema.format === 'remapper') {
-    return ownerKey;
+    return schema.default ?? ownerKey;
   }
   if (schema.type === 'array') {
     const firstArray = Array.from({ length: schema.minItems }, (empty, index) =>
@@ -70,13 +70,13 @@ export const generateData = (
     if (schema.const) {
       return schema.const;
     }
-    return '';
+    return schema.default ?? '';
   }
   if (schema.type === 'number') {
-    return 0;
+    return schema.default ?? 0;
   }
   if (schema.type === 'boolean') {
-    return true;
+    return schema.default ?? false;
   }
   if (schema.type === 'object') {
     return mapValues(schema.properties || {}, generateData);
