@@ -30,6 +30,8 @@ import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
+// This import is required to prevent the 'unexpected usage' bug.
+import '../../../../components/MonacoEditor/custom.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
