@@ -1,1 +1,1 @@
-Support showing bullet point lists of fields.
+Add bullet point list support.
