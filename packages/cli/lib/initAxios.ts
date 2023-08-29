@@ -1,7 +1,6 @@
-import { configureAxios, logger } from '@appsemble/node-utils';
+import { configureAxios, logger, version } from '@appsemble/node-utils';
 import axios from 'axios';
 
-import pkg from '../package.json' assert { type: 'json' };
 import { type BaseArguments } from '../types.js';
 
 /**
@@ -12,5 +11,5 @@ import { type BaseArguments } from '../types.js';
 export function initAxios({ remote }: BaseArguments): void {
   axios.defaults.baseURL = remote;
   logger.verbose(`Request remote set to ${remote}`);
-  configureAxios('AppsembleCLI', pkg.version);
+  configureAxios('AppsembleCLI', version);
 }

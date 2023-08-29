@@ -1,11 +1,11 @@
 import { Agent } from 'node:https';
 
+import { version } from '@appsemble/node-utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
 
 import { App, Organization } from '../../models/index.js';
-import pkg from '../../package.json' assert { type: 'json' };
 import { setArgv } from '../argv.js';
 import { useTestDatabase } from '../test/testSchema.js';
 
@@ -65,7 +65,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': pkg.version,
+          'app.kubernetes.io/version': version,
         },
         name: 'testorg-host-example',
       },
@@ -128,7 +128,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': pkg.version,
+          'app.kubernetes.io/version': version,
         },
         name: 'example-com',
       },
@@ -207,7 +207,7 @@ describe('configureDNS', () => {
           'app.kubernetes.io/managed-by': 'review-service',
           'app.kubernetes.io/name': 'appsemble',
           'app.kubernetes.io/part-of': 'review-service',
-          'app.kubernetes.io/version': pkg.version,
+          'app.kubernetes.io/version': version,
         },
         name: 'foo-host-example',
       },
@@ -300,7 +300,7 @@ describe('restoreDNS', () => {
             'app.kubernetes.io/managed-by': 'review-service',
             'app.kubernetes.io/name': 'appsemble',
             'app.kubernetes.io/part-of': 'review-service',
-            'app.kubernetes.io/version': pkg.version,
+            'app.kubernetes.io/version': version,
           },
           name: 'test-host-example',
         },
@@ -332,7 +332,7 @@ describe('restoreDNS', () => {
             'app.kubernetes.io/managed-by': 'review-service',
             'app.kubernetes.io/name': 'appsemble',
             'app.kubernetes.io/part-of': 'review-service',
-            'app.kubernetes.io/version': pkg.version,
+            'app.kubernetes.io/version': version,
           },
           name: 'app-example',
         },

@@ -1,5 +1,6 @@
 import { gzipSync } from 'node:zlib';
 
+import { version } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -14,7 +15,6 @@ import {
   Organization,
   type User,
 } from '../models/index.js';
-import pkg from '../package.json' assert { type: 'json' };
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
@@ -195,7 +195,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -217,7 +217,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -239,7 +239,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -261,7 +261,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -283,7 +283,7 @@ describe('handleRequestProxy', () => {
       'content-length': '2',
       'content-type': 'application/json',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -324,7 +324,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
     expect(proxiedContext.path).toBe('/');
   });
@@ -415,7 +415,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -460,7 +460,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -507,7 +507,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -563,7 +563,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -618,7 +618,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -684,7 +684,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -748,7 +748,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -807,7 +807,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -852,7 +852,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -907,7 +907,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -952,7 +952,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -1007,7 +1007,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -1054,7 +1054,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -1110,7 +1110,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 
@@ -1185,7 +1185,7 @@ describe('handleRequestProxy', () => {
       accept: 'application/json, text/plain, */*',
       'accept-encoding': 'gzip, compress, deflate, br',
       host: new URL(proxiedRequest.defaults.baseURL).host,
-      'user-agent': `AppsembleServer/${pkg.version}`,
+      'user-agent': `AppsembleServer/${version}`,
     });
   });
 });

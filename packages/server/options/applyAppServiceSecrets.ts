@@ -1,13 +1,12 @@
 import https from 'node:https';
 
-import { type ApplyAppServiceSecretsParams, basicAuth } from '@appsemble/node-utils';
+import { type ApplyAppServiceSecretsParams, basicAuth, version } from '@appsemble/node-utils';
 import { checkAppRole } from '@appsemble/utils';
 import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context } from 'koa';
 import { isMatch } from 'matcher';
 
 import { App, AppMember, AppServiceSecret, Organization } from '../models/index.js';
-import pkg from '../package.json' assert { type: 'json' };
 import { argv } from '../utils/argv.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
 
@@ -151,7 +150,7 @@ export async function applyAppServiceSecrets({
               grant_type: 'client_credentials',
             },
             headers: {
-              'user-agent': `AppsembleServer/${pkg.version}`,
+              'user-agent': `AppsembleServer/${version}`,
               'content-type': 'application/x-www-form-urlencoded',
               Authorization: basicAuth(serviceSecret.identifier, decryptedSecret),
             },

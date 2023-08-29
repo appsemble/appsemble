@@ -1,9 +1,8 @@
 import { createRequire } from 'node:module';
 import { dirname } from 'node:path';
 
-import { type Options, tinyRouter } from '@appsemble/node-utils';
+import { faVersion, type Options, tinyRouter } from '@appsemble/node-utils';
 import { noop, partialNormalized, partialSemver } from '@appsemble/utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
 import { type Middleware } from 'koa';
 import mount from 'koa-mount';
 import serve from 'koa-static';
@@ -59,7 +58,7 @@ export function createAppRouter(options: Options): Middleware {
     {
       route: /^\/fa\//,
       get: mount(
-        `/fa/${faPkg.version}`,
+        `/fa/${faVersion}`,
         serve(dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
       ),
     },

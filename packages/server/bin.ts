@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
+import { configureAxios, configureLogger, handleError, version } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
 import * as cleanup from './commands/cleanup.js';
@@ -9,18 +9,17 @@ import * as migrate from './commands/migrate.js';
 import * as restore from './commands/restore.js';
 import * as runCronJobs from './commands/runCronJobs.js';
 import * as start from './commands/start.js';
-import pkg from './package.json' assert { type: 'json' };
 import './types.js';
 import { setArgv } from './utils/argv.js';
 import { configureSentry } from './utils/sentry.js';
 
 process.title = 'appsemble';
 
-configureAxios('AppsembleServer', pkg.version);
+configureAxios('AppsembleServer', version);
 
 const parser = yargs()
   .usage('Usage:\n  $0 [command]')
-  .version(pkg.version)
+  .version(version)
   .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
   .option('verbose', {
     alias: 'v',

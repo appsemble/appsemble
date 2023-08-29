@@ -1,4 +1,4 @@
-import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
+import bulmaPkg from 'bulma/package.json';
 
 import { createThemeURL, mergeThemes } from './theme.js';
 

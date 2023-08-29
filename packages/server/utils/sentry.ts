@@ -1,8 +1,8 @@
+import { version } from '@appsemble/node-utils';
 import { init } from '@sentry/node';
 import { matcher } from 'matcher';
 
 import { argv } from './argv.js';
-import pkg from '../package.json' assert { type: 'json' };
 
 interface SentrySettings {
   /**
@@ -64,6 +64,6 @@ export function getSentryClientSettings(
  */
 export function configureSentry(): void {
   if (argv.sentryDsn) {
-    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: pkg.version });
+    init({ dsn: argv.sentryDsn, environment: argv.sentryEnvironment, release: version });
   }
 }

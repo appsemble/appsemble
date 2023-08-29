@@ -1,7 +1,7 @@
+import { version } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { serverImport } from '../lib/serverImport.js';
-import pkg from '../package.json' assert { type: 'json' };
 import { type BaseArguments } from '../types.js';
 
 export const command = 'migrate [migrate-to]';
@@ -11,7 +11,7 @@ export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('migrate-to', {
       desc: 'The database version to migrate to.',
-      default: pkg.version,
+      default: version,
     })
     .option('database-host', {
       desc: 'The host of the database to connect to. This defaults to the connected database container.',

@@ -1,16 +1,15 @@
 import { randomBytes } from 'node:crypto';
 
 import { createThemeURL, defaultLocale, getAppBlocks, mergeThemes } from '@appsemble/utils';
-import faPkg from '@fortawesome/fontawesome-free/package.json' assert { type: 'json' };
-import bulmaPkg from 'bulma/package.json' assert { type: 'json' };
 import { type Context, type Middleware } from 'koa';
 
 import { organizationBlocklist } from '../../../organizationBlocklist.js';
 import { makeCSP, render } from '../../../render.js';
+import { bulmaVersion, faVersion } from '../../../versions.cjs';
 import { type Options } from '../../types.js';
 
-export const bulmaURL = `/bulma/${bulmaPkg.version}/bulma.min.css`;
-export const faURL = `/fa/${faPkg.version}/css/all.min.css`;
+export const bulmaURL = `/bulma/${bulmaVersion}/bulma.min.css`;
+export const faURL = `/fa/${faVersion}/css/all.min.css`;
 
 export function createIndexHandler({
   createSettings,

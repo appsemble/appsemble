@@ -12,6 +12,7 @@ import {
   type SecurityOptions,
   serializer,
   type UtilsUser,
+  version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
@@ -32,7 +33,6 @@ import { authentication } from './authentication.js';
 import { Mailer } from './email/Mailer.js';
 import * as controllers from '../controllers/index.js';
 import { appMapper } from '../middleware/appMapper.js';
-import pkg from '../package.json' assert { type: 'json' };
 import { appRouter, studioRouter } from '../routes/index.js';
 
 export interface AuthenticationCheckers {
@@ -87,7 +87,7 @@ export async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        koas(api(pkg.version, argv), [
+        koas(api(version, argv), [
           specHandler(),
           swaggerUI({ url: '/api-explorer' }),
           security(authentication() as SecurityOptions),

@@ -6,6 +6,7 @@ import {
   loggerMiddleware,
   parameters,
   serializer,
+  version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
 import { notFound } from '@hapi/boom';
@@ -19,7 +20,6 @@ import { operations } from 'koas-operations';
 import { statusCode } from 'koas-status-code';
 import { type Configuration } from 'webpack';
 
-import pkg from '../package.json' assert { type: 'json' };
 import { argv } from '../server/argv.js';
 import * as controllers from '../server/controllers/index.js';
 import { appRouter } from '../server/routes/appRouter/index.js';
@@ -77,7 +77,7 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
   app.use(
     compose([
       conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-      koas(api(pkg.version, argv), [
+      koas(api(version, argv), [
         parameters(),
         bodyParser(),
         serializer(),

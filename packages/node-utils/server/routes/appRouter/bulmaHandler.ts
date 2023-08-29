@@ -1,9 +1,8 @@
 import { createRequire } from 'node:module';
 
-import { logger, type Options } from '@appsemble/node-utils';
+import { bulmaVersion, logger, type Options } from '@appsemble/node-utils';
 import { type Theme as ThemeType } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
-import bulma from 'bulma/package.json' assert { type: 'json' };
 import { type Context, type Middleware } from 'koa';
 import { renderSync } from 'sass';
 import stripBom from 'strip-bom';
@@ -95,7 +94,7 @@ export function createBulmaHandler({ createTheme, getTheme }: Options): Middlewa
       fontFamily: string;
       fontSource: string;
     } = {
-      bulmaVersion: bulma.version,
+      bulmaVersion,
       primaryColor: (getQueryParameter(query.primaryColor) || baseTheme.primaryColor).toLowerCase(),
       linkColor: (getQueryParameter(query.linkColor) || baseTheme.linkColor).toLowerCase(),
       successColor: (getQueryParameter(query.successColor) || baseTheme.successColor).toLowerCase(),

@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "isolatedModules": true,
     "lib": ["esnext"],
-    "module": "esnext",
+    "module": "nodenext",
     "moduleDetection": "force",
-    "moduleResolution": "node16",
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
