@@ -22,7 +22,7 @@ import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
-import { createResource } from './resource.js';
+import { publishResource } from './resource.js';
 
 interface PublishAppParams {
   /**
@@ -734,7 +734,7 @@ export async function publishApp({
         for (const resource of resourceFiles) {
           if (resource.isFile()) {
             const { name } = parse(resource.name);
-            await createResource({
+            await publishResource({
               appId: data.id,
               path: join(resourcePath, resource.name),
               remote,
@@ -746,7 +746,7 @@ export async function publishApp({
             });
 
             for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-              await createResource({
+              await publishResource({
                 appId: data.id,
                 path: join(resourcePath, resource.name, subResource.name),
                 remote,

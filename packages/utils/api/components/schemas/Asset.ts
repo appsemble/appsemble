@@ -4,7 +4,7 @@ import { normalized } from '../../../constants/index.js';
 
 export const Asset: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
-  description: 'The response object of an asset create call.',
+  description: 'The response object of an asset publish call.',
   additionalProperties: false,
   properties: {
     id: {

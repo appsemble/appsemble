@@ -6,11 +6,11 @@ import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app.js';
-import { createAsset } from '../../lib/asset.js';
+import { publishAsset } from '../../lib/asset.js';
 import { authenticate } from '../../lib/authentication.js';
 import { type BaseArguments } from '../../types.js';
 
-interface CreateAssetArguments extends BaseArguments {
+interface PublishAssetArguments extends BaseArguments {
   name: string;
   useFileName: boolean;
   paths: string[];
@@ -19,13 +19,13 @@ interface CreateAssetArguments extends BaseArguments {
   app: string;
 }
 
-export const command = 'create <paths...>';
-export const description = 'Create assets for an existing app.';
+export const command = 'publish <paths...>';
+export const description = 'Publish assets for an existing app.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('paths', {
-      describe: 'The path to the resources to create',
+      describe: 'The path to the resources to publish',
       normalize: true,
       demandOption: true,
     })
@@ -40,7 +40,7 @@ export function builder(yargs: Argv): Argv<any> {
       default: true,
     })
     .option('app-id', {
-      describe: 'The ID of the app to create the resources for.',
+      describe: 'The ID of the app to publish the resources for.',
       type: 'number',
     })
     .option('app', {
@@ -60,7 +60,7 @@ export async function handler({
   paths,
   remote,
   useFileName,
-}: CreateAssetArguments): Promise<void> {
+}: PublishAssetArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
   await authenticate(resolvedRemote, 'assets:write', clientCredentials);
 
@@ -71,10 +71,10 @@ export async function handler({
     throw new AppsembleError('--name was specified but multiple files were found.');
   }
 
-  logger.info(`Creating ${files.length} asset(s)`);
+  logger.info(`Publishing ${files.length} asset(s)`);
   for (const path of files) {
     logger.info('');
-    await createAsset({
+    await publishAsset({
       name: name || (useFileName ? parse(path).name : null),
       appId: resolvedAppId,
       path,

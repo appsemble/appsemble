@@ -5,7 +5,7 @@ import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-interface CreateAssetParams {
+interface PublishAssetParams {
   /**
    * The name of the asset being uploaded.
    * This must be a unique name for the app. If left empty, the ID is used instead.
@@ -18,17 +18,22 @@ interface CreateAssetParams {
   path: string;
 
   /**
-   * The ID of the app to create a resource entry for.
+   * The ID of the app to publish a resource entry for.
    */
   appId: number;
 
   /**
-   * The remote server to create the app on.
+   * The remote server to publish the asset on.
    */
   remote: string;
 }
 
-export async function createAsset({ appId, name, path, remote }: CreateAssetParams): Promise<void> {
+export async function publishAsset({
+  appId,
+  name,
+  path,
+  remote,
+}: PublishAssetParams): Promise<void> {
   const formData = new FormData();
   const file = createReadStream(path);
   formData.append('file', file);
@@ -39,5 +44,5 @@ export async function createAsset({ appId, name, path, remote }: CreateAssetPara
   const {
     data: { id },
   } = await axios.post<{ id: string }>(`/api/apps/${appId}/assets`, formData, { baseURL: remote });
-  logger.info(`Created asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
+  logger.info(`Published asset ${id}${name ? ` with name ${normalize(name)}` : ''}`);
 }

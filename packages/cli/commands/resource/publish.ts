@@ -5,10 +5,10 @@ import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app.js';
 import { authenticate } from '../../lib/authentication.js';
-import { createResource } from '../../lib/resource.js';
+import { publishResource } from '../../lib/resource.js';
 import { type BaseArguments } from '../../types.js';
 
-interface CreateResourceArguments extends BaseArguments {
+interface PublishResourceArguments extends BaseArguments {
   resourceName: string;
   paths: string[];
   appId: number;
@@ -16,22 +16,22 @@ interface CreateResourceArguments extends BaseArguments {
   app: string;
 }
 
-export const command = 'create <resource-name> <paths...>';
-export const description = 'Create resources based on a specified JSON file or directory.';
+export const command = 'publish <resource-name> <paths...>';
+export const description = 'Publish resources based on a specified JSON file or directory.';
 
 export function builder(yargs: Argv): Argv<any> {
   return yargs
     .positional('resource-name', {
-      describe: 'The name of the resource that should be created.',
+      describe: 'The name of the resource that should be published.',
       demandOption: true,
     })
     .positional('paths', {
-      describe: 'The path to the resources to create',
+      describe: 'The path to the resources to publish',
       normalize: true,
       demandOption: true,
     })
     .option('app-id', {
-      describe: 'The ID of the app to create the resources for.',
+      describe: 'The ID of the app to publish the resources for.',
       type: 'number',
     })
     .option('app', {
@@ -52,7 +52,7 @@ export async function handler({
   paths,
   remote,
   resourceName,
-}: CreateResourceArguments): Promise<void> {
+}: PublishResourceArguments): Promise<void> {
   const [resolvedAppId, resolvedRemote] = await resolveAppIdAndRemote(app, context, remote, appId);
   await authenticate(resolvedRemote, 'resources:write', clientCredentials);
 
@@ -68,7 +68,7 @@ export async function handler({
   logger.info(`Creating resources based on ${files.length} files`);
   for (const path of files) {
     logger.info('');
-    await createResource({
+    await publishResource({
       resourceName,
       appId: resolvedAppId,
       path,

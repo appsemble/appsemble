@@ -21,12 +21,12 @@ interface UpdateResourceParams {
   appId: number;
 
   /**
-   * The remote server to create the app on.
+   * The remote server to create the resource on.
    */
   remote: string;
 }
 
-interface CreateResourceParams {
+interface PublishResourceParams {
   /**
    * The name of the resource that a new entry is being created of.
    */
@@ -38,22 +38,22 @@ interface CreateResourceParams {
   path: string;
 
   /**
-   * The ID of the app to create a resource entry for.
+   * The ID of the app to publish a resource entry for.
    */
   appId: number;
 
   /**
-   * The remote server to create the app on.
+   * The remote server to publish the resource on.
    */
   remote: string;
 }
 
-export async function createResource({
+export async function publishResource({
   appId,
   path,
   remote,
   resourceName,
-}: CreateResourceParams): Promise<void> {
+}: PublishResourceParams): Promise<void> {
   const csv = path.endsWith('.csv');
   let resources: Buffer | Resource[];
 
@@ -69,7 +69,7 @@ export async function createResource({
     resources = [].concat(file);
   }
 
-  logger.info(`Creating resource(s) from ${path}`);
+  logger.info(`Publishing resource(s) from ${path}`);
 
   const { data } = await axios.post<Resource | Resource[]>(
     `/api/apps/${appId}/resources/${resourceName}`,
@@ -82,7 +82,7 @@ export async function createResource({
   const ids: number[] = [].concat(data).map((d: Resource) => d.id);
   const url = new URL(`/apps/${appId}/resources/${resourceName}/`, remote);
   logger.info(
-    `Successfully created ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
+    `Successfully published ${ids.length} resource${resources.length === 1 ? '' : 's'} at: \n${ids
       .map((id) => `${url}${id}`)
       .join('\n')}`,
   );

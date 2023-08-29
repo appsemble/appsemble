@@ -224,7 +224,7 @@ The Appsemble CLI can be used to upload assets from disk. For example, the follo
 an asset named `example-asset`:
 
 ```sh
-appsemble asset create --app-id 1 path/to/example-asset.png
+appsemble asset publish --app-id 1 path/to/example-asset.png
 ```
 
 ### Resources
@@ -241,11 +241,11 @@ The Appsemble CLI can be used to create a resource from a JSON file or directory
 ```
 
 ```sh
-appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/my-resource.json
+appsemble resource publish --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/my-resource.json
 ```
 
 ```sh
-appsemble resource create --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
+appsemble resource publish --app-id 1 --context development --app path/to/my-app my-resource path/to/resources/*
 ```
 
 And resources can also be updated when they contain an id in the JSON file.
