@@ -1,4 +1,3 @@
-import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
 import { type JsonValue } from 'type-fest';
 
@@ -15,6 +14,7 @@ export const generateData = (
   if (!schema) {
     return;
   }
+
   if (schema.$ref) {
     const ref = decodeURIComponent(schema.$ref.split('/').pop());
     return generateData(definitions, definitions[ref!] as Schema);
@@ -26,7 +26,10 @@ export const generateData = (
     const data: Record<string, JsonValue> = {};
     if (schema.properties) {
       for (const key of Object.keys(schema.properties)) {
-        data[key] = generateData(definitions, schema.properties[key], key);
+        // This is a workaround for the form block
+        if (key !== 'autofill') {
+          data[key] = generateData(definitions, schema.properties[key], key);
+        }
       }
     }
     return data;
@@ -48,6 +51,9 @@ export const generateData = (
     return schema.enum[0];
   }
   if (schema.format === 'remapper') {
+    if (schema.const) {
+      return schema.const;
+    }
     return schema.default ?? ownerKey;
   }
   if (schema.type === 'array') {
@@ -70,16 +76,17 @@ export const generateData = (
     if (schema.const) {
       return schema.const;
     }
+
     return schema.default ?? '';
   }
   if (schema.type === 'number') {
     return schema.default ?? 0;
   }
   if (schema.type === 'boolean') {
+    if (schema.const) {
+      return schema.const;
+    }
     return schema.default ?? false;
-  }
-  if (schema.type === 'object') {
-    return mapValues(schema.properties || {}, generateData);
   }
   return null;
 };
