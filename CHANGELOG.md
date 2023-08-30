@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.0](https://gitlab.com/appsemble/appsemble/-/releases/0.22.0)] - 2023-08-30
+
+### Added
+
+- Block(`detail-viewer`): Add bullet point list support.
+- Block(`detail-viewer`): Add image customization options.
+- Block(`filter`): Add search bar example and screenshot.
+- Block(`image`): Add data listen event.
+- Block(`image`): Add support for assets API.
+- App: Add `user.logout` action.
+- App: Support binary response data in `request` action.
+- Cli: Add `appsemble block create` command to create the boilerplate for a block. Previously this
+  was done through `create-appsemble`, but has now been moved to the Appsemble CLI.
+- Cli: Add `appsemble block delete` command.
+- Cli: Add path option to `appsemble block create` command.
+- Server: Add custom properties support for user remapper.
+- Studio: Add option to delete organization in the organization settings page.
+- Studio: Initial release of the GUI Editor.
+- Utils: The `date.format` remapper now allows arguments to be passed along to set a custom output
+  format.
+
+### Changed
+
+- Cli: Change `appsemble app create` command to create the boilerplate for an app directory.
+  Previously this was used to create an app on the remote, but has been changed to
+  `appsemble app publish`.
+- Cli: Rename `appsemble app create` command to `appsemble app publish`.
+- Cli: Rename `appsemble asset create` command to `appsemble asset publish`.
+- Cli: Rename `appsemble resource create` command to `appsemble resource publish`.
+- Webpack-config: Don’t override the TypeScript `module` compiler option.
+
+### Removed
+
+- Create-appsemble: Remove `appsemble block` command. This has been moved to the Appsemble CLI as
+  the following command `appsemble block create`.
+
+### Fixed
+
+- App: Fix tab contents breaking when switching between tabs too fast.
+- Server: Resolve `request` action cutting-off response body when the external server responds with
+  compressed data.
+
 ## \[[0.21.3](https://gitlab.com/appsemble/appsemble/-/releases/0.21.3)] - 2023-08-14
 
 ### Added
