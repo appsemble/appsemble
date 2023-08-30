@@ -1,0 +1,17 @@
+parameters:
+  # By highlighting a field it will be displayed directly on the page
+  # If the field is a string it serves as a search bar
+  highlight: searchedValue
+  fields:
+    - name: searchedValue
+      type: string
+events:
+  emit:
+    filtered: filterResults
+actions:
+  onLoad:
+    type: resource.query
+    resource: resourceName
+    query:
+      object.from:
+        $filter: { prop: $filter }

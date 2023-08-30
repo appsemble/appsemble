@@ -1,0 +1,30 @@
+# Unlittered app
+events:
+  emit:
+    filtered: filterResults
+    refreshed: refreshedResults
+  listen:
+    refresh: refresh
+parameters:
+  highlight: process
+  fields:
+    - name: process
+      type: enum
+      enum:
+        - value: Bicycle Collection
+        - value: Maintenance
+        - value: Biodegradable Waste
+        - value: Collection
+    - name: $created
+      label: { translate: date }
+      type: date-range
+      icon: calendar-alt
+actions:
+  onLoad:
+    type: resource.query
+    resource: litter
+    query:
+      object.from:
+        $filter: { prop: $filter }
+        $orderby: '$created desc'
+        $top: 50
