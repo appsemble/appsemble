@@ -5,7 +5,6 @@ import { deflateRaw } from 'node:zlib';
 import { logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
 import axios from 'axios';
 import { type Context } from 'koa';
@@ -58,13 +57,25 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   const [secret] = app.AppSamlSecrets;
 
   if (!secret) {
-    throw notFound('SAML secret not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'SAML secret not found',
+    };
+    ctx.throw();
   }
 
   const loginId = `id${randomUUID()}`;
@@ -303,6 +314,7 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
     loginRequest.redirectUri,
     loginRequest.scope,
     user,
+    ctx,
   );
   const location = new URL(loginRequest.redirectUri);
   location.searchParams.set('code', code);
@@ -341,6 +353,7 @@ export async function continueSamlLogin(ctx: Context): Promise<void> {
     loginRequest.redirectUri,
     loginRequest.scope,
     loginRequest.User ?? (user as User),
+    ctx,
   );
   const redirect = new URL(loginRequest.redirectUri);
   redirect.searchParams.set('code', code);
@@ -360,7 +373,13 @@ export async function getEntityId(ctx: Context): Promise<void> {
   });
 
   if (!secret) {
-    throw notFound('SAML secret not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'SAML secret not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = toXml(

@@ -12,7 +12,12 @@ import {
 import { defaultLocale, remap } from '@appsemble/utils';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { ValidationError, Validator } from 'jsonschema';
-import { type DefaultContext, type DefaultState, type ParameterizedContext } from 'koa';
+import {
+  type Context,
+  type DefaultContext,
+  type DefaultState,
+  type ParameterizedContext,
+} from 'koa';
 import parseDuration from 'parse-duration';
 import { Op, type Order, type WhereOptions } from 'sequelize';
 
@@ -242,6 +247,7 @@ export async function processReferenceHooks(
  *
  * @param resource The resource to process.
  * @param definition The resource definition to use for processing the request body.
+ * @param ctx Context used to throw back the errors.
  * @param isPatch The "HTTP" method used.
  * @param knownExpires A previously known expires value.
  * @returns One or more resources.
@@ -249,6 +255,7 @@ export async function processReferenceHooks(
 export function validate(
   resource: Record<string, unknown> | Record<string, unknown>[],
   definition: ResourceDefinition,
+  ctx: Context,
   isPatch = false,
   knownExpires?: Date,
 ): Record<string, unknown> | Record<string, unknown>[] {
@@ -307,7 +314,7 @@ export function validate(
 
   result.errors.push(...customErrors);
 
-  handleValidatorResult(result, 'Resource validation failed');
+  handleValidatorResult(ctx, result, 'Resource validation failed');
 
   return strippedResource;
 }

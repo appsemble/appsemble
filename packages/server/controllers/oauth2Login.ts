@@ -1,6 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { badRequest, conflict, forbidden, notFound, notImplemented } from '@hapi/boom';
 import { type Context } from 'koa';
 import { type Transaction } from 'sequelize';
 
@@ -45,10 +44,22 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   try {
     referer = new URL(headers.referer);
   } catch {
-    throw badRequest('The referer header is invalid');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'The referer header is invalid',
+    };
+    ctx.throw();
   }
   if (referer.origin !== new URL(argv.host).origin) {
-    throw badRequest('The referer header is invalid');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'The referer header is invalid',
+    };
+    ctx.throw();
   }
 
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
@@ -67,7 +78,13 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   }
 
   if (!clientId || !clientSecret) {
-    throw notImplemented('Unknown authorization URL');
+    ctx.response.status = 501;
+    ctx.response.body = {
+      statusCode: 501,
+      message: 'Unknown authorization URL',
+      error: 'Not Implemented',
+    };
+    ctx.throw();
   }
 
   // Exchange the authorization code for an access token and refresh token.
@@ -140,13 +157,25 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
   if (!preset) {
-    throw notImplemented('Unknown authorization URL');
+    ctx.response.status = 501;
+    ctx.response.body = {
+      statusCode: 501,
+      error: 'Not Implemented',
+      message: 'Unknown authorization URL',
+    };
+    ctx.throw();
   }
 
   const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
   if (!authorization) {
-    throw notFound('No pending OAuth2 authorization found for given state');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'No pending OAuth2 authorization found for given state',
+    };
+    ctx.throw();
   }
 
   // The user is already logged in to Appsemble.
@@ -159,7 +188,13 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
 
     // The authorization is already linked to another account, so we disallow linking it again.
     else if (authorization.UserId !== user.id) {
-      throw forbidden('This OAuth2 authorization is already linked to an account.');
+      ctx.response.status = 403;
+      ctx.response.body = {
+        statusCode: 403,
+        error: 'Forbidden',
+        message: 'This OAuth2 authorization is already linked to an account.',
+      };
+      ctx.throw();
     }
   }
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
@@ -190,7 +225,13 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
         });
         if (emailAuthorization) {
           if (emailAuthorization.UserId !== user.id) {
-            throw conflict('This email address has already been linked to an existing account.');
+            ctx.response.status = 409;
+            ctx.response.body = {
+              statusCode: 409,
+              error: 'Conflict',
+              message: 'This email address has already been linked to an existing account.',
+            };
+            ctx.throw();
           }
         } else {
           await processEmailAuthorization(
@@ -226,6 +267,12 @@ export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 
   if (!rows) {
-    throw notFound('OAuth2 account to unlink not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'OAuth2 account to unlink not found',
+    };
+    ctx.throw();
   }
 }

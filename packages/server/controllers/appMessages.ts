@@ -1,6 +1,5 @@
 import { createGetMessages } from '@appsemble/node-utils';
 import { compareStrings, defaultLocale, Permission } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 
@@ -22,14 +21,26 @@ export async function createMessages(ctx: Context): Promise<void> {
   const app = await App.findOne({ attributes: ['locked', 'OrganizationId'], where: { id: appId } });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
   if (!tags.check(language)) {
-    throw badRequest(`Language “${language}” is invalid`);
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      message: `Language “${language}” is invalid`,
+      error: 'Bad Request',
+    };
+    ctx.throw();
   }
 
   const messages = Object.fromEntries(
@@ -48,9 +59,14 @@ export async function deleteMessages(ctx: Context): Promise<void> {
     attributes: ['locked', 'OrganizationId'],
     where: { id: appId },
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
@@ -61,7 +77,13 @@ export async function deleteMessages(ctx: Context): Promise<void> {
   });
 
   if (!affectedRows) {
-    throw notFound(`App does not have messages for “${language}”`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: `App does not have messages for “${language}”`,
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 }
 
@@ -76,7 +98,13 @@ export async function getLanguages(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      status: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = [

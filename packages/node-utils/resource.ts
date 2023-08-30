@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 
 import { handleValidatorResult, type PreparedAsset } from '@appsemble/node-utils';
 import { type App, type ResourceDefinition, type Resource as ResourceType } from '@appsemble/types';
-import { notFound } from '@hapi/boom';
 import { addMilliseconds, isPast, parseISO } from 'date-fns';
 import { type PreValidatePropertyFunction, ValidationError, Validator } from 'jsonschema';
 import { type Context } from 'koa';
@@ -28,26 +27,58 @@ function stripResource({
  *
  * @param app The app to get the resource definition of
  * @param resourceType The name of the resource definition to get.
+ * @param ctx Context used to throw back the errors.
  * @param view The view that’s being used.
  * @returns The matching resource definition.
  */
 export function getResourceDefinition(
   app: App,
   resourceType: string,
+  ctx?: Context,
   view?: string,
 ): ResourceDefinition {
   if (!app) {
-    throw notFound('App not found');
+    if (ctx === undefined) {
+      throw new Error('App not found');
+    } else {
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App not found',
+      };
+      ctx.throw();
+    }
   }
 
   const definition = app.definition.resources?.[resourceType];
 
   if (!definition) {
-    throw notFound(`App does not have resources called ${resourceType}`);
+    if (ctx === undefined || ctx.response === undefined) {
+      throw new Error(`App does not have resources called ${resourceType}`);
+    } else {
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: `App does not have resources called ${resourceType}`,
+      };
+      ctx.throw();
+    }
   }
 
   if (view && !definition.views[view]) {
-    throw notFound(`View ${view} does not exist for resource type ${resourceType}`);
+    if (ctx === undefined) {
+      throw new Error(`View ${view} does not exist for resource type ${resourceType}`);
+    } else {
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: `View ${view} does not exist for resource type ${resourceType}`,
+      };
+      ctx.throw();
+    }
   }
 
   return definition;
@@ -215,7 +246,7 @@ export function processResourceBody(
     }
   }
 
-  handleValidatorResult(result, 'Resource validation failed');
+  handleValidatorResult(ctx, result, 'Resource validation failed');
 
   return [resource, preparedAssets, knownAssetIds.filter((id) => !reusedAssets.has(id))];
 }

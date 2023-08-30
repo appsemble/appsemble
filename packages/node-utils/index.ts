@@ -7,7 +7,7 @@ export * from './handleError.js';
 export * from './interceptors.js';
 export * from './logger.js';
 export * from './middleware/loggerMiddleware.js';
-export * from './middleware/boom.js';
+export * from './middleware/error.js';
 export * from './middleware/conditional.js';
 export * from './middleware/frontend.js';
 export * from './parsers.js';

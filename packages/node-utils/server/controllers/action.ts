@@ -7,7 +7,6 @@ import {
   type RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
-import { badGateway, badRequest, methodNotAllowed, notFound, tooManyRequests } from '@hapi/boom';
 import axios from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
@@ -39,7 +38,13 @@ async function handleEmail(
     user,
   } = ctx;
   if (method !== 'POST') {
-    throw methodNotAllowed('Method must be POST for email actions');
+    ctx.response.status = 405;
+    ctx.response.body = {
+      statusCode: 405,
+      message: 'Method must be POST for email actions',
+      error: 'Method Not Allowed',
+    };
+    ctx.throw();
   }
 
   const { email, reloadUser } = options;
@@ -49,9 +54,15 @@ async function handleEmail(
     await email({ action, data, mailer, user, options, context: ctx });
   } catch (error: unknown) {
     if (error instanceof EmailQuotaExceededError) {
-      throw tooManyRequests(error.message);
+      ctx.response.status = 429;
+      ctx.response.body = {
+        statusCode: 429,
+        error: 'Too Many Requests',
+        message: error.message,
+      };
+      ctx.throw();
     }
-    throw error;
+    ctx.throw(error);
   }
   ctx.status = 204;
 }
@@ -114,7 +125,13 @@ async function handleRequestProxy(
     try {
       data = JSON.parse(query.data as string);
     } catch {
-      throw badRequest('data should be a JSON object');
+      ctx.response.status = 400;
+      ctx.response.body = {
+        status: 400,
+        message: 'data should be a JSON object.',
+        error: 'Bad Request',
+      };
+      ctx.throw();
     }
   }
 
@@ -145,7 +162,13 @@ async function handleRequestProxy(
   axiosConfig = await applyAppServiceSecrets({ axiosConfig, context: ctx, app });
 
   if (axiosConfig.method.toUpperCase() !== method) {
-    throw badRequest('Method does match the request action method');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      message: 'Method does not match the request action method',
+      error: 'Bad Request',
+    };
+    ctx.throw();
   }
 
   if (useBody) {
@@ -163,7 +186,13 @@ async function handleRequestProxy(
     response = await axios(axiosConfig);
   } catch (err: unknown) {
     logger.error(err);
-    throw badGateway();
+    ctx.response.status = 502;
+    ctx.response.body = {
+      statusCode: 502,
+      error: 'Bad Gateway',
+      message: 'Bad Gateway',
+    };
+    ctx.throw(502);
   }
 
   ctx.status = response.status;
@@ -180,7 +209,13 @@ function createProxyHandler(useBody: boolean, options: Options): Middleware {
     const app = await options.getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App not found',
+      };
+      ctx.throw();
     }
 
     const appAction = get(app.definition, path) as ActionDefinition;
@@ -200,7 +235,13 @@ function createProxyHandler(useBody: boolean, options: Options): Middleware {
           options,
         );
       default:
-        throw badRequest('path does not point to a proxyable action');
+        ctx.response.status = 400;
+        ctx.response.body = {
+          statusCode: 400,
+          message: 'path does not point to a proxyable action',
+          error: 'Bad Request',
+        };
+        ctx.throw();
     }
   };
 }

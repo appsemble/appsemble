@@ -30,7 +30,7 @@ export async function get({
   }
 
   const { view } = action;
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, view);
+  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
 
   const resource = await Resource.findOne({
     include: [
@@ -90,7 +90,7 @@ export async function query({
 
   const parsed = parseQuery(queryParams || {});
   const include = queryParams?.$select?.split(',').map((s) => s.trim());
-  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, view);
+  const resourceDefinition = getResourceDefinition(app.toJSON(), action.resource, context, view);
 
   const resources = await Resource.findAll({
     include: [
@@ -150,8 +150,8 @@ export async function create({
     | Record<string, unknown>
     | Record<string, unknown>[];
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource);
-  const resource = validate(body, definition);
+  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
+  const resource = validate(body, definition, context);
 
   const resources = Array.isArray(resource) ? resource : [resource];
   const createdResources = await Resource.bulkCreate(
@@ -190,7 +190,7 @@ export async function update({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource);
+  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -205,7 +205,7 @@ export async function update({
     throw new Error('Resource not found');
   }
 
-  const updatedResource = validate(body, definition, false, resource.expires);
+  const updatedResource = validate(body, definition, context, false, resource.expires);
 
   const {
     $clonable: clonable,
@@ -248,6 +248,7 @@ export async function update({
 export async function patch({
   action,
   app,
+  context,
   data: actionData,
   internalContext,
 }: ServerActionParameters<ResourcePatchActionDefinition>): Promise<unknown> {
@@ -260,7 +261,7 @@ export async function patch({
     throw new Error('Missing id');
   }
 
-  const definition = getResourceDefinition(app.toJSON(), action.resource);
+  const definition = getResourceDefinition(app.toJSON(), action.resource, context);
 
   const resource = await Resource.findOne({
     where: {
@@ -275,7 +276,7 @@ export async function patch({
     throw new Error('Resource not found');
   }
 
-  const patchedResource = validate(body, definition, true, resource.expires);
+  const patchedResource = validate(body, definition, context, true, resource.expires);
 
   const {
     $clonable: clonable,
@@ -324,7 +325,7 @@ export async function remove({
 }: ServerActionParameters<ResourceDeleteActionDefinition>): Promise<unknown> {
   const body = (remap(action.body, data, internalContext) ?? data) as Record<string, unknown>;
 
-  getResourceDefinition(app.toJSON(), action.resource);
+  getResourceDefinition(app.toJSON(), action.resource, context);
 
   if (!body?.id) {
     throw new Error('Missing id');

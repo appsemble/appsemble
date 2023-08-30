@@ -1,5 +1,4 @@
 import { type Options } from '@appsemble/node-utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 export function createCssHandler(
@@ -10,7 +9,13 @@ export function createCssHandler(
     const app = await getAppStyles({ context: ctx, query: { attributes: [type], raw: true } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App not found',
+      };
+      ctx.throw();
     }
 
     ctx.body = app[type];

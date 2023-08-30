@@ -1,7 +1,6 @@
 import { handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
 import { getAppBlocks, has, Permission } from '@appsemble/utils';
-import { badRequest, conflict, forbidden, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { Validator } from 'jsonschema';
 import { type Context } from 'koa';
@@ -61,7 +60,13 @@ export async function getBlock(ctx: Context): Promise<void> {
   });
 
   if (!blockVersion) {
-    throw notFound('Block definition not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block definition not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = blockVersionToJson(blockVersion);
@@ -156,7 +161,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
   if (data.actions) {
     for (const key of Object.keys(data.actions)) {
       if (!actionKeyRegex.test(key) && key !== '$any') {
-        throw badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
+        ctx.response.status = 400;
+        ctx.response.body = {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: `Action “${key}” does match /${actionKeyRegex.source}/`,
+        };
+        ctx.throw();
       }
     }
   }
@@ -174,7 +185,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
       try {
         example = parse(exampleString);
       } catch {
-        throw badRequest(`Error parsing YAML example:\n${exampleString}`);
+        ctx.response.status = 400;
+        ctx.response.body = {
+          statusCode: 400,
+          message: `Error parsing YAML example:\n${exampleString}`,
+          error: 'Bad Request',
+        };
+        ctx.throw();
       }
       if (!example || typeof example !== 'object') {
         continue;
@@ -230,7 +247,7 @@ export async function publishBlock(ctx: Context): Promise<void> {
       }
 
       const validationResult = ctx.openApi.validate(example, blockSchema, { throw: false });
-      handleValidatorResult(validationResult, 'Validation failed for block example');
+      handleValidatorResult(ctx, validationResult, 'Validation failed for block example');
     }
   }
 
@@ -239,7 +256,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
     for (const [language, record] of Object.entries(messages)) {
       const keys = Object.keys(record);
       if (keys.length !== messageKeys.length || keys.some((key) => !messageKeys.includes(key))) {
-        throw badRequest(`Language ‘${language}’ contains mismatched keys compared to ‘en’.`);
+        ctx.response.status = 400;
+        ctx.response.body = {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: `Language ‘${language}’ contains mismatched keys compared to ‘en’.`,
+        };
+        ctx.throw();
       }
     }
   }
@@ -254,9 +277,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
 
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockVersion && semver.gte(blockVersion.version, version)) {
-    throw conflict(
-      `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
-    );
+    ctx.response.status = 409;
+    ctx.response.body = {
+      statusCode: 409,
+      error: 'Conflict',
+      message: `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
+    };
+    ctx.throw();
   }
 
   try {
@@ -310,7 +337,13 @@ export async function publishBlock(ctx: Context): Promise<void> {
     });
   } catch (err: unknown) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      throw conflict(`Block “${name}@${data.version}” already exists`);
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        message: 'Conflict',
+        error: `Block “${name}@${data.version}” already exists`,
+      };
+      ctx.throw();
     }
     throw err;
   }
@@ -351,7 +384,13 @@ export async function getBlockVersion(ctx: Context): Promise<void> {
   });
 
   if (!version) {
-    throw notFound('Block version not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block version not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = blockVersionToJson(version);
@@ -387,13 +426,24 @@ export async function removeBlockVersion(ctx: Context): Promise<void> {
     where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
   if (!version) {
-    throw notFound('Block version not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block version not found.',
+    };
   }
 
   await checkRole(ctx, organizationId, Permission.DeleteBlocks);
   const usedBlocks = await findBlockInApps(blockId, blockVersion, organizationId);
   if (usedBlocks) {
-    throw forbidden('Cannot delete blocks that are used by apps.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Cannot delete blocks that are used by apps.',
+    };
+    ctx.throw();
   }
 
   await BlockAsset.destroy({
@@ -443,7 +493,13 @@ export async function getBlockVersions(ctx: Context): Promise<void> {
   });
 
   if (blockVersions.length === 0) {
-    throw notFound('Block not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block not found.',
+    };
+    ctx.throw();
   }
 
   ctx.body = blockVersions.map(blockVersionToJson);
@@ -464,11 +520,23 @@ export async function getBlockAsset(ctx: Context): Promise<void> {
   });
 
   if (!block) {
-    throw notFound('Block version not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block version not found',
+    };
+    ctx.throw();
   }
 
   if (block.BlockAssets.length !== 1) {
-    throw notFound(`Block has no asset named "${filename}"`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: `Block has no asset named "${filename}"`,
+    };
+    ctx.throw();
   }
 
   ctx.body = block.BlockAssets[0].content;
@@ -493,11 +561,23 @@ export async function getBlockMessages(ctx: Context): Promise<void> {
   });
 
   if (!block) {
-    throw notFound('Block version not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block version not found',
+    };
+    ctx.throw();
   }
 
   if (block.BlockMessages.length !== 1) {
-    throw notFound(`Block has no messages for language "${language}"`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block has no messages for language "en"',
+    };
+    ctx.throw();
   }
 
   ctx.body = block.BlockMessages[0].messages;
@@ -516,7 +596,13 @@ export async function getBlockIcon(ctx: Context): Promise<void> {
   });
 
   if (!version) {
-    throw notFound('Block version not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block version not found',
+    };
+    ctx.throw();
   }
 
   const cache = version.icon

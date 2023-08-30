@@ -1,4 +1,3 @@
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 import { type Options } from '../types.js';
@@ -12,17 +11,35 @@ export function createGetAppMember({ getApp, getAppMembers }: Options): Middlewa
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App not found',
+      };
+      ctx.throw();
     }
 
     if (app.definition.security === undefined) {
-      throw notFound('App does not have a security definition');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App does not have a security definition',
+      };
+      ctx.throw();
     }
 
     const appMembers = await getAppMembers({ context: ctx, app, memberId });
 
     if (appMembers.length !== 1) {
-      throw notFound('App member not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App member not found',
+      };
+      ctx.throw();
     }
 
     ctx.body = appMembers[0];

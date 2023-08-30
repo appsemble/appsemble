@@ -11,7 +11,6 @@ import {
   normalizeBlockName,
   type Prefix,
 } from '@appsemble/utils';
-import { badRequest, notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 import tags from 'language-tags';
 
@@ -27,7 +26,12 @@ export function createGetMessages({
     } = ctx;
 
     if (!tags.check(language)) {
-      throw badRequest(`Language “${language}” is invalid`);
+      ctx.response.status = 400;
+      ctx.response.body = {
+        error: 'Bad Request',
+        message: '`Language “${language}” is invalid`',
+      };
+      ctx.throw();
     }
 
     const lang = language.toLowerCase();
@@ -41,7 +45,13 @@ export function createGetMessages({
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        status: 404,
+        message: 'App not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const appMessages = await getAppMessages({ context: ctx, app, language });
@@ -74,7 +84,13 @@ export function createGetMessages({
       (!appMessages.length || (merge && !appMessages.some((m) => m.language === lang))) &&
       lang !== (app.definition.defaultLanguage || defaultLocale)
     ) {
-      throw notFound(`Language “${language}” could not be found`);
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: `Language “${language}” could not be found`,
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const baseLanguageMessages =

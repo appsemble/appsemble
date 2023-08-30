@@ -16,7 +16,15 @@ export function createServiceWorkerHandler({ getApp, getBlocksAssetsPaths }: Opt
 
     const app = await getApp({ context: ctx });
 
-    ctx.assert(app, 404, 'App does not exist.');
+    if (!app) {
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'App does not exist.',
+        error: 'Not Found',
+      };
+      ctx.throw();
+    }
 
     const identifiableBlocks = getAppBlocks(app.definition);
     const blocksAssetsPaths = await getBlocksAssetsPaths({ identifiableBlocks, context: ctx });

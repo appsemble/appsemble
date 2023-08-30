@@ -1,5 +1,4 @@
 import { Permission } from '@appsemble/utils';
-import { conflict, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
@@ -18,7 +17,9 @@ export async function getAssets(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
@@ -57,7 +58,9 @@ export async function countAssets(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
@@ -79,7 +82,9 @@ export async function getAssetById(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   // Pick asset id over asset name.
@@ -87,7 +92,9 @@ export async function getAssetById(ctx: Context): Promise<void> {
     app.Assets.find((a) => a.id === assetId) || app.Assets.find((a) => a.name === assetId);
 
   if (!asset) {
-    throw notFound('Asset not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Asset not found' };
+    ctx.throw();
   }
 
   if (assetId !== asset.id) {
@@ -132,7 +139,9 @@ export async function createAsset(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   let asset: Asset;
@@ -147,7 +156,13 @@ export async function createAsset(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict(`An asset named ${name} already exists`);
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        message: `An asset named ${name} already exists`,
+        error: 'Conflict',
+      };
+      ctx.throw();
     }
     throw error;
   }
@@ -167,13 +182,17 @@ export async function deleteAsset(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   const [asset] = app.Assets;
 
   if (!asset) {
-    throw notFound('Asset not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Asset not found' };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
@@ -191,7 +210,9 @@ export async function deleteAssets(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);

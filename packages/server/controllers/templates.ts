@@ -1,7 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
 import { normalize, Permission } from '@appsemble/utils';
-import { conflict, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
 import webpush from 'web-push';
@@ -62,7 +61,13 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
   await checkRole(ctx, organizationId, Permission.CreateApps);
 
   if (!template) {
-    throw notFound(`Template with ID ${templateId} does not exist.`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: `Template with ID ${templateId} does not exist.`,
+    };
+    ctx.throw();
   }
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
@@ -134,7 +139,13 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     ctx.status = 201;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict(`Another app with path “${path}” already exists`);
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: `Another app with path “${path}” already exists`,
+      };
+      ctx.throw();
     }
 
     throw error;

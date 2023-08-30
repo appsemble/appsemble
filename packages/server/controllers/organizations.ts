@@ -2,7 +2,6 @@ import { randomBytes } from 'node:crypto';
 
 import { organizationBlocklist, serveIcon } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
-import { badRequest, conflict, forbidden, notAcceptable, notFound } from '@hapi/boom';
 import { isEqual, parseISO } from 'date-fns';
 import { type Context } from 'koa';
 import { col, fn, literal, Op, QueryTypes, UniqueConstraintError } from 'sequelize';
@@ -61,7 +60,9 @@ export async function getOrganization(ctx: Context): Promise<void> {
     },
   });
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
 
   ctx.body = {
@@ -81,14 +82,16 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
     pathParams: { organizationId },
     user,
   } = ctx;
-  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx.query?.language);
+  const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
   const memberInclude = user
     ? { include: [{ model: User, where: { id: user.id }, required: false }] }
     : {};
   const organization = await Organization.findByPk(organizationId, memberInclude);
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
 
   const apps = await App.findAll({
@@ -158,7 +161,9 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
   });
 
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
 
   // Sequelize does not support sub queries
@@ -226,7 +231,9 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
   });
 
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
 
   await serveIcon(ctx, {
@@ -251,14 +258,26 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
   });
   const organization = member.Organization;
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Organization not found',
+    };
+    ctx.throw();
   }
   await organization.reload({
     include: [BlockVersion, App],
   });
 
   if (organization.BlockVersions.length !== 0) {
-    throw forbidden('Cannot delete an organization with associated blocks.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Cannot delete an organization with associated blocks.',
+    };
+    ctx.throw();
   }
 
   organization.Apps.map(async (app) => {
@@ -343,11 +362,23 @@ export async function createOrganization(ctx: Context): Promise<void> {
   });
 
   if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
-    throw forbidden('Email not verified.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Email not verified.',
+    };
+    ctx.throw();
   }
 
   if (organizationBlocklist.includes(id)) {
-    throw badRequest('This organization id is not allowed.');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'This organization id is not allowed.',
+    };
+    ctx.throw();
   }
 
   try {
@@ -379,7 +410,13 @@ export async function createOrganization(ctx: Context): Promise<void> {
     };
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict(`Another organization with the id “${id}” already exists`);
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: `Another organization with the id “${id}” already exists`,
+      };
+      ctx.throw();
     }
 
     throw error;
@@ -395,7 +432,9 @@ export async function getMembers(ctx: Context): Promise<void> {
     include: [User],
   });
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
   await checkRole(ctx, organization.id, Permission.ViewMembers);
 
@@ -424,7 +463,13 @@ export async function getInvites(ctx: Context): Promise<void> {
   });
 
   if (!member.Organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Organization not found.',
+    };
+    ctx.throw();
   }
 
   ctx.body = member.Organization.OrganizationInvites.map(({ email }) => ({
@@ -447,13 +492,24 @@ export async function getInvitation(ctx: Context): Promise<void> {
       },
     },
   });
-
   if (!invite) {
-    throw notFound('This token does not exist.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This token does not exist',
+    };
+    ctx.throw();
   }
 
   if (!invite.organization) {
-    throw notFound('Organization not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Organization not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = {
@@ -479,13 +535,25 @@ export async function respondInvitation(ctx: Context): Promise<void> {
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
   if (!invite) {
-    throw notFound('This token is invalid.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This token is invalid',
+    };
+    ctx.throw();
   }
 
   const organization = await Organization.findByPk(invite.OrganizationId);
 
   if (organizationId !== organization.id) {
-    throw notAcceptable('Organization IDs does not match');
+    ctx.response.status = 406;
+    ctx.response.body = {
+      statusCode: 406,
+      error: 'Not Acceptable',
+      message: 'Organization IDs do not match',
+    };
+    ctx.throw();
   }
 
   if (response) {
@@ -531,7 +599,13 @@ export async function inviteMembers(ctx: Context): Promise<void> {
   );
   const newInvites = allInvites.filter((invite) => !memberEmails.has(invite.email));
   if (!newInvites.length) {
-    throw badRequest('All invited users are already part of this organization');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'All invited users are already part of this organization',
+    };
+    ctx.throw();
   }
 
   const existingInvites = new Set(
@@ -539,7 +613,13 @@ export async function inviteMembers(ctx: Context): Promise<void> {
   );
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
   if (!pendingInvites.length) {
-    throw badRequest('All email addresses are already invited to this organization');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'All email addresses are already invited to this organization',
+    };
+    ctx.throw();
   }
 
   const auths = await EmailAuthorization.findAll({
@@ -586,14 +666,22 @@ export async function resendInvitation(ctx: Context): Promise<void> {
     include: [OrganizationInvite],
   });
   if (!organization) {
-    throw notFound('Organization not found.');
+    ctx.response.status = 404;
+    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
+    ctx.throw();
   }
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
   const invite = organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
-    throw notFound('This person was not invited previously.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This person was not invited previously.',
+    };
+    ctx.throw();
   }
 
   const user = await User.findByPk(invite.UserId);
@@ -615,8 +703,15 @@ export async function removeInvite(ctx: Context): Promise<void> {
 
   const email = request.body.email.toLowerCase();
   const invite = await OrganizationInvite.findOne({ where: { email } });
+
   if (!invite) {
-    throw notFound('This invite does not exist.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This invite does not exist',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, invite.OrganizationId, Permission.InviteMember);
@@ -632,11 +727,23 @@ export async function removeMember(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
-    throw notFound('User is not part of this organization.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'User is not part of this organization.',
+    };
+    ctx.throw();
   }
 
   if (!organization.Users.some((u) => u.id === memberId)) {
-    throw notFound('This member is not part of this organization.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This member is not part of this organization.',
+    };
+    ctx.throw();
   }
 
   if (memberId !== user.id) {
@@ -644,9 +751,14 @@ export async function removeMember(ctx: Context): Promise<void> {
   }
 
   if (memberId === user.id && organization.Users.length <= 1) {
-    throw notAcceptable(
-      'Not allowed to remove yourself from an organization if you’re the only member left.',
-    );
+    ctx.response.status = 406;
+    ctx.response.body = {
+      statusCode: 406,
+      error: 'Not Acceptable',
+      message:
+        'Not allowed to remove yourself from an organization if you’re the only member left.',
+    };
+    ctx.throw();
   }
 
   await organization.$remove('User', memberId);
@@ -663,18 +775,36 @@ export async function setRole(ctx: Context): Promise<void> {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
-    throw notFound('User is not part of this organization.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'User is not part of this organization.',
+    };
+    ctx.throw();
   }
 
   if (user.id === memberId) {
-    throw badRequest('Not allowed to change your own rule.');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Not allowed to change your own rule',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, organization.id, Permission.ManageRoles);
 
   const member = organization.Users.find((m) => m.id === memberId);
   if (!member) {
-    throw notFound('This member is not part of this organization.');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'This member is not part of this organization.',
+    };
+    ctx.throw();
   }
 
   await member.Member.update({ role });

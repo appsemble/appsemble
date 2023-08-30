@@ -45,7 +45,6 @@
     "@appsemble/types": "0.21.3",
     "@appsemble/utils": "0.21.3",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
-    "@hapi/boom": "^10.0.0",
     "@koa/cors": "^4.0.0",
     "@odata/parser": "^0.2.0",
     "axios": "^1.0.0",

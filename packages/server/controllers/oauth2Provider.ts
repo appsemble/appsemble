@@ -1,5 +1,4 @@
 import { createGetUserInfo } from '@appsemble/node-utils';
-import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -42,27 +41,47 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   const isAllowed = await checkIsAllowed(app, user as User);
 
   if (!isAllowed) {
-    throw badRequest('User is not allowed to login due to the app’s security policy', {
-      appName: app.definition.name,
-      isAllowed,
-    });
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'User is not allowed to login due to the app’s security policy',
+      data: {
+        isAllowed,
+        appName: app.definition.name,
+      },
+    };
+    ctx.throw();
   }
 
   if (!app.AppMembers?.length || app.AppMembers[0].consent == null) {
-    throw badRequest('User has not agreed to the requested scopes', {
-      appName: app.definition.name,
-      isAllowed,
-    });
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'User has not agreed to the requested scopes',
+      data: {
+        isAllowed,
+        appName: app.definition.name,
+      },
+    };
+    ctx.throw();
   }
 
   ctx.body = {
-    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User)),
+    ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User, ctx)),
     isAllowed: true,
   };
 }
@@ -81,14 +100,26 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   if (!(await checkIsAllowed(app, user as User))) {
-    throw badRequest('User is not allowed to login due to the app’s security policy', {
-      appName: app.definition.name,
-      isAllowed: false,
-    });
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'User is not allowed to login due to the app’s security policy',
+      data: {
+        isAllowed: false,
+      },
+    };
+    ctx.throw();
   }
 
   if (app.AppMembers.length) {
@@ -113,5 +144,5 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
       consent: new Date(),
     });
   }
-  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User);
+  ctx.body = await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User, ctx);
 }

@@ -9,7 +9,6 @@ import {
   type WhereOptions,
 } from '@appsemble/node-utils';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { badRequest, internal, notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 function generateQuery(
@@ -20,10 +19,23 @@ function generateQuery(
     return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw badRequest('Unable to process this query', { syntaxError: error.message });
+      ctx.response.status = 400;
+      ctx.response.body = {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Unable to process this query',
+        data: { syntaxError: error.message },
+      };
+      ctx.throw();
     }
     logger.error(error);
-    throw internal('Unable to process this query');
+    ctx.response.status = 500;
+    ctx.response.body = {
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'Unable to process this query',
+    };
+    ctx.throw();
   }
 }
 
@@ -47,6 +59,7 @@ export function createQueryResources(options: Options): Middleware {
       resourceType,
       action: 'query',
       options,
+      ctx,
     });
 
     const findOptions: FindOptions = {
@@ -76,7 +89,7 @@ export function createQueryResources(options: Options): Middleware {
 
     const view = ctx.queryParams?.view;
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, view);
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
     if (view) {
       const context = await getRemapperContext(
@@ -121,6 +134,7 @@ export function createCountResources(options: Options): Middleware {
       action,
       resourceType,
       options,
+      ctx,
     });
 
     const { where } = generateQuery(ctx, options);
@@ -165,7 +179,7 @@ export function createGetResourceById(options: Options): Middleware {
 
     const view = ctx.queryParams?.view;
 
-    const resourceDefinition = getResourceDefinition(app, resourceType, view);
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
     const userQuery = await verifyResourceActionPermission({
       app,
@@ -173,6 +187,7 @@ export function createGetResourceById(options: Options): Middleware {
       action,
       resourceType,
       options,
+      ctx,
     });
 
     const findOptions: FindOptions = {
@@ -194,7 +209,13 @@ export function createGetResourceById(options: Options): Middleware {
     });
 
     if (!resource) {
-      throw notFound('Resource not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Resource not found',
+      };
+      ctx.throw();
     }
 
     if (view) {
@@ -230,8 +251,8 @@ export function createCreateResource(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const resourceDefinition = getResourceDefinition(app, resourceType);
-    await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options });
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
+    await verifyResourceActionPermission({ app, context: ctx, action, resourceType, options, ctx });
 
     const [processedBody, preparedAssets] = processResourceBody(ctx, resourceDefinition);
     if (Array.isArray(processedBody) && !processedBody.length) {
@@ -271,7 +292,7 @@ export function createUpdateResource(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const resourceDefinition = getResourceDefinition(app, resourceType);
+    const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
 
     const userQuery = await verifyResourceActionPermission({
       app,
@@ -279,6 +300,7 @@ export function createUpdateResource(options: Options): Middleware {
       action,
       resourceType,
       options,
+      ctx,
     });
 
     const findOptions: FindOptions = {
@@ -300,7 +322,13 @@ export function createUpdateResource(options: Options): Middleware {
     });
 
     if (!oldResource) {
-      throw notFound('Resource not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Resource not found',
+      };
+      ctx.throw();
     }
 
     const appAssets = await getAppAssets({ context: ctx, app });
@@ -346,6 +374,7 @@ export function createDeleteResource(options: Options): Middleware {
       action,
       resourceType,
       options,
+      ctx,
     });
 
     const findOptions: FindOptions = {
@@ -367,7 +396,13 @@ export function createDeleteResource(options: Options): Middleware {
     });
 
     if (!resource) {
-      throw notFound('Resource not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Resource not found',
+      };
+      ctx.throw();
     }
 
     await deleteAppResource({

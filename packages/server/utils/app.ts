@@ -1,6 +1,5 @@
 import { mergeMessages } from '@appsemble/node-utils';
 import { extractAppMessages } from '@appsemble/utils';
-import { badRequest } from '@hapi/boom';
 import { type Context } from 'koa';
 import tags from 'language-tags';
 import { type FindOptions, type IncludeOptions, Op } from 'sequelize';
@@ -109,11 +108,15 @@ export function compareApps(a: App, b: App): number {
 /**
  * Extracts and parses the language from the query string of a request.
  *
+ * @param ctx Context to throw back the errors in parsing.
  * @param input The language string to parse.
  * @returns An object containing the language, base language, and Sequelize filter
  *   to filter AppMessages by these languages.
  */
-export function parseLanguage(input: string[] | string): {
+export function parseLanguage(
+  ctx: Context,
+  input: string[] | string,
+): {
   language: string;
   baseLanguage: string;
   query: IncludeOptions[];
@@ -124,7 +127,13 @@ export function parseLanguage(input: string[] | string): {
   }
 
   if (!tags.check(language)) {
-    throw badRequest(`Language “${language}” is invalid`);
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: `Language “${language}” is invalid`,
+    };
+    ctx.throw();
   }
 
   const lang = language?.toLowerCase();

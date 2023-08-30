@@ -337,7 +337,7 @@ describe('handleRequestProxy', () => {
 
       {
         "error": "Bad Request",
-        "message": "Method does match the request action method",
+        "message": "Method does not match the request action method",
         "statusCode": 400,
       }
     `);

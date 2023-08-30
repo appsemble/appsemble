@@ -1,6 +1,5 @@
 import { type Options } from '@appsemble/node-utils';
 import { baseTheme, normalize } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
 
@@ -11,7 +10,13 @@ export function createManifestHandler({ getApp, getAppScreenshots }: Options): M
     const app = await getApp({ context: ctx });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'Block asset not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const { defaultPage, description, name, theme = baseTheme } = app.definition;

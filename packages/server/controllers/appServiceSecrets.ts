@@ -1,5 +1,4 @@
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { App, AppServiceSecret } from '../models/index.js';
@@ -19,7 +18,13 @@ export async function addAppServiceSecret(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statuscode: 404,
+      error: 'not found',
+      message: 'app not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
@@ -52,7 +57,13 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statuscode: 404,
+      error: 'not found',
+      message: 'app not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
@@ -77,18 +88,28 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(appServiceId);
-
   if (!appServiceSecret) {
-    throw notFound('Cannot find the app service secret to update');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Cannot find the app service secret to update',
+    };
+    ctx.throw();
   }
 
   await appServiceSecret.update({
@@ -118,18 +139,28 @@ export async function deleteAppServiceSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const appServiceSecret = await AppServiceSecret.findByPk(appServiceId);
-
   if (!appServiceSecret) {
-    throw notFound('Cannot find the app service secret to delete');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Cannot find the app service secret to delete',
+    };
+    ctx.throw();
   }
 
   await appServiceSecret.destroy();

@@ -1,4 +1,4 @@
-import { boomMiddleware, readFixture } from '@appsemble/node-utils';
+import { errorMiddleware, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
@@ -9,7 +9,7 @@ import { useTestDatabase } from '../../utils/test/testSchema.js';
 useTestDatabase(import.meta);
 
 beforeAll(async () => {
-  await setTestApp(new Koa().use(boomMiddleware()).use(appRouter));
+  await setTestApp(new Koa().use(errorMiddleware()).use(appRouter));
 });
 
 it('should download a block asset', async () => {

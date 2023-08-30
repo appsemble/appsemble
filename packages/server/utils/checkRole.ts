@@ -1,5 +1,4 @@
 import { type Permission, roles } from '@appsemble/utils';
-import { forbidden, unauthorized } from '@hapi/boom';
 import { type Context } from 'koa';
 import { type FindOptions } from 'sequelize';
 
@@ -23,7 +22,7 @@ export async function checkRole(
 ): Promise<Member> {
   const { user } = ctx;
   if (!user) {
-    throw unauthorized();
+    ctx.throw(401);
   }
 
   const member = await Member.findOne({
@@ -33,13 +32,25 @@ export async function checkRole(
   });
 
   if (!member) {
-    throw forbidden('User is not part of this organization.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'User is not part of this organization.',
+    };
+    ctx.throw();
   }
 
   const role = roles[member.role];
 
   if (![].concat(permissions).every((p) => role.includes(p))) {
-    throw forbidden('User does not have sufficient permissions.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'User does not have sufficient permissions.',
+    };
+    ctx.throw();
   }
 
   return member;
