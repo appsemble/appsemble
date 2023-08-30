@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.1](https://gitlab.com/appsemble/appsemble/-/releases/0.22.1)] - 2023-08-30
+
+### Fixed
+
+- Server: Fix migration for release version `0.22.1`.
+
 ## \[[0.22.0](https://gitlab.com/appsemble/appsemble/-/releases/0.22.0)] - 2023-08-30
 
 ### Added

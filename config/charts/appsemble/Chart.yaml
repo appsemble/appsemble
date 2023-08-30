@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.22.0
-appVersion: 0.22.0
+version: 0.22.1
+appVersion: 0.22.1
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,60 +23,9 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(detail-viewer): Add bullet point list support."
-    - kind: added
-      description: "Block(detail-viewer): Add image customization options."
-    - kind: added
-      description: "Block(filter): Add search bar example and screenshot."
-    - kind: added
-      description: "Block(image): Add data listen event."
-    - kind: added
-      description: "Block(image): Add support for assets API."
-    - kind: added
-      description: "App: Add user.logout action."
-    - kind: added
-      description: "App: Support binary response data in request action."
-    - kind: added
-      description: "Cli: Add appsemble block create command to create the boilerplate
-        for a block. Previously this was done through create-appsemble, but has now
-        been moved to the Appsemble CLI."
-    - kind: added
-      description: "Cli: Add appsemble block delete command."
-    - kind: added
-      description: "Cli: Add path option to appsemble block create command."
-    - kind: added
-      description: "Server: Add custom properties support for user remapper."
-    - kind: added
-      description: "Studio: Add option to delete organization in the organization
-        settings page."
-    - kind: added
-      description: "Studio: Initial release of the GUI Editor."
-    - kind: added
-      description: "Utils: The date.format remapper now allows arguments to be passed
-        along to set a custom output format."
-    - kind: changed
-      description: "Cli: Change appsemble app create command to create the boilerplate
-        for an app directory. Previously this was used to create an app on the
-        remote, but has been changed to appsemble app publish."
-    - kind: changed
-      description: "Cli: Rename appsemble app create command to appsemble app publish."
-    - kind: changed
-      description: "Cli: Rename appsemble asset create command to appsemble asset publish."
-    - kind: changed
-      description: "Cli: Rename appsemble resource create command to appsemble
-        resource publish."
-    - kind: changed
-      description: "Webpack-config: Don’t override the TypeScript module compiler option."
-    - kind: removed
-      description: "Create-appsemble: Remove appsemble block command. This has been
-        moved to the Appsemble CLI as the following command appsemble block create."
+  artifacthub.io/changes: |
     - kind: fixed
-      description: "App: Fix tab contents breaking when switching between tabs too fast."
-    - kind: fixed
-      description: "Server: Resolve request action cutting-off response body when the
-        external server responds with compressed data."
+      description: "Server: Fix migration for release version 0.22.1."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

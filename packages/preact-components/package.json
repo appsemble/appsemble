@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "private": true,
   "description": "Reusable Preact components for internal use",
   "keywords": [
@@ -32,9 +32,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/preact": "0.22.0",
-    "@appsemble/types": "0.22.0",
-    "@appsemble/web-utils": "0.22.0",
+    "@appsemble/preact": "0.22.1",
+    "@appsemble/types": "0.22.1",
+    "@appsemble/web-utils": "0.22.1",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/leaflet": "^1.0.0",
