@@ -1,7 +1,7 @@
 import {
   bodyParser,
-  boomMiddleware,
   conditional,
+  errorMiddleware,
   frontend,
   type GetApiKeyUser,
   type GetHttpUser,
@@ -15,7 +15,6 @@ import {
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
 import Koa, { type Middleware } from 'koa';
 import compose from 'koa-compose';
@@ -70,7 +69,7 @@ export async function createServer({
   }
 
   app.use(loggerMiddleware());
-  app.use(boomMiddleware());
+  app.use(errorMiddleware());
   app.use(range);
 
   Object.assign(app.context, { mailer: new Mailer(argv) });
@@ -97,9 +96,15 @@ export async function createServer({
           statusCode(),
           operations({ controllers }),
         ]),
-        ({ path }, next) => {
-          if (path.startsWith('/api/')) {
-            throw notFound('URL not found');
+        (ctx, next) => {
+          if (ctx.path.startsWith('/api/')) {
+            ctx.response.status = 404;
+            ctx.response.body = {
+              statusCode: 404,
+              error: 'Not Found',
+              message: 'URL not found',
+            };
+            ctx.throw();
           }
           return next();
         },

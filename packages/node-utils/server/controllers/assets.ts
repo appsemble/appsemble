@@ -1,6 +1,5 @@
 import { type FindOptions, type Options } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
 
@@ -14,7 +13,13 @@ export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): M
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'App not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const findOptions: FindOptions = {
@@ -38,7 +43,13 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'App not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const assets = await getAppAssets({ app, context: ctx });
@@ -47,7 +58,13 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
     const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
 
     if (!asset) {
-      throw notFound('Asset not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'Asset not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     if (assetId !== asset.id) {
@@ -95,7 +112,13 @@ export function createCreateAsset({ createAppAsset, getApp }: Options): Middlewa
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'App not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const asset = await createAppAsset({

@@ -1,4 +1,4 @@
-import { boomMiddleware } from '@appsemble/node-utils';
+import { errorMiddleware } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
@@ -17,7 +17,7 @@ beforeAll(async () => {
         Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
         return next();
       })
-      .use(boomMiddleware())
+      .use(errorMiddleware())
       .use(appRouter),
   );
 });

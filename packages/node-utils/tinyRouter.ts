@@ -1,5 +1,4 @@
 import { has } from '@appsemble/utils';
-import { methodNotAllowed } from '@hapi/boom';
 import { type Middleware } from 'koa';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
@@ -35,7 +34,13 @@ export function tinyRouter(routes: Route[]): Middleware {
     let m = method.toLowerCase();
     if (!has(result, m)) {
       if (!has(result, 'any')) {
-        throw methodNotAllowed();
+        ctx.response.status = 405;
+        ctx.response.body = {
+          statusCode: 405,
+          error: 'Method Not Allowed',
+          message: 'Method not allowed',
+        };
+        ctx.throw();
       }
       m = 'any';
     }

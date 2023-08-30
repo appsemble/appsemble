@@ -1,6 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { conflict, notAcceptable, notFound, unauthorized } from '@hapi/boom';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
 import { literal, Op } from 'sequelize';
@@ -103,11 +102,23 @@ export async function updateUser(ctx: Context): Promise<void> {
     });
 
     if (!emailAuth) {
-      throw notFound('No matching email could be found.');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'No matching email could be found.',
+      };
+      ctx.throw();
     }
 
     if (!emailAuth.verified) {
-      throw notAcceptable('This email address has not been verified.');
+      ctx.response.status = 406;
+      ctx.response.body = {
+        statusCode: 406,
+        error: 'Not Acceptable',
+        message: 'This email address has not been verified.',
+      };
+      ctx.throw();
     }
   }
 
@@ -142,7 +153,13 @@ export async function addEmail(ctx: Context): Promise<void> {
   });
 
   if (dbEmail) {
-    throw conflict('This email has already been registered.');
+    ctx.response.status = 409;
+    ctx.response.body = {
+      statusCode: 409,
+      error: 'Conflict',
+      message: 'This email has already been registered.',
+    };
+    ctx.throw();
   }
 
   await (user as User).reload({
@@ -185,11 +202,23 @@ export async function removeEmail(ctx: Context): Promise<void> {
   const dbEmail = await EmailAuthorization.findOne({ where: { email, UserId: user.id } });
 
   if (!dbEmail) {
-    throw notFound('This email address is not associated with your account.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This email address is not associated with your account.',
+    };
+    ctx.throw();
   }
 
   if (user.EmailAuthorizations.length === 1 && !(user as User).OAuthAuthorizations.length) {
-    throw notAcceptable('Deleting this email results in the inability to access this account.');
+    ctx.response.status = 406;
+    ctx.response.body = {
+      statusCode: 406,
+      error: 'Not Acceptable',
+      message: 'Deleting this email results in the inability to access this account.',
+    };
+    ctx.throw();
   }
 
   await dbEmail.destroy();
@@ -211,7 +240,13 @@ export function refreshToken(ctx: Context): void {
   try {
     ({ sub } = jwt.verify(body.refresh_token, argv.secret, { audience: argv.host }) as JwtPayload);
   } catch {
-    throw unauthorized('Invalid refresh token');
+    ctx.response.status = 401;
+    ctx.response.body = {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Invalid refresh token',
+    };
+    ctx.throw();
   }
 
   ctx.body = createJWTResponse(sub);
@@ -225,7 +260,13 @@ export async function getSubscribedUsers(ctx: Context): Promise<void> {
   } = ctx;
 
   if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
-    throw unauthorized('Invalid or missing admin API secret');
+    ctx.response.status = 401;
+    ctx.response.body = {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Invalid or missing admin API secret',
+    };
+    ctx.throw();
   }
   const users = await User.findAll({
     include: {
@@ -252,7 +293,13 @@ export async function unsubscribe(ctx: Context): Promise<void> {
   } = ctx;
 
   if (authorization !== `Bearer ${argv.adminApiSecret}` || !argv.adminApiSecret) {
-    throw unauthorized('Invalid or missing admin API secret');
+    ctx.response.status = 401;
+    ctx.response.body = {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Invalid or missing admin API secret',
+    };
+    ctx.throw();
   }
   const user = await User.findOne({ where: { primaryEmail: email } });
   if (!user.subscribed) {

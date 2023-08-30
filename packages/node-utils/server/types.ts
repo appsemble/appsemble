@@ -16,6 +16,7 @@ import {
 import { type IdentifiableBlock, type Permission } from '@appsemble/utils';
 import { type RawAxiosRequestConfig } from 'axios';
 import {
+  type Context,
   type DefaultContext as DefaultContextInterface,
   type DefaultState,
   type ParameterizedContext,
@@ -153,6 +154,7 @@ export interface GetAppUserInfoParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   client: { scope: string } | { scope: string; app: App } | {};
   user: UtilsUser;
+  ctx: Context;
 }
 
 export interface ExtendedTeam extends TeamMember {
@@ -238,6 +240,7 @@ export interface VerifyResourceActionPermissionParams {
   resourceType: string;
   action: Action;
   options: Options;
+  ctx: Context;
 }
 
 export interface ApplyAppServiceSecretsParams {

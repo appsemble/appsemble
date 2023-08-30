@@ -1,13 +1,16 @@
 import { type GetAppUserInfoParams } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
-import { forbidden } from '@hapi/boom';
 import { literal, Op } from 'sequelize';
 
 import { AppMember, EmailAuthorization, User } from '../models/index.js';
 import { argv } from '../utils/argv.js';
 import { getGravatarUrl } from '../utils/gravatar.js';
 
-export async function getAppUserInfo({ client, user }: GetAppUserInfoParams): Promise<UserInfo> {
+export async function getAppUserInfo({
+  client,
+  ctx,
+  user,
+}: GetAppUserInfoParams): Promise<UserInfo> {
   if (client && 'app' in client) {
     const appMember = await AppMember.findOne({
       attributes: [
@@ -23,7 +26,14 @@ export async function getAppUserInfo({ client, user }: GetAppUserInfoParams): Pr
 
     if (!appMember) {
       // The authenticated user may have been deleted.
-      throw forbidden();
+      // throw new Error('Forbidden');
+      ctx.response.status = 403;
+      ctx.response.body = {
+        statusCode: 403,
+        error: 'Forbidden',
+        message: 'Forbidden',
+      };
+      ctx.throw();
     }
 
     return {
@@ -61,7 +71,7 @@ export async function getAppUserInfo({ client, user }: GetAppUserInfoParams): Pr
 
   if (!user) {
     // The authenticated user may have been deleted.
-    throw forbidden();
+    throw new Error('Forbidden');
   }
 
   return {

@@ -1,21 +1,26 @@
-import { notFound, unauthorized } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { boomMiddleware } from './boom.js';
+import { errorMiddleware } from './error.js';
 
-describe('boomMiddleware', () => {
+describe('errorMiddleware', () => {
   let app: Koa;
 
   beforeEach(async () => {
     app = new Koa();
-    app.use(boomMiddleware());
+    app.use(errorMiddleware());
     await setTestApp(app);
   });
 
-  it('should catch boom errors', async () => {
-    app.use(() => {
-      throw notFound('Error not found', "It's nowhere to be seen!");
+  it('should catch Koa errors', async () => {
+    app.use((ctx) => {
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Error not found',
+      };
+      ctx.throw();
     });
 
     const response = await request.get('/');
@@ -26,12 +31,11 @@ describe('boomMiddleware', () => {
         statusCode: 404,
         error: 'Not Found',
         message: 'Error not found',
-        data: "It's nowhere to be seen!",
       },
     });
   });
 
-  it('should rethrow non-boom errors', async () => {
+  it('should rethrow non-Koa errors', async () => {
     app.silent = true;
     const error = new Error('This is a test error');
     let result;
@@ -49,8 +53,15 @@ describe('boomMiddleware', () => {
   });
 
   it('should set Koa headers correctly', async () => {
-    app.use(() => {
-      throw unauthorized('Not authorized!', ['Basic realm="Access to test data", charset="UTF-8"']);
+    app.use((ctx) => {
+      ctx.set('www-authenticate', 'Basic realm="Access to test data", charset="UTF-8"');
+      ctx.response.status = 401;
+      ctx.response.body = {
+        error: 'Unauthorized',
+        message: 'Not authorized!',
+        statusCode: 401,
+      };
+      ctx.throw();
     });
 
     const response = await request.get('/');

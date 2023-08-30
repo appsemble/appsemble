@@ -1,7 +1,6 @@
 import { getRemapperContext } from '@appsemble/node-utils';
 import { type EmailActionDefinition } from '@appsemble/types';
 import { defaultLocale, remap } from '@appsemble/utils';
-import { badRequest } from '@hapi/boom';
 import { extension } from 'mime-types';
 import { type SendMailOptions } from 'nodemailer';
 
@@ -82,9 +81,16 @@ export async function email({
     // Continue as normal without doing anything
     return data;
   }
+  const ctx = context;
 
   if (!sub || !body) {
-    throw badRequest('Fields “subject” and “body” must be a valid string');
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Fields “subject” and “body” must be a valid string',
+    };
+    ctx.throw();
   }
 
   const attachments: SendMailOptions['attachments'] = [];

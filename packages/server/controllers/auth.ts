@@ -1,7 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
 import { logger } from '@appsemble/node-utils';
-import { conflict, forbidden, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
@@ -10,14 +9,19 @@ import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../
 import { argv } from '../utils/argv.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
 
-function mayRegister(): void {
+function mayRegister(ctx: Context): void {
   if (argv.disableRegistration) {
-    throw forbidden('Registration is disabled');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Registration is disabled',
+    };
   }
 }
 
 export async function registerEmail(ctx: Context): Promise<void> {
-  mayRegister();
+  mayRegister(ctx);
   const {
     mailer,
     request: {
@@ -40,13 +44,25 @@ export async function registerEmail(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict('User with this email address already exists.');
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'User with this email address already exists.',
+      };
+      ctx.throw();
     }
 
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      throw conflict('User with this email address already exists.');
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        message: 'User with this email address already exists.',
+        error: 'Conflict',
+      };
+      ctx.throw();
     }
 
     throw error;
@@ -76,7 +92,13 @@ export async function verifyEmail(ctx: Context): Promise<void> {
   const email = await EmailAuthorization.findOne({ where: { key: token } });
 
   if (!email) {
-    throw notFound('Unable to verify this token.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Unable to verify this token.',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   email.verified = true;
@@ -133,7 +155,12 @@ export async function resetPassword(ctx: Context): Promise<void> {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    throw notFound(`Unknown password reset token: ${token}`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: `Unknown password reset token: ${token}`,
+      error: 'Not Found',
+    };
   }
 
   const password = await hash(ctx.request.body.password, 10);

@@ -7,7 +7,6 @@ import {
   type SSOConfiguration,
 } from '@appsemble/types';
 import { has, Permission } from '@appsemble/utils';
-import { badRequest, conflict, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { type Context } from 'koa';
 import {
@@ -158,7 +157,13 @@ export async function getAppMembers(ctx: Context): Promise<void> {
     ],
   });
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      status: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
@@ -217,18 +222,35 @@ export async function setAppMember(ctx: Context): Promise<void> {
     ],
   });
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      status: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
   const user = await User.findByPk(memberId);
   if (!user) {
-    throw notFound('User with this ID doesn’t exist.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      status: 404,
+      message: 'User with this ID doesn’t exist.',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
-
   if (!has(app.definition.security.roles, role)) {
-    throw badRequest(`Role ‘${role}’ is not defined.`);
+    ctx.response.status = 400;
+    ctx.response.body = {
+      status: 400,
+      message: `Role ‘${role}’ is not defined`,
+      error: 'Bad Request',
+    };
+    ctx.throw();
   }
 
   let member = app.AppMembers?.[0];
@@ -259,7 +281,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
 export async function getAppAccounts(ctx: Context): Promise<void> {
   const { user } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
+  const { baseLanguage, language, query } = parseLanguage(ctx, ctx.query?.language);
 
   const apps = await App.findAll(createAppAccountQuery(user as User, query));
 
@@ -271,7 +293,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
     pathParams: { appId },
     user,
   } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
+  const { baseLanguage, language, query } = parseLanguage(ctx, ctx.query?.language);
 
   const app = await App.findOne({
     where: { id: appId },
@@ -279,7 +301,13 @@ export async function getAppAccount(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App account not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App account not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = outputAppMember(app, language, baseLanguage);
@@ -294,7 +322,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     },
     user,
   } = ctx;
-  const { baseLanguage, language, query } = parseLanguage(ctx.query?.language);
+  const { baseLanguage, language, query } = parseLanguage(ctx, ctx.query?.language);
 
   const app = await App.findOne({
     where: { id: appId },
@@ -302,7 +330,13 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App account not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App account not found',
+    };
+    ctx.throw();
   }
 
   const [member] = app.AppMembers;
@@ -370,15 +404,33 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App could not be found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App could not be found.',
+    };
+    ctx.throw();
   }
 
   if (!app.AppMembers.length) {
-    throw notFound('This member does not exist');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This member does not exist.',
+    };
+    ctx.throw();
   }
 
   if (!app.AppMembers[0].picture) {
-    throw notFound('This member has no profile picture set.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: 'Not Found',
+      message: 'This member has no profile picture set.',
+      statusCode: 404,
+    };
+    ctx.throw();
   }
 
   await serveIcon(ctx, {
@@ -426,18 +478,36 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App could not be found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App could not be found.',
+    };
+    ctx.throw();
   }
 
   if (!app.definition?.security?.default?.role) {
-    throw badRequest('This app has no security definition');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'This app has no security definition',
+    };
+    ctx.throw();
   }
 
   // XXX: This could introduce a race condition.
   // If this is not manually checked here, Sequelize never returns on
   // the AppMember.create() call if there is a conflict on the email index.
   if (app.AppMembers.length) {
-    throw conflict('User with this email address already exists.');
+    ctx.response.status = 409;
+    ctx.response.body = {
+      statusCode: 409,
+      error: 'Conflict',
+      message: 'User with this email address already exists.',
+    };
+    ctx.throw();
   }
 
   try {
@@ -468,12 +538,24 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict('User with this email address already exists.');
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'User with  this email address already exists.',
+      };
+      ctx.throw();
     }
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      throw conflict('User with this email address already exists.');
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'User with this email already exists.',
+      };
+      ctx.throw();
     }
 
     throw error;
@@ -529,11 +611,23 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App could not be found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App could not be found.',
+    };
+    ctx.throw();
   }
 
   if (!app.AppMembers.length) {
-    throw notFound('Unable to verify this token.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Unable to verify this token.',
+    };
+    ctx.throw();
   }
 
   const [member] = app.AppMembers;
@@ -669,11 +763,23 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found.',
+    };
+    ctx.throw();
   }
 
   if (!app.AppMembers.length) {
-    throw notFound(`Unknown password reset token: ${token}`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: `Unknown password reset token: ${token}`,
+    };
+    ctx.throw();
   }
 
   const password = await hash(ctx.request.body.password, 10);
@@ -703,7 +809,13 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   if (user.id !== memberId) {
@@ -713,7 +825,13 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   const member = app.AppMembers?.[0];
 
   if (!member) {
-    throw notFound('App member not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App member not found',
+    };
+    ctx.throw();
   }
 
   await member.destroy();

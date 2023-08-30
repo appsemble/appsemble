@@ -1,5 +1,4 @@
 import { type Options } from '@appsemble/node-utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 export function createScreenshotHandler({ getApp, getAppScreenshots }: Options): Middleware {
@@ -9,7 +8,13 @@ export function createScreenshotHandler({ getApp, getAppScreenshots }: Options):
     const app = await getApp({ context: ctx });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'App not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const appScreenshots = await getAppScreenshots({ app, context: ctx });
@@ -18,7 +23,13 @@ export function createScreenshotHandler({ getApp, getAppScreenshots }: Options):
     );
 
     if (!appScreenshot) {
-      throw notFound('Screenshot not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'Screenshot not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     const { mime, screenshot } = appScreenshot;

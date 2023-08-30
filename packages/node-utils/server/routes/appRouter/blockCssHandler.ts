@@ -1,5 +1,4 @@
 import { type Options } from '@appsemble/node-utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): Middleware {
@@ -11,7 +10,13 @@ export function createBlockCssHandler({ getApp, getAppBlockStyles }: Options): M
     const app = await getApp({ context: ctx });
 
     if (!app) {
-      throw notFound('App not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'App not found',
+      };
+      ctx.throw();
     }
 
     const appBlockStyles = await getAppBlockStyles({ app, name, context: ctx });

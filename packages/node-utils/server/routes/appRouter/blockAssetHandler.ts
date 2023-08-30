@@ -1,5 +1,4 @@
 import { type Options } from '@appsemble/node-utils';
-import { notFound } from '@hapi/boom';
 import { type Context, type Middleware } from 'koa';
 
 export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware {
@@ -11,7 +10,13 @@ export function createBlockAssetHandler({ getBlockAsset }: Options): Middleware 
     const blockAsset = await getBlockAsset({ filename, name, version, context: ctx });
 
     if (!blockAsset) {
-      throw notFound('Block asset not found');
+      ctx.response.status = 404;
+      ctx.response.body = {
+        statusCode: 404,
+        message: 'Block asset not found',
+        error: 'Not Found',
+      };
+      ctx.throw();
     }
 
     ctx.body = blockAsset.content;

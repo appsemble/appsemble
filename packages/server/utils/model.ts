@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 
 import type * as types from '@appsemble/types';
-import { forbidden } from '@hapi/boom';
 import { addMinutes } from 'date-fns';
+import { type Context } from 'koa';
 
 import { argv } from './argv.js';
 import * as models from '../models/index.js';
@@ -40,11 +40,18 @@ export async function createOAuth2AuthorizationCode(
   redirectUri: string,
   scope: string,
   user: models.User,
+  ctx: Context,
 ): Promise<types.OAuth2AuthorizationCode> {
   const appHost = `${app.path}.${app.OrganizationId}.${new URL(argv.host).hostname}`;
   const redirectHost = new URL(redirectUri).hostname;
   if (redirectHost !== appHost && redirectHost !== app.domain) {
-    throw forbidden('Invalid redirectUri');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'Invalid redirectUri',
+    };
+    ctx.throw();
   }
 
   const { code } = await models.OAuth2AuthorizationCode.create({

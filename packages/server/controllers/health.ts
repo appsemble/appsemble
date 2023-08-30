@@ -1,5 +1,4 @@
 import { logger } from '@appsemble/node-utils';
-import { serverUnavailable } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { getDB } from '../models/index.js';
@@ -19,7 +18,16 @@ export async function checkHealth(ctx: Context): Promise<void> {
 
   ctx.body = status;
   if (!Object.values(status).every(Boolean)) {
-    throw serverUnavailable('API unhealthy', status);
+    ctx.response.status = 503;
+    ctx.response.body = {
+      statusCode: 503,
+      error: 'Service Unavailable',
+      message: 'API unhealthy',
+      data: {
+        database: false,
+      },
+    };
+    ctx.throw();
   }
 }
 

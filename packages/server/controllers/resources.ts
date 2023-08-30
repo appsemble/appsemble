@@ -10,7 +10,6 @@ import {
   processResourceBody,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
-import { badRequest, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import {
@@ -63,20 +62,38 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  getResourceDefinition(app.toJSON(), resourceType);
+  getResourceDefinition(app.toJSON(), resourceType, ctx);
 
   if (!app.Resources.length) {
-    throw notFound('Resource not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Resource not found',
+    };
+    ctx.throw();
   }
 
   if (!app.AppSubscriptions.length) {
-    throw notFound('User is not subscribed to this app.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'User is not subscribed to this app.',
+    };
+    ctx.throw();
   }
 
   const [appSubscription] = app.AppSubscriptions;
 
   if (!appSubscription) {
-    throw notFound('Subscription not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Subscription not found',
+    };
+    ctx.throw();
   }
 
   const result: any = { create: false, update: false, delete: false };
@@ -129,10 +146,16 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  getResourceDefinition(app.toJSON(), resourceType);
+  getResourceDefinition(app.toJSON(), resourceType, ctx);
 
   if (!app.Resources.length) {
-    throw notFound('Resource not found.');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Resource not found.',
+    };
+    ctx.throw();
   }
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
@@ -171,13 +194,14 @@ export async function updateResources(ctx: Context): Promise<void> {
       : [],
   });
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType);
+  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
     action,
     options,
+    ctx,
   });
   const resourceList = extractResourceBody(ctx)[0] as ResourceType[];
 
@@ -187,10 +211,14 @@ export async function updateResources(ctx: Context): Promise<void> {
   }
 
   if (resourceList.some((r) => !r.id)) {
-    throw badRequest(
-      'List of resources contained a resource without an ID.',
-      resourceList.filter((r) => !r.id),
-    );
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'List of resources contained a resource without an ID.',
+      data: resourceList.filter((r) => !r.id),
+    };
+    ctx.throw();
   }
 
   const existingResources = await Resource.findAll({
@@ -216,10 +244,14 @@ export async function updateResources(ctx: Context): Promise<void> {
 
   if (existingResources.length !== processedResources.length) {
     const ids = new Set(existingResources.map((r) => r.id));
-    throw badRequest(
-      'One or more resources could not be found.',
-      processedResources.filter((r) => !ids.has(r.id)),
-    );
+    ctx.response.status = 400;
+    ctx.response.body = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'One or more resources could not be found.',
+      data: processedResources.filter((r) => !ids.has(r.id)),
+    };
+    ctx.throw();
   }
 
   let updatedResources: Resource[];
@@ -306,13 +338,14 @@ export async function patchResource(ctx: Context): Promise<void> {
       : [],
   });
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType);
+  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
     action,
     options,
+    ctx,
   });
 
   const resource = await Resource.findOne({
@@ -324,7 +357,13 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   if (!resource) {
-    throw notFound('Resource not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Resource not found',
+    };
+    ctx.throw();
   }
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
@@ -410,13 +449,14 @@ export async function deleteResources(ctx: Context): Promise<void> {
       : [],
   });
 
-  getResourceDefinition(app.toJSON(), resourceType);
+  getResourceDefinition(app.toJSON(), resourceType, ctx);
   const userQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
     action,
     options,
+    ctx,
   });
 
   let deletedAmount = 0;

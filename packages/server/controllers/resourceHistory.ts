@@ -1,5 +1,4 @@
 import { getResourceDefinition } from '@appsemble/node-utils';
-import { notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { App, Resource, ResourceVersion, User } from '../models/index.js';
@@ -26,17 +25,35 @@ export async function getResourceHistory(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
-  const definition = getResourceDefinition(app.toJSON(), resourceType);
+  const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
 
   if (!definition.history) {
-    throw notFound(`Resource “${resourceType}” has no history`);
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: `Resource “${resourceType}” has no history`,
+    };
+    ctx.throw();
   }
 
   if (app.Resources.length !== 1) {
-    throw notFound('Resource not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Resource not found',
+    };
+    ctx.throw();
   }
 
   const [resource] = app.Resources;

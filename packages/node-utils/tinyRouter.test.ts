@@ -1,8 +1,8 @@
 import { noop } from '@appsemble/utils';
-import { type Boom } from '@hapi/boom';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa, { type Context } from 'koa';
 
+import { errorMiddleware } from './index.js';
 import { tinyRouter } from './tinyRouter.js';
 
 let app: Koa;
@@ -32,10 +32,7 @@ it('should assign the match group to params', async () => {
 });
 
 it('should throw method not allowed if a URL is matched, but not for the given method', async () => {
-  let error: Boom;
-  app.on('error', (err) => {
-    error = err;
-  });
+  app.use(errorMiddleware());
   app.use(
     tinyRouter([
       {
@@ -45,8 +42,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
     ]),
   );
   await request.post('/');
-  expect(error.isBoom).toBe(true);
-  expect(error.output.statusCode).toBe(405);
+  expect(context.status).toBe(405);
 });
 
 it('should fall back to the any handler if it exists', async () => {

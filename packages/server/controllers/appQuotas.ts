@@ -1,5 +1,4 @@
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { addDays, startOfDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { type Context } from 'koa';
@@ -21,7 +20,13 @@ export async function getAppEmailQuota(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);

@@ -247,7 +247,7 @@ describe('createQueryResources', () => {
       ) => Promise<AppMessages[]>,
     } as Options;
 
-    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', 'view');
+    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');
 
     const remapperContext = await getRemapperContext(
       mockApp,
@@ -554,7 +554,7 @@ describe('createGetResourceById', () => {
       ) => Promise<AppMessages[]>,
     } as Options;
 
-    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', 'view');
+    const resourceDefinition = getResourceDefinition(mockApp, 'mockResourceType', mockCtx, 'view');
 
     const remapperContext = await getRemapperContext(
       mockApp,

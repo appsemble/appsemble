@@ -1,6 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { badRequest, notFound } from '@hapi/boom';
 import { hash } from 'bcrypt';
 import { isPast, parseISO } from 'date-fns';
 import { type Context } from 'koa';
@@ -18,7 +17,13 @@ export async function registerOAuth2ClientCredentials(ctx: Context): Promise<voi
   if (body.expires) {
     expires = parseISO(body.expires);
     if (isPast(expires)) {
-      throw badRequest('These credentials have already expired');
+      ctx.response.status = 400;
+      ctx.response.body = {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'These credentials have already expired',
+      };
+      ctx.throw();
     }
   }
   const scopes = body.scopes.sort().join(' ');
@@ -76,6 +81,12 @@ export async function deleteOAuth2ClientCredentials(ctx: Context): Promise<void>
   });
 
   if (!affectedRows) {
-    throw notFound('No client credentials found for the given client id');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'No client credentials found for the given client id',
+    };
+    ctx.throw();
   }
 }

@@ -282,7 +282,7 @@ describe('verifyOAuth2Consent', () => {
       OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
-      definition: {},
+      definition: { name: 'app' },
       vapidPublicKey: '',
       vapidPrivateKey: '',
     });
@@ -298,6 +298,10 @@ describe('verifyOAuth2Consent', () => {
         error: 'Bad Request',
         message: 'User has not agreed to the requested scopes',
         statusCode: 400,
+        data: {
+          isAllowed: true,
+          appName: 'app',
+        },
       },
     });
   });

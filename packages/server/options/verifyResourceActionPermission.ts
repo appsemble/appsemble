@@ -3,7 +3,6 @@ import {
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
-import { forbidden, unauthorized } from '@hapi/boom';
 import { Op, type WhereOptions } from 'sequelize';
 
 import { AppMember, Organization, Team, TeamMember, User } from '../models/index.js';
@@ -19,12 +18,13 @@ export async function verifyResourceActionPermission({
   action,
   app,
   context,
+  ctx,
   options: { checkRole },
   resourceType,
 }: VerifyResourceActionPermissionParams): Promise<Record<string, any>> {
   const view = context.queryParams?.view;
 
-  const resourceDefinition = getResourceDefinition(app, resourceType, view);
+  const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
   const {
     query: { $team },
@@ -63,7 +63,13 @@ export async function verifyResourceActionPermission({
   }
 
   if (!functionalRoles.length && !appRoles.length) {
-    throw forbidden('This action is private.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      error: 'Forbidden',
+      message: 'This action is private.',
+    };
+    ctx.throw();
   }
 
   if (isPublic && action !== 'count') {
@@ -75,7 +81,13 @@ export async function verifyResourceActionPermission({
   }
 
   if (!isPublic && !user && (appRoles.length || functionalRoles.length)) {
-    throw unauthorized('User is not logged in.');
+    ctx.response.status = 401;
+    ctx.response.body = {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'User is not logged in.',
+    };
+    ctx.throw();
   }
 
   const result: WhereOptions[] = [];
@@ -149,14 +161,27 @@ export async function verifyResourceActionPermission({
 
         case 'organization':
           if (!(await organization.$has('User', user.id))) {
-            throw forbidden('User is not a member of the organization.');
+            ctx.response.status = 403;
+            ctx.response.body = {
+              statusCode: 403,
+              error: 'Forbidden',
+              message: 'User is not a member of the app.',
+            };
+            ctx.throw();
           }
 
           role = defaultRole;
           break;
 
         case 'invite':
-          throw forbidden('User is not a member of the app.');
+          ctx.response.status = 403;
+          ctx.response.body = {
+            statusCode: 403,
+            error: 'Forbidden',
+            message: 'User is not a member of the app.',
+          };
+          ctx.throw();
+          break;
 
         default:
           role = null;
@@ -169,7 +194,13 @@ export async function verifyResourceActionPermission({
       !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&
       !result.length
     ) {
-      throw forbidden('User does not have sufficient permissions.');
+      ctx.response.status = 403;
+      ctx.response.body = {
+        statusCode: 403,
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+      };
+      ctx.throw();
     }
   }
 

@@ -1,5 +1,4 @@
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { addYears } from 'date-fns';
 import { type Context } from 'koa';
 import forge from 'node-forge';
@@ -19,9 +18,14 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret }],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
@@ -64,9 +68,14 @@ export async function getAppSamlSecrets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret }],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -97,16 +106,27 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppSamlSecrets;
-
   if (!secret) {
-    throw notFound('SAML secret not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'SAML secret not found',
+    };
+    ctx.throw();
   }
 
   ctx.body = await secret.update({
@@ -129,18 +149,28 @@ export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppSamlSecrets;
-
   if (!secret) {
-    throw notFound('SAML secret not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'SAML secret not found',
+    };
+    ctx.throw();
   }
 
   await secret.destroy();

@@ -1,7 +1,7 @@
 import {
   bodyParser,
-  boomMiddleware,
   conditional,
+  errorMiddleware,
   frontend,
   loggerMiddleware,
   parameters,
@@ -9,9 +9,8 @@ import {
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import cors from '@koa/cors';
-import Koa from 'koa';
+import Koa, { type ParameterizedContext } from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
 import range from 'koa-range';
@@ -43,7 +42,7 @@ export async function createStaticServer({
   const app = new Koa();
 
   app.use(loggerMiddleware());
-  app.use(boomMiddleware());
+  app.use(errorMiddleware());
   app.use(range);
 
   Object.assign(app.context, context);
@@ -65,7 +64,7 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
   const app = new Koa();
 
   app.use(loggerMiddleware());
-  app.use(boomMiddleware());
+  app.use(errorMiddleware());
   app.use(range);
 
   Object.assign(app.context, context);
@@ -84,9 +83,15 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
         statusCode(),
         operations({ controllers, throwOnNotImplemented: false }),
       ]),
-      ({ path }, next) => {
-        if (path.startsWith('/api/')) {
-          throw notFound('URL not found');
+      (ctx: ParameterizedContext, next) => {
+        if (ctx.path.startsWith('/api/')) {
+          ctx.response.status = 404;
+          ctx.response.body = {
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'URL not found',
+          };
+          ctx.throw();
         }
         return next();
       },

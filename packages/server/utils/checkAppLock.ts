@@ -1,4 +1,3 @@
-import { forbidden } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { type App } from '../models/index.js';
@@ -13,6 +12,12 @@ import { type App } from '../models/index.js';
  */
 export function checkAppLock(ctx: Context, app: App): void {
   if (app.locked && !ctx.request.body?.force) {
-    throw forbidden('App is currently locked.');
+    ctx.response.status = 403;
+    ctx.response.body = {
+      statusCode: 403,
+      message: 'App is currently locked.',
+      error: 'Forbidden',
+    };
+    ctx.throw();
   }
 }

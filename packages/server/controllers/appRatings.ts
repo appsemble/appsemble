@@ -1,4 +1,3 @@
-import { notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { App, AppRating, User } from '../models/index.js';
@@ -30,9 +29,14 @@ export async function submitAppRating(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(AppId, { attributes: ['id'] });
   await (user as User).reload({ attributes: ['name'] });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   const [result] = await AppRating.upsert(

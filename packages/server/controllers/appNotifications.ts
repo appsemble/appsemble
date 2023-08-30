@@ -1,7 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { type SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 
 import { App, AppSubscription, ResourceSubscription } from '../models/index.js';
@@ -26,15 +25,25 @@ export async function getSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const [appSubscription] = app.AppSubscriptions;
-
   if (!appSubscription) {
-    throw notFound('Subscription not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Subscription not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const resources: SubscriptionResponse = {};
@@ -78,7 +87,13 @@ export async function addSubscription(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   await AppSubscription.create({
@@ -123,13 +138,24 @@ export async function updateSubscription(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   const [appSubscription] = app.AppSubscriptions;
-
   if (!appSubscription) {
-    throw notFound('Subscription not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Subscription not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   if (user?.id && !appSubscription.UserId) {
@@ -188,7 +214,13 @@ export async function broadcast(ctx: Context): Promise<void> {
   });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.response.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, app.OrganizationId, Permission.PushNotifications);
