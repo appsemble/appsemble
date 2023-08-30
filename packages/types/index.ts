@@ -170,6 +170,11 @@ export interface UserInfo {
    * The end-user’s time zone.
    */
   zoneinfo?: string;
+
+  /**
+   * The end-user's additional properties
+   */
+  properties?: Record<string, string>;
 }
 
 /**
