@@ -6,9 +6,9 @@ import inquirer from 'inquirer';
 import { type PackageJson } from 'type-fest';
 import { type Argv } from 'yargs';
 
-const templateDir = new URL('../templates/blocks/', import.meta.url);
+const templateDir = new URL('../../templates/blocks/', import.meta.url);
 
-export const command = 'block';
+export const command = 'create';
 export const description = 'Bootstrap a new Appsemble block.';
 
 interface BlockArgs {

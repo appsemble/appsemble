@@ -1,1 +1,1 @@
-Add delete block version command.
+Add `appsemble block delete` command.

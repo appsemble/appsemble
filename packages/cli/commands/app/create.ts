@@ -1,104 +1,134 @@
-import { type ReadStream } from 'node:fs';
+import { cp, readdir } from 'node:fs/promises';
+import { join } from 'node:path';
 
-import { logger } from '@appsemble/node-utils';
-import { type AppVisibility } from '@appsemble/types';
-import fg from 'fast-glob';
-import normalizePath from 'normalize-path';
+import { logger, readData, writeData } from '@appsemble/node-utils';
+import { type AppDefinition, type AppsembleRC } from '@appsemble/types';
+import inquirer from 'inquirer';
+import { parse, stringify } from 'yaml';
 import { type Argv } from 'yargs';
 
-import { createApp } from '../../lib/app.js';
-import { coerceFile } from '../../lib/coercers.js';
-import { type BaseArguments } from '../../types.js';
+const templatesDir = new URL('../../templates/apps/', import.meta.url);
 
-interface CreateAppArguments extends BaseArguments {
-  context: string;
-  icon: NodeJS.ReadStream | ReadStream;
-  iconBackground: string;
-  maskableIcon: NodeJS.ReadStream | ReadStream;
-  paths: string[];
-  organization: string;
-  template: boolean;
-  dryRun: boolean;
-  resources: boolean;
-  modifyContext: boolean;
-  visibility: AppVisibility;
-  sentryDsn: string;
-  sentryEnvironment: string;
-  googleAnalyticsId: string;
+export const command = 'create';
+export const description = 'Scaffold a new app with a basic app-definition and styling.';
+
+interface AppArgs {
+  path?: string;
+  name?: string;
+  organization?: string;
+  template?: string;
+  languages?: string[];
+  description?: string;
 }
 
-export const command = 'create <paths...>';
-export const description = 'Create a new App based on a specified YAML file or directory.';
-
-export function builder(yargs: Argv): Argv<any> {
+export async function builder(yargs: Argv): Promise<Argv<any>> {
+  const templateChoices = await readdir(templatesDir);
+  const languageChoices = ['en', 'nl', 'ru', 'fr', 'de', 'da', 'id', 'hr'];
   return yargs
-    .positional('paths', {
-      describe: 'The paths to the apps to create.',
+    .option('path', {
+      describe: 'Path of the folder where you want to put your app.',
     })
-    .option('context', {
-      describe: 'If specified, use the specified context from .appsemblerc.yaml',
+    .option('name', {
+      describe: 'The name of the app.',
     })
     .option('organization', {
-      describe: 'The ID the app should be created for.',
+      describe: 'The Organization ID app should be created for.',
     })
-    .option('icon', {
-      describe: 'The icon to upload. By default "icon.png" in the app directory is used.',
-      coerce: coerceFile,
-    })
-    .option('icon-background', {
-      describe: 'The background color to use for the icon in opaque contexts.',
-      default: '#ffffff',
-    })
-    .option('maskable-icon', {
-      describe:
-        'The maskable icon to upload. By default "maskable-icon.png" in the app directory is used.',
-      coerce: coerceFile,
-    })
-    .option('visibility', {
-      describe: 'Visibility of the app in the public app store.',
-      default: 'unlisted',
-      choices: ['public', 'unlisted', 'private'],
+    .option('description', {
+      describe: 'The description of the app.',
     })
     .option('template', {
-      describe: 'Whether the app should be marked as a template.',
-      type: 'boolean',
+      describe: 'The template to use.',
+      choices: templateChoices,
     })
-    .option('dry-run', {
-      describe: 'Whether the API should be called to run without actually creating the app.',
-      type: 'boolean',
-    })
-    .option('resources', {
-      describe:
-        'Whether the resources from the `resources` directory should be created after creating the app. The names of subdirectories are used as the name of the resource, otherwise the names of top level resource .json files are used instead.',
-      type: 'boolean',
-    })
-    .option('modify-context', {
-      describe:
-        'If the app context is specified, modify it for the current context to include the id of the created app.',
-      type: 'boolean',
-    })
-    .option('google-analytics-id', {
-      describe: 'The ID for Google Analytics for the app.',
-    })
-    .option('sentry-dsn', {
-      describe: 'The custom Sentry DSN for the app.',
-    })
-    .option('sentry-environment', {
-      describe: 'The environment for the custom Sentry DSN for the app.',
-      implies: ['sentry-dsn'],
+    .option('languages', {
+      describe: 'Languages in which the app will be translated.',
+      choices: languageChoices,
     });
 }
 
-export async function handler({ paths, ...args }: CreateAppArguments): Promise<void> {
-  const normalizedPaths = paths.map((path) => normalizePath(path));
-  const directories = await fg(normalizedPaths, { absolute: true, onlyDirectories: true });
-
-  logger.info(`Creating ${directories.length} apps`);
-  for (const dir of directories) {
-    logger.info('');
-    await createApp({
-      ...args,
-      path: dir,
-    });
+function validateAppName(input: string): boolean {
+  if (input.length > 30 || input.length === 0) {
+    logger.error('Please input a valid app name. Name must be between 1 and 30 characters long.');
+    return false;
   }
+  return true;
+}
+
+export async function handler(args: AppArgs): Promise<void> {
+  const templateChoices = await readdir(templatesDir);
+  const languageChoices = ['en', 'nl', 'ru', 'fr', 'de', 'da', 'id', 'hr'];
+  const answers = await inquirer.prompt(
+    [
+      !args.organization && {
+        name: 'organization',
+        message: 'For which organisation is this app? (default "appsemble")',
+      },
+      !args.name && {
+        name: 'name',
+        message: 'What will be the name of the app.',
+        validate: validateAppName,
+      },
+      !args.description && {
+        name: 'description',
+        message: 'Please describe your app.',
+      },
+      !args.template && {
+        name: 'template',
+        type: 'list',
+        choices: templateChoices,
+        message: 'Please choose a template to continue.',
+      },
+      !args.languages && {
+        name: 'languages',
+        type: 'checkbox',
+        choices: languageChoices,
+        message: 'Please select the languages for your app.',
+      },
+      !args.path && {
+        name: 'path',
+        message: 'Please enter the path for where you want the app folder to go (default "apps").',
+      },
+    ].filter(Boolean),
+  );
+  const path = args.path || answers.path || join(process.cwd(), 'apps');
+  const organization = answers.organization || args.organization || 'appsemble';
+  const name = answers.name || args.name;
+  const appDescription = answers.description || args.description || '';
+  const template = answers.template || args.template;
+  const languages = answers.languages || args.languages;
+
+  const outputDirectory = join(path, name);
+  const inputDirectory = new URL(`${template}/`, templatesDir);
+  const appsembleRcPath = new URL('.appsemblerc.yaml', inputDirectory);
+  const [appsembleRc] = await readData<AppsembleRC>(appsembleRcPath);
+  const outputAppsembleRcObject: AppsembleRC = { ...appsembleRc };
+  for (const key of Object.keys(appsembleRc.context)) {
+    outputAppsembleRcObject.context[key].organization = organization;
+  }
+  const outputAppsembleRc = parse(stringify(outputAppsembleRcObject));
+  const appDefinitionPath = new URL('app-definition.yaml', inputDirectory);
+  const [appDefinition] = await readData<AppDefinition>(appDefinitionPath);
+
+  const outputAppDefinitionObject = { ...appDefinition };
+
+  outputAppDefinitionObject.name = name;
+  outputAppDefinitionObject.description = appDescription;
+
+  const outputAppDefinition = parse(stringify(outputAppDefinitionObject));
+
+  await cp(inputDirectory, outputDirectory, {
+    errorOnExist: true,
+    filter: (src) => !src.endsWith('.appsemblerc.yaml') || !src.endsWith('app-definition.yaml'),
+    force: false,
+    recursive: true,
+  });
+  for (const language of languages) {
+    await writeData(join(outputDirectory, 'i18n', `${language}.json`), {});
+  }
+  await writeData(join(outputDirectory, '.appsemblerc.yaml'), outputAppsembleRc);
+  await writeData(join(outputDirectory, 'app-definition.yaml'), outputAppDefinition, {
+    sort: false,
+  });
+  logger.info(`Successfully created ${name} at ${outputDirectory}`);
 }

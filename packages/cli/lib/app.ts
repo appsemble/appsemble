@@ -22,9 +22,9 @@ import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
-import { createResource } from './resource.js';
+import { publishResource } from './resource.js';
 
-interface CreateAppParams {
+interface PublishAppParams {
   /**
    * The OAuth2 client credentials to use.
    */
@@ -51,7 +51,7 @@ interface CreateAppParams {
   visibility: AppVisibility;
 
   /**
-   * The remote server to create the app on.
+   * The remote server to publish the app on.
    */
   remote: string;
 
@@ -81,13 +81,13 @@ interface CreateAppParams {
   dryRun: boolean;
 
   /**
-   * Whether resources from the `resources` directory should be created after creating the app.
+   * Whether resources from the `resources` directory should be published after publishing the app.
    */
   resources: boolean;
 
   /**
    * If the app context is specified,
-   * modify it for the current context to include the id of the created app.
+   * modify it for the current context to include the id of the published app.
    */
   modifyContext: boolean;
 
@@ -614,11 +614,11 @@ export async function updateApp({
 }
 
 /**
- * Create a new App.
+ * Publish a new app.
  *
- * @param options The options to use for creating an app.
+ * @param options The options to use for publishing an app.
  */
-export async function createApp({
+export async function publishApp({
   clientCredentials,
   context,
   dryRun,
@@ -626,7 +626,7 @@ export async function createApp({
   path,
   resources,
   ...options
-}: CreateAppParams): Promise<void> {
+}: PublishAppParams): Promise<void> {
   const file = await stat(path);
   const formData = new FormData();
   let appsembleContext: AppsembleContext;
@@ -734,7 +734,7 @@ export async function createApp({
         for (const resource of resourceFiles) {
           if (resource.isFile()) {
             const { name } = parse(resource.name);
-            await createResource({
+            await publishResource({
               appId: data.id,
               path: join(resourcePath, resource.name),
               remote,
@@ -746,7 +746,7 @@ export async function createApp({
             });
 
             for (const subResource of subDirectoryResources.filter((s) => s.isFile())) {
-              await createResource({
+              await publishResource({
                 appId: data.id,
                 path: join(resourcePath, resource.name, subResource.name),
                 remote,
@@ -770,7 +770,7 @@ export async function createApp({
   }
 
   const { host, protocol } = new URL(remote);
-  logger.info(`Successfully created app ${data.definition.name}! 🙌`);
+  logger.info(`Successfully published app ${data.definition.name}! 🙌`);
   logger.info(`App URL: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
   logger.info(`App store page: ${new URL(`/apps/${data.id}`, remote)}`);
 }

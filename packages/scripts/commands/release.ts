@@ -282,13 +282,13 @@ export async function handler({ increment }: Args): Promise<void> {
     ],
     { absolute: true, gitignore: true },
   );
-  const blockTemplateDir = 'packages/create-appsemble/templates/blocks';
+  const blockTemplateDir = 'packages/cli/templates/blocks';
   const blocksTemplates = await readdir(blockTemplateDir);
   await Promise.all(
     blocksTemplates.map((t) => updatePkg(join(process.cwd(), blockTemplateDir, t), newVersion)),
   );
 
-  const appsTemplateDir = 'packages/create-appsemble/templates/apps';
+  const appsTemplateDir = 'packages/cli/templates/apps';
   const appsTemplates = await globby([`${appsTemplateDir}/*/app-definition.yaml`]);
   await Promise.all(appsTemplates.map((t) => replaceFile(t, version, newVersion)));
   await Promise.all(paths.map((filepath) => replaceFile(filepath, version, newVersion)));

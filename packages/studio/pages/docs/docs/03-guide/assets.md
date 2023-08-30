@@ -40,7 +40,7 @@ entered through which the asset can be referenced in the API.
 Assets can be uploaded using the [Appsemble CLI](https://www.npmjs.com/package/@appsemble/cli).
 
 ```sh
-appsemble asset create --app-id "$MY_APP_ID" path/to/example.png
+appsemble asset publish --app-id "$MY_APP_ID" path/to/example.png
 ```
 
 By default the base name of the file will be used as the asset name. I.e. the asset created using
