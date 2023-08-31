@@ -4604,7 +4604,7 @@ describe('setAppBlockStyle', () => {
 
       {
         "error": "Not Found",
-        "message": "App not found.",
+        "message": "App not found",
         "statusCode": 404,
       }
     `);
@@ -4630,7 +4630,7 @@ describe('setAppBlockStyle', () => {
 
       {
         "error": "Not Found",
-        "message": "Block not found.",
+        "message": "Block not found",
         "statusCode": 404,
       }
     `);

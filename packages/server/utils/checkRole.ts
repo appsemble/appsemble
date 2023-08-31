@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { type Permission, roles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { type FindOptions } from 'sequelize';
@@ -31,27 +32,16 @@ export async function checkRole(
     where: { OrganizationId: organizationId, UserId: user.id },
   });
 
-  if (!member) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'User is not part of this organization.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!member, ctx, 403, 'User is not part of this organization.');
 
   const role = roles[member.role];
 
-  if (![].concat(permissions).every((p) => role.includes(p))) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'User does not have sufficient permissions.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    ![].concat(permissions).every((p) => role.includes(p)),
+    ctx,
+    403,
+    'User does not have sufficient permissions.',
+  );
 
   return member;
 }

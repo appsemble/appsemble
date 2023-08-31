@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { normalize, Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { UniqueConstraintError } from 'sequelize';
@@ -60,15 +61,7 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
 
   await checkRole(ctx, organizationId, Permission.CreateApps);
 
-  if (!template) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Template with ID ${templateId} does not exist.`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!template, ctx, 404, `Template with ID ${templateId} does not exist.`);
 
   if (!template.template && (template.visibility === 'private' || !template.showAppDefinition)) {
     // Only allow cloning of unlisted apps if the user is part of the template’s organization.
@@ -139,15 +132,8 @@ export async function createTemplateApp(ctx: Context): Promise<void> {
     ctx.status = 201;
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: `Another app with path “${path}” already exists`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `Another app with path “${path}” already exists`);
     }
-
     throw error;
   }
 }

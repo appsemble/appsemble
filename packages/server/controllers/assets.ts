@@ -1,3 +1,4 @@
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { extension } from 'mime-types';
@@ -17,11 +18,7 @@ export async function getAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
@@ -58,11 +55,7 @@ export async function countAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.ReadAssets);
 
@@ -82,21 +75,13 @@ export async function getAssetById(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   // Pick asset id over asset name.
   const asset =
     app.Assets.find((a) => a.id === assetId) || app.Assets.find((a) => a.name === assetId);
 
-  if (!asset) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Asset not found' };
-    ctx.throw();
-  }
+  assertKoaError(!asset, ctx, 404, 'Asset not found');
 
   if (assetId !== asset.id) {
     // Redirect to asset using current asset ID
@@ -140,11 +125,7 @@ export async function createAsset(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['id'] });
   const appMember = await getUserAppAccount(appId, user?.id);
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   let asset: Asset;
   try {
@@ -158,13 +139,7 @@ export async function createAsset(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        message: `An asset named ${name} already exists`,
-        error: 'Conflict',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `An asset named ${name} already exists`);
     }
     throw error;
   }
@@ -183,19 +158,10 @@ export async function deleteAsset(ctx: Context): Promise<void> {
     include: [{ model: Asset, attributes: ['id'], where: { id: assetId }, required: false }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const [asset] = app.Assets;
-
-  if (!asset) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Asset not found' };
-    ctx.throw();
-  }
+  assertKoaError(!asset, ctx, 404, 'Asset not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   await asset.destroy();
@@ -211,11 +177,7 @@ export async function deleteAssets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   await Asset.destroy({ where: { id: body } });

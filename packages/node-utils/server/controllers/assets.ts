@@ -1,4 +1,4 @@
-import { type FindOptions, type Options } from '@appsemble/node-utils';
+import { assertKoaError, type FindOptions, type Options } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context, type Middleware } from 'koa';
 import { extension } from 'mime-types';
@@ -12,15 +12,7 @@ export function createGetAssets({ checkRole, getApp, getAppAssets }: Options): M
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'App not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const findOptions: FindOptions = {
       limit: $top,
@@ -42,30 +34,14 @@ export function createGetAssetById({ getApp, getAppAssets }: Options): Middlewar
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'App not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const assets = await getAppAssets({ app, context: ctx });
 
     // Pick asset id over asset name
     const asset = assets.find((a) => a.id === assetId) || assets.find((a) => a.name === assetId);
 
-    if (!asset) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'Asset not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!asset, ctx, 404, 'Asset not found');
 
     if (assetId !== asset.id) {
       // Redirect to asset using current asset ID
@@ -111,15 +87,7 @@ export function createCreateAsset({ createAppAsset, getApp }: Options): Middlewa
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: 'App not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const asset = await createAppAsset({
       app,

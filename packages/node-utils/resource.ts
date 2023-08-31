@@ -9,6 +9,7 @@ import { type File } from 'koas-body-parser';
 import parseDuration from 'parse-duration';
 
 import { preProcessCSV } from './csv.js';
+import { throwKoaError } from './koa.js';
 
 function stripResource({
   $author,
@@ -41,13 +42,7 @@ export function getResourceDefinition(
     if (ctx === undefined) {
       throw new Error('App not found');
     } else {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 404, 'App not found');
     }
   }
 
@@ -57,13 +52,7 @@ export function getResourceDefinition(
     if (ctx === undefined || ctx.response === undefined) {
       throw new Error(`App does not have resources called ${resourceType}`);
     } else {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: `App does not have resources called ${resourceType}`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 404, `App does not have resources called ${resourceType}`);
     }
   }
 
@@ -71,13 +60,7 @@ export function getResourceDefinition(
     if (ctx === undefined) {
       throw new Error(`View ${view} does not exist for resource type ${resourceType}`);
     } else {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: `View ${view} does not exist for resource type ${resourceType}`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 404, `View ${view} does not exist for resource type ${resourceType}`);
     }
   }
 

@@ -1,4 +1,11 @@
-import { getRemapperContext, logger, type Options, version } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  getRemapperContext,
+  logger,
+  type Options,
+  throwKoaError,
+  version,
+} from '@appsemble/node-utils';
 import {
   type ActionDefinition,
   type App,
@@ -38,13 +45,7 @@ async function handleEmail(
     user,
   } = ctx;
   if (method !== 'POST') {
-    ctx.response.status = 405;
-    ctx.response.body = {
-      statusCode: 405,
-      message: 'Method must be POST for email actions',
-      error: 'Method Not Allowed',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 405, 'Method must be POST for email actions');
   }
 
   const { email, reloadUser } = options;
@@ -54,13 +55,7 @@ async function handleEmail(
     await email({ action, data, mailer, user, options, context: ctx });
   } catch (error: unknown) {
     if (error instanceof EmailQuotaExceededError) {
-      ctx.response.status = 429;
-      ctx.response.body = {
-        statusCode: 429,
-        error: 'Too Many Requests',
-        message: error.message,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 429, error.message);
     }
     ctx.throw(error);
   }
@@ -125,13 +120,7 @@ async function handleRequestProxy(
     try {
       data = JSON.parse(query.data as string);
     } catch {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        status: 400,
-        message: 'data should be a JSON object.',
-        error: 'Bad Request',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'data should be a JSON object.');
     }
   }
 
@@ -162,13 +151,7 @@ async function handleRequestProxy(
   axiosConfig = await applyAppServiceSecrets({ axiosConfig, context: ctx, app });
 
   if (axiosConfig.method.toUpperCase() !== method) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      message: 'Method does not match the request action method',
-      error: 'Bad Request',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Method does not match the request action method');
   }
 
   if (useBody) {
@@ -186,13 +169,7 @@ async function handleRequestProxy(
     response = await axios(axiosConfig);
   } catch (err: unknown) {
     logger.error(err);
-    ctx.response.status = 502;
-    ctx.response.body = {
-      statusCode: 502,
-      error: 'Bad Gateway',
-      message: 'Bad Gateway',
-    };
-    ctx.throw(502);
+    throwKoaError(ctx, 502, 'Bad Gateway');
   }
 
   ctx.status = response.status;
@@ -208,15 +185,7 @@ function createProxyHandler(useBody: boolean, options: Options): Middleware {
 
     const app = await options.getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const appAction = get(app.definition, path) as ActionDefinition;
     const action = supportedActions.find((act) => act === appAction?.type);
@@ -235,13 +204,7 @@ function createProxyHandler(useBody: boolean, options: Options): Middleware {
           options,
         );
       default:
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          message: 'path does not point to a proxyable action',
-          error: 'Bad Request',
-        };
-        ctx.throw();
+        throwKoaError(ctx, 400, 'path does not point to a proxyable action');
     }
   };
 }

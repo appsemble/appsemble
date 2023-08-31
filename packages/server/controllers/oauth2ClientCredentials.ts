@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { hash } from 'bcrypt';
 import { isPast, parseISO } from 'date-fns';
 import { type Context } from 'koa';
@@ -17,13 +18,7 @@ export async function registerOAuth2ClientCredentials(ctx: Context): Promise<voi
   if (body.expires) {
     expires = parseISO(body.expires);
     if (isPast(expires)) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'These credentials have already expired',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'These credentials have already expired');
     }
   }
   const scopes = body.scopes.sort().join(' ');
@@ -80,13 +75,5 @@ export async function deleteOAuth2ClientCredentials(ctx: Context): Promise<void>
     },
   });
 
-  if (!affectedRows) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'No client credentials found for the given client id',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!affectedRows, ctx, 404, 'No client credentials found for the given client id');
 }

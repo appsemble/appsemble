@@ -1,4 +1,4 @@
-import { type AppAsset, type CreateAppAssetParams } from '@appsemble/node-utils';
+import { type AppAsset, type CreateAppAssetParams, throwKoaError } from '@appsemble/node-utils';
 import { UniqueConstraintError } from 'sequelize';
 
 import { getUserAppAccount } from './getUserAppAccount.js';
@@ -26,13 +26,7 @@ export async function createAppAsset({
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: `An asset named ${name} already exists`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `An asset named ${name} already exists`);
     }
     throw error;
   }

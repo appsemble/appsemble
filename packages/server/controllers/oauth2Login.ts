@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { assertKoaError, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type Transaction } from 'sequelize';
 
@@ -44,22 +45,10 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
   try {
     referer = new URL(headers.referer);
   } catch {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'The referer header is invalid',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'The referer header is invalid');
   }
   if (referer.origin !== new URL(argv.host).origin) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'The referer header is invalid',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'The referer header is invalid');
   }
 
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
@@ -77,15 +66,7 @@ export async function registerOAuth2Connection(ctx: Context): Promise<void> {
     clientSecret = argv.githubClientSecret;
   }
 
-  if (!clientId || !clientSecret) {
-    ctx.response.status = 501;
-    ctx.response.body = {
-      statusCode: 501,
-      message: 'Unknown authorization URL',
-      error: 'Not Implemented',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!clientId || !clientSecret, ctx, 501, 'Unknown authorization URL');
 
   // Exchange the authorization code for an access token and refresh token.
   const {
@@ -156,27 +137,11 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
   } = ctx;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
-  if (!preset) {
-    ctx.response.status = 501;
-    ctx.response.body = {
-      statusCode: 501,
-      error: 'Not Implemented',
-      message: 'Unknown authorization URL',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!preset, ctx, 501, 'Unknown authorization URL');
 
   const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
-  if (!authorization) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'No pending OAuth2 authorization found for given state',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!authorization, ctx, 404, 'No pending OAuth2 authorization found for given state');
 
   // The user is already logged in to Appsemble.
   if (user) {
@@ -188,13 +153,7 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
 
     // The authorization is already linked to another account, so we disallow linking it again.
     else if (authorization.UserId !== user.id) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'This OAuth2 authorization is already linked to an account.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'This OAuth2 authorization is already linked to an account.');
     }
   }
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
@@ -224,15 +183,12 @@ export async function connectPendingOAuth2Profile(ctx: Context): Promise<void> {
           where: { email: userInfo.email.toLowerCase() },
         });
         if (emailAuthorization) {
-          if (emailAuthorization.UserId !== user.id) {
-            ctx.response.status = 409;
-            ctx.response.body = {
-              statusCode: 409,
-              error: 'Conflict',
-              message: 'This email address has already been linked to an existing account.',
-            };
-            ctx.throw();
-          }
+          assertKoaError(
+            emailAuthorization.UserId !== user.id,
+            ctx,
+            409,
+            'This email address has already been linked to an existing account.',
+          );
         } else {
           await processEmailAuthorization(
             mailer,
@@ -266,13 +222,5 @@ export async function unlinkConnectedAccount(ctx: Context): Promise<void> {
 
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 
-  if (!rows) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'OAuth2 account to unlink not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!rows, ctx, 404, 'OAuth2 account to unlink not found');
 }

@@ -1,7 +1,14 @@
 import { randomBytes } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
-import { AppsembleError, handleValidatorResult, logger, serveIcon } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  assertKoaError,
+  handleValidatorResult,
+  logger,
+  serveIcon,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { type App as AppType, type BlockManifest } from '@appsemble/types';
 import {
   type IdentifiableBlock,
@@ -72,43 +79,23 @@ async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManif
 
 function handleAppValidationError(ctx: Context, error: Error, app: Partial<App>): never {
   if (error instanceof UniqueConstraintError) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
-    };
-    ctx.throw();
+    throwKoaError(
+      ctx,
+      409,
+      `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
+    );
   }
 
   if (error instanceof StyleValidationError) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Provided CSS was invalid.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Provided CSS was invalid.');
   }
 
   if (error.message === 'Expected file ´coreStyle´ to be css') {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: error.message,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, error.message);
   }
 
   if (error.message === 'Expected file ´sharedStyle´ to be css') {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: error.message,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, error.message);
   }
 
   throw error;
@@ -221,15 +208,7 @@ export async function createApp(ctx: Context): Promise<void> {
                   const { format, height, width } = await img.metadata();
                   const mime = lookup(format);
 
-                  if (!mime) {
-                    ctx.response.status = 404;
-                    ctx.response.body = {
-                      statusCode: 404,
-                      error: 'Not Found',
-                      message: `Unknown screenshot mime type: ${mime}`,
-                    };
-                    ctx.throw();
-                  }
+                  assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
                   return {
                     screenshot: contents,
@@ -307,11 +286,7 @@ export async function getAppById(ctx: Context): Promise<void> {
     order: [[{ model: AppSnapshot, as: 'AppSnapshots' }, 'created', 'DESC']],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const propertyFilters: (keyof AppType)[] = [];
   if (app.visibility === 'private' || !app.showAppDefinition) {
@@ -528,15 +503,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!dbApp) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!dbApp, ctx, 404, 'App not found');
 
   checkAppLock(ctx, dbApp);
 
@@ -687,15 +654,8 @@ export async function patchApp(ctx: Context): Promise<void> {
 
               const { format, height, width } = await img.metadata();
               const mime = lookup(format);
-              if (!mime) {
-                ctx.response.status = 404;
-                ctx.response.body = {
-                  statusCode: 404,
-                  error: 'Not Found',
-                  message: `Unknown screenshot mime type: ${mime}`,
-                };
-                ctx.throw();
-              }
+
+              assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
               return {
                 screenshot: contents,
@@ -732,11 +692,7 @@ export async function setAppLock(ctx: Context): Promise<void> {
     include: [{ model: AppScreenshot, attributes: ['id'] }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ locked });
@@ -749,11 +705,7 @@ export async function deleteApp(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['id', 'OrganizationId'] });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.DeleteApps);
 
@@ -779,11 +731,7 @@ export async function getAppEmailSettings(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
@@ -813,11 +761,7 @@ export async function getAppSnapshots(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.AppSnapshots.sort((a, b) => b.id - a.id).map((snapshot) => ({
     id: snapshot.id,
@@ -844,20 +788,8 @@ export async function getAppSnapshot(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-  if (!app.AppSnapshots.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Snapshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppSnapshots.length, ctx, 404, 'Snapshot not found');
 
   const [snapshot] = app.AppSnapshots;
   ctx.body = {
@@ -886,11 +818,7 @@ export async function getAppIcon(ctx: Context): Promise<void> {
     include: [{ model: Organization, attributes: ['icon', 'updated'] }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const dbUpdated =
     (maskable && app.maskableIcon) || app.icon ? app.updated : app.Organization.updated;
@@ -916,21 +844,8 @@ export async function deleteAppIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'icon', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.icon) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App has no icon',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.icon, ctx, 404, 'App has no icon');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ icon: null });
@@ -944,21 +859,8 @@ export async function deleteAppMaskableIcon(ctx: Context): Promise<void> {
     attributes: ['id', 'maskableIcon', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.maskableIcon) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App has no maskable icon',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.maskableIcon, ctx, 404, 'App has no maskable icon');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
   await app.update({ maskableIcon: null });
@@ -980,21 +882,8 @@ export async function getAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
-
-  if (!app.AppScreenshots?.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Screenshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
+  assertKoaError(!app.AppScreenshots?.length, ctx, 404, 'Screenshot not found');
 
   const [{ mime, screenshot }] = app.AppScreenshots;
 
@@ -1013,11 +902,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
     attributes: ['id', 'OrganizationId'],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
@@ -1032,15 +917,7 @@ export async function createAppScreenshot(ctx: Context): Promise<void> {
           const { format, height, width } = await img.metadata();
           const mime = lookup(format);
 
-          if (!mime) {
-            ctx.response.status = 404;
-            ctx.response.body = {
-              statusCode: 404,
-              error: 'Not Found',
-              message: `Unknown screenshot mime type: ${mime}`,
-            };
-            ctx.throw();
-          }
+          assertKoaError(!mime, ctx, 404, `Unknown screenshot mime type: ${mime}`);
 
           return {
             screenshot: contents,
@@ -1070,24 +947,12 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
-  if (!app.AppScreenshots.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Screenshot not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
 
   await app.AppScreenshots[0].destroy();
 }
@@ -1099,11 +964,7 @@ export async function getAppCoreStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['coreStyle'], raw: true });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.coreStyle || '';
   ctx.type = 'css';
@@ -1117,11 +978,7 @@ export async function getAppSharedStyle(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: ['sharedStyle'], raw: true });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found' };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
@@ -1156,27 +1013,16 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
 
   try {
     const app = await App.findByPk(appId, { attributes: ['locked', 'OrganizationId'] });
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'App not found.' };
-      ctx.throw();
-    }
 
+    assertKoaError(!app, ctx, 404, 'App not found');
     checkAppLock(ctx, app);
     validateStyle(css);
 
     const block = await BlockVersion.findOne({
       where: { name: blockId, OrganizationId: organizationId },
     });
-    if (!block) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Block not found.',
-      };
-      ctx.throw();
-    }
+
+    assertKoaError(!block, ctx, 404, 'Block not found');
 
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
@@ -1193,13 +1039,7 @@ export async function setAppBlockStyle(ctx: Context): Promise<void> {
     ctx.status = 204;
   } catch (error: unknown) {
     if (error instanceof StyleValidationError) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Provided CSS was invalid.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'Provided CSS was invalid.');
     }
 
     throw error;

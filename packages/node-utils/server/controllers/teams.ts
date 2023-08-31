@@ -1,5 +1,6 @@
 import { type Context, type Middleware } from 'koa';
 
+import { assertKoaError } from '../../koa.js';
 import { type Options } from '../types.js';
 
 export function createGetTeams({ getApp, getAppTeams }: Options): Middleware {
@@ -11,15 +12,7 @@ export function createGetTeams({ getApp, getAppTeams }: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'App not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     ctx.body = await getAppTeams({ context: ctx, app, user });
   };

@@ -1,4 +1,4 @@
-import { getAppsembleMessages, getSupportedLanguages } from '@appsemble/node-utils';
+import { getAppsembleMessages, getSupportedLanguages, throwKoaError } from '@appsemble/node-utils';
 import { defaultLocale } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -9,13 +9,7 @@ export async function getStudioMessages(ctx: Context): Promise<void> {
   } = ctx;
 
   if (!tags.check(language)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: `Language code “${language}” is invalid`,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, `Language code “${language}” is invalid`);
   }
 
   const lang = language.toLowerCase();
@@ -27,24 +21,12 @@ export async function getStudioMessages(ctx: Context): Promise<void> {
 
   const languages = await getSupportedLanguages();
   if (!languages.has(lang) && !languages.has(baseLanguage)) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Language “${language}” could not be found`,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 404, `Language “${language}” could not be found`);
   }
 
   const messages = await getAppsembleMessages(lang, baseLanguage);
   if (Object.keys(messages).length === 0 && baseLanguage !== defaultLocale) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Language “${language}” could not be found`,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 404, `Language “${language}” could not be found`);
   }
 
   ctx.body = {

@@ -1,4 +1,5 @@
 import {
+  assertKoaError,
   type FindOptions,
   getRemapperContext,
   getResourceDefinition,
@@ -6,6 +7,7 @@ import {
   type Options,
   type OrderItem,
   processResourceBody,
+  throwKoaError,
   type WhereOptions,
 } from '@appsemble/node-utils';
 import { defaultLocale, remap } from '@appsemble/utils';
@@ -19,23 +21,10 @@ function generateQuery(
     return parseQuery({ $filter: ctx.queryParams.$filter, $orderby: ctx.queryParams.$orderby });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Unable to process this query',
-        data: { syntaxError: error.message },
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, 'Unable to process this query', { syntaxError: error.message });
     }
     logger.error(error);
-    ctx.response.status = 500;
-    ctx.response.body = {
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: 'Unable to process this query',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Unable to process this query');
   }
 }
 
@@ -208,15 +197,7 @@ export function createGetResourceById(options: Options): Middleware {
       findOptions,
     });
 
-    if (!resource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!resource, ctx, 404, 'Resource not found');
 
     if (view) {
       const context = await getRemapperContext(
@@ -321,15 +302,7 @@ export function createUpdateResource(options: Options): Middleware {
       findOptions,
     });
 
-    if (!oldResource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!oldResource, ctx, 404, 'Resource not found');
 
     const appAssets = await getAppAssets({ context: ctx, app });
 
@@ -395,15 +368,7 @@ export function createDeleteResource(options: Options): Middleware {
       findOptions,
     });
 
-    if (!resource) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        error: 'Not Found',
-        message: 'Resource not found',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!resource, ctx, 404, 'Resource not found');
 
     await deleteAppResource({
       app,

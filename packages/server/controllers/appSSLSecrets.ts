@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -12,15 +13,8 @@ export async function getSSLSecret(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId', 'sslCertificate', 'sslKey'],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditAppSettings);
 
@@ -39,15 +33,7 @@ export async function updateSSLSecret(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['domain', 'id', 'OrganizationId'] });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await app.update({
     sslCertificate: certificate?.trim() || null,

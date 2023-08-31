@@ -1,4 +1,4 @@
-import { type GetAppUserInfoParams } from '@appsemble/node-utils';
+import { type GetAppUserInfoParams, throwKoaError } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
 import { literal, Op } from 'sequelize';
 
@@ -27,14 +27,7 @@ export async function getAppUserInfo({
 
     if (!appMember) {
       // The authenticated user may have been deleted.
-      // throw new Error('Forbidden');
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'Forbidden',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'Forbidden');
     }
 
     return {
