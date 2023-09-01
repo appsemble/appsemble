@@ -29,6 +29,7 @@ import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
+import { useBreadCrumbsDecoration } from '../../../../components/BreadCrumbsDecoration/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 // This import is required to prevent the 'unexpected usage' bug.
 import '../../../../components/MonacoEditor/custom.js';
@@ -99,6 +100,22 @@ export default function EditPage(): ReactElement {
   const { id, lang } = params;
   const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
+
+  const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
+
+  useEffect(() => {
+    setBreadCrumbsDecoration(
+      <Link className="my-2 mx-1" to={`/${lang}/apps/${id}/edit`}>
+        <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
+          {formatMessage(messages.switchToCodeEditor)}
+        </Button>
+      </Link>,
+    );
+
+    return () => {
+      setBreadCrumbsDecoration(null);
+    };
+  }, [formatMessage, location, lang, setBreadCrumbsDecoration, id]);
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);

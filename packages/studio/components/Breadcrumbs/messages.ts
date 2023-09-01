@@ -5,16 +5,4 @@ export const messages = defineMessages({
     id: 'studio.ByoZDD',
     defaultMessage: 'Breadcrumbs',
   },
-  switchToGuiEditor: {
-    id: 'studio.zoSzG+',
-    defaultMessage: 'Switch to GUI Editor',
-  },
-  switchToCodeEditor: {
-    id: 'studio.7Znis6',
-    defaultMessage: 'Switch to Code Editor',
-  },
-  experimental: {
-    id: 'studio.R1RMax',
-    defaultMessage: '- Experimental',
-  },
 });

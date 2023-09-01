@@ -17,6 +17,14 @@ export const messages = defineMessages({
     id: 'studio.kg2p7g',
     defaultMessage: 'Resource warning',
   },
+  switchToGuiEditor: {
+    id: 'studio.zoSzG+',
+    defaultMessage: 'Switch to GUI Editor',
+  },
+  experimental: {
+    id: 'studio.R1RMax',
+    defaultMessage: '- Experimental',
+  },
   resourceWarning: {
     id: 'studio.JvxqIq',
     defaultMessage:

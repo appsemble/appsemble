@@ -114,6 +114,7 @@ export function DocsRoutes(): ReactElement {
   useEffect(() => {
     setBreadCrumbsDecoration(
       <Input
+        className="my-2"
         defaultValue={decodeURIComponent(location.hash.slice(1))}
         onChange={(event) => {
           navigate({ hash: event.target.value, pathname: `${url}/search` });

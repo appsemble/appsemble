@@ -17,6 +17,10 @@ export const messages = defineMessages({
     id: 'studio.CxfKLC',
     defaultMessage: 'Pages',
   },
+  switchToCodeEditor: {
+    id: 'studio.7Znis6',
+    defaultMessage: 'Switch to Code Editor',
+  },
   themeTab: {
     id: 'studio.Pe0ogR',
     defaultMessage: 'Theme',
