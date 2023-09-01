@@ -58,26 +58,26 @@ Fonts][] may be used
 
 ### Example
 
-```yaml copy
+```yaml copy validate
+name: Theme app
+defaultPage: Red Page
+
 theme:
-  primaryColor: '#229954'  # Green
-  linkColor: '#D68910'     # Orange
-  successColor: '#76448A'  # Purple
+  primaryColor: '#229954' # Green
+  linkColor: '#D68910' # Orange
+  successColor: '#76448A' # Purple
 
 pages:
   - name: Red Page
     theme:
       primaryColor: '#FF0000' # Red
     blocks:
-      - type: example
-        version: 0.0.0
+      - type: action-button
+        version: 0.22.1
+        parameters:
+          icon: plus
         theme:
           primaryColor: '#0000FF' # Blue
-      - type: example
-        ...
-      ...
-  - name: Some Other Page
-    ...
 ```
 
 The above example sets the app´s primary color to green, the color of its links to orange and the

@@ -48,6 +48,26 @@ CSS styles are linted using
 Markdown documents are linted using
 [![](https://avatars.githubusercontent.com/u/16309564?s=16) Remark lint](https://github.com/remarkjs/remark-lint)
 
+#### Documentation validation
+
+We intend to validate all full and partial app YAML examples in the Appsemble documentation using CI
+tests, except for very specific cases where the example contains an error on purpose or could not be
+validated due to being dependent on the user’s environment.
+
+To validate a code block, which is a full app-definition, append the `validate` tag to its meta. To
+validate a code block, which is a part of an app definition, append the `validate` tag and one of
+the following available tags to its meta:
+
+- `resources-snippet`
+- `page-snippet`
+- `pages-snippet`
+- `block-snippet`
+- `blocks-snippet`
+- `cron-snippet`
+- `security-snippet`
+
+You can refer to existing code snippets in the guide section of the documentation.
+
 #### Message validation
 
 To add new messages, follow the following format:

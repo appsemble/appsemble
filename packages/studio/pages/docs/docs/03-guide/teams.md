@@ -40,13 +40,12 @@ resource.
 
 For example, let’s say we have an app for managing a soccer club:
 
-```yaml
-name: Soccer club
-
+```yaml validate resources-snippet
 resources:
   strategy:
     schema:
       type: object
+      additionalProperties: false
       properties:
         description:
           type: string
@@ -64,6 +63,7 @@ resources:
   absence:
     schema:
       type: object
+      additionalProperties: false
       properties:
         date:
           type: string
@@ -114,12 +114,30 @@ bunch of errors which leads to a bad user experience.
 Continuing with the Soccer club app in the resources example, the following could represent the
 app’s pages:
 
-```yaml
+```yaml validate pages-snippet
 pages:
   - name: Create strategy
     roles:
       - $team:manager
-    blocks: # …
+    blocks:
+      - type: form
+        version: 0.22.1
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: strategy
+            onSuccess:
+              type: link
+              to: Strategies
+        parameters:
+          fields:
+            - label: { translate: name }
+              name: name
+              type: string
+            - label: { translate: description }
+              multiline: true
+              name: description
+              type: string
 
   - name: Strategies
     roles:
@@ -127,24 +145,62 @@ pages:
     blocks:
       - type: action-button
         version: 0.22.1
-        roles: $team:member
+        parameters:
+          icon: plus
+        roles:
+          - $team:member
         actions:
           onClick:
-            link: Create strategy
-      -  # …
+            type: link
+            to: Create strategy
 
   - name: Report absence
     roles:
       - $team:member
-    blocks: # …
+    blocks:
+      - type: form
+        version: 0.22.1
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: absence
+            onSuccess:
+              type: link
+              to: View absence
+        parameters:
+          fields:
+            - label: { translate: player }
+              name: player
+              type: string
+            - label: { translate: description }
+              multiline: true
+              name: description
+              type: string
 
   - name: View absence
     roles:
       - $team:manager
-    blocks: # …
+    blocks:
+      - type: action-button
+        version: 0.22.1
+        parameters:
+          icon: plus
+        roles:
+          - $team:member
+        actions:
+          onClick:
+            type: link
+            to: Report absence
 
   - name: About
-    blocks: # …
+    blocks:
+      - type: html
+        version: 0.22.1
+        parameters:
+          placeholders:
+            summary: This is the teams app
+          content: |
+            <span data-content="summary" />
 ```
 
 According to this app definition, only the team manager may view the pages called `Create strategy`

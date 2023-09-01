@@ -3,7 +3,14 @@ import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
 import { basename, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
 
-import { AppsembleError, logger, opendirSafe, readData, writeData } from '@appsemble/node-utils';
+import {
+  AppsembleError,
+  authenticate,
+  logger,
+  opendirSafe,
+  readData,
+  writeData,
+} from '@appsemble/node-utils';
 import {
   type App,
   type AppDefinition,
@@ -17,7 +24,6 @@ import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-import { authenticate } from './authentication.js';
 import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
 import { printAxiosError } from './output.js';

@@ -1,8 +1,8 @@
 import { type ReadStream } from 'node:fs';
 
+import { authenticate } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication.js';
 import { coerceFile } from '../../lib/coercers.js';
 import { createOrganization } from '../../lib/organization.js';
 import { type BaseArguments } from '../../types.js';

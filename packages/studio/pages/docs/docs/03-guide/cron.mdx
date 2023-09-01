@@ -66,11 +66,11 @@ Supported (server-side) actions:
 Cron jobs are defined at the top level of the app definition with the
 [cron](/docs/reference/app#-app-definition-cron) property.
 
-```yaml
+```yaml copy validate cron-snippet
 cron:
   everyDayAt10:
     schedule: '* 10 * * *' # Quotes are required if the first character starts with `*`
     action:
       type: resource.query
-      resource: ...
+      resource: person
 ```

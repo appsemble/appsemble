@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import process from 'node:process';
 
-import { configureLogger, handleError, version } from '@appsemble/node-utils';
+import { configureLogger, CREDENTIALS_ENV_VAR, handleError, version } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
 import yargs, { type CommandModule } from 'yargs';
 
@@ -19,7 +19,6 @@ import * as runCronJobs from './commands/runCronJobs.js';
 import * as serve from './commands/serve.js';
 import * as start from './commands/start.js';
 import * as team from './commands/team/index.js';
-import { CREDENTIALS_ENV_VAR } from './lib/authentication.js';
 import { coerceRemote } from './lib/coercers.js';
 import { initAxios } from './lib/initAxios.js';
 
