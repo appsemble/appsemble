@@ -32,3 +32,4 @@ export * from './server/types.js';
 export * from './koa.js';
 export { bulmaVersion, faVersion, version } from './versions.cjs';
 export * from './EmailQuotaExceededError.js';
+export * from './authentication.js';

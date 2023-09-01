@@ -36,7 +36,10 @@ Within a notification hook it’s possible to define how notifications are sent.
 automatically send notifications for users with specific roles, the author of a resource, as well as
 allowing users to subscribe to resources of a specific type and individual resources.
 
-```yaml copy
+```yaml copy validate
+name: Example App
+defaultPage: Person List
+
 notifications: opt-in # Enable notifications in the app
 
 security:
@@ -55,11 +58,15 @@ resources:
   person:
     schema:
       type: object
+      additionalProperties: false
       properties:
         firstName:
           type: string
         lastName:
           type: string
+    query:
+      roles:
+        - Reader
     create:
       hooks:
         notification:
@@ -67,7 +74,30 @@ resources:
             - Admin # Notify users with the Admin role when a `person` resource is created.
           subscribe: both # Users are able to both subscribe to individual resources, as well as all `person` resources being created.
 
-pages: # …
+pages:
+  - name: Person List
+    roles: []
+    blocks:
+      - type: data-loader
+        version: 0.22.1
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+        events:
+          emit:
+            data: data
+      - type: table
+        version: 0.22.1
+        parameters:
+          fields:
+            - value: { prop: firstName }
+              label: First Name
+            - value: { prop: lastName }
+              label: Surname
+        events:
+          listen:
+            data: data
 ```
 
 In the example above we define a notification hook that is triggered when a `person` resource is
@@ -101,7 +131,7 @@ if the user wasn’t subscribed before and vice versa.
 
 An example of what this could look like can be found in the code snippet below.
 
-```yaml
+```yaml validate pages-snippet
 pages:
   - name: Person List
     roles: []
@@ -119,11 +149,9 @@ pages:
         version: 0.22.1
         parameters:
           fields:
-            - name:
-                - value: firstName
+            - value: { prop: firstName }
               label: First Name
-            - value:
-                - prop: lastName
+            - value: { prop: lastName }
               label: Surname
         actions:
           onClick:
@@ -150,16 +178,20 @@ dynamic, or a valid [remapper definition](/docs/reference/remapper).
 
 For example:
 
-```yaml
+```yaml validate resources-snippet
 resources:
   person:
     schema:
       type: object
+      additionalProperties: false
       properties:
         firstName:
           type: string
         lastName:
           type: string
+    query:
+      roles:
+        - Reader
     create:
       hooks:
         notification:

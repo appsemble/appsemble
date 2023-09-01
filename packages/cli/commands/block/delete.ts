@@ -1,7 +1,6 @@
-import { logger } from '@appsemble/node-utils';
+import { authenticate, logger } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication.js';
 import { deleteBlock } from '../../lib/block.js';
 import { type BaseArguments } from '../../types.js';
 

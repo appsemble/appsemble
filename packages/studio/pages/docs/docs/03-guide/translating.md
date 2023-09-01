@@ -49,7 +49,7 @@ defining a default or fallback translation.
 
 Let’s look at a simple example of what this looks like in an app.
 
-```yaml
+```yaml validate blocks-snippet
 blocks:
   - type: markdown
     version: 0.22.1
@@ -66,7 +66,7 @@ message’s content.
 
 Alternatively using `string.format`:
 
-```yaml
+```yaml validate blocks-snippet
 blocks:
   - type: markdown
     version: 0.22.1

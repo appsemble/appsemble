@@ -24,9 +24,9 @@ The following code is an example of an Action Button. When you press the button 
 app will lead to the Home page because the type of this button is Link and it’s linked to Home. This
 only works when you have a page defined with the name Home.
 
-```yaml
+```yaml copy validate block-snippet
 - type: action-button
-  version: 0.20.15
+  version: 0.22.1
   parameters:
     icon: home
   actions:
@@ -39,8 +39,8 @@ The following example is a complete working app that consists of 2 pages: Home a
 the home page there is a button (arrow to the right) that leads you to the Other Page and on the
 other page there is a home Button.
 
-```yaml
-name: Test Tutorial action button app
+```yaml copy validate
+name: Tutorial action button app
 description: testing tutorial code of an action button
 defaultPage: Home
 
@@ -48,7 +48,7 @@ pages:
   - name: Home
     blocks:
       - type: action-button
-        version: 0.20.15
+        version: 0.22.1
         parameters:
           icon: arrow-right
         actions:
@@ -59,7 +59,7 @@ pages:
   - name: Other Page
     blocks:
       - type: action-button
-        version: 0.20.15
+        version: 0.22.1
         parameters:
           icon: home
         actions:

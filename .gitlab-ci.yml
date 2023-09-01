@@ -24,16 +24,6 @@ workflow:
 #  Job Templates                                                                                  #
 ###################################################################################################
 
-# A preset for running Docker in Docker.
-.docker:
-  interruptible: true
-  services:
-    - docker:dind
-  image: docker
-  dependencies: []
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-
 # A preconfigured environment for using Yarn.
 .yarn:
   interruptible: true
@@ -163,12 +153,15 @@ validate:
 
 # Build the Docker image.
 build docker image:
-  extends: .docker
   stage: build
-  needs: []
+  image:
+    name: gcr.io/kaniko-project/executor:v1.14.0-debug
+    entrypoint: ['/bin/sh', '-c']
   script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
 
 # Build the npm packages that should be published.
 pack:
@@ -263,7 +256,6 @@ gitlab release:
 
 # Publish the Docker image that was built to Docker Hub.
 publish docker:
-  extends: .docker
   stage: publish
   needs:
     - build docker image
@@ -700,3 +692,14 @@ playwright:
       - packages/e2e/test-results/
     reports:
       junit: packages/e2e/results.xml
+
+validate docs:
+  stage: end 2 end
+  extends: .yarn
+  needs:
+    - provision review
+  rules:
+    - if: $CI_MERGE_REQUEST_ID && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH == 'appsemble/appsemble'
+  script:
+    - yarn scripts release patch
+    - yarn scripts validate-docs --organization appsemble --remote "https://$CI_MERGE_REQUEST_IID.appsemble.review"

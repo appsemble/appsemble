@@ -9,7 +9,7 @@ You can define your resource under the element resources. In the code below the 
 created. This resource contains: `firstName`, `lastName`, `email` and `description`. You could use
 this resource for a participant overview for example.
 
-```yaml
+```yaml validate resources-snippet
 resources:
   person:
     roles: [$public]
@@ -61,17 +61,16 @@ need to show the data there is no need for the Form element.
 
 Here you see the code of the data-loader block
 
-```yaml
-blocks:
-  - type: data-loader
-    version: 0.20.16
-    actions:
-      onLoad:
-        type: resource.query
-        resource: person
-    events:
-      emit:
-        data: people
+```yaml validate block-snippet
+- type: data-loader
+  version: 0.22.1
+  actions:
+    onLoad:
+      type: resource.query
+      resource: person
+  events:
+    emit:
+      data: people
 ```
 
 The data-loader gets the data through the resource.query process. Then it emits all the data to a
@@ -83,9 +82,9 @@ resources in place this way of working is more efficient and secure.
 
 The following is the table block:
 
-```yaml
+```yaml validate block-snippet
 - type: table
-  version: 0.20.16
+  version: 0.22.1
   events:
     listen:
       data: people
@@ -109,9 +108,9 @@ in the app via a form.
 With a form block you can easily shape the page of your app. In this example we only use the form
 block as an input form:
 
-```yaml
+```yaml validate block-snippet
 - type: form
-  version: 0.20.16
+  version: 0.22.1
   actions:
     onSubmit:
       type: resource.create

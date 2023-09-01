@@ -39,7 +39,7 @@ possible for submitted data to be validated on types and required properties aut
 
 An example of a resource definition:
 
-```yaml copy
+```yaml copy validate resources-snippet
 resources:
   person:
     roles: [$public] # This makes all person resource actions public by default.
@@ -126,32 +126,50 @@ HTTP method, but external APIs may differ.
 
 The following example demonstrates a more complex resource definition for an external API.
 
-```yaml copy
-person:
-  schema: ... # see schema above
-  id: myId # the name of the field to use when calling get, update and delete
-  url: https://example.com/api/person # the default URL to use for resource actions
-  query:
-    # HTTP method to use. GET is default
-    method: GET
-    # url: defaults to the base URL
-
-    # Query parameters are the ones after the question mark in the URL. These can optionally be
-    # defined in a readable manner using remappers.
+```yaml copy validate resources-snippet
+resources:
+  person:
+    schema:
+      type: object
+      additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+        description:
+          type: string
+    id: myId # the name of the field to use when calling get, update and delete
+    url: https://example.com/api/person # the default URL to use for resource actions
     query:
-      object.from:
-        $limit: 50
-  get:
-    # HTTP method to use. GET is default
-    method: GET
-    # This would default to https://example.com/api/person/{myId}, but for the sake of this example,
-    # the nickname property is used.
-    url: https://example.com/api/person/{nickname}
-  create:
-    # HTTP method to use. POST is default
-    method: POST
-  update:
-    method: PUT # HTTP method to use. PUT is default
+      # HTTP method to use. GET is default
+      method: GET
+      # url: defaults to the base URL
+
+      # Query parameters are the ones after the question mark in the URL. These can optionally be
+      # defined in a readable manner using remappers.
+      query:
+        object.from: '$limit: 50'
+    get:
+      # HTTP method to use. GET is default
+      method: GET
+      # This would default to https://example.com/api/person/{myId}, but for the sake of this example,
+      # the nickname property is used.
+      url: https://example.com/api/person/{nickname}
+    create:
+      # HTTP method to use. POST is default
+      method: POST
+    update:
+      method: PUT # HTTP method to use. PUT is default
 ```
 
 ## Query object
@@ -164,13 +182,35 @@ the one defined as the default for the resource’s method.
 
 Below is an example of what the query object looks like when in use.
 
-```yaml copy
-person:
-  query:
-    roles: [$public] # This makes all person resource actions public by default.
+```yaml copy validate
+name: Demo App
+defaultPage: Example Page
+
+resources:
+  person:
+    schema:
+      type: object
+      additionalProperties: false # Custom properties are disallowed to ensure the shape of each person resource is fixed.
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+        description:
+          type: string
     query:
-      object.from:
-        $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
+      roles: [$public] # This makes all person resource actions public by default.
+      query:
+        object.from: "$filter: lastName eq 'foo'" # Resolves to /resources/person?$filter=lastName eq 'foo'
 
 pages:
   - name: Example Page
@@ -187,6 +227,17 @@ pages:
         events:
           emit:
             data: people
+      - type: table
+        version: 0.22.1
+        events:
+          listen:
+            data: people
+        parameters:
+          fields:
+            - value: { prop: firstName }
+              label: First Name
+            - value: { prop: lastName }
+              label: Surname
 ```
 
 ## Views
@@ -211,7 +262,7 @@ accomplish this, views can be used. A view has a set of roles, as well as a
 In this case only the resource ID, table name and the creation date should be included. The
 `object.from` remapper is suitable for this:
 
-```yaml
+```yaml validate resources-snippet
 resources:
   reservation:
     query:
@@ -222,6 +273,7 @@ resources:
         - User
     schema:
       type: object
+      additionalProperties: false
       properties:
         name:
           type: string
@@ -271,10 +323,16 @@ long it takes for a resource to be considered expired.
 
 For example:
 
-```yaml
-person:
-  schema: ... # see schema above
-  expires: 1d 12h # resource will expire in 36 hours
+```yaml validate resources-snippet
+resources:
+  expiring-resource:
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+    expires: 1d 12h # resource will expire in 36 hours
 ```
 
 In the above example, a resource will be removed 36 hours after it was created, unless this was
@@ -419,7 +477,7 @@ the [asset](./assets.md) API. The resource API works with the asset API to handl
 treat a field in a resource as a binary asset, specify it as `type: string` and `format: binary` in
 the JSON schema.
 
-```yaml
+```yaml validate resources-snippet
 resources:
   picture:
     schema:

@@ -33,7 +33,7 @@ resource API.
 
 Add the following to the app definition at the root of the YAML:
 
-```yaml copy
+```yaml copy validate resources-snippet
 resources:
   person:
     roles: [$public]
@@ -133,21 +133,29 @@ graph LR
 
 Let’s add such a `data-loader` block.
 
-```yaml copy
-pages:
-  - name: People
-    blocks:
-      - type: data-loader
-        version: 0.22.1
-        actions:
-          onLoad:
-            type: resource.query
-            resource: person
-        events:
-          emit:
-            data: people
-      - type: table
-        version: 0.22.1
+```yaml copy validate page-snippet
+- name: People
+  blocks:
+    - type: data-loader
+      version: 0.22.1
+      actions:
+        onLoad:
+          type: resource.query
+          resource: person
+      events:
+        emit:
+          data: people
+    - type: table
+      version: 0.22.1
+      events:
+        listen:
+          data: people
+      parameters:
+        fields:
+          - value: { prop: firstName }
+            label: First Name
+          - value: { prop: lastName }
+            label: Surname
 ```
 
 When the app is saved, it will start off by showing a spinner. It then quickly turns into some
@@ -156,7 +164,7 @@ been registered yet.
 
 At this point, the total app definition should look like this:
 
-```yaml copy filename="app-definition.yaml"
+```yaml copy filename="app-definition.yaml" validate
 name: My App
 defaultPage: People
 
@@ -215,7 +223,7 @@ The easiest way to create new data is through a form. This is exactly what we’
 
 Add a new page:
 
-```yaml copy
+```yaml copy validate page-snippet
 - name: Register
   blocks:
     - type: form
@@ -269,7 +277,7 @@ displays the newly created person.
 
 The app should now look like this:
 
-```yaml copy filename="app-definition.yaml"
+```yaml copy filename="app-definition.yaml" validate
 name: My App
 description: ''
 defaultPage: People
@@ -365,7 +373,7 @@ editing the resource, but for now we’ll focus on viewing.
 
 Add a new page:
 
-```yaml indent={2} copy
+```yaml indent={2} copy validate page-snippet
 - name: Person details
   parameters:
     - id
@@ -416,7 +424,7 @@ Now, when a list item is clicked, the user will be redirected to the person’s 
 
 At this point, the app definition should look like this:
 
-```yaml copy filename="app-definition.yaml"
+```yaml copy filename="app-definition.yaml" validate
 name: My App
 description: ''
 defaultPage: People

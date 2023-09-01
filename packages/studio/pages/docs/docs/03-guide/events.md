@@ -20,7 +20,7 @@ of event to refresh its data.
 
 In an app definition this can be defined as follows, taking the `data-loader` block as an example:
 
-```yaml copy
+```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
     version: 0.22.1
@@ -30,14 +30,14 @@ blocks:
         resource: person
     events:
       emit:
-        data: example # the data event is emitted when data-loader is finished loading, and will emit it under the name ‘example’
+        data: people # the data event is emitted when data-loader is finished loading, and will emit it under the name ‘people’
       listen:
-        refresh: refreshExample # any received event using the name ‘refreshExample’ will trigger a refresh
+        refresh: refreshPeople # any received event using the name ‘refreshPeople’ will trigger a refresh
 ```
 
-The `data-loader` block will send an event called `example` containing the data it received when it
+The `data-loader` block will send an event called `people` containing the data it received when it
 finishes the `onLoad` action. It also waits for any incoming events under the name of
-`refreshExample`, which upon being received will call `onLoad` again and emit its data once again to
+`refreshPeople`, which upon being received will call `onLoad` again and emit its data once again to
 recreate refreshing the data.
 
 This functionality may seem unwieldy at a first glance, but it allows for more powerful and flexible
@@ -75,7 +75,7 @@ Any data received from the action will be passed to the event.
 
 For example, let’s say we want an `action-button` to trigger the `data-loader` to refresh its data:
 
-```yaml copy
+```yaml copy validate blocks-snippet
 blocks:
   - type: data-loader
     version: 0.22.1
@@ -85,9 +85,9 @@ blocks:
         resource: person
     events:
       emit:
-        data: example
+        data: people
       listen:
-        refresh: refreshExample
+        refresh: refreshPeople
   - type: action-button
     version: 0.22.1
     parameters:
@@ -95,8 +95,22 @@ blocks:
     actions:
       onClick:
         type: event
-        event: refreshExample
+        event: refreshPeople
+  - type: table
+    version: 0.22.1
+    events:
+      listen:
+        data: people
+    parameters:
+      fields:
+        - value: { prop: firstName }
+          label: First Name
+        - value: { prop: lastName }
+          label: Surname
 ```
 
 Triggering the `onClick` action on `action-button` will cause it to emit an event called
-`refreshExample`, which the `data-loader` block is listening for, causing it to refresh its data.
+`refreshPeople`, which the `data-loader` block is listening for, causing it to refresh its data.
+
+The `data-loader` also emits an event called people, so we need to have a block that will listen for
+it - the `table` block.

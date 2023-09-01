@@ -87,6 +87,8 @@
     "webpack": "^5.0.0",
     "webpack-dev-middleware": "^6.0.0",
     "winston": "^3.0.0",
+    "keytar": "^7.0.0",
+    "inquirer": "^9.0.0",
     "yaml": "^2.0.0",
     "yargs": "^17.0.0"
   },

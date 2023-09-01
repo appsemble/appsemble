@@ -1303,7 +1303,7 @@ export interface RequestLikeActionDefinition<T extends Action['type'] = Action['
   body?: Remapper;
 }
 
-interface ResourceActionDefinition<T extends Action['type']>
+export interface ResourceActionDefinition<T extends Action['type']>
   extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.

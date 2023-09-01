@@ -11,6 +11,7 @@ import * as gitlabRelease from './commands/gitlab-release.js';
 import * as release from './commands/release.js';
 import * as rewriteMessages from './commands/rewrite-messages.js';
 import * as twitter from './commands/twitter.js';
+import * as validateDocs from './commands/validate-docs.js';
 import * as validate from './commands/validate.js';
 import * as waitForApi from './commands/wait-for-api.js';
 import * as waitForSsl from './commands/wait-for-ssl.js';
@@ -37,6 +38,7 @@ yargs()
   .command(release as unknown as CommandModule)
   .command(rewriteMessages)
   .command(twitter)
+  .command(validateDocs as unknown as CommandModule)
   .command(validate)
   .command(waitForApi)
   .command(waitForSsl)

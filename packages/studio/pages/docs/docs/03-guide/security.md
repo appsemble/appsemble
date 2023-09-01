@@ -84,7 +84,7 @@ observed.
 
 The security definition below is used in the examples on this page.
 
-```yaml copy
+```yaml copy validate security-snippet
 security:
   default:
     role: Reader
@@ -103,7 +103,7 @@ security:
 In addition to roles, an app may also use teams for securing the app. This can be defined using the
 `teams` property of the security definition.
 
-```yaml copy
+```yaml copy validate security-snippet
 security:
   default:
     role: Reader
@@ -133,14 +133,28 @@ app definition, each user must at least have one of these roles in order to view
 Consequently, each page and block will use this property as its default implementation unless it is
 overridden by specifying another `roles` list at that level.
 
-```yaml
-name: Example app
-# etc
+```yaml validate
+name: Example App
+defaultPage: Example Page
+
 security:
-  # etc
+  default:
+    role: Reader
+    policy: everyone
+  roles:
+    Reader:
+      description: Anyone viewing the app.
 
 roles:
   - Reader
+
+pages:
+  - name: Example Page
+    blocks:
+      - type: action-button
+        version: 0.22.1
+        parameters:
+          icon: home
 ```
 
 > The example above signifies that everyone using the app must be logged-in in order to receive the
@@ -162,31 +176,49 @@ be logged out of the app and be notified of this.
 Pages that are not accessible to an authenticated user based on their role will automatically be
 hidden from the app’s menu.
 
-```yaml
-pages:
-  - name: Example Page
+```yaml validate page-snippet
+- name: Example Page
+  blocks:
+    - type: action-button
+      version: 0.22.1
+      parameters:
+        icon: home
 ```
 
 > In the above example, viewing this page requires either no roles or the `roles` property specified
 > on the root of the app definition
 
-```yaml
-pages:
-  - name: Example Page
-    roles: []
+```yaml validate page-snippet
+- name: Example Page
+  roles: []
+  blocks:
+    - type: action-button
+      version: 0.22.1
+      parameters:
+        icon: home
 ```
 
 > By specifying an empty list, no roles are required to view this page. If the root of the app
 > definition requires any roles, the user still needs to authenticate themselves.
 
-```yaml
+```yaml validate pages-snippet
 pages:
   - name: Example Page
     roles:
       - Admin
+    blocks:
+      - type: action-button
+        version: 0.22.1
+        parameters:
+          icon: home
   - name: Example Page 2
     roles:
       - Reader
+    blocks:
+      - type: action-button
+        version: 0.22.1
+        parameters:
+          icon: arrow-left
 ```
 
 > By specifying the `roles` property for each page, the root `roles` property of the app will be
@@ -203,16 +235,23 @@ block will not be able to view or interact with the block at all.
 This can be especially useful for extending the functionality of a page for a specific set of users
 such as a button to create a new app for the administrators of a blog.
 
-```yaml
-pages:
-  - name: Example Page
-    blocks:
-      - type: example
-        version: 0.0.0
-      - type: super-secret-block
-        version: 0.0.0
-        roles:
-          - Admin
+```yaml validate page-snippet
+- name: Example Page
+  blocks:
+    - type: action-button
+      version: 0.22.1
+      parameters:
+        icon: home
+    - type: table
+      version: 0.22.1
+      parameters:
+        fields:
+          - value: { prop: firstName }
+            label: First Name
+          - value: { prop: lastName }
+            label: Surname
+      roles:
+        - Admin
 ```
 
 > In the example above, only the “example” block will be shown to users who don’t have the “Admin”
@@ -231,11 +270,12 @@ By specifying the `roles` property for a specific action of a resource, it is po
 this action. For example, if your resource may be publicly viewed by anyone but not created anew by
 non-administrators, this can be managed by defining the `roles` property.
 
-```yaml
+```yaml validate resources-snippet
 resources:
   blog:
     schema:
       type: object
+      additionalProperties: false
       properties:
         title:
           type: string

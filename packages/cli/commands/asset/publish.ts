@@ -1,13 +1,12 @@
 import { parse } from 'node:path';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, authenticate, logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app.js';
 import { publishAsset } from '../../lib/asset.js';
-import { authenticate } from '../../lib/authentication.js';
 import { type BaseArguments } from '../../types.js';
 
 interface PublishAssetArguments extends BaseArguments {

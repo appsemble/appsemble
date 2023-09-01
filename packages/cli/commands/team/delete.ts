@@ -1,7 +1,7 @@
+import { authenticate } from '@appsemble/node-utils';
 import { type Argv } from 'yargs';
 
 import { resolveAppIdAndRemote } from '../../lib/app.js';
-import { authenticate } from '../../lib/authentication.js';
 import { deleteTeam } from '../../lib/team.js';
 import { type BaseArguments } from '../../types.js';
 

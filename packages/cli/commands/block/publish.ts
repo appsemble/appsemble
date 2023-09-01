@@ -1,9 +1,8 @@
-import { logger } from '@appsemble/node-utils';
+import { authenticate, logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
-import { authenticate } from '../../lib/authentication.js';
 import { buildBlock, getBlockConfig, publishBlock } from '../../lib/block.js';
 import { type BaseArguments } from '../../types.js';
 

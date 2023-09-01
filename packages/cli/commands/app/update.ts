@@ -1,13 +1,12 @@
 import { type ReadStream } from 'node:fs';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { AppsembleError, authenticate, logger } from '@appsemble/node-utils';
 import { type AppVisibility } from '@appsemble/types';
 import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
 import { updateApp } from '../../lib/app.js';
-import { authenticate } from '../../lib/authentication.js';
 import { coerceFile } from '../../lib/coercers.js';
 import { type BaseArguments } from '../../types.js';
 
