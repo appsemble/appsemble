@@ -8,6 +8,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         color,
         fullwidth,
         icon,
+        iconSide,
         inverted,
         label,
         light,
@@ -30,41 +31,79 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
           'is-inverted': inverted,
           'is-outlined': outlined,
         });
-        node.title = utils.remap(title, data) as string;
-        if (icon) {
-          node.append(
-            <span className="icon">
-              <i className={utils.fa(icon)} />
-            </span>,
-          );
+        if (iconSide) {
+          const createNode = (newData: unknown): ChildNode => {
+            const newText = utils.remap(label, newData);
+            return typeof newText === 'string' ||
+              (typeof newText === 'number' && Number.isFinite(newText)) ? (
+              <span>{newText}</span>
+            ) : (
+              // Even if the label is empty, we want to be able to replace the node when new data is
+              // is received.
+              document.createTextNode('')
+            );
+          };
+          let currentText = createNode(data);
+          let currentData = data;
+          node.append(currentText);
+          events.on.data((newData) => {
+            const newText = createNode(newData);
+            currentText.replaceWith(newText);
+            currentText = newText;
+            currentData = newData;
+          });
+
+          node.addEventListener('click', (event) => {
+            // Delegate anchor behavior to the link action.
+            event.preventDefault();
+            action(currentData);
+          });
+
+          node.title = utils.remap(title, data) as string;
+          if (icon) {
+            node.append(
+              <span className="icon">
+                <i className={utils.fa(icon)} />
+              </span>,
+            );
+          }
+        } else {
+          node.title = utils.remap(title, data) as string;
+          if (icon) {
+            node.append(
+              <span className="icon">
+                <i className={utils.fa(icon)} />
+              </span>,
+            );
+          }
+
+          const createNode = (newData: unknown): ChildNode => {
+            const newText = utils.remap(label, newData);
+            return typeof newText === 'string' ||
+              (typeof newText === 'number' && Number.isFinite(newText)) ? (
+              <span>{newText}</span>
+            ) : (
+              // Even if the label is empty, we want to be able to replace the node when new data is
+              // is received.
+              document.createTextNode('')
+            );
+          };
+          let currentText = createNode(data);
+          let currentData = data;
+          node.append(currentText);
+          events.on.data((newData) => {
+            const newText = createNode(newData);
+            currentText.replaceWith(newText);
+            currentText = newText;
+            currentData = newData;
+          });
+
+          node.addEventListener('click', (event) => {
+            // Delegate anchor behavior to the link action.
+            event.preventDefault();
+            action(currentData);
+          });
         }
-
-        const createNode = (newData: unknown): ChildNode => {
-          const newText = utils.remap(label, newData);
-          return typeof newText === 'string' ||
-            (typeof newText === 'number' && Number.isFinite(newText)) ? (
-            <span>{newText}</span>
-          ) : (
-            // Even if the label is empty, we want to be able to replace the node when new data is
-            // is received.
-            document.createTextNode('')
-          );
-        };
-        let currentText = createNode(data);
-        let currentData = data;
-        node.append(currentText);
-        events.on.data((newData) => {
-          const newText = createNode(newData);
-          currentText.replaceWith(newText);
-          currentText = newText;
-          currentData = newData;
-        });
-
-        node.addEventListener('click', (event) => {
-          // Delegate anchor behavior to the link action.
-          event.preventDefault();
-          action(currentData);
-        });
         return node;
       },
     )}
