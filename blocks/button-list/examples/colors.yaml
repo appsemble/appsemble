@@ -3,12 +3,14 @@ parameters:
     - label: Primary
       color: primary
       onClick: clickPrimary
+      iconSide: true
     - label: Warning
       color: warning
       onClick: clickWarning
     - label: Danger
       color: danger
       onClick: clickDanger
+      iconSide: true
     - label: Link
       color: link
       onClick: clickLink

@@ -8,6 +8,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
         color,
         fullwidth,
         icon,
+        iconSide,
         inverted,
         label,
         light,
@@ -31,7 +32,7 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
           'is-outlined': outlined,
         });
         node.title = utils.remap(title, data) as string;
-        if (icon) {
+        if (!iconSide && icon) {
           node.append(
             <span className="icon">
               <i className={utils.fa(icon)} />
@@ -65,6 +66,14 @@ bootstrap(({ actions, data, events, parameters: { buttons }, utils }) => (
           event.preventDefault();
           action(currentData);
         });
+
+        if (iconSide && icon) {
+          node.append(
+            <span className="icon">
+              <i className={utils.fa(icon)} />
+            </span>,
+          );
+        }
         return node;
       },
     )}

@@ -16,6 +16,11 @@ export interface Button {
   icon?: IconName;
 
   /**
+   * When set to true, icon will be located on the right side of the button in the list.
+   */
+  iconSide?: boolean;
+
+  /**
    * The name of the action to trigger when the button is clicked.
    *
    * @format action
