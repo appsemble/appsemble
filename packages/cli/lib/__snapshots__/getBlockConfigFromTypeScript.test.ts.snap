@@ -237,6 +237,10 @@ Will not render if undefined.",
             "format": "fontawesome",
             "type": "string",
           },
+          "iconSide": {
+            "description": "When set to true, icon will be located on the right side of the button in the list.",
+            "type": "boolean",
+          },
           "inverted": {
             "description": "Whether the text and background colors should be inverted.",
             "type": "boolean",
