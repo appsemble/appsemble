@@ -22,13 +22,14 @@ import {
   useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { parse } from 'yaml';
 
 import { EditorTab } from './EditorTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AppPreview } from '../../../../components/AppPreview/index.js';
+import { useBreadCrumbsDecoration } from '../../../../components/BreadCrumbsDecoration/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
@@ -58,6 +59,23 @@ export default function EditPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const push = useMessages();
+  const { lang } = useParams();
+
+  const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
+
+  useEffect(() => {
+    setBreadCrumbsDecoration(
+      <Link className="my-2 mx-1" to={`/${lang}/apps/${id}/edit/gui`}>
+        <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
+          {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(messages.experimental)}`}
+        </Button>
+      </Link>,
+    );
+
+    return () => {
+      setBreadCrumbsDecoration(null);
+    };
+  }, [formatMessage, id, lang, location, setBreadCrumbsDecoration]);
 
   const changeTab = useCallback(
     (event: SyntheticEvent, hash: string) => navigate({ hash }),
