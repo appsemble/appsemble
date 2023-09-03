@@ -1,6 +1,11 @@
-import { type Remapper } from '@appsemble/sdk';
-
 declare module '@appsemble/sdk' {
+  interface Actions {
+    /**
+     * The action that is triggered when changing image.
+     */
+    onChange: never;
+  }
+
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
@@ -12,39 +17,38 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
-     * The Url of the image.
-     *
-     * Note that remappers must be used if the image is received through the data event listener.
-     */
-    url: Remapper;
-
-    /**
      * The alt text of the image.
      *
      */
     alt?: Remapper;
 
     /**
-     * Is image rounded.
+     * The height of the image in pixels.
      *
+     * @default 250
      */
-    rounded?: boolean;
+    height?: number;
 
     /**
-     * The alignment of the text content.
+     * If true file can be uploaded from device.
      *
-     * @default 'left'
+     * Actions will work if input is true.
+     *
+     * @default false
      */
-    alignment?: 'center' | 'left' | 'right';
+    input?: boolean;
+
+    /**
+     * The Url or src of the image.
+     *
+     */
+    url: Remapper;
 
     /**
      * The width of the image in pixels.
+     *
+     * @default 250
      */
     width?: number;
-
-    /**
-     * The height of the image in pixels.
-     */
-    height?: number;
   }
 }

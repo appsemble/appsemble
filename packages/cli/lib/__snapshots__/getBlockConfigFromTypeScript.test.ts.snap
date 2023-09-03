@@ -3525,7 +3525,11 @@ All elements specifying \`data-content\` will be updated each time this event is
 
 exports[`getBlockConfigFromTypeScript > official blocks > image 1`] = `
 {
-  "actions": undefined,
+  "actions": {
+    "onChange": {
+      "description": "The action that is triggered when changing image.",
+    },
+  },
   "events": {
     "emit": undefined,
     "listen": {
@@ -3541,35 +3545,28 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "properties": {
-      "alignment": {
-        "default": "left",
-        "description": "The alignment of the text content.",
-        "enum": [
-          "center",
-          "left",
-          "right",
-        ],
-        "type": "string",
-      },
       "alt": {
         "description": "The alt text of the image.",
         "format": "remapper",
       },
       "height": {
+        "default": 250,
         "description": "The height of the image in pixels.",
         "type": "number",
       },
-      "rounded": {
-        "description": "Is image rounded.",
+      "input": {
+        "default": false,
+        "description": "If true file can be uploaded from device.
+
+Actions will work if input is true.",
         "type": "boolean",
       },
       "url": {
-        "description": "The Url of the image.
-
-Note that remappers must be used if the image is received through the data event listener.",
+        "description": "The Url or src of the image.",
         "format": "remapper",
       },
       "width": {
+        "default": 250,
         "description": "The width of the image in pixels.",
         "type": "number",
       },
