@@ -3545,13 +3545,27 @@ Compatible data that is received will be displayed.",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false,
     "properties": {
+      "alignment": {
+        "default": "center",
+        "description": "The alignment of image.",
+        "enum": [
+          "center",
+          "left",
+          "right",
+        ],
+        "type": "string",
+      },
       "alt": {
         "description": "The alt text of the image.",
         "format": "remapper",
       },
+      "defaultImage": {
+        "description": "This image will load if url returns invalid or null value.",
+        "format": "remapper",
+      },
       "fullscreen": {
         "default": false,
-        "description": "This image will be shown in fullscreened if image is clicked.",
+        "description": "This image will be shown in full screen mode if image is clicked.",
         "type": "boolean",
       },
       "height": {
@@ -3566,10 +3580,21 @@ Compatible data that is received will be displayed.",
 Actions will work if input is true.",
         "type": "boolean",
       },
-      "url": {
-        "description": "The Url or src of the image.
+      "name": {
+        "description": "The name used when storing image.
 
-Note that remappers must be used if the image is received through the data event listener.",
+Needed when input is true
+
+Value should be same as property name in resources where it is going to be stored.",
+        "type": "string",
+      },
+      "rounded": {
+        "default": false,
+        "description": "Is image rounded.",
+        "type": "boolean",
+      },
+      "url": {
+        "description": "The Url or src of the image.",
         "format": "remapper",
       },
       "width": {

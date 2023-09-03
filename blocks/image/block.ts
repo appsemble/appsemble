@@ -17,13 +17,26 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
+     * The alignment of image.
+     *
+     * @default 'center'
+     */
+    alignment?: 'center' | 'left' | 'right';
+
+    /**
      * The alt text of the image.
      *
      */
     alt?: Remapper;
 
     /**
-     * This image will be shown in fullscreened if image is clicked.
+     * This image will load if url returns invalid or null value.
+     *
+     */
+    defaultImage?: Remapper;
+
+    /**
+     * This image will be shown in full screen mode if image is clicked.
      *
      * @default false
      */
@@ -46,9 +59,24 @@ declare module '@appsemble/sdk' {
     input?: boolean;
 
     /**
+     * The name used when storing image.
+     *
+     * Needed when input is true
+     *
+     * Value should be same as property name in resources where it is going to be stored.
+     */
+    name?: string;
+
+    /**
+     * Is image rounded.
+     *
+     * @default false
+     */
+    rounded?: boolean;
+
+    /**
      * The Url or src of the image.
      *
-     * Note that remappers must be used if the image is received through the data event listener.
      */
     url: Remapper;
 
