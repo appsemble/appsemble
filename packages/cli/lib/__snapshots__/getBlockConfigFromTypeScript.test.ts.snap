@@ -3549,6 +3549,11 @@ Compatible data that is received will be displayed.",
         "description": "The alt text of the image.",
         "format": "remapper",
       },
+      "fullscreen": {
+        "default": false,
+        "description": "This image will be shown in fullscreened if image is clicked.",
+        "type": "boolean",
+      },
       "height": {
         "default": 250,
         "description": "The height of the image in pixels.",
@@ -3562,7 +3567,9 @@ Actions will work if input is true.",
         "type": "boolean",
       },
       "url": {
-        "description": "The Url or src of the image.",
+        "description": "The Url or src of the image.
+
+Note that remappers must be used if the image is received through the data event listener.",
         "format": "remapper",
       },
       "width": {

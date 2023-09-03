@@ -1,0 +1,1 @@
+Allows full screen functionality.

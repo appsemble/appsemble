@@ -23,6 +23,13 @@ declare module '@appsemble/sdk' {
     alt?: Remapper;
 
     /**
+     * This image will be shown in fullscreened if image is clicked.
+     *
+     * @default false
+     */
+    fullscreen?: boolean;
+
+    /**
      * The height of the image in pixels.
      *
      * @default 250
@@ -41,6 +48,7 @@ declare module '@appsemble/sdk' {
     /**
      * The Url or src of the image.
      *
+     * Note that remappers must be used if the image is received through the data event listener.
      */
     url: Remapper;
 
