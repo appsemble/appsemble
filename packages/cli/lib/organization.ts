@@ -4,16 +4,7 @@ import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
 
-interface CreateOrganizationArguments {
-  description: string;
-  email: string;
-  id: string;
-  name: string;
-  website: string;
-  icon: ReadStream;
-}
-
-interface UpdateOrganizationArguments {
+interface OrganizationArguments {
   description: string;
   email: string;
   id: string;
@@ -29,7 +20,7 @@ export async function createOrganization({
   id,
   name,
   website,
-}: CreateOrganizationArguments): Promise<void> {
+}: OrganizationArguments): Promise<void> {
   const formData = new FormData();
   formData.append('id', id);
 
@@ -70,7 +61,7 @@ export async function updateOrganization({
   id,
   name,
   website,
-}: UpdateOrganizationArguments): Promise<void> {
+}: OrganizationArguments): Promise<void> {
   logger.info(`Updating organization ${id}${name ? ` (${name})` : ''}`);
 
   const formData = new FormData();
@@ -102,4 +93,24 @@ export async function updateOrganization({
 
   await axios.patch(`/api/organizations/${id}`, formData);
   logger.info(`Successfully updated organization ${id}${name ? ` (${name})` : ''}`);
+}
+
+export async function upsertOrganization({
+  description,
+  email,
+  icon,
+  id,
+  name,
+  website,
+}: OrganizationArguments): Promise<void> {
+  try {
+    await axios.get(`/api/organizations/${id}`);
+    updateOrganization({ description, email, icon, id, name, website });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
+      createOrganization({ description, email, icon, id, name, website });
+    } else {
+      logger.error(error);
+    }
+  }
 }
