@@ -19,6 +19,7 @@
 }
 
 .ellipsis {
+  font-size: 0.8vw !important;
   margin-bottom: 0 !important;
   overflow: hidden;
   text-overflow: ellipsis;
