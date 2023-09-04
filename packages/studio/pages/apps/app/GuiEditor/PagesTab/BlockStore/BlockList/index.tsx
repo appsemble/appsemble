@@ -39,16 +39,21 @@ export function BlockList({ dragEventListener, filter }: BlockListProps): ReactE
   const appsembleBlocks: BlockManifest[] = blocks
     .filter((b) => b.name.startsWith('@appsemble'))
     .sort((a, b) => a.name.localeCompare(b.name));
+  const thirdPartyBlocks: BlockManifest[] = blocks
+    .filter((b) => !b.name.startsWith('@appsemble'))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const allBlocks = appsembleBlocks.concat(thirdPartyBlocks);
 
   const filteredBlocks = filter
-    ? appsembleBlocks.filter(
+    ? allBlocks.filter(
         (block: BlockManifest) =>
           parseBlockName(block.name)[1].toLowerCase().includes(filter.toLowerCase()) ||
           parseBlockName(block.name)[0]
             .toLowerCase()
             .includes(filter.toLowerCase().replaceAll('@', '')),
       )
-    : appsembleBlocks;
+    : allBlocks;
 
   if (!filteredBlocks.length) {
     return (

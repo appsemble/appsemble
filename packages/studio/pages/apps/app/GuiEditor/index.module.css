@@ -62,7 +62,7 @@
   flex-direction: row;
   height: 80vh;
   margin: 0;
-  overflow-x: hidden;
+  overflow: hidden;
   padding: 0;
 }
 
