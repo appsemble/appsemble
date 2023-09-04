@@ -1,5 +1,4 @@
 import { Permission } from '@appsemble/utils';
-import { conflict, notFound } from '@hapi/boom';
 import { type Context } from 'koa';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 
@@ -91,7 +90,13 @@ export async function getCollection(ctx: Context): Promise<void> {
     (collection.visibility === 'private' &&
       !memberships.some((membership) => membership.OrganizationId === collection.OrganizationId))
   ) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   ctx.response.status = 200;
@@ -108,7 +113,13 @@ export async function deleteCollection(ctx: Context): Promise<void> {
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, collection.OrganizationId, Permission.DeleteCollections);
@@ -174,7 +185,13 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     (collection.visibility === 'private' &&
       !memberships.some((membership) => membership.OrganizationId === collection.OrganizationId))
   ) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const apps = (
@@ -225,7 +242,13 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
   )?.Apps;
 
   if (!apps) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const ratingsMap = new Map(
@@ -284,7 +307,13 @@ export async function addAppToCollection(ctx: Context): Promise<void> {
   const app = await App.findByPk(body.AppId, { attributes: ['id'] });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const collection = await AppCollection.findByPk(appCollectionId, {
@@ -292,7 +321,13 @@ export async function addAppToCollection(ctx: Context): Promise<void> {
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
@@ -304,7 +339,13 @@ export async function addAppToCollection(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      throw conflict('App already in collection');
+      ctx.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        message: 'App already in collection',
+        error: 'Conflict',
+      };
+      ctx.throw();
     }
     throw error;
   }
@@ -320,7 +361,13 @@ export async function removeAppFromCollection(ctx: Context): Promise<void> {
   const app = await App.findByPk(appId, { attributes: ['id'] });
 
   if (!app) {
-    throw notFound('App not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   const collection = await AppCollection.findByPk(appCollectionId, {
@@ -328,7 +375,13 @@ export async function removeAppFromCollection(ctx: Context): Promise<void> {
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
@@ -353,7 +406,13 @@ export async function getCollectionHeaderImage(ctx: Context): Promise<void> {
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   ctx.response.status = 200;
@@ -371,7 +430,13 @@ export async function getCollectionExpertProfileImage(ctx: Context): Promise<voi
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   ctx.response.status = 200;
@@ -390,7 +455,13 @@ export async function updateCollection(ctx: Context): Promise<void> {
   });
 
   if (!collection) {
-    throw notFound('Collection not found');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'Collection not found',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, collection.OrganizationId, Permission.EditCollections);
@@ -428,7 +499,13 @@ export async function pinAppToCollection(ctx: Context): Promise<void> {
   });
 
   if (!aca) {
-    throw notFound('App not found in collection');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found in collection',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
@@ -461,7 +538,13 @@ export async function unpinAppFromCollection(ctx: Context): Promise<void> {
   });
 
   if (!aca) {
-    throw notFound('App not found in collection');
+    ctx.status = 404;
+    ctx.response.body = {
+      statusCode: 404,
+      message: 'App not found in collection',
+      error: 'Not Found',
+    };
+    ctx.throw();
   }
 
   await checkRole(ctx, aca.AppCollection.OrganizationId, Permission.EditCollections);
