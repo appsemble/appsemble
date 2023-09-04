@@ -7,6 +7,7 @@
   flex-flow: wrap row;
   height: 80%;
   margin: 5%;
+  min-height: 105px;
   min-width: 105px;
   padding-bottom: 0;
   padding-top: 0;
