@@ -43,8 +43,7 @@
     "@appsemble/types": "0.22.1",
     "inquirer": "^9.0.0",
     "type-fest": "^4.0.0",
-    "yaml": "^2.0.0",
-    "yargs": "^17.0.0"
+    "yaml": "^2.0.0"
   },
   "devDependencies": {
     "@types/inquirer": "^9.0.0"
