@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "dependencies": {
+    "@appsemble/cli": "^0.20.0",
+    "@appsemble/webpack-config": "^0.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-remcohaszing": "^9.0.0",
+    "eslint-formatter-gitlab": "^4.0.0",
+    "eslint-plugin-playwright": "^0.15.0",
+    "postcss-preset-env": "^8.0.0",
+    "prettier": "^2.0.0"
+  },
+  "workspaces": [
+    "blocks/*",
+    "packages/*"
+  ]
+}

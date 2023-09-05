@@ -1,0 +1,41 @@
+stages:
+  - test
+
+workflow:
+  rules:
+    # By default, run jobs for every merge request.
+    - if: $CI_MERGE_REQUEST_ID
+    # By default, run jobs for every commit on main.
+    - if: $CI_COMMIT_BRANCH == 'main'
+    # By default, run jobs for every schedule
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+
+.npm:
+  image: node18-alpine
+  before_script:
+    - npm ci
+
+###################################################################################################
+# Test Stage                                                                                      #
+###################################################################################################
+
+# Lint code using eslint
+eslint:
+  extends: .npm
+  stage: test
+  script: npx eslint --format gitlab .
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
+
+# Check formatting using Prettier
+prettier:
+  extends: .npm
+  stage: test
+  script: npx prettier --check .
+
+# Validate types using TypeScript
+tsc:
+  extends: .npm
+  stage: test
+  script: npx --workspaces tsc

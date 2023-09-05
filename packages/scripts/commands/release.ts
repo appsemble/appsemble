@@ -292,6 +292,12 @@ export async function handler({ increment }: Args): Promise<void> {
   const appsTemplateDir = 'packages/cli/templates/apps';
   const appsTemplates = await globby([`${appsTemplateDir}/*/app-definition.yaml`]);
   await Promise.all(appsTemplates.map((t) => replaceFile(t, version, newVersion)));
+
+  const projectTemplatesDir = 'packages/create-appsemble/templates';
+  const projectTemplates = await readdir(projectTemplatesDir);
+  await Promise.all(
+    projectTemplates.map((t) => updatePkg(join(process.cwd(), projectTemplatesDir, t), newVersion)),
+  );
   await Promise.all(paths.map((filepath) => replaceFile(filepath, version, newVersion)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, newVersion)));
   await updatePkg(process.cwd(), newVersion);
