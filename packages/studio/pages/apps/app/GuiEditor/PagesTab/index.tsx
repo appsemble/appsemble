@@ -211,7 +211,11 @@ export function PagesTab({
     const newBlock = {
       type: blockManifest.name,
       version: blockManifest.version,
-      parameters: generateData(blockManifest.parameters.definitions, blockManifest.parameters),
+      parameters: generateData(
+        blockManifest.parameters.definitions,
+        blockManifest.parameters,
+        blockManifest.name,
+      ),
     } as BlockDefinition;
     addBlock(newBlock);
   };

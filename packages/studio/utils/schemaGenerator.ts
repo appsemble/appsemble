@@ -2,6 +2,42 @@ import { type Schema } from 'jsonschema';
 import { type JsonValue } from 'type-fest';
 
 /**
+ * Generates data for certain blocks acording to a preset configuration of default values
+ */
+export const generateDataFromConfiguration = (
+  definitions: Record<string, Schema>,
+  schema?: Schema,
+  blockName?: string,
+): JsonValue => {
+  if (blockName === '@appsemble/form') {
+    return {
+      dense: false,
+      disableDefault: false,
+      disabled: false,
+      fields: [
+        {
+          defaultValue: '',
+          disabled: false,
+          icon: 'fas fa-home',
+          inline: true,
+          label: 'label',
+          name: '',
+          placeholder: 'placeholder',
+          readOnly: false,
+          requirements: [],
+          show: 'show',
+          tag: 'tag',
+          type: 'string',
+        },
+      ],
+      previous: false,
+      requirements: [],
+      skipInitialLoad: false,
+    };
+  }
+};
+
+/**
  * Generates values for each type in a Schema.
  * This is done to allow new blocks made with the GUI Editor to have default values
  */
@@ -9,10 +45,18 @@ import { type JsonValue } from 'type-fest';
 export const generateData = (
   definitions: Record<string, Schema>,
   schema?: Schema,
-  ownerKey = '',
+  blockName?: string,
 ): JsonValue => {
   if (!schema) {
     return;
+  }
+
+  // Set configurations for certain blocks
+  if (blockName) {
+    const blockConfigs = ['@appsemble/form'];
+    if (blockConfigs.includes(blockName)) {
+      return generateDataFromConfiguration(definitions, schema, blockName);
+    }
   }
 
   if (schema.$ref) {
@@ -54,7 +98,7 @@ export const generateData = (
     if (schema.const) {
       return schema.const;
     }
-    return schema.default ?? ownerKey;
+    return schema.default ?? blockName;
   }
   if (schema.type === 'array') {
     const firstArray = Array.from({ length: schema.minItems }, (empty, index) =>
