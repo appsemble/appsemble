@@ -30,7 +30,7 @@ it('should return empty string', () => {
 
 it('Boolean property should return false', () => {
   const result = generateData(null, { type: 'boolean' });
-  expect(result).toBe(true);
+  expect(result).toBe(false);
 });
 
 it('number property should return 0', () => {

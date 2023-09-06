@@ -2,7 +2,7 @@ import { type Schema } from 'jsonschema';
 import { type JsonValue } from 'type-fest';
 
 /**
- * Generates data for certain blocks acording to a preset configuration of default values
+ * Generates data for certain blocks according to a preset configuration of default values
  */
 export const generateDataFromConfiguration = (
   definitions: Record<string, Schema>,
