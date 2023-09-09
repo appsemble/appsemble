@@ -2276,7 +2276,7 @@ describe('updateResources', () => {
       {
         AppId: app.id,
         ResourceId: 1,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test Resource A'),
         filename: null,
@@ -2724,7 +2724,7 @@ describe('createResource', () => {
       {
         AppId: app.id,
         ResourceId: 1,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
         filename: null,
@@ -2886,7 +2886,7 @@ describe('createResource', () => {
       {
         AppId: app.id,
         ResourceId: 1,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource a'),
         filename: null,
@@ -2898,7 +2898,7 @@ describe('createResource', () => {
       {
         AppId: app.id,
         ResourceId: 2,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: Buffer.from('Test resource b'),
         filename: null,
@@ -3567,7 +3567,7 @@ describe('updateResource', () => {
       {
         AppId: app.id,
         ResourceId: 1,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
         filename: null,
@@ -4410,7 +4410,7 @@ describe('patchResource', () => {
       {
         AppId: app.id,
         ResourceId: 1,
-        UserId: null,
+        AppMemberId: null,
         created: new Date('1970-01-01T00:00:00.000Z'),
         data: expect.any(Buffer),
         filename: null,

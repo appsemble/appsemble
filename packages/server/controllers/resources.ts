@@ -24,6 +24,7 @@ import {
   transactional,
   type User,
 } from '../models/index.js';
+import { getUserAppAccount } from '../options/getUserAppAccount.js';
 import { options } from '../options/options.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
@@ -194,6 +195,8 @@ export async function updateResources(ctx: Context): Promise<void> {
       : [],
   });
 
+  const appMember = await getUserAppAccount(app.id, user?.id);
+
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const userQuery = await verifyResourceActionPermission({
     context: ctx,
@@ -296,7 +299,7 @@ export async function updateResources(ctx: Context): Promise<void> {
             ...asset,
             AppId: app.id,
             ResourceId,
-            UserId: user?.id,
+            AppMemberId: appMember?.id,
           };
         }),
         { logging: false, transaction },
@@ -337,6 +340,8 @@ export async function patchResource(ctx: Context): Promise<void> {
         ]
       : [],
   });
+
+  const appMember = await getUserAppAccount(app.id, user?.id);
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
   const userQuery = await verifyResourceActionPermission({
@@ -393,7 +398,7 @@ export async function patchResource(ctx: Context): Promise<void> {
             ...asset,
             AppId: app.id,
             ResourceId: resource.id,
-            UserId: user?.id,
+            AppMemberId: appMember?.id,
           })),
           { logging: false, transaction },
         ),

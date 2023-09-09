@@ -17,7 +17,6 @@ import {
 
 import {
   AppMember,
-  Asset,
   EmailAuthorization,
   Member,
   OAuth2AuthorizationCode,
@@ -71,9 +70,6 @@ export class User extends Model {
 
   @HasMany(() => ResetPasswordToken, { onDelete: 'CASCADE' })
   ResetPasswordTokens: ResetPasswordToken[];
-
-  @HasMany(() => Asset)
-  Asset: Asset[];
 
   @HasMany(() => AppMember)
   AppMembers: AppMember[];
