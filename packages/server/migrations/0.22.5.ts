@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes, type Sequelize } from 'sequelize';
 
-import { getUserAppAccount } from '../options/getUserAppAccount.js';
+import { convertUserToAppMember } from './utils.js';
 
-export const key = '0.22.1';
+export const key = '0.22.5';
 
 /**
  * Summary:
@@ -19,10 +19,6 @@ export async function up(db: Sequelize): Promise<void> {
     AppId: number;
   }
 
-  const assets: OldAsset[] = (
-    await db.query('SELECT "UserId", "AppId" FROM "Asset"')
-  )[0] as OldAsset[];
-
   logger.info('Adding column `Asset`.AppMemberId to `Asset`');
   await queryInterface.addColumn('Asset', 'AppMemberId', {
     type: DataTypes.UUID,
@@ -35,14 +31,18 @@ export async function up(db: Sequelize): Promise<void> {
   });
 
   logger.info("Add associated AppMemberId's to `Asset`.`AppMemberId`");
+  const assets: OldAsset[] = (
+    await db.query('SELECT "UserId", "AppId" FROM "Asset"')
+  )[0] as OldAsset[];
+
   let assetError = false;
   for (const asset of assets) {
     try {
-      const appMember = await getUserAppAccount(asset.AppId, asset.UserId);
-      if (appMember) {
+      const appMemberId = await convertUserToAppMember(db, asset.AppId, asset.UserId);
+      if (appMemberId) {
         await db.query('UPDATE "Asset" SET "AppMemberId" = ? WHERE "UserId" = ?', {
           type: QueryTypes.UPDATE,
-          replacements: [appMember, asset.UserId],
+          replacements: [appMemberId, asset.UserId],
         });
       }
     } catch (error) {
@@ -53,15 +53,10 @@ export async function up(db: Sequelize): Promise<void> {
   }
 
   if (assetError) {
-    logger.warn(
+    throw new Error(
       'A problem occurred while migrating Asset Users to AppMembers. Old data not deleted in this migration. See log for more information.',
     );
   } else {
-    await queryInterface.changeColumn('Asset', 'AppMemberId', {
-      type: DataTypes.UUID,
-      allowNull: false,
-    });
-
     logger.warn('Removing column `UserId` from Asset');
     await queryInterface.removeConstraint('Asset', 'Asset_UserId_fkey');
     await queryInterface.removeColumn('Asset', 'UserId');
@@ -119,15 +114,10 @@ export async function down(db: Sequelize): Promise<void> {
   }
 
   if (assetError) {
-    logger.warn(
+    throw new Error(
       'A problem occurred while migrating Asset AppMembers to Users. Old data not deleted in this migration. See log for more information.',
     );
   } else {
-    await queryInterface.changeColumn('Asset', 'UserId', {
-      type: DataTypes.UUID,
-      allowNull: false,
-    });
-
     logger.warn('Removing column `AppMemberId` from Asset');
     await queryInterface.removeConstraint('Asset', 'Asset_AppMemberId_fkey');
     await queryInterface.removeColumn('Asset', 'AppMemberId');
