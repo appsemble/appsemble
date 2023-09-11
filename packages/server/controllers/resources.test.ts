@@ -33,7 +33,11 @@ let member: Member;
 let user: User;
 let originalSendNotification: typeof webpush.sendNotification;
 
-const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
+const exampleApp = (
+  orgId: string,
+  path = 'test-app',
+  { template }: { template?: boolean } = {},
+): Promise<App> =>
   App.create({
     definition: {
       name: 'Test App',
@@ -253,6 +257,7 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
       },
     },
     path,
+    template,
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: orgId,
@@ -1765,6 +1770,51 @@ describe('queryResources', () => {
         "message": "User does not have sufficient permissions.",
         "statusCode": 403,
       }
+    `);
+  });
+
+  it('should return clonable field if app is a template app', async () => {
+    const app = await exampleApp(organization.id, 'test-app', { template: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'bar' },
+    });
+
+    authorizeStudio();
+    const response1 = await request.get(`/api/apps/${app.id}/resources/testResource`);
+    expect(response1).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$clonable": false,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+      ]
+    `);
+
+    resource.clonable = true;
+    await resource.save();
+
+    const response2 = await request.get(`/api/apps/${app.id}/resources/testResource`);
+    expect(response2).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$clonable": true,
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "bar",
+          "id": 1,
+        },
+      ]
     `);
   });
 });
@@ -3411,7 +3461,7 @@ describe('updateResource', () => {
   });
 
   it('should set clonable if specified in the request', async () => {
-    const app = await exampleApp(organization.id);
+    const app = await exampleApp(organization.id, 'test-app');
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3442,9 +3492,69 @@ describe('updateResource', () => {
         "foo": "I am not Foo.",
         "id": 1,
       }
-    `,
+      `,
     );
     expect(resource.clonable).toBe(true);
+  });
+
+  it('should return clonable if app is a template app', async () => {
+    const app = await exampleApp(organization.id, 'test-app', { template: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    authorizeStudio();
+    const response1 = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+    );
+
+    expect(response1).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$clonable": false,
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+      `,
+    );
+
+    const response2 = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.', $clonable: true },
+    );
+
+    expect(response2).toMatchInlineSnapshot(
+      { data: { $editor: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$clonable": true,
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$editor": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am not Foo.",
+        "id": 1,
+      }
+      `,
+    );
   });
 
   it('should set $expires', async () => {

@@ -85,13 +85,13 @@ export function updateAppResource({
     }
 
     const reloaded = await newResource.reload({
-      include: [{ association: 'Editor' }],
+      include: [{ association: 'Editor' }, { association: 'App', attributes: ['template'] }],
       transaction,
     });
 
     processReferenceHooks(user as User, persistedApp, newResource, action, options, context);
     processHooks(user as User, persistedApp, newResource, action, options, context);
 
-    return reloaded.toJSON();
+    return reloaded.toJSON({ exclude: reloaded.App.template ? [] : undefined });
   });
 }
