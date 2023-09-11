@@ -4,8 +4,9 @@ import {
   type TabsPageDefinition,
 } from '@appsemble/types';
 import { type MutableRefObject, type ReactElement, useCallback, useState } from 'react';
-import { type Document, type ParsedNode } from 'yaml';
+import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
+import { type Page } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 import { BlockItem } from '../../ElementsList/BlockItem/index.js';
 import { PageItem } from '../../ElementsList/PageItem/PageItem.js';
@@ -28,7 +29,14 @@ export function PagesList({
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
 
-  const pages: string[] = app.definition.pages.map((page) => page.name);
+  const pageNames: string[] = app.definition.pages.map((page) => page.name);
+  const pages: Page[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.flatMap(
+    (page: YAMLMap, pageIndex: number) => ({
+      name: page.getIn(['name']) as string,
+      type: (page.getIn(['type']) ?? 'page') as string,
+      index: pageIndex,
+    }),
+  );
   const blocks: { type: string; parent: number; subParent: number; block: number }[] =
     app.definition.pages.flatMap((page, pageIndex) => {
       if (!page.type || page.type === 'page') {
@@ -61,6 +69,22 @@ export function PagesList({
       }
     });
 
+  const getSubPages = (pageIndex: number): Page[] => {
+    if (pages[pageIndex].type && pages[pageIndex].type !== 'page') {
+      return (
+        docRef.current.getIn([
+          'pages',
+          pageIndex,
+          pages[pageIndex].type === 'flow' ? 'steps' : 'tabs',
+        ]) as YAMLSeq
+      ).items.map((subPage: any) => ({
+        name: subPage.getIn(['name']) as string,
+        type: 'subPage',
+        index: pageIndex,
+      }));
+    }
+  };
+
   const onSelectPage = useCallback(
     (index: number, subParentIndex: number) => {
       onChange(index, subParentIndex, -1);
@@ -70,7 +94,7 @@ export function PagesList({
 
   return (
     <>
-      {pages.map((page, pageIndex) => (
+      {pageNames.map((page, pageIndex) => (
         <div key={page}>
           <PageItem
             blocks={blocks}
@@ -96,10 +120,10 @@ export function PagesList({
                 blocks={blocks}
                 docRef={docRef}
                 onChange={onChange}
-                pageIndex={pageIndex}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
                 selectedSubParent={selectedSubParent}
+                subPages={getSubPages(pageIndex)}
               />
             </>
           )}

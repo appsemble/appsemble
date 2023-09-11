@@ -35,6 +35,12 @@ export interface Block {
   block: number;
 }
 
+export interface Page {
+  name: string;
+  type: string;
+  index: number;
+}
+
 /**
  * This extended state is stored in `sessionStorage` during the login process with OAuth2.
  */
