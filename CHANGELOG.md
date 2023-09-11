@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.2](https://gitlab.com/appsemble/appsemble/-/releases/0.22.2)] - 2023-09-11
+
+### Added
+
+- Block(`button-list`): Added variable to support flipping icon side.
+- Cli: Add `appsemble organization upsert` command.
+- Create-appsemble: Add command to scaffold Appsemble projects for GitLab repositories.
+- Studio: List custom blocks in the GUI editor block store.
+
+### Fixed
+
+- Studio: Fix search missing from the docs.
+
 ## \[[0.22.1](https://gitlab.com/appsemble/appsemble/-/releases/0.22.1)] - 2023-08-30
 
 ### Fixed

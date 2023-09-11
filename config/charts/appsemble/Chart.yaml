@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.22.1
-appVersion: 0.22.1
+version: 0.22.2
+appVersion: 0.22.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,9 +23,18 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Block(button-list): Added variable to support flipping icon side."
+    - kind: added
+      description: "Cli: Add appsemble organization upsert command."
+    - kind: added
+      description: "Create-appsemble: Add command to scaffold Appsemble projects for
+        GitLab repositories."
+    - kind: added
+      description: "Studio: List custom blocks in the GUI editor block store."
     - kind: fixed
-      description: "Server: Fix migration for release version 0.22.1."
+      description: "Studio: Fix search missing from the docs."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
