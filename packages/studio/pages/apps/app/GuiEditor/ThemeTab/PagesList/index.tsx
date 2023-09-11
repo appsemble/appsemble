@@ -3,7 +3,7 @@ import {
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type MutableRefObject, type ReactElement, useCallback, useState } from 'react';
+import { type ReactElement, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
 import { type Page } from '../../../../../../types.js';
@@ -13,15 +13,15 @@ import { PageItem } from '../../ElementsList/PageItem/PageItem.js';
 import { SubPageItem } from '../../ElementsList/SubPageItem/index.js';
 
 interface PagesListProps {
-  readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
+  readonly saveStack: Document<ParsedNode, true>;
 }
 export function PagesList({
-  docRef,
   onChange,
+  saveStack,
   selectedBlock,
   selectedPage,
   selectedSubParent,
@@ -30,7 +30,7 @@ export function PagesList({
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
 
   const pageNames: string[] = app.definition.pages.map((page) => page.name);
-  const pages: Page[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.flatMap(
+  const pages: Page[] = (saveStack.getIn(['pages']) as YAMLSeq).items.flatMap(
     (page: YAMLMap, pageIndex: number) => ({
       name: page.getIn(['name']) as string,
       type: (page.getIn(['type']) ?? 'page') as string,
@@ -72,7 +72,7 @@ export function PagesList({
   const getSubPages = (pageIndex: number): Page[] => {
     if (pages[pageIndex].type && pages[pageIndex].type !== 'page') {
       return (
-        docRef.current.getIn([
+        saveStack.getIn([
           'pages',
           pageIndex,
           pages[pageIndex].type === 'flow' ? 'steps' : 'tabs',
@@ -110,16 +110,16 @@ export function PagesList({
             <>
               <BlockItem
                 blocks={blocks}
-                docRef={docRef}
                 onChange={onChange}
                 pageIndex={pageIndex}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
               />
               <SubPageItem
                 blocks={blocks}
-                docRef={docRef}
                 onChange={onChange}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
                 selectedSubParent={selectedSubParent}

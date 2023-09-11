@@ -17,22 +17,24 @@ interface SubPagePropertyProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedSubPage: number;
+  readonly saveStack: Document<ParsedNode, true>;
 }
 
 export function SubPageProperty({
   changeIn,
   deletePage,
   docRef,
+  saveStack,
   selectedPage,
   selectedSubPage,
 }: SubPagePropertyProps): ReactElement {
   const push = useMessages();
   const [currentSubPageName, setCurrentSubPageName] = useState<string>(
     (
-      docRef.current.getIn([
+      saveStack.getIn([
         'pages',
         selectedPage,
-        docRef.current.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+        saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
         selectedSubPage,
         'name',
       ]) as string
@@ -49,16 +51,16 @@ export function SubPageProperty({
   useEffect(() => {
     setCurrentSubPageName(
       (
-        docRef.current.getIn([
+        saveStack.getIn([
           'pages',
           selectedPage,
-          docRef.current.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+          saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
           selectedSubPage,
           'name',
         ]) as string
       ).trim(),
     );
-  }, [docRef, selectedPage, selectedSubPage]);
+  }, [docRef, saveStack, selectedPage, selectedSubPage]);
 
   const onChangePage = useCallback(() => {
     const doc = docRef.current;
@@ -72,7 +74,7 @@ export function SubPageProperty({
         [
           'pages',
           selectedPage,
-          docRef.current.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+          saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
           selectedSubPage,
           'name',
         ],
@@ -84,14 +86,14 @@ export function SubPageProperty({
         [
           'pages',
           selectedPage,
-          docRef.current.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+          saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
           selectedSubPage,
           'name',
         ],
         doc.createNode(currentSubPageName),
       );
     }
-  }, [docRef, selectedPage, selectedSubPage, currentSubPageName, changeIn, push]);
+  }, [docRef, selectedPage, selectedSubPage, currentSubPageName, changeIn, saveStack, push]);
 
   return (
     <div>

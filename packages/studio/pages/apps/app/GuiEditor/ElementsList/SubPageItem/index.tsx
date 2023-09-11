@@ -1,12 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import {
-  type DragEvent,
-  type MutableRefObject,
-  type ReactElement,
-  useCallback,
-  useState,
-} from 'react';
+import { type DragEvent, type ReactElement, useCallback, useState } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -14,11 +8,11 @@ import { SubPageBlockItem } from './SubPageBlockItem/index.js';
 import { type Block, type Page } from '../../../../../../types.js';
 
 interface SubPageItemProps {
-  readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
   readonly blocks: Block[];
+  readonly saveStack: Document<ParsedNode, true>;
   readonly subPages: Page[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
@@ -32,11 +26,11 @@ interface SubPageItemProps {
 }
 export function SubPageItem({
   blocks,
-  docRef,
   handleDragStart,
   handleDrop,
   onChange,
   onSelectSubPage,
+  saveStack,
   selectedBlock,
   selectedPage,
   selectedSubParent,
@@ -102,10 +96,10 @@ export function SubPageItem({
                 .map((subBlock) => (
                   <SubPageBlockItem
                     block={subBlock}
-                    docRef={docRef}
                     key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
                     onChange={onChange}
                     pageIndex={subPage.index}
+                    saveStack={saveStack}
                     selectedBlock={selectedBlock}
                     selectedPage={selectedPage}
                     selectedSubParent={selectedSubParent}

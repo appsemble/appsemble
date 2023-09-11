@@ -21,6 +21,7 @@ interface PagePropertyProps {
   readonly deleteIn: (path: Iterable<number | string>) => void;
   readonly deletePage: () => void;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly saveStack: Document<ParsedNode, true>;
   readonly selectedPage: number;
   readonly selectedSubPage: number;
 }
@@ -32,6 +33,7 @@ export function PageProperty({
   deleteIn,
   deletePage,
   docRef,
+  saveStack,
   selectedPage,
   selectedSubPage,
 }: PagePropertyProps): ReactElement {
@@ -40,10 +42,10 @@ export function PageProperty({
   const [currentPageName, setCurrentPageName] = useState(
     selectedPage === -1
       ? formatMessage(messages.pageName)
-      : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
+      : (saveStack.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
   const [inputPageType, setInputPageType] = useState<string>(
-    (docRef.current.getIn(['pages', selectedPage, 'type']) as string) ?? 'page',
+    (saveStack.getIn(['pages', selectedPage, 'type']) as string) ?? 'page',
   );
   const [currentSubPage, setCurrentSubPage] = useState<number>(selectedSubPage);
 
@@ -65,7 +67,7 @@ export function PageProperty({
     const doc = docRef.current;
     if (selectedPage === -1 && currentSubPage === -1) {
       // Create new page
-      if (doc.toJS().pages.some((page: PageDefinition) => page.name === currentPageName)) {
+      if (saveStack.toJS().pages.some((page: PageDefinition) => page.name === currentPageName)) {
         push({ body: formatMessage(messages.pageNameExists), color: 'danger' });
         return;
       }
@@ -89,7 +91,7 @@ export function PageProperty({
     } else if (selectedPage !== -1 && currentSubPage === -1) {
       // Update page
       if (
-        doc
+        saveStack
           .toJS()
           .pages.filter((value: PageDefinition, index: number) => index !== selectedPage)
           .some((page: PageDefinition) => page.name === currentPageName)
@@ -102,16 +104,16 @@ export function PageProperty({
         return;
       }
       // Check if the changed page is the default page TODO check if page name is used anywhere else
-      const oldName = doc.toJS().pages[selectedPage].name.trim();
-      if (doc.toJS().defaultPage.trim() === oldName) {
+      const oldName = saveStack.toJS().pages[selectedPage].name.trim();
+      if (saveStack.toJS().defaultPage.trim() === oldName) {
         changeIn(['defaultPage'], doc.createNode(currentPageName.trim()));
       }
       changeIn(['pages', selectedPage, 'name'], doc.createNode(currentPageName.trim()));
 
       // Change page type from page to flow/tab (move blocks into steps/tabs)
-      if (inputPageType !== 'page' && !doc.getIn(['pages', selectedPage, 'type'])) {
-        changeIn(['pages', selectedPage, 'type'], doc.createNode(inputPageType));
-        const pageBlocks = doc.getIn(['pages', selectedPage, 'blocks']);
+      if (inputPageType !== 'page' && !saveStack.getIn(['pages', selectedPage, 'type'])) {
+        changeIn(['pages', selectedPage, 'type'], saveStack.createNode(inputPageType));
+        const pageBlocks = saveStack.getIn(['pages', selectedPage, 'blocks']);
         addIn(
           ['pages', selectedPage, inputPageType === 'flow' ? 'steps' : 'tabs', 0, 'name'],
           doc.createNode('Sub-page'),
@@ -124,21 +126,21 @@ export function PageProperty({
       }
       // From flow/tab to page
       if (
-        (doc.getIn(['pages', selectedPage, 'type']) === 'flow' ||
-          doc.getIn(['pages', selectedPage, 'type']) === 'tabs') &&
+        (saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ||
+          saveStack.getIn(['pages', selectedPage, 'type']) === 'tabs') &&
         inputPageType === 'page'
       ) {
         const subPageBlocks = (
-          doc.getIn([
+          saveStack.getIn([
             'pages',
             selectedPage,
-            doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+            saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
           ]) as YAMLSeq
         ).items.flatMap((subPage: any) =>
           subPage.getIn(['blocks']).items.map((block: BlockDefinition) => block),
         );
 
-        const pageName = doc.getIn(['pages', selectedPage, 'name']);
+        const pageName = saveStack.getIn(['pages', selectedPage, 'name']);
         deleteIn(['pages', selectedPage]);
         addIn(['pages'], doc.createNode({ name: pageName, blocks: subPageBlocks }));
       }
@@ -169,13 +171,14 @@ export function PageProperty({
     docRef,
     selectedPage,
     currentSubPage,
+    saveStack,
     currentPageName,
     inputPageType,
     push,
+    formatMessage,
     addIn,
     changeIn,
     deleteIn,
-    formatMessage,
   ]);
 
   const onCreateSubPage = useCallback(() => {
@@ -185,30 +188,36 @@ export function PageProperty({
       addIn(
         ['pages', selectedPage, 'steps'],
         doc.createNode({
-          name: `Sub-page${(doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length}`,
+          name: `SubPage${
+            (saveStack.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length
+          }`,
           blocks: [],
         }),
       );
-      setCurrentSubPage((doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1);
+      setCurrentSubPage(
+        (saveStack.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1,
+      );
     } else {
       addIn(
         ['pages', selectedPage, 'tabs'],
         doc.createNode({
-          name: `Sub-page${(doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length}`,
+          name: `SubPage${(doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length}`,
           blocks: [],
         }),
       );
-      setCurrentSubPage((doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length - 1);
+      setCurrentSubPage(
+        (saveStack.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length - 1,
+      );
     }
-  }, [onChangePage, docRef, inputPageType, addIn, selectedPage]);
+  }, [onChangePage, docRef, inputPageType, addIn, selectedPage, saveStack]);
 
   useEffect(() => {
     setCurrentPageName(
       selectedPage === -1
         ? formatMessage(messages.pageName)
-        : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
+        : (saveStack.getIn(['pages', selectedPage, 'name']) as string).trim(),
     );
-  }, [docRef, formatMessage, selectedPage]);
+  }, [docRef, formatMessage, saveStack, selectedPage]);
 
   return (
     <div>
