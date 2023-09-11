@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.3](https://gitlab.com/appsemble/appsemble/-/releases/0.22.3)] - 2023-09-11
+
+### Fixed
+
+- Studio: Fix a workaround in the GUI editor where the `action-button` would get attached by default
+  when creating a new sub-page.
+
 ## \[[0.22.2](https://gitlab.com/appsemble/appsemble/-/releases/0.22.2)] - 2023-09-11
 
 ### Added
