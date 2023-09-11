@@ -90,32 +90,30 @@ export function PagesTab({
     setSelectedPage(-1);
   }, [setEditPageView, setEditBlockView]);
 
-  const getPagesBlocks = (): YAMLSeq => {
-    const doc = docRef.current;
+  const getPagesBlocks = useCallback((): YAMLSeq => {
     if (
-      !doc.getIn(['pages', selectedPage, 'type']) ||
-      doc.getIn(['pages', selectedPage, 'type']) === 'page'
+      !saveStack.getIn(['pages', selectedPage, 'type']) ||
+      saveStack.getIn(['pages', selectedPage, 'type']) === 'page'
     ) {
-      return doc.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
+      return saveStack.getIn(['pages', selectedPage, 'blocks']) as YAMLSeq;
     }
-    return doc.getIn([
+    return saveStack.getIn([
       'pages',
       selectedPage,
-      doc.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
+      saveStack.getIn(['pages', selectedPage, 'type']) === 'flow' ? 'steps' : 'tabs',
       selectedSubParent >= 0 ? selectedSubParent : 0,
       'blocks',
     ]) as YAMLSeq;
-  };
+  }, [saveStack, selectedPage, selectedSubParent]);
 
   const getBlockPath = useCallback((): unknown[] => {
-    const doc = docRef.current;
     if (
-      !doc.getIn(['pages', selectedPage, 'type']) ||
-      doc.getIn(['pages', selectedPage, 'type']) === 'page'
+      !saveStack.getIn(['pages', selectedPage, 'type']) ||
+      saveStack.getIn(['pages', selectedPage, 'type']) === 'page'
     ) {
       return ['pages', selectedPage, 'blocks'];
     }
-    if (doc.getIn(['pages', selectedPage, 'type']) === 'flow') {
+    if (saveStack.getIn(['pages', selectedPage, 'type']) === 'flow') {
       return [
         'pages',
         selectedPage,
@@ -124,7 +122,7 @@ export function PagesTab({
         'blocks',
       ];
     }
-    if (doc.getIn(['pages', selectedPage, 'type']) === 'tabs') {
+    if (saveStack.getIn(['pages', selectedPage, 'type']) === 'tabs') {
       return [
         'pages',
         selectedPage,
@@ -133,12 +131,13 @@ export function PagesTab({
         'blocks',
       ];
     }
-  }, [docRef, selectedPage, selectedSubParent]);
+  }, [saveStack, selectedPage, selectedSubParent]);
 
-  const getSelectedBlock = useCallback((): Document<ParsedNode> => {
-    const doc = docRef.current;
-    return doc.getIn([...getBlockPath(), selectedBlock]) as Document<ParsedNode>;
-  }, [docRef, getBlockPath, selectedBlock]);
+  const getSelectedBlock = useCallback(
+    (): Document<ParsedNode> =>
+      saveStack.getIn([...getBlockPath(), selectedBlock]) as Document<ParsedNode>,
+    [getBlockPath, saveStack, selectedBlock],
+  );
 
   const addBlock = (nb: BlockDefinition): void => {
     const doc = docRef.current;
@@ -256,6 +255,7 @@ export function PagesTab({
               deleteIn={deleteIn}
               deletePage={deletePage}
               docRef={docRef}
+              saveStack={saveStack}
               selectedPage={selectedPage}
               selectedSubPage={selectedSubParent}
             />
@@ -265,6 +265,7 @@ export function PagesTab({
               changeIn={changeIn}
               deletePage={deleteSubPage}
               docRef={docRef}
+              saveStack={saveStack}
               selectedPage={selectedPage}
               selectedSubPage={selectedSubParent}
             />

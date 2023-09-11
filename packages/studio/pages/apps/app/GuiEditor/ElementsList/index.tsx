@@ -42,8 +42,7 @@ export function ElementsList({
   const { formatMessage } = useIntl();
 
   const pageNames: string[] = (saveStack.getIn(['pages']) as YAMLSeq).items.map(
-    (page: YAMLSeq, pageIndex: number) =>
-      docRef.current.getIn(['pages', pageIndex, 'name']) as string,
+    (page: YAMLSeq, pageIndex: number) => saveStack.getIn(['pages', pageIndex, 'name']) as string,
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
@@ -223,21 +222,21 @@ export function ElementsList({
             <>
               <BlockItem
                 blocks={blocks}
-                docRef={docRef}
                 handleDragStart={handleDragStart}
                 handleDrop={handleDrop}
                 onChange={onChange}
                 pageIndex={pageIndex}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
               />
               <SubPageItem
                 blocks={blocks}
-                docRef={docRef}
                 handleDragStart={handleDragStart}
                 handleDrop={handleDrop}
                 onChange={onChange}
                 onSelectSubPage={onSelectPage}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
                 selectedSubParent={selectedSubParent}

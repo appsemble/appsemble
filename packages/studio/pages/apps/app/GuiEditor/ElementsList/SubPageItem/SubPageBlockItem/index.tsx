@@ -1,6 +1,6 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type MutableRefObject, type ReactElement, useCallback } from 'react';
+import { type DragEvent, type ReactElement, useCallback } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -8,11 +8,11 @@ import { type Block } from '../../../../../../../types.js';
 
 interface SubPageBlockItemProps {
   readonly block: Block;
-  readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
   readonly pageIndex: number;
+  readonly saveStack: Document<ParsedNode, true>;
   readonly subBlock: {
     type: string;
     parent: number;
@@ -30,11 +30,11 @@ interface SubPageBlockItemProps {
 }
 export function SubPageBlockItem({
   block,
-  docRef,
   handleDragStart,
   handleDrop,
   onChange,
   pageIndex,
+  saveStack,
   selectedBlock,
   selectedPage,
   selectedSubParent,
@@ -61,12 +61,10 @@ export function SubPageBlockItem({
       onDrop={(e) => handleDrop(e, subBlock.block, pageIndex, subBlock.subParent)}
     >
       {subBlock.type === 'flow'
-        ? docRef.current.toJS().pages[subBlock.parent].steps[subBlock.subParent].blocks[
-            subBlock.block
-          ].type
-        : docRef.current.toJS().pages[subBlock.parent].tabs[subBlock.subParent].blocks[
-            subBlock.block
-          ].type}
+        ? saveStack.toJS().pages[subBlock.parent].steps[subBlock.subParent].blocks[subBlock.block]
+            .type
+        : saveStack.toJS().pages[subBlock.parent].tabs[subBlock.subParent].blocks[subBlock.block]
+            .type}
     </Button>
   );
 }

@@ -1,13 +1,13 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type MutableRefObject, type ReactElement, useCallback } from 'react';
+import { type DragEvent, type ReactElement, useCallback } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { type Block } from '../../../../../../types.js';
 
 interface BlockItemProps {
-  readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly saveStack: Document<ParsedNode, true>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly pageIndex: number;
@@ -18,11 +18,11 @@ interface BlockItemProps {
 }
 export function BlockItem({
   blocks,
-  docRef,
   handleDragStart,
   handleDrop,
   onChange,
   pageIndex,
+  saveStack,
   selectedBlock,
   selectedPage,
 }: BlockItemProps): ReactElement {
@@ -49,7 +49,7 @@ export function BlockItem({
             onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
             onDrop={(e) => handleDrop(e, block.block, pageIndex)}
           >
-            {docRef.current.getIn(['pages', block.parent, 'blocks', block.block, 'type']) as string}
+            {saveStack.getIn(['pages', block.parent, 'blocks', block.block, 'type']) as string}
           </Button>
         ))}
     </>

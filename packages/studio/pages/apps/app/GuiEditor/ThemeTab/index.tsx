@@ -15,6 +15,7 @@ interface ThemeTabProps {
   readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
   readonly deleteIn: (path: Iterable<unknown>) => void;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly saveStack: Document<ParsedNode, true>;
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
@@ -26,6 +27,7 @@ export function ThemeTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
+  saveStack,
 }: ThemeTabProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
@@ -55,8 +57,8 @@ export function ThemeTab({
             {formatMessage(messages.defaultTheme)}
           </Button>
           <PagesList
-            docRef={docRef}
             onChange={onChangePagesBlocks}
+            saveStack={saveStack}
             selectedBlock={selectedBlock}
             selectedPage={selectedPage}
             selectedSubParent={selectedSubPage}
