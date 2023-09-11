@@ -546,6 +546,7 @@ production:
     - helm repo add appsemble https://charts.appsemble.com
     - helm upgrade appsemble appsemble/appsemble
       --debug
+      --timeout 30m
       --version "$CI_COMMIT_TAG"
       --set "gitlab.app=$CI_PROJECT_PATH_SLUG"
       --set "gitlab.env=$CI_ENVIRONMENT_SLUG"
