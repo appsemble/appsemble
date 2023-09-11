@@ -42,7 +42,9 @@ export function PageProperty({
       ? formatMessage(messages.pageName)
       : (docRef.current.getIn(['pages', selectedPage, 'name']) as string).trim(),
   );
-  const [inputPageType, setInputPageType] = useState<(typeof pageTypes)[number]>('page');
+  const [inputPageType, setInputPageType] = useState<string>(
+    (docRef.current.getIn(['pages', selectedPage, 'type']) as string) ?? 'page',
+  );
   const [currentSubPage, setCurrentSubPage] = useState<number>(selectedSubPage);
 
   const onChangePageName = useCallback(
@@ -71,6 +73,7 @@ export function PageProperty({
         push({ body: formatMessage(messages.pageNameEmpty), color: 'danger' });
         return;
       }
+      // Page type changed
       if (inputPageType === 'page') {
         addIn(['pages'], doc.createNode({ name: currentPageName, blocks: [] }));
       }
@@ -182,15 +185,8 @@ export function PageProperty({
       addIn(
         ['pages', selectedPage, 'steps'],
         doc.createNode({
-          name: 'Sub-page',
-          blocks: [
-            // Add a action-button as a hack to prevent empty sub-page
-            {
-              type: 'action-button',
-              version: '0.20.42',
-              parameters: { icon: 'fas fa-home', title: 'title' },
-            },
-          ],
+          name: `Sub-page${(doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length}`,
+          blocks: [],
         }),
       );
       setCurrentSubPage((doc.getIn(['pages', selectedPage, 'steps']) as YAMLSeq).items.length - 1);
@@ -198,19 +194,13 @@ export function PageProperty({
       addIn(
         ['pages', selectedPage, 'tabs'],
         doc.createNode({
-          name: 'Sub-page',
-          blocks: [
-            {
-              type: 'action-button',
-              version: '0.20.42',
-              parameters: { icon: 'fas fa-home', title: 'title' },
-            },
-          ],
+          name: `Sub-page${(doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length}`,
+          blocks: [],
         }),
       );
       setCurrentSubPage((doc.getIn(['pages', selectedPage, 'tabs']) as YAMLSeq).items.length - 1);
     }
-  }, [addIn, inputPageType, docRef, onChangePage, selectedPage]);
+  }, [onChangePage, docRef, inputPageType, addIn, selectedPage]);
 
   useEffect(() => {
     setCurrentPageName(

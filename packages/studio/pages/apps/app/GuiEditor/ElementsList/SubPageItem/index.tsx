@@ -11,15 +11,15 @@ import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
 import { SubPageBlockItem } from './SubPageBlockItem/index.js';
-import { type Block } from '../../../../../../types.js';
+import { type Block, type Page } from '../../../../../../types.js';
 
 interface SubPageItemProps {
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
-  readonly pageIndex: number;
   readonly blocks: Block[];
+  readonly subPages: Page[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
   readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
   readonly onSelectSubPage?: (index: number, subParentIndex: number) => void;
@@ -37,10 +37,10 @@ export function SubPageItem({
   handleDrop,
   onChange,
   onSelectSubPage,
-  pageIndex,
   selectedBlock,
   selectedPage,
   selectedSubParent,
+  subPages,
 }: SubPageItemProps): ReactElement {
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
 
@@ -55,82 +55,67 @@ export function SubPageItem({
     [disabledSubParents],
   );
 
+  if (!subPages) {
+    return;
+  }
   return (
     <>
-      {blocks
-        .filter(
-          (block, index, self) =>
-            block.parent === pageIndex &&
-            block.subParent !== -1 &&
-            self.findIndex((b) => b.subParent === block.subParent && b.parent === block.parent) ===
-              index,
-        )
-        .map((block) => (
-          <div key={`subParent-${block.subParent}`}>
-            <Button
-              className={classNames(styles.subParent, {
-                'is-link':
-                  block.subParent === selectedSubParent &&
-                  selectedPage === pageIndex &&
-                  selectedBlock === -1,
-                'is-info':
-                  selectedPage === pageIndex &&
-                  block.subParent === selectedSubParent &&
-                  selectedBlock !== -1,
-              })}
-              // TODO make sub pages draggable (by adding draggable property)
-              key={block.block}
-              onClick={() => onSelectSubPage(block.parent, block.subParent)}
-              onDragOver={(e) => e.preventDefault()}
-              onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
-              onDrop={(e) => handleDrop(e, block.block, pageIndex, block.subParent)}
-            >
-              {
-                docRef.current.getIn([
-                  'pages',
-                  block.parent,
-                  block.type === 'flow' ? 'steps' : 'tabs',
-                  block.subParent,
-                  'name',
-                ]) as string
-              }
-              {blocks.some(
-                (blockItem) =>
-                  blockItem.parent === pageIndex && blockItem.subParent === block.subParent,
-              ) && (
-                <Icon
-                  className="mx-2"
-                  icon={
-                    disabledSubParents.includes(block.subParent) ? 'chevron-up' : 'chevron-down'
-                  }
-                  onClick={() => toggleDropdownSubParents(block.subParent)}
-                />
-              )}
-            </Button>
-            {!disabledSubParents.includes(block.subParent) && (
-              <>
-                {blocks
-                  .filter(
-                    (subBlock) =>
-                      subBlock.parent === pageIndex && subBlock.subParent === block.subParent,
-                  )
-                  .map((subBlock) => (
-                    <SubPageBlockItem
-                      block={block}
-                      docRef={docRef}
-                      key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
-                      onChange={onChange}
-                      pageIndex={pageIndex}
-                      selectedBlock={selectedBlock}
-                      selectedPage={selectedPage}
-                      selectedSubParent={selectedSubParent}
-                      subBlock={subBlock}
-                    />
-                  ))}
-              </>
+      {subPages.map((subPage: Page, subPageIndex: number) => (
+        <div key={`subParent-${subPage.name}`}>
+          <Button
+            className={classNames(styles.subParent, {
+              'is-link':
+                subPageIndex === selectedSubParent &&
+                selectedPage === subPage.index &&
+                selectedBlock === -1,
+              'is-info':
+                selectedPage === subPage.index &&
+                subPageIndex === selectedSubParent &&
+                selectedBlock !== -1,
+            })}
+            // TODO make sub pages draggable (by adding draggable property) also fix onDrop target
+            key={subPage.index}
+            onClick={() => onSelectSubPage(subPage.index, subPageIndex)}
+            onDragOver={(e) => e.preventDefault()}
+            onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index)}
+            onDrop={(e) => handleDrop(e, subPageIndex, subPage.index, selectedSubParent)}
+          >
+            {subPage.name}
+            {blocks.some(
+              (blockItem) =>
+                blockItem.parent === subPage.index && blockItem.subParent === subPageIndex,
+            ) && (
+              <Icon
+                className="mx-2"
+                icon={disabledSubParents.includes(subPageIndex) ? 'chevron-up' : 'chevron-down'}
+                onClick={() => toggleDropdownSubParents(subPageIndex)}
+              />
             )}
-          </div>
-        ))}
+          </Button>
+          {!disabledSubParents.includes(subPageIndex) && (
+            <>
+              {blocks
+                .filter(
+                  (subBlock) =>
+                    subBlock.parent === subPage.index && subBlock.subParent === subPageIndex,
+                )
+                .map((subBlock) => (
+                  <SubPageBlockItem
+                    block={subBlock}
+                    docRef={docRef}
+                    key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
+                    onChange={onChange}
+                    pageIndex={subPage.index}
+                    selectedBlock={selectedBlock}
+                    selectedPage={selectedPage}
+                    selectedSubParent={selectedSubParent}
+                    subBlock={subBlock}
+                  />
+                ))}
+            </>
+          )}
+        </div>
+      ))}
     </>
   );
 }

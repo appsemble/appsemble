@@ -55,7 +55,6 @@ export function SubPageBlockItem({
           selectedPage === pageIndex &&
           selectedSubParent === subBlock.subParent,
       })}
-      draggable
       onClick={() => onSelectBlock(subBlock.parent, subBlock.subParent, subBlock.block)}
       onDragOver={(e) => e.preventDefault()}
       onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
