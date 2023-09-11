@@ -266,33 +266,6 @@ export default function EditPage(): ReactElement {
 
   useBeforeUnload(unsavedChanges);
 
-  /*
-   * Handle undo redo and save through key presses.
-   */
-  const handleKeyPress = useCallback(
-    async (event: any) => {
-      if (event.ctrlKey) {
-        switch (event.key) {
-          case 's':
-            event.preventDefault();
-            await handleSave();
-            break;
-          case 'z':
-            onUndo();
-            break;
-          case 'y':
-            onRedo();
-            break;
-          default:
-            break;
-        }
-      }
-    },
-    [handleSave, onRedo, onUndo],
-  );
-
-  document.addEventListener('keydown', handleKeyPress);
-
   useEffect(() => {
     updateAppPreview();
   }, [setIndex, updateAppPreview]);
