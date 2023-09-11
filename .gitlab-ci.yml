@@ -151,13 +151,14 @@ validate:
 #  Build Stage                                                                                    #
 ###################################################################################################
 
-# Build the Docker image.
-build docker image:
+# Build and push the Docker image.
+build and push docker image:
   stage: build
   image:
     name: gcr.io/kaniko-project/executor:v1.14.0-debug
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint: ['']
   script:
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
@@ -254,15 +255,19 @@ gitlab release:
   script:
     - yarn scripts gitlab-release
 
-# Publish the Docker image that was built to Docker Hub.
 publish docker:
   stage: publish
+  services:
+    - docker:dind
+  image: docker
   needs:
-    - build docker image
+    - build and push docker image
   variables:
     GIT_STRATEGY: none
   rules:
     - if: $CI_COMMIT_TAG
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
@@ -406,7 +411,7 @@ review:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - build docker image
+    - build and push docker image
     - job: helm package
       artifacts: true
   rules:
@@ -476,7 +481,7 @@ staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - build docker image
+    - build and push docker image
     - job: helm package
       artifacts: true
   rules:
@@ -526,7 +531,7 @@ production:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - publish docker
+    - build and push docker image
     - publish helm
   rules:
     - if: $CI_COMMIT_TAG
