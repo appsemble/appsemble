@@ -181,13 +181,13 @@ export default function EditPage(): ReactElement {
     );
   };
 
-  const onUndo = (): void => {
+  const onUndo = useCallback((): void => {
     setIndex((currentIndex) => Math.max(0, currentIndex - 1));
-  };
+  }, []);
 
-  const onRedo = (): void => {
+  const onRedo = useCallback((): void => {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
-  };
+  }, [saveStack.length]);
 
   const getErrorMessage = useCallback(
     (error: any): string => {
@@ -265,6 +265,33 @@ export default function EditPage(): ReactElement {
   const unsavedChanges = getUnsavedChanges().length !== 1;
 
   useBeforeUnload(unsavedChanges);
+
+  /*
+   * Handle undo redo and save through key presses.
+   */
+  const handleKeyPress = useCallback(
+    async (event: any) => {
+      if (event.ctrlKey) {
+        switch (event.key) {
+          case 's':
+            event.preventDefault();
+            await handleSave();
+            break;
+          case 'z':
+            onUndo();
+            break;
+          case 'y':
+            onRedo();
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    [handleSave, onRedo, onUndo],
+  );
+
+  document.addEventListener('keydown', handleKeyPress);
 
   useEffect(() => {
     updateAppPreview();
