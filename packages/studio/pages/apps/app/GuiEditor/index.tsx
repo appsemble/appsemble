@@ -364,6 +364,7 @@ export default function EditPage(): ReactElement {
             frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
+            saveStack={saveStack[index]}
           />
         )}
         {currentTab.tabName === 'theme' && (

@@ -23,6 +23,7 @@ interface PagesTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly saveStack: Document<ParsedNode, true>;
 }
 
 export function PagesTab({
@@ -33,6 +34,7 @@ export function PagesTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
+  saveStack,
 }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const push = useMessages();
@@ -224,6 +226,7 @@ export function PagesTab({
           docRef={docRef}
           onChange={onChangePagesBlocks}
           onCreatePage={onCreatePage}
+          saveStack={saveStack}
           selectedBlock={selectedBlock}
           selectedPage={selectedPage}
           selectedSubParent={selectedSubParent}
