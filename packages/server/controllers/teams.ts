@@ -23,11 +23,16 @@ async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
     pathParams: { teamId },
     user,
   } = ctx;
+
   const teamMember =
-    team?.Users.find((u) => u.id === user.id)?.TeamMember ??
-    (await TeamMember.findOne({
-      where: { UserId: user.id, TeamId: teamId },
-    }));
+    team?.Members.find((m) => m.AppMember?.UserId === user.id) ??
+    (await Team.findOne({
+      where: { id: teamId },
+      include: {
+        model: TeamMember,
+        include: [{ model: AppMember }],
+      },
+    }).then((t) => t.Members.find((m) => m.AppMember.UserId === user.id)));
 
   if (!teamMember || teamMember.role !== TeamRole.Manager) {
     ctx.response.status = 403;
@@ -83,7 +88,7 @@ export async function createTeam(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, {
-    attributes: ['definition', 'OrganizationId'],
+    attributes: ['definition', 'OrganizationId', 'id'],
     include:
       'app' in clients
         ? [
@@ -91,14 +96,7 @@ export async function createTeam(ctx: Context): Promise<void> {
               model: AppMember,
               required: false,
               where: { UserId: user.id },
-              attributes: ['role'],
-              include: [
-                {
-                  model: User,
-                  attributes: ['id'],
-                  include: [{ model: TeamMember, required: false }],
-                },
-              ],
+              attributes: ['role', 'UserId', 'id'],
             },
           ]
         : [],
@@ -106,7 +104,7 @@ export async function createTeam(ctx: Context): Promise<void> {
   assertTeamsDefinition(ctx, app);
 
   if ('app' in clients) {
-    const appMember = app.AppMembers.find((member) => member.User.id === user.id);
+    const appMember = app.AppMembers.find((member) => member.UserId === user.id);
     if (!appMember) {
       ctx.response.status = 403;
       ctx.response.body = {
@@ -118,7 +116,7 @@ export async function createTeam(ctx: Context): Promise<void> {
     }
     if (
       !app.definition.security.teams.create.some((teamName) =>
-        checkAppRole(app.definition.security, teamName, appMember.role, appMember.User.TeamMembers),
+        checkAppRole(app.definition.security, teamName, appMember.role, appMember.TeamMembers),
       )
     ) {
       ctx.response.status = 403;
@@ -139,8 +137,25 @@ export async function createTeam(ctx: Context): Promise<void> {
       { name, AppId: appId, annotations: annotations || undefined },
       { transaction },
     );
+    let member =
+      app.AppMembers?.[0] ||
+      (await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } }));
+
+    if (!member) {
+      const completeUser = await User.findByPk(user.id);
+      member = await AppMember.create(
+        {
+          UserId: completeUser.id,
+          AppId: app.id,
+          role: app.definition.security.default.role,
+          name: completeUser.name,
+          email: completeUser.primaryEmail,
+        },
+        { transaction },
+      );
+    }
     await TeamMember.create(
-      { TeamId: team.id, UserId: user.id, role: TeamRole.Manager },
+      { TeamId: team.id, AppMemberId: member.id, name: member.name, role: TeamRole.Manager },
       { transaction },
     );
   });
@@ -161,7 +176,19 @@ export async function getTeam(ctx: Context): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User, where: { id: user.id }, required: false }],
+    include: [
+      {
+        model: TeamMember,
+        required: false,
+        include: [
+          {
+            model: AppMember,
+            where: { UserId: user.id },
+            required: false,
+          },
+        ],
+      },
+    ],
   });
 
   if (!team) {
@@ -177,7 +204,7 @@ export async function getTeam(ctx: Context): Promise<void> {
   ctx.body = {
     id: team.id,
     name: team.name,
-    ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    ...(team.Members.length && { role: team.Members[0].role }),
     ...(team.annotations && { annotations: team.annotations }),
   };
 }
@@ -196,7 +223,11 @@ export async function patchTeam(ctx: Context): Promise<void> {
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: { id: user.id }, required: false },
+      {
+        model: TeamMember,
+        required: false,
+        include: [{ model: AppMember, where: { UserId: user.id } }],
+      },
       { model: App, attributes: ['OrganizationId'] },
     ],
   });
@@ -218,7 +249,7 @@ export async function patchTeam(ctx: Context): Promise<void> {
     id: team.id,
     name,
     ...(annotations && { annotations }),
-    ...(team.Users.length && { role: team.Users[0].TeamMember.role }),
+    ...(team.Members.length && { role: team.Members[0].role }),
   };
 }
 
@@ -231,7 +262,11 @@ export async function deleteTeam(ctx: Context): Promise<void> {
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: { id: user.id }, required: false },
+      {
+        model: TeamMember,
+        required: false,
+        include: [{ model: AppMember, where: { UserId: user.id } }],
+      },
       { model: App, attributes: ['OrganizationId'] },
     ],
   });
@@ -258,7 +293,17 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
+    include: [
+      {
+        model: TeamMember,
+        include: [
+          {
+            model: AppMember,
+            attributes: ['id', 'name', 'email', 'UserId'],
+          },
+        ],
+      },
+    ],
   });
 
   if (!team) {
@@ -271,11 +316,11 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  ctx.body = team.Users.map((user) => ({
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
-    role: user.TeamMember.role,
+  ctx.body = team.Members.map((member) => ({
+    id: member.AppMember.UserId,
+    name: member.AppMember.name,
+    primaryEmail: member.AppMember.email,
+    role: member.role,
   }));
 }
 
@@ -286,7 +331,12 @@ export async function getTeamMember(ctx: Context): Promise<void> {
 
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
-    include: [{ model: User, attributes: ['id', 'name', 'primaryEmail'] }],
+    include: [
+      {
+        model: TeamMember,
+        include: [{ model: AppMember, attributes: ['id', 'name', 'email', 'UserId'] }],
+      },
+    ],
   });
 
   if (!team) {
@@ -299,23 +349,23 @@ export async function getTeamMember(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  const teamMember = team.Users.find((user) => user.id === memberId);
+  const teamMember = team.Members.find((member) => member.AppMember.UserId === memberId);
 
   if (!teamMember) {
     ctx.response.status = 404;
     ctx.response.body = {
       statusCode: 404,
       error: 'Not Found',
-      message: 'User not found in team',
+      message: 'App member not found in team',
     };
     ctx.throw();
   }
 
   ctx.body = {
-    id: teamMember.id,
-    name: teamMember.name,
-    primaryEmail: teamMember.primaryEmail,
-    role: teamMember.TeamMember.role,
+    id: teamMember.AppMember.UserId,
+    name: teamMember.AppMember.name,
+    primaryEmail: teamMember.AppMember.email,
+    role: teamMember.role,
   };
 }
 
@@ -359,7 +409,10 @@ export async function inviteTeamMember(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  const teamMembers = await TeamMember.findAll({ where: { UserId: user.id, TeamId: teamId } });
+  const teamMembers = await TeamMember.findAll({
+    where: { TeamId: teamId },
+    include: { model: AppMember, where: { UserId: user.id } },
+  });
   const [appMember] = app.AppMembers;
   if (
     !app.definition.security.teams.invite.some((r) =>
@@ -426,10 +479,21 @@ export async function addTeamMember(ctx: Context): Promise<void> {
   const userQuery = {
     [uuid4Pattern.test(id) ? 'id' : 'primaryEmail']: id,
   };
+
   const team = await Team.findOne({
     where: { id: teamId, AppId: appId },
     include: [
-      { model: User, where: userQuery, required: false },
+      {
+        model: TeamMember,
+        required: false,
+        include: [
+          {
+            model: AppMember,
+            required: true,
+            include: [{ model: User, where: userQuery, required: true }],
+          },
+        ],
+      },
       {
         model: App,
         attributes: ['OrganizationId', 'definition'],
@@ -437,11 +501,25 @@ export async function addTeamMember(ctx: Context): Promise<void> {
           {
             model: Organization,
             attributes: ['id'],
-            include: [{ model: User, where: userQuery, required: false }],
+            include: [
+              {
+                model: User,
+                required: false,
+                where: userQuery,
+                include: [
+                  {
+                    model: AppMember,
+                    required: true,
+                    where: { AppId: appId },
+                    as: 'AppMembers',
+                  },
+                ],
+              },
+            ],
           },
           {
             model: AppMember,
-            attributes: ['id'],
+            attributes: ['id', 'name', 'email', 'UserId'],
             required: false,
             include: [{ model: User, where: userQuery, required: true }],
           },
@@ -460,14 +538,14 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  // Allow app users to add themselves to a team.
+  // Allow app members to add themselves to a team.
   if ('app' in clients) {
     if (id !== user.id && id !== user.primaryEmail) {
       ctx.response.status = 403;
       ctx.response.body = {
         statusCode: 403,
         error: 'Forbidden',
-        message: 'App users may only add themselves as team member',
+        message: 'App members may only add themselves as team member',
       };
       ctx.throw();
     }
@@ -497,23 +575,35 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     ctx.response.body = {
       statusCode: 404,
       error: 'Not Found',
-      message: `User with id ${id} is not part of this app’s members.`,
+      message: `App member with id ${id} is not part of this app’s members.`,
     };
     ctx.throw();
   }
 
-  if (team.Users.length) {
+  if (team.Members.length) {
     ctx.response.status = 400;
     ctx.response.body = {
       statusCode: 400,
       error: 'Bad Request',
-      message: 'This user is already a member of this team.',
+      message: 'This app member is already a member of this team.',
     };
     ctx.throw();
   }
 
-  const member = team.App.AppMembers[0]?.User ?? team.App.Organization.Users[0];
-  await TeamMember.create({ UserId: member.id, TeamId: team.id, role: TeamRole.Member });
+  const member =
+    team.App.AppMembers[0] ||
+    (await AppMember.create({
+      AppId: appId,
+      UserId: team.App.Organization.Users[0].id,
+      role: team.App.definition.security.default.role,
+      name: team.App.Organization.Users[0].name,
+    }));
+  await TeamMember.create({
+    AppMemberId: member.id,
+    TeamId: team.id,
+    role: TeamRole.Member,
+    name: member.name,
+  });
 
   if ('app' in clients) {
     // XXX: Separate app and studio responses.
@@ -529,9 +619,9 @@ export async function addTeamMember(ctx: Context): Promise<void> {
   }
   ctx.response.status = 201;
   ctx.body = {
-    id: member.id,
+    id: member.UserId,
     name: member.name,
-    primaryEmail: member.primaryEmail,
+    primaryEmail: member.email,
     role: TeamRole.Member,
   };
 }
@@ -546,8 +636,8 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     where: { id: teamId, AppId: appId },
     include: [
       {
-        model: User,
-        where: isUuid ? { id: memberId } : { primaryEmail: memberId },
+        model: TeamMember,
+        include: [{ model: AppMember, where: isUuid ? { UserId: memberId } : { email: memberId } }],
         required: false,
       },
       { model: App, attributes: ['OrganizationId'] },
@@ -570,7 +660,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.Users.length) {
+  if (!team.Members.length) {
     ctx.response.status = 400;
     ctx.response.body = {
       statusCode: 400,
@@ -580,7 +670,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  await TeamMember.destroy({ where: { UserId: team.Users[0].id, TeamId: team.id } });
+  await team.Members[0].destroy();
 }
 
 export async function updateTeamMember(ctx: Context): Promise<void> {
@@ -595,9 +685,9 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     where: { id: teamId, AppId: appId },
     include: [
       {
-        model: User,
-        where: isUuid ? { id: memberId } : { primaryEmail: memberId },
+        model: TeamMember,
         required: false,
+        include: [{ model: AppMember, where: isUuid ? { UserId: memberId } : { email: memberId } }],
       },
       { model: App, attributes: ['OrganizationId'] },
     ],
@@ -619,7 +709,7 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.Users.length) {
+  if (!team.Members.length) {
     ctx.response.status = 400;
     ctx.response.body = {
       statusCode: 400,
@@ -629,14 +719,14 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  const [user] = team.Users;
-  await TeamMember.update({ role }, { where: { UserId: user.id, TeamId: team.id } });
+  const [member] = team.Members;
+  await member.update({ role });
 
   ctx.status = 200;
   ctx.body = {
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
+    id: member.AppMember.UserId,
+    name: member.AppMember.name,
+    primaryEmail: member.AppMember.email,
     role,
   };
 }
@@ -652,7 +742,20 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
 
   const invite = await TeamInvite.findOne({
     where: { key: code },
-    include: [{ model: Team, where: { AppId: appId } }],
+    include: [
+      {
+        model: Team,
+        where: { AppId: appId },
+        include: [
+          {
+            model: App,
+            attributes: ['id', 'definition'],
+            required: false,
+            include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
+          },
+        ],
+      },
+    ],
   });
 
   if (!invite) {
@@ -665,12 +768,32 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
     ctx.throw();
   }
 
-  await TeamMember.create({
-    UserId: user.id,
-    role: invite.role,
-    TeamId: invite.TeamId,
-  });
-  await invite.destroy();
+  const app = invite.Team.App;
+  await transactional(async (transaction) =>
+    Promise.all([
+      TeamMember.create(
+        {
+          AppMemberId:
+            app.AppMembers[0]?.id ||
+            (
+              await AppMember.create(
+                {
+                  AppId: app.id,
+                  UserId: user.id,
+                  role: app.definition.security.default.role,
+                  name: user.name,
+                },
+                { transaction },
+              )
+            ).id,
+          role: invite.role,
+          TeamId: invite.TeamId,
+        },
+        { transaction },
+      ),
+      invite.destroy({ transaction }),
+    ]),
+  );
 
   const { Team: team } = invite;
   ctx.body = {

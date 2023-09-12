@@ -17,6 +17,7 @@ import {
 } from 'sequelize-typescript';
 
 import { App, AppOAuth2Authorization, AppSamlAuthorization, User } from './index.js';
+import { TeamMember } from './TeamMember.js';
 
 @Table({ tableName: 'AppMember' })
 export class AppMember extends Model {
@@ -91,6 +92,9 @@ export class AppMember extends Model {
 
   @BelongsTo(() => User)
   User: Awaited<User>;
+
+  @HasMany(() => TeamMember)
+  TeamMembers: TeamMember[];
 
   @HasMany(() => AppOAuth2Authorization)
   AppOAuth2Authorizations: AppOAuth2Authorization[];

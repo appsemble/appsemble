@@ -450,11 +450,11 @@ describe('getResourceById', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    const member1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const member2 = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: member2.id, role: TeamRole.Member });
 
     const resource = await Resource.create({
       AppId: app.id,
@@ -491,9 +491,9 @@ describe('getResourceById', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resource = await Resource.create({
@@ -988,10 +988,10 @@ describe('queryResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
-
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -1058,13 +1058,42 @@ describe('queryResources', () => {
 
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: teamB.id, UserId: userB.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userC.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: teamC.id, UserId: user.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: teamC.id, UserId: userC.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const appAMemberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const appAMemberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const appAMemberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
+    const appBMemberA = await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+    const appBMemberC = await AppMember.create({
+      AppId: appB.id,
+      UserId: userC.id,
+      role: 'Member',
+    });
+
+    await TeamMember.create({
+      TeamId: team.id,
+      AppMemberId: appAMemberA.id,
+      role: TeamRole.Manager,
+    });
+    await TeamMember.create({
+      TeamId: teamB.id,
+      AppMemberId: appAMemberB.id,
+      role: TeamRole.Member,
+    });
+    await TeamMember.create({
+      TeamId: team.id,
+      AppMemberId: appAMemberC.id,
+      role: TeamRole.Member,
+    });
+    await TeamMember.create({
+      TeamId: teamC.id,
+      AppMemberId: appBMemberA.id,
+      role: TeamRole.Manager,
+    });
+    await TeamMember.create({
+      TeamId: teamC.id,
+      AppMemberId: appBMemberC.id,
+      role: TeamRole.Member,
+    });
 
     await Resource.create({
       AppId: app.id,
@@ -1868,10 +1897,10 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
-
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -1907,10 +1936,12 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -1948,10 +1979,12 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -1989,7 +2022,10 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
@@ -2029,10 +2065,12 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -2070,10 +2108,12 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Manager });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await Resource.create({
       AppId: app.id,
@@ -2127,7 +2167,9 @@ describe('countResources', () => {
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
@@ -3157,9 +3199,12 @@ describe('updateResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     const resource = await Resource.create({
       type: 'testResourceTeam',
@@ -3207,7 +3252,9 @@ describe('updateResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resource = await Resource.create({
@@ -4056,9 +4103,12 @@ describe('patchResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     const resource = await Resource.create({
       type: 'testResourceTeam',
@@ -4106,7 +4156,10 @@ describe('patchResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resource = await Resource.create({
@@ -5002,9 +5055,12 @@ describe('deleteResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id, role: TeamRole.Member });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
     const resource = await Resource.create({
       type: 'testResourceTeam',
@@ -5025,7 +5081,10 @@ describe('deleteResource', () => {
     const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await TeamMember.create({ TeamId: team.id, UserId: userB.id, role: TeamRole.Member });
+
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+
+    await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     const resource = await Resource.create({

@@ -207,23 +207,20 @@ describe('createSCIMUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: User,
-          include: [
-            {
-              model: TeamMember,
-              include: [Team],
-            },
-          ],
+          model: TeamMember,
+          include: [Team],
         },
       ],
     });
     expect(member).toMatchObject({
       AppId: app.id,
-      User: {
-        TeamMembers: [{ Team: { name: 'krbs' } }],
-        locale: 'en',
-        timezone: 'Europe/Amsterdam',
-      },
+      TeamMembers: [
+        {
+          Team: { name: 'krbs' },
+          role: 'member',
+          TeamId: 1,
+        },
+      ],
       email: 'spongebob@krustykrab.example',
       id: response.data.id,
       role: 'User',
@@ -231,7 +228,7 @@ describe('createSCIMUser', () => {
     });
   });
 
-  it('should add users to an existing team matching the manager id', async () => {
+  it('should add members to an existing team matching the manager id', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
@@ -285,23 +282,19 @@ describe('createSCIMUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: User,
-          include: [
-            {
-              model: TeamMember,
-              include: [Team],
-            },
-          ],
+          model: TeamMember,
+          include: [Team],
         },
       ],
     });
+
     expect(member).toMatchObject({
       AppId: app.id,
-      User: {
-        TeamMembers: [{ TeamId: team.id }],
-        locale: 'en',
-        timezone: 'Europe/Amsterdam',
-      },
+      TeamMembers: [
+        {
+          TeamId: team.id,
+        },
+      ],
       email: 'spongebob@krustykrab.example',
       id: response.data.id,
       role: 'User',
@@ -309,7 +302,7 @@ describe('createSCIMUser', () => {
     });
   });
 
-  it('should make users manager of a team matching their id', async () => {
+  it('should make members manager of a team matching their id', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
 
     const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
@@ -355,23 +348,18 @@ describe('createSCIMUser', () => {
     const member = await AppMember.findByPk(response.data.id, {
       include: [
         {
-          model: User,
-          include: [
-            {
-              model: TeamMember,
-              include: [Team],
-            },
-          ],
+          model: TeamMember,
         },
       ],
     });
     expect(member).toMatchObject({
       AppId: app.id,
-      User: {
-        TeamMembers: [{ TeamId: team.id, role: 'manager' }],
-        locale: 'en',
-        timezone: 'Europe/Amsterdam',
-      },
+      TeamMembers: [
+        {
+          TeamId: team.id,
+          role: 'manager',
+        },
+      ],
       email: 'krabs@krustykrab.example',
       id: response.data.id,
       role: 'User',
@@ -405,7 +393,9 @@ describe('createSCIMUser', () => {
     });
     const result = await Team.findOne({
       where: { AppId: app.id, name: appMember.scimExternalId },
-    }).then((team) => TeamMember.findOne({ where: { TeamId: team.id, UserId: user.id } }));
+    }).then((team) =>
+      TeamMember.findOne({ where: { TeamId: team.id, AppMemberId: appMember.id } }),
+    );
 
     expect(result.role).toBe('manager');
   });
@@ -451,7 +441,7 @@ describe('getSCIMUser', () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
     const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users/${member.id}`);
 
@@ -496,7 +486,6 @@ describe('getSCIMUsers', () => {
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users`);
-
     expect(response).toMatchInlineSnapshot(
       { data: { Resources: [{ id: expect.any(String), meta: { location: expect.any(String) } }] } },
       `
@@ -537,8 +526,8 @@ describe('getSCIMUsers', () => {
   it('should return a SCIM user with manager', async () => {
     const team = await Team.create({ AppId: app.id, name: 'krbs' });
     const user = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
-    await TeamMember.create({ TeamId: team.id, UserId: user.id });
+    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+    await TeamMember.create({ TeamId: team.id, AppMemberId: member.id });
 
     const response = await request.get(`/api/apps/${app.id}/scim/Users`);
 
