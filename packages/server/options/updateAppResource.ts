@@ -1,6 +1,7 @@
 import { type UpdateAppResourceParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
+import { getUserAppAccount } from './getUserAppAccount.js';
 import { App, Asset, ResourceVersion, transactional, type User } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
@@ -18,6 +19,8 @@ export function updateAppResource({
 }: UpdateAppResourceParams): Promise<ResourceInterface | null> {
   return transactional(async (transaction) => {
     const { user } = context;
+
+    const member = await getUserAppAccount(app?.id, user?.id);
 
     const persistedApp = await App.findOne({
       where: {
@@ -56,7 +59,7 @@ export function updateAppResource({
           ...asset,
           AppId: app.id,
           ResourceId: id,
-          UserId: user?.id,
+          AppMemberId: member?.id,
         })),
         { logging: false, transaction },
       );
