@@ -181,13 +181,13 @@ export default function EditPage(): ReactElement {
     );
   };
 
-  const onUndo = (): void => {
+  const onUndo = useCallback((): void => {
     setIndex((currentIndex) => Math.max(0, currentIndex - 1));
-  };
+  }, []);
 
-  const onRedo = (): void => {
+  const onRedo = useCallback((): void => {
     setIndex((currentIndex) => Math.min(saveStack.length - 1, currentIndex + 1));
-  };
+  }, [saveStack.length]);
 
   const getErrorMessage = useCallback(
     (error: any): string => {
@@ -364,6 +364,7 @@ export default function EditPage(): ReactElement {
             frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
+            saveStack={saveStack[index]}
           />
         )}
         {currentTab.tabName === 'theme' && (
@@ -374,6 +375,7 @@ export default function EditPage(): ReactElement {
             frameRef={frame}
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
+            saveStack={saveStack[index]}
           />
         )}
         {currentTab.tabName === 'security' && (

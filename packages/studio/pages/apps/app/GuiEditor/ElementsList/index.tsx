@@ -19,6 +19,7 @@ import { messages } from '../messages.js';
 interface ElementsListProps {
   readonly changeIn: (path: Iterable<unknown>, value: Node) => void;
   readonly docRef: MutableRefObject<Document<ParsedNode>>;
+  readonly saveStack: Document<ParsedNode, true>;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
@@ -30,6 +31,7 @@ export function ElementsList({
   docRef,
   onChange,
   onCreatePage,
+  saveStack,
   selectedBlock,
   selectedPage,
   selectedSubParent,
@@ -39,13 +41,12 @@ export function ElementsList({
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
   const { formatMessage } = useIntl();
 
-  const pageNames: string[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.map(
-    (page: YAMLSeq, pageIndex: number) =>
-      docRef.current.getIn(['pages', pageIndex, 'name']) as string,
+  const pageNames: string[] = (saveStack.getIn(['pages']) as YAMLSeq).items.map(
+    (page: YAMLSeq, pageIndex: number) => saveStack.getIn(['pages', pageIndex, 'name']) as string,
   );
 
   // A list of the blocks with their parents to construct the hierarchy.
-  const blocks: Block[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.flatMap(
+  const blocks: Block[] = (saveStack.getIn(['pages']) as YAMLSeq).items.flatMap(
     (page: YAMLMap, pageIndex: number) => {
       if (!page.getIn(['type']) || page.getIn(['type']) === 'page') {
         return (page.getIn(['blocks']) as YAMLSeq).items.map((block: any, blockIndex: number) => ({
@@ -80,7 +81,7 @@ export function ElementsList({
     },
   );
 
-  const pages: Page[] = (docRef.current.getIn(['pages']) as YAMLSeq).items.flatMap(
+  const pages: Page[] = (saveStack.getIn(['pages']) as YAMLSeq).items.flatMap(
     (page: YAMLMap, pageIndex: number) => ({
       name: page.getIn(['name']) as string,
       type: (page.getIn(['type']) ?? 'page') as string,
@@ -91,7 +92,7 @@ export function ElementsList({
   const getSubPages = (pageIndex: number): Page[] => {
     if (pages[pageIndex].type && pages[pageIndex].type !== 'page') {
       return (
-        docRef.current.getIn([
+        saveStack.getIn([
           'pages',
           pageIndex,
           pages[pageIndex].type === 'flow' ? 'steps' : 'tabs',
@@ -105,15 +106,14 @@ export function ElementsList({
   };
 
   const getBlocks = (pageIndex: number): YAMLMap[] => {
-    const doc = docRef.current;
     if (!pages[pageIndex].type || pages[pageIndex].type === 'page') {
-      return (doc.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq).items as YAMLMap[];
+      return (saveStack.getIn(['pages', pageIndex, 'blocks']) as YAMLSeq).items as YAMLMap[];
     }
     return pages[pageIndex].type === 'flow'
-      ? (doc.getIn(['pages', pageIndex, 'steps', 'blocks']) as YAMLSeq).items.flatMap(
+      ? (saveStack.getIn(['pages', pageIndex, 'steps', 'blocks']) as YAMLSeq).items.flatMap(
           (subPage: any) => subPage as YAMLMap[],
         )
-      : (doc.getIn(['pages', pageIndex, 'tabs', 'blocks']) as YAMLSeq).items.flatMap(
+      : (saveStack.getIn(['pages', pageIndex, 'tabs', 'blocks']) as YAMLSeq).items.flatMap(
           (subPage: any) => subPage as YAMLMap[],
         );
   };
@@ -222,21 +222,21 @@ export function ElementsList({
             <>
               <BlockItem
                 blocks={blocks}
-                docRef={docRef}
                 handleDragStart={handleDragStart}
                 handleDrop={handleDrop}
                 onChange={onChange}
                 pageIndex={pageIndex}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
               />
               <SubPageItem
                 blocks={blocks}
-                docRef={docRef}
                 handleDragStart={handleDragStart}
                 handleDrop={handleDrop}
                 onChange={onChange}
                 onSelectSubPage={onSelectPage}
+                saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}
                 selectedSubParent={selectedSubParent}
