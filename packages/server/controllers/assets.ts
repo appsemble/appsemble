@@ -4,6 +4,7 @@ import { extension } from 'mime-types';
 import { Op, UniqueConstraintError } from 'sequelize';
 
 import { App, Asset, Resource } from '../models/index.js';
+import { getUserAppAccount } from '../options/getUserAppAccount.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getAssets(ctx: Context): Promise<void> {
@@ -137,6 +138,7 @@ export async function createAsset(ctx: Context): Promise<void> {
   } = ctx;
 
   const app = await App.findByPk(appId, { attributes: ['id'] });
+  const appMember = await getUserAppAccount(appId, user?.id);
 
   if (!app) {
     ctx.response.status = 404;
@@ -152,7 +154,7 @@ export async function createAsset(ctx: Context): Promise<void> {
       filename,
       mime,
       name,
-      UserId: user?.id,
+      AppMemberId: appMember?.id,
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {

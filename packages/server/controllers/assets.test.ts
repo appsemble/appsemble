@@ -3,7 +3,15 @@ import { type Asset as AssetType } from '@appsemble/types';
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
-import { App, Asset, Member, Organization, Resource, type User } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  Asset,
+  Member,
+  Organization,
+  Resource,
+  type User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -512,7 +520,7 @@ describe('createAsset', () => {
       filename: null,
       mime: 'application/octet-stream',
       name: 'test-asset',
-      UserId: null,
+      AppMemberId: null,
     });
   });
 
@@ -593,7 +601,8 @@ describe('createAsset', () => {
     `);
   });
 
-  it('should associate the user if the user is authenticated', async () => {
+  it('should associate the app member if the user is authenticated', async () => {
+    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: '' });
     authorizeStudio();
     const response = await request.post<AssetType>(
       `/api/apps/${app.id}/assets`,
@@ -601,7 +610,7 @@ describe('createAsset', () => {
     );
     const asset = await Asset.findByPk(response.data.id);
 
-    expect(asset.UserId).toStrictEqual(user.id);
+    expect(asset.AppMemberId).toStrictEqual(member.id);
     expect(response).toMatchInlineSnapshot(
       { data: { id: expect.stringMatching(uuid4Pattern) } },
       `
