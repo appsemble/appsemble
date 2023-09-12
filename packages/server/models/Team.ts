@@ -2,18 +2,18 @@ import {
   AllowNull,
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, TeamMember, User } from './index.js';
+import { App, TeamMember } from './index.js';
 
 @Table({ tableName: 'Team' })
 export class Team extends Model {
@@ -37,8 +37,8 @@ export class Team extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @BelongsToMany(() => User, () => TeamMember)
-  Users: User[];
+  @HasMany(() => TeamMember)
+  Members: TeamMember[];
 
   @CreatedAt
   created: Date;

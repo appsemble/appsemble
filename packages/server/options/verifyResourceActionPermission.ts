@@ -5,7 +5,7 @@ import {
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
 import { Op, type WhereOptions } from 'sequelize';
 
-import { AppMember, Organization, Team, TeamMember, User } from '../models/index.js';
+import { AppMember, Organization, Team, TeamMember } from '../models/index.js';
 
 const specialRoles = new Set([
   '$author',
@@ -97,29 +97,31 @@ export async function verifyResourceActionPermission({
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
+    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [{ model: User, where: { id: user.id } }],
+        include: [{ model: TeamMember, where: { AppMemberId: appMember.id } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
     const userIds = (
       await TeamMember.findAll({
-        attributes: ['UserId'],
         where: { TeamId: teamIds },
+        include: [{ model: AppMember, attributes: ['UserId'] }],
       })
-    ).map((tm) => tm.UserId);
+    ).map((tm) => tm.AppMember.UserId);
     result.push({ AuthorId: { [Op.in]: userIds } });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
+    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
         include: [
-          { model: User, where: { id: user.id }, through: { where: { role: TeamRole.Manager } } },
+          { model: TeamMember, where: { AppMemberId: appMember.id, role: TeamRole.Manager } },
         ],
         attributes: ['id'],
       })
@@ -127,11 +129,10 @@ export async function verifyResourceActionPermission({
 
     const userIds = (
       await TeamMember.findAll({
-        attributes: ['UserId'],
-        raw: true,
         where: { TeamId: teamIds },
+        include: [{ model: AppMember, attributes: ['UserId'] }],
       })
-    ).map((tm) => tm.UserId);
+    ).map((tm) => tm.AppMember.UserId);
     result.push({ AuthorId: { [Op.in]: userIds } });
   }
 

@@ -13,7 +13,8 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { Team, User } from './index.js';
+import { AppMember } from './AppMember.js';
+import { Team } from './Team.js';
 
 @Table({ tableName: 'TeamMember' })
 export class TeamMember extends Model {
@@ -23,17 +24,17 @@ export class TeamMember extends Model {
   TeamId: number;
 
   @PrimaryKey
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
   @Default(TeamRole.Member)
   @AllowNull(false)
   @Column(DataType.ENUM(...Object.values(TeamRole)))
   role: TeamRole;
 
-  @BelongsTo(() => User)
-  User: Awaited<User>;
+  @BelongsTo(() => AppMember)
+  AppMember: Awaited<AppMember>;
 
   @BelongsTo(() => Team)
   Team: Awaited<Team>;

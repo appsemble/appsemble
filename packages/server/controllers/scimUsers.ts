@@ -25,9 +25,9 @@ function toScimUser(member: AppMember): ScimUser {
       : undefined,
     timezone: member.User.timezone,
     locale: member.locale || member.User.locale,
-    'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.User.TeamMembers?.length
+    'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': member.TeamMembers?.length
       ? {
-          manager: { value: member.User.TeamMembers.at(-1).Team.name },
+          manager: { value: member.TeamMembers.at(-1).Team.name },
         }
       : undefined,
     meta: {
@@ -102,47 +102,6 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
         { transaction },
       );
 
-      if (managerId) {
-        if (!team) {
-          team = await Team.create({ AppId: appId, name: managerId }, { transaction });
-          const teamManager = await AppMember.findOne({
-            where: { AppId: appId, scimExternalId: team.name },
-          });
-
-          if (teamManager) {
-            await TeamMember.create(
-              {
-                TeamId: team.id,
-                UserId: teamManager.UserId,
-                role: 'manager',
-              },
-              { transaction },
-            );
-          }
-        }
-        const teamMember = await TeamMember.create(
-          {
-            TeamId: team.id,
-            UserId: user.id,
-            role: 'member',
-          },
-          { transaction },
-        );
-        teamMember.Team = team;
-        user.TeamMembers = [teamMember];
-      }
-
-      if (managerTeam) {
-        await TeamMember.create(
-          {
-            TeamId: managerTeam.id,
-            UserId: user.id,
-            role: 'manager',
-          },
-          { transaction },
-        );
-      }
-
       member = await AppMember.create(
         {
           UserId: user.id,
@@ -157,6 +116,47 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
       );
 
       member.User = user;
+
+      if (managerId) {
+        if (!team) {
+          team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+          const teamManager = await AppMember.findOne({
+            where: { AppId: appId, scimExternalId: team.name },
+          });
+
+          if (teamManager) {
+            await TeamMember.create(
+              {
+                TeamId: team.id,
+                AppMemberId: teamManager.id,
+                role: 'manager',
+              },
+              { transaction },
+            );
+          }
+        }
+        const teamMember = await TeamMember.create(
+          {
+            TeamId: team.id,
+            AppMemberId: member.id,
+            role: 'member',
+          },
+          { transaction },
+        );
+        teamMember.Team = team;
+        member.TeamMembers = [teamMember];
+      }
+
+      if (managerTeam) {
+        await TeamMember.create(
+          {
+            TeamId: managerTeam.id,
+            AppMemberId: member.id,
+            role: 'manager',
+          },
+          { transaction },
+        );
+      }
     });
   } catch {
     throw new SCIMError(409, 'Conflict');
@@ -175,17 +175,13 @@ export async function getSCIMUser(ctx: Context): Promise<void> {
     include: [
       {
         model: User,
+      },
+      {
+        model: TeamMember,
         include: [
           {
-            model: TeamMember,
-            where: { role: 'member' },
+            model: Team,
             required: false,
-            include: [
-              {
-                model: Team,
-                where: { AppId: appId },
-              },
-            ],
           },
         ],
       },
@@ -215,17 +211,13 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
   const include = [
     {
       model: User,
+    },
+    {
+      model: TeamMember,
       include: [
         {
-          model: TeamMember,
-          where: { role: 'member' },
+          model: Team,
           required: false,
-          include: [
-            {
-              model: Team,
-              where: { AppId: appId },
-            },
-          ],
         },
       ],
     },
@@ -235,7 +227,7 @@ export async function getSCIMUsers(ctx: Context): Promise<void> {
     count: number;
     rows: AppMember[];
   }> {
-    const whereClause: WhereOptions<any> = {};
+    const whereClause: WhereOptions<any> = { AppId: appId };
     const attribute = queryFilter.attrPath.toLowerCase();
     const value =
       typeof queryFilter.compValue === 'string'
@@ -337,17 +329,14 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
     include: [
       {
         model: User,
+      },
+      {
+        model: TeamMember,
+        required: false,
         include: [
           {
-            model: TeamMember,
-            where: { role: 'member' },
-            required: false,
-            include: [
-              {
-                model: Team,
-                where: { AppId: appId },
-              },
-            ],
+            model: Team,
+            where: { AppId: appId },
           },
         ],
       },
@@ -368,20 +357,20 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
       if (managerId === '') {
         if (team) {
           promises.push(
-            TeamMember.destroy({ where: { TeamId: team.id, UserId: member.User.id }, transaction }),
+            TeamMember.destroy({ where: { TeamId: team.id, AppMemberId: member.id }, transaction }),
           );
         }
       } else {
         if (team) {
-          if (!(await TeamMember.findOne({ where: { TeamId: team.id, UserId: member.User.id } }))) {
+          if (!(await TeamMember.findOne({ where: { TeamId: team.id, AppMemberId: member.id } }))) {
             promises.push(
-              TeamMember.create({ TeamId: team.id, UserId: member.User.id }, { transaction }),
+              TeamMember.create({ TeamId: team.id, AppMemberId: member.id }, { transaction }),
             );
           }
         } else {
           promises.push(
             Team.create({ AppId: appId, name: managerId }, { transaction }).then((t) =>
-              TeamMember.create({ TeamId: t.id, UserId: member.User.id }, { transaction }),
+              TeamMember.create({ TeamId: t.id, AppMemberId: member.id }, { transaction }),
             ),
           );
         }
@@ -404,17 +393,15 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
     include: [
       {
         model: User,
+      },
+      {
+        model: TeamMember,
+        where: { role: 'member' },
+        required: false,
         include: [
           {
-            model: TeamMember,
-            where: { role: 'member' },
-            required: false,
-            include: [
-              {
-                model: Team,
-                where: { AppId: appId },
-              },
-            ],
+            model: Team,
+            where: { AppId: appId },
           },
         ],
       },
@@ -503,14 +490,14 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
         if (
           existingTeam &&
           !(await TeamMember.findOne({
-            where: { TeamId: existingTeam.id, UserId: member.UserId },
+            where: { TeamId: existingTeam.id, AppMemberId: member.id },
           }))
         ) {
           promises.push(
             TeamMember.create(
               {
                 TeamId: existingTeam.id,
-                UserId: member.UserId,
+                AppMemberId: member.id,
               },
               { transaction },
             ),
@@ -522,14 +509,14 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
             TeamMember.create(
               {
                 TeamId: newTeam.id,
-                UserId: member.UserId,
+                AppMemberId: member.id,
               },
               { transaction },
             ),
             TeamMember.create(
               {
                 TeamId: newTeam.id,
-                UserId: teamManager.UserId,
+                AppMemberId: teamManager.id,
                 role: 'manager',
               },
               { transaction },

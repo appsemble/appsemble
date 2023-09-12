@@ -23,7 +23,6 @@ import {
   OAuthAuthorization,
   Organization,
   ResetPasswordToken,
-  TeamMember,
 } from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
@@ -74,9 +73,6 @@ export class User extends Model {
   @HasMany(() => AppMember)
   AppMembers: AppMember[];
 
-  @HasMany(() => TeamMember)
-  TeamMembers: TeamMember[];
-
   @CreatedAt
   created: Date;
 
@@ -86,9 +82,7 @@ export class User extends Model {
   @DeletedAt
   deleted: Date;
 
-  TeamMember: Awaited<TeamMember>;
+  AppMember: AppMember;
 
-  AppMember: Awaited<AppMember>;
-
-  Member: Awaited<Member>;
+  Member: Member;
 }
