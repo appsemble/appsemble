@@ -81,8 +81,12 @@ export async function verifyResourceActionPermission({
 
   const result: WhereOptions[] = [];
 
-  if (functionalRoles.includes('$author') && user && action !== 'create') {
-    result.push({ AuthorId: user.id });
+  const member = user
+    ? await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } })
+    : null;
+
+  if (functionalRoles.includes('$author') && member && action !== 'create') {
+    result.push({ AuthorId: member.id });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
@@ -126,12 +130,6 @@ export async function verifyResourceActionPermission({
   }
 
   if (app.definition.security && !isPublic) {
-    const member = await AppMember.findOne({
-      where: {
-        AppId: app.id,
-        UserId: user.id,
-      },
-    });
     const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
     let role: string;
 

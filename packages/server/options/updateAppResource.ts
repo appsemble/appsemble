@@ -48,7 +48,7 @@ export function updateAppResource({
         data,
         clonable,
         expires,
-        EditorId: user?.id,
+        EditorId: member?.id,
       },
       { transaction },
     );
@@ -69,7 +69,7 @@ export function updateAppResource({
       await ResourceVersion.create(
         {
           ResourceId: id,
-          UserId: previousEditorId,
+          AppMemberId: previousEditorId,
           data:
             resourceDefinition.history === true || resourceDefinition.history.data
               ? oldData

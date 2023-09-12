@@ -42,7 +42,7 @@ export function createQueryResources(options: Options): Middleware {
 
     const { order, where } = generateQuery(ctx, options);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       context: ctx,
       app,
       resourceType,
@@ -59,7 +59,7 @@ export function createQueryResources(options: Options): Middleware {
         and: [
           where,
           {
-            ...userQuery,
+            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
@@ -117,7 +117,7 @@ export function createCountResources(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -133,7 +133,7 @@ export function createCountResources(options: Options): Middleware {
         and: [
           where || {},
           {
-            ...userQuery,
+            ...memberQuery,
             type: resourceType,
             AppId: appId,
             expires: { or: [{ gt: new Date() }, null] },
@@ -170,7 +170,7 @@ export function createGetResourceById(options: Options): Middleware {
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx, view);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -181,7 +181,7 @@ export function createGetResourceById(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,
@@ -275,7 +275,7 @@ export function createUpdateResource(options: Options): Middleware {
 
     const resourceDefinition = getResourceDefinition(app, resourceType, ctx);
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -286,7 +286,7 @@ export function createUpdateResource(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,
@@ -341,7 +341,7 @@ export function createDeleteResource(options: Options): Middleware {
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    const userQuery = await verifyResourceActionPermission({
+    const memberQuery = await verifyResourceActionPermission({
       app,
       context: ctx,
       action,
@@ -352,7 +352,7 @@ export function createDeleteResource(options: Options): Middleware {
 
     const findOptions: FindOptions = {
       where: {
-        ...userQuery,
+        ...memberQuery,
         id: resourceId,
         type: resourceType,
         AppId: appId,

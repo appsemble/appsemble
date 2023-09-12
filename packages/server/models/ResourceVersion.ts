@@ -13,7 +13,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { Resource, User } from './index.js';
+import { AppMember, Resource } from './index.js';
 
 @Table({ tableName: 'ResourceVersion', updatedAt: false })
 export class ResourceVersion extends Model {
@@ -34,12 +34,12 @@ export class ResourceVersion extends Model {
   @BelongsTo(() => Resource)
   Resource: Awaited<Resource>;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
-  UserId: string;
+  AppMemberId: string;
 
-  @BelongsTo(() => User)
-  User: Awaited<User>;
+  @BelongsTo(() => AppMember)
+  AppMember: Awaited<AppMember>;
 
   @CreatedAt
   created: Date;
@@ -48,7 +48,7 @@ export class ResourceVersion extends Model {
     return {
       created: this.created.toISOString(),
       data: this.data,
-      author: this.User ? { id: this.User.id, name: this.User.name } : undefined,
+      author: this.AppMember ? { id: this.AppMember.id, name: this.AppMember.name } : undefined,
     };
   }
 }

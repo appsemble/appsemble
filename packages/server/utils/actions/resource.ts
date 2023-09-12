@@ -227,7 +227,7 @@ export async function update({
         ResourceVersion.create(
           {
             ResourceId: resource.id,
-            UserId: previousEditorId,
+            AppMemberId: previousEditorId,
             data: definition.history === true || definition.history.data ? oldData : undefined,
           },
           { transaction },
@@ -299,7 +299,7 @@ export async function patch({
         ResourceVersion.create(
           {
             ResourceId: resource.id,
-            UserId: previousEditorId,
+            AppMemberId: previousEditorId,
             data: definition.history === true || definition.history.data ? oldData : undefined,
           },
           { transaction },

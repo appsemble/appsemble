@@ -15,7 +15,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, Asset, ResourceSubscription, ResourceVersion, User } from './index.js';
+import { App, AppMember, Asset, ResourceSubscription, ResourceVersion } from './index.js';
 
 interface ResourceToJsonOptions {
   /**
@@ -68,19 +68,19 @@ export class Resource extends Model {
   @BelongsTo(() => App)
   App: Awaited<App>;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
   AuthorId: string;
 
-  @BelongsTo(() => User, 'AuthorId')
-  Author: Awaited<User>;
+  @BelongsTo(() => AppMember, 'AuthorId')
+  Author: Awaited<AppMember>;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => AppMember)
   @Column(DataType.UUID)
   EditorId: string;
 
-  @BelongsTo(() => User, 'EditorId')
-  Editor: Awaited<User>;
+  @BelongsTo(() => AppMember, 'EditorId')
+  Editor: Awaited<AppMember>;
 
   @HasMany(() => Asset)
   Assets: Asset[];
