@@ -1,1 +1,1 @@
-Elements list updates after undo or redo
+GUI editor elements list updates after undo or redo
