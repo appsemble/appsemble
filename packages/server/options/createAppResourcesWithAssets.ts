@@ -19,7 +19,7 @@ export async function createAppResourcesWithAssets({
 
   await (user as User)?.reload({ attributes: ['name', 'id'] });
 
-  const appMember = await getUserAppAccount(app.id, user.id);
+  const appMember = await getUserAppAccount(app?.id, user?.id);
 
   let createdResources: Resource[];
   await transactional(async (transaction) => {

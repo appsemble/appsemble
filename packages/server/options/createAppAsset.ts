@@ -11,7 +11,7 @@ export async function createAppAsset({
 }: CreateAppAssetParams): Promise<AppAsset> {
   const { data, filename, mime, name } = payload;
 
-  const member = await getUserAppAccount(app.id, context.user.id);
+  const member = await getUserAppAccount(app?.id, context.user?.id);
 
   let asset: Asset;
   const ctx = context;

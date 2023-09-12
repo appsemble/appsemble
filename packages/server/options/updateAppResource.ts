@@ -20,7 +20,7 @@ export function updateAppResource({
   return transactional(async (transaction) => {
     const { user } = context;
 
-    const member = await getUserAppAccount(app.id, user.id);
+    const member = await getUserAppAccount(app?.id, user?.id);
 
     const persistedApp = await App.findOne({
       where: {
