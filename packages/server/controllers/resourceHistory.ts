@@ -1,7 +1,7 @@
 import { assertKoaError, getResourceDefinition } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 
-import { App, Resource, ResourceVersion, User } from '../models/index.js';
+import { App, AppMember, Resource, ResourceVersion } from '../models/index.js';
 
 export async function getResourceHistory(ctx: Context): Promise<void> {
   const {
@@ -18,7 +18,7 @@ export async function getResourceHistory(ctx: Context): Promise<void> {
         where: { id: resourceId, type: resourceType },
         include: [
           { association: 'Editor' },
-          { model: ResourceVersion, include: [{ model: User }] },
+          { model: ResourceVersion, include: [{ model: AppMember }] },
         ],
       },
     ],
