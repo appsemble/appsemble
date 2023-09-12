@@ -1,6 +1,7 @@
 import { type CreateAppResourcesWithAssetsParams } from '@appsemble/node-utils';
 import { type Resource as ResourceInterface } from '@appsemble/types';
 
+import { getUserAppAccount } from './getUserAppAccount.js';
 import { App, Asset, transactional, type User } from '../models/index.js';
 import { Resource } from '../models/Resource.js';
 import { processHooks, processReferenceHooks } from '../utils/resource.js';
@@ -16,7 +17,9 @@ export async function createAppResourcesWithAssets({
 }: CreateAppResourcesWithAssetsParams): Promise<ResourceInterface[]> {
   const { user } = context;
 
-  await (user as User)?.reload({ attributes: ['name'] });
+  await (user as User)?.reload({ attributes: ['name', 'id'] });
+
+  const appMember = await getUserAppAccount(app.id, user.id);
 
   let createdResources: Resource[];
   await transactional(async (transaction) => {
@@ -43,7 +46,7 @@ export async function createAppResourcesWithAssets({
           ...asset,
           AppId: app.id,
           ResourceId,
-          UserId: user?.id,
+          AppMemberId: appMember?.id,
         };
       }),
       { logging: false, transaction },

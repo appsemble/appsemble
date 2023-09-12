@@ -1,6 +1,7 @@
 import { type AppAsset, type CreateAppAssetParams } from '@appsemble/node-utils';
 import { UniqueConstraintError } from 'sequelize';
 
+import { getUserAppAccount } from './getUserAppAccount.js';
 import { Asset } from '../models/Asset.js';
 
 export async function createAppAsset({
@@ -9,6 +10,8 @@ export async function createAppAsset({
   payload,
 }: CreateAppAssetParams): Promise<AppAsset> {
   const { data, filename, mime, name } = payload;
+
+  const member = await getUserAppAccount(app.id, context.user.id);
 
   let asset: Asset;
   const ctx = context;
@@ -19,7 +22,7 @@ export async function createAppAsset({
       filename,
       mime,
       name,
-      UserId: context.user?.id,
+      AppMemberId: member?.id,
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
