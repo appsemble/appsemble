@@ -1,6 +1,41 @@
-import { mapValues } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
 import { type JsonValue } from 'type-fest';
+
+/**
+ * Generates data for certain blocks according to a preset configuration of default values
+ */
+export const generateDataFromConfiguration = (
+  definitions: Record<string, Schema>,
+  schema?: Schema,
+  blockName?: string,
+): JsonValue => {
+  if (blockName === '@appsemble/form') {
+    return {
+      dense: false,
+      disableDefault: false,
+      disabled: false,
+      fields: [
+        {
+          defaultValue: '',
+          disabled: false,
+          icon: 'fas fa-home',
+          inline: true,
+          label: 'label',
+          name: '',
+          placeholder: 'placeholder',
+          readOnly: false,
+          requirements: [],
+          show: 'show',
+          tag: 'tag',
+          type: 'string',
+        },
+      ],
+      previous: false,
+      requirements: [],
+      skipInitialLoad: false,
+    };
+  }
+};
 
 /**
  * Generates values for each type in a Schema.
@@ -10,11 +45,20 @@ import { type JsonValue } from 'type-fest';
 export const generateData = (
   definitions: Record<string, Schema>,
   schema?: Schema,
-  ownerKey = '',
+  blockName?: string,
 ): JsonValue => {
   if (!schema) {
     return;
   }
+
+  // Set configurations for certain blocks
+  if (blockName) {
+    const blockConfigs = ['@appsemble/form'];
+    if (blockConfigs.includes(blockName)) {
+      return generateDataFromConfiguration(definitions, schema, blockName);
+    }
+  }
+
   if (schema.$ref) {
     const ref = decodeURIComponent(schema.$ref.split('/').pop());
     return generateData(definitions, definitions[ref!] as Schema);
@@ -26,7 +70,10 @@ export const generateData = (
     const data: Record<string, JsonValue> = {};
     if (schema.properties) {
       for (const key of Object.keys(schema.properties)) {
-        data[key] = generateData(definitions, schema.properties[key], key);
+        // This is a workaround for the form block
+        if (key !== 'autofill') {
+          data[key] = generateData(definitions, schema.properties[key], key);
+        }
       }
     }
     return data;
@@ -48,7 +95,10 @@ export const generateData = (
     return schema.enum[0];
   }
   if (schema.format === 'remapper') {
-    return ownerKey;
+    if (schema.const) {
+      return schema.const;
+    }
+    return schema.default ?? blockName;
   }
   if (schema.type === 'array') {
     const firstArray = Array.from({ length: schema.minItems }, (empty, index) =>
@@ -70,16 +120,17 @@ export const generateData = (
     if (schema.const) {
       return schema.const;
     }
-    return '';
+
+    return schema.default ?? '';
   }
   if (schema.type === 'number') {
-    return 0;
+    return schema.default ?? 0;
   }
   if (schema.type === 'boolean') {
-    return true;
-  }
-  if (schema.type === 'object') {
-    return mapValues(schema.properties || {}, generateData);
+    if (schema.const) {
+      return schema.const;
+    }
+    return schema.default ?? false;
   }
   return null;
 };
