@@ -6,9 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Studio: GUI editor elements list updates after undo or redo.
+- Studio: The elements list in the GUI editor now uses the Undo or Redo stack.
 
 ## \[[0.22.4](https://gitlab.com/appsemble/appsemble/-/releases/0.22.4)] - 2023-09-12
+
+- CI: Fix release process for production. Any new block features from `0.22.0` till `0.22.3` are now
+  available in block versions `0.22.4` and onward.
 
 ## \[[0.22.3](https://gitlab.com/appsemble/appsemble/-/releases/0.22.3)] - 2023-09-11
 
@@ -34,7 +37,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Server: Fix migration for release version `0.22.0`.
+- Server: Fix database migration for release version `0.22.0`.
 
 ## \[[0.22.0](https://gitlab.com/appsemble/appsemble/-/releases/0.22.0)] - 2023-08-30
 
