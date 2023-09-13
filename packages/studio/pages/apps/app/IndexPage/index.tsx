@@ -9,6 +9,7 @@ import { AppRatings } from './AppRatings/index.js';
 import { AppScreenshots } from './AppScreenshots/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
+import { AddToCollectionButton } from '../../../../components/AddToCollectionButton/index.js';
 import { AppIcon } from '../../../../components/AppIcon/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { CloneButton } from '../../../../components/CloneButton/index.js';
@@ -43,6 +44,7 @@ export function IndexPage(): ReactElement {
               <FormattedMessage {...messages.view} />
             </Button>
             <CloneButton app={app} />
+            <AddToCollectionButton app={app} />
           </>
         }
         description={app.messages?.app?.description || app.definition.description}

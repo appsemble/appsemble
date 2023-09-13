@@ -1,0 +1,9 @@
+.expertFigure {
+  height: 170px;
+  padding: 6px;
+  width: 170px;
+}
+
+.expertImg {
+  box-shadow: 0 0 5px 5px rgb(0 0 0 / 20%);
+}

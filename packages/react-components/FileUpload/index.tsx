@@ -4,6 +4,9 @@ import {
   forwardRef,
   type ReactNode,
   useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
 } from 'react';
 
 import { FormComponent, Icon, type Input, type SharedFormComponentProps } from '../index.js';
@@ -41,10 +44,21 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     },
     ref,
   ) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useImperativeHandle(ref, () => inputRef.current);
+
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLInputElement>) => onChange(event, event.currentTarget.files[0]),
       [onChange],
     );
+
+    useEffect(() => {
+      // Make sure the input is cleared when the value is cleared.
+      if (!value) {
+        inputRef.current.value = null;
+      }
+    }, [value, inputRef]);
 
     const fileName = value?.name || fileLabel;
 
@@ -59,7 +73,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
               id={id}
               name={name}
               onChange={handleChange}
-              ref={ref}
+              ref={inputRef}
               type="file"
             />
             <span className="file-cta">

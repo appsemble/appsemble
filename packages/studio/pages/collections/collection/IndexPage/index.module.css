@@ -1,0 +1,10 @@
+.content {
+  max-width: 960px;
+  width: 100%;
+}
+
+.pinnedAppIcon {
+  padding: 1.25em;
+  pointer-events: none;
+  transform: rotate(-45deg);
+}

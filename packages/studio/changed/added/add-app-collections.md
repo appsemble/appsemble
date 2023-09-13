@@ -1,0 +1,1 @@
+Add app collections page.

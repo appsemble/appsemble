@@ -1,0 +1,23 @@
+.figure {
+  margin: 0 auto;
+}
+
+.rating {
+  left: -0.5em;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  line-height: 1.3;
+}
+
+.image {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}

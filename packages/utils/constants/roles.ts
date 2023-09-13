@@ -31,6 +31,9 @@ const Owner = [
   Permission.DeleteOrganization,
   Permission.ManageMembers,
   Permission.ManageRoles,
+  Permission.CreateCollections,
+  Permission.DeleteCollections,
+  Permission.EditCollections,
 ];
 
 export const roles = {

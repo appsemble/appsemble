@@ -7,7 +7,8 @@ import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AppCard } from '../../../../components/AppCard/index.js';
+import { AppList } from '../../../../components/AppList/index.js';
+import { sortFunctions } from '../../../../components/AppListControls/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { BlockCard } from '../../../../components/BlockCard/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
@@ -92,20 +93,7 @@ export function IndexPage({ organization }: IndexPageProps): ReactElement {
       >
         <div className="px-5 pt-2 pb-4 has-background-white-bis">
           <Collapsible title={<FormattedMessage {...messages.apps} />}>
-            <AsyncDataView
-              emptyMessage={<FormattedMessage {...messages.appsEmpty} />}
-              errorMessage={<FormattedMessage {...messages.appsError} />}
-              loadingMessage={<FormattedMessage {...messages.appsLoading} />}
-              result={appsResult}
-            >
-              {(apps) => (
-                <div className={styles.appList}>
-                  {apps.map((app) => (
-                    <AppCard app={app} key={app.id} />
-                  ))}
-                </div>
-              )}
-            </AsyncDataView>
+            <AppList result={appsResult} reverse sortFunction={sortFunctions.rating} />
           </Collapsible>
           <hr className="has-background-grey-lighter" />
           <Collapsible title={<FormattedMessage {...messages.blocks} />}>

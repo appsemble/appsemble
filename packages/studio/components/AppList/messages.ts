@@ -13,10 +13,6 @@ export const messages = defineMessages({
     id: 'studio.dkCG8O',
     defaultMessage: 'There are currently no apps available.',
   },
-  emptyUserApps: {
-    id: 'studio.c69Zgz',
-    defaultMessage: 'There are currently no user apps available.',
-  },
   noApps: {
     id: 'studio.DCjIUV',
     defaultMessage: 'There are no apps that match your search parameters.',

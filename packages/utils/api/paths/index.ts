@@ -1,4 +1,5 @@
 import { paths as action } from './action.js';
+import { paths as appCollections } from './appCollections.js';
 import { paths as translations } from './appMessages.js';
 import { paths as appOAuth2Secrets } from './appOAuth2Secrets.js';
 import { paths as appQuotas } from './appQuotas.js';
@@ -32,6 +33,7 @@ export const paths = {
   ...scimEndpoints,
   ...appsembleMessages,
   ...appSSLSecrets,
+  ...appCollections,
   ...appQuotas,
   ...assets,
   ...blocks,
