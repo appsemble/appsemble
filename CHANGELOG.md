@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Studio: Store actions in the undo and redo stack for the left sidebar in the GUI editor.
+- Studio: The elements list in the GUI editor now uses the Undo or Redo stack.
 
 ## \[[0.22.4](https://gitlab.com/appsemble/appsemble/-/releases/0.22.4)] - 2023-09-12
 
