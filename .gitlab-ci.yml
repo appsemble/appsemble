@@ -24,6 +24,16 @@ workflow:
 #  Job Templates                                                                                  #
 ###################################################################################################
 
+# A preset for running Docker in Docker.
+.docker:
+  interruptible: true
+  services:
+    - docker:dind
+  image: docker
+  dependencies: []
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+
 # A preconfigured environment for using Yarn.
 .yarn:
   interruptible: true
@@ -151,18 +161,14 @@ validate:
 #  Build Stage                                                                                    #
 ###################################################################################################
 
-# Build and push the Docker image.
-build and push docker image:
+# Build the Docker image.
+build docker image:
+  extends: .docker
   stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:v1.14.0-debug
-    entrypoint: ['']
+  needs: []
   script:
-    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" --build-arg "version=$CI_COMMIT_REF_NAME" --build-arg "date=$CI_JOB_STARTED_AT" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.
 pack:
@@ -257,17 +263,12 @@ gitlab release:
 
 publish docker:
   stage: publish
-  services:
-    - docker:dind
-  image: docker
   needs:
-    - build and push docker image
+    - build docker image
   variables:
     GIT_STRATEGY: none
   rules:
     - if: $CI_COMMIT_TAG
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
@@ -411,7 +412,7 @@ review:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - build and push docker image
+    - build docker image
     - job: helm package
       artifacts: true
   rules:
@@ -481,7 +482,7 @@ staging:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - build and push docker image
+    - build docker image
     - job: helm package
       artifacts: true
   rules:
@@ -531,7 +532,7 @@ production:
   image: dtzar/helm-kubectl:3
   stage: deploy
   needs:
-    - build and push docker image
+    - build docker image
     - publish helm
   rules:
     - if: $CI_COMMIT_TAG
