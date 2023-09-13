@@ -40,6 +40,7 @@ export function SettingsPage({ collection, setCollection }: SettingsPageProps): 
       isPrivate: collection.visibility === 'private',
       expertName: collection.$expert.name,
       expertDescription: collection.$expert.description,
+      domain: collection.domain,
     }),
     [collection],
   );
@@ -77,7 +78,7 @@ export function SettingsPage({ collection, setCollection }: SettingsPageProps): 
   });
 
   const onSubmit = useCallback(
-    async ({ expertDescription, expertName, isPrivate, name }: typeof defaultValues) => {
+    async ({ domain, expertDescription, expertName, isPrivate, name }: typeof defaultValues) => {
       const formData = new FormData();
       if (name !== defaultValues.name) {
         formData.append('name', name);
@@ -90,6 +91,9 @@ export function SettingsPage({ collection, setCollection }: SettingsPageProps): 
       }
       if (expertDescription !== defaultValues.expertDescription) {
         formData.append('expertDescription', expertDescription);
+      }
+      if (domain !== defaultValues.domain) {
+        formData.append('domain', domain);
       }
       if (header) {
         formData.append('headerImage', header, header.name);

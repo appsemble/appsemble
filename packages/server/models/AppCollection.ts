@@ -68,6 +68,14 @@ export class AppCollection extends Model {
   @HasMany(() => AppCollectionApp)
   Apps: AppCollectionApp[];
 
+  /**
+   * The maximum length of a domain name is 255 bytes as per
+   * https://tools.ietf.org/html/rfc1034#section-3.1. The reason the maximum length of the field
+   * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
+   */
+  @Column({ type: DataType.STRING(253) })
+  domain?: string;
+
   @CreatedAt
   created: Date;
 
@@ -87,6 +95,7 @@ export class AppCollection extends Model {
         profileImage: `/api/appCollections/${this.id}/expert/profileImage`,
       },
       headerImage: `/api/appCollections/${this.id}/headerImage`,
+      domain: this.domain,
       $created: this.created?.toISOString(),
       $updated: this.updated?.toISOString(),
     };

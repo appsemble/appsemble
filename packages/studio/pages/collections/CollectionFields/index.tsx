@@ -1,4 +1,5 @@
 import {
+  Button,
   CheckboxField,
   FileUpload,
   Message,
@@ -7,11 +8,39 @@ import {
   useSimpleForm,
   useToggle,
 } from '@appsemble/react-components';
+import { type SSLStatus } from '@appsemble/types';
+import { domainPattern, normalize } from '@appsemble/utils';
 import { type ChangeEvent, type ReactElement, useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
+import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { AvatarEditorModal } from '../../../components/AvatarEditorModal/index.js';
+import { useSSLStatus } from '../../../components/useSSLStatus.js';
+
+function preprocessDomain(domain: string): string {
+  return domain
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .split(/\./g)
+    .map((node) => normalize(node, false).slice(0, 63))
+    .join('.');
+}
+
+function getSSLMessage(status: SSLStatus): MessageDescriptor {
+  switch (status) {
+    case 'error':
+      return messages.sslError;
+    case 'missing':
+      return messages.sslMissing;
+    case 'pending':
+      return messages.sslPending;
+    case 'ready':
+      return messages.sslReady;
+    default:
+      return messages.sslUnknown;
+  }
+}
 
 interface CollectionFieldsProps {
   readonly header: File | null;
@@ -26,9 +55,15 @@ export function CollectionFields({
   onExpertPhotoChange,
   onHeaderChange,
 }: CollectionFieldsProps): ReactElement {
+  const { lang } = useParams<{ lang: string }>();
+
   const avatarModalToggle = useToggle();
 
-  const { setValue } = useSimpleForm();
+  const { setValue, values } = useSimpleForm();
+
+  const { formatMessage } = useIntl();
+
+  const sslStatus = useSSLStatus(values.domain === '' ? undefined : values.domain);
 
   const handleExpertPhotoChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -115,6 +150,44 @@ export function CollectionFields({
         name="expertProfileImage"
         onChange={handleExpertPhotoChange}
         required
+      />
+      <SimpleFormField
+        addonLeft={
+          <Button
+            className={`is-light ${
+              sslStatus
+                ? sslStatus[values.domain] === 'ready'
+                  ? 'is-success'
+                  : 'is-danger'
+                : 'is-loading'
+            }`}
+            component="label"
+            htmlFor="domain"
+            title={formatMessage(getSSLMessage(sslStatus?.[values.domain]))}
+          >
+            {`${window.location.protocol}//`}
+          </Button>
+        }
+        help={
+          <FormattedMessage
+            {...messages.domainDescription}
+            values={{
+              link: (link) => (
+                <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/dns`}>
+                  {link}
+                </Link>
+              ),
+            }}
+          />
+        }
+        label={<FormattedMessage {...messages.domain} />}
+        maxLength={253}
+        name="domain"
+        pattern={domainPattern}
+        preprocess={preprocessDomain}
+        validityMessages={{
+          patternMismatch: <FormattedMessage {...messages.domainError} />,
+        }}
       />
       <AvatarEditorModal
         onCanceled={() => {

@@ -148,6 +148,7 @@ export async function createCollection(ctx: Context): Promise<void> {
     headerImageMimeType: body.headerImage.mime,
     OrganizationId: organizationId,
     visibility: body.visibility ?? 'public',
+    domain: body.domain,
   });
 
   await collection.reload({
@@ -475,6 +476,7 @@ export async function updateCollection(ctx: Context): Promise<void> {
     headerImage: body.headerImage?.contents ?? undefined,
     headerImageMimeType: body.headerImage?.mime ?? undefined,
     visibility: body.visibility ?? undefined,
+    domain: body.domain ?? undefined,
   });
   ctx.response.status = 200;
   ctx.response.body = updatedCollection.toJSON();

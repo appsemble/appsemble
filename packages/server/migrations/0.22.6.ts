@@ -29,6 +29,7 @@ export async function up(db: Sequelize): Promise<void> {
       allowNull: false,
     },
     visibility: { type: DataTypes.STRING, allowNull: false },
+    domain: { type: DataTypes.STRING(253) },
     created: { allowNull: false, type: DataTypes.DATE },
     updated: { allowNull: false, type: DataTypes.DATE },
   });

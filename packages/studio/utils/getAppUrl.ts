@@ -1,3 +1,5 @@
+import { customDomainAppCollection } from './settings.js';
+
 /**
  * Get an app URL for a given organization ID, app path, and domain name.
  *
@@ -8,7 +10,9 @@
  * @returns A URL on which the app is hosted.
  */
 export function getAppUrl(organizationId: string, path: string, domain?: string): string {
-  const { hostname, port, protocol } = window.location;
+  const { hostname, port, protocol } = customDomainAppCollection?.realHost
+    ? new URL(customDomainAppCollection.realHost)
+    : window.location;
   const portPostfix =
     port && ((protocol === 'https:' && port !== '443') || (protocol === 'http:' && port !== '80'))
       ? `:${port}`

@@ -1,2 +1,8 @@
-export const { enableRegistration, logins, sentryDsn, sentryEnvironment } = window.settings;
+export const {
+  customDomainAppCollection,
+  enableRegistration,
+  logins,
+  sentryDsn,
+  sentryEnvironment,
+} = window.settings;
 delete window.settings;

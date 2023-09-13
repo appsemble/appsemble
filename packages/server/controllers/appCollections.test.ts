@@ -161,6 +161,7 @@ describe('appCollections', () => {
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
+          domain: null,
           $created: new Date(0).toISOString(),
           $updated: new Date(0).toISOString(),
         },
@@ -176,6 +177,7 @@ describe('appCollections', () => {
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
+          domain: null,
           $created: new Date(0).toISOString(),
           $updated: new Date(0).toISOString(),
         },
@@ -191,6 +193,7 @@ describe('appCollections', () => {
           OrganizationId: organization.id,
           OrganizationName: organization.name,
           visibility: 'public',
+          domain: null,
           $created: new Date(0).toISOString(),
           $updated: new Date(0).toISOString(),
         },
@@ -241,6 +244,7 @@ describe('appCollections', () => {
       headerImage: `/api/appCollections/${collections[0].id}/headerImage`,
       OrganizationId: organization.id,
       visibility: 'public',
+      domain: null,
       $created: new Date(0).toISOString(),
       $updated: new Date(0).toISOString(),
     });
@@ -282,6 +286,7 @@ describe('appCollections', () => {
       OrganizationId: organization.id,
       OrganizationName: organization.name,
       visibility: 'public',
+      domain: null,
       $created: new Date(0).toISOString(),
       $updated: new Date(0).toISOString(),
     });
@@ -450,6 +455,7 @@ describe('appCollections', () => {
       OrganizationId: organization.id,
       OrganizationName: organization.name,
       visibility: 'private',
+      domain: null,
       $created: new Date(0).toISOString(),
       $updated: new Date(0).toISOString(),
     });

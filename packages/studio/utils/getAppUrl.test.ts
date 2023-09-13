@@ -8,6 +8,9 @@ beforeEach(() => {
     value: { ...originalLocation },
     writable: true,
   });
+  vi.mock('./settings.js', () => ({
+    customDomainAppCollection: {},
+  }));
 });
 
 afterEach(() => {
@@ -48,4 +51,13 @@ it('should add the port for non-standard https ports', () => {
 it('should prefer a domain name', () => {
   const result = getAppUrl('org', 'app', 'example.com');
   expect(result).toBe('http://example.com');
+});
+
+it('should use the real host if a custom app collection domain is being used', async () => {
+  const { customDomainAppCollection } = await import('./settings.js');
+  customDomainAppCollection.realHost = 'https://example.com';
+  window.location.hostname = 'app-store.example.nl';
+  window.location.port = '80';
+  const result = getAppUrl('org', 'app');
+  expect(result).toBe('https://app.org.example.com');
 });
