@@ -3,7 +3,7 @@ import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
-import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
+import { App, AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
 import { type ScimUser } from '../types/scim.js';
 import { getCaseInsensitive } from '../utils/object.js';
 import { getScimLocation } from '../utils/scim.js';
@@ -483,47 +483,50 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.save({ transaction }),
     ];
     if (managerId != null && managerId !== '') {
-      const teamManager = await AppMember.findByPk(managerId);
-      if (teamManager) {
-        const existingTeam = await Team.findOne({ where: { AppId: appId, name: managerId } });
-        // Checks if user is already in the team
-        if (
-          existingTeam &&
-          !(await TeamMember.findOne({
-            where: { TeamId: existingTeam.id, AppMemberId: member.id },
-          }))
-        ) {
-          promises.push(
-            TeamMember.create(
-              {
-                TeamId: existingTeam.id,
-                AppMemberId: member.id,
-              },
-              { transaction },
-            ),
-          );
-        } else {
-          const newTeam = await Team.create({ AppId: appId, name: managerId }, { transaction });
+      let team = await Team.findOne({
+        where: { AppId: appId, name: managerId },
+        include: [
+          { model: TeamMember, required: false },
+          { model: App, include: [{ model: AppMember, required: false }] },
+        ],
+      });
 
-          promises.push(
-            TeamMember.create(
-              {
-                TeamId: newTeam.id,
-                AppMemberId: member.id,
-              },
-              { transaction },
-            ),
-            TeamMember.create(
-              {
-                TeamId: newTeam.id,
-                AppMemberId: teamManager.id,
-                role: 'manager',
-              },
-              { transaction },
-            ),
-          );
-        }
+      if (!team) {
+        team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+        team.App = await App.findByPk(appId, { include: [{ model: AppMember }] });
       }
+
+      if (!team.Members?.some((m) => m.AppMemberId === member.id)) {
+        promises.push(
+          TeamMember.create(
+            {
+              TeamId: team.id,
+              AppMemberId: member.id,
+              role: 'member',
+            },
+            { transaction },
+          ),
+        );
+      }
+
+      // Check if manager has an AppMember account, but isn't assigned to the team yet
+      if (
+        team.App?.AppMembers?.some((m) => m.id === managerId) &&
+        !team.Members?.some((m) => m.AppMemberId === managerId)
+      ) {
+        promises.push(
+          TeamMember.create(
+            {
+              TeamId: team.id,
+              AppMemberId: managerId,
+              role: 'manager',
+            },
+            { transaction },
+          ),
+        );
+      }
+
+      promises.push(team.save({ transaction }));
     }
     return Promise.all(promises);
   });
