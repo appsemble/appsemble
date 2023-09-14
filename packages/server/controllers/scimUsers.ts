@@ -91,6 +91,15 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
     team = await Team.findOne({ where: { AppId: appId, name: managerId } });
   }
   const managerTeam = await Team.findOne({ where: { AppId: appId, name: externalId } });
+  const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] })).definition
+    .security?.default?.role;
+
+  if (!defaultRole) {
+    ctx.throw(
+      400,
+      'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',
+    );
+  }
   try {
     await transactional(async (transaction) => {
       const user = await User.create(
@@ -106,11 +115,13 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
         {
           UserId: user.id,
           AppId: appId,
-          role: 'User',
+          role: defaultRole,
           email: userName,
           name: formattedName,
           scimExternalId: externalId,
           scimActive: active,
+          locale,
+          emailVerified: true,
         },
         { transaction },
       );

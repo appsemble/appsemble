@@ -63,7 +63,7 @@ export class AppMember extends Model {
   @Column(DataType.STRING)
   scimExternalId?: string;
 
-  @Default(true)
+  @AllowNull(true)
   @Column(DataType.BOOLEAN)
   scimActive?: boolean;
 
