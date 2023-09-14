@@ -155,7 +155,7 @@ export async function createTeam(ctx: Context): Promise<void> {
       );
     }
     await TeamMember.create(
-      { TeamId: team.id, AppMemberId: member.id, name: member.name, role: TeamRole.Manager },
+      { TeamId: team.id, AppMemberId: member.id, role: TeamRole.Manager },
       { transaction },
     );
   });
@@ -602,7 +602,6 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     AppMemberId: member.id,
     TeamId: team.id,
     role: TeamRole.Member,
-    name: member.name,
   });
 
   if ('app' in clients) {
@@ -781,7 +780,6 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
                   AppId: app.id,
                   UserId: user.id,
                   role: app.definition.security.default.role,
-                  name: user.name,
                 },
                 { transaction },
               )

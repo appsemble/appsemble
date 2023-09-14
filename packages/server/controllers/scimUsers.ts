@@ -1,9 +1,19 @@
+import { randomBytes } from 'node:crypto';
+
 import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
-import { App, AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  EmailAuthorization,
+  Team,
+  TeamMember,
+  transactional,
+  User,
+} from '../models/index.js';
 import { type ScimUser } from '../types/scim.js';
 import { getCaseInsensitive } from '../utils/object.js';
 import { getScimLocation } from '../utils/scim.js';
@@ -107,9 +117,13 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
           timezone,
           locale,
           name: formattedName,
+          primaryEmail: userName,
         },
         { transaction },
       );
+
+      const key = randomBytes(40).toString('hex');
+      await EmailAuthorization.create({ UserId: user.id, email: userName, key }, { transaction });
 
       member = await AppMember.create(
         {
@@ -356,12 +370,18 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
   scimAssert(member, 404, 'User not found');
 
   await transactional(async (transaction) => {
+    const key = randomBytes(40).toString('hex');
     const promises: Promise<unknown>[] = [
       member.update(
         { email: userName, name: formattedName, scimExternalId: externalId, scimActive: active },
         { transaction },
       ),
-      member.User.update({ timezone, locale, name: formattedName }, { transaction }),
+      member.User.update(
+        { timezone, locale, name: formattedName, primaryEmail: userName },
+        { transaction },
+      ),
+
+      EmailAuthorization.create({ UserId: member.UserId, email: userName, key }, { transaction }),
     ];
     if (managerId != null) {
       const team = await Team.findOne({ where: { AppId: appId, name: managerId } });
@@ -440,6 +460,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.timezone = value;
     } else if (lower === 'username') {
       member.email = value;
+      member.User.primaryEmail = value;
     } else if (lower === 'active') {
       member.scimActive = value.toLowerCase() === 'true';
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
