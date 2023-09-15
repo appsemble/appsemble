@@ -29,5 +29,9 @@ Does nothing if the user is already logged in.`,
 
 Every value will be converted to a string.`,
     },
+    login: {
+      description: 'Whether to login after registering.',
+      default: true,
+    },
   },
 });

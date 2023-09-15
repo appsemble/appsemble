@@ -24,6 +24,7 @@ export const register: ActionCreator<'user.register'> = ({
     const name = remap(definition.displayName, data);
     const picture = remap(definition.picture, data);
     const properties = remap(definition.properties, data);
+    const login = remap(definition.login, data) ?? true;
 
     const formData = new FormData();
     formData.append('email', email);
@@ -51,7 +52,9 @@ export const register: ActionCreator<'user.register'> = ({
     }
 
     await axios.post(`${apiUrl}/api/user/apps/${appId}/account`, formData);
-    await passwordLogin({ username: email, password });
+    if (login) {
+      await passwordLogin({ username: email, password });
+    }
     return data;
   },
 ];

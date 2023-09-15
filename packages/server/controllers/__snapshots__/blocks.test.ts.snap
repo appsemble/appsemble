@@ -3467,6 +3467,10 @@ Does nothing if the user is already logged in.",
                     "email": {
                       "description": "The email to login with.",
                     },
+                    "login": {
+                      "default": true,
+                      "description": "Whether to login after registering.",
+                    },
                     "onError": {},
                     "onSuccess": {},
                     "password": {
@@ -3519,6 +3523,10 @@ Does nothing if the user is already logged in.",
                     },
                     "email": {
                       "description": "The email to login with.",
+                    },
+                    "login": {
+                      "default": true,
+                      "description": "Whether to login after registering.",
                     },
                     "onError": {},
                     "onSuccess": {},
@@ -7632,6 +7640,10 @@ Does nothing if the user is already logged in.",
             "email": {
               "description": "The email to login with.",
             },
+            "login": {
+              "default": true,
+              "description": "Whether to login after registering.",
+            },
             "onError": {},
             "onSuccess": {},
             "password": {
@@ -7684,6 +7696,10 @@ Does nothing if the user is already logged in.",
             },
             "email": {
               "description": "The email to login with.",
+            },
+            "login": {
+              "default": true,
+              "description": "Whether to login after registering.",
             },
             "onError": {},
             "onSuccess": {},

@@ -37,7 +37,7 @@ describe('user.register', () => {
     });
   });
 
-  it('should do nothing and return data if used is logged in', async () => {
+  it('should do nothing and return data if user is logged in', async () => {
     mock.onPost(`${apiUrl}/api/user/apps/${appId}/account`).reply(() => [201]);
     const action = createTestAction({
       definition: {
