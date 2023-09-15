@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.6](https://gitlab.com/appsemble/appsemble/-/releases/0.22.6)] - 2023-09-15
+
+### Added
+
+- Server: Add app collections.
+- Studio: Add a page for the expert/curator of an app collection.
+- Studio: Add a settings page for app collections.
+- Studio: Add an editor for the profile picture of app collection experts.
+- Studio: Add app collections page.
+- Studio: Add functionality to remove apps from an app collection.
+- Studio: Add “Add to collection” button to individual app pages.
+- Studio: Implement pinned apps in app collections.
+
 ## \[[0.22.5](https://gitlab.com/appsemble/appsemble/-/releases/0.22.5)] - 2023-09-12
 
 ### Changed
