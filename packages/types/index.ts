@@ -1222,6 +1222,13 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
   displayName: Remapper;
 
   /**
+   * Whether to login after registering.
+   *
+   * @default true
+   */
+  login?: boolean;
+
+  /**
    * The profile picture to use.
    *
    * This must be a file, otherwise it’s discarded.
