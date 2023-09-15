@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.7](https://gitlab.com/appsemble/appsemble/-/releases/0.22.7)] - 2023-09-15
+
 ## \[[0.22.6](https://gitlab.com/appsemble/appsemble/-/releases/0.22.6)] - 2023-09-15
 
 ### Added

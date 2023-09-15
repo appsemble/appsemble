@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/image",
-  "version": "0.22.6",
+  "version": "0.22.7",
   "private": true,
   "description": "A block that can be used to display an image.",
   "homepage": "https://appsemble.app",
@@ -17,6 +17,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.22.6"
+    "@appsemble/sdk": "0.22.7"
   }
 }
