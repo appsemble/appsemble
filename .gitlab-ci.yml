@@ -262,6 +262,7 @@ gitlab release:
     - yarn scripts gitlab-release
 
 publish docker:
+  extends: .docker
   stage: publish
   needs:
     - build docker image
