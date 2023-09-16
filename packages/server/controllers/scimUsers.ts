@@ -101,7 +101,7 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
     team = await Team.findOne({ where: { AppId: appId, name: managerId } });
   }
   const managerTeam = await Team.findOne({ where: { AppId: appId, name: externalId } });
-  const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] })).definition
+  const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
     .security?.default?.role;
 
   if (!defaultRole) {

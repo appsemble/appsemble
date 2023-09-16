@@ -25,7 +25,17 @@ beforeEach(async () => {
   const organization = await Organization.create({ id: 'testorganization' });
   const scimToken = 'test';
   app = await App.create({
-    definition: {},
+    definition: {
+      security: {
+        default: {
+          role: 'User',
+          policy: 'everyone',
+        },
+        roles: {
+          User: { description: 'Default SCIM User for testing.' },
+        },
+      },
+    },
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
@@ -99,6 +109,34 @@ describe('createSCIMUser', () => {
       role: 'User',
       scimExternalId: 'spgb',
     });
+  });
+
+  it('should throw an error when app has no roles', async () => {
+    app.update({
+      definition: {
+        security: null,
+      },
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
+      ScHeMaS: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      ExTeRnAlId: 'spgb',
+      UsErNaMe: 'spongebob@krustykrab.example',
+      active: true,
+      MeTa: {
+        ReSoUrCeTyPe: 'User',
+      },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: text/plain; charset=utf-8
+
+      App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.
+    `);
   });
 
   it('should accept partial data', async () => {
