@@ -152,7 +152,7 @@ pages:
   - name: Example Page
     blocks:
       - type: action-button
-        version: 0.22.7
+        version: 0.22.8
         parameters:
           icon: home
 ```
@@ -180,7 +180,7 @@ hidden from the app’s menu.
 - name: Example Page
   blocks:
     - type: action-button
-      version: 0.22.7
+      version: 0.22.8
       parameters:
         icon: home
 ```
@@ -193,7 +193,7 @@ hidden from the app’s menu.
   roles: []
   blocks:
     - type: action-button
-      version: 0.22.7
+      version: 0.22.8
       parameters:
         icon: home
 ```
@@ -208,7 +208,7 @@ pages:
       - Admin
     blocks:
       - type: action-button
-        version: 0.22.7
+        version: 0.22.8
         parameters:
           icon: home
   - name: Example Page 2
@@ -216,7 +216,7 @@ pages:
       - Reader
     blocks:
       - type: action-button
-        version: 0.22.7
+        version: 0.22.8
         parameters:
           icon: arrow-left
 ```
@@ -239,11 +239,11 @@ such as a button to create a new app for the administrators of a blog.
 - name: Example Page
   blocks:
     - type: action-button
-      version: 0.22.7
+      version: 0.22.8
       parameters:
         icon: home
     - type: table
-      version: 0.22.7
+      version: 0.22.8
       parameters:
         fields:
           - value: { prop: firstName }

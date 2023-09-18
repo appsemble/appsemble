@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.8](https://gitlab.com/appsemble/appsemble/-/releases/0.22.8)] - 2023-09-18
+
+### Added
+
+- App: Add login property to `user.register` action to toggle login after register.
+
 ## \[[0.22.7](https://gitlab.com/appsemble/appsemble/-/releases/0.22.7)] - 2023-09-15
 
 ## \[[0.22.6](https://gitlab.com/appsemble/appsemble/-/releases/0.22.6)] - 2023-09-15
