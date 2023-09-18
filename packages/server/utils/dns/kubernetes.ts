@@ -456,27 +456,23 @@ export async function restoreDNS(): Promise<void> {
   const { hostname } = new URL(argv.host);
   const createIngress = await createIngressFunction();
 
-  const promises = [];
-
   for await (const { id } of iterTable(Organization, { attributes: ['id'] })) {
-    promises.push(createIngress(`*.${id}.${hostname}`));
+    await createIngress(`*.${id}.${hostname}`);
   }
 
   for await (const { domain } of iterTable(App, {
     attributes: ['domain'],
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
-    promises.push(createIngress(domain));
+    await createIngress(domain);
   }
 
   for await (const { domain } of iterTable(AppCollection, {
     attributes: ['domain'],
     where: { [Op.and]: [{ domain: { [Op.not]: null } }, { domain: { [Op.not]: '' } }] },
   })) {
-    promises.push(createIngress(domain));
+    await createIngress(domain);
   }
-
-  await Promise.all(promises);
 }
 
 /**
