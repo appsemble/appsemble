@@ -77,7 +77,7 @@ export interface BlockDefinition {
   layout?: 'float' | 'grow' | 'static';
 
   /**
-   * For floating blocks this propert defines where the block should float.
+   * For floating blocks this property defines where the block should float.
    */
   position?:
     | 'bottom left'

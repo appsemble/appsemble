@@ -274,7 +274,7 @@ export function Block({
 
   return (
     <div
-      className={`is-flex ${styles.root} ${layout === 'static' ? styles.static : styles.grow}`}
+      className={`is-flex ${styles.root} ${layout === 'grow' ? styles.grow : styles.static}`}
       data-block={blockName}
       data-path={prefix}
       data-path-index={prefixIndex}
