@@ -1,9 +1,19 @@
+import { randomBytes } from 'node:crypto';
+
 import { scimAssert, SCIMError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { type Compare, parse } from 'scim2-parse-filter';
 import { col, fn, where, type WhereOptions } from 'sequelize';
 
-import { AppMember, Team, TeamMember, transactional, User } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  EmailAuthorization,
+  Team,
+  TeamMember,
+  transactional,
+  User,
+} from '../models/index.js';
 import { type ScimUser } from '../types/scim.js';
 import { getCaseInsensitive } from '../utils/object.js';
 import { getScimLocation } from '../utils/scim.js';
@@ -91,6 +101,15 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
     team = await Team.findOne({ where: { AppId: appId, name: managerId } });
   }
   const managerTeam = await Team.findOne({ where: { AppId: appId, name: externalId } });
+  const defaultRole = (await App.findByPk(appId, { attributes: ['definition'] }))?.definition
+    .security?.default?.role;
+
+  if (!defaultRole) {
+    ctx.throw(
+      400,
+      'App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.',
+    );
+  }
   try {
     await transactional(async (transaction) => {
       const user = await User.create(
@@ -98,19 +117,25 @@ export async function createSCIMUser(ctx: Context): Promise<void> {
           timezone,
           locale,
           name: formattedName,
+          primaryEmail: userName,
         },
         { transaction },
       );
+
+      const key = randomBytes(40).toString('hex');
+      await EmailAuthorization.create({ UserId: user.id, email: userName, key }, { transaction });
 
       member = await AppMember.create(
         {
           UserId: user.id,
           AppId: appId,
-          role: 'User',
+          role: defaultRole,
           email: userName,
           name: formattedName,
           scimExternalId: externalId,
           scimActive: active,
+          locale,
+          emailVerified: true,
         },
         { transaction },
       );
@@ -345,12 +370,18 @@ export async function updateSCIMUser(ctx: Context): Promise<void> {
   scimAssert(member, 404, 'User not found');
 
   await transactional(async (transaction) => {
+    const key = randomBytes(40).toString('hex');
     const promises: Promise<unknown>[] = [
       member.update(
         { email: userName, name: formattedName, scimExternalId: externalId, scimActive: active },
         { transaction },
       ),
-      member.User.update({ timezone, locale, name: formattedName }, { transaction }),
+      member.User.update(
+        { timezone, locale, name: formattedName, primaryEmail: userName },
+        { transaction },
+      ),
+
+      EmailAuthorization.create({ UserId: member.UserId, email: userName, key }, { transaction }),
     ];
     if (managerId != null) {
       const team = await Team.findOne({ where: { AppId: appId, name: managerId } });
@@ -429,6 +460,7 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.timezone = value;
     } else if (lower === 'username') {
       member.email = value;
+      member.User.primaryEmail = value;
     } else if (lower === 'active') {
       member.scimActive = value.toLowerCase() === 'true';
     } else if (lower === 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager') {
@@ -483,47 +515,50 @@ export async function patchSCIMUser(ctx: Context): Promise<void> {
       member.User.save({ transaction }),
     ];
     if (managerId != null && managerId !== '') {
-      const teamManager = await AppMember.findByPk(managerId);
-      if (teamManager) {
-        const existingTeam = await Team.findOne({ where: { AppId: appId, name: managerId } });
-        // Checks if user is already in the team
-        if (
-          existingTeam &&
-          !(await TeamMember.findOne({
-            where: { TeamId: existingTeam.id, AppMemberId: member.id },
-          }))
-        ) {
-          promises.push(
-            TeamMember.create(
-              {
-                TeamId: existingTeam.id,
-                AppMemberId: member.id,
-              },
-              { transaction },
-            ),
-          );
-        } else {
-          const newTeam = await Team.create({ AppId: appId, name: managerId }, { transaction });
+      let team = await Team.findOne({
+        where: { AppId: appId, name: managerId },
+        include: [
+          { model: TeamMember, required: false },
+          { model: App, include: [{ model: AppMember, required: false }] },
+        ],
+      });
 
-          promises.push(
-            TeamMember.create(
-              {
-                TeamId: newTeam.id,
-                AppMemberId: member.id,
-              },
-              { transaction },
-            ),
-            TeamMember.create(
-              {
-                TeamId: newTeam.id,
-                AppMemberId: teamManager.id,
-                role: 'manager',
-              },
-              { transaction },
-            ),
-          );
-        }
+      if (!team) {
+        team = await Team.create({ AppId: appId, name: managerId }, { transaction });
+        team.App = await App.findByPk(appId, { include: [{ model: AppMember }] });
       }
+
+      if (!team.Members?.some((m) => m.AppMemberId === member.id)) {
+        promises.push(
+          TeamMember.create(
+            {
+              TeamId: team.id,
+              AppMemberId: member.id,
+              role: 'member',
+            },
+            { transaction },
+          ),
+        );
+      }
+
+      // Check if manager has an AppMember account, but isn't assigned to the team yet
+      if (
+        team.App?.AppMembers?.some((m) => m.id === managerId) &&
+        !team.Members?.some((m) => m.AppMemberId === managerId)
+      ) {
+        promises.push(
+          TeamMember.create(
+            {
+              TeamId: team.id,
+              AppMemberId: managerId,
+              role: 'manager',
+            },
+            { transaction },
+          ),
+        );
+      }
+
+      promises.push(team.save({ transaction }));
     }
     return Promise.all(promises);
   });

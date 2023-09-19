@@ -1,3 +1,4 @@
+import { TeamRole } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 
 import { setArgv } from '../index.js';
@@ -24,7 +25,17 @@ beforeEach(async () => {
   const organization = await Organization.create({ id: 'testorganization' });
   const scimToken = 'test';
   app = await App.create({
-    definition: {},
+    definition: {
+      security: {
+        default: {
+          role: 'User',
+          policy: 'everyone',
+        },
+        roles: {
+          User: { description: 'Default SCIM User for testing.' },
+        },
+      },
+    },
     vapidPublicKey: 'a',
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
@@ -98,6 +109,34 @@ describe('createSCIMUser', () => {
       role: 'User',
       scimExternalId: 'spgb',
     });
+  });
+
+  it('should throw an error when app has no roles', async () => {
+    app.update({
+      definition: {
+        security: null,
+      },
+    });
+
+    const response = await request.post(`/api/apps/${app.id}/scim/Users`, {
+      ScHeMaS: [
+        'urn:ietf:params:scim:schemas:core:2.0:User',
+        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+      ],
+      ExTeRnAlId: 'spgb',
+      UsErNaMe: 'spongebob@krustykrab.example',
+      active: true,
+      MeTa: {
+        ReSoUrCeTyPe: 'User',
+      },
+    });
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: text/plain; charset=utf-8
+
+      App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.
+    `);
   });
 
   it('should accept partial data', async () => {
@@ -415,7 +454,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
-        "active": true,
+        "active": null,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -452,7 +491,7 @@ describe('getSCIMUser', () => {
       Content-Type: application/scim+json
 
       {
-        "active": true,
+        "active": null,
         "externalId": null,
         "id": Any<String>,
         "locale": null,
@@ -495,7 +534,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": true,
+            "active": null,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -540,7 +579,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": true,
+            "active": null,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -595,7 +634,7 @@ describe('getSCIMUsers', () => {
       {
         "Resources": [
           {
-            "active": true,
+            "active": null,
             "externalId": null,
             "id": Any<String>,
             "locale": null,
@@ -748,7 +787,7 @@ describe('patchSCIMUser', () => {
       Content-Type: application/json; charset=utf-8
 
       {
-        "active": true,
+        "active": null,
         "externalId": "ptrk",
         "id": Any<String>,
         "locale": "nl_NL",
@@ -852,3 +891,96 @@ describe('patchSCIMUser', () => {
     });
   });
 });
+
+it("should create a team if the user contains a manager ID of a team that doesn't exist yet", async () => {
+  const user = await User.create({ timezone: 'Europe/Amsterdam' });
+  const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'User' });
+
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member.id}`, {
+    ScHeMaS: [
+      'urn:ietf:params:scim:schemas:core:2.0:User',
+      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+    ],
+    oPeRaTiOnS: [
+      {
+        op: 'add',
+        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+        value: 'krbs',
+      },
+    ],
+  });
+
+  const team = await Team.findOne({ where: { AppId: app.id, name: 'krbs' } });
+
+  expect(team).toMatchObject({
+    AppId: 1,
+    annotations: null,
+    id: 1,
+    name: 'krbs',
+  });
+});
+
+it('should add member to an existing team if the user contains a manager ID of a team that already exists', async () => {
+  const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
+  const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+  const member1 = await AppMember.create({ AppId: app.id, UserId: user1.id, role: 'User' });
+  const member2 = await AppMember.create({ AppId: app.id, UserId: user2.id, role: 'User' });
+  const team = await Team.create({ AppId: app.id, name: member1.id });
+  await TeamMember.create({ TeamId: team.id, AppMemberId: member1.id, role: 'manager' });
+
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member2.id}`, {
+    ScHeMaS: [
+      'urn:ietf:params:scim:schemas:core:2.0:User',
+      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+    ],
+    oPeRaTiOnS: [
+      {
+        op: 'add',
+        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+        value: member1.id,
+      },
+    ],
+  });
+
+  const result = await TeamMember.findOne({
+    where: { TeamId: team.id, AppMemberId: member2.id },
+  });
+
+  expect(result).toMatchObject({
+    AppMemberId: member2.id,
+    TeamId: 1,
+    role: TeamRole.Member,
+  });
+});
+
+it('should assign existing manager to new team as manager', async () => {
+  const user1 = await User.create({ timezone: 'Europe/Amsterdam' });
+  const user2 = await User.create({ timezone: 'Europe/Amsterdam' });
+  const member1 = await AppMember.create({ AppId: app.id, UserId: user1.id, role: 'User' });
+  const member2 = await AppMember.create({ AppId: app.id, UserId: user2.id, role: 'User' });
+
+  await request.patch(`/api/apps/${app.id}/scim/Users/${member1.id}`, {
+    ScHeMaS: [
+      'urn:ietf:params:scim:schemas:core:2.0:User',
+      'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User',
+    ],
+    oPeRaTiOnS: [
+      {
+        op: 'add',
+        path: 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user:manager',
+        value: member2.id,
+      },
+    ],
+  });
+
+  const result = await TeamMember.findOne({
+    where: { AppMemberId: member2.id },
+    include: [{ model: Team, where: { AppId: app.id } }],
+  });
+
+  expect(result).toMatchObject({
+    AppMemberId: member2.id,
+    TeamId: 1,
+    role: TeamRole.Manager,
+  });
+}, 50_000);
