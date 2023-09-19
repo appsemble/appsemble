@@ -25,6 +25,7 @@ import { HighlightedCode } from '../HighlightedCode/index.js';
 import { MDXAnchor, MDXWrapper } from '../MDX/index.js';
 import { createHeader } from '../MDX/MDXHeader/index.js';
 import { PageHeaderProvider } from '../PageHeader/index.js';
+import { PasswordBanner } from '../PasswordBanner/index.js';
 import { SideMenuBase } from '../SideMenuBase/index.js';
 import { SideMenuBottom } from '../SideMenuBottom/index.js';
 import { StudioMessagesProvider } from '../StudioMessagesProvider/index.js';
@@ -47,6 +48,7 @@ function StudioContent(): ReactNode {
           })}
           id="appDiv"
         >
+          <PasswordBanner />
           <VerifyBanner />
           <EmailQuotaBanners />
           <BreadCrumbsDecorationProvider>

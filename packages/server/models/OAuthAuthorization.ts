@@ -68,6 +68,12 @@ export class OAuthAuthorization extends Model {
   UserId: string;
 
   /**
+   * The email used for the authorization
+   */
+  @Column(DataType.STRING)
+  email: string;
+
+  /**
    * The Appsemble user.
    */
   @BelongsTo(() => User)

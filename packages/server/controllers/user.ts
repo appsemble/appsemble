@@ -270,3 +270,26 @@ export async function unsubscribe(ctx: Context): Promise<void> {
 
   ctx.body = `User with email ${user.primaryEmail} unsubscribed successfully`;
 }
+
+export async function hasLoginMethods(ctx: Context): Promise<void> {
+  const { user } = ctx;
+
+  const dbUser = await User.findOne({
+    where: { id: user.id },
+    include: [
+      {
+        model: OAuthAuthorization,
+      },
+    ],
+  });
+
+  // If no one's logged in, return true, so that
+  // The password warning banner is not displayed
+  if (!dbUser) {
+    ctx.body = true;
+    return;
+  }
+  const hasPassword = dbUser.password != null;
+
+  ctx.body = { password: hasPassword, OAuthAuthorizations: dbUser.OAuthAuthorizations.length > 0 };
+}
