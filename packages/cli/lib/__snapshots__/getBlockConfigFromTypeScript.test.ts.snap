@@ -3525,7 +3525,11 @@ All elements specifying \`data-content\` will be updated each time this event is
 
 exports[`getBlockConfigFromTypeScript > official blocks > image 1`] = `
 {
-  "actions": undefined,
+  "actions": {
+    "onChange": {
+      "description": "The action that is triggered when changing image.",
+    },
+  },
   "events": {
     "emit": undefined,
     "listen": {
@@ -3542,8 +3546,8 @@ Compatible data that is received will be displayed.",
     "additionalProperties": false,
     "properties": {
       "alignment": {
-        "default": "left",
-        "description": "The alignment of the text content.",
+        "default": "center",
+        "description": "The alignment of image.",
         "enum": [
           "center",
           "left",
@@ -3555,21 +3559,46 @@ Compatible data that is received will be displayed.",
         "description": "The alt text of the image.",
         "format": "remapper",
       },
+      "defaultImage": {
+        "description": "This image will load if url returns invalid or null value.",
+        "format": "remapper",
+      },
+      "fullscreen": {
+        "default": false,
+        "description": "This image will be shown in full screen mode if image is clicked.",
+        "type": "boolean",
+      },
       "height": {
+        "default": 250,
         "description": "The height of the image in pixels.",
         "type": "number",
       },
+      "input": {
+        "default": false,
+        "description": "If true file can be uploaded from device.
+
+Actions will work if input is true.",
+        "type": "boolean",
+      },
+      "name": {
+        "description": "The name used when storing image.
+
+Needed when input is true
+
+Value should be same as property name in resources where it is going to be stored.",
+        "type": "string",
+      },
       "rounded": {
+        "default": false,
         "description": "Is image rounded.",
         "type": "boolean",
       },
       "url": {
-        "description": "The Url of the image.
-
-Note that remappers must be used if the image is received through the data event listener.",
+        "description": "The Url or src of the image.",
         "format": "remapper",
       },
       "width": {
+        "default": 250,
         "description": "The width of the image in pixels.",
         "type": "number",
       },

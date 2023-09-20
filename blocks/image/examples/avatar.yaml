@@ -1,0 +1,20 @@
+parameters:
+  url: { prop: root }
+  alt: Alt text for image
+  rounded: true
+  alignment: center
+  width: 250
+  height: 250
+  input: true
+  fullscreen: true
+events:
+  listen:
+    data: data
+actions:
+  onChange:
+    type: resource.update
+    resource: test
+    remapBefore:
+      object.from:
+        id: { prop: id }
+        image: { prop: root }
