@@ -30,6 +30,7 @@
   "files": [
     "**/*.d.ts",
     "**/*.js",
+    "**/*.cjs",
     "!*.config.js"
   ],
   "scripts": {
