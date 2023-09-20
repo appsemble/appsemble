@@ -71,7 +71,7 @@ bootstrap(({ data: blockData, events, parameters: { base }, ready, utils }) => {
     <ul className="py-4 px-5">
       {data.map((item, index) => (
         <li key={item.id ?? index}>
-          <ListItem item={item} />
+          <ListItem index={index} item={item} />
         </li>
       ))}
     </ul>

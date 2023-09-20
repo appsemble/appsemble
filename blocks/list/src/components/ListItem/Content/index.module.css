@@ -12,17 +12,15 @@
   width: 100%;
 }
 
-.contentWrapper {
-  width: 100%;
+.fieldWrapper {
+  align-items: flex-start;
+  flex-direction: column;
 }
 
-.button {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+.dropdown {
+  align-self: flex-end;
 }
 
-.image {
-  align-items: center;
+.itemField {
+  word-break: break-word;
 }

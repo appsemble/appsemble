@@ -12,15 +12,24 @@
   width: 100%;
 }
 
-.contentWrapper {
-  width: 100%;
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.button {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+.header > * {
+  display: inline;
+}
+
+.headerWrapper {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown {
+  align-self: flex-end;
 }
 
 .image {
