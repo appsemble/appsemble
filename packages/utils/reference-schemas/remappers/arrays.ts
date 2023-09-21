@@ -259,6 +259,35 @@ Result:
   }
 ]
 \`\`\`
+
+Extra example:
+
+array remapper can also be used in combination with different remappers as in the current example comes object remapper:
+
+Example object:
+\`\`\`json
+{
+  "names": ["Bart", "Bas", "Sam"]
+}
+\`\`\`
+
+Combination of object and array remapper:
+
+\`\`\`yaml
+object.assign:
+  names:
+  - { prop: Applicants }
+  - array.append:
+    - Kevin
+\`\`\`
+
+Result:
+\`\`\`json
+{
+  "names": ["Bart", "Bas", "Sam", "Kevin"]
+}
+\`\`\`
+\
     `,
   },
   'array.omit': {
