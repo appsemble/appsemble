@@ -186,6 +186,8 @@ pack:
     - npm --pack-destination build --workspace @appsemble/cli pack
     - npm --pack-destination build --workspace appsemble pack
     - npm --pack-destination build --workspace create-appsemble pack
+    - yarn scripts validate-packaged-exports build/*
+    - find build -mindepth 1 -maxdepth 1 -type d -exec rm -r {} +
   artifacts:
     name: npm packages
     expose_as: packages
