@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.22.8
-appVersion: 0.22.8
+version: 0.22.9
+appVersion: 0.22.9
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -25,8 +25,26 @@ dependencies:
 annotations:
   artifacthub.io/changes: >
     - kind: added
-      description: "App: Add login property to user.register action to toggle login
-        after register."
+      description: "Block(image): Allows alignment and rounded styling."
+    - kind: added
+      description: "Block(image): Allows file upload functionality."
+    - kind: added
+      description: "Block(image): Allows full screen functionality."
+    - kind: added
+      description: "Block(list): Allows button functionality."
+    - kind: added
+      description: "Block(list): Allows dropdown functionality."
+    - kind: added
+      description: "Block(list): Allows image customization."
+    - kind: added
+      description: "Block(list): Allows toggle button functionality."
+    - kind: added
+      description: "App: Set static as default block layout."
+    - kind: fixed
+      description: "Cli: Resolve missing file crash."
+    - kind: fixed
+      description: "Server: Fixed every new user getting scimActive set without them
+        being a SCIM member."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

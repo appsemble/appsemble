@@ -1,1 +1,0 @@
-Allows dropdown functionality.

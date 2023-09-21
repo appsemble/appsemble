@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.9](https://gitlab.com/appsemble/appsemble/-/releases/0.22.9)] - 2023-09-21
+
+### Added
+
+- Block(`image`): Allows alignment and rounded styling.
+- Block(`image`): Allows file upload functionality.
+- Block(`image`): Allows full screen functionality.
+- Block(`list`): Allows button functionality.
+- Block(`list`): Allows dropdown functionality.
+- Block(`list`): Allows image customization.
+- Block(`list`): Allows toggle button functionality.
+- App: Set `static` as default block layout.
+
+### Fixed
+
+- Cli: Resolve missing file crash.
+- Server: Fixed every new user getting `scimActive` set without them being a SCIM member.
+
 ## \[[0.22.8](https://gitlab.com/appsemble/appsemble/-/releases/0.22.8)] - 2023-09-18
 
 ### Added

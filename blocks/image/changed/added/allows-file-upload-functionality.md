@@ -1,1 +1,0 @@
-Allows file upload functionality.
