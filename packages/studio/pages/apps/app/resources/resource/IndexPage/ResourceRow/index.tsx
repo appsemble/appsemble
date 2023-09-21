@@ -277,7 +277,7 @@ export function ResourceRow({
           <AsyncCheckbox
             id={`clonable${resource.id}`}
             onChange={onSetClonable}
-            value={resource.$clonable}
+            value={resource.$clonable ?? false}
           />
         </td>
       ) : null}

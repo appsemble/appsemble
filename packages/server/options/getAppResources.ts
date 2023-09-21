@@ -14,7 +14,10 @@ export async function getAppResources({
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
       { association: 'Editor', attributes: ['id', 'name'], required: false },
+      { association: 'App', attributes: ['template'] },
     ],
   });
-  return resources.map((resource) => resource.toJSON({ include: attributes }));
+  return resources.map((resource) =>
+    resource.toJSON({ include: attributes, exclude: resource.App.template ? [] : undefined }),
+  );
 }
