@@ -45,7 +45,7 @@
     "@sentry/browser": "^7.0.0",
     "@types/css-modules": "^1.0.0",
     "@types/events": "^3.0.0",
-    "@types/gtag.js": "^0.0.13",
+    "@types/gtag.js": "^0.0.14",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
@@ -66,10 +66,10 @@
     "xast-util-to-xml": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jsdom": "^21.1.1",
+    "@types/jsdom": "^21.0.0",
     "fake-indexeddb": "^4.0.0",
-    "happy-dom": "^10.10.0",
-    "jsdom": "^22.1.0",
+    "happy-dom": "^12.0.0",
+    "jsdom": "^22.0.0",
     "vitest": "^0.34.0"
   }
 }
