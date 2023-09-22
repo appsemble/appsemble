@@ -1,8 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "@appsemble/cli": "0.22.9",
-    "@appsemble/webpack-config": "0.22.9",
+    "@appsemble/cli": "0.22.10",
+    "@appsemble/webpack-config": "0.22.10",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "eslint": "^8.0.0",
     "eslint-config-remcohaszing": "^9.0.0",

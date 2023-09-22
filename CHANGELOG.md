@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.22.10](https://gitlab.com/appsemble/appsemble/-/releases/0.22.10)] - 2023-09-22
+
+### Fixed
+
+- Server: Include $clonable field on resources where appropriate.
+- Server: Update block versions before `0.20.10` not being able to sync on the server.
+- Studio: Fix Clonable column on resources.
+
 ## \[[0.22.9](https://gitlab.com/appsemble/appsemble/-/releases/0.22.9)] - 2023-09-21
 
 ### Added

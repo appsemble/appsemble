@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.22.9
-appVersion: 0.22.9
+version: 0.22.10
+appVersion: 0.22.10
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,27 +24,13 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: added
-      description: "Block(image): Allows alignment and rounded styling."
-    - kind: added
-      description: "Block(image): Allows file upload functionality."
-    - kind: added
-      description: "Block(image): Allows full screen functionality."
-    - kind: added
-      description: "Block(list): Allows button functionality."
-    - kind: added
-      description: "Block(list): Allows dropdown functionality."
-    - kind: added
-      description: "Block(list): Allows image customization."
-    - kind: added
-      description: "Block(list): Allows toggle button functionality."
-    - kind: added
-      description: "App: Set static as default block layout."
     - kind: fixed
-      description: "Cli: Resolve missing file crash."
+      description: "Server: Include $clonable field on resources where appropriate."
     - kind: fixed
-      description: "Server: Fixed every new user getting scimActive set without them
-        being a SCIM member."
+      description: "Server: Update block versions before 0.20.10 not being able to
+        sync on the server."
+    - kind: fixed
+      description: "Studio: Fix Clonable column on resources."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
