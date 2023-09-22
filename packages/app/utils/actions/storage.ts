@@ -1,4 +1,5 @@
 import { type StorageType } from '@appsemble/types';
+import { Mutex } from 'async-mutex';
 import { type IDBPDatabase, openDB } from 'idb';
 
 import { type ActionCreator } from './index.js';
@@ -6,6 +7,8 @@ import { appId } from '../settings.js';
 import { type AppStorage } from '../storage.js';
 
 let dbPromise: Promise<IDBPDatabase>;
+
+const mutexes = new Map<string, Mutex>();
 
 export function getDB(): Promise<IDBPDatabase> {
   if (!dbPromise) {
@@ -62,7 +65,7 @@ export function writeStorage(
   key: string,
   value: any,
   appStorage: AppStorage,
-): void {
+): Promise<void> {
   async function write(): Promise<void> {
     switch (storage) {
       case 'appStorage':
@@ -80,7 +83,7 @@ export function writeStorage(
       }
     }
   }
-  write();
+  return write();
 }
 
 export function deleteStorage(storage: StorageType, key: string, appStorage: AppStorage): void {
@@ -125,7 +128,18 @@ export const write: ActionCreator<'storage.write'> = ({ appStorage, definition, 
 
     const value = remap(definition.value, data, context);
 
-    writeStorage(definition.storage, key, value, appStorage);
+    const mutexKey = `${definition.storage}:${key}`;
+    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
+    mutex
+      .runExclusive(async () => {
+        await writeStorage(definition.storage, key, value, appStorage);
+      })
+      .then(() => {
+        if (!mutex.isLocked()) {
+          mutexes.delete(mutexKey);
+        }
+      });
+
     return data;
   },
 ];
@@ -151,17 +165,26 @@ export const append: ActionCreator<'storage.append'> = ({ appStorage, definition
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
-
     const value = remap(definition.value, data, context);
 
-    if (Array.isArray(storageData)) {
-      storageData.push(value);
-    } else {
-      storageData = [storageData, value];
-    }
+    const mutexKey = `${storage}:${key}`;
+    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
+    const release = await mutex.acquire();
+    try {
+      let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
 
-    writeStorage(storage, key, storageData, appStorage);
+      if (Array.isArray(storageData)) {
+        storageData.push(value);
+      } else {
+        storageData = [storageData, value];
+      }
+      await writeStorage(storage, key, storageData, appStorage);
+    } finally {
+      release();
+      if (!mutex.isLocked()) {
+        mutexes.delete(mutexKey);
+      }
+    }
     return data;
   },
 ];
@@ -175,23 +198,32 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ appStorage, defini
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+    const mutexKey = `${storage}:${key}`;
+    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
+    const release = await mutex.acquire();
+    try {
+      let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
 
-    if (Array.isArray(storageData)) {
-      const last = storageData.pop();
-      if (storageData.length <= 1) {
-        storageData = last;
+      if (Array.isArray(storageData)) {
+        const last = storageData.pop();
+        if (storageData.length <= 1) {
+          storageData = last;
+        }
+      } else {
+        storageData = null;
       }
-    } else {
-      storageData = null;
-    }
 
-    if (storageData == null) {
-      deleteStorage(storage, key, appStorage);
-    } else {
-      writeStorage(storage, key, storageData, appStorage);
+      if (storageData == null) {
+        deleteStorage(storage, key, appStorage);
+      } else {
+        writeStorage(storage, key, storageData, appStorage);
+      }
+    } finally {
+      release();
+      if (!mutex.isLocked()) {
+        mutexes.delete(mutexKey);
+      }
     }
-
     return data;
   },
 ];
@@ -207,15 +239,25 @@ export const update: ActionCreator<'storage.update'> = ({ appStorage, definition
 
     const { storage } = definition;
 
-    let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
+    const mutexKey = `${storage}:${key}`;
+    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
+    const release = await mutex.acquire();
+    try {
+      let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
 
-    if (Array.isArray(storageData)) {
-      storageData[item as number] = value;
-    } else {
-      storageData = value;
+      if (Array.isArray(storageData)) {
+        storageData[item as number] = value;
+      } else {
+        storageData = value;
+      }
+
+      writeStorage(storage, key, storageData, appStorage);
+    } finally {
+      release();
+      if (!mutex.isLocked()) {
+        mutexes.delete(mutexKey);
+      }
     }
-
-    writeStorage(storage, key, storageData, appStorage);
     return data;
   },
 ];
