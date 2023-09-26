@@ -1877,6 +1877,7 @@ describe('queryResources', () => {
   });
 
   it('should return clonable field if app is a template app', async () => {
+    app.update({ template: true });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -1934,6 +1935,7 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
+    authorizeStudio();
     const responseA = await request.get(`/api/apps/${app.id}/resources/testResource/$count`);
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testExpirableResource/$count`,
@@ -1970,6 +1972,7 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
     );
@@ -2269,6 +2272,8 @@ describe('countResources', () => {
       type: 'testPrivateResource',
       data: { foo: 'bar' },
     });
+
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -3635,6 +3640,7 @@ describe('updateResource', () => {
   });
 
   it('should return clonable if app is a template app', async () => {
+    app.update({ template: true });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
