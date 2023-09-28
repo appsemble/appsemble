@@ -1,5 +1,6 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
+import { beforeEach, expect, it } from 'vitest';
 
 import { studioRouter } from './index.js';
 

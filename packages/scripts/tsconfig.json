@@ -2,6 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "rootDir": ".",
-    "types": ["vitest/globals", "node"]
+    "types": ["node"]
   }
 }

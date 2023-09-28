@@ -1,5 +1,6 @@
 import { api } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
+import { describe, expect, it } from 'vitest';
 
 import { oauth2Scope } from './constants.js';
 

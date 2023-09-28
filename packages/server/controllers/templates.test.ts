@@ -1,5 +1,6 @@
 import { type AppMessages as AppMessagesType, type App as AppType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { parse } from 'yaml';
 
 import {

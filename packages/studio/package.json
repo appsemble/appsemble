@@ -46,6 +46,7 @@
     "@types/css-modules": "^1.0.0",
     "@types/mdx": "^2.0.0",
     "@types/react": "^18.0.0",
+    "@types/react-avatar-editor": "^13.0.0",
     "@types/react-dom": "^18.0.0",
     "@types/react-router-dom": "^5.0.0",
     "@types/webpack-env": "^1.0.0",
@@ -72,9 +73,7 @@
     "remark-rehype": "^10.0.0",
     "type-fest": "^4.0.0",
     "unified": "^10.0.0",
+    "vitest": "^0.34.0",
     "yaml": "^2.0.0"
-  },
-  "devDependencies": {
-    "@types/react-avatar-editor": "^13.0.0"
   }
 }

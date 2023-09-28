@@ -6,6 +6,7 @@ import axios, { type InternalAxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { type ParameterizedContext } from 'koa';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,

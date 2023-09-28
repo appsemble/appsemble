@@ -1,6 +1,7 @@
 import { createFixtureStream, getAppsembleMessages } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   App,

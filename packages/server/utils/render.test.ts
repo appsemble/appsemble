@@ -1,4 +1,5 @@
 import { type ContentSecurityPolicy, makeCSP } from '@appsemble/node-utils';
+import { describe, expect, it } from 'vitest';
 
 describe('makeCSP', () => {
   const fixtures: Record<string, ContentSecurityPolicy> = {

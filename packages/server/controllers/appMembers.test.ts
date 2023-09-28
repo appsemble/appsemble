@@ -3,6 +3,7 @@ import { type AppAccount, type AppMember as AppMemberType } from '@appsemble/typ
 import { jwtPattern, uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   App,

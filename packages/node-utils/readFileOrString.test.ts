@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { readFileOrString } from './readFileOrString.js';
 import { resolveFixture } from './testFixtures.js';
 

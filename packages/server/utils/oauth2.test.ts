@@ -2,6 +2,7 @@ import { AppsembleError } from '@appsemble/node-utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { getAccessToken, getUserInfo, hasScope } from './oauth2.js';
 

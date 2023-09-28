@@ -1,4 +1,5 @@
 import makeServiceWorkerEnv from 'service-worker-mock';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { onFetch } from './onFetch.js';
 import * as utils from './utils.js';

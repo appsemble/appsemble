@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { prefix } from './prefix.js';
 
 it('should prefix a string if the prefix is truthy', () => {

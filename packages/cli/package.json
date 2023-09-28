@@ -91,7 +91,8 @@
     "@types/normalize-path": "^3.0.0",
     "@types/postcss-import": "^14.0.0",
     "@types/postcss-url": "^10.0.0",
-    "concat-stream": "^2.0.0"
+    "concat-stream": "^2.0.0",
+    "vitest": "^0.34.0"
   },
   "peerDependencies": {},
   "optionalDependencies": {

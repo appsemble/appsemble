@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { validateNumber } from './validateNumber.js';
 import { type NumberField } from '../../../block.js';
 

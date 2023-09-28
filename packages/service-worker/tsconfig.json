@@ -3,6 +3,6 @@
   "compilerOptions": {
     "lib": ["esnext", "webworker"],
     "rootDir": ".",
-    "types": ["vitest/globals", "node"]
+    "types": ["node"]
   }
 }

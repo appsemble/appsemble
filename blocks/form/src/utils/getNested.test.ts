@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { getValueByNameSequence } from './getNested.js';
 
 describe('get value by name sequence', () => {

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { identity, rethrow, stripNullValues } from './miscellaneous.js';
 
 /**

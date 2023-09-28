@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+
 import { getAppUrl } from './getAppUrl.js';
 
 let originalLocation: Location;

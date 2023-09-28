@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { type ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { expect, it, vi } from 'vitest';
 
 import { ErrorHandler } from './index.js';
 

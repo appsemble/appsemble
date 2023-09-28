@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
 

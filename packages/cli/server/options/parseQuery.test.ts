@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { parseQuery } from './parseQuery.js';
 
 describe('parseQuery', () => {

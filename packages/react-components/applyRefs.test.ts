@@ -1,4 +1,5 @@
 import { createRef } from 'react';
+import { expect, it, vi } from 'vitest';
 
 import { applyRefs } from './applyRefs.js';
 

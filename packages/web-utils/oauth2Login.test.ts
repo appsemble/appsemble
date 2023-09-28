@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
 import {
   appendOAuth2State,
   clearOAuth2State,

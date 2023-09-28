@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events';
 
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createTestAction } from '../makeActions.js';
 
 describe('event', () => {

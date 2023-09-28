@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { AppsembleError, isErrno, opendirSafe, readData, resolveFixture } from './index.js';
 
 describe('isErrno', () => {

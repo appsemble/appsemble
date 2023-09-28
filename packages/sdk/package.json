@@ -44,5 +44,8 @@
     "@appsemble/types": "0.22.10",
     "@fortawesome/fontawesome-common-types": "^6.0.0",
     "type-fest": "^4.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.0"
   }
 }

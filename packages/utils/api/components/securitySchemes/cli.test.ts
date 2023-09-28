@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { cli } from './cli.js';
 import { scopes } from '../../../constants/index.js';
 

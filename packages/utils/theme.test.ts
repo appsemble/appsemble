@@ -1,4 +1,5 @@
 import bulmaPkg from 'bulma/package.json';
+import { describe, expect, it } from 'vitest';
 
 import { createThemeURL, mergeThemes } from './theme.js';
 

@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { combineSchemas, generateDataFromSchema, iterJSONSchema } from './jsonschema.js';
 
 describe('generateDataFromSchema', () => {

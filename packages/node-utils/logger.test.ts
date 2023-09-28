@@ -1,3 +1,5 @@
+import { afterEach, describe, expect, it } from 'vitest';
+
 import { configureLogger, logger, setLogLevel } from './logger.js';
 
 describe('setLogLevel', () => {

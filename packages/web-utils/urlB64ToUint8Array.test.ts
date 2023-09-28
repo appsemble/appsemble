@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { urlB64ToUint8Array } from './urlB64ToUint8Array.js';
 
 const tests: [string, Uint8Array][] = [

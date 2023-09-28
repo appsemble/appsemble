@@ -2,6 +2,7 @@ import { rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import globalCacheDir from 'global-cache-dir';
+import { afterAll, describe, expect, it } from 'vitest';
 
 import { Methods, setAppName } from './methods.js';
 

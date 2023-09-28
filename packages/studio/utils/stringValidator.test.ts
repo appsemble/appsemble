@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, expect, it } from 'vitest';
+
 import { getAllowedChars, getCheckedString } from './stringValidator.js';
 
 let originalLocation: Location;

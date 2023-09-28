@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { validateFile } from './validateFile.js';
 import { type FileField } from '../../../block.js';
 

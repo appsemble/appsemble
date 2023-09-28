@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { checkRole } from './checkRole.js';
 
 describe('checkRole', () => {
