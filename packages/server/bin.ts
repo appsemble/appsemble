@@ -13,7 +13,7 @@ import './types.js';
 import { setArgv } from './utils/argv.js';
 import { configureSentry } from './utils/sentry.js';
 
-process.title = 'appsemble';
+process.title = 'appsemble-server';
 
 configureAxios('AppsembleServer', version);
 

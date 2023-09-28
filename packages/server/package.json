@@ -28,7 +28,7 @@
     ]
   },
   "bin": {
-    "appsemble": "bin.js"
+    "appsemble-server": "bin.js"
   },
   "files": [
     "**/*.d.ts",

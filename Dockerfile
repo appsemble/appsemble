@@ -33,7 +33,7 @@ ARG date
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 COPY i18n /app/i18n
-RUN ln -s /app/packages/server/bin.js /usr/bin/appsemble
+RUN ln -s /app/packages/server/bin.js /usr/bin/appsemble-server
 WORKDIR /app
 # By default colors aren’t detected within a Docker container. Let’s assume at least simple colors
 # are supported by those who inspect the logs.
@@ -41,9 +41,9 @@ WORKDIR /app
 ENV FORCE_COLOR 1
 ENV NODE_ENV production
 USER node
-ENTRYPOINT ["appsemble"]
+ENTRYPOINT ["appsemble-server"]
 CMD ["start"]
-HEALTHCHECK CMD ["appsemble", "health"]
+HEALTHCHECK CMD ["appsemble-server", "health"]
 EXPOSE 9999
 LABEL io.artifacthub.package.alternative-locations registry.gitlab.com/appsemble/appsemble:${version}
 LABEL io.artifacthub.package.keywords app,apps,appsemble,framework,low-code,lowcode

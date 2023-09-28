@@ -22,8 +22,7 @@ spec:
             - name: {{ include "appsemble.fullname" . }}-cronjob
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              command:
-                - appsemble
+              args:
                 - run-cronjobs
                 - -vv
               env:
