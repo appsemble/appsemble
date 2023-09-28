@@ -21,8 +21,7 @@ spec:
             - name: {{ include "appsemble.fullname" . }}-cronjob-cleanup-resources
               image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              command:
-                - appsemble
+              args:
                 - cleanup-resources
                 - -vv
               env:

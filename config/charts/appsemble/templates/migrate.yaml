@@ -18,8 +18,7 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-migrate
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - appsemble
+          args:
             - migrate
             {{ with .Values.migrateTo }}
             - {{ . }}
