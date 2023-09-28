@@ -82,7 +82,7 @@ myMessage: {
 To generate an ID for the message run:
 
 ```sh
-yarn eslint --fix path/to/my-file
+yarn eslint --fix path/to/my-messages-file
 ```
 
 This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for
@@ -96,6 +96,12 @@ automatically extract these messages from the source files run:
 ```sh
 yarn script extract-messages
 ```
+
+### Permissions
+
+After adding a new permission to the `Permission` enum, add the permission to the relevant role at
+`packages/utils/constants/roles.ts`. Similarly add the permission and it’s description to
+`packages/studio/pages/organizations/messages.ts`.
 
 ### Testing
 
