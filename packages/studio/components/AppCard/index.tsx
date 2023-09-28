@@ -31,7 +31,7 @@ export function AppCard({ app, href }: AppCardProps): ReactElement {
 
   return (
     <Link
-      className="card"
+      className={`card ${styles.overflow}`}
       title={app.messages?.app?.description || app.definition.description}
       to={href ?? `/${lang}/apps/${app.id}`}
     >
