@@ -39,5 +39,6 @@ public/
 *.d.ts
 *.js
 *.map
+*.tsbuildinfo
 !*.config.js
 !*rc.js
