@@ -73,7 +73,9 @@
     "remark-rehype": "^10.0.0",
     "type-fest": "^4.0.0",
     "unified": "^10.0.0",
-    "vitest": "^0.34.0",
     "yaml": "^2.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.0"
   }
 }

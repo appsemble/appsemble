@@ -39,7 +39,9 @@
     "@types/mdast": "^3.0.0",
     "@types/webpack-env": "^1.0.0",
     "axios": "^1.0.0",
-    "type-fest": "^4.0.0",
+    "type-fest": "^4.0.0"
+  },
+  "devDependencies": {
     "vitest": "^0.34.0"
   }
 }
