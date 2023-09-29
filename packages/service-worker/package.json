@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/service-worker-mock": "^2.0.0",
-    "service-worker-mock": "^2.0.0"
+    "service-worker-mock": "^2.0.0",
+    "vitest": "^0.34.0"
   }
 }

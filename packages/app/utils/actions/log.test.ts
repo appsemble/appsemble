@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createTestAction } from '../makeActions.js';
 
 describe('log', () => {

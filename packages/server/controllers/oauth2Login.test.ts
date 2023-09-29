@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
 import jwt from 'jsonwebtoken';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { EmailAuthorization, OAuthAuthorization, User } from '../models/index.js';
 import { argv, setArgv } from '../utils/argv.js';

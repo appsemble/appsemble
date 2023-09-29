@@ -1,4 +1,5 @@
 import semver from 'semver';
+import { expect, it } from 'vitest';
 
 import { migrations } from './index.js';
 

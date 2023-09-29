@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
+import { beforeAll, beforeEach, expect, it, vi } from 'vitest';
 
 import { studioRouter } from './index.js';
 import { setArgv } from '../../utils/argv.js';

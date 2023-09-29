@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { camelToHyphen, decodeJSONRef, toUpperCase } from './string.js';
 
 describe('camelToHyphen', () => {

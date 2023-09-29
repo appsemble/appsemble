@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { oauth2Redirect, verifyOAuth2LoginRequest } from './oauth2Utils.js';
 
 let originalLocation: Location;

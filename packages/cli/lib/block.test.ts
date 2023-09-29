@@ -1,5 +1,6 @@
 import { resolveFixture } from '@appsemble/node-utils';
 import concat from 'concat-stream';
+import { describe, expect, it } from 'vitest';
 
 import { makePayload } from './block.js';
 

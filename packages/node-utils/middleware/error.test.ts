@@ -1,5 +1,6 @@
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { errorMiddleware } from './error.js';
 

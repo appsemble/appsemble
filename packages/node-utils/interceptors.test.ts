@@ -2,6 +2,7 @@ import axios, { type AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { highlight } from 'cli-highlight';
 import FormData from 'form-data';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { configureAxios, formData, logger, requestLogger, responseLogger } from './index.js';
 

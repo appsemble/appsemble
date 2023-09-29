@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { bootstrap } from './index.js';
 
 let event: CustomEvent;

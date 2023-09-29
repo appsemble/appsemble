@@ -14,7 +14,7 @@
     "strictFunctionTypes": false,
     "strictNullChecks": false,
     "target": "es2019",
-    "types": ["vitest/globals"]
+    "types": []
   },
   "ts-node": {
     "experimentalResolver": true

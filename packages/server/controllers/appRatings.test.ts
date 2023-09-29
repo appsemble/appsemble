@@ -1,5 +1,6 @@
 import { uuid4Pattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, AppRating, Member, Organization, User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';

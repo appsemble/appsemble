@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { validateEnum, validateRadio } from './validateEnum.js';
 import { type EnumField, type RadioField } from '../../../block.js';
 

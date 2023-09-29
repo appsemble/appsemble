@@ -28,5 +28,8 @@
     "leaflet": "~1.5.0",
     "merge": "^2.0.0",
     "preact": "^10.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.0"
   }
 }

@@ -1,6 +1,7 @@
 import { errorMiddleware, readFixture } from '@appsemble/node-utils';
 import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
+import { beforeAll, expect, it } from 'vitest';
 
 import { appRouter } from './index.js';
 import { BlockAsset, BlockVersion, Organization } from '../../models/index.js';

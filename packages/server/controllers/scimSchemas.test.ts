@@ -1,4 +1,5 @@
 import { request, setTestApp } from 'axios-test-instance';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../index.js';
 import { App, Organization } from '../models/index.js';

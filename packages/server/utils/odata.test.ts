@@ -1,4 +1,5 @@
 import { and, col, fn, json, Op, or, type Order, where, type WhereOptions } from 'sequelize';
+import { describe, expect, it } from 'vitest';
 
 import { odataFilterToSequelize, odataOrderbyToSequelize } from './odata.js';
 

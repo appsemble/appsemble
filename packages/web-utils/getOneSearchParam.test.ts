@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { getOneSearchParam } from './getOneSearchParam.js';
 
 it('should return null if no values are available', () => {

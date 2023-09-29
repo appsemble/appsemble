@@ -1,5 +1,6 @@
 import { getRemapperContext } from '@appsemble/node-utils';
 import { type UserInfo } from '@appsemble/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { compareApps, getApp } from './app.js';
 import { setArgv } from './argv.js';

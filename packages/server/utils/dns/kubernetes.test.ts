@@ -4,6 +4,7 @@ import { version } from '@appsemble/node-utils';
 import axios, { type AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { fs, vol } from 'memfs';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App, Organization } from '../../models/index.js';
 import { setArgv } from '../argv.js';

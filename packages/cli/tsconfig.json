@@ -5,6 +5,6 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "null",
     "rootDir": ".",
-    "types": ["vitest/globals", "node"]
+    "types": ["node"]
   }
 }

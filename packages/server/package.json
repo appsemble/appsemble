@@ -122,7 +122,6 @@
     "@types/bcrypt": "^5.0.0",
     "@types/express-to-koa": "^1.0.0",
     "@types/imapflow": "^1.0.0",
-    "@types/jest-image-snapshot": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.0",
     "@types/koa": "^2.0.0",
     "@types/koa-mount": "^4.0.0",

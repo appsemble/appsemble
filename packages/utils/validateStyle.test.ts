@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { StyleValidationError, validateStyle } from './validateStyle.js';
 
 describe('validateStyle', () => {

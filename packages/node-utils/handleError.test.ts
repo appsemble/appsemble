@@ -1,3 +1,4 @@
+import { beforeEach, expect, it, vi } from 'vitest';
 import { type Argv } from 'yargs';
 
 import { AppsembleError } from './AppsembleError.js';

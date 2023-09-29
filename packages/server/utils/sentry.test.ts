@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { setArgv } from './argv.js';
 import { getSentryClientSettings } from './sentry.js';
 

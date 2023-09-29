@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { resolveRoleInheritance } from './appSecurity.js';
 
 describe('resolveRoleInheritance', () => {

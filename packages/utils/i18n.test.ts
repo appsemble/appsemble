@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { detectLocale, sortLocales } from './i18n.js';
 
 describe('sortLocales', () => {

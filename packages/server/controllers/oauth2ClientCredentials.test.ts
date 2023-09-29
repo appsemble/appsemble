@@ -1,6 +1,7 @@
 import { type OAuth2ClientCredentials as OAuth2ClientCredentialsType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { OAuth2ClientCredentials, User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';

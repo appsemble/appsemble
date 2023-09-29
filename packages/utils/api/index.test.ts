@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 import { createValidator } from 'koas-core/lib/validation.js';
+import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 
 import { api, schemas } from './index.js';

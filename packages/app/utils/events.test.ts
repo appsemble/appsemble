@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { noop } from '@appsemble/utils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createEvents } from './events.js';
 

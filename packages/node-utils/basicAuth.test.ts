@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { basicAuth } from './basicAuth.js';
 
 it('should serialize credentials', () => {

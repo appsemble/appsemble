@@ -4,6 +4,7 @@ import { inflateRaw } from 'node:zlib';
 import { readFixture } from '@appsemble/node-utils';
 import { type SAMLRedirectResponse } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toXml } from 'xast-util-to-xml';
 import { x as h } from 'xastscript';
 

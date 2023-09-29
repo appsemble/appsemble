@@ -1,5 +1,6 @@
 import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
 import { argv, setArgv, updateArgv } from '../utils/argv.js';

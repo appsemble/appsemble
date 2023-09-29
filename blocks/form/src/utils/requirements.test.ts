@@ -1,5 +1,6 @@
 import { type Utils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
+import { describe, expect, it } from 'vitest';
 
 import {
   getDisabledDays,

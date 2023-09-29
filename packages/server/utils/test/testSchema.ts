@@ -1,6 +1,7 @@
 import { parse } from 'node:path';
 
 import { Sequelize } from 'sequelize';
+import { afterAll, afterEach, beforeAll } from 'vitest';
 
 import { initDB, type InitDBParams } from '../../models/index.js';
 

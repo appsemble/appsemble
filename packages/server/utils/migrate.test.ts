@@ -1,5 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
-import { type Mock } from 'vitest';
+import { beforeEach, expect, it, type Mock, vi } from 'vitest';
 
 import { migrate, type Migration } from './migrate.js';
 import { useTestDatabase } from './test/testSchema.js';

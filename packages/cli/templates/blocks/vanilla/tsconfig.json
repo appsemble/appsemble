@@ -2,6 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["@appsemble/webpack-config/types", "vitest/globals"]
+    "types": ["@appsemble/webpack-config/types"]
   }
 }

@@ -1,4 +1,5 @@
 import { type Schema } from 'jsonschema';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { generateData } from './schemaGenerator.js';
 

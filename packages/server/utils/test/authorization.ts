@@ -5,6 +5,7 @@ import { api } from '@appsemble/utils';
 import { request } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { type OpenAPIV3 } from 'openapi-types';
+import { afterEach } from 'vitest';
 
 import { type App, EmailAuthorization, OAuth2ClientCredentials, User } from '../../models/index.js';
 import { createJWTResponse } from '../createJWTResponse.js';

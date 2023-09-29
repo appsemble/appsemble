@@ -1,4 +1,5 @@
 import { request, setTestApp } from 'axios-test-instance';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { setArgv } from '../index.js';
 import { type AppMessages } from '../models/index.js';

@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { normalize } from './normalize.js';
 
 const fixtures = [

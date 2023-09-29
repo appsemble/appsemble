@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { validateString } from './validateString.js';
 import { type StringField } from '../../../block.js';
 

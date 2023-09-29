@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
 
 import { ModalCard } from './index.js';
 

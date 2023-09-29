@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { convertToCsv } from './convertToCsv.js';
 
 describe('convertToCsv', () => {

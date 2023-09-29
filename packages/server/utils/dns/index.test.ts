@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { cleanupDNS, configureDNS, restoreDNS } from './index.js';
 import * as kubernetes from './kubernetes.js';
 import { setArgv } from '../argv.js';

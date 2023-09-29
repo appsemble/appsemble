@@ -1,4 +1,5 @@
 import { zxcvbnOptions } from '@zxcvbn-ts/core';
+import { describe, expect, it } from 'vitest';
 
 import { messages } from './messages.js';
 

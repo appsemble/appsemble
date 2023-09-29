@@ -1,5 +1,6 @@
 import { type AppMessages, type Remapper, type UserInfo } from '@appsemble/types';
 import { IntlMessageFormat } from 'intl-messageformat';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { remap } from './remap.js';
 

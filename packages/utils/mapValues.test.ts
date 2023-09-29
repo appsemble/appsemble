@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { mapValues } from './mapValues.js';
 
 describe('mapValues', () => {

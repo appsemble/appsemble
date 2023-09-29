@@ -4,6 +4,7 @@ import {
   type FlowPageDefinition,
 } from '@appsemble/types';
 import { ValidationError } from 'jsonschema';
+import { describe, expect, it } from 'vitest';
 
 import { validateAppDefinition } from './validation.js';
 

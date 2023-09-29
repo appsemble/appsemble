@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { coerceRemote } from './coercers.js';
 
 describe('coerceRemote', () => {

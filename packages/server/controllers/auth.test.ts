@@ -1,6 +1,7 @@
 import { jwtPattern } from '@appsemble/utils';
 import { request, setTestApp } from 'axios-test-instance';
 import { compare } from 'bcrypt';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';

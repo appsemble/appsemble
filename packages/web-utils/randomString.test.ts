@@ -1,3 +1,5 @@
+import { expect, it } from 'vitest';
+
 import { randomString } from './randomString.js';
 
 it('should generate a random string', () => {
