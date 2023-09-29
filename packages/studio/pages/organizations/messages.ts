@@ -13,9 +13,17 @@ export const messages = defineMessages({
     id: 'studio.na98ss',
     defaultMessage: 'The permission to create new apps or copy them from templates.',
   },
+  CreateCollections: {
+    id: 'studio.2Hd0c4',
+    defaultMessage: 'The permission to create new app collections.',
+  },
   DeleteApps: {
     id: 'studio.jNtX+C',
     defaultMessage: 'The permission to delete apps.',
+  },
+  DeleteCollections: {
+    id: 'studio.9TomUe',
+    defaultMessage: 'The permission to delete app collections.',
   },
   DeleteOrganization: {
     id: 'studio.gXv9ZK',
@@ -32,6 +40,10 @@ export const messages = defineMessages({
   EditApps: {
     id: 'studio.1qiYs4',
     defaultMessage: 'The permission to edit the app definition.',
+  },
+  EditCollections: {
+    id: 'studio.xZ6x8f',
+    defaultMessage: 'The permission to edit app collections.',
   },
   EditOrganization: {
     id: 'studio.K0PWHi',
