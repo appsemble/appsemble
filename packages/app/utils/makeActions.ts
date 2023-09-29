@@ -1,4 +1,4 @@
-import { type Action, type ActionDefinition, type ActionType } from '@appsemble/types';
+import { type Action, type ActionDefinition, ActionError, type ActionType } from '@appsemble/types';
 import { defaultLocale, has, remap } from '@appsemble/utils';
 import { addBreadcrumb } from '@sentry/browser';
 import { IntlMessageFormat } from 'intl-messageformat';
@@ -85,44 +85,46 @@ export function createAction<T extends ActionDefinition['type']>({
     let updatedContext;
 
     try {
-      const data = has(definition, 'remapBefore')
-        ? localRemap(definition.remapBefore, args, context)
-        : has(definition, 'remap')
-          ? localRemap(definition.remap, args, context)
-          : args;
+      try {
+        const data = has(definition, 'remapBefore')
+          ? localRemap(definition.remapBefore, args, context)
+          : has(definition, 'remap')
+            ? localRemap(definition.remap, args, context)
+            : args;
 
-      updatedContext = {
-        ...context,
-        history: [...(context?.history ?? []), data],
-      };
+        updatedContext = {
+          ...context,
+          history: [...(context?.history ?? []), data],
+        };
 
-      result = await dispatch(data, updatedContext);
+        result = await dispatch(data, updatedContext);
 
-      if (has(definition, 'remapAfter')) {
-        result = localRemap(definition.remapAfter, result, updatedContext);
+        if (has(definition, 'remapAfter')) {
+          result = localRemap(definition.remapAfter, result, updatedContext);
+        }
+        addBreadcrumb({
+          category: 'appsemble.action',
+          data: { success: type },
+        });
+      } catch (error: unknown) {
+        addBreadcrumb({
+          category: 'appsemble.action',
+          data: { failed: type },
+          level: 'warning',
+        });
+        if (onError) {
+          return await onError(error, updatedContext);
+        }
+        throw error;
       }
-      addBreadcrumb({
-        category: 'appsemble.action',
-        data: { success: type },
-      });
-    } catch (error: unknown) {
-      addBreadcrumb({
-        category: 'appsemble.action',
-        data: { failed: type },
-        level: 'warning',
-      });
-      if (onError) {
-        return onError(error, updatedContext);
+
+      if (onSuccess) {
+        return await onSuccess(result, updatedContext);
       }
-
-      throw error;
+      return result;
+    } catch (error) {
+      throw new ActionError({ cause: error, data: args, definition });
     }
-
-    if (onSuccess) {
-      return onSuccess(result, updatedContext);
-    }
-
-    return result;
   }) as Omit<Action, string> as Extract<Action, { type: T }>;
   // Name the function to enhance stack traces.
   Object.defineProperty(action, 'name', { value: `${type}[wrapper]` });

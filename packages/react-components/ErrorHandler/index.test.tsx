@@ -25,7 +25,7 @@ it('should render its children if no errors are thrown', () => {
 });
 
 it('should render its fallback when errors are thrown', () => {
-  vi.spyOn(console, 'error').mockImplementation(null);
+  vi.spyOn(console, 'error').mockImplementation(() => null);
   const Child = (): ReactNode => {
     throw new Error('test');
   };

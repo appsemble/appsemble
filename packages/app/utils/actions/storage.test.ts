@@ -1,3 +1,4 @@
+import { ActionError } from '@appsemble/types';
 import { type IDBPDatabase } from 'idb';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -58,10 +59,16 @@ describe('storage.read', () => {
     try {
       result = await action({ key: 'invalid key' });
     } catch (error) {
-      result = (error as Error).message;
+      result = error as ActionError;
     }
 
-    expect(result).toBe('Could not find data at this key.');
+    expect(result).toStrictEqual(
+      new ActionError({
+        cause: 'Could not find data at this key.',
+        data: null,
+        definition: { type: 'storage.read', key: { prop: 'key' }, storage: 'localStorage' },
+      }),
+    );
   });
 });
 

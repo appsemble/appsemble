@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 
+import { ActionError } from '@appsemble/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestAction } from '../makeActions.js';
@@ -49,7 +50,13 @@ describe('event', () => {
     // Wait 1 tick before emitting.
     await Promise.resolve();
     ee.emit('bar', { test: 'data' }, 'Boo!');
-    await expect(result).rejects.toBe('Boo!');
+    await expect(result).rejects.toThrow(
+      new ActionError({
+        cause: 'Boo!',
+        data: null,
+        definition: { type: 'event', event: 'foo', waitFor: 'bar' },
+      }),
+    );
     expect(ee.once).toHaveBeenCalledTimes(1);
   });
 });

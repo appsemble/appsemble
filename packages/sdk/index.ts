@@ -1,5 +1,6 @@
 import {
   type Action,
+  type ActionError,
   type BaseMessage,
   type BulmaColor,
   type BulmaSize,
@@ -157,6 +158,14 @@ export interface Utils {
    * Use this to clean up resouces that would otherwise stay in memory, e.g. object URLs.
    */
   addCleanup: (fn: () => void) => void;
+
+  /**
+   * Test if the input is an action error.
+   *
+   * @param input The input to test
+   * @returns Whether or not the input is an action error.
+   */
+  isActionError: (input: unknown) => input is ActionError;
 
   /**
    * Remap data based in a user defined remapper function.
