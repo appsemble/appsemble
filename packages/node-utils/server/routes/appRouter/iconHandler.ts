@@ -17,7 +17,7 @@ export function createIconHandler({ getApp, getAppIcon, getDbUpdated }: Options)
     const appIcon = app ? await getAppIcon({ app, context: ctx }) : null;
 
     await serveIcon(ctx, {
-      background: maskable ? app.iconBackground || '#ffffff' : undefined,
+      background: maskable ? app?.iconBackground || '#ffffff' : undefined,
       cache: dbUpdated ? isEqual(parseISO(updated as string), dbUpdated) : false,
       fallback: 'mobile-alt-solid.png',
       height: size && Number.parseInt(size as string),
