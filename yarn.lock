@@ -10687,10 +10687,10 @@ mini-css-extract-plugin@^2.0.0:
   dependencies:
     schema-utils "^4.0.0"
 
-mini-jsx@^3.0.0:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-3.0.4.tgz#6952f3626db4f9a932f0732a486cc5bfc6ce6ab9"
-  integrity sha512-pf0ug6uL/HLIZ7T11Tm2wJr1WZQ/wFPxEKRam43WO9alk1uOYbL+5CdsJQQo+H7knfYm8sqWHA5KzSfW9/KT6g==
+mini-jsx@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-4.0.0.tgz#0c945cc5447fcfcb6a49d932009aa90f67e60eee"
+  integrity sha512-IwRQYxDgWyOFunzI0lgsEtDU8TDcGdOk4/OeUtrexTISs63iKqNRX6xL3UkV6XudYRAMjySHZZd7QEZgDI+/4A==
 
 mini-svg-data-uri@^1.0.0:
   version "1.4.4"
