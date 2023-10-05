@@ -19,6 +19,6 @@
   "dependencies": {
     "@appsemble/sdk": "0.22.10",
     "fast-deep-equal": "^3.0.0",
-    "mini-jsx": "^3.0.0"
+    "mini-jsx": "^4.0.0"
   }
 }
