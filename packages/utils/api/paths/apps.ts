@@ -36,6 +36,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
+                },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
@@ -173,6 +176,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
+                },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
                 },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',

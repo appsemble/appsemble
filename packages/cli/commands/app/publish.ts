@@ -18,6 +18,7 @@ interface PublishAppArguments extends BaseArguments {
   paths: string[];
   organization: string;
   template: boolean;
+  demoMode: boolean;
   dryRun: boolean;
   resources: boolean;
   modifyContext: boolean;
@@ -62,6 +63,10 @@ export function builder(yargs: Argv): Argv<any> {
     })
     .option('template', {
       describe: 'Whether the app should be marked as a template.',
+      type: 'boolean',
+    })
+    .option('demo-mode', {
+      describe: 'Whether the app should be used in demo mode.',
       type: 'boolean',
     })
     .option('dry-run', {

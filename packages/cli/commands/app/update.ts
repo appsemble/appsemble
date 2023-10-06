@@ -18,6 +18,7 @@ interface UpdateAppArguments extends BaseArguments {
   maskableIcon: NodeJS.ReadStream | ReadStream;
   id: number;
   template: boolean;
+  demoMode: boolean;
   force: boolean;
   visibility: AppVisibility;
   sentryDsn: string;
@@ -63,6 +64,10 @@ export function builder(yargs: Argv): Argv<any> {
       describe: 'Whether the app should be marked as a template.',
       type: 'boolean',
       default: false,
+    })
+    .option('demo-mode', {
+      describe: 'Whether the app should be used in demo mode.',
+      type: 'boolean',
     })
     .option('force', {
       describe: 'Whether the lock property should be ignored.',

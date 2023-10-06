@@ -95,6 +95,11 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   template: boolean;
 
+  @AllowNull(false)
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  demoMode: boolean;
+
   @Column(DataType.TEXT)
   longDescription: string;
 
@@ -274,6 +279,7 @@ export class App extends Model {
         ({ id }) => `/api/apps/${this.id}/screenshots/${id}`,
       ),
       messages: this.messages,
+      demoMode: this.demoMode,
     };
 
     return omit(result, omittedValues) as AppType;

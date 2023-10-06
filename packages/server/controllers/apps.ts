@@ -113,6 +113,7 @@ export async function createApp(ctx: Context): Promise<void> {
       body: {
         OrganizationId,
         coreStyle,
+        demoMode,
         domain,
         googleAnalyticsID,
         icon,
@@ -172,6 +173,7 @@ export async function createApp(ctx: Context): Promise<void> {
       showAppsembleOAuth2Login: true,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
+      demoMode: Boolean(demoMode),
     };
 
     if (icon) {
@@ -453,6 +455,7 @@ export async function patchApp(ctx: Context): Promise<void> {
     request: {
       body: {
         coreStyle,
+        demoMode,
         domain,
         emailHost,
         emailName,
@@ -545,6 +548,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (template !== undefined) {
       result.template = template;
+    }
+
+    if (demoMode !== undefined) {
+      result.demoMode = demoMode;
     }
 
     if (domain !== undefined) {

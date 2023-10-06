@@ -52,6 +52,7 @@ interface LoginState {
 
 interface UserContext extends LoginState {
   passwordLogin: (params: PasswordLoginParams) => Promise<void>;
+  demoLogin: (role: string) => Promise<void>;
   authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
   logout: () => any;
   updateTeam: UpdateTeam;
@@ -210,6 +211,22 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
    */
   const developmentLogin = useCallback(() => login('development', {}), [login]);
 
+  /**
+   * Login using demo app functionality.
+   *
+   * @param role The role to log in as.
+   */
+  const demoLogin = useCallback(
+    (role: string) => {
+      const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+      return login('urn:ietf:params:oauth:grant-type:demo-login', {
+        role,
+        ...(refreshToken ? { refresh_token: refreshToken } : {}),
+      });
+    },
+    [login],
+  );
+
   const updateTeam: UpdateTeam = useCallback((team) => {
     setState(({ teams, ...oldState }) => {
       const newTeams = teams.map((t) => (t.id === team.id ? { ...t, role: team.role } : t));
@@ -301,6 +318,7 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       authorizationCodeLogin,
       passwordLogin,
       developmentLogin,
+      demoLogin,
       logout,
       updateTeam,
       setUserInfo,
@@ -308,7 +326,16 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
       userInfoRef,
       ...state,
     }),
-    [authorizationCodeLogin, passwordLogin, developmentLogin, logout, updateTeam, userInfo, state],
+    [
+      authorizationCodeLogin,
+      passwordLogin,
+      developmentLogin,
+      demoLogin,
+      logout,
+      updateTeam,
+      userInfo,
+      state,
+    ],
   );
 
   // If security hasn’t been initialized yet, show a loader instead of the children. This prevents
