@@ -253,61 +253,72 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
   const role = app.definition.security?.default?.role;
   let member: AppMember;
   let user: User;
-  if (authorization) {
-    // If the user is already linked to a known SAML authorization, use that account.
-    member = authorization.AppMember;
-    user = member.User;
-  } else {
-    try {
-      await transactional(async (transaction) => {
-        // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
-        // If the user isn’t logged in to Appsemble studio either, create a new anonymous Appsemble
-        // account.
-        user = loginRequest.User;
-        if (!user && app.scimEnabled) {
-          member = await AppMember.findOne({
-            where: { AppId: appId, scimExternalId: objectId },
-            attributes: { exclude: ['picture'] },
-          });
-          user = await User.findOne({ where: { id: member.UserId } });
-        } else {
-          user = await User.create(
-            {
-              name: name || nameId,
-              timezone: loginRequest.timezone,
-            },
-            { transaction },
-          );
+
+  switch (true) {
+    case authorization != null:
+      // If the user is already linked to a known SAML authorization, use that account.
+      member = authorization.AppMember;
+      user = member.User;
+      break;
+
+    case app.scimEnabled:
+      // If the app uses SCIM for user provisioning, it should be able to find a user based on
+      // the "objectId" attribute in the secret.
+      if (!objectId) {
+        ctx.response.status = 400;
+        ctx.response.body = {
+          statusCode: 400,
+          error: 'Bad request',
+          message:
+            'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
+        };
+        ctx.throw();
+      }
+      member = await AppMember.findOne({
+        where: { AppId: appId, scimExternalId: objectId },
+        attributes: { exclude: ['picture'] },
+      });
+      user = await User.findOne({ where: { id: member.UserId } });
+      break;
+
+    default:
+      try {
+        await transactional(async (transaction) => {
+          // Otherwise, link to the Appsemble account that’s logged in to Appsemble Studio.
+          // If the user isn’t logged in to Appsemble studio either, create a new anonymous
+          // Appsemble account.
+          user =
+            loginRequest.User ||
+            (await User.create(
+              {
+                name: name || nameId,
+                timezone: loginRequest.timezone,
+              },
+              { transaction },
+            ));
+
           member = await AppMember.findOne({
             where: { UserId: user.id, AppId: appId },
             attributes: { exclude: ['picture'] },
           });
-        }
 
-        if (!member) {
-          member = await AppMember.create(
-            {
-              UserId: user.id,
-              AppId: appId,
-              role,
-              email,
-              name,
-              emailVerified: true,
-              scimExternalId: objectId,
-            },
+          if (!member) {
+            member = await AppMember.create(
+              { UserId: user.id, AppId: appId, role, email, name, emailVerified: true },
+              { transaction },
+            );
+          }
+
+          // The logged in account is linked to a new SAML authorization for next time.
+          await AppSamlAuthorization.create(
+            { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
             { transaction },
           );
-        }
-        // The logged in account is linked to a new SAML authorization for next time.
-        await AppSamlAuthorization.create(
-          { nameId, AppSamlSecretId: appSamlSecretId, AppMemberId: member.id },
-          { transaction },
-        );
-      });
-    } catch {
-      await loginRequest.update({ email, nameId });
-      return prompt('emailconflict', { email, id: loginRequest.id });
-    }
+        });
+      } catch {
+        await loginRequest.update({ email, nameId });
+        return prompt('emailconflict', { email, id: loginRequest.id });
+      }
   }
   const { code } = await createOAuth2AuthorizationCode(
     app,
