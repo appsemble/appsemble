@@ -219,12 +219,12 @@ export async function processReferenceHooks(
   await Promise.all(
     Object.entries(app.definition.resources[resource.type].references || {}).map(
       async ([propertyName, reference]) => {
-        if (!reference[action]?.trigger?.length) {
+        if (!reference[action]?.triggers?.length) {
           // Do nothing
           return;
         }
 
-        const { trigger } = reference[action];
+        const { triggers } = reference[action];
         const ids = [].concat(resource.data[propertyName]);
         const parents = await Resource.findAll({
           where: { id: ids, type: reference.resource, AppId: app.id },
@@ -232,12 +232,99 @@ export async function processReferenceHooks(
 
         await Promise.all(
           parents.map((parent) =>
-            Promise.all(trigger.map((t) => processHooks(user, app, parent, t, options, context))),
+            Promise.all(
+              triggers.map((trigger) =>
+                processHooks(user, app, parent, trigger.type, options, context),
+              ),
+            ),
           ),
         );
       },
     ),
   );
+}
+
+export async function processReferenceTriggers(
+  app: App,
+  parent: Resource,
+  action: 'create' | 'delete' | 'update',
+  context: ParameterizedContext<DefaultState, DefaultContext, any>,
+): Promise<void> {
+  const resourceReferences = [];
+  for (const [resourceName, resourceDefinition] of Object.entries(app.definition.resources || {})) {
+    const [referencedProperty, referenceToParent] =
+      Object.entries(resourceDefinition.references || {}).find(
+        ([, reference]) => reference.resource === parent.type && Boolean(reference[action]),
+      ) || [];
+
+    if (referenceToParent) {
+      const { triggers } = referenceToParent[action];
+
+      resourceReferences.push({
+        childName: resourceName,
+        referencedProperty,
+        triggers,
+      });
+    }
+  }
+
+  const childResources: Record<string, Resource[]> = {};
+  const childPromises = resourceReferences.map(async ({ childName }) => {
+    childResources[childName] = await Resource.findAll({
+      where: { type: childName, AppId: app.id },
+    });
+  });
+
+  await Promise.all(childPromises);
+
+  const triggerPromises = [];
+  for (const resourceReference of resourceReferences) {
+    const { childName, referencedProperty, triggers } = resourceReference;
+
+    if (childResources[childName].length > 0) {
+      switch (action) {
+        case 'delete':
+          if (triggers.some((trigger) => !trigger.cascade)) {
+            const ctx = context;
+
+            ctx.response.status = 400;
+            ctx.response.body = {
+              statusCode: 400,
+              error: 'Bad Request',
+              message: `Cannot delete resource ${parent.id}. There is a resource of type ${childName} that references it.`,
+            };
+
+            return ctx.throw();
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    for (const child of childResources[childName]) {
+      triggerPromises.push(
+        await Promise.all(
+          triggers.map(async (trigger) => {
+            switch (trigger.cascade) {
+              case 'update':
+                await child.update({
+                  data: { ...child.data, [referencedProperty]: null },
+                });
+                break;
+              case 'delete':
+                await child.destroy();
+                break;
+              default:
+                break;
+            }
+          }),
+        ),
+      );
+    }
+  }
+
+  await Promise.all(triggerPromises);
 }
 
 /**

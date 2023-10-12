@@ -1,0 +1,16 @@
+context:
+  development:
+    organization: appsemble
+    remote: http://localhost:9999
+    visibility: public
+  production:
+    organization: appsemble
+    remote: https://appsemble.app
+    visibility: public
+  review:
+    organization: appsemble
+    visibility: public
+  staging:
+    organization: appsemble
+    remote: https://staging.appsemble.review
+    visibility: public

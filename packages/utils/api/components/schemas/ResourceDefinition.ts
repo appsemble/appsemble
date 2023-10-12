@@ -17,15 +17,37 @@ const query: OpenAPIV3.NonArraySchemaObject = {
   additionalProperties: { type: 'string' },
 };
 
+const referenceActionTrigger: OpenAPIV3.NonArraySchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  description: 'Defines the type of trigger and the cascading strategy for it',
+  properties: {
+    type: {
+      enum: ['create', 'update', 'delete'],
+    },
+    cascade: {
+      description: `Defines the cascading strategy.
+
+If 'update' is specified, the referencing property of the referencing resource is set to null.
+
+If 'delete' is specified, the referencing resource is deleted.
+
+If not specified, the referenced resource cannot be deleted
+without deleting the referencing resource first.`,
+      enum: ['update', 'delete'],
+    },
+  },
+};
+
 const referenceAction: OpenAPIV3.NonArraySchemaObject = {
   type: 'object',
   additionalProperties: false,
-  // XXX
-  description: 'To be documented.',
+  description:
+    'Defines what happens when the specified action is executed on the referenced resource.',
   properties: {
-    trigger: {
+    triggers: {
       type: 'array',
-      items: { enum: ['create', 'update', 'delete'] },
+      items: referenceActionTrigger,
       minItems: 1,
       uniqueItems: true,
     },

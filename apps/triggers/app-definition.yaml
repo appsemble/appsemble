@@ -1,0 +1,479 @@
+name: Triggers
+description: This app demonstrates resource referencing, triggers and cascading strategies
+defaultPage: Owners' Pets
+
+resources:
+  owner:
+    roles:
+      - $public
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+      required:
+        - name
+
+  housePet:
+    roles:
+      - $public
+    references:
+      ownerId:
+        resource: owner
+        delete:
+          triggers:
+            # No cascading strategy specified
+            # The owner cannot be deleted if there is a house pet that references them
+            # The house pet cannot live without an owner
+            - type: delete
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        species:
+          type: string
+        ownerId:
+          type: number
+      required:
+        - name
+        - ownerId
+
+  farmPet:
+    roles:
+      - $public
+    references:
+      ownerId:
+        resource: owner
+        delete:
+          triggers:
+            - type: delete
+              # Cascading update strategy specified
+              # The owner can be deleted even if there is a farm pet that references them
+              # The ownerId property of the pet is set to null (The pet can stay in the farm without an owner)
+              cascade: update
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        species:
+          type: string
+        ownerId:
+          type: number
+      required:
+        - name
+        - ownerId
+
+  wildPet:
+    roles:
+      - $public
+    references:
+      ownerId:
+        resource: owner
+        delete:
+          triggers:
+            - type: delete
+              # Cascading delete strategy specified
+              # The owner can be deleted even if there is a wild pet that references them
+              # The pet is deleted (The pet escapes and there is no longer a record of it)
+              cascade: delete
+    schema:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        species:
+          type: string
+        ownerId:
+          type: number
+      required:
+        - name
+        - ownerId
+
+pages:
+  - name: Owners' Pets
+    icon: dog
+    type: tabs
+    tabs:
+      - name: Owners
+        blocks:
+          - type: data-loader
+            version: 0.22.10
+            actions:
+              onLoad:
+                type: resource.query
+                resource: owner
+            events:
+              listen:
+                refresh: refreshOwners
+              emit:
+                data: owners
+
+          - type: table
+            version: 0.22.10
+            parameters:
+              fields:
+                - value: { prop: name }
+                  label: Name
+                - button:
+                    icon: trash
+                    color: danger
+                  alignment: right
+                  onClick: onRemoveClick
+            events:
+              listen:
+                data: owners
+            actions:
+              onRemoveClick:
+                type: dialog
+                closable: true
+                blocks:
+                  - type: detail-viewer
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - label: { translate: confirmDeleteOwner }
+                          value: { prop: name }
+
+                  - type: button-list
+                    version: 0.22.10
+                    parameters:
+                      buttons:
+                        - label: { translate: cancel }
+                          color: primary
+                          onClick: cancelDialog
+                        - label: { translate: configDelete }
+                          color: danger
+                          onClick: removeItem
+                    actions:
+                      cancelDialog:
+                        type: dialog.ok
+                      removeItem:
+                        type: resource.delete
+                        resource: owner
+                        onSuccess:
+                          type: event
+                          event: refreshOwners
+                          onSuccess:
+                            type: dialog.ok
+
+          - type: action-button
+            version: 0.22.10
+            parameters:
+              icon: plus
+            actions:
+              onClick:
+                type: dialog
+                blocks:
+                  - type: form
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - type: string
+                          name: name
+                          label: Name
+                    actions:
+                      onSubmit:
+                        type: resource.create
+                        resource: owner
+                        onSuccess:
+                          type: dialog.ok
+                onSuccess:
+                  type: event
+                  event: refreshOwners
+
+      - name: House Pets
+        blocks:
+          - type: data-loader
+            version: 0.22.10
+            actions:
+              onLoad:
+                type: resource.query
+                resource: housePet
+            events:
+              listen:
+                refresh: refreshHousePets
+              emit:
+                data: housePets
+
+          - type: table
+            version: 0.22.10
+            parameters:
+              fields:
+                - value: { prop: name }
+                  label: Name
+                - value: { prop: species }
+                  label: Species
+                - button:
+                    icon: trash
+                    color: danger
+                  alignment: right
+                  onClick: onRemoveClick
+            events:
+              listen:
+                data: housePets
+            actions:
+              onRemoveClick:
+                type: dialog
+                closable: true
+                blocks:
+                  - type: detail-viewer
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - label: { translate: confirmDeleteHousePet }
+                          value: { prop: name }
+
+                  - type: button-list
+                    version: 0.22.10
+                    parameters:
+                      buttons:
+                        - label: { translate: cancel }
+                          color: primary
+                          onClick: cancelDialog
+                        - label: { translate: configDelete }
+                          color: danger
+                          onClick: removeItem
+                    actions:
+                      cancelDialog:
+                        type: dialog.ok
+                      removeItem:
+                        type: resource.delete
+                        resource: housePet
+                        onSuccess:
+                          type: event
+                          event: refreshHousePets
+                          onSuccess:
+                            type: dialog.ok
+
+          - type: action-button
+            version: 0.22.10
+            parameters:
+              icon: plus
+            actions:
+              onClick:
+                type: dialog
+                blocks:
+                  - type: form
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - type: string
+                          name: name
+                          label: Name
+                        - type: string
+                          name: species
+                          label: Species
+                        - type: number
+                          name: ownerId
+                          label: Owner Id
+                          requirements:
+                            - required: true
+                    actions:
+                      onSubmit:
+                        type: resource.create
+                        resource: housePet
+                        onSuccess:
+                          type: dialog.ok
+                onSuccess:
+                  type: event
+                  event: refreshHousePets
+
+      - name: Farm Pets
+        blocks:
+          - type: data-loader
+            version: 0.22.10
+            actions:
+              onLoad:
+                type: resource.query
+                resource: farmPet
+            events:
+              listen:
+                refresh: refreshFarmPets
+              emit:
+                data: farmPets
+
+          - type: table
+            version: 0.22.10
+            parameters:
+              fields:
+                - value: { prop: name }
+                  label: Name
+                - value: { prop: species }
+                  label: Species
+                - button:
+                    icon: trash
+                    color: danger
+                  alignment: right
+                  onClick: onRemoveClick
+            events:
+              listen:
+                data: farmPets
+            actions:
+              onRemoveClick:
+                type: dialog
+                closable: true
+                blocks:
+                  - type: detail-viewer
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - label: { translate: confirmDeleteFarmPet }
+                          value: { prop: name }
+
+                  - type: button-list
+                    version: 0.22.10
+                    parameters:
+                      buttons:
+                        - label: { translate: cancel }
+                          color: primary
+                          onClick: cancelDialog
+                        - label: { translate: configDelete }
+                          color: danger
+                          onClick: removeItem
+                    actions:
+                      cancelDialog:
+                        type: dialog.ok
+                      removeItem:
+                        type: resource.delete
+                        resource: farmPet
+                        onSuccess:
+                          type: event
+                          event: refreshFarmPets
+                          onSuccess:
+                            type: dialog.ok
+
+          - type: action-button
+            version: 0.22.10
+            parameters:
+              icon: plus
+            actions:
+              onClick:
+                type: dialog
+                blocks:
+                  - type: form
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - type: string
+                          name: name
+                          label: Name
+                        - type: string
+                          name: species
+                          label: Species
+                        - type: number
+                          name: ownerId
+                          label: Owner Id
+                          requirements:
+                            - required: true
+                    actions:
+                      onSubmit:
+                        type: resource.create
+                        resource: farmPet
+                        onSuccess:
+                          type: dialog.ok
+                onSuccess:
+                  type: event
+                  event: refreshFarmPets
+
+      - name: Wild Pets
+        blocks:
+          - type: data-loader
+            version: 0.22.10
+            actions:
+              onLoad:
+                type: resource.query
+                resource: wildPet
+            events:
+              listen:
+                refresh: refreshWildPets
+              emit:
+                data: wildPets
+
+          - type: table
+            version: 0.22.10
+            parameters:
+              fields:
+                - value: { prop: name }
+                  label: Name
+                - value: { prop: species }
+                  label: Species
+                - button:
+                    icon: trash
+                    color: danger
+                  alignment: right
+                  onClick: onRemoveClick
+            events:
+              listen:
+                data: wildPets
+            actions:
+              onRemoveClick:
+                type: dialog
+                closable: true
+                blocks:
+                  - type: detail-viewer
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - label: { translate: confirmDeleteWildPet }
+                          value: { prop: name }
+
+                  - type: button-list
+                    version: 0.22.10
+                    parameters:
+                      buttons:
+                        - label: { translate: cancel }
+                          color: primary
+                          onClick: cancelDialog
+                        - label: { translate: configDelete }
+                          color: danger
+                          onClick: removeItem
+                    actions:
+                      cancelDialog:
+                        type: dialog.ok
+                      removeItem:
+                        type: resource.delete
+                        resource: wildPet
+                        onSuccess:
+                          type: event
+                          event: refreshWildPets
+                          onSuccess:
+                            type: dialog.ok
+
+          - type: action-button
+            version: 0.22.10
+            parameters:
+              icon: plus
+            actions:
+              onClick:
+                type: dialog
+                blocks:
+                  - type: form
+                    version: 0.22.10
+                    parameters:
+                      fields:
+                        - type: string
+                          name: name
+                          label: Name
+                        - type: string
+                          name: species
+                          label: Species
+                        - type: number
+                          name: ownerId
+                          label: Owner Id
+                          requirements:
+                            - required: true
+                    actions:
+                      onSubmit:
+                        type: resource.create
+                        resource: wildPet
+                        onSuccess:
+                          type: dialog.ok
+                onSuccess:
+                  type: event
+                  event: refreshWildPets

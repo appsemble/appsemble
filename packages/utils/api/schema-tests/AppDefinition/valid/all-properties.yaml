@@ -71,14 +71,15 @@ resources:
     references:
       foo:
         create:
-          trigger:
-            - create
+          triggers:
+            - type: create
         update:
-          trigger:
-            - update
+          triggers:
+            - type: update
         delete:
-          trigger:
-            - delete
+          triggers:
+            - type: delete
+              cascade: delete
     schema:
       type: object
       additionalProperties: false
