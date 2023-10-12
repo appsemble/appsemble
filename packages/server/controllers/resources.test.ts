@@ -121,8 +121,54 @@ const exampleApp = (
           references: {
             testResourceId: {
               resource: 'testResource',
-              create: {
-                trigger: ['update'],
+              delete: {
+                triggers: [
+                  {
+                    type: 'delete',
+                  },
+                ],
+              },
+            },
+          },
+        },
+        testResourceC: {
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+          },
+          roles: ['$public'],
+          references: {
+            testResourceId: {
+              resource: 'testResource',
+              delete: {
+                triggers: [
+                  {
+                    type: 'delete',
+                    cascade: 'update',
+                  },
+                ],
+              },
+            },
+          },
+        },
+        testResourceD: {
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+          },
+          roles: ['$public'],
+          references: {
+            testResourceId: {
+              resource: 'testResource',
+              delete: {
+                triggers: [
+                  {
+                    type: 'delete',
+                    cascade: 'delete',
+                  },
+                ],
               },
             },
           },
@@ -5088,7 +5134,7 @@ describe('deleteResources', () => {
 
       []
     `);
-  });
+  }, 60_000);
 
   it('should ignore non-existent resources.', async () => {
     const app = await exampleApp(organization.id);
@@ -5106,6 +5152,401 @@ describe('deleteResources', () => {
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
     expect(responseGetEmpty).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      []
+    `);
+  });
+
+  it('should not be able to delete multiple resources if they are referenced by another resource without cascading strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource1 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResource2 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+
+    await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
+    });
+
+    await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
+    });
+
+    const responseGetTestResources = await request.get(
+      `/api/apps/${app.id}/resources/testResource`,
+    );
+    expect(responseGetTestResources).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo.",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Too.",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseGetTestResourcesB = await request.get(
+      `/api/apps/${app.id}/resources/testResourceB`,
+    );
+    expect(responseGetTestResourcesB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+      ]
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResources = await request.delete(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        data: [testResource1.id, testResource2.id],
+      },
+    );
+
+    expect(responseDeleteTestResources).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Cannot delete resource 1. There is a resource of type testResourceB that references it.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should be able to delete multiple resources if they are referenced by another resource without cascading strategy if the referencing resources are deleted first', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource1 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResource2 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+
+    const testResourceB1 = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
+    });
+
+    const testResourceB2 = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
+    });
+
+    const responseGetTestResources = await request.get(
+      `/api/apps/${app.id}/resources/testResource`,
+    );
+    expect(responseGetTestResources).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo.",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Too.",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseGetTestResourcesB = await request.get(
+      `/api/apps/${app.id}/resources/testResourceB`,
+    );
+    expect(responseGetTestResourcesB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+      ]
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResourcesB = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceB`,
+      {
+        data: [testResourceB1.id, testResourceB2.id],
+      },
+    );
+
+    expect(responseDeleteTestResourcesB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseDeleteTestResources = await request.delete(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        data: [testResource1.id, testResource2.id],
+      },
+    );
+
+    expect(responseDeleteTestResources).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should be able to delete multiple resources if they are referenced by another resource with cascading update strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource1 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResource2 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+
+    await Resource.create({
+      type: 'testResourceC',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
+    });
+
+    await Resource.create({
+      type: 'testResourceC',
+      AppId: app.id,
+      data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
+    });
+
+    const responseGetTestResources = await request.get(
+      `/api/apps/${app.id}/resources/testResource`,
+    );
+    expect(responseGetTestResources).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo.",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Too.",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseGetTestResourcesC = await request.get(
+      `/api/apps/${app.id}/resources/testResourceC`,
+    );
+    expect(responseGetTestResourcesC).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+      ]
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResources = await request.delete(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        data: [testResource1.id, testResource2.id],
+      },
+    );
+
+    expect(responseDeleteTestResources).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceCAfterDeletingTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResourceC`,
+    );
+
+    expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": null,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": null,
+        },
+      ]
+    `);
+  });
+
+  it('should be able to delete multiple resources if they are referenced by another resource with cascading delete strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource1 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResource2 = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo Too.' },
+    });
+
+    await Resource.create({
+      type: 'testResourceD',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource1.id },
+    });
+
+    await Resource.create({
+      type: 'testResourceD',
+      AppId: app.id,
+      data: { foo: 'I reference Foo Two.', testResourceId: testResource2.id },
+    });
+
+    const responseGetTestResources = await request.get(
+      `/api/apps/${app.id}/resources/testResource`,
+    );
+    expect(responseGetTestResources).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo.",
+          "id": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I am Foo Too.",
+          "id": 2,
+        },
+      ]
+    `);
+
+    const responseGetTestResourcesD = await request.get(
+      `/api/apps/${app.id}/resources/testResourceD`,
+    );
+    expect(responseGetTestResourcesD).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      [
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo.",
+          "id": 3,
+          "testResourceId": 1,
+        },
+        {
+          "$created": "1970-01-01T00:00:00.000Z",
+          "$updated": "1970-01-01T00:00:00.000Z",
+          "foo": "I reference Foo Two.",
+          "id": 4,
+          "testResourceId": 2,
+        },
+      ]
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResources = await request.delete(
+      `/api/apps/${app.id}/resources/testResource`,
+      {
+        data: [testResource1.id, testResource2.id],
+      },
+    );
+
+    expect(responseDeleteTestResources).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceDAfterDeletingTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResourceD`,
+    );
+
+    expect(responseGetTestResourceDAfterDeletingTestResource).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
       Content-Type: application/json; charset=utf-8
 
@@ -5398,6 +5839,273 @@ describe('deleteResource', () => {
         "error": "Forbidden",
         "message": "User does not have sufficient permissions.",
         "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not be able to delete a resource if it is referenced by another resource without cascading strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResourceB = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource.id },
+    });
+
+    const responseGetTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseGetTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
+
+    const responseGetTestResourceB = await request.get(
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+    );
+
+    expect(responseGetTestResourceB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I reference Foo.",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResource = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseDeleteTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "Cannot delete resource 1. There is a resource of type testResourceB that references it.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should be able to delete a resource if it is referenced by another resource without cascading strategy if the referencing resource is deleted first', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResourceB = await Resource.create({
+      type: 'testResourceB',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource.id },
+    });
+
+    const responseGetTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseGetTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
+
+    const responseGetTestResourceB = await request.get(
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+    );
+
+    expect(responseGetTestResourceB).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I reference Foo.",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResourceB = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceB/${testResourceB.id}`,
+    );
+
+    expect(responseDeleteTestResourceB).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseDeleteTestResource = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should be able to delete a resource if it is referenced by another resource with cascading update strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResourceC = await Resource.create({
+      type: 'testResourceC',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource.id },
+    });
+
+    const responseGetTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseGetTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
+
+    const responseGetTestResourceC = await request.get(
+      `/api/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
+    );
+
+    expect(responseGetTestResourceC).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I reference Foo.",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResource = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceCAfterDeletingTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResourceC/${testResourceC.id}`,
+    );
+
+    expect(responseGetTestResourceCAfterDeletingTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I reference Foo.",
+        "id": 2,
+        "testResourceId": null,
+      }
+    `);
+  });
+
+  it('should be able to delete a resource if it is referenced by another resource with cascading delete strategy', async () => {
+    const app = await exampleApp(organization.id);
+    const testResource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const testResourceD = await Resource.create({
+      type: 'testResourceD',
+      AppId: app.id,
+      data: { foo: 'I reference Foo.', testResourceId: testResource.id },
+    });
+
+    const responseGetTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseGetTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I am Foo.",
+        "id": 1,
+      }
+    `);
+
+    const responseGetTestResourceD = await request.get(
+      `/api/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
+    );
+
+    expect(responseGetTestResourceD).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "I reference Foo.",
+        "id": 2,
+        "testResourceId": 1,
+      }
+    `);
+
+    authorizeStudio();
+    const responseDeleteTestResource = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${testResource.id}`,
+    );
+
+    expect(responseDeleteTestResource).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+
+    const responseGetTestResourceDAfterDeletingTestResource = await request.get(
+      `/api/apps/${app.id}/resources/testResourceD/${testResourceD.id}`,
+    );
+
+    expect(responseGetTestResourceDAfterDeletingTestResource).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404,
       }
     `);
   });

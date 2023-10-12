@@ -1,0 +1,19 @@
+{
+  "app": {
+    "description": "Resource triggers demonstration",
+    "name": "Triggers",
+    "pages.owners-pets": "Owners' Pets",
+    "pages.owners-pets.tabs.0": "Owners",
+    "pages.owners-pets.tabs.1": "House Pets",
+    "pages.owners-pets.tabs.2": "Farm Pets",
+    "pages.owners-pets.tabs.3": "Wild Pets"
+  },
+  "messageIds": {
+    "cancel": "Cancel",
+    "configDelete": "Delete",
+    "confirmDeleteFarmPet": "Are you sure you want to delete the following farm pet?",
+    "confirmDeleteHousePet": "Are you sure you want to delete the following house pet?",
+    "confirmDeleteOwner": "Are you sure you want to delete the following owner?",
+    "confirmDeleteWildPet": "Are you sure you want to delete the following wild pet?"
+  }
+}

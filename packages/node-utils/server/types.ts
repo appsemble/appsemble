@@ -232,8 +232,8 @@ export interface GetCspParams {
   nonce: string;
 }
 
-export type HookAction = 'create' | 'delete' | 'update';
-export type Action = HookAction | 'count' | 'get' | 'patch' | 'query';
+export type ResourceAction = 'create' | 'delete' | 'update';
+export type Action = ResourceAction | 'count' | 'get' | 'patch' | 'query';
 
 export interface VerifyResourceActionPermissionParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
@@ -286,7 +286,7 @@ export interface CreateAppResourcesWithAssetsParams extends GetAppSubEntityParam
   resources: Record<string, unknown>[];
   preparedAssets: PreparedAsset[];
   resourceType: string;
-  action: HookAction;
+  action: ResourceAction;
   options: Options;
 }
 
@@ -298,14 +298,14 @@ export interface UpdateAppResourceParams extends GetAppSubEntityParams {
   deletedAssetIds: string[];
   type: string;
   options: Options;
-  action: HookAction;
+  action: ResourceAction;
 }
 
 export interface DeleteAppResourceParams extends GetAppSubEntityParams {
   id: number | string;
   type: string;
   whereOptions?: WhereOptions;
-  action: HookAction;
+  action: ResourceAction;
   options: Options;
 }
 

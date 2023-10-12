@@ -707,8 +707,13 @@ export interface ResourceCall {
   roles?: string[];
 }
 
+export interface ResourceReferenceActionTrigger {
+  type: 'create' | 'delete' | 'update';
+  cascade?: 'delete' | 'update';
+}
+
 interface ResourceReferenceAction {
-  trigger: ('create' | 'delete' | 'update')[];
+  triggers: ResourceReferenceActionTrigger[];
 }
 
 interface ResourceReference {

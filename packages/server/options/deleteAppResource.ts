@@ -1,7 +1,11 @@
 import { type DeleteAppResourceParams } from '@appsemble/node-utils';
 
 import { App, Resource, type User } from '../models/index.js';
-import { processHooks, processReferenceHooks } from '../utils/resource.js';
+import {
+  processHooks,
+  processReferenceHooks,
+  processReferenceTriggers,
+} from '../utils/resource.js';
 
 export async function deleteAppResource({
   action,
@@ -26,6 +30,8 @@ export async function deleteAppResource({
 
   processReferenceHooks(user as User, persistedApp, resource, action, options, context);
   processHooks(user as User, persistedApp, resource, action, options, context);
+
+  await processReferenceTriggers(persistedApp, resource, action, context);
 
   return resource.destroy();
 }

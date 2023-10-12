@@ -1,0 +1,19 @@
+{
+  "app": {
+    "description": "Bron activeert demonstratie",
+    "name": "Triggers",
+    "pages.owners-pets": "Huisdieren van eigenaren",
+    "pages.owners-pets.tabs.0": "Eigenaars",
+    "pages.owners-pets.tabs.1": "Huisdieren",
+    "pages.owners-pets.tabs.2": "Boerderijdieren",
+    "pages.owners-pets.tabs.3": "Wilde huisdieren"
+  },
+  "messageIds": {
+    "cancel": "Annuleren",
+    "configDelete": "Verwijderen",
+    "confirmDeleteFarmPet": "Weet u zeker dat u het volgende boerderijdier wilt verwijderen?",
+    "confirmDeleteHousePet": "Weet u zeker dat u het volgende huisdier wilt verwijderen?",
+    "confirmDeleteOwner": "Weet u zeker dat u de volgende eigenaar wilt verwijderen?",
+    "confirmDeleteWildPet": "Weet je zeker dat je het volgende wilde dier wilt verwijderen?"
+  }
+}

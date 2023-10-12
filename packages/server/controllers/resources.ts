@@ -26,7 +26,11 @@ import {
 } from '../models/index.js';
 import { getUserAppAccount } from '../options/getUserAppAccount.js';
 import { options } from '../options/options.js';
-import { processHooks, processReferenceHooks } from '../utils/resource.js';
+import {
+  processHooks,
+  processReferenceHooks,
+  processReferenceTriggers,
+} from '../utils/resource.js';
 
 export const queryResources = createQueryResources(options);
 
@@ -475,9 +479,12 @@ export async function deleteResources(ctx: Context): Promise<void> {
       },
       limit: 100,
     })) {
-      await resource.destroy();
       processReferenceHooks(user as User, app, resource, action, options, ctx);
       processHooks(user as User, app, resource, action, options, ctx);
+
+      await processReferenceTriggers(app, resource, action, ctx);
+
+      await resource.destroy();
     }
     deletedAmount += 100;
   }
