@@ -1,0 +1,27 @@
+version: '3.5'
+
+networks:
+  pipeline:
+    name: pipeline
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    networks: [pipeline]
+    environment:
+      POSTGRES_DB: appsemble
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5433:5432'
+
+  helm:
+    container_name: helm
+    image: dtzar/helm-kubectl:3
+    networks: [pipeline]
+    tty: true
+    stdin_open: true
+    working_dir: /app/config
+    volumes:
+      - ./config/charts:/app/config/charts
