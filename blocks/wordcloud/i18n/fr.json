@@ -1,0 +1,6 @@
+{
+  "empty": "Il n'y a pas de données à afficher",
+  "error": "Il y avait un problème de chargement des données.",
+  "loading": "Chargement …",
+  "unsupported": "Votre navigateur ne prend pas en charge le bloc wordcloud !"
+}
