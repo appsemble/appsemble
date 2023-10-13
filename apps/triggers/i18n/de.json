@@ -1,0 +1,19 @@
+{
+  "app": {
+    "description": "",
+    "name": "",
+    "pages.owners-pets": "Haustiere der Besitzer",
+    "pages.owners-pets.tabs.0": "Besitzer",
+    "pages.owners-pets.tabs.1": "Haustiere",
+    "pages.owners-pets.tabs.2": "",
+    "pages.owners-pets.tabs.3": ""
+  },
+  "messageIds": {
+    "cancel": "Abbrechen",
+    "configDelete": "Löschen",
+    "confirmDeleteFarmPet": "",
+    "confirmDeleteHousePet": "",
+    "confirmDeleteOwner": "",
+    "confirmDeleteWildPet": ""
+  }
+}
