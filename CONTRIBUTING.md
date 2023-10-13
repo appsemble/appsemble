@@ -138,6 +138,19 @@ The end 2 end tests are run using
 [![](https://avatars.githubusercontent.com/u/89237858?s=16) Playwright](https://playwright.dev).
 They reside in [`packages/e2e`](packages/e2e).
 
+### Local CI
+
+When changes are pushed to a merge request branch, Appsemble runs a CI pipeline in GitLab. The first
+stage in the pipeline checks code formatting and styling, and runs tests. You can run that stage
+locally to avoid waiting for the pipeline by running the following:
+
+```bash
+. scripts/local-pipeline.sh
+```
+
+On `arm64/v8` systems, tests that use the `sharp` module will fail. If that happens, you can still
+try to push your changes.
+
 ### Changelog
 
 Every block and package has a `changed` directory. This directory contains the following folders:
