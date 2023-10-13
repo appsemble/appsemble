@@ -20,6 +20,7 @@ export async function serverImport<
   T extends
     | 'cleanupDemoUsers'
     | 'cleanupResources'
+    | 'cleanupTemplateResources'
     | 'migrate'
     | 'runCronJobs'
     | 'setArgv'
