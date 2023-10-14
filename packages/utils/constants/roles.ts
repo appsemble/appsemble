@@ -24,6 +24,9 @@ const Maintainer = [
   Permission.ManageTeams,
   Permission.PublishBlocks,
   Permission.DeleteBlocks,
+  Permission.CreateCollections,
+  Permission.DeleteCollections,
+  Permission.EditCollections,
 ];
 const Owner = [
   ...Maintainer,
@@ -31,9 +34,6 @@ const Owner = [
   Permission.DeleteOrganization,
   Permission.ManageMembers,
   Permission.ManageRoles,
-  Permission.CreateCollections,
-  Permission.DeleteCollections,
-  Permission.EditCollections,
 ];
 
 export const roles = {
