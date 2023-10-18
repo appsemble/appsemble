@@ -1,6 +1,5 @@
 .diagnostics {
   border: 1px solid hsl(0deg 0% 86%);
   height: 15vh;
-  overflow-x: auto;
-  overflow-y: scroll;
+  overflow: auto scroll;
 }
