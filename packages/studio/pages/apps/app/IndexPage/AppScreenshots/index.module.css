@@ -14,10 +14,9 @@
 .screenshots {
   height: 24em;
   justify-content: space-between;
+  overflow: scroll hidden;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
-  overflow-x: scroll;
-  overflow-y: hidden;
   scroll-behavior: smooth;
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   scrollbar-width: none; /* Hide scrollbar for Firefox */
