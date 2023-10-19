@@ -64,9 +64,5 @@ bootstrap(({ events, parameters: { fields, options, shape = 'circle' }, ready, u
     return <FormattedMessage id="empty" />;
   }
 
-  return (
-    <div>
-      <WordcloudLogic options={options} shape={shape} words={data} />
-    </div>
-  );
+  return <WordcloudLogic options={options} shape={shape} words={data} />;
 });

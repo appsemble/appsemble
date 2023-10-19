@@ -95,6 +95,18 @@ declare module '@appsemble/sdk' {
      * for the same list and settings.
      */
     shuffle?: boolean;
+
+    /**
+     * Set to true to allow word being draw partly outside of the canvas. Allow word bigger than
+     * the size of the canvas to be drawn.
+     */
+    drawOutOfBound?: boolean;
+
+    /**
+     * Set to `true` to shrink the word so it will fit into canvas. Best if `drawOutOfBound` is set
+     * to false. This word will now have lower weight.
+     */
+    shrinkToFit?: boolean;
   }
 
   interface Messages {

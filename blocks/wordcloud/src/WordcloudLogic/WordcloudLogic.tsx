@@ -1,7 +1,7 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { type VNode } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import WordCloud, { type ListEntry } from 'wordcloud';
+import WordCloud, { type ListEntry, type Options } from 'wordcloud';
 
 import styles from './wordcloud.module.css';
 
@@ -17,7 +17,7 @@ function mapArrayToWordcloudObject(words: string[]): ListEntry[] {
 
 interface WordcloudProps {
   readonly shape: string;
-  readonly options: object;
+  readonly options: Options;
   readonly words: string[];
 }
 
@@ -46,13 +46,11 @@ export function WordcloudLogic(props: WordcloudProps): VNode {
   }
 
   return (
-    <div className="canvasContainer">
-      <canvas
-        className={styles.centerCloud}
-        height={canvasHeight}
-        ref={canvasRef}
-        width={canvasWidth}
-      />
-    </div>
+    <canvas
+      className={styles.centerCloud}
+      height={canvasHeight}
+      ref={canvasRef}
+      width={canvasWidth}
+    />
   );
 }
