@@ -70,7 +70,14 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const serviceSecrets = await AppServiceSecret.findAll({
-    attributes: ['id', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
+    attributes: [
+      'id',
+      'serviceName',
+      'urlPatterns',
+      'authenticationMethod',
+      'identifier',
+      'tokenUrl',
+    ],
     where: {
       AppId: appId,
     },
