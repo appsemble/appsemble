@@ -12,7 +12,7 @@ import { HeaderControl } from '../../../../../components/HeaderControl/index.js'
 import { useApp } from '../../index.js';
 
 const initialSecret: AppServiceSecret = {
-  serviceName: '',
+  name: '',
   urlPatterns: '',
   authenticationMethod: 'http-basic',
   identifier: '',

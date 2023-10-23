@@ -30,7 +30,7 @@ export async function addAppServiceSecret(ctx: Context): Promise<void> {
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
-  const { authenticationMethod, id, identifier, serviceName, tokenUrl, urlPatterns } =
+  const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } =
     await AppServiceSecret.create({
       ...body,
       secret: encrypt(body.secret, argv.aesSecret),
@@ -41,7 +41,7 @@ export async function addAppServiceSecret(ctx: Context): Promise<void> {
     authenticationMethod,
     id,
     identifier,
-    serviceName,
+    name,
     urlPatterns,
     tokenUrl,
   };
@@ -70,7 +70,7 @@ export async function getAppServiceSecrets(ctx: Context): Promise<void> {
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const serviceSecrets = await AppServiceSecret.findAll({
-    attributes: ['id', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
+    attributes: ['id', 'name', 'urlPatterns', 'authenticationMethod', 'identifier', 'tokenUrl'],
     where: {
       AppId: appId,
     },
@@ -118,13 +118,12 @@ export async function updateAppServiceSecret(ctx: Context): Promise<void> {
     AppId: appId,
   });
 
-  const { authenticationMethod, id, identifier, serviceName, tokenUrl, urlPatterns } =
-    appServiceSecret;
+  const { authenticationMethod, id, identifier, name, tokenUrl, urlPatterns } = appServiceSecret;
 
   ctx.body = {
     authenticationMethod,
     id,
-    serviceName,
+    name,
     identifier,
     urlPatterns,
     tokenUrl,

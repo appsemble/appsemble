@@ -380,7 +380,7 @@ describe('handleRequestProxy', () => {
     server.context.user = null;
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -425,7 +425,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: `!${proxiedRequest.defaults.baseURL}`,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -470,7 +470,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -517,7 +517,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -526,7 +526,7 @@ describe('handleRequestProxy', () => {
     });
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'not_john_doe',
@@ -573,7 +573,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -628,7 +628,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -639,7 +639,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST1\n-----END CERTIFICATE-----',
@@ -696,7 +696,7 @@ describe('handleRequestProxy', () => {
     const tokenUrl = `${proxiedRequest.defaults.baseURL}oauth/token`;
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-credentials',
       identifier: 'id',
@@ -758,7 +758,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -767,7 +767,7 @@ describe('handleRequestProxy', () => {
     });
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-credentials',
       identifier: 'id',
@@ -817,7 +817,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'cookie',
@@ -862,7 +862,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'cookie',
@@ -870,7 +870,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'cookie',
       identifier: 'another-cookie',
@@ -917,7 +917,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'custom-header',
       identifier: 'custom-header',
@@ -962,7 +962,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -970,7 +970,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'custom-header',
       identifier: 'Authorization',
@@ -1017,7 +1017,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
@@ -1064,7 +1064,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',
@@ -1072,7 +1072,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'anotherOne',
@@ -1120,7 +1120,7 @@ describe('handleRequestProxy', () => {
     authorizeApp(app);
 
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'http-basic',
       identifier: 'john_doe',
@@ -1128,7 +1128,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'client-certificate',
       identifier: '-----BEGIN CERTIFICATE-----\nTEST\n-----END CERTIFICATE-----',
@@ -1139,7 +1139,7 @@ describe('handleRequestProxy', () => {
       AppId: app.id,
     });
     await AppServiceSecret.create({
-      serviceName: 'Test service',
+      name: 'Test service',
       urlPatterns: proxiedRequest.defaults.baseURL,
       authenticationMethod: 'query-parameter',
       identifier: 'authKey',

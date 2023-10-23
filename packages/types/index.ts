@@ -2248,7 +2248,7 @@ export interface AppServiceSecret {
   /**
    * An optional name to give extra clarity what the secret is used for.
    */
-  serviceName?: string;
+  name?: string;
 
   /**
    * The url pattern that is matched when a proxied request action is called.
