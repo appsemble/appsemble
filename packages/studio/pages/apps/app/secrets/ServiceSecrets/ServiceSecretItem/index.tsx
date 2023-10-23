@@ -61,7 +61,7 @@ export function ServiceSecretItem({
           onClick={modal.enable}
         >
           <Title className="is-marginless" size={5}>
-            {secret.serviceName ?? 'Service secret'}
+            {secret.name ?? 'Service secret'}
           </Title>
           <Title className="is-marginless" size={6}>
             <FormattedMessage {...messages[secret.authenticationMethod]} />

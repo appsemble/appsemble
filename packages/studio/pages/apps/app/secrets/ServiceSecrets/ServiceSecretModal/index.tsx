@@ -87,7 +87,7 @@ export function ServiceSecretsModal({
       await axios.delete(`/api/apps/${app.id}/secrets/service/${secret.id}`);
 
       push({
-        body: formatMessage(messages.deleteSuccess, { name: secret.serviceName }),
+        body: formatMessage(messages.deleteSuccess, { name: secret.name }),
         color: 'info',
       });
       onDeleted(secret);
@@ -130,9 +130,9 @@ export function ServiceSecretsModal({
       </p>
       <SimpleFormField
         disabled={locked}
-        help={<FormattedMessage {...messages.serviceNameHelp} />}
-        label={<FormattedMessage {...messages.serviceNameLabel} />}
-        name="serviceName"
+        help={<FormattedMessage {...messages.nameHelp} />}
+        label={<FormattedMessage {...messages.nameLabel} />}
+        name="name"
       />
       <SimpleFormField
         component={TagsField}
