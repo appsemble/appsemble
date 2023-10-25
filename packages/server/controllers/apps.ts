@@ -20,17 +20,19 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import { parseISO } from 'date-fns';
+import JSZip from 'jszip';
 import { type Context } from 'koa';
 import { type File } from 'koas-body-parser';
 import { lookup } from 'mime-types';
 import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import webpush from 'web-push';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 
 import {
   App,
   AppBlockStyle,
+  AppMessages,
   AppRating,
   AppScreenshot,
   AppSnapshot,
@@ -41,12 +43,14 @@ import {
   transactional,
   User,
 } from '../models/index.js';
+import { options } from '../options/options.js';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
 import { blockVersionToJson, syncBlock } from '../utils/block.js';
 import { checkAppLock } from '../utils/checkAppLock.js';
 import { checkRole } from '../utils/checkRole.js';
 import { encrypt } from '../utils/crypto.js';
+import { processHooks, processReferenceHooks } from '../utils/resource.js';
 
 async function getBlockVersions(blocks: IdentifiableBlock[]): Promise<BlockManifest[]> {
   const uniqueBlocks = blocks.map(({ type, version }) => {
@@ -955,6 +959,246 @@ export async function deleteAppScreenshot(ctx: Context): Promise<void> {
   assertKoaError(!app.AppScreenshots.length, ctx, 404, 'Screenshot not found');
 
   await app.AppScreenshots[0].destroy();
+}
+
+export async function importApp(ctx: Context): Promise<void> {
+  const {
+    openApi,
+    pathParams: { organizationId },
+    request: { body: importFile },
+  } = ctx;
+  await checkRole(ctx, organizationId, Permission.EditApps);
+  let result: Partial<App>;
+  const zip = await JSZip.loadAsync(importFile);
+  try {
+    const definitionFile = zip.file('app-definition.yaml');
+    if (!definitionFile) {
+      ctx.response.status = 400;
+      ctx.response.body = {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'app-definition.yaml file not found in the zip file.',
+      };
+      ctx.throw();
+    }
+    const yaml = await definitionFile.async('text');
+    const theme = zip.folder('theme');
+    const definition = parse(yaml, { maxAliasCount: 10_000 });
+    handleValidatorResult(
+      ctx,
+      openApi.validate(definition, openApi.document.components.schemas.AppDefinition, {
+        throw: false,
+      }),
+      'App validation failed',
+    );
+    handleValidatorResult(
+      ctx,
+      await validateAppDefinition(definition, getBlockVersions),
+      'App validation failed',
+    );
+    const path = normalize(definition.name);
+    if (!path) {
+      result.path = `${path}-${randomBytes(5).toString('hex')}`;
+    }
+    const existingPath = await App.findOne({
+      where: { path, OrganizationId: organizationId },
+    });
+    if (existingPath) {
+      ctx.response.status = 409;
+      ctx.response.body = {
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'Path in app definition needs to be unique',
+      };
+      ctx.throw();
+    }
+    const keys = webpush.generateVAPIDKeys();
+    result = {
+      definition,
+      path,
+      OrganizationId: organizationId,
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
+      showAppsembleLogin: false,
+      showAppsembleOAuth2Login: true,
+      showAppDefinition: true,
+      template: false,
+      iconBackground: '#ffffff',
+    };
+    const coreStyleFile = theme.file('core/index.css');
+    if (coreStyleFile) {
+      const coreStyle = await coreStyleFile.async('text');
+      result.coreStyle = validateStyle(coreStyle);
+    }
+    const sharedStyleFile = theme.file('shared/index.css');
+    if (sharedStyleFile) {
+      const sharedStyle = await sharedStyleFile.async('text');
+      result.sharedStyle = validateStyle(sharedStyle);
+    }
+
+    let record: App;
+    try {
+      await transactional(async (transaction) => {
+        record = await App.create(result, { transaction });
+        record.AppSnapshots = [
+          await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
+        ];
+        const i18Folder = zip.folder('i18n').filter((filename) => filename.endsWith('json'));
+        for (const json of i18Folder) {
+          const language = json.name.slice(5, 7);
+          const messages = await json.async('text');
+          record.AppMessages = [
+            await AppMessages.create(
+              { AppId: record.id, language, messages: JSON.parse(messages) },
+              { transaction },
+            ),
+          ];
+        }
+
+        const { user } = ctx;
+        const appId = record.id;
+
+        const resourcesFolder = zip
+          .folder('resources')
+          .filter((filename) => filename.endsWith('json'));
+        for (const file of resourcesFolder) {
+          const [, resourceJsonName] = file.name.split('/');
+          const [resourceType] = resourceJsonName.split('.');
+          const action = 'create';
+          const resourcesText = await file.async('text');
+          const resources = JSON.parse(JSON.stringify(resourcesText.trim().split('\n')));
+          const { verifyResourceActionPermission } = options;
+
+          verifyResourceActionPermission({
+            app: record.toJSON(),
+            context: ctx,
+            action,
+            resourceType,
+            options,
+            ctx,
+          });
+          await (user as User)?.reload({ attributes: ['name', 'id'] });
+
+          const createdResources = await Resource.bulkCreate(
+            resources.map((data: string) => ({
+              AppId: appId,
+              type: resourceType,
+              data: JSON.parse(data),
+              AuthorId: user?.id,
+            })),
+            { logging: false, transaction },
+          );
+          for (const createdResource of createdResources) {
+            createdResource.Author = user as User;
+          }
+
+          processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);
+          processHooks(user as User, record, createdResources[0], action, options, ctx);
+        }
+
+        const organizations = theme.filter((filename) => filename.startsWith('@'));
+        for (const organization of organizations) {
+          const organizationFolder = theme.folder(organization.name);
+          const blocks = organizationFolder.filter(
+            (filename) => !organizationFolder.file(filename).dir,
+          );
+          for (const block of blocks) {
+            const [, blockName] = block.name.split('/');
+            const orgName = organizationFolder.name.slice(1);
+            const blockVersion = await BlockVersion.findOne({
+              where: { name: blockName, organizationId: orgName },
+            });
+            if (!blockVersion) {
+              ctx.response.status = 404;
+              ctx.response.body = {
+                statusCode: 404,
+                error: 'Not Found',
+                message: 'Block not found',
+              };
+              ctx.throw();
+            }
+            const style = validateStyle(await block.async('text'));
+            record.AppBlockStyles = [
+              await AppBlockStyle.create(
+                {
+                  style,
+                  appId: record.id,
+                  block: `${orgName}/${blockName}`,
+                },
+                { transaction },
+              ),
+            ];
+          }
+        }
+      });
+    } catch (error: unknown) {
+      if (error instanceof AppsembleError) {
+        ctx.status = 204;
+        return;
+      }
+      ctx.throw(error);
+    }
+    ctx.body = record.toJSON();
+    ctx.status = 201;
+  } catch (error) {
+    handleAppValidationError(ctx, error as Error, result);
+  }
+}
+
+export async function exportApp(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+  } = ctx;
+  const { resources } = ctx.queryParams;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition', 'coreStyle', 'OrganizationId', 'sharedStyle'],
+    include: [
+      { model: AppBlockStyle, required: false },
+      { model: AppMessages, required: false },
+      { model: Resource, required: false },
+    ],
+  });
+
+  if (app.visibility === 'public' || !app.showAppDefinition) {
+    await checkRole(ctx, app.OrganizationId, Permission.ViewApps);
+  }
+  const zip = new JSZip();
+  zip.file('app-definition.yaml', stringify(app.definition));
+  const theme = zip.folder('theme');
+  theme.file('core/index.css', app.coreStyle);
+  theme.file('shared/index.css', app.sharedStyle);
+
+  if (app.AppMessages !== undefined) {
+    const i18 = zip.folder('i18n');
+    for (const message of app.AppMessages) {
+      i18.file(`${message.language}.json`, JSON.stringify(message.messages));
+    }
+  }
+
+  if (app.AppBlockStyles !== undefined) {
+    for (const block of app.AppBlockStyles) {
+      const [orgName, blockName] = block.block.split('/');
+      theme.file(`${orgName}/${blockName}/index.css`, block.style);
+    }
+  }
+
+  if (resources && app.Resources !== undefined) {
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    const resourceMap = new Map<string, string>();
+    for (const resource of app.Resources) {
+      const currentValue = resourceMap.get(resource.type) || '';
+      resourceMap.set(resource.type, `${currentValue + JSON.stringify(resource.toJSON())}\n`);
+    }
+    for (const [resourceType, resourceValue] of resourceMap.entries()) {
+      zip.file(`resources/${resourceType}.json`, resourceValue);
+    }
+  }
+  const content = zip.generateNodeStream();
+  ctx.attachment();
+  ctx.body = content;
+  ctx.type = 'application/zip';
+  ctx.status = 200;
 }
 
 export async function getAppCoreStyle(ctx: Context): Promise<void> {

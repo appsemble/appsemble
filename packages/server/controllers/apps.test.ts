@@ -1,10 +1,12 @@
 import { createFixtureStream, createFormData, readFixture } from '@appsemble/node-utils';
-import { type App as AppType, type Snapshot } from '@appsemble/types';
+import { type AppDefinition, type App as AppType, type Snapshot } from '@appsemble/types';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { request, setTestApp } from 'axios-test-instance';
+import JSZip from 'jszip';
 import stripIndent from 'strip-indent';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { stringify } from 'yaml';
 
 import {
   App,
@@ -17,6 +19,7 @@ import {
   BlockVersion,
   Member,
   Organization,
+  Resource,
   User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -4427,6 +4430,204 @@ describe('deleteAppScreenshot', () => {
         "error": "Not Found",
         "message": "Screenshot not found",
         "statusCode": 404,
+      }
+    `);
+  });
+});
+
+describe('exportApp', () => {
+  it('should not allow exporting resources if the user does not have sufficient permissions', async () => {
+    const appWithResources = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              required: ['bar'],
+              properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+            },
+            roles: ['$public'],
+            references: {
+              testResourceId: {
+                resource: 'testResource',
+                create: {
+                  trigger: ['update'],
+                },
+              },
+            },
+          },
+        },
+      },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await Resource.create({
+      AppId: appWithResources.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not allow for cloning unlisted apps if the user is not in the same organization as app.', async () => {
+    await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: 'xkcd',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      visibility: 'unlisted',
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  it('should not allow for exporting apps with hidden app definitions if the user is not in the same organization as the app', async () => {
+    await Organization.create({ id: 'xkcd', name: 'Test Organization 2' });
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: 'xkcd',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      showAppDefinition: false,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User is not part of this organization.",
+        "statusCode": 403,
+      }
+    `);
+  });
+
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should allow exporting resources if the user has sufficient permissions', async () => {
+    const appWithResources = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              required: ['bar'],
+              properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+            },
+            roles: ['$public'],
+            references: {
+              testResourceId: {
+                resource: 'testResource',
+                create: {
+                  trigger: ['update'],
+                },
+              },
+            },
+          },
+        },
+      },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+    });
+    await Resource.create({
+      AppId: appWithResources.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`, {
+      responseType: 'blob',
+    });
+    expect(response.status).toBe(200);
+  });
+
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should return a zip file', async () => {
+    const app = await App.create({
+      path: 'testapp',
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [{ name: 'Test Page' }],
+      },
+      vapidPrivateKey: 'b',
+      vapidPublicKey: 'a',
+      OrganizationId: organization.id,
+    });
+    authorizeStudio();
+    const response = await request.get(`/api/apps/${app.id}/export?resources=false`, {
+      responseType: 'blob',
+    });
+    expect(response.status).toBe(200);
+  });
+});
+
+describe('importApp', () => {
+  // eslint-disable-next-line vitest/no-disabled-tests
+  it.skip('should not allow a user with insufficient permissions to import an App', async () => {
+    const appDefinition = {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      pages: [{ name: 'Test Page' }],
+    } as AppDefinition;
+    const zip = new JSZip();
+    zip.file('app-definition.yaml', stringify(appDefinition));
+    const content = zip.generateNodeStream();
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    authorizeStudio();
+    const response = await request.post(
+      `/api/apps/import/organization/${organization.id}`,
+      content,
+      {
+        headers: {
+          'Content-Type': 'application/zip',
+        },
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 403 Forbidden
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Forbidden",
+        "message": "User does not have sufficient permissions.",
+        "statusCode": 403,
       }
     `);
   });

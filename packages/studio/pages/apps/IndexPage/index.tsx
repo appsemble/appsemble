@@ -21,13 +21,13 @@ export function IndexPage(): ReactElement {
     name: 'rating',
     reverse: true,
   });
-  const { userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();
   const myAppsResult = useData<App[]>(`/api/user/apps?language=${lang}`);
   const appsResult = useData<App[]>(`/api/apps?language=${lang}`);
   const onSortChange = useCallback((name: AppSortFunctionName, reverse: boolean) => {
     setSort({ name, reverse });
   }, []);
+  const { userInfo } = useUser();
 
   return (
     <Content className={styles.content} main>

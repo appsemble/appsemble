@@ -66,6 +66,7 @@
     "jest-axios-snapshot": "^1.0.0",
     "jsonschema": "^1.0.0",
     "jsonwebtoken": "^9.0.0",
+    "jszip": "^3.0.0",
     "koa": "^2.0.0",
     "koa-compose": "^4.0.0",
     "koa-compress": "^5.0.0",

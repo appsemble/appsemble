@@ -106,6 +106,7 @@ declare module 'koas-parameters' {
     count: number;
     startIndex: number;
     view: string;
+    resources: boolean;
   }
 }
 
