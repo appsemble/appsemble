@@ -6,6 +6,7 @@ import {
   loggerMiddleware,
   parameters,
   serializer,
+  throwKoaError,
   version,
 } from '@appsemble/node-utils';
 import { api } from '@appsemble/utils';
@@ -85,13 +86,7 @@ export function createApiServer({ context }: CreateServerOptions): Koa {
       ]),
       (ctx: ParameterizedContext, next) => {
         if (ctx.path.startsWith('/api/')) {
-          ctx.response.status = 404;
-          ctx.response.body = {
-            statusCode: 404,
-            error: 'Not Found',
-            message: 'URL not found',
-          };
-          ctx.throw();
+          throwKoaError(ctx, 404, 'URL not found');
         }
         return next();
       },

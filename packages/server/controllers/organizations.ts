@@ -1,6 +1,11 @@
 import { randomBytes } from 'node:crypto';
 
-import { organizationBlocklist, serveIcon } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  organizationBlocklist,
+  serveIcon,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { isEqual, parseISO } from 'date-fns';
 import { type Context } from 'koa';
@@ -59,11 +64,8 @@ export async function getOrganization(ctx: Context): Promise<void> {
       exclude: ['icon'],
     },
   });
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   ctx.body = {
     id: organization.id,
@@ -88,11 +90,8 @@ export async function getOrganizationApps(ctx: Context): Promise<void> {
     ? { include: [{ model: User, where: { id: user.id }, required: false }] }
     : {};
   const organization = await Organization.findByPk(organizationId, memberInclude);
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   const apps = await App.findAll({
     attributes: {
@@ -160,11 +159,7 @@ export async function getOrganizationBlocks(ctx: Context): Promise<void> {
     },
   });
 
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   // Sequelize does not support sub queries
   // The alternative is to query everything and filter manually
@@ -230,11 +225,7 @@ export async function getOrganizationIcon(ctx: Context): Promise<void> {
     raw: true,
   });
 
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   await serveIcon(ctx, {
     background: background as string,
@@ -257,28 +248,18 @@ export async function deleteOrganization(ctx: Context): Promise<void> {
     include: { model: Organization },
   });
   const organization = member.Organization;
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+
   await organization.reload({
     include: [BlockVersion, App],
   });
 
-  if (organization.BlockVersions.length !== 0) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Cannot delete an organization with associated blocks.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    organization.BlockVersions.length !== 0,
+    ctx,
+    403,
+    'Cannot delete an organization with associated blocks.',
+  );
 
   organization.Apps.map(async (app) => {
     await app.destroy();
@@ -361,25 +342,18 @@ export async function createOrganization(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Email not verified.',
-    };
-    ctx.throw();
-  }
-
-  if (organizationBlocklist.includes(id)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'This organization id is not allowed.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    !user.primaryEmail || !user.EmailAuthorizations[0].verified,
+    ctx,
+    403,
+    'Email not verified.',
+  );
+  assertKoaError(
+    organizationBlocklist.includes(id),
+    ctx,
+    400,
+    'This organization id is not allowed.',
+  );
 
   try {
     const organization = await Organization.create(
@@ -410,13 +384,7 @@ export async function createOrganization(ctx: Context): Promise<void> {
     };
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: `Another organization with the id “${id}” already exists`,
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, `Another organization with the id “${id}” already exists`);
     }
 
     throw error;
@@ -431,11 +399,9 @@ export async function getMembers(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId, {
     include: [User],
   });
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
+
   await checkRole(ctx, organization.id, Permission.ViewMembers);
 
   ctx.body = organization.Users.map((user) => ({
@@ -462,15 +428,7 @@ export async function getInvites(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!member.Organization) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!member.Organization, ctx, 404, 'Organization not found.');
 
   ctx.body = member.Organization.OrganizationInvites.map(({ email }) => ({
     email,
@@ -492,25 +450,9 @@ export async function getInvitation(ctx: Context): Promise<void> {
       },
     },
   });
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This token does not exist',
-    };
-    ctx.throw();
-  }
 
-  if (!invite.organization) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!invite, ctx, 404, 'This token does not exist');
+  assertKoaError(!invite.organization, ctx, 404, 'Organization not found');
 
   ctx.body = {
     id: invite.organization.id,
@@ -534,27 +476,11 @@ export async function respondInvitation(ctx: Context): Promise<void> {
 
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This token is invalid',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!invite, ctx, 404, 'This token is invalid');
 
   const organization = await Organization.findByPk(invite.OrganizationId);
 
-  if (organizationId !== organization.id) {
-    ctx.response.status = 406;
-    ctx.response.body = {
-      statusCode: 406,
-      error: 'Not Acceptable',
-      message: 'Organization IDs do not match',
-    };
-    ctx.throw();
-  }
+  assertKoaError(organizationId !== organization.id, ctx, 406, 'Organization IDs do not match');
 
   if (response) {
     await organization.$add('User', userId, { through: { role: invite.role || 'Member' } });
@@ -598,29 +524,25 @@ export async function inviteMembers(ctx: Context): Promise<void> {
     ),
   );
   const newInvites = allInvites.filter((invite) => !memberEmails.has(invite.email));
-  if (!newInvites.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'All invited users are already part of this organization',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(
+    !newInvites.length,
+    ctx,
+    400,
+    'All invited users are already part of this organization',
+  );
 
   const existingInvites = new Set(
     member.Organization.OrganizationInvites.flatMap(({ email }) => email),
   );
   const pendingInvites = newInvites.filter((invite) => !existingInvites.has(invite.email));
-  if (!pendingInvites.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'All email addresses are already invited to this organization',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(
+    !pendingInvites.length,
+    ctx,
+    400,
+    'All email addresses are already invited to this organization',
+  );
 
   const auths = await EmailAuthorization.findAll({
     include: [{ model: User }],
@@ -665,24 +587,14 @@ export async function resendInvitation(ctx: Context): Promise<void> {
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
   });
-  if (!organization) {
-    ctx.response.status = 404;
-    ctx.response.body = { statusCode: 404, error: 'Not Found', message: 'Organization not found.' };
-    ctx.throw();
-  }
+
+  assertKoaError(!organization, ctx, 404, 'Organization not found.');
 
   await checkRole(ctx, organization.id, Permission.InviteMember);
 
   const invite = organization.OrganizationInvites.find((i) => i.email === email);
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This person was not invited previously.',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!invite, ctx, 404, 'This person was not invited previously.');
 
   const user = await User.findByPk(invite.UserId);
 
@@ -704,15 +616,7 @@ export async function removeInvite(ctx: Context): Promise<void> {
   const email = request.body.email.toLowerCase();
   const invite = await OrganizationInvite.findOne({ where: { email } });
 
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This invite does not exist',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!invite, ctx, 404, 'This invite does not exist');
 
   await checkRole(ctx, invite.OrganizationId, Permission.InviteMember);
 
@@ -726,40 +630,31 @@ export async function removeMember(ctx: Context): Promise<void> {
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some((u) => u.id === user.id)) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'User is not part of this organization.',
-    };
-    ctx.throw();
-  }
 
-  if (!organization.Users.some((u) => u.id === memberId)) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This member is not part of this organization.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    !organization.Users.some((u) => u.id === user.id),
+    ctx,
+    404,
+    'User is not part of this organization.',
+  );
+
+  assertKoaError(
+    !organization.Users.some((u) => u.id === memberId),
+    ctx,
+    404,
+    'This member is not part of this organization.',
+  );
 
   if (memberId !== user.id) {
     await checkRole(ctx, organization.id, Permission.ManageMembers);
   }
 
-  if (memberId === user.id && organization.Users.length <= 1) {
-    ctx.response.status = 406;
-    ctx.response.body = {
-      statusCode: 406,
-      error: 'Not Acceptable',
-      message:
-        'Not allowed to remove yourself from an organization if you’re the only member left.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    memberId === user.id && organization.Users.length <= 1,
+    ctx,
+    406,
+    'Not allowed to remove yourself from an organization if you’re the only member left.',
+  );
 
   await organization.$remove('User', memberId);
 }
@@ -774,38 +669,20 @@ export async function setRole(ctx: Context): Promise<void> {
   } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some((u) => u.id === user.id)) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'User is not part of this organization.',
-    };
-    ctx.throw();
-  }
 
-  if (user.id === memberId) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Not allowed to change your own rule',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    !organization.Users.some((u) => u.id === user.id),
+    ctx,
+    404,
+    'User is not part of this organization.',
+  );
+  assertKoaError(user.id === memberId, ctx, 400, 'Not allowed to change your own rule');
 
   await checkRole(ctx, organization.id, Permission.ManageRoles);
 
   const member = organization.Users.find((m) => m.id === memberId);
-  if (!member) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'This member is not part of this organization.',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!member, ctx, 400, 'This member is not part of this organization.');
 
   await member.Member.update({ role });
   ctx.body = {

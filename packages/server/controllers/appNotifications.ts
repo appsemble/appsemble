@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger } from '@appsemble/node-utils';
 import { type SubscriptionResponse } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
@@ -25,26 +25,10 @@ export async function getSubscription(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  if (!appSubscription) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Subscription not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
 
   const resources: SubscriptionResponse = {};
   if (app.definition.resources) {
@@ -86,15 +70,7 @@ export async function addSubscription(ctx: Context): Promise<void> {
 
   const app = await App.findByPk(appId, { attributes: [], include: [AppSubscription] });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await AppSubscription.create({
     AppId: appId,
@@ -137,26 +113,10 @@ export async function updateSubscription(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const [appSubscription] = app.AppSubscriptions;
-  if (!appSubscription) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'Subscription not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
 
   if (user?.id && !appSubscription.UserId) {
     await appSubscription.update({ UserId: user.id });
@@ -213,15 +173,7 @@ export async function broadcast(ctx: Context): Promise<void> {
     include: [{ model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.PushNotifications);
 

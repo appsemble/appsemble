@@ -1,6 +1,12 @@
 import { randomBytes } from 'node:crypto';
 
-import { createGetAppMember, logger, serveIcon } from '@appsemble/node-utils';
+import {
+  assertKoaError,
+  createGetAppMember,
+  logger,
+  serveIcon,
+  throwKoaError,
+} from '@appsemble/node-utils';
 import {
   type AppAccount,
   type AppMember as AppMemberType,
@@ -156,15 +162,8 @@ export async function getAppMembers(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const appMembers: AppMemberType[] = app.AppMembers.map((member) => ({
     id: member.UserId,
@@ -221,37 +220,20 @@ export async function setAppMember(ctx: Context): Promise<void> {
       },
     ],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
   const user = await User.findByPk(memberId);
-  if (!user) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      message: 'User with this ID doesn’t exist.',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
-  if (!has(app.definition.security.roles, role)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      status: 400,
-      message: `Role ‘${role}’ is not defined`,
-      error: 'Bad Request',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!user, ctx, 404, 'User with this ID doesn’t exist.');
+  assertKoaError(
+    !has(app.definition.security.roles, role),
+    ctx,
+    404,
+    `Role ‘${role}’ is not defined`,
+  );
 
   let member = app.AppMembers?.[0];
 
@@ -300,15 +282,7 @@ export async function getAppAccount(ctx: Context): Promise<void> {
     ...createAppAccountQuery(user as User, query),
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App account not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App account not found');
 
   ctx.body = outputAppMember(app, language, baseLanguage);
 }
@@ -329,15 +303,7 @@ export async function patchAppAccount(ctx: Context): Promise<void> {
     ...createAppAccountQuery(user as User, query),
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App account not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App account not found');
 
   const [member] = app.AppMembers;
   const result: Partial<AppMember> = {};
@@ -403,35 +369,9 @@ export async function getAppMemberPicture(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This member does not exist.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers[0].picture) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      error: 'Not Found',
-      message: 'This member has no profile picture set.',
-      statusCode: 404,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, 'This member does not exist.');
+  assertKoaError(!app.AppMembers[0].picture, ctx, 404, 'This member has no profile picture set.');
 
   await serveIcon(ctx, {
     icon: app.AppMembers[0].picture,
@@ -477,38 +417,23 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.definition?.security?.default?.role) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This app has no security definition',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(
+    !app.definition?.security?.default?.role,
+    ctx,
+    404,
+    'This app has no security definition',
+  );
 
   // XXX: This could introduce a race condition.
   // If this is not manually checked here, Sequelize never returns on
   // the AppMember.create() call if there is a conflict on the email index.
-  if (app.AppMembers.length) {
-    ctx.response.status = 409;
-    ctx.response.body = {
-      statusCode: 409,
-      error: 'Conflict',
-      message: 'User with this email address already exists.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    Boolean(app.AppMembers.length),
+    ctx,
+    409,
+    'User with this email address already exists.',
+  );
 
   try {
     await transactional(async (transaction) => {
@@ -538,24 +463,12 @@ export async function registerMemberEmail(ctx: Context): Promise<void> {
     });
   } catch (error: unknown) {
     if (error instanceof UniqueConstraintError) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'User with  this email address already exists.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email address already exists.');
     }
     if (error instanceof DatabaseError) {
       // XXX: Postgres throws a generic transaction aborted error
       // if there is a way to read the internal error, replace this code.
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'User with this email already exists.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 409, 'User with this email already exists.');
     }
 
     throw error;
@@ -610,25 +523,8 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App could not be found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Unable to verify this token.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, 'Unable to verify this token.');
 
   const [member] = app.AppMembers;
   member.emailVerified = true;
@@ -637,6 +533,7 @@ export async function verifyMemberEmail(ctx: Context): Promise<void> {
 
   ctx.status = 200;
 }
+
 export async function resendMemberEmailVerification(ctx: Context): Promise<void> {
   const {
     mailer,
@@ -762,25 +659,8 @@ export async function resetMemberPassword(ctx: Context): Promise<void> {
     },
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `Unknown password reset token: ${token}`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App could not be found.');
+  assertKoaError(!app.AppMembers.length, ctx, 404, `Unknown password reset token: ${token}`);
 
   const password = await hash(ctx.request.body.password, 10);
   const [member] = app.AppMembers;
@@ -808,15 +688,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   if (user.id !== memberId) {
     await checkRole(ctx, app.OrganizationId, Permission.EditApps);
@@ -824,15 +696,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
 
   const member = app.AppMembers?.[0];
 
-  if (!member) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App member not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!member, ctx, 404, 'App member not found');
 
   await member.destroy();
 }

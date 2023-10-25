@@ -1,5 +1,6 @@
 import {
   getResourceDefinition,
+  throwKoaError,
   type VerifyResourceActionPermissionParams,
 } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole } from '@appsemble/utils';
@@ -63,13 +64,7 @@ export async function verifyResourceActionPermission({
   }
 
   if (!functionalRoles.length && !appRoles.length) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'This action is private.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 403, 'This action is private.');
   }
 
   if (isPublic && action !== 'count') {
@@ -81,13 +76,7 @@ export async function verifyResourceActionPermission({
   }
 
   if (!isPublic && !user && (appRoles.length || functionalRoles.length)) {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'User is not logged in.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 401, 'User is not logged in.');
   }
 
   const result: WhereOptions[] = [];
@@ -162,26 +151,14 @@ export async function verifyResourceActionPermission({
 
         case 'organization':
           if (!(await organization.$has('User', user.id))) {
-            ctx.response.status = 403;
-            ctx.response.body = {
-              statusCode: 403,
-              error: 'Forbidden',
-              message: 'User is not a member of the app.',
-            };
-            ctx.throw();
+            throwKoaError(ctx, 403, 'User is not a member of the app.');
           }
 
           role = defaultRole;
           break;
 
         case 'invite':
-          ctx.response.status = 403;
-          ctx.response.body = {
-            statusCode: 403,
-            error: 'Forbidden',
-            message: 'User is not a member of the app.',
-          };
-          ctx.throw();
+          throwKoaError(ctx, 403, 'User is not a member of the app.');
           break;
 
         default:
@@ -195,13 +172,7 @@ export async function verifyResourceActionPermission({
       !appRoles.some((r) => checkAppRole(app.definition.security, r, role, null)) &&
       !result.length
     ) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'User does not have sufficient permissions.',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'User does not have sufficient permissions.');
     }
   }
 

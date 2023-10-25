@@ -1,4 +1,4 @@
-import { createGetUserInfo } from '@appsemble/node-utils';
+import { assertKoaError, createGetUserInfo, throwKoaError } from '@appsemble/node-utils';
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
@@ -40,45 +40,30 @@ export async function verifyOAuth2Consent(ctx: Context): Promise<void> {
     include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const isAllowed = await checkIsAllowed(app, user as User);
 
-  if (!isAllowed) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'User is not allowed to login due to the app’s security policy',
-      data: {
-        isAllowed,
-        appName: app.definition.name,
-      },
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppMembers?.length || app.AppMembers[0].consent == null) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'User has not agreed to the requested scopes',
-      data: {
-        isAllowed,
-        appName: app.definition.name,
-      },
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    !isAllowed,
+    ctx,
+    400,
+    'User is not allowed to login due to the app’s security policy',
+    {
+      isAllowed,
+      appName: app.definition.name,
+    },
+  );
+  assertKoaError(
+    !app.AppMembers?.length || app.AppMembers[0].consent == null,
+    ctx,
+    400,
+    'User has not agreed to the requested scopes',
+    {
+      isAllowed,
+      appName: app.definition.name,
+    },
+  );
 
   ctx.body = {
     ...(await createOAuth2AuthorizationCode(app, redirectUri, scope, user as User, ctx)),
@@ -99,27 +84,12 @@ export async function agreeOAuth2Consent(ctx: Context): Promise<void> {
     include: [{ model: AppMember, where: { UserId: user.id }, required: false }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   if (!(await checkIsAllowed(app, user as User))) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'User is not allowed to login due to the app’s security policy',
-      data: {
-        isAllowed: false,
-      },
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'User is not allowed to login due to the app’s security policy', {
+      isAllowed: false,
+    });
   }
 
   if (app.AppMembers.length) {

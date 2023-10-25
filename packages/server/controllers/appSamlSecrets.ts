@@ -1,3 +1,4 @@
+import { assertKoaError } from '@appsemble/node-utils';
 import { Permission } from '@appsemble/utils';
 import { addYears } from 'date-fns';
 import { type Context } from 'koa';
@@ -18,15 +19,8 @@ export async function createAppSamlSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret }],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
@@ -68,15 +62,8 @@ export async function getAppSamlSecrets(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret }],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
@@ -105,29 +92,13 @@ export async function updateAppSamlSecret(ctx: Context): Promise<void> {
     include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppSamlSecrets;
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   ctx.body = await secret.update({
     emailAttribute,
@@ -149,29 +120,14 @@ export async function deleteAppSamlSecret(ctx: Context): Promise<void> {
     attributes: ['OrganizationId'],
     include: [{ model: AppSamlSecret, required: false, where: { id: appSamlSecretId } }],
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
 
   const [secret] = app.AppSamlSecrets;
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   await secret.destroy();
 }

@@ -1,4 +1,4 @@
-import { createGetMessages } from '@appsemble/node-utils';
+import { assertKoaError, createGetMessages, throwKoaError } from '@appsemble/node-utils';
 import { compareStrings, defaultLocale, Permission } from '@appsemble/utils';
 import { type Context } from 'koa';
 import tags from 'language-tags';
@@ -20,27 +20,13 @@ export async function createMessages(ctx: Context): Promise<void> {
 
   const app = await App.findOne({ attributes: ['locked', 'OrganizationId'], where: { id: appId } });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
 
   if (!tags.check(language)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      message: `Language “${language}” is invalid`,
-      error: 'Bad Request',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, `Language “${language}” is invalid`);
   }
 
   const messages = Object.fromEntries(
@@ -59,15 +45,8 @@ export async function deleteMessages(ctx: Context): Promise<void> {
     attributes: ['locked', 'OrganizationId'],
     where: { id: appId },
   });
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: 'App not found',
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   checkAppLock(ctx, app);
   await checkRole(ctx, app.OrganizationId, Permission.EditAppMessages);
@@ -76,15 +55,7 @@ export async function deleteMessages(ctx: Context): Promise<void> {
     where: { language: language.toLowerCase(), AppId: appId },
   });
 
-  if (!affectedRows) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      message: `App does not have messages for “${language}”`,
-      error: 'Not Found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!affectedRows, ctx, 404, `App does not have messages for “${language}”`);
 }
 
 export async function getLanguages(ctx: Context): Promise<void> {
@@ -97,15 +68,7 @@ export async function getLanguages(ctx: Context): Promise<void> {
     include: [{ model: AppMessages, required: false }],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      status: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   ctx.body = [
     ...new Set([

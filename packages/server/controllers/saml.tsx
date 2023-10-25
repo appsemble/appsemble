@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 import { deflateRaw } from 'node:zlib';
 
-import { logger } from '@appsemble/node-utils';
+import { assertKoaError, logger } from '@appsemble/node-utils';
 import { type SAMLStatus } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import { DOMImplementation, DOMParser } from '@xmldom/xmldom';
@@ -56,27 +56,10 @@ export async function createAuthnRequest(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found');
 
   const [secret] = app.AppSamlSecrets;
-
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   const loginId = `id${randomUUID()}`;
   const doc = dom.createDocument(NS.samlp, 'samlp:AuthnRequest', null);
@@ -383,15 +366,7 @@ export async function getEntityId(ctx: Context): Promise<void> {
     where: { AppId: appId, id: appSamlSecretId },
   });
 
-  if (!secret) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'SAML secret not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!secret, ctx, 404, 'SAML secret not found');
 
   ctx.body = toXml(
     <>

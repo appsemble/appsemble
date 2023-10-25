@@ -1,8 +1,10 @@
 import {
+  assertKoaError,
   type BlockQueryItem,
   getAppsembleMessages,
   mergeMessages,
   type Options,
+  throwKoaError,
 } from '@appsemble/node-utils';
 import { type AppsembleMessages } from '@appsemble/types';
 import {
@@ -26,40 +28,23 @@ export function createGetMessages({
     } = ctx;
 
     if (!tags.check(language)) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        error: 'Bad Request',
-        message: '`Language “${language}” is invalid`',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 400, '`Language “${language}” is invalid`');
     }
 
     const lang = language.toLowerCase();
-
     const baseLanguage = tags(language)
       .subtags()
       .find((sub) => sub.type() === 'language');
-
     const baseLang = baseLanguage && String(baseLanguage).toLowerCase();
 
     const app = await getApp({ context: ctx, query: { where: { id: appId } } });
 
-    if (!app) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        status: 404,
-        message: 'App not found',
-        error: 'Not Found',
-      };
-      ctx.throw();
-    }
-
-    const appMessages = await getAppMessages({ context: ctx, app, language });
+    assertKoaError(!app, ctx, 404, 'App not found');
 
     const blockPrefixes: [string, Prefix][] = [];
-
     const blockQuery: BlockQueryItem[] = [];
 
+    const appMessages = await getAppMessages({ context: ctx, app, language });
     const coreMessages = await getAppsembleMessages(lang, baseLang);
 
     const messages: AppsembleMessages = {
@@ -84,13 +69,7 @@ export function createGetMessages({
       (!appMessages.length || (merge && !appMessages.some((m) => m.language === lang))) &&
       lang !== (app.definition.defaultLanguage || defaultLocale)
     ) {
-      ctx.response.status = 404;
-      ctx.response.body = {
-        statusCode: 404,
-        message: `Language “${language}” could not be found`,
-        error: 'Not Found',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 404, `Language “${language}” could not be found`);
     }
 
     const baseLanguageMessages =

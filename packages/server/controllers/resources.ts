@@ -1,4 +1,5 @@
 import {
+  assertKoaError,
   createCountResources,
   createCreateResource,
   createDeleteResource,
@@ -8,6 +9,7 @@ import {
   extractResourceBody,
   getResourceDefinition,
   processResourceBody,
+  throwKoaError,
 } from '@appsemble/node-utils';
 import { type Resource as ResourceType } from '@appsemble/types';
 import { type Context } from 'koa';
@@ -69,37 +71,12 @@ export async function getResourceTypeSubscription(ctx: Context): Promise<void> {
   });
   getResourceDefinition(app.toJSON(), resourceType, ctx);
 
-  if (!app.Resources.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found',
-    };
-    ctx.throw();
-  }
-
-  if (!app.AppSubscriptions.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'User is not subscribed to this app.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found');
+  assertKoaError(!app.AppSubscriptions.length, ctx, 404, 'User is not subscribed to this app.');
 
   const [appSubscription] = app.AppSubscriptions;
 
-  if (!appSubscription) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Subscription not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!appSubscription, ctx, 404, 'Subscription not found');
 
   const result: any = { create: false, update: false, delete: false };
   for (const { ResourceId, action } of appSubscription.ResourceSubscriptions) {
@@ -153,15 +130,7 @@ export async function getResourceSubscription(ctx: Context): Promise<void> {
   });
   getResourceDefinition(app.toJSON(), resourceType, ctx);
 
-  if (!app.Resources.length) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.Resources.length, ctx, 404, 'Resource not found.');
 
   const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result: any = { id: resourceId, update: false, delete: false };
@@ -218,14 +187,12 @@ export async function updateResources(ctx: Context): Promise<void> {
   }
 
   if (resourceList.some((r) => !r.id)) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'List of resources contained a resource without an ID.',
-      data: resourceList.filter((r) => !r.id),
-    };
-    ctx.throw();
+    throwKoaError(
+      ctx,
+      400,
+      'List of resources contained a resource without an ID.',
+      resourceList.filter((r) => !r.id),
+    );
   }
 
   const existingResources = await Resource.findAll({
@@ -251,14 +218,13 @@ export async function updateResources(ctx: Context): Promise<void> {
 
   if (existingResources.length !== processedResources.length) {
     const ids = new Set(existingResources.map((r) => r.id));
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'One or more resources could not be found.',
-      data: processedResources.filter((r) => !ids.has(r.id)),
-    };
-    ctx.throw();
+
+    throwKoaError(
+      ctx,
+      400,
+      'One or more resources could not be found.',
+      processedResources.filter((r) => !ids.has(r.id)),
+    );
   }
 
   let updatedResources: Resource[];
@@ -365,15 +331,7 @@ export async function patchResource(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!resource) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Resource not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!resource, ctx, 404, 'Resource not found');
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,

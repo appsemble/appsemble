@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
-import { createGetTeams } from '@appsemble/node-utils';
+import { assertKoaError, createGetTeams, throwKoaError } from '@appsemble/node-utils';
 import { checkAppRole, Permission, TeamRole, uuid4Pattern } from '@appsemble/utils';
 import { type Context } from 'koa';
 
@@ -35,46 +35,14 @@ async function checkTeamPermission(ctx: Context, team: Team): Promise<void> {
     }).then((t) => t.Members.find((m) => m.AppMember.UserId === user.id)));
 
   if (!teamMember || teamMember.role !== TeamRole.Manager) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'User does not have sufficient permissions.',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 403, 'User does not have sufficient permissions.');
   }
 }
 
 function assertTeamsDefinition(ctx: Context, app: App): asserts app {
-  if (!app) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App not found.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.definition.security) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'App does not have a security definition.',
-    };
-    ctx.throw();
-  }
-
-  if (!app.definition.security.teams) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'App does not have a teams definition.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app, ctx, 404, 'App not found.');
+  assertKoaError(!app.definition.security, ctx, 400, 'App does not have a security definition.');
+  assertKoaError(!app.definition.security.teams, ctx, 400, 'App does not have a teams definition.');
 }
 
 export async function createTeam(ctx: Context): Promise<void> {
@@ -105,27 +73,15 @@ export async function createTeam(ctx: Context): Promise<void> {
 
   if ('app' in clients) {
     const appMember = app.AppMembers.find((member) => member.UserId === user.id);
-    if (!appMember) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'User is not an app member',
-      };
-      ctx.throw();
-    }
+
+    assertKoaError(!appMember, ctx, 403, 'User is not an app member');
+
     if (
       !app.definition.security.teams.create.some((teamName) =>
         checkAppRole(app.definition.security, teamName, appMember.role, appMember.TeamMembers),
       )
     ) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'User is not allowed to create teams',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'User is not allowed to create teams');
     }
   } else {
     await checkRole(ctx, app.OrganizationId, Permission.ManageTeams);
@@ -191,15 +147,7 @@ export async function getTeam(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   ctx.body = {
     id: team.id,
@@ -232,15 +180,7 @@ export async function patchTeam(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
@@ -271,15 +211,7 @@ export async function deleteTeam(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
 
@@ -306,15 +238,7 @@ export async function getTeamMembers(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   ctx.body = team.Members.map((member) => ({
     id: member.AppMember.UserId,
@@ -339,27 +263,11 @@ export async function getTeamMember(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   const teamMember = team.Members.find((member) => member.AppMember.UserId === memberId);
 
-  if (!teamMember) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'App member not found in team',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!teamMember, ctx, 404, 'App member not found in team');
 
   ctx.body = {
     id: teamMember.AppMember.UserId,
@@ -390,24 +298,9 @@ export async function inviteTeamMember(ctx: Context): Promise<void> {
   assertTeamsDefinition(ctx, app);
 
   if (app.definition.security.teams.join !== 'invite') {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Team invites are not supported',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 400, 'Team invites are not supported');
   }
-
-  if (!app.Teams?.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: `Team ${teamId} does not exist`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!app.Teams?.length, ctx, 400, `Team ${teamId} does not exist`);
 
   const teamMembers = await TeamMember.findAll({
     where: { TeamId: teamId },
@@ -419,13 +312,7 @@ export async function inviteTeamMember(ctx: Context): Promise<void> {
       checkAppRole(app.definition.security, r, appMember?.role, teamMembers),
     )
   ) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'User is not allowed to invite members to this team',
-    };
-    ctx.throw();
+    throwKoaError(ctx, 403, 'User is not allowed to invite members to this team');
   }
 
   const invite = await TeamInvite.create({
@@ -454,15 +341,7 @@ export async function getTeamInvite(ctx: Context): Promise<void> {
     include: [{ model: Team, where: { AppId: appId } }],
   });
 
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `No invite found for code: ${code}`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!invite, ctx, 404, `No invite found for code: ${code}`);
 
   ctx.body = invite;
 }
@@ -528,35 +407,15 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   // Allow app members to add themselves to a team.
   if ('app' in clients) {
     if (id !== user.id && id !== user.primaryEmail) {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'App members may only add themselves as team member',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'App members may only add themselves as team member');
     }
     if (team.App.definition.security?.teams.join === 'invite') {
-      ctx.response.status = 403;
-      ctx.response.body = {
-        statusCode: 403,
-        error: 'Forbidden',
-        message: 'You need an invite to join this team',
-      };
-      ctx.throw();
+      throwKoaError(ctx, 403, 'You need an invite to join this team');
     }
   } else {
     try {
@@ -571,24 +430,15 @@ export async function addTeamMember(ctx: Context): Promise<void> {
     (team.App.definition.security.default.policy === 'invite' ||
       !team.App.Organization.Users.length)
   ) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `App member with id ${id} is not part of this app’s members.`,
-    };
-    ctx.throw();
+    throwKoaError(ctx, 404, `App member with id ${id} is not part of this app’s members.`);
   }
 
-  if (team.Members.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'This app member is already a member of this team.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(
+    Boolean(team.Members.length),
+    ctx,
+    400,
+    'This app member is already a member of this team.',
+  );
 
   const member =
     team.App.AppMembers[0] ||
@@ -643,15 +493,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 400, 'Team not found');
 
   try {
     await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
@@ -659,15 +501,7 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.Members.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'This user is not a member of this team.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team.Members.length, ctx, 400, 'This user is not a member of this team.');
 
   await team.Members[0].destroy();
 }
@@ -692,15 +526,7 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!team) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Team not found.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team, ctx, 404, 'Team not found.');
 
   try {
     await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
@@ -708,15 +534,7 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
     await checkTeamPermission(ctx, team);
   }
 
-  if (!team.Members.length) {
-    ctx.response.status = 400;
-    ctx.response.body = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'This user is not a member of this team.',
-    };
-    ctx.throw();
-  }
+  assertKoaError(!team.Members.length, ctx, 400, 'This user is not a member of this team.');
 
   const [member] = team.Members;
   await member.update({ role });
@@ -757,15 +575,7 @@ export async function acceptTeamInvite(ctx: Context): Promise<void> {
     ],
   });
 
-  if (!invite) {
-    ctx.response.status = 404;
-    ctx.response.body = {
-      statusCode: 404,
-      error: 'Not Found',
-      message: `No invite found for code: ${code}`,
-    };
-    ctx.throw();
-  }
+  assertKoaError(!invite, ctx, 404, `No invite found for code: ${code}`);
 
   const app = invite.Team.App;
   await transactional(async (transaction) =>
