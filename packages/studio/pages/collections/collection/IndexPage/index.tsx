@@ -124,6 +124,7 @@ export function IndexPage({ collection }: IndexPageProps): ReactElement {
             </Button>
           ) : null
         }
+        actionControlImport={null}
         filter={filter}
         onFilterChange={setFilter}
         onSortChange={onSortChange}

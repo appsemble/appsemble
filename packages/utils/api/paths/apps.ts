@@ -280,6 +280,53 @@ export const paths: OpenAPIV3.PathsObject = {
       security: [{ studio: [] }],
     },
   },
+  '/api/apps/import/organization/{organizationId}': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['app', 'import', 'zip'],
+      description: 'Import an app from a zip file',
+      operationId: 'importApp',
+      requestBody: {
+        content: {
+          'application/zip': {
+            schema: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'App imported successfully',
+          $ref: '#/components/responses/app',
+        },
+      },
+      security: [{ studio: [] }],
+    },
+  },
+  '/api/apps/{appId}/export': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app', 'export', 'zip'],
+      description: 'Export the app',
+      operationId: 'exportApp',
+      parameters: [
+        {
+          name: 'resources',
+          schema: { type: 'boolean' },
+          description: 'Whether to include resources for an app.',
+          in: 'query',
+        },
+      ],
+      responses: {
+        200: {
+          description: 'App exported successfully.',
+        },
+      },
+      security: [{ studio: [] }],
+    },
+  },
   '/api/apps/{appId}/lock': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
@@ -306,6 +353,9 @@ export const paths: OpenAPIV3.PathsObject = {
       responses: {
         204: {
           description: 'Lock status successfully changed',
+          content: {
+            'application/zip': {},
+          },
         },
       },
       security: [{ studio: [] }, { cli: ['apps:write'] }],

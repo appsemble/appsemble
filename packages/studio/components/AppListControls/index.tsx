@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { CreateAppButton } from '../../pages/apps/IndexPage/CreateAppButton/index.js';
+import { ImportAppButton } from '../../pages/apps/IndexPage/ImportAppButton/index.js';
 import { type AppSortFunction } from '../AppList/index.js';
 import { useUser } from '../UserProvider/index.js';
 
@@ -32,10 +33,12 @@ export interface AppListControlsProps {
   readonly onFilterChange: (filter: string) => void;
   readonly onSortChange: (sortName: AppSortFunctionName, reverse: boolean) => void;
   readonly actionControl?: ReactElement;
+  readonly actionControlImport?: ReactElement;
 }
 
 export function AppListControls({
   actionControl: actionButton = <CreateAppButton className="" />,
+  actionControlImport: actionImportButton = <ImportAppButton />,
   filter,
   onFilterChange,
   onSortChange,
@@ -106,6 +109,7 @@ export function AppListControls({
         </option>
       </SelectField>
       <div className="ml-auto">{userInfo && actionButton ? actionButton : null}</div>
+      <div className="ml-auto">{userInfo && actionImportButton ? actionImportButton : null}</div>
     </div>
   );
 }

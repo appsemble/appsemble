@@ -70,7 +70,7 @@ export function AddToCollectionButton({ app }: AppToCollectionButtonProps): Reac
 
   return (
     <>
-      <Button className="ml-4" onClick={modalToggle.enable}>
+      <Button className="mb-3 ml-4" onClick={modalToggle.enable}>
         <FormattedMessage {...messages.addToCollection} />
       </Button>
       {userInfo ? (
