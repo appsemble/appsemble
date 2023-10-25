@@ -3,6 +3,11 @@ context:
     organization: appsemble
     remote: http://localhost:9999
     visibility: public
+  e2e:
+    organization: appsemble
+    remote: http://appsemble:9999
+    template: true
+    visibility: public
   production:
     organization: appsemble
     remote: https://appsemble.app
