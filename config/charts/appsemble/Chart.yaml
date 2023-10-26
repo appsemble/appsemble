@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.22.10
-appVersion: 0.22.10
+version: 0.23.0
+appVersion: 0.23.0
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -24,13 +24,14 @@ dependencies:
     condition: postgresql.enabled
 annotations:
   artifacthub.io/changes: >
-    - kind: fixed
-      description: "Server: Include $clonable field on resources where appropriate."
-    - kind: fixed
-      description: "Server: Update block versions before 0.20.10 not being able to
-        sync on the server."
-    - kind: fixed
-      description: "Studio: Fix Clonable column on resources."
+    - kind: added
+      description: "Block(wordcloud): Added shrinkToFit and drawOutOfBound options."
+    - kind: added
+      description: "Studio: Add export feature to apps."
+    - kind: added
+      description: "Studio: Add importing new apps from zip files."
+    - kind: changed
+      description: "Server: Rename the appsemble executable to appsemble-server."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio

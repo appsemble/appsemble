@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.23.0](https://gitlab.com/appsemble/appsemble/-/releases/0.23.0)] - 2023-10-26
+
+### Added
+
+- Block(`wordcloud`): Added `shrinkToFit` and `drawOutOfBound` options.
+- Studio: Add export feature to apps.
+- Studio: Add importing new apps from zip files.
+
+### Changed
+
+- Server: Rename the `appsemble` executable to `appsemble-server`.
+
 ## \[[0.22.10](https://gitlab.com/appsemble/appsemble/-/releases/0.22.10)] - 2023-09-22
 
 ### Fixed
