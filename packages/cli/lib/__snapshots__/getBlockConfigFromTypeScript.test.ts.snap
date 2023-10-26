@@ -4250,6 +4250,34 @@ foundQr event only holds the string of the QR.",
 }
 `;
 
+exports[`getBlockConfigFromTypeScript > official blocks > results-loader 1`] = `
+{
+  "actions": {
+    "onLoad": {
+      "description": "Action that is dispatched during the initial load.",
+    },
+  },
+  "events": {
+    "emit": {
+      "data": {
+        "description": "Event that gets emitted once the \`onLoad\` action has finished.",
+      },
+    },
+    "listen": {
+      "data": {
+        "description": "Event that listens to incoming data",
+      },
+    },
+  },
+  "messages": {
+    "loadErrorMessage": {
+      "description": "The error message that should be shown when data failed to load.",
+    },
+  },
+  "parameters": undefined,
+}
+`;
+
 exports[`getBlockConfigFromTypeScript > official blocks > stats 1`] = `
 {
   "actions": undefined,
@@ -4942,6 +4970,10 @@ exports[`getBlockConfigFromTypeScript > official blocks > wordcloud 1`] = `
             "description": "Color of the text, can be any CSS color You may also specify colors with built-in * keywords: random-dark and random-light.",
             "type": "string",
           },
+          "drawOutOfBound": {
+            "description": "Set to true to allow word being draw partly outside of the canvas. Allow word bigger than the size of the canvas to be drawn.",
+            "type": "boolean",
+          },
           "fontFamily": {
             "description": "The font the wordcloud words use.",
             "type": "string",
@@ -4969,6 +5001,10 @@ exports[`getBlockConfigFromTypeScript > official blocks > wordcloud 1`] = `
             "default": 0,
             "description": "Probability for the word to rotate. Set the number to 1 to always rotate.",
             "type": "number",
+          },
+          "shrinkToFit": {
+            "description": "Set to \`true\` to shrink the word so it will fit into canvas. Best if \`drawOutOfBound\` is set to false. This word will now have lower weight.",
+            "type": "boolean",
           },
           "shuffle": {
             "description": "Shuffle the points to draw so the result will be different each time for the same list and settings.",
