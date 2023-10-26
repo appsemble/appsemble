@@ -113,6 +113,8 @@ export * from './TeamsDefinition.js';
 export * from './Theme.js';
 export * from './ThrowActionDefinition.js';
 export * from './User.js';
+export * from './Training.js';
+export * from './TrainingBlock.js';
 export * from './UserEmail.js';
 export * from './UserLogoutActionDefinition.js';
 export * from './UserLoginActionDefinition.js';

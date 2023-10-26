@@ -92,6 +92,8 @@ declare module 'koas-parameters' {
     token: string;
     appServiceId: number;
     userId: string;
+    trainingBlockId: number;
+    trainingId: number;
   }
 
   interface QueryParams {

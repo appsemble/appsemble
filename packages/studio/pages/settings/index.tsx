@@ -13,6 +13,7 @@ import { AppsRoutes } from './apps/index.js';
 import { ClientCredentialsPage } from './client-credentials/index.js';
 import { messages } from './messages.js';
 import { SocialPage } from './social/index.js';
+import { TrainingRoutes } from './trainings/index.js';
 import { UserPage } from './user/index.js';
 
 export function SettingsRoutes(): ReactElement {
@@ -35,6 +36,9 @@ export function SettingsRoutes(): ReactElement {
       <MenuItem icon="key" to={`${url}/client-credentials`}>
         <FormattedMessage {...messages.clientCredentials} />
       </MenuItem>
+      <MenuItem icon="graduation-cap" to={`${url}/trainings`}>
+        <FormattedMessage {...messages.training} />
+      </MenuItem>
     </MenuSection>,
   );
 
@@ -46,6 +50,7 @@ export function SettingsRoutes(): ReactElement {
         <Route element={<ClientCredentialsPage />} path="/client-credentials" />
         <Route element={<AppsRoutes />} path="/apps/*" />
         <Route element={<Navigate to={`${url}/user`} />} path="*" />
+        <Route element={<TrainingRoutes />} path="trainings/*" />
       </MetaSwitch>
     </Content>
   );

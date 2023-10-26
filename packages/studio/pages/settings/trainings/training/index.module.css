@@ -1,0 +1,40 @@
+.root {
+  max-width: 960px;
+  width: 100%;
+}
+
+.icon {
+  font-size: 5rem;
+  height: 128px;
+  width: 128px;
+}
+
+.list {
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+/* stack things on top of each other */
+.stack {
+  display: grid;
+}
+
+.stack > * {
+  grid-area: 1 / 1 / 1;
+}
+
+.stack > *:nth-child(1) {
+  z-index: 1;
+}
+
+.stack > *:nth-child(2) {
+  z-index: 2;
+}
+
+.stack > *:nth-child(3) {
+  z-index: 3;
+}

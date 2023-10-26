@@ -23,6 +23,8 @@ import {
   OAuthAuthorization,
   Organization,
   ResetPasswordToken,
+  Training,
+  UserTraining,
 } from './index.js';
 
 @Table({ tableName: 'User', paranoid: true })
@@ -57,6 +59,9 @@ export class User extends Model {
 
   @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];
+
+  @BelongsToMany(() => Training, () => UserTraining)
+  Trainings: Training[];
 
   @HasMany(() => EmailAuthorization)
   EmailAuthorizations: EmailAuthorization[];
