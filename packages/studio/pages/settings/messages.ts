@@ -25,4 +25,8 @@ export const messages = defineMessages({
     id: 'studio.pysIuq',
     defaultMessage: 'Client credentials',
   },
+  training: {
+    id: 'studio./+axU7',
+    defaultMessage: 'Training',
+  },
 });

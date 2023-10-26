@@ -27,6 +27,7 @@ export * from './scimResourceTypes.js';
 export * from './scimSchemas.js';
 export * from './scimServiceProviderConfig.js';
 export * from './scimUsers.js';
+export * from './trainings.js';
 export * from './user.js';
 export * from './teams.js';
 export * from './appCollections.js';

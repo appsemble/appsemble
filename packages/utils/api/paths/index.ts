@@ -23,6 +23,7 @@ import { paths as resourceHistory } from './resourceHistory.js';
 import { paths as resources } from './resources.js';
 import { paths as saml } from './saml.js';
 import { paths as templates } from './templates.js';
+import { paths as trainings } from './trainings.js';
 import { paths as user } from './user.js';
 
 export const paths = {
@@ -52,4 +53,5 @@ export const paths = {
   ...translations,
   ...appServiceSecrets,
   ...user,
+  ...trainings,
 };

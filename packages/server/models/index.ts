@@ -38,7 +38,10 @@ import { Team } from './Team.js';
 import { TeamInvite } from './TeamInvite.js';
 import { TeamMember } from './TeamMember.js';
 import { Theme } from './Theme.js';
+import { Training } from './Training.js';
+import { TrainingBlock } from './TrainingBlock.js';
 import { User } from './User.js';
+import { UserTraining } from './UserTraining.js';
 import { logSQL } from '../utils/sqlUtils.js';
 
 let db: Sequelize;
@@ -92,6 +95,9 @@ export {
   Theme,
   SamlLoginRequest,
   User,
+  UserTraining,
+  Training,
+  TrainingBlock,
 };
 
 export function initDB({
@@ -149,6 +155,9 @@ export function initDB({
       Theme,
       SamlLoginRequest,
       User,
+      Training,
+      UserTraining,
+      TrainingBlock,
     ],
   };
   const args: [Options] | [string, Options] = uri
