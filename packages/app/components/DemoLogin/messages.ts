@@ -29,4 +29,16 @@ export const messages = defineMessages({
     id: 'app.KQzcqr',
     defaultMessage: 'Manager',
   },
+  joinTeam: {
+    id: 'app.C5l8n7',
+    defaultMessage: 'Join team',
+  },
+  leaveTeam: {
+    id: 'app.sPEM/n',
+    defaultMessage: 'Leave team',
+  },
+  error: {
+    id: 'app.ox304v',
+    defaultMessage: 'An error occurred',
+  },
 });
