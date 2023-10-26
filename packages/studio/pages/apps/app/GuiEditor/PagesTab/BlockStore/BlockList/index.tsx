@@ -62,8 +62,9 @@ export function BlockList({ dragEventListener, filter }: BlockListProps): ReactE
       </div>
     );
   }
+
   return (
-    <div>
+    <div className={styles.list}>
       {filteredBlocks.map((block) => (
         <BlockStoreElement block={block} dragEventListener={dragEventListener} key={block.name} />
       ))}

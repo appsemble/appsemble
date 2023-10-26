@@ -11,7 +11,7 @@ import { type Document, type Node, type ParsedNode, type YAMLMap, type YAMLSeq }
 
 import { BlockItem } from './BlockItem/index.js';
 import styles from './index.module.css';
-import { PageItem } from './PageItem/PageItem.js';
+import { PageItem } from './PageItem/index.js';
 import { SubPageItem } from './SubPageItem/index.js';
 import { type Block, type Page } from '../../../../../types.js';
 import { messages } from '../messages.js';

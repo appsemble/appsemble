@@ -2,3 +2,8 @@
   margin: 5px 25px 0;
   text-align: center;
 }
+
+.list {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
