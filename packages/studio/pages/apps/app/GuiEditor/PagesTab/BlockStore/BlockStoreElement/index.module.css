@@ -1,17 +1,13 @@
 .link {
   color: hsl(219deg 95% 35%);
-  font-size: 0.8rem;
+  font-size: 0.8vw;
 }
 
 .root {
-  flex-flow: wrap row;
-  height: 80%;
+  height: 90%;
   margin: 5%;
-  min-height: 105px;
-  min-width: 105px;
-  padding-bottom: 0;
-  padding-top: 0;
-  width: 40%;
+  min-width: 45%;
+  padding: 0;
 }
 
 .header {
@@ -49,9 +45,4 @@
   font-size: 1.5rem;
   height: 64px;
   width: 64px;
-}
-
-.versionNr {
-  font-size: 0.5rem;
-  text-align: left;
 }

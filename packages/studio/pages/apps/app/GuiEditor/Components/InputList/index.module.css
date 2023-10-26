@@ -26,13 +26,3 @@
   font-size: 1rem;
   font-weight: bold;
 }
-
-.input {
-  height: 2rem;
-}
-
-.dropDown {
-  display: flex;
-  justify-content: stretch;
-  width: 100%;
-}

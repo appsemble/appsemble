@@ -25,6 +25,10 @@ export const messages = defineMessages({
     id: 'studio.Pe0ogR',
     defaultMessage: 'Theme',
   },
+  styleTab: {
+    id: 'studio.7mL9QE',
+    defaultMessage: 'Style',
+  },
   securityTab: {
     id: 'studio.Py189G',
     defaultMessage: 'Security',

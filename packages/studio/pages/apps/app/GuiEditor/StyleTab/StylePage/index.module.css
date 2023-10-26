@@ -1,0 +1,95 @@
+.root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.leftLabel {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.leftLabel > * {
+  margin-right: 0.5rem;
+}
+
+.topLabel {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  height: 28vh !important;
+  margin-top: 5%;
+}
+
+.inheritFrom {
+  color: hsl(0deg 0% 50%);
+  justify-content: flex-end;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.input {
+  height: 2.5rem;
+  padding: 0.5rem;
+  width: 3rem;
+}
+
+.borderContainer {
+  display: flex;
+  width: 100%;
+}
+
+.borderContainer input {
+  width: 3vw;
+}
+
+.marginContainer {
+  margin-bottom: 5%;
+}
+
+table {
+  border: 1px solid hsl(0deg 0 0);
+  width: 100% !important;
+}
+
+td {
+  padding: auto;
+}
+
+.marginBox {
+  display: flex;
+  overflow-wrap: normal;
+}
+
+.marginColor {
+  background-color: hsl(27deg 93% 58%);
+}
+
+.paddingColor {
+  background-color: hsl(131deg 86% 33%);
+}
+
+.contentColor {
+  background-color: hsl(218deg 100% 66%);
+}
+
+.marginContainer input {
+  height: auto !important;
+  width: 100% !important;
+}
+
+.marginColor input {
+  background-color: hsl(27deg 93% 58%);
+}
+
+.paddingColor input {
+  background-color: hsl(131deg 86% 33%);
+}

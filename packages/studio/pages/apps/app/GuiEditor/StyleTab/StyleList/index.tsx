@@ -1,31 +1,36 @@
+import { Button } from '@appsemble/react-components';
 import {
   type BasicPageDefinition,
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
+import classNames from 'classnames';
 import { type ReactElement, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
+import styles from './index.module.css';
 import { type Page } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 import { BlockItem } from '../../ElementsList/BlockItem/index.js';
 import { PageItem } from '../../ElementsList/PageItem/index.js';
 import { SubPageItem } from '../../ElementsList/SubPageItem/index.js';
 
-interface PagesListProps {
-  readonly onChange: (page: number, subParent: number, block: number) => void;
+interface StyleListProps {
+  readonly onChange: (page: number, subParent: number, block: number, propName?: string) => void;
   readonly selectedPage: number;
   readonly selectedBlock: number;
   readonly selectedSubParent: number;
+  readonly selectedProp?: string;
   readonly saveStack: Document<ParsedNode, true>;
 }
-export function PagesList({
+export function StyleList({
   onChange,
   saveStack,
   selectedBlock,
   selectedPage,
+  selectedProp,
   selectedSubParent,
-}: PagesListProps): ReactElement {
+}: StyleListProps): ReactElement {
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
 
@@ -91,9 +96,48 @@ export function PagesList({
     },
     [onChange],
   );
+  const onSelectProp = useCallback(
+    (propName: string) => {
+      onChange(-1, -1, -1, propName);
+    },
+    [onChange],
+  );
 
   return (
     <>
+      {/* Body css shared prop: body */}
+      <div key="body">
+        <Button
+          className={classNames(styles.parentTop, {
+            'is-link': selectedProp === 'body',
+          })}
+          onClick={() => onSelectProp('html')}
+        >
+          Body
+        </Button>
+      </div>
+      <div key="nav">
+        <Button
+          className={classNames(styles.parentTop, {
+            'is-link': selectedProp === 'nav-bar',
+          })}
+          onClick={() => onSelectProp('.nav-bar')}
+        >
+          Nav
+        </Button>
+      </div>
+      {/* Button css shared prop: .button */}
+      <div key="button">
+        <Button
+          className={classNames(styles.parentTop, {
+            'is-link': selectedProp === 'button',
+          })}
+          onClick={() => onSelectProp('.button')}
+        >
+          Button
+        </Button>
+      </div>
+      {/* Blocks css prop: [data-block='@appsemble/button-list'] */}
       {pageNames.map((page, pageIndex) => (
         <div key={page}>
           <PageItem

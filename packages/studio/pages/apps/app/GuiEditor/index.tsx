@@ -28,6 +28,7 @@ import { messages } from './messages.js';
 import { PagesTab } from './PagesTab/index.js';
 import { ResourcesTab } from './ResourcesTab/index.js';
 import { SecurityTab } from './SecurityTab/index.js';
+import { StyleTab } from './StyleTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
 import { useBreadCrumbsDecoration } from '../../../../components/BreadCrumbsDecoration/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
@@ -36,7 +37,7 @@ import '../../../../components/MonacoEditor/custom.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
-type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'theme';
+type TabTypes = 'general' | 'pages' | 'resources' | 'security' | 'style' | 'theme';
 export interface GuiEditorTabs {
   tabName: TabTypes;
   title: MessageDescriptor;
@@ -69,6 +70,12 @@ const tabs: GuiEditorTabs[] = [
     icon: 'fas fa-palette',
   },
   {
+    title: messages.styleTab,
+    path: 'style',
+    tabName: 'style',
+    icon: 'fas fa-pen',
+  },
+  {
     title: messages.securityTab,
     path: 'security',
     tabName: 'security',
@@ -88,7 +95,9 @@ export default function EditPage(): ReactElement {
   const [index, setIndex] = useState(0);
   const frame = useRef<HTMLIFrameElement>();
   const push = useMessages();
-  const { data: coreStyle } = useData<string>(`/api/apps/${app.id}/style/core`);
+  const { data: coreStyle, setData: setCoreStyle } = useData<string>(
+    `/api/apps/${app.id}/style/core`,
+  );
   const { data: sharedStyle } = useData<string>(`/api/apps/${app.id}/style/shared`);
   const location = useLocation();
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
@@ -376,6 +385,17 @@ export default function EditPage(): ReactElement {
             isOpenLeft={leftPanelOpen}
             isOpenRight={rightPanelOpen}
             saveStack={saveStack[index]}
+          />
+        )}
+        {currentTab.tabName === 'style' && (
+          <StyleTab
+            coreStyle={coreStyle}
+            docRef={docRef}
+            frameRef={frame}
+            isOpenLeft={leftPanelOpen}
+            isOpenRight={rightPanelOpen}
+            saveStack={saveStack[index]}
+            setCoreStyle={setCoreStyle}
           />
         )}
         {currentTab.tabName === 'security' && (
