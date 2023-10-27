@@ -247,16 +247,12 @@ export async function assertConsumerService(ctx: Context): Promise<void> {
     case app.scimEnabled:
       // If the app uses SCIM for user provisioning, it should be able to find a user based on
       // the "objectId" attribute in the secret.
-      if (!objectId) {
-        ctx.response.status = 400;
-        ctx.response.body = {
-          statusCode: 400,
-          error: 'Bad request',
-          message:
-            'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
-        };
-        ctx.throw();
-      }
+      assertKoaError(
+        !objectId,
+        ctx,
+        400,
+        'Could not retrieve ObjectID value from incoming secret. Is your app SAML secret configured correctly?.',
+      );
       member = await AppMember.findOne({
         where: { AppId: appId, scimExternalId: objectId },
         attributes: { exclude: ['picture'] },

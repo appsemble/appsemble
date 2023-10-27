@@ -87,13 +87,13 @@ type HttpErrorCodes = keyof typeof errorStatusMap;
 export function throwKoaError(
   ctx: Context,
   status: HttpErrorCodes,
-  message: string,
+  message?: string,
   data?: Record<string, any>,
 ): void {
   ctx.response.status = status;
   ctx.response.body = {
     error: errorStatusMap[status],
-    message,
+    message: message || errorStatusMap[status],
     statusCode: status,
     data,
   };
@@ -113,7 +113,7 @@ export function assertKoaError(
   condition: boolean,
   ctx: Context,
   status: HttpErrorCodes,
-  message: string,
+  message?: string,
   data?: Record<string, any>,
 ): void {
   if (condition) {

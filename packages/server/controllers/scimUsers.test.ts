@@ -134,9 +134,13 @@ describe('createSCIMUser', () => {
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 400 Bad Request
-      Content-Type: text/plain; charset=utf-8
+      Content-Type: application/json; charset=utf-8
 
-      App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.
+      {
+        "error": "Bad Request",
+        "message": "App does not have a security definition in place to handle SCIM users. See SCIM documentation for more info.",
+        "statusCode": 400,
+      }
     `);
   });
 
