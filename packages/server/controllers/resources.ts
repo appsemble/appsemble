@@ -160,7 +160,7 @@ export async function updateResources(ctx: Context): Promise<void> {
           { model: Organization, attributes: ['id'] },
           {
             model: AppMember,
-            attributes: ['role', 'UserId'],
+            attributes: ['role', 'UserId', 'id'],
             required: false,
             where: { UserId: user.id },
           },
@@ -171,7 +171,7 @@ export async function updateResources(ctx: Context): Promise<void> {
   const appMember = await getUserAppAccount(app.id, user?.id);
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -200,7 +200,7 @@ export async function updateResources(ctx: Context): Promise<void> {
       id: resourceList.map((r) => Number(r.id)),
       type: resourceType,
       AppId: appId,
-      ...userQuery,
+      ...memberQuery,
     },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
@@ -234,7 +234,7 @@ export async function updateResources(ctx: Context): Promise<void> {
         const [, [resource]] = await Resource.update(
           {
             data,
-            EditorId: user?.id,
+            EditorId: appMember?.id,
           },
           { where: { id }, transaction, returning: true },
         );
@@ -247,7 +247,7 @@ export async function updateResources(ctx: Context): Promise<void> {
       await ResourceVersion.bulkCreate(
         existingResources.map((resource) => ({
           ResourceId: resource.id,
-          UserId: resource.EditorId,
+          AppMemberId: resource.EditorId,
           data: historyDefinition === true || historyDefinition.data ? resource.data : undefined,
         })),
       );
@@ -303,7 +303,7 @@ export async function patchResource(ctx: Context): Promise<void> {
           { model: Organization, attributes: ['id'] },
           {
             model: AppMember,
-            attributes: ['role', 'UserId'],
+            attributes: ['role', 'UserId', 'id'],
             required: false,
             where: { UserId: user.id },
           },
@@ -314,7 +314,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   const appMember = await getUserAppAccount(app.id, user?.id);
 
   const definition = getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -324,7 +324,7 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   const resource = await Resource.findOne({
-    where: { id: resourceId, type: resourceType, AppId: appId, ...userQuery },
+    where: { id: resourceId, type: resourceType, AppId: appId, ...memberQuery },
     include: [
       { association: 'Author', attributes: ['id', 'name'], required: false },
       { model: Asset, attributes: ['id'], required: false },
@@ -332,6 +332,13 @@ export async function patchResource(ctx: Context): Promise<void> {
   });
 
   assertKoaError(!resource, ctx, 404, 'Resource not found');
+
+  let member: AppMember;
+  if (app.AppMembers && app.AppMembers.length > 0) {
+    member = app.AppMembers[0];
+  } else if (user) {
+    member = await getUserAppAccount(app.id, user.id);
+  }
 
   const [updatedResource, preparedAssets, deletedAssetIds] = processResourceBody(
     ctx,
@@ -350,7 +357,7 @@ export async function patchResource(ctx: Context): Promise<void> {
     const data = { ...oldData, ...patchData };
     const previousEditorId = resource.EditorId;
     const promises: Promise<unknown>[] = [
-      resource.update({ data, clonable, expires, EditorId: user?.id }, { transaction }),
+      resource.update({ data, clonable, expires, EditorId: member?.id }, { transaction }),
     ];
 
     if (preparedAssets.length) {
@@ -372,7 +379,7 @@ export async function patchResource(ctx: Context): Promise<void> {
         ResourceVersion.create(
           {
             ResourceId: resourceId,
-            UserId: previousEditorId,
+            AppMemberId: previousEditorId,
             data: definition.history === true || definition.history.data ? oldData : undefined,
           },
           { transaction },
@@ -417,7 +424,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
   });
 
   getResourceDefinition(app.toJSON(), resourceType, ctx);
-  const userQuery = await verifyResourceActionPermission({
+  const memberQuery = await verifyResourceActionPermission({
     context: ctx,
     app: app.toJSON(),
     resourceType,
@@ -433,7 +440,7 @@ export async function deleteResources(ctx: Context): Promise<void> {
         id: body.slice(deletedAmount, deletedAmount + 100),
         type: resourceType,
         AppId: appId,
-        ...userQuery,
+        ...memberQuery,
       },
       limit: 100,
     })) {

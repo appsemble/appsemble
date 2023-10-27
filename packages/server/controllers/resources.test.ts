@@ -30,8 +30,9 @@ import {
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let member: Member;
+let orgMember: Member;
 let user: User;
+let app: App;
 let originalSendNotification: typeof webpush.sendNotification;
 
 const exampleApp = (
@@ -329,11 +330,12 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  member = await Member.create({
+  orgMember = await Member.create({
     UserId: user.id,
     OrganizationId: organization.id,
     role: 'Maintainer',
   });
+  app = await exampleApp(organization.id);
 });
 
 afterAll(() => {
@@ -343,8 +345,6 @@ afterAll(() => {
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -366,8 +366,6 @@ describe('getResourceById', () => {
   });
 
   it('should be able to fetch a resource view', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -392,8 +390,6 @@ describe('getResourceById', () => {
   });
 
   it('should be able to fetch a public resource view', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -420,8 +416,6 @@ describe('getResourceById', () => {
   });
 
   it('should return 404 for non-existing resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -447,8 +441,6 @@ describe('getResourceById', () => {
   });
 
   it('should check for authentication when using resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -472,8 +464,6 @@ describe('getResourceById', () => {
   });
 
   it('should check for the correct role when using resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -499,7 +489,6 @@ describe('getResourceById', () => {
   });
 
   it('should be able to fetch a resource you are a team member of', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const member1 = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
@@ -512,7 +501,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      AuthorId: userB.id,
+      AuthorId: member2.id,
     });
     authorizeStudio();
     const response = await request.get(
@@ -540,7 +529,6 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resource you are not a team member of', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
@@ -552,7 +540,7 @@ describe('getResourceById', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeApp(app);
@@ -573,11 +561,10 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
-    const appA = await exampleApp(organization.id);
     const appB = await exampleApp(organization.id, 'app-b');
 
     const resource = await Resource.create({
-      AppId: appA.id,
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
     });
@@ -611,12 +598,17 @@ describe('getResourceById', () => {
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
-    const app = await exampleApp(organization.id);
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'User',
+    });
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      AuthorId: user.id,
+      AuthorId: member.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
@@ -643,12 +635,17 @@ describe('getResourceById', () => {
   });
 
   it('should ignore id in the data fields', async () => {
-    const app = await exampleApp(organization.id);
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'User',
+    });
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { id: 23, foo: 'foo', bar: 1 },
-      AuthorId: user.id,
+      AuthorId: member.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
@@ -675,7 +672,6 @@ describe('getResourceById', () => {
   });
 
   it('should not fetch expired resources', async () => {
-    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -718,7 +714,6 @@ describe('getResourceById', () => {
   });
 
   it('should allow organization app editors to get resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -742,10 +737,10 @@ describe('getResourceById', () => {
   });
 
   it('should not allow organization members to get resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -768,7 +763,6 @@ describe('getResourceById', () => {
   });
 
   it('should allow organization app editors to get resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -792,10 +786,10 @@ describe('getResourceById', () => {
   });
 
   it('should not allow organization members to get resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -820,8 +814,6 @@ describe('getResourceById', () => {
 
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -858,8 +850,6 @@ describe('queryResources', () => {
   });
 
   it('should be possible to filter properties using $select', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -895,8 +885,6 @@ describe('queryResources', () => {
   });
 
   it('should trim spaces in $select properties', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -930,8 +918,6 @@ describe('queryResources', () => {
   });
 
   it('should ignore unknown properties in $select', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -959,10 +945,15 @@ describe('queryResources', () => {
   });
 
   it('should be possible to query resources without credentials with the $none role', async () => {
-    const app = await exampleApp(organization.id);
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'User',
+    });
     await Resource.create({
       AppId: app.id,
-      AuthorId: user.id,
+      AuthorId: member.id,
       type: 'testResourceNone',
       data: { bar: 'bar' },
     });
@@ -991,20 +982,24 @@ describe('queryResources', () => {
   });
 
   it('should be possible to query resources as author', async () => {
-    const app = await exampleApp(organization.id);
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    const memberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Admin',
+    });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
-    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
+    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
 
     await Resource.create({
       AppId: app.id,
-      AuthorId: user.id,
+      AuthorId: memberA.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
     });
     await Resource.create({
       AppId: app.id,
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'baz' },
     });
@@ -1036,12 +1031,27 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources from team members', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
-    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
-    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
+    const memberB = await AppMember.create({
+      AppId: app.id,
+      UserId: userB.id,
+      name: userB.name,
+      role: 'Member',
+    });
+    const memberC = await AppMember.create({
+      AppId: app.id,
+      UserId: userC.id,
+      name: userC.name,
+      role: 'Member',
+    });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
@@ -1049,19 +1059,19 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -1099,7 +1109,6 @@ describe('queryResources', () => {
   });
 
   it('should only fetch resources as an author or team manager', async () => {
-    const app = await exampleApp(organization.id);
     const appB = await exampleApp(organization.id, 'test-app-2');
 
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
@@ -1111,13 +1120,34 @@ describe('queryResources', () => {
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
-    const appAMemberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
-    const appAMemberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
-    const appAMemberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
-    const appBMemberA = await AppMember.create({ AppId: appB.id, UserId: user.id, role: 'Member' });
+    const appAMemberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
+    const appAMemberB = await AppMember.create({
+      AppId: app.id,
+      UserId: userB.id,
+      name: userB.name,
+      role: 'Member',
+    });
+    const appAMemberC = await AppMember.create({
+      AppId: app.id,
+      UserId: userC.id,
+      name: userC.name,
+      role: 'Member',
+    });
+    const appBMemberA = await AppMember.create({
+      AppId: appB.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
     const appBMemberC = await AppMember.create({
       AppId: appB.id,
       UserId: userC.id,
+      name: userC.name,
       role: 'Member',
     });
 
@@ -1151,31 +1181,31 @@ describe('queryResources', () => {
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: appAMemberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: appAMemberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeamManager',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: appAMemberC.id,
     });
     await Resource.create({
       AppId: appB.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baar' },
-      AuthorId: user.id,
+      AuthorId: appBMemberA.id,
     });
     await Resource.create({
       AppId: appB.id,
       type: 'testResourceTeamManager',
       data: { foo: 'baaar' },
-      AuthorId: userC.id,
+      AuthorId: appBMemberC.id,
     });
 
     authorizeApp(app);
@@ -1214,8 +1244,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to limit the amount of resources', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1241,8 +1269,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1349,7 +1375,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter fields when fetching resources', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1377,7 +1402,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1406,23 +1430,34 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter by author', async () => {
-    const app = await exampleApp(organization.id);
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
+    const memberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
+    const memberB = await AppMember.create({
+      AppId: app.id,
+      UserId: userB.id,
+      name: userB.name,
+      role: 'Member',
+    });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      params: { $filter: `$author/id eq ${userB.id}` },
+      params: { $filter: `$author/id eq ${memberB.id}` },
     });
 
     expect(response).toMatchInlineSnapshot(
@@ -1449,7 +1484,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1490,13 +1524,18 @@ describe('queryResources', () => {
   });
 
   it('should return the resource authors if it has them', async () => {
-    const app = await exampleApp(organization.id);
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
-      AuthorId: user.id,
-      EditorId: user.id,
+      AuthorId: member.id,
+      EditorId: member.id,
     });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
@@ -1529,7 +1568,6 @@ describe('queryResources', () => {
   });
 
   it('should not fetch expired resources', async () => {
-    const app = await exampleApp(organization.id);
     await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -1583,7 +1621,6 @@ describe('queryResources', () => {
   });
 
   it('should allow organization app editors to query resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -1608,10 +1645,10 @@ describe('queryResources', () => {
   });
 
   it('should not allow organization members to query resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -1632,7 +1669,6 @@ describe('queryResources', () => {
   });
 
   it('should allow organization app editors to query resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -1656,10 +1692,10 @@ describe('queryResources', () => {
   });
 
   it('should not allow organization members to query resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -1680,7 +1716,6 @@ describe('queryResources', () => {
   });
 
   it('should make actions private by default', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testPrivateResource',
@@ -1700,7 +1735,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to fetch a resource view', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1741,7 +1775,6 @@ describe('queryResources', () => {
   });
 
   it('should be able to fetch a public resource view', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1789,8 +1822,6 @@ describe('queryResources', () => {
   });
 
   it('should return 404 for non-existing resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
@@ -1810,8 +1841,6 @@ describe('queryResources', () => {
   });
 
   it('should check for authentication when using resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
       params: { view: 'testView' },
     });
@@ -1829,8 +1858,6 @@ describe('queryResources', () => {
   });
 
   it('should check for the correct role when using resource views', async () => {
-    const app = await exampleApp(organization.id);
-
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Visitor' });
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
@@ -1850,7 +1877,7 @@ describe('queryResources', () => {
   });
 
   it('should return clonable field if app is a template app', async () => {
-    const app = await exampleApp(organization.id, 'test-app', { template: true });
+    app.update({ template: true });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -1897,8 +1924,6 @@ describe('queryResources', () => {
 
 describe('countResources', () => {
   it('should be able to count all resources of a type', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1910,6 +1935,7 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
+    authorizeStudio();
     const responseA = await request.get(`/api/apps/${app.id}/resources/testResource/$count`);
     const responseB = await request.get(
       `/api/apps/${app.id}/resources/testExpirableResource/$count`,
@@ -1930,8 +1956,6 @@ describe('countResources', () => {
   });
 
   it('should apply filters', async () => {
-    const app = await exampleApp(organization.id);
-
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -1948,6 +1972,7 @@ describe('countResources', () => {
       data: { foo: 'baz' },
     });
 
+    authorizeStudio();
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/$count?$filter=foo eq 'baz'`,
     );
@@ -1961,14 +1986,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources the user has access to', async () => {
-    const app = await exampleApp(organization.id);
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    const member = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
     await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: member.id,
     });
     await Resource.create({
       AppId: app.id,
@@ -1990,12 +2014,12 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
 
@@ -2003,19 +2027,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResourceTeam',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2029,13 +2053,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the member team filter as a member', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -2044,19 +2068,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2072,13 +2096,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the member team filter as a manager', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -2087,19 +2111,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2115,34 +2139,33 @@ describe('countResources', () => {
   });
 
   it('should not count resources from team members based on the member team filter as not a member', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
-
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2158,13 +2181,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the manager team filter as a member', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -2173,19 +2196,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2201,13 +2224,13 @@ describe('countResources', () => {
   });
 
   it('should only count resources from team members based on the manager team filter as a manager', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
 
     const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Manager });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -2216,19 +2239,19 @@ describe('countResources', () => {
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2244,12 +2267,13 @@ describe('countResources', () => {
   });
 
   it('should override general action roles', async () => {
-    const app = await exampleApp(organization.id);
     await Resource.create({
       AppId: app.id,
       type: 'testPrivateResource',
       data: { foo: 'bar' },
     });
+
+    authorizeStudio();
     const response = await request.get(`/api/apps/${app.id}/resources/testPrivateResource/$count`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 200 OK
@@ -2260,33 +2284,33 @@ describe('countResources', () => {
   });
 
   it('should not count resources from team members based on the manager team filter as not a team member', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const userC = await User.create({ timezone: 'Europe/Amsterdam' });
+
+    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberC = await AppMember.create({ AppId: app.id, UserId: userC.id, role: 'Member' });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
-
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
 
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: memberA.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'baz' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
     await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo' },
-      AuthorId: userC.id,
+      AuthorId: memberC.id,
     });
 
     authorizeApp(app);
@@ -2304,8 +2328,6 @@ describe('countResources', () => {
 
 describe('updateResources', () => {
   it('should be able to update existing resources', async () => {
-    const app = await exampleApp(organization.id);
-
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -2337,8 +2359,6 @@ describe('updateResources', () => {
   });
 
   it('should accept text/csv', async () => {
-    const app = await exampleApp(organization.id);
-
     const { data: resources } = await request.post<{ id: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [
@@ -2390,7 +2410,6 @@ describe('updateResources', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
-    const app = await exampleApp(organization.id);
     const resources = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -2454,8 +2473,6 @@ describe('updateResources', () => {
   });
 
   it('should not be able to update existing resources if one of them is missing an ID', async () => {
-    const app = await exampleApp(organization.id);
-
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -2483,8 +2500,6 @@ describe('updateResources', () => {
   });
 
   it('should not be able to update existing resources if one the resources don’t exist', async () => {
-    const app = await exampleApp(organization.id);
-
     const { data: resources } = await request.post<{ foo: string }[]>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -2513,7 +2528,6 @@ describe('updateResources', () => {
   });
 
   it('should keep an old resource version including data if history is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryTrue',
@@ -2542,7 +2556,7 @@ describe('updateResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -2550,7 +2564,6 @@ describe('updateResources', () => {
   });
 
   it('should keep an old resource version including data if history.data is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataTrue',
@@ -2579,7 +2592,7 @@ describe('updateResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -2587,7 +2600,6 @@ describe('updateResources', () => {
   });
 
   it('should keep an old resource version excluding data if history.data is false', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataFalse',
@@ -2616,7 +2628,7 @@ describe('updateResources', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: null,
       id: expect.stringMatching(uuid4Pattern),
@@ -2626,8 +2638,6 @@ describe('updateResources', () => {
 
 describe('createResource', () => {
   it('should be able to create a new resource', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = { foo: 'bar' };
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
@@ -2645,8 +2655,6 @@ describe('createResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await exampleApp(organization.id);
-
     const resource = {};
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
@@ -2721,8 +2729,6 @@ describe('createResource', () => {
   });
 
   it('should check if an app has a specific resource definition', async () => {
-    const app = await exampleApp(organization.id);
-
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -2737,14 +2743,14 @@ describe('createResource', () => {
   });
 
   it('should check if an app has any resource definitions', async () => {
-    const app = await App.create({
+    const appA = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
-      path: 'test-app',
+      path: 'test-app-A',
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
       OrganizationId: organization.id,
     });
-    const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
+    const response = await request.get(`/api/apps/${appA.id}/resources/thisDoesNotExist`);
 
     expect(response).toMatchInlineSnapshot(`
       HTTP/1.1 404 Not Found
@@ -2759,7 +2765,6 @@ describe('createResource', () => {
   });
 
   it('should calculate resource expiration', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
     });
@@ -2779,7 +2784,6 @@ describe('createResource', () => {
   });
 
   it('should set resource expiration', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -2803,7 +2807,6 @@ describe('createResource', () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
 
-    const app = await exampleApp(organization.id);
     const response = await request.post(`/api/apps/${app.id}/resources/testExpirableResource`, {
       foo: 'test',
       $expires: '1970-01-01T00:05:00.000Z',
@@ -2835,7 +2838,6 @@ describe('createResource', () => {
   });
 
   it('should accept assets as form data', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -2877,7 +2879,6 @@ describe('createResource', () => {
   });
 
   it('should disallow unused files', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -2915,7 +2916,6 @@ describe('createResource', () => {
   });
 
   it('should disallow duplicate file references', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -2956,7 +2956,6 @@ describe('createResource', () => {
   });
 
   it('should accept an array of resources', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post<ResourceType>(
       `/api/apps/${app.id}/resources/testResource`,
       [{ foo: 'bar' }, { foo: 'baz' }],
@@ -2984,7 +2983,6 @@ describe('createResource', () => {
   });
 
   it('should accept assets as form data with multiple resources', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post<ResourceType[]>(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -3051,7 +3049,6 @@ describe('createResource', () => {
   });
 
   it('should block unknown asset references', async () => {
-    const app = await exampleApp(organization.id);
     const response = await request.post(
       `/api/apps/${app.id}/resources/testAssets`,
       createFormData({
@@ -3091,7 +3088,6 @@ describe('createResource', () => {
   });
 
   it('should allow organization app editors to create resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
@@ -3117,10 +3113,10 @@ describe('createResource', () => {
   });
 
   it('should not allow organization members to create resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     authorizeStudio();
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
@@ -3138,7 +3134,6 @@ describe('createResource', () => {
   });
 
   it('should allow organization app editors to create resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     await authorizeClientCredentials('resources:write');
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
@@ -3164,10 +3159,10 @@ describe('createResource', () => {
   });
 
   it('should not allow organization members to create resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     await authorizeClientCredentials('resources:write');
     const response = await request.post(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
       foo: 'bar',
@@ -3185,8 +3180,6 @@ describe('createResource', () => {
   });
 
   it('should accept text/csv', async () => {
-    const app = await exampleApp(organization.id);
-
     const response = await request.post(
       `/api/apps/${app.id}/resources/testResource`,
       stripIndent(`
@@ -3230,11 +3223,63 @@ describe('createResource', () => {
       ]
     `);
   });
+
+  it("should assign the user's AppMember account to the resource", async () => {
+    const { id } = await AppMember.create({ UserId: user.id, AppId: app.id, role: 'user' });
+    authorizeStudio();
+
+    const resource = { foo: 'bar' };
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": null,
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
+    expect(response.data.$author.id).toBe(id);
+  });
+
+  it('should create a new AppMember account if the user does not have one yet, and assign it to the resource', async () => {
+    authorizeStudio();
+    const resource = { foo: 'bar' };
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
+
+    expect(response).toMatchInlineSnapshot(
+      { data: { $author: { id: expect.any(String) } } },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$author": {
+          "id": Any<String>,
+          "name": "Test User",
+        },
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "foo": "bar",
+        "id": 1,
+      }
+    `,
+    );
+  });
 });
 
 describe('updateResource', () => {
   it('should be able to update an existing resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3293,12 +3338,21 @@ describe('updateResource', () => {
   });
 
   it('should be able to update an existing resource from another team', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
-    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
-    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
+    const memberB = await AppMember.create({
+      AppId: app.id,
+      UserId: userB.id,
+      name: userB.name,
+      role: 'Member',
+    });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -3307,7 +3361,7 @@ describe('updateResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeStudio();
@@ -3346,7 +3400,6 @@ describe('updateResource', () => {
   });
 
   it('should not be able to update an existing resource from another team if not part of the team', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
     const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
@@ -3358,7 +3411,7 @@ describe('updateResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeApp(app);
@@ -3380,7 +3433,6 @@ describe('updateResource', () => {
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3406,7 +3458,6 @@ describe('updateResource', () => {
   });
 
   it('should not be possible to update an existing resource through another app', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3434,7 +3485,6 @@ describe('updateResource', () => {
   });
 
   it('should not be possible to update a non-existent resource', async () => {
-    const app = await exampleApp(organization.id);
     authorizeStudio();
     const response = await request.put(`/api/apps/${app.id}/resources/testResource/0`, {
       foo: 'I am not Foo.',
@@ -3453,7 +3503,6 @@ describe('updateResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3555,7 +3604,6 @@ describe('updateResource', () => {
   });
 
   it('should set clonable if specified in the request', async () => {
-    const app = await exampleApp(organization.id, 'test-app');
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3592,7 +3640,7 @@ describe('updateResource', () => {
   });
 
   it('should return clonable if app is a template app', async () => {
-    const app = await exampleApp(organization.id, 'test-app', { template: true });
+    app.update({ template: true });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -3652,7 +3700,6 @@ describe('updateResource', () => {
   });
 
   it('should set $expires', async () => {
-    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -3702,7 +3749,6 @@ describe('updateResource', () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
 
-    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -3742,7 +3788,6 @@ describe('updateResource', () => {
   });
 
   it('should accept assets as form data', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -3785,7 +3830,6 @@ describe('updateResource', () => {
   });
 
   it('should disallow unused assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -3824,7 +3868,6 @@ describe('updateResource', () => {
   });
 
   it('should block unknown asset references', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.put(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -3865,7 +3908,6 @@ describe('updateResource', () => {
   });
 
   it('should allow referencing existing assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const asset = await Asset.create({
       ResourceId: resource.id,
@@ -3895,7 +3937,6 @@ describe('updateResource', () => {
   });
 
   it('should delete dereferenced assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testAssets',
@@ -3932,7 +3973,6 @@ describe('updateResource', () => {
   });
 
   it('should allow organization app editors to update resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -3964,10 +4004,10 @@ describe('updateResource', () => {
   });
 
   it('should not allow organization members to update resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -3991,7 +4031,6 @@ describe('updateResource', () => {
   });
 
   it('should allow organization app editors to update resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4023,10 +4062,10 @@ describe('updateResource', () => {
   });
 
   it('should not allow organization members to update resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4050,11 +4089,17 @@ describe('updateResource', () => {
   });
 
   it('should set the updater', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
+    });
+
+    const { id } = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'User',
     });
 
     authorizeStudio();
@@ -4082,11 +4127,10 @@ describe('updateResource', () => {
     );
 
     await resource.reload();
-    expect(resource.EditorId).toBe(user.id);
+    expect(resource.EditorId).toBe(id);
   });
 
   it('should keep an old resource version including data if history is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryTrue',
@@ -4114,7 +4158,7 @@ describe('updateResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -4122,7 +4166,6 @@ describe('updateResource', () => {
   });
 
   it('should keep an old resource version including data if history.data is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataTrue',
@@ -4150,7 +4193,7 @@ describe('updateResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -4158,7 +4201,6 @@ describe('updateResource', () => {
   });
 
   it('should keep an old resource version excluding data if history.data is false', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataFalse',
@@ -4186,7 +4228,7 @@ describe('updateResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: null,
       id: expect.stringMatching(uuid4Pattern),
@@ -4196,7 +4238,6 @@ describe('updateResource', () => {
 
 describe('patchResource', () => {
   it('should be able to patch an existing resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -4257,12 +4298,21 @@ describe('patchResource', () => {
   });
 
   it('should be able to patch an existing resource from another team', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
-    const memberA = await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Member' });
-    const memberB = await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Member' });
+    const memberA = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Member',
+    });
+    const memberB = await AppMember.create({
+      AppId: app.id,
+      UserId: userB.id,
+      name: userB.name,
+      role: 'Member',
+    });
 
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberA.id, role: TeamRole.Member });
     await TeamMember.create({ TeamId: team.id, AppMemberId: memberB.id, role: TeamRole.Member });
@@ -4271,7 +4321,7 @@ describe('patchResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeStudio();
@@ -4310,7 +4360,6 @@ describe('patchResource', () => {
   });
 
   it('should not be able to patch an existing resource from another team if not part of the team', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -4323,7 +4372,7 @@ describe('patchResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeApp(app);
@@ -4345,7 +4394,6 @@ describe('patchResource', () => {
   });
 
   it('should not be possible to patch an existing resource through another resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -4371,7 +4419,6 @@ describe('patchResource', () => {
   });
 
   it('should not be possible to patch an existing resource through another app', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -4399,7 +4446,6 @@ describe('patchResource', () => {
   });
 
   it('should not be possible to patch a non-existent resource', async () => {
-    const app = await exampleApp(organization.id);
     authorizeStudio();
     const response = await request.patch(`/api/apps/${app.id}/resources/testResource/0`, {
       foo: 'I am not Foo.',
@@ -4418,7 +4464,6 @@ describe('patchResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -4464,7 +4509,6 @@ describe('patchResource', () => {
   });
 
   it('should set clonable if specified in the request', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -4501,7 +4545,6 @@ describe('patchResource', () => {
   });
 
   it('should set $expires', async () => {
-    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -4551,7 +4594,6 @@ describe('patchResource', () => {
     // 10 minutes
     vi.advanceTimersByTime(600e3);
 
-    const app = await exampleApp(organization.id);
     const {
       data: { id },
     } = await request.post<ResourceType>(`/api/apps/${app.id}/resources/testExpirableResource`, {
@@ -4591,7 +4633,6 @@ describe('patchResource', () => {
   });
 
   it('should accept assets as form data', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch<ResourceType>(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -4634,7 +4675,6 @@ describe('patchResource', () => {
   });
 
   it('should disallow unused assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -4673,7 +4713,6 @@ describe('patchResource', () => {
   });
 
   it('should block unknown asset references', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const response = await request.patch(
       `/api/apps/${app.id}/resources/testAssets/${resource.id}`,
@@ -4714,7 +4753,6 @@ describe('patchResource', () => {
   });
 
   it('should allow referencing existing assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({ AppId: app.id, type: 'testAssets', data: {} });
     const asset = await Asset.create({
       ResourceId: resource.id,
@@ -4744,7 +4782,6 @@ describe('patchResource', () => {
   });
 
   it('should delete dereferenced assets', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testAssets',
@@ -4781,7 +4818,6 @@ describe('patchResource', () => {
   });
 
   it('should allow organization app editors to patch resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4813,10 +4849,10 @@ describe('patchResource', () => {
   });
 
   it('should not allow organization members to patch resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4840,7 +4876,6 @@ describe('patchResource', () => {
   });
 
   it('should allow organization app editors to patch resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4872,10 +4907,10 @@ describe('patchResource', () => {
   });
 
   it('should not allow organization members to patch resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -4899,11 +4934,17 @@ describe('patchResource', () => {
   });
 
   it('should set the updater', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
+    });
+
+    const { id } = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'User',
     });
 
     authorizeStudio();
@@ -4931,11 +4972,10 @@ describe('patchResource', () => {
     );
 
     await resource.reload();
-    expect(resource.EditorId).toBe(user.id);
+    expect(resource.EditorId).toBe(id);
   });
 
   it('should keep an old resource version including data if history is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryTrue',
@@ -4963,7 +5003,7 @@ describe('patchResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -4971,7 +5011,6 @@ describe('patchResource', () => {
   });
 
   it('should keep an old resource version including data if history.data is true', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataTrue',
@@ -4999,7 +5038,7 @@ describe('patchResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -5007,7 +5046,6 @@ describe('patchResource', () => {
   });
 
   it('should keep an old resource version excluding data if history.data is false', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testHistoryDataFalse',
@@ -5035,7 +5073,7 @@ describe('patchResource', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: null,
       id: expect.stringMatching(uuid4Pattern),
@@ -5045,7 +5083,6 @@ describe('patchResource', () => {
 
 describe('deleteResources', () => {
   it('should be able to delete multiple resources', async () => {
-    const app = await exampleApp(organization.id);
     const resourceA = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5113,7 +5150,6 @@ describe('deleteResources', () => {
   });
 
   it('should delete large number of resources', async () => {
-    const app = await exampleApp(organization.id);
     const resources = await Resource.bulkCreate(
       Array.from({ length: 1000 }, (unused, i) => ({
         type: 'testResource',
@@ -5137,7 +5173,6 @@ describe('deleteResources', () => {
   }, 60_000);
 
   it('should ignore non-existent resources.', async () => {
-    const app = await exampleApp(organization.id);
     const resourceA = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5160,7 +5195,6 @@ describe('deleteResources', () => {
   });
 
   it('should not be able to delete multiple resources if they are referenced by another resource without cascading strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5254,7 +5288,6 @@ describe('deleteResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource without cascading strategy if the referencing resources are deleted first', async () => {
-    const app = await exampleApp(organization.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5348,7 +5381,6 @@ describe('deleteResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource with cascading update strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5459,7 +5491,6 @@ describe('deleteResources', () => {
   });
 
   it('should be able to delete multiple resources if they are referenced by another resource with cascading delete strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource1 = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5557,7 +5588,6 @@ describe('deleteResources', () => {
 
 describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5604,7 +5634,6 @@ describe('deleteResource', () => {
   });
 
   it('should delete another team member’s resource', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -5618,7 +5647,7 @@ describe('deleteResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeStudio();
@@ -5630,7 +5659,6 @@ describe('deleteResource', () => {
   });
 
   it('should not delete resources if not part of the same team', async () => {
-    const app = await exampleApp(organization.id);
     const team = await Team.create({ name: 'Test Team', AppId: app.id });
     const userB = await User.create({ timezone: 'Europe/Amsterdam' });
 
@@ -5643,7 +5671,7 @@ describe('deleteResource', () => {
       type: 'testResourceTeam',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
-      AuthorId: userB.id,
+      AuthorId: memberB.id,
     });
 
     authorizeApp(app);
@@ -5664,7 +5692,6 @@ describe('deleteResource', () => {
   });
 
   it('should not be able to delete a non-existent resource', async () => {
-    const app = await exampleApp(organization.id);
     authorizeStudio();
     const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`);
 
@@ -5681,7 +5708,6 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another resource', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5722,7 +5748,6 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5764,7 +5789,6 @@ describe('deleteResource', () => {
   });
 
   it('should allow organization app editors to delete resources using Studio', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -5778,10 +5802,10 @@ describe('deleteResource', () => {
   });
 
   it('should not allow organization members to delete resources using Studio', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -5804,7 +5828,6 @@ describe('deleteResource', () => {
   });
 
   it('should allow organization app editors to delete resources using client credentials', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -5818,10 +5841,10 @@ describe('deleteResource', () => {
   });
 
   it('should not allow organization members to delete resources using client credentials', async () => {
-    await member.update({
+    await orgMember.update({
       role: 'Member',
     });
-    const app = await exampleApp(organization.id);
+
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResourceAuthorOnly',
@@ -5844,7 +5867,6 @@ describe('deleteResource', () => {
   });
 
   it('should not be able to delete a resource if it is referenced by another resource without cascading strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5908,7 +5930,6 @@ describe('deleteResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource without cascading strategy if the referencing resource is deleted first', async () => {
-    const app = await exampleApp(organization.id);
     const testResource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -5969,7 +5990,6 @@ describe('deleteResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource with cascading update strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -6041,7 +6061,6 @@ describe('deleteResource', () => {
   });
 
   it('should be able to delete a resource if it is referenced by another resource with cascading delete strategy', async () => {
-    const app = await exampleApp(organization.id);
     const testResource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -6114,7 +6133,6 @@ describe('deleteResource', () => {
 describe('verifyAppRole', () => {
   // The same logic gets applies to query, get, create, update, and delete.
   it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
-    const app = await exampleApp(organization.id);
     app.definition.resources.testResource.query = {
       roles: ['Reader'],
     };
@@ -6157,17 +6175,21 @@ describe('verifyAppRole', () => {
   });
 
   it('should return normally on secured actions if user is the resource author', async () => {
-    const app = await exampleApp(organization.id);
     app.definition.resources.testResource.get = {
       roles: ['Admin', '$author'],
     };
 
-    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
+    const member = await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      name: user.name,
+      role: 'Reader',
+    });
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
-      AuthorId: user.id,
+      AuthorId: member.id,
     });
 
     authorizeStudio();
@@ -6194,8 +6216,6 @@ describe('verifyAppRole', () => {
   });
 
   it('should return a 401 on unauthorized requests if roles are present', async () => {
-    const app = await exampleApp(organization.id);
-
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
     expect(response).toMatchInlineSnapshot(`
@@ -6211,8 +6231,6 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
-    const app = await exampleApp(organization.id);
-
     authorizeApp(app);
     const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
@@ -6229,8 +6247,6 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
-    const app = await exampleApp(organization.id);
-
     await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
     authorizeApp(app);
@@ -6251,7 +6267,6 @@ describe('verifyAppRole', () => {
 
 describe('getResourceSubscription', () => {
   it('should fetch resource subscriptions', async () => {
-    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -6290,7 +6305,6 @@ describe('getResourceSubscription', () => {
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
-    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -6322,7 +6336,6 @@ describe('getResourceSubscription', () => {
   });
 
   it('should 404 if resource is not found', async () => {
-    const app = await exampleApp(organization.id);
     await AppSubscription.create({
       AppId: app.id,
       endpoint: 'https://example.com',
@@ -6349,7 +6362,6 @@ describe('getResourceSubscription', () => {
   });
 
   it('should return 200 if user is not subscribed', async () => {
-    const app = await exampleApp(organization.id);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,

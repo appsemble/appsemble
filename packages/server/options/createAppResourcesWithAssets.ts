@@ -28,14 +28,14 @@ export async function createAppResourcesWithAssets({
         AppId: app.id,
         type: resourceType,
         data,
-        AuthorId: user?.id,
+        AuthorId: appMember?.id,
         expires: $expires,
       })),
       { logging: false, transaction },
     );
 
     for (const createdResource of createdResources) {
-      createdResource.Author = user as User;
+      createdResource.Author = appMember;
     }
 
     await Asset.bulkCreate(

@@ -43,6 +43,7 @@ import {
   transactional,
   User,
 } from '../models/index.js';
+import { getUserAppAccount } from '../options/getUserAppAccount.js';
 import { options } from '../options/options.js';
 import { applyAppMessages, compareApps, parseLanguage } from '../utils/app.js';
 import { argv } from '../utils/argv.js';
@@ -1078,18 +1079,18 @@ export async function importApp(ctx: Context): Promise<void> {
             ctx,
           });
           await (user as User)?.reload({ attributes: ['name', 'id'] });
-
+          const appMember = await getUserAppAccount(appId, user.id);
           const createdResources = await Resource.bulkCreate(
             resources.map((data: string) => ({
               AppId: appId,
               type: resourceType,
               data: JSON.parse(data),
-              AuthorId: user?.id,
+              AuthorId: appMember?.id,
             })),
             { logging: false, transaction },
           );
           for (const createdResource of createdResources) {
-            createdResource.Author = user as User;
+            createdResource.Author = appMember;
           }
 
           processReferenceHooks(user as User, record, createdResources[0], action, options, ctx);

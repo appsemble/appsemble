@@ -81,57 +81,51 @@ export async function verifyResourceActionPermission({
 
   const result: WhereOptions[] = [];
 
-  if (functionalRoles.includes('$author') && user && action !== 'create') {
-    result.push({ AuthorId: user.id });
+  const member = user
+    ? await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } })
+    : null;
+
+  if (functionalRoles.includes('$author') && member && action !== 'create') {
+    result.push({ AuthorId: member.id });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Member}`) && user) {
-    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [{ model: TeamMember, where: { AppMemberId: appMember.id } }],
+        include: [{ model: TeamMember, where: { AppMemberId: member.id } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
-    const userIds = (
+    const appMemberIds = (
       await TeamMember.findAll({
         where: { TeamId: teamIds },
-        include: [{ model: AppMember, attributes: ['UserId'] }],
+        attributes: ['AppMemberId'],
       })
-    ).map((tm) => tm.AppMember.UserId);
-    result.push({ AuthorId: { [Op.in]: userIds } });
+    ).map((tm) => tm.AppMemberId);
+    result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
   if (functionalRoles.includes(`$team:${TeamRole.Manager}`) && user) {
-    const appMember = await AppMember.findOne({ where: { AppId: app.id, UserId: user.id } });
     const teamIds = (
       await Team.findAll({
         where: { AppId: app.id },
-        include: [
-          { model: TeamMember, where: { AppMemberId: appMember.id, role: TeamRole.Manager } },
-        ],
+        include: [{ model: TeamMember, where: { AppMemberId: member.id, role: TeamRole.Manager } }],
         attributes: ['id'],
       })
     ).map((t) => t.id);
 
-    const userIds = (
+    const appMemberIds = (
       await TeamMember.findAll({
         where: { TeamId: teamIds },
-        include: [{ model: AppMember, attributes: ['UserId'] }],
+        attributes: ['AppMemberId'],
       })
-    ).map((tm) => tm.AppMember.UserId);
-    result.push({ AuthorId: { [Op.in]: userIds } });
+    ).map((tm) => tm.AppMemberId);
+    result.push({ AuthorId: { [Op.in]: appMemberIds } });
   }
 
   if (app.definition.security && !isPublic) {
-    const member = await AppMember.findOne({
-      where: {
-        AppId: app.id,
-        UserId: user.id,
-      },
-    });
     const { policy = 'everyone', role: defaultRole } = app.definition.security.default;
     let role: string;
 

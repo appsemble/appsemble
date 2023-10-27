@@ -16,6 +16,13 @@ export async function up(db: Sequelize): Promise<void> {
   await queryInterface.renameColumn('AppServiceSecret', 'serviceName', 'name');
 }
 
+/**
+ * Summary:
+ * - Renames `AppServiceSecret`.`name` to `AppServiceSecret`.`serviceName`.
+ *
+ * @param db The sequelize database.
+ */
+
 export async function down(db: Sequelize): Promise<void> {
   const queryInterface = db.getQueryInterface();
 

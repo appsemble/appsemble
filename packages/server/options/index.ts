@@ -17,6 +17,7 @@ export * from './getHost.js';
 export * from './getTheme.js';
 export * from './parseQuery.js';
 export * from './verifyResourceActionPermission.js';
+export * from './getUserAppAccount.js';
 export * from './checkRole.js';
 export * from './createAppAsset.js';
 export * from './createAppResourcesWithAssets.js';

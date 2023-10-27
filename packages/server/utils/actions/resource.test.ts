@@ -1139,7 +1139,7 @@ describe('resource.update', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -1189,7 +1189,7 @@ describe('resource.update', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -1239,7 +1239,7 @@ describe('resource.update', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: null,
       id: expect.stringMatching(uuid4Pattern),
@@ -1811,7 +1811,7 @@ describe('resource.patch', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -1861,7 +1861,7 @@ describe('resource.patch', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: { string: 'rev1' },
       id: expect.stringMatching(uuid4Pattern),
@@ -1911,7 +1911,7 @@ describe('resource.patch', () => {
     const [resourceVersion] = await ResourceVersion.findAll({ raw: true });
     expect(resourceVersion).toStrictEqual({
       ResourceId: resource.id,
-      UserId: null,
+      AppMemberId: null,
       created: new Date(),
       data: null,
       id: expect.stringMatching(uuid4Pattern),
