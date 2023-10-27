@@ -973,15 +973,7 @@ export async function importApp(ctx: Context): Promise<void> {
   const zip = await JSZip.loadAsync(importFile);
   try {
     const definitionFile = zip.file('app-definition.yaml');
-    if (!definitionFile) {
-      ctx.response.status = 400;
-      ctx.response.body = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'app-definition.yaml file not found in the zip file.',
-      };
-      ctx.throw();
-    }
+    assertKoaError(!definitionFile, ctx, 400, 'app-definition.yaml file not found in the zip file');
     const yaml = await definitionFile.async('text');
     const theme = zip.folder('theme');
     const definition = parse(yaml, { maxAliasCount: 10_000 });
@@ -1004,15 +996,7 @@ export async function importApp(ctx: Context): Promise<void> {
     const existingPath = await App.findOne({
       where: { path, OrganizationId: organizationId },
     });
-    if (existingPath) {
-      ctx.response.status = 409;
-      ctx.response.body = {
-        statusCode: 409,
-        error: 'Conflict',
-        message: 'Path in app definition needs to be unique',
-      };
-      ctx.throw();
-    }
+    assertKoaError(existingPath != null, ctx, 409, 'Path  in app definition needs to be unique');
     const keys = webpush.generateVAPIDKeys();
     result = {
       definition,
@@ -1109,15 +1093,7 @@ export async function importApp(ctx: Context): Promise<void> {
             const blockVersion = await BlockVersion.findOne({
               where: { name: blockName, organizationId: orgName },
             });
-            if (!blockVersion) {
-              ctx.response.status = 404;
-              ctx.response.body = {
-                statusCode: 404,
-                error: 'Not Found',
-                message: 'Block not found',
-              };
-              ctx.throw();
-            }
+            assertKoaError(!blockVersion, ctx, 404, 'Block not found');
             const style = validateStyle(await block.async('text'));
             record.AppBlockStyles = [
               await AppBlockStyle.create(
