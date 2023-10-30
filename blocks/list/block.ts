@@ -259,6 +259,11 @@ declare module '@appsemble/sdk' {
     image?: Image;
 
     /**
+     * Nests image on the left inside the inline block.
+     */
+    imageInline?: boolean;
+
+    /**
      * The definition of the contents and styling of the button.
      */
     button?: Button;
