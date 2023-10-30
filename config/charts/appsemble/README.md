@@ -56,6 +56,14 @@ kubectl create secret generic sentry \
   --from-literal 'dsn=my-dsn'
 ```
 
+Certain endpoints in Appsemble require administrator privileges. These endpoints are protected with
+a secret:
+
+```sh
+kubectl create secret generic admin-api-secret \
+  --from-literal 'admin-api-secret=my-admin-api-secret'
+```
+
 Now the chart can be installed.
 
 ```sh
