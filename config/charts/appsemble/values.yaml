@@ -45,6 +45,8 @@ affinity: {}
 
 smtpSecret: smtp
 
+adminApiSecret: admin-api-secret
+
 sentry: null
 
 oauthSecret: null
