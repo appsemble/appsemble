@@ -3937,6 +3937,10 @@ Will not render if undefined.",
 
 This can be either a full image path or an asset id.",
       },
+      "imageInline": {
+        "description": "Nests image on the left inside the inline block.",
+        "type": "boolean",
+      },
       "toggleButton": {
         "$ref": "#/definitions/ToggleButton",
         "description": "The definition of the contents and styling of the toggle button.",
@@ -4247,34 +4251,6 @@ foundQr event only holds the string of the QR.",
     },
     "type": "object",
   },
-}
-`;
-
-exports[`getBlockConfigFromTypeScript > official blocks > results-loader 1`] = `
-{
-  "actions": {
-    "onLoad": {
-      "description": "Action that is dispatched during the initial load.",
-    },
-  },
-  "events": {
-    "emit": {
-      "data": {
-        "description": "Event that gets emitted once the \`onLoad\` action has finished.",
-      },
-    },
-    "listen": {
-      "data": {
-        "description": "Event that listens to incoming data",
-      },
-    },
-  },
-  "messages": {
-    "loadErrorMessage": {
-      "description": "The error message that should be shown when data failed to load.",
-    },
-  },
-  "parameters": undefined,
 }
 `;
 
