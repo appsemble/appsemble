@@ -166,7 +166,11 @@ export interface Utils {
    * @param context The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
-  remap: (remapper: Remapper, data: unknown, context?: Record<string, unknown>) => unknown;
+  remap: (
+    remapper: Remapper | undefined,
+    data: unknown,
+    context?: Record<string, unknown>,
+  ) => unknown;
 
   /**
    * Show a bulma style message.

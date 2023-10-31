@@ -7,7 +7,7 @@ bootstrap(({ events, parameters: { drawQr = false, height = 0, width = 0 }, them
   // Create elements
   const video = document.createElement('video');
   const canvasElement = document.createElement('canvas');
-  const canvas = canvasElement.getContext('2d');
+  const canvas = canvasElement.getContext('2d')!;
 
   let stopped = false;
   utils.addCleanup(() => {
@@ -29,7 +29,6 @@ bootstrap(({ events, parameters: { drawQr = false, height = 0, width = 0 }, them
       const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
 
       // Get URL from QR-Code
-      // @ts-expect-error https://github.com/cozmo/jsQR/pull/234
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
         inversionAttempts: 'dontInvert',
       });

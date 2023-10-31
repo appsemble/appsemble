@@ -1,8 +1,6 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "@appsemble/tsconfig",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "rootDir": ".",
     "types": ["@appsemble/webpack-config/types"]
   }
 }

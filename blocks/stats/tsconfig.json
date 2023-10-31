@@ -1,10 +1,6 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "@appsemble/tsconfig/mini-jsx",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "mini-jsx",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "rootDir": ".",
-    "types": ["@appsemble/webpack-config/types", "node"]
+    "types": ["@appsemble/webpack-config/types"]
   }
 }

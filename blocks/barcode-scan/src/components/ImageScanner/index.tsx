@@ -21,7 +21,6 @@ export function ImageScanner({
   const inputRef = useRef<HTMLInputElement>(null);
 
   function runBarcodeDetection(image: any): void {
-    // @ts-expect-error Quagga types are wrong
     Quagga.decodeSingle(
       {
         src: image,
@@ -34,7 +33,6 @@ export function ImageScanner({
       },
       onDetected,
     );
-    // @ts-expect-error Quagga types are wrong
     Quagga.onProcessed(() => {
       setBarcode(null);
     });
