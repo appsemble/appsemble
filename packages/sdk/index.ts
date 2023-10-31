@@ -8,8 +8,8 @@ import {
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Promisable } from 'type-fest';
 
-export { IconName };
-export { Action, BulmaColor, BulmaSize, Theme };
+export { type IconName };
+export { type Action, type BulmaColor, type BulmaSize, type Theme };
 
 /**
  * A user defined remapper function.
@@ -166,7 +166,11 @@ export interface Utils {
    * @param context The context to retrieve contextual data from.
    * @returns The result of the remapped data.
    */
-  remap: (remapper: Remapper, data: unknown, context?: Record<string, unknown>) => unknown;
+  remap: (
+    remapper: Remapper | undefined,
+    data: unknown,
+    context?: Record<string, unknown>,
+  ) => unknown;
 
   /**
    * Show a bulma style message.

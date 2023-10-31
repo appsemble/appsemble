@@ -1,10 +1,8 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "@appsemble/tsconfig/preact",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "rootDir": ".",
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
     "types": ["@appsemble/webpack-config/types"]
   }
 }

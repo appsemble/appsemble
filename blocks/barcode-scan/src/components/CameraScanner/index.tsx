@@ -26,23 +26,18 @@ export function CameraScanner({
   const [videoPlaying, setVideoPlaying] = useState(false);
 
   const onProcessedCanvas = (result: QuaggaJSResultObject): void => {
-    if (drawingCanvasRef && videoRef) {
-      const drawingCtx = drawingCanvasRef.current.getContext('2d');
+    const drawingCanvas = drawingCanvasRef.current;
+    const video = videoRef.current;
+    if (drawingCanvas && video) {
+      const drawingCtx = drawingCanvas.getContext('2d')!;
 
-      drawingCanvasRef.current.width = videoRef.current.width;
-      drawingCanvasRef.current.height = videoRef.current.height;
+      drawingCanvas.width = video.width;
+      drawingCanvas.height = video.height;
 
       if (result) {
         if (result.boxes) {
-          drawingCtx.clearRect(
-            0,
-            0,
-            drawingCanvasRef.current.width,
-            drawingCanvasRef.current.height,
-          );
-          result.boxes.filter((box) => box !== result.box);
+          drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
           for (const box of result.boxes) {
-            // @ts-expect-error Quagga types are wrong
             Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
               color: 'green',
               lineWidth: 2,
@@ -51,7 +46,6 @@ export function CameraScanner({
         }
 
         if (result.box) {
-          // @ts-expect-error Quagga types are wrong
           Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, {
             color: '#00F',
             lineWidth: 2,
@@ -59,7 +53,6 @@ export function CameraScanner({
         }
 
         if (result.codeResult?.code) {
-          // @ts-expect-error Quagga types are wrong
           Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, {
             color: 'red',
             lineWidth: 3,
@@ -70,7 +63,6 @@ export function CameraScanner({
   };
 
   function videoStart(): void {
-    // @ts-expect-error Quagga types are wrong
     Quagga.init(
       {
         inputStream: {
@@ -87,17 +79,14 @@ export function CameraScanner({
         frequency: 10,
         ...config,
       },
-      (err: any): void => {
+      (err) => {
         if (err) {
           return;
         }
-        // @ts-expect-error Quagga types are wrong
         Quagga.start();
       },
     );
-    // @ts-expect-error Quagga types are wrong
     Quagga.onProcessed(onProcessedCanvas);
-    // @ts-expect-error Quagga types are wrong
     Quagga.onDetected(onDetected);
   }
 
@@ -106,13 +95,19 @@ export function CameraScanner({
   }, [config]);
 
   const handleScanStart = (): void => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
+    }
+
     scanning.enable();
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then((stream) => {
-      videoRef.current.srcObject = stream;
+      video.srcObject = stream;
 
-      videoRef.current.setAttribute('playsinline', 'true');
+      video.setAttribute('playsinline', 'true');
 
-      videoRef.current.play();
+      video.play();
       setVideoPlaying(true);
 
       if (videoRef.current) {
@@ -134,7 +129,6 @@ export function CameraScanner({
         videoRef.current.srcObject = null;
       }
     }
-    // @ts-expect-error Quagga types are wrong
     Quagga.stop();
     setBarcode(null);
   };

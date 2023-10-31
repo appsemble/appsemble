@@ -1,0 +1,42 @@
+{
+  "name": "@appsemble/tsconfig",
+  "version": "0.23.0",
+  "type": "commonjs",
+  "description": "The recommended TypeScript configuration for building Appsemble blocks",
+  "keywords": [
+    "app",
+    "apps",
+    "appsemble",
+    "framework",
+    "low-code",
+    "lowcode",
+    "ts",
+    "tsconfig",
+    "typescript"
+  ],
+  "homepage": "https://appsemble.app",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/tsconfig"
+  },
+  "license": "LGPL-3.0-only",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "files": [
+    "*.json",
+    "!tsconfig.json"
+  ],
+  "exports": {
+    ".": "./dom.json",
+    "./mini-jsx": "./mini-jsx.json",
+    "./preact": "./preact.json"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

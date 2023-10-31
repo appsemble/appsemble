@@ -20,6 +20,10 @@ export async function handler({ paths }: { paths: string[] }): Promise<void> {
   const files = await fg(normalizedPaths, { absolute: true, onlyFiles: true });
 
   for (const file of files) {
+    if (file.includes('tsconfig')) {
+      continue;
+    }
+
     const outDir = file.replace('.tgz', '');
     mkdirSync(outDir);
     await tar.x({
