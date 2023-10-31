@@ -47,7 +47,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
             <img
               alt={(utils.remap(field.label, value) as string) ?? field.name}
               className={styles.image}
-              src={url}
+              src={utils.asset(url)}
             />
           </figure>
         </Modal>
@@ -69,7 +69,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
                 <img
                   alt={(utils.remap(field.label, value) as string) ?? field.name}
                   className={`${styles.image} ${styles.rounded}`}
-                  src={url}
+                  src={utils.asset(url)}
                 />
               </figure>
             </button>
