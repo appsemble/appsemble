@@ -57,6 +57,9 @@ export class User extends Model {
   @Column(DataType.BOOLEAN)
   subscribed: boolean;
 
+  /**
+   * Whether this user is created by the demo login feature.
+   */
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
