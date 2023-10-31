@@ -8,8 +8,8 @@ import {
 import { type IconName } from '@fortawesome/fontawesome-common-types';
 import { type Promisable } from 'type-fest';
 
-export { IconName };
-export { Action, BulmaColor, BulmaSize, Theme };
+export { type IconName };
+export { type Action, type BulmaColor, type BulmaSize, type Theme };
 
 /**
  * A user defined remapper function.
