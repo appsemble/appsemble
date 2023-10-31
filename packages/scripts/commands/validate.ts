@@ -242,7 +242,7 @@ async function validate(
    * Validate vitest.config.js exists
    */
   assert(
-    existsSync(join(dir, 'vitest.config.js')),
+    existsSync(join(dir, 'vitest.config.js')) || existsSync(join(dir, 'vitest.config.mjs')),
     'vitest.config.js',
     'Projects should have a vitest configuration',
   );
