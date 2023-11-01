@@ -12,7 +12,9 @@ export function Ref({ isArray, jsonRef }: RenderRefProps): ReactElement {
       {name === 'ActionDefinition' ? (
         'ActionDefinition'
       ) : (
-        <Link to={name === 'RemapperDefinition' ? './remapper' : `./app#${camelToHyphen(name)}`}>
+        <Link
+          to={name === 'RemapperDefinition' ? '../../remapper' : `./app#${camelToHyphen(name)}`}
+        >
           {name}
         </Link>
       )}
