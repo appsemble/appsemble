@@ -25,7 +25,11 @@ import {
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { encrypt } from '../utils/crypto.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import {
+  authorizeClientCredentials,
+  authorizeStudio,
+  createTestUser,
+} from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -3708,6 +3712,35 @@ describe('deleteApp', () => {
     const response = await request.delete(`/api/apps/${id}`);
 
     expect(response).toMatchInlineSnapshot('HTTP/1.1 204 No Content');
+  });
+
+  it('should delete an app via the CLI command.', async () => {
+    authorizeClientCredentials('apps:delete');
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      OrganizationId: organization.id,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      showAppDefinition: false,
+    });
+
+    const { status } = await request.delete(`/api/apps/${app.id}`);
+    expect(status).toBe(204);
+
+    const response = await request.get(`/api/apps/${app.id}`);
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 404 Not Found
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Not Found",
+        "message": "App not found",
+        "statusCode": 404,
+      }
+    `);
   });
 
   it('should not delete non-existent apps', async () => {

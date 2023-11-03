@@ -277,7 +277,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'The app was successfully deleted.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:delete'] }],
     },
   },
   '/api/apps/import/organization/{organizationId}': {

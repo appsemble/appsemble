@@ -38,6 +38,7 @@ interface FormValues {
   'resources:read': boolean;
   'resources:write': boolean;
   'apps:write': boolean;
+  'apps:delete': boolean;
   'teams:read': boolean;
   'teams:write': boolean;
   'assets:write': boolean;
@@ -217,6 +218,12 @@ export function ClientCredentialsPage(): ReactElement {
               label="apps:write"
               name="apps:write"
               title={<FormattedMessage {...messages['apps:write']} />}
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="apps:delete"
+              name="apps:delete"
+              title={<FormattedMessage {...messages['apps:delete']} />}
             />
             <SimpleFormField
               component={CheckboxField}
