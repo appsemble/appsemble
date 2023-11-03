@@ -144,8 +144,8 @@ arguments.
 appsemble app create
 ```
 
-The Appsemble CLI can be used to create and update apps. For example, to create an app in the
-`apps/my-app` directory, run:
+The Appsemble CLI can be used to create, update and delete apps. For example, to create an app in
+the `apps/my-app` directory, run:
 
 ```sh
 appsemble app publish apps/my-app
@@ -155,6 +155,12 @@ Similarly, to update an app using an app directory, run the following command:
 
 ```sh
 appsemble app update --id <app-id> <path/to/updated app>.
+```
+
+To delete an app using the CLI use the following command:
+
+```sh
+appsemble app delete --id <appId>
 ```
 
 For a more in depth explanation of how to build apps, use our

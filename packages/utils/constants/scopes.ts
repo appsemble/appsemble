@@ -3,6 +3,7 @@
  */
 export const scopes = [
   'apps:write',
+  'apps:delete',
   'blocks:write',
   'blocks:delete',
   'organizations:write',
