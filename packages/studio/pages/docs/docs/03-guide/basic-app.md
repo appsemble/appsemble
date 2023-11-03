@@ -10,6 +10,7 @@ value that was entered in the _“Create new app”_ dialog.
 - [Displaying data](#displaying-data)
 - [Creating data](#creating-data)
 - [Detail view](#detail-view)
+- [Export Import](#export-import)
 - [Further reading](#further-reading)
 
 ## Empty app
@@ -554,6 +555,47 @@ pages:
             - type: string
               value: { prop: description }
               label: Description
+```
+
+## Export Import
+
+An app can be exported using the studio or the CLI. Appsemble supports exporting app-definition,
+styling and messages. Exporting resources is optional and requires special permissions. To export an
+app using the studio, visit the app page in studio. Similarly, to export using CLI use the following
+command.
+
+```
+appsemble app export --id <appId>
+```
+
+Other supported flags for export command are `resources`, a boolean representing whether to include
+the resources in the exported zip file, and `path`, representing the folder where you want to put
+your downloaded file.
+
+On the other hand, importing an app is only possible via the studio, you can import the app
+definition, styling, messaging and resources. Visit the homepage of the studio to import an app.
+Importing an app requires `CreateApps` level of permissions. Zip file shall follow the same
+structure as the exported app. Importing an app is not possible if there already exists an app with
+the same name in that organization.
+
+Following structure is implemented for the zip files exported and supported for importing the apps.
+
+```
+.
+├── app-definition.yaml
+├── i18n
+│   ├── en.json
+│   ├── fr.json
+│   ├── hr.json
+│   ├── nl.json
+│   └── ru.json
+├── resources
+│   └── reosurce1.json
+└── theme
+    ├── core
+    │   └── index.css
+    └── shared
+        └── index.css
 ```
 
 ## Further reading
