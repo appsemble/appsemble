@@ -55,7 +55,7 @@ describe('Appsemble server', () => {
       id: 'testorganization',
       name: 'Test Organization',
     });
-    await AppCollection.create({
+    const collection = await AppCollection.create({
       name: 'test',
       domain: 'test.com',
       expertName: 'test',
@@ -72,5 +72,6 @@ describe('Appsemble server', () => {
     expect(platformMiddleware).toHaveBeenCalledWith(context, expect.any(Function));
     expect(appMiddleware).not.toHaveBeenCalled();
     expect(context.state.appCollectionId).toBeDefined();
+    expect(context.state.appCollectionId).toStrictEqual(collection.id);
   });
 });
