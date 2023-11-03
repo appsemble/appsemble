@@ -27,7 +27,7 @@ RUN rm -r yarn.lock
 
 # Setup the production docker image.
 FROM node:18-bookworm-slim
-ARG version=0.23.2
+ARG version=0.23.3
 ARG date
 
 COPY --from=prod /app /app
