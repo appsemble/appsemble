@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.23.1
-appVersion: 0.23.1
+version: 0.23.2
+appVersion: 0.23.2
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,21 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(detail-viewer): Add support for icons in the StringField."
-    - kind: added
-      description: "Block(list): Added inline image support."
-    - kind: added
-      description: "Cli: Add delete command for apps."
-    - kind: added
-      description: "Server: Add demoMode flag to apps that lets users log in as any app role."
-    - kind: added
-      description: "Studio: Add documentation for export and import features."
-    - kind: added
-      description: "Tsconfig: Add new package @appsemble/tsconfig."
-    - kind: fixed
-      description: "Studio: Fix visibility of the export button."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
