@@ -71,7 +71,7 @@ export function IndexPage(): ReactElement {
             </Button>
             <CloneButton app={app} />
             <AddToCollectionButton app={app} />
-            {app.showAppDefinition || showExport ? (
+            {showExport ? (
               <div>
                 <Button className="mb-3 mx-4" onClick={onExport} rel="noopener noreferrer">
                   <FormattedMessage {...messages.exportText} />
