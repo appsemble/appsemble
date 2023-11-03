@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.23.1](https://gitlab.com/appsemble/appsemble/-/releases/0.23.1)] - 2023-11-03
+
+### Added
+
+- Block(`detail-viewer`): Add support for icons in the `StringField`.
+- Block(`list`): Added inline image support.
+- Cli: Add delete command for apps.
+- Server: Add `demoMode` flag to apps that lets users log in as any app role.
+- Studio: Add documentation for export and import features.
+- Tsconfig: Add new package `@appsemble/tsconfig`.
+
+### Fixed
+
+- Studio: Fix visibility of the export button.
+
 ## \[[0.23.0](https://gitlab.com/appsemble/appsemble/-/releases/0.23.0)] - 2023-10-26
 
 ### Added
