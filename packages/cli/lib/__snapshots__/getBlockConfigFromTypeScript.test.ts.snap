@@ -939,6 +939,11 @@ If \`fields[].latitude\` and \`fields[].longitude\` are not set it defaults to \
 
 If the content is an object it will be converted using \`JSON.stringify()\`.",
         "properties": {
+          "icon": {
+            "description": "The icon to be used.",
+            "format": "fontawesome",
+            "type": "string",
+          },
           "label": {
             "description": "The label that is presented to the user. No label will be displayed if this is not defined.",
             "format": "remapper",
