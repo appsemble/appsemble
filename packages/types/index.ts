@@ -2016,6 +2016,11 @@ export interface App {
    * Any app styles that are core.
    */
   coreStyle?: string;
+
+  /**
+   * Whether the app should be used in demo mode.
+   */
+  demoMode: boolean;
 }
 
 /**

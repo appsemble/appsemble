@@ -1,12 +1,20 @@
 import querystring from 'node:querystring';
 
+import { logger } from '@appsemble/node-utils';
 import { compare } from 'bcrypt';
 import { isPast } from 'date-fns';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { type Context } from 'koa';
 import raw from 'raw-body';
 
-import { AppMember, OAuth2AuthorizationCode, OAuth2ClientCredentials } from '../../models/index.js';
+import {
+  App,
+  AppMember,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  transactional,
+  User,
+} from '../../models/index.js';
 import { argv } from '../../utils/argv.js';
 import { createJWTResponse } from '../../utils/createJWTResponse.js';
 import { hasScope } from '../../utils/oauth2.js';
@@ -171,6 +179,91 @@ export async function tokenHandler(ctx: Context): Promise<void> {
 
         if (!member || !(await compare(password, member.password))) {
           throw new GrantError('invalid_client');
+        }
+
+        aud = clientId;
+        sub = member.UserId;
+        scope = requestedScope;
+        refreshToken = true;
+        break;
+      }
+      case 'urn:ietf:params:oauth:grant-type:demo-login': {
+        const {
+          client_id: clientId,
+          refresh_token: token,
+          role,
+          scope: requestedScope,
+        } = checkTokenRequestParameters(query, ['client_id', 'role', 'scope', 'refresh_token']);
+
+        const appId = Number(clientId.replace('app:', ''));
+        const app = await App.findByPk(appId, {
+          attributes: ['demoMode', 'definition'],
+        });
+
+        if (
+          !app ||
+          !app.demoMode ||
+          !Object.keys(app.definition.security?.roles ?? {}).includes(role)
+        ) {
+          throw new GrantError('invalid_client');
+        }
+
+        let member: AppMember;
+
+        if (token) {
+          const payload = jwt.verify(token, argv.secret) as JwtPayload;
+          ({ sub } = payload);
+
+          const user = await User.findByPk(sub, {
+            attributes: ['id', 'demoLoginUser'],
+          });
+          if (!user) {
+            throw new GrantError('invalid_grant');
+          }
+          if (!user.demoLoginUser) {
+            throw new GrantError('invalid_grant');
+          }
+
+          logger.verbose('Demo login: Using existing demo user');
+
+          await transactional(async (transaction) => {
+            [member] = await AppMember.upsert(
+              {
+                AppId: appId,
+                UserId: user.id,
+                role,
+                email: user.primaryEmail,
+                emailVerified: true,
+                name: user.name,
+              },
+              { transaction },
+            );
+          });
+        } else {
+          logger.verbose('Demo login: Creating new demo user');
+          await transactional(async (transaction) => {
+            const demoEmail = `demo-${Math.random().toString(36).slice(2)}@example.com`;
+            const user = await User.create(
+              {
+                name: 'Demo User',
+                primaryEmail: demoEmail,
+                timezone: 'Europe/Amsterdam',
+                demoLoginUser: true,
+              },
+              { transaction },
+            );
+            member = await AppMember.create(
+              {
+                AppId: appId,
+                UserId: user.id,
+                role,
+                email: demoEmail,
+                emailVerified: true,
+                name: 'Demo User',
+              },
+              { transaction },
+            );
+          });
         }
 
         aud = clientId;

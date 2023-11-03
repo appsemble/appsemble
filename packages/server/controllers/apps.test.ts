@@ -130,6 +130,7 @@ describe('queryApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -157,6 +158,7 @@ describe('queryApps', () => {
             "defaultPage": "Another Page",
             "name": "Another App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -229,6 +231,7 @@ describe('queryApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -317,6 +320,7 @@ describe('queryApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -348,6 +352,7 @@ describe('queryApps', () => {
             "defaultPage": "Another Page",
             "name": "Another App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -379,6 +384,7 @@ describe('queryApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -444,6 +450,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -492,6 +499,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -540,6 +548,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -591,6 +600,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -638,6 +648,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -685,6 +696,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -735,6 +747,7 @@ describe('getAppById', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -810,6 +823,7 @@ describe('queryMyApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -844,6 +858,7 @@ describe('queryMyApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -871,6 +886,7 @@ describe('queryMyApps', () => {
             "defaultPage": "Test Page",
             "name": "Test App B",
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -938,6 +954,7 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -1015,6 +1032,7 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -1091,6 +1109,9 @@ describe('createApp', () => {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
                 },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
+                },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
                 },
@@ -1163,6 +1184,9 @@ describe('createApp', () => {
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1271,6 +1295,9 @@ describe('createApp', () => {
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1565,6 +1592,7 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -1649,6 +1677,7 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -1727,6 +1756,7 @@ describe('createApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -1814,6 +1844,9 @@ describe('createApp', () => {
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -1920,6 +1953,9 @@ describe('createApp', () => {
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -2232,6 +2268,7 @@ describe('createApp', () => {
               },
             ],
           },
+          "demoMode": false,
           "domain": null,
           "emailName": null,
           "googleAnalyticsID": null,
@@ -2561,6 +2598,7 @@ describe('patchApp', () => {
             },
           ],
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -2629,6 +2667,7 @@ describe('patchApp', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": "Test Email <test@example.com>",
         "googleAnalyticsID": null,
@@ -2774,6 +2813,7 @@ describe('patchApp', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -2827,6 +2867,7 @@ describe('patchApp', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": "appsemble.app",
         "emailName": null,
         "googleAnalyticsID": null,
@@ -2880,6 +2921,7 @@ describe('patchApp', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -2972,6 +3014,9 @@ describe('patchApp', () => {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
                 },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
+                },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
                 },
@@ -3044,6 +3089,9 @@ describe('patchApp', () => {
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
+                },
+                "demoMode": {
+                  "$ref": "#/components/schemas/App/properties/demoMode",
                 },
                 "domain": {
                   "$ref": "#/components/schemas/App/properties/domain",
@@ -3464,6 +3512,7 @@ describe('patchApp', () => {
           "defaultPage": "Test Page",
           "name": "Test App",
         },
+        "demoMode": false,
         "domain": null,
         "emailName": null,
         "googleAnalyticsID": null,
@@ -3624,6 +3673,103 @@ describe('patchApp', () => {
 
     expect(responseA).toMatchSnapshot();
     expect(responseB).toMatchSnapshot();
+  });
+
+  it('should update the app demo mode flag', async () => {
+    const app = await App.create(
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(`/api/apps/${app.id}`, createFormData({ demoMode: true }));
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": true,
+        "domain": null,
+        "emailName": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+
+    const response2 = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ demoMode: false }),
+    );
+
+    expect(response2).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "bar",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
   });
 });
 

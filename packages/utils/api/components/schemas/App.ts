@@ -69,6 +69,10 @@ This must be set to \`false\` before any other changes can be made to an app.
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching for templates.',
     },
+    demoMode: {
+      type: 'boolean',
+      description: 'Determines whether this app should be used in demo mode.',
+    },
     longDescription: {
       type: 'string',
       description: `

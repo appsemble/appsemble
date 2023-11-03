@@ -36,6 +36,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
                 },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
+                },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
                 },
@@ -173,6 +176,9 @@ export const paths: OpenAPIV3.PathsObject = {
                 },
                 template: {
                   $ref: '#/components/schemas/App/properties/template',
+                },
+                demoMode: {
+                  $ref: '#/components/schemas/App/properties/demoMode',
                 },
                 longDescription: {
                   $ref: '#/components/schemas/App/properties/longDescription',
@@ -1329,7 +1335,7 @@ This will return a 404 if the user has not uploaded one.`,
           },
         },
       },
-      security: [{ studio: [] }, { cli: ['teams:write'] }],
+      security: [{ studio: [] }, { app: [] }, { cli: ['teams:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -1340,7 +1346,7 @@ This will return a 404 if the user has not uploaded one.`,
           description: 'The team member has been removed successfully.',
         },
       },
-      security: [{ studio: [] }, { cli: ['teams:write'] }],
+      security: [{ studio: [] }, { app: [] }, { cli: ['teams:write'] }],
     },
   },
   '/api/apps/{appId}/teams/{teamId}/invite': {

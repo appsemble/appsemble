@@ -23,8 +23,10 @@ import {
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
+  showDemoLogin,
 } from '../../utils/settings.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
+import { DemoLogin } from '../DemoLogin/index.js';
 import { Main } from '../Main/index.js';
 import { OpenIDLogin } from '../OpenIDLogin/index.js';
 import { AppBar } from '../TitleBar/index.js';
@@ -92,15 +94,21 @@ export function Login(): ReactElement {
             src={`/icon-256.png?updated=${appUpdated}`}
           />
         </figure>
-        {showAppsembleLogin ? (
-          <PasswordLogin
-            enableRegistration
-            onPasswordLogin={onPasswordLogin}
-            registerLink={`/${lang}/Register`}
-            resetPasswordLink={`/${lang}/Reset-Password`}
-          />
-        ) : null}
-        <OpenIDLogin disabled={busy.enabled} />
+        {showDemoLogin ? (
+          <DemoLogin />
+        ) : (
+          <>
+            {showAppsembleLogin ? (
+              <PasswordLogin
+                enableRegistration
+                onPasswordLogin={onPasswordLogin}
+                registerLink={`/${lang}/Register`}
+                resetPasswordLink={`/${lang}/Reset-Password`}
+              />
+            ) : null}
+            <OpenIDLogin disabled={busy.enabled} />
+          </>
+        )}
       </Content>
     </Main>
   );

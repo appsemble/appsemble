@@ -11,6 +11,7 @@ export const {
   sentryEnvironment,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
+  showDemoLogin,
   vapidPublicKey,
 } = window.settings;
 delete window.settings;

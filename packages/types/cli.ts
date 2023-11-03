@@ -48,6 +48,11 @@ export interface AppsembleContext {
    * If `template` is specified, this will override `--template` passed on the command line.
    */
   template?: boolean;
+
+  /**
+   * If `demoMode` is specified, this will override `--demo-mode` passed on the command line.
+   */
+  demoMode?: boolean;
 }
 
 export interface AppsembleRC {

@@ -486,19 +486,27 @@ export async function removeTeamMember(ctx: Context): Promise<void> {
     include: [
       {
         model: TeamMember,
-        include: [{ model: AppMember, where: isUuid ? { UserId: memberId } : { email: memberId } }],
+        include: [
+          {
+            model: AppMember,
+            include: [{ model: User, attributes: ['demoLoginUser'] }],
+            where: isUuid ? { UserId: memberId } : { email: memberId },
+          },
+        ],
         required: false,
       },
-      { model: App, attributes: ['OrganizationId'] },
+      { model: App, attributes: ['OrganizationId', 'demoMode'] },
     ],
   });
 
   assertKoaError(!team, ctx, 400, 'Team not found');
 
-  try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
-  } catch {
-    await checkTeamPermission(ctx, team);
+  if (!(team.App.demoMode && team.Members[0]?.AppMember.User.demoLoginUser)) {
+    try {
+      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+    } catch {
+      await checkTeamPermission(ctx, team);
+    }
   }
 
   assertKoaError(!team.Members.length, ctx, 400, 'This user is not a member of this team.');
@@ -520,18 +528,26 @@ export async function updateTeamMember(ctx: Context): Promise<void> {
       {
         model: TeamMember,
         required: false,
-        include: [{ model: AppMember, where: isUuid ? { UserId: memberId } : { email: memberId } }],
+        include: [
+          {
+            model: AppMember,
+            include: [{ model: User, attributes: ['demoLoginUser'] }],
+            where: isUuid ? { UserId: memberId } : { email: memberId },
+          },
+        ],
       },
-      { model: App, attributes: ['OrganizationId'] },
+      { model: App, attributes: ['OrganizationId', 'demoMode'] },
     ],
   });
 
   assertKoaError(!team, ctx, 404, 'Team not found.');
 
-  try {
-    await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
-  } catch {
-    await checkTeamPermission(ctx, team);
+  if (!(team.App.demoMode && team.Members[0]?.AppMember.User.demoLoginUser)) {
+    try {
+      await checkRole(ctx, team.App.OrganizationId, Permission.ManageTeams);
+    } catch {
+      await checkTeamPermission(ctx, team);
+    }
   }
 
   assertKoaError(!team.Members.length, ctx, 400, 'This user is not a member of this team.');
