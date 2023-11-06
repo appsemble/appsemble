@@ -188,6 +188,29 @@ describe('storage.append', () => {
     expect(result).toStrictEqual({ key: 'key', data });
     expect(Array.isArray(newStorage)).toBe(true);
   });
+
+  it('should not create race conditions when appending to the same key', async () => {
+    await writeStorage('localStorage', 'key', [], appStorage);
+    const action = createTestAction({
+      definition: {
+        type: 'storage.append',
+        key: { prop: 'key' },
+        value: { prop: 'data' },
+        storage: 'localStorage',
+      },
+      appStorage,
+    });
+    const data = {
+      key: 'key',
+      data: { text: 'test' },
+    };
+
+    await Promise.all([action(data), action(data), action(data)]);
+
+    const newStorage = await readStorage('localStorage', 'key', appStorage);
+
+    expect(newStorage).toHaveLength(3);
+  });
 });
 
 describe('storage.subtract', () => {
