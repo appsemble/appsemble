@@ -10,6 +10,15 @@ let dbPromise: Promise<IDBPDatabase>;
 
 const mutexes = new Map<string, Mutex>();
 
+function withMutex(key: string, fn: () => Promise<void>): Promise<void> {
+  const mutex = mutexes.get(key) || mutexes.set(key, new Mutex()).get(key);
+  return mutex.runExclusive(fn).then(() => {
+    if (!mutex.isLocked()) {
+      mutexes.delete(key);
+    }
+  });
+}
+
 export function getDB(): Promise<IDBPDatabase> {
   if (!dbPromise) {
     dbPromise = openDB(`appsemble-${appId}`, 1, {
@@ -128,17 +137,9 @@ export const write: ActionCreator<'storage.write'> = ({ appStorage, definition, 
 
     const value = remap(definition.value, data, context);
 
-    const mutexKey = `${definition.storage}:${key}`;
-    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
-    mutex
-      .runExclusive(async () => {
-        await writeStorage(definition.storage, key, value, appStorage);
-      })
-      .then(() => {
-        if (!mutex.isLocked()) {
-          mutexes.delete(mutexKey);
-        }
-      });
+    withMutex(`${definition.storage}:${key}`, () =>
+      writeStorage(definition.storage, key, value, appStorage),
+    );
 
     return data;
   },
@@ -167,24 +168,16 @@ export const append: ActionCreator<'storage.append'> = ({ appStorage, definition
 
     const value = remap(definition.value, data, context);
 
-    const mutexKey = `${storage}:${key}`;
-    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
-    const release = await mutex.acquire();
-    try {
+    await withMutex(`${storage}:${key}`, async () => {
       let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
-
       if (Array.isArray(storageData)) {
         storageData.push(value);
       } else {
         storageData = [storageData, value];
       }
-      await writeStorage(storage, key, storageData, appStorage);
-    } finally {
-      release();
-      if (!mutex.isLocked()) {
-        mutexes.delete(mutexKey);
-      }
-    }
+      return writeStorage(storage, key, storageData, appStorage);
+    });
+
     return data;
   },
 ];
@@ -198,12 +191,8 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ appStorage, defini
 
     const { storage } = definition;
 
-    const mutexKey = `${storage}:${key}`;
-    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
-    const release = await mutex.acquire();
-    try {
+    await withMutex(`${storage}:${key}`, async () => {
       let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
-
       if (Array.isArray(storageData)) {
         const last = storageData.pop();
         if (storageData.length <= 1) {
@@ -216,14 +205,10 @@ export const subtract: ActionCreator<'storage.subtract'> = ({ appStorage, defini
       if (storageData == null) {
         deleteStorage(storage, key, appStorage);
       } else {
-        writeStorage(storage, key, storageData, appStorage);
+        return writeStorage(storage, key, storageData, appStorage);
       }
-    } finally {
-      release();
-      if (!mutex.isLocked()) {
-        mutexes.delete(mutexKey);
-      }
-    }
+    });
+
     return data;
   },
 ];
@@ -239,25 +224,16 @@ export const update: ActionCreator<'storage.update'> = ({ appStorage, definition
 
     const { storage } = definition;
 
-    const mutexKey = `${storage}:${key}`;
-    const mutex = mutexes.get(mutexKey) || mutexes.set(mutexKey, new Mutex()).get(mutexKey);
-    const release = await mutex.acquire();
-    try {
+    await withMutex(`${storage}:${key}`, async () => {
       let storageData: Object | Object[] = await readStorage(storage, key, appStorage);
-
       if (Array.isArray(storageData)) {
         storageData[item as number] = value;
       } else {
         storageData = value;
       }
+      return writeStorage(storage, key, storageData, appStorage);
+    });
 
-      writeStorage(storage, key, storageData, appStorage);
-    } finally {
-      release();
-      if (!mutex.isLocked()) {
-        mutexes.delete(mutexKey);
-      }
-    }
     return data;
   },
 ];
