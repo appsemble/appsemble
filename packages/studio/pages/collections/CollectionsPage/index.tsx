@@ -38,7 +38,7 @@ export function CollectionsPage({ organizationId }: CollectionsPageProps): React
   const [filter, setFilter] = useState('');
 
   const onCollectionCreated = useCallback(
-    (newCollection: AppCollection) => setCollections([...collections, newCollection]),
+    (newCollection: AppCollection) => setCollections([newCollection, ...collections]),
     [collections, setCollections],
   );
 
