@@ -1361,6 +1361,94 @@ exports[`getBlockConfigFromTypeScript > official blocks > filter 1`] = `
         ],
         "type": "object",
       },
+      "BooleanField": {
+        "additionalProperties": false,
+        "description": "A checkbox that returns \`true\` when checked and \`false\` when not.",
+        "properties": {
+          "color": {
+            "$ref": "#/definitions/BulmaColor",
+            "description": "The color of the checkbox.",
+          },
+          "defaultValue": {
+            "description": "The filter to apply by default.",
+            "type": "boolean",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "labelText": {
+            "description": "The color of the checkbox.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name of the field to filter on.",
+            "type": "string",
+          },
+          "size": {
+            "$ref": "#/definitions/BulmaSize",
+            "default": "normal",
+            "description": "The size of the checkbox.",
+          },
+          "switch": {
+            "additionalProperties": false,
+            "description": "Whether the checkbox should display as a switch instead.",
+            "properties": {
+              "outlined": {
+                "description": "Whether the outlined style should be used.",
+                "type": "boolean",
+              },
+              "rounded": {
+                "description": "Whether the rounded style should be used.",
+                "type": "boolean",
+              },
+              "thin": {
+                "description": "Whether the thin style should be used.",
+                "type": "boolean",
+              },
+            },
+            "type": "object",
+          },
+          "type": {
+            "const": "boolean",
+            "description": "The type of the filter field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "BulmaColor": {
+        "description": "A color known to Bulma.",
+        "enum": [
+          "danger",
+          "dark",
+          "info",
+          "link",
+          "primary",
+          "success",
+          "warning",
+          "white",
+        ],
+        "type": "string",
+      },
+      "BulmaSize": {
+        "enum": [
+          "large",
+          "medium",
+          "normal",
+          "small",
+        ],
+        "type": "string",
+      },
       "ButtonOption": {
         "additionalProperties": false,
         "properties": {
@@ -1532,6 +1620,9 @@ exports[`getBlockConfigFromTypeScript > official blocks > filter 1`] = `
       "Field": {
         "anyOf": [
           {
+            "$ref": "#/definitions/BooleanField",
+          },
+          {
             "$ref": "#/definitions/ButtonsField",
           },
           {
@@ -1544,9 +1635,98 @@ exports[`getBlockConfigFromTypeScript > official blocks > filter 1`] = `
             "$ref": "#/definitions/EnumField",
           },
           {
+            "$ref": "#/definitions/ListField",
+          },
+          {
+            "$ref": "#/definitions/RangeField",
+          },
+          {
             "$ref": "#/definitions/StringField",
           },
         ],
+      },
+      "ListField": {
+        "additionalProperties": false,
+        "properties": {
+          "defaultValue": {
+            "description": "The filter to apply by default.",
+            "type": "string",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "list": {
+            "description": "A list of enum options.",
+            "items": {
+              "$ref": "#/definitions/EnumOption",
+            },
+            "type": "array",
+          },
+          "name": {
+            "description": "The name of the field to filter on.",
+            "type": "string",
+          },
+          "type": {
+            "const": "list",
+            "description": "The type of the filter field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "list",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "RangeField": {
+        "additionalProperties": false,
+        "properties": {
+          "defaultValue": {
+            "description": "The filter to apply by default.",
+            "items": {
+              "type": "number",
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array",
+          },
+          "from": {
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name of the field to filter on.",
+            "type": "string",
+          },
+          "to": {
+            "format": "remapper",
+          },
+          "type": {
+            "const": "range",
+            "description": "The type of the filter field.",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "type",
+        ],
+        "type": "object",
       },
       "StringField": {
         "additionalProperties": false,
