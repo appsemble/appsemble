@@ -5,22 +5,24 @@ export function toOData(fields: Field[], values: FilterValues): string {
     .map((field) => {
       const value = values[field.name];
 
-      if (value == null || value.length === 0) {
+      if (value == null || (value as string[]).length === 0) {
         return null;
       }
 
       switch (field.type) {
+        case 'boolean':
+          return `${field.name} eq ${value}`;
         case 'buttons':
           return (value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ');
         case 'date':
           return `${field.name} eq '${value}'`;
         case 'date-range': {
           const filters = [];
-          if (value[0]) {
-            filters.push(`${field.name} ge '${value[0]}'`);
+          if ((value as string[])[0]) {
+            filters.push(`${field.name} ge '${value as string[][0]}'`);
           }
-          if (value[1]) {
-            filters.push(`${field.name} le '${value[1]}'`);
+          if ((value as string[])[1]) {
+            filters.push(`${field.name} le '${value as string[][1]}'`);
           }
           if (!filters.length) {
             return null;
@@ -29,6 +31,17 @@ export function toOData(fields: Field[], values: FilterValues): string {
         }
         case 'enum':
           return `${field.name} eq '${value}'`;
+        case 'list': {
+          const listValue = (value as string).split(', ');
+
+          return `${field.name}/any(field: ${listValue
+            .map((val) => `field eq '${val}'`)
+            .join(' or ')})`;
+        }
+        case 'range': {
+          const [minValue, maxValue] = value as [number, number];
+          return `${field.name} ge ${minValue} and le ${maxValue}`;
+        }
         case 'string':
           if (field.exact) {
             return `${field.name} eq '${value}'`;
