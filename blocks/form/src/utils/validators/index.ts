@@ -51,7 +51,8 @@ export function validate(
   defaultValue: any,
   prefix = '',
 ): boolean | string {
-  const value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
+  let value = getValueByNameSequence(prefix ? `${prefix}.${field.name}` : field.name, values);
+  value = typeof value === 'string' ? value.trim() : value;
 
   if (!has(validators, field.type)) {
     return;

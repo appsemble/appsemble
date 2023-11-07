@@ -11,8 +11,13 @@ import { resize } from '../../utils/resize.js';
 type FileEntryProps = InputProps<Blob | string, FileField>;
 
 export function FileEntry({ field, formValues: value, name, onChange }: FileEntryProps): VNode {
-  const url = useObjectURL(value as unknown as Blob | string);
   const { utils } = useBlock();
+
+  const valueString = typeof value === 'string' ? (value as string) : null;
+  const prefix = valueString ? utils.asset(valueString) : null;
+  const src = valueString?.startsWith('http') ? valueString : prefix;
+  const url = useObjectURL((src || value) as unknown as Blob | string);
+
   const modal = useToggle();
 
   const onSelect = useCallback(

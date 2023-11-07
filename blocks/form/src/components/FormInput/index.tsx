@@ -9,8 +9,10 @@ import { EnumInput } from '../EnumInput/index.js';
 import { Fieldset } from '../Fieldset/index.js';
 import { FileInput } from '../FileInput/index.js';
 import { GeoCoordinatesInput } from '../GeoCoordinatesInput/index.js';
+import { ListInput } from '../ListInput/index.js';
 import { NumberInput } from '../NumberInput/index.js';
 import { RadioInput } from '../RadioInput/index.js';
+import { RangeInput } from '../RangeInput/index.js';
 import { StaticField } from '../StaticField/index.js';
 import { StringInput } from '../StringInput/index.js';
 
@@ -41,10 +43,14 @@ export function FormInput({ field, onChange, ...props }: FormInputProps): VNode 
       return <FileInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'geocoordinates':
       return <GeoCoordinatesInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'list':
+      return <ListInput dirty={dirty} field={field} onChange={onChange} {...props} />;
     case 'static':
       return <StaticField field={field} {...props} />;
     case 'string':
       return <StringInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
+    case 'range':
+      return <RangeInput dirty={dirty} field={field} onChange={handleChange} {...props} />;
     case 'number':
     case 'integer':
       return <NumberInput dirty={dirty} field={field} onChange={handleChange} {...props} />;

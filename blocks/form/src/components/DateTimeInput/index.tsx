@@ -33,7 +33,7 @@ export function DateTimeInput({
   readOnly,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { label, name, placeholder, tag } = field;
+  const { help, label, name, placeholder, tag } = field;
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
 
@@ -74,6 +74,7 @@ export function DateTimeInput({
       disabled={disabled}
       enableTime={field.type === 'date-time'}
       error={dirty ? error : null}
+      help={utils.remap(help, value) as string}
       icon={field.icon}
       id={name}
       iso
