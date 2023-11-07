@@ -23,7 +23,7 @@ export function FileInput({
   onChange,
 }: FileInputProps): VNode {
   const { utils } = useBlock();
-  const { icon, inline, label, repeated, tag } = field;
+  const { help, icon, inline, label, repeated, tag } = field;
   const value = getValueByNameSequence(name, formValues);
   const required = isRequired(field, utils, formValues);
   const remappedLabel = utils.remap(label, value);
@@ -45,6 +45,7 @@ export function FileInput({
   return (
     <FormComponent
       className={classNames('appsemble-file', className)}
+      help={utils.remap(help, {}) as string}
       icon={icon}
       inline={repeated ? undefined : inline}
       label={remappedLabel as string}

@@ -318,6 +318,12 @@ interface AbstractField {
    * Won’t display if the field has no label of its own.
    */
   tag?: Remapper;
+
+  /**
+   * A description for the text field.
+   * For adding more information about the field.
+   */
+  help?: Remapper;
 }
 
 interface InlineField {
@@ -627,6 +633,29 @@ interface EventEnumField extends AbstractEnumField {
 
 export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 
+export interface AbstractListField extends AbstractField, InlineField {
+  type: 'list';
+}
+
+export interface EventListField extends AbstractListField {
+  /**
+   * Wait until an event has been fired containing the list of options.
+   * The event should return an array of objects that contain the `label` and `value` property.
+   *
+   * @format event-listener
+   */
+  event: string;
+}
+
+export interface SyncListField extends AbstractListField {
+  /**
+   * A list of enum options.
+   */
+  list: Choice[];
+}
+
+export type ListField = EventListField | SyncListField;
+
 /**
  * An input field used to upload files.
  */
@@ -767,6 +796,12 @@ export interface NumberField extends AbstractField, InlineField {
   topLabels?: Remapper[];
 }
 
+export interface RangeField extends Omit<NumberField, 'display' | 'type'> {
+  type: 'range';
+  from?: Remapper;
+  to?: Remapper;
+}
+
 /**
  * A field that displays static content.
  *
@@ -879,8 +914,10 @@ export type Field =
   | FileField
   | GeoCoordinatesField
   | HiddenField
+  | ListField
   | NumberField
   | RadioField
+  | RangeField
   | StaticField
   | StringField;
 

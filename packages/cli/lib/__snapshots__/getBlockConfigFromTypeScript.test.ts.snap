@@ -1723,6 +1723,10 @@ The action should return an array of objects that contain the \`label\` and \`va
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -1806,6 +1810,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
           "icon": {
@@ -1990,6 +1998,10 @@ The date value can be accessed using the \`root\` remapper.",
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2103,6 +2115,10 @@ The date value can be accessed using the \`root\` remapper.",
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
           "icon": {
@@ -2276,6 +2292,10 @@ The event should return an array of objects that contain the \`label\` and \`val
             "format": "event-listener",
             "type": "string",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2344,6 +2364,76 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         ],
         "type": "object",
       },
+      "EventListField": {
+        "additionalProperties": false,
+        "properties": {
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "event": {
+            "description": "Wait until an event has been fired containing the list of options. The event should return an array of objects that contain the \`label\` and \`value\` property.",
+            "format": "event-listener",
+            "type": "string",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "list",
+            "type": "string",
+          },
+        },
+        "required": [
+          "event",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
       "Field": {
         "anyOf": [
           {
@@ -2371,10 +2461,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "$ref": "#/definitions/HiddenField",
           },
           {
+            "$ref": "#/definitions/ListField",
+          },
+          {
             "$ref": "#/definitions/NumberField",
           },
           {
             "$ref": "#/definitions/RadioField",
+          },
+          {
+            "$ref": "#/definitions/RangeField",
           },
           {
             "$ref": "#/definitions/StaticField",
@@ -2404,6 +2500,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             },
             "minItems": 1,
             "type": "array",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2488,6 +2588,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "emptyFileLabel": {
             "default": " ",
             "description": "The label that is shown for empty files.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
           "icon": {
@@ -2641,6 +2745,10 @@ This can be used to set the location to something that is more relevant to the u
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2703,6 +2811,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
           "icon": {
@@ -2800,6 +2912,16 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "type": "object",
       },
+      "ListField": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/EventListField",
+          },
+          {
+            "$ref": "#/definitions/SyncListField",
+          },
+        ],
+      },
       "MinMaxRequirement": {
         "additionalProperties": false,
         "description": "Minimum and maximum form requirements for number fields.",
@@ -2846,6 +2968,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
 
 By default a \`number\` input field is displayed.",
             "type": "string",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
           },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
@@ -2947,6 +3073,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             "description": "Whether the field should always be be disabled.",
             "format": "remapper",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -2999,6 +3129,105 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "type": {
             "const": "radio",
+            "type": "string",
+          },
+        },
+        "required": [
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "RangeField": {
+        "additionalProperties": false,
+        "properties": {
+          "bottomLabels": {
+            "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced below the slider.",
+            "items": {
+              "format": "remapper",
+            },
+            "minItems": 2,
+            "type": "array",
+          },
+          "defaultValue": {
+            "description": "The default value of the field.",
+            "type": "number",
+          },
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "from": {
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/NumberRequirement",
+            },
+            "type": "array",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "to": {
+            "format": "remapper",
+          },
+          "topLabels": {
+            "description": "If \`display\` is set to \`slider\`, these labels are displayed evenly spaced on top of the slider.",
+            "items": {
+              "format": "remapper",
+            },
+            "minItems": 2,
+            "type": "array",
+          },
+          "type": {
+            "const": "range",
             "type": "string",
           },
         },
@@ -3094,6 +3323,10 @@ This field does not contain a name or a value.",
           "disabled": {
             "default": false,
             "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
             "format": "remapper",
           },
           "icon": {
@@ -3196,6 +3429,10 @@ For example, the [\`regex\`](#RegexRequirement) requirement type allows you to v
             ],
             "type": "string",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -3297,6 +3534,10 @@ Replaces the optional label if the field is optional. Won’t display if the fie
             },
             "type": "array",
           },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
           "icon": {
             "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
             "format": "fontawesome",
@@ -3355,6 +3596,78 @@ Replaces the optional label if the field is optional. Won’t display if the fie
         },
         "required": [
           "enum",
+          "name",
+          "type",
+        ],
+        "type": "object",
+      },
+      "SyncListField": {
+        "additionalProperties": false,
+        "properties": {
+          "disabled": {
+            "default": false,
+            "description": "Whether the field should always be be disabled.",
+            "format": "remapper",
+          },
+          "help": {
+            "description": "A description for the text field. For adding more information about the field.",
+            "format": "remapper",
+          },
+          "icon": {
+            "description": "Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to the label.",
+            "format": "fontawesome",
+            "type": "string",
+          },
+          "inline": {
+            "const": true,
+            "description": "Combines fields on the same row.
+
+Fields are combined in order if set to true.",
+            "type": "boolean",
+          },
+          "label": {
+            "description": "The label displayed next to the field.",
+            "format": "remapper",
+          },
+          "list": {
+            "description": "A list of enum options.",
+            "items": {
+              "$ref": "#/definitions/Choice",
+            },
+            "type": "array",
+          },
+          "name": {
+            "description": "The name used when storing this field.",
+            "type": "string",
+          },
+          "placeholder": {
+            "description": "The placeholder to display when the field is empty.",
+            "format": "remapper",
+          },
+          "readOnly": {
+            "default": false,
+            "description": "Whether the field should be read-only.",
+            "format": "remapper",
+          },
+          "show": {
+            "description": "Displays field only if condition is true.
+
+If not specified, the field will display.",
+            "format": "remapper",
+          },
+          "tag": {
+            "description": "The label that is shown to the right of the label.
+
+Replaces the optional label if the field is optional. Won’t display if the field has no label of its own.",
+            "format": "remapper",
+          },
+          "type": {
+            "const": "list",
+            "type": "string",
+          },
+        },
+        "required": [
+          "list",
           "name",
           "type",
         ],

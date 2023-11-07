@@ -26,7 +26,7 @@ export function DateInput({
   readOnly,
 }: DateTimeInputProps): VNode {
   const { utils } = useBlock();
-  const { inline, label, name, placeholder, tag } = field;
+  const { help, inline, label, name, placeholder, tag } = field;
 
   const value = getValueByNameSequence(name, formValues);
   const dateLabel = utils.remap(label, value) as string;
@@ -66,6 +66,7 @@ export function DateInput({
       disable={disable}
       disabled={disabled}
       error={dirty ? error : null}
+      help={utils.remap(help, value) as string}
       icon={field.icon}
       id={name}
       inline={inline}

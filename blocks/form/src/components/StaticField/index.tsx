@@ -22,6 +22,7 @@ export function StaticField({ className, field, formValues }: StaticFieldProps):
     <FormComponent
       className={classNames('appsemble-static', className)}
       disableHelp
+      help={utils.remap(field.help, value) as string}
       inline={field.inline}
       label={utils.remap(label, value) as string}
       required

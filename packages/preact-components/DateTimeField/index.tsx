@@ -196,7 +196,9 @@ export function DateTimeField({
   ]);
 
   useEffect(() => {
-    picker?.setDate(new Date(value));
+    if (value) {
+      picker?.setDate(new Date(value));
+    }
   }, [picker, value]);
 
   return (
