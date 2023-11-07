@@ -36,7 +36,7 @@ services:
       - '8000:9999'
 
   postgresql:
-    image: postgres:11
+    image: postgres:15
     networks:
       - appsemble
     restart: always

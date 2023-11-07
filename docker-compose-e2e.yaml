@@ -21,7 +21,7 @@ networks:
 services:
   database:
     container_name: *database-host
-    image: postgres:14
+    image: postgres:15
     networks: [appsemble-e2e]
     environment:
       POSTGRES_DB: *database-name
