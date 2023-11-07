@@ -25,7 +25,7 @@ export async function up(db: Sequelize): Promise<void> {
   }
 
   logger.info('Renaming column `Resource`.AuthorId to User_AuthorId');
-  await queryInterface.removeConstraint('Resource', 'Resource_UserId_fkey');
+  await queryInterface.removeConstraint('Resource', 'Resource_AuthorId_fkey');
   await queryInterface.renameColumn('Resource', 'AuthorId', 'User_AuthorId');
 
   logger.info('Renaming column `Resource`.EditorId to User_EditorId');
