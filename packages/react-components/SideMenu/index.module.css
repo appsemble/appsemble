@@ -29,7 +29,7 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-  z-index: 5000;
+  z-index: 1500; /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
 
   @media screen and (width >= 1024px) {
     left: 0;
