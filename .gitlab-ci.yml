@@ -127,7 +127,7 @@ stylelint:
 test node 18:
   interruptible: true
   services:
-    - postgres:14
+    - postgres:15
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
