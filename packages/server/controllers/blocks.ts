@@ -415,6 +415,30 @@ export async function removeBlockVersion(ctx: Context): Promise<void> {
   ctx.status = 204;
 }
 
+export async function getVersionsList(ctx: Context): Promise<void> {
+  const {
+    pathParams: { blockId, organizationId },
+  } = ctx;
+
+  const blockVersions = await BlockVersion.findAll({
+    attributes: ['version'],
+    where: { name: blockId, OrganizationId: organizationId },
+    order: [['created', 'DESC']],
+  });
+
+  if (blockVersions.length === 0) {
+    ctx.response.status = 404;
+    ctx.response.body = {
+      error: 'Not Found',
+      statusCode: 404,
+      message: 'Block not found',
+    };
+    ctx.throw();
+  }
+
+  ctx.body = blockVersions.map((block) => String(block.version));
+}
+
 export async function getBlockVersions(ctx: Context): Promise<void> {
   const {
     pathParams: { blockId, organizationId },
