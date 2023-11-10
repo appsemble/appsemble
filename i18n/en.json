@@ -182,6 +182,7 @@
   "studio./T03S3": "Are you sure you want to delete {amount} {amount, plural, one {asset} other {assets}}? This action cannot be reverted.",
   "studio./TwSx+": "Service provider certificate",
   "studio./liVQE": "In order to create an app you must be in an organization and have the permission to create new apps. You can create one below or have someone invite you to an existing organization.",
+  "studio.0/cdhu": "Export apps as zip files.",
   "studio.03J9iZ": "Create and manage organizations",
   "studio.0Atfb1": "Want to create a new app based on {name}? This app can be cloned by pressing the clone button.",
   "studio.0D+2Vq": "Are you sure you want to delete {amount, plural, one {this resource} other {these resources}}? Deleted resources can not be recovered.",

@@ -144,8 +144,8 @@ arguments.
 appsemble app create
 ```
 
-The Appsemble CLI can be used to create, update and delete apps. For example, to create an app in
-the `apps/my-app` directory, run:
+The Appsemble CLI can be used to create, export, import and update apps. For example, to create an
+app in the `apps/my-app` directory, run:
 
 ```sh
 appsemble app publish apps/my-app
@@ -161,6 +161,22 @@ To delete an app using the CLI use the following command:
 
 ```sh
 appsemble app delete --id <appId>
+```
+
+To export an app as a zip file, run the following:
+
+```sh
+appsemble app export --id <app-id>
+```
+
+Supported arguments for this app are `resources` and `path`. Resources is used to specify whether to
+include the resources in the exported file and path is the path of the folder where you want to put
+your downloaded file. Path is `./apps` by default and resources is set to `false`.
+
+To import an app from a zip file, use the following command:
+
+```sh
+appsemble app import <path-of-zip-file> --organization <organizationId>
 ```
 
 For a more in depth explanation of how to build apps, use our

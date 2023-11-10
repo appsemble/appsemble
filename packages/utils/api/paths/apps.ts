@@ -308,7 +308,7 @@ export const paths: OpenAPIV3.PathsObject = {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
   '/api/apps/{appId}/export': {
@@ -330,7 +330,7 @@ export const paths: OpenAPIV3.PathsObject = {
           description: 'App exported successfully.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:export'] }],
     },
   },
   '/api/apps/{appId}/lock': {

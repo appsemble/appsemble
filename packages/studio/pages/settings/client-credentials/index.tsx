@@ -32,6 +32,7 @@ import { messages } from './messages.js';
 interface FormValues {
   description: string;
   expires: string;
+  'apps:export': boolean;
   'blocks:write': boolean;
   'blocks:delete': boolean;
   'organizations:write': boolean;
@@ -140,6 +141,7 @@ export function ClientCredentialsPage(): ReactElement {
         defaultValues={{
           description: suggestedDescription,
           expires: '',
+          'apps:export': false,
           'blocks:write': false,
           'blocks:delete': false,
           'organizations:write': false,
@@ -194,6 +196,12 @@ export function ClientCredentialsPage(): ReactElement {
               label={<FormattedMessage {...messages.expires} />}
               name="expires"
               type="date"
+            />
+            <SimpleFormField
+              component={CheckboxField}
+              label="apps:export"
+              name="apps:export"
+              title={<FormattedMessage {...messages['apps:export']} />}
             />
             <SimpleFormField
               component={CheckboxField}

@@ -107,6 +107,10 @@ export const messages = defineMessages({
     id: 'studio.K/9MYq',
     defaultMessage: 'This scope is not currently known. You may want to revoke this client.',
   },
+  'apps:export': {
+    id: 'studio.0/cdhu',
+    defaultMessage: 'Export apps as zip files.',
+  },
   'blocks:write': {
     id: 'studio.BWpepv',
     defaultMessage: 'Publish blocks and block versions',
