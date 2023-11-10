@@ -67,6 +67,7 @@ describe('getUserInfo', () => {
           profile: 'https://example.com/me',
           picture: 'https://example.com/me.png',
           sub: '42',
+          subscribed: false,
           zoneinfo: 'Europe/Amsterdam',
         },
         'secret',
@@ -80,6 +81,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/me.png',
       sub: '42',
       locale: undefined,
+      subscribed: false,
       zoneinfo: 'Europe/Amsterdam',
     });
   });
@@ -94,6 +96,7 @@ describe('getUserInfo', () => {
           profile: 'https://example.com/user',
           picture: 'https://example.com/user.png',
           locale: undefined,
+          subscribed: false,
           zoneinfo: undefined,
         },
         'secret',
@@ -106,6 +109,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/user',
       picture: 'https://example.com/user.png',
       sub: '1337',
+      subscribed: false,
       locale: undefined,
       zoneinfo: undefined,
     });
@@ -121,6 +125,7 @@ describe('getUserInfo', () => {
         profile: 'https://example.com/user',
         picture: 'https://example.com/user.png',
         locale: undefined,
+        subscribed: false,
         zoneinfo: undefined,
       },
     ]);
@@ -133,6 +138,7 @@ describe('getUserInfo', () => {
       picture: 'https://example.com/user.png',
       sub: '1337',
       locale: undefined,
+      subscribed: false,
       zoneinfo: undefined,
     });
   });
@@ -147,6 +153,7 @@ describe('getUserInfo', () => {
         avatarUrl: 'https://example.com/user.png',
         userId: 1337,
         zoneinfo: undefined,
+        subscribed: false,
       },
     ]);
     const userInfo = await getUserInfo('', null, '/user', [
@@ -156,6 +163,7 @@ describe('getUserInfo', () => {
           name: [{ prop: 'fullName' }],
           profile: [{ prop: 'profileUrl' }],
           picture: [{ prop: 'avatarUrl' }],
+          subscribed: false,
           sub: [{ prop: 'userId' }],
         },
       },
@@ -167,6 +175,7 @@ describe('getUserInfo', () => {
       profile: 'https://example.com/user',
       picture: 'https://example.com/user.png',
       sub: '1337',
+      subscribed: false,
       locale: undefined,
       zoneinfo: undefined,
     });

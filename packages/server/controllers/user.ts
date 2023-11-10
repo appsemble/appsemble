@@ -47,6 +47,7 @@ export async function getUser(ctx: Context): Promise<void> {
     ),
     locale: user.locale,
     timezone: user.timezone,
+    subscribed: user.subscribed,
   };
 }
 
@@ -82,7 +83,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
 export async function updateUser(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { locale, name, timezone },
+      body: { locale, name, subscribed, timezone },
     },
     user,
   } = ctx;
@@ -106,7 +107,7 @@ export async function updateUser(ctx: Context): Promise<void> {
     assertKoaError(!emailAuth.verified, ctx, 406, 'This email address has not been verified.');
   }
 
-  await dbUser.update({ name, primaryEmail: email, locale, timezone });
+  await dbUser.update({ name, primaryEmail: email, locale, timezone, subscribed });
 
   ctx.body = {
     id: dbUser.id,
@@ -114,6 +115,7 @@ export async function updateUser(ctx: Context): Promise<void> {
     email,
     email_verified: true,
     locale: dbUser.locale,
+    subscribed,
   };
 }
 
@@ -256,7 +258,7 @@ export async function unsubscribe(ctx: Context): Promise<void> {
   );
 
   const user = await User.findOne({ where: { primaryEmail: email } });
-  if (!user.subscribed) {
+  if (!user?.subscribed) {
     ctx.body = 'User is already unsubscribed';
     return;
   }

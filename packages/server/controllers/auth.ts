@@ -25,7 +25,7 @@ export async function registerEmail(ctx: Context): Promise<void> {
   const {
     mailer,
     request: {
-      body: { name, password, timezone },
+      body: { name, password, subscribed, timezone },
     },
   } = ctx;
 
@@ -37,7 +37,7 @@ export async function registerEmail(ctx: Context): Promise<void> {
   try {
     await transactional(async (transaction) => {
       user = await User.create(
-        { name, password: hashedPassword, primaryEmail: email, timezone },
+        { name, password: hashedPassword, primaryEmail: email, timezone, subscribed },
         { transaction },
       );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
