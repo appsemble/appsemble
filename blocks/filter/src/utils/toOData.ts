@@ -11,7 +11,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
 
       switch (field.type) {
         case 'boolean':
-          return `${field.name} eq ${value}`;
+          return `${field.name} eq '${value}'`;
         case 'buttons':
           return (value as string[]).map((val) => `${field.name} eq '${val}'`).join(' or ');
         case 'date':
@@ -33,7 +33,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
           return `${field.name} eq '${value}'`;
         case 'list': {
           const listValue = (value as string).split(', ');
-          return `${listValue.map((val) => `(contains(${field.name}, '${val}')`).join(' or ')})`;
+          return String(listValue.map((val) => `contains(${field.name}, '${val}')`).join(' or '));
         }
         case 'range': {
           const [minValue, maxValue] = value as [number, number];
