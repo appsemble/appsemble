@@ -33,10 +33,7 @@ export function toOData(fields: Field[], values: FilterValues): string {
           return `${field.name} eq '${value}'`;
         case 'list': {
           const listValue = (value as string).split(', ');
-
-          return `${field.name}/any(field: ${listValue
-            .map((val) => `field eq '${val}'`)
-            .join(' or ')})`;
+          return `${listValue.map((val) => `(contains(${field.name}, '${val}')`).join(' or ')})`;
         }
         case 'range': {
           const [minValue, maxValue] = value as [number, number];
