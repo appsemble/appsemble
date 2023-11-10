@@ -176,6 +176,11 @@ export interface UserInfo {
    * The end-user's additional properties
    */
   properties?: Record<string, string>;
+
+  /**
+   * If the user is subscribed to the newsletter
+   */
+  subscribed?: boolean;
 }
 
 /**

@@ -29,6 +29,7 @@ export interface UtilsUser {
   timezone: string;
   locale: string;
   EmailAuthorizations?: { verified: boolean }[];
+  subscribed?: boolean;
 }
 
 declare module 'koa' {

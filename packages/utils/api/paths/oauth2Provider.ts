@@ -42,6 +42,10 @@ export const paths: OpenAPIV3.PathsObject = {
                     description:
                       'True if the end-user’s email address has been verified, else false.',
                   },
+                  subscribed: {
+                    type: 'boolean',
+                    description: 'If the user is subscribed to the newsletter.',
+                  },
                 },
               },
             },

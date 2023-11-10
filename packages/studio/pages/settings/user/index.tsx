@@ -1,6 +1,7 @@
 import {
   AsyncButton,
   Button,
+  CheckboxField,
   Content,
   FormButtons,
   Loader,
@@ -53,7 +54,7 @@ export function UserPage(): ReactElement {
   useEffect(() => setRerenderKey((prevKey) => prevKey + 1), [pathname]);
 
   const onSaveProfile = useCallback(
-    async (values: { name: string; locale: string; timezone: string }) => {
+    async (values: { name: string; locale: string; timezone: string; subscribed: boolean }) => {
       localStorage.setItem('preferredLanguage', values.locale);
       await axios.put('/api/user', values);
       refreshUserInfo();
@@ -132,6 +133,7 @@ export function UserPage(): ReactElement {
               ? userInfo.locale?.toLowerCase()
               : localStorage.getItem('preferredLanguage') || defaultLocale,
             timezone: userInfo.zoneinfo,
+            subscribed: userInfo.subscribed,
           }}
           key={rerenderKey}
           onSubmit={onSaveProfile}
@@ -173,6 +175,11 @@ export function UserPage(): ReactElement {
               </option>
             ))}
           </SimpleFormField>
+          <SimpleFormField
+            component={CheckboxField}
+            name="subscribed"
+            title={<FormattedMessage {...messages.newsletter} />}
+          />
           <FormButtons>
             <SimpleSubmit>
               <FormattedMessage {...messages.saveProfile} />

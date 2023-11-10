@@ -45,4 +45,8 @@ export const messages = defineMessages({
     id: 'react-components.gR2hpT',
     defaultMessage: 'This email address has already been registered.',
   },
+  newsletter: {
+    id: 'react-components.It/Dy0',
+    defaultMessage: 'Yes, I want to be kept up to date with Appsemble news.',
+  },
 });

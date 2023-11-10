@@ -94,7 +94,7 @@ The pipeline will automatically detect if newly added messages are missing in th
 automatically extract these messages from the source files run:
 
 ```sh
-yarn script extract-messages
+yarn scripts extract-messages
 ```
 
 ### Permissions

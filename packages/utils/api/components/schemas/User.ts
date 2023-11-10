@@ -26,5 +26,9 @@ export const User: OpenAPIV3.NonArraySchemaObject = {
       enum: Intl.supportedValuesOf('timeZone'),
       description: 'The time zone of the user.',
     },
+    subscribed: {
+      type: 'boolean',
+      description: 'If the user is subscribed to the newsletter.',
+    },
   },
 };

@@ -87,6 +87,7 @@ export async function getUserInfo(
   let sub: string;
   let locale: string;
   let zoneinfo: string;
+  let subscribed: boolean;
 
   function assign(info: UserInfo): void {
     email ??= info.email;
@@ -98,6 +99,7 @@ export async function getUserInfo(
     zoneinfo ??= info.zoneinfo;
     // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
     sub ??= typeof info.sub === 'number' ? String(info.sub) : info.sub;
+    subscribed ??= info.subscribed;
   }
 
   function shouldTryNext(): boolean {
@@ -153,5 +155,6 @@ export async function getUserInfo(
     sub,
     locale,
     zoneinfo,
+    subscribed,
   };
 }

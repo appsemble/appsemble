@@ -117,4 +117,8 @@ export const messages = defineMessages({
     id: 'studio.lQxlek',
     defaultMessage: 'The time zone used for formatting time in emails',
   },
+  newsletter: {
+    id: 'studio.It/Dy0',
+    defaultMessage: 'Yes, I want to be kept up to date with Appsemble news.',
+  },
 });

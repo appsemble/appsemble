@@ -51,7 +51,7 @@ export async function getAppUserInfo({
     };
   }
   await (user as User).reload({
-    attributes: ['primaryEmail', 'name', 'locale', 'timezone'],
+    attributes: ['primaryEmail', 'name', 'locale', 'timezone', 'subscribed'],
     include: [
       {
         required: false,
@@ -77,5 +77,6 @@ export async function getAppUserInfo({
     sub: user.id,
     locale: user.locale,
     zoneinfo: user.timezone,
+    subscribed: user.subscribed,
   };
 }
