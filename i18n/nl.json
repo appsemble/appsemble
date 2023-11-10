@@ -182,6 +182,7 @@
   "studio./T03S3": "Weet je zeker dat je {amount} {amount, plural, one {asset} other {assets}} wil verwijderen? Deze actie kan niet worden teruggedraaid.",
   "studio./TwSx+": "Service provider certificaat",
   "studio./liVQE": "Om een app te kunnen aanmaken moet je in een organisatie zitten waarin je de rechten hebt om nieuwe apps aan te kunnen maken. Je kan hieronder een nieuwe organisatie aanmaken of iemand kan je uitnodigen voor een bestaande organisatie.",
+  "studio.0/cdhu": "",
   "studio.03J9iZ": "Organisaties aanmaken en beheren",
   "studio.0Atfb1": "Wil je een nieuwe app maken gebaseed op {name}? Deze app kan worden gekloond door op de kloon knop te drukken.",
   "studio.0D+2Vq": "Weet je zeker dat je deze {amount, plural, one {resource} other {resources}} wil verwijderen? Verwijderde resources kunnen niet hersteld worden.",

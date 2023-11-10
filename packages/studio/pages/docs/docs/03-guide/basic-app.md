@@ -572,11 +572,16 @@ Other supported flags for export command are `resources`, a boolean representing
 the resources in the exported zip file, and `path`, representing the folder where you want to put
 your downloaded file.
 
-On the other hand, importing an app is only possible via the studio, you can import the app
+Similarly, importing an app is possible via the studio as well as CLI, you can import the app
 definition, styling, messaging and resources. Visit the homepage of the studio to import an app.
-Importing an app requires `CreateApps` level of permissions. Zip file shall follow the same
-structure as the exported app. Importing an app is not possible if there already exists an app with
-the same name in that organization.
+Importing an app requires `CreateApps` level of permissions or `apps:write` CLI scope . Zip file
+shall follow the same structure as the exported app. Importing an app is not possible if there
+already exists an app with the same name in that organization. To import an app using the CLI use
+the following command
+
+```
+appsemble app import <path-to-zip-file> --organization <organizationId>
+```
 
 Following structure is implemented for the zip files exported and supported for importing the apps.
 

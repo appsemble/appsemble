@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, type ReadStream } from 'node:fs';
+import { createReadStream, createWriteStream, existsSync, type ReadStream } from 'node:fs';
 import { mkdir, readdir, readFile, stat } from 'node:fs/promises';
 import { basename, join, parse, relative, resolve } from 'node:path';
 import { inspect } from 'node:util';
@@ -309,6 +309,32 @@ export async function traverseAppDirectory(
     ? resolve(path, discoveredContext.maskableIcon)
     : maskableIconPath;
   return [discoveredContext, rc, yaml, gatheredData];
+}
+
+/**
+ * Export an app as a zip file.
+ *
+ * @param appId Id of the app to be exported.
+ * @param resources Boolean representing whether to include resources in the zip file.
+ * @param path Path of the folder where you want to put your downloaded file.
+ * @param remote The remote to fetch the app from.
+ */
+export async function exportAppAsZip(
+  appId: number,
+  resources: boolean,
+  path: string,
+  remote: string,
+): Promise<void> {
+  const app = await axios.get(`/api/apps/${appId}`);
+  const { name } = app.data.definition;
+  const response = await axios.get(`/api/apps/${appId}/export?resources=${resources}`, {
+    baseURL: remote,
+    responseType: 'stream',
+  });
+  const zipFileName = join(path, `${name}_${appId}.zip`);
+  const writeStream = createWriteStream(zipFileName);
+  response.data.pipe(writeStream);
+  logger.info(`Successfully downloaded file: ${zipFileName}`);
 }
 
 /**
