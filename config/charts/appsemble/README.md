@@ -23,7 +23,7 @@ kubectl create secret generic postgresql-secret \
 
 > **Caution**: Make sure not to lose the PostgreSQL passwords!
 
-Next an SMTP and IMAP secret are needed for sending emails.
+Next, an SMTP and IMAP secret are needed for sending emails.
 
 ```sh
 kubectl create secret generic smtp \
