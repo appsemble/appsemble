@@ -257,7 +257,7 @@ e2e apps:
   trigger:
     project: $APP
     strategy: depend
-    branch: e2e
+    branch: main
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
