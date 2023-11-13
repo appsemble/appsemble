@@ -45,7 +45,7 @@ function waitForCredentials(url: URL): Promise<string> {
         throwKoaError(ctx, 400, 'Invalid JSON');
       }
       assertKoaError(
-        typeof credentials === 'string' && validate(credentials),
+        typeof credentials === 'string' && !validate(credentials),
         ctx,
         400,
         'Invalid client credentials',
