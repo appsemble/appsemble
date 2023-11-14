@@ -18,6 +18,29 @@
   height: 28px;
   justify-content: flex-start;
   margin: 0;
-  padding: 0 0 0 1.5rem;
+  padding: 0 0 0 0.9rem;
   width: 100%;
+}
+
+/* adds indentation line before the sub-page parent */
+.subParent::before {
+  border-left: 2px solid hsl(0deg 0% 29%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
+}
+
+/* adds indentation line before the selected sub-page parent
+  but the line is white for better readibility
+*/
+/* stylelint-disable selector-max-attribute */
+[class*='subParent is-link']::before {
+  border-left: 2px solid hsl(0deg 0% 100%);
+  content: '';
+  height: 98%;
+  left: 17px;
+  position: absolute;
+  width: 5px;
 }

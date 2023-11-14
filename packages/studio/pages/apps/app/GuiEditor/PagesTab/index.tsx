@@ -24,24 +24,32 @@ interface PagesTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
   readonly saveStack: Document<ParsedNode, true>;
+  readonly selectedResolution: string;
+  readonly propsTabShow: boolean;
+  readonly blocksTabShow: boolean;
+  readonly toggleProps: () => void;
 }
 
 export function PagesTab({
   addIn,
+  blocksTabShow,
   changeIn,
   deleteIn,
   docRef,
   frameRef,
   isOpenLeft,
   isOpenRight,
+  propsTabShow,
   saveStack,
+  selectedResolution,
+  toggleProps,
 }: PagesTabProps): ReactElement {
   const { app } = useApp();
   const push = useMessages();
   const [selectedPage, setSelectedPage] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubParent, setSelectedSubParent] = useState<number>(-1);
-  const [editPageView, setEditPageView] = useState<boolean>(false);
+  const [editPageView, setEditPageView] = useState<boolean>(true);
   const [editSubPageView, setEditSubPageView] = useState<boolean>(false);
   const [editBlockView, setEditBlockView] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<Boolean>(false);
@@ -68,20 +76,23 @@ export function PagesTab({
         setEditPageView(false);
         setEditBlockView(true);
         setEditSubPageView(false);
+        toggleProps();
         return;
       }
       if (page !== -1 && block === -1 && subParent === -1) {
         setEditPageView(true);
         setEditBlockView(false);
         setEditSubPageView(false);
+        toggleProps();
       }
       if (page !== -1 && block === -1 && subParent !== -1) {
         setEditPageView(false);
         setEditBlockView(false);
         setEditSubPageView(true);
+        toggleProps();
       }
     },
-    [setSelectedPage, setSelectedBlock, setSelectedSubParent],
+    [setSelectedPage, setSelectedBlock, setSelectedSubParent, toggleProps],
   );
 
   const onCreatePage = useCallback(() => {
@@ -235,10 +246,20 @@ export function PagesTab({
           selectedSubParent={selectedSubParent}
         />
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={`${styles.root} ${
+          selectedResolution === 'fullscreen'
+            ? styles.fullscreen
+            : selectedResolution === 'desktop'
+            ? styles.desktop
+            : selectedResolution === 'phone'
+            ? styles.phone
+            : ''
+        }`}
+      >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
-          className={`${dropzoneActive ? styles.dropzoneActive : styles.dropzoneInactive}  ${
+          className={`${dropzoneActive ? styles.dropzoneActive : styles.dropzoneInactive} ${
             dragOver ? styles.dropzoneDragOver : styles.dropzone
           } is-flex m-0 p-0`}
           draggable={false}
@@ -252,7 +273,7 @@ export function PagesTab({
       </div>
       <Sidebar isOpen={isOpenRight} type="right">
         <div className={styles.rightBar}>
-          {editPageView ? (
+          {editPageView && propsTabShow ? (
             <PageProperty
               addIn={addIn}
               changeIn={changeIn}
@@ -264,7 +285,7 @@ export function PagesTab({
               selectedSubPage={selectedSubParent}
             />
           ) : null}
-          {editSubPageView ? (
+          {editSubPageView && propsTabShow ? (
             <SubPageProperty
               changeIn={changeIn}
               deletePage={deleteSubPage}
@@ -274,7 +295,7 @@ export function PagesTab({
               selectedSubPage={selectedSubParent}
             />
           ) : null}
-          {editBlockView ? (
+          {editBlockView && propsTabShow ? (
             <BlockProperty
               changeProperty={changeProperty}
               changeType={changeBlockType}
@@ -282,8 +303,8 @@ export function PagesTab({
               selectedBlock={getSelectedBlock()}
             />
           ) : null}
+          {blocksTabShow === true && <BlockStore dragEventListener={onDragEvent} />}
         </div>
-        <BlockStore dragEventListener={onDragEvent} />
       </Sidebar>
     </>
   );

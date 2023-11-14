@@ -33,6 +33,9 @@ export function BlockStoreElement({
       className={styles.root}
       draggable
       key={name}
+      onDoubleClick={() =>
+        window.open(`../../../../blocks/${block.name}/${block.version}`, '_blank')
+      }
       onDragStart={handleDragStart}
       title={block.description}
     >

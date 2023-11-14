@@ -74,17 +74,17 @@ export function SubPageItem({
             onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index)}
             onDrop={(e) => handleDrop(e, subPageIndex, subPage.index, selectedSubParent)}
           >
-            {subPage.name}
             {blocks.some(
               (blockItem) =>
                 blockItem.parent === subPage.index && blockItem.subParent === subPageIndex,
             ) && (
               <Icon
                 className="mx-2"
-                icon={disabledSubParents.includes(subPageIndex) ? 'chevron-up' : 'chevron-down'}
+                icon={disabledSubParents.includes(subPageIndex) ? 'chevron-right' : 'chevron-down'}
                 onClick={() => toggleDropdownSubParents(subPageIndex)}
               />
             )}
+            {subPage.name}
           </Button>
           {!disabledSubParents.includes(subPageIndex) && (
             <>

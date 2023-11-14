@@ -1,4 +1,4 @@
-import { Button, useMessages } from '@appsemble/react-components';
+import { Button, Confirmation, useConfirmation, useMessages } from '@appsemble/react-components';
 import {
   type ChangeEvent,
   type MutableRefObject,
@@ -95,17 +95,28 @@ export function SubPageProperty({
     }
   }, [docRef, selectedPage, selectedSubPage, currentSubPageName, changeIn, saveStack, push]);
 
+  const handleDelete = useConfirmation({
+    title: 'Careful!',
+    body: 'Do you really want to delete this sub-page?',
+    cancelLabel: 'No',
+    confirmLabel: 'Yes',
+    color: 'danger',
+    action: () => deletePage(),
+  });
+
   return (
     <div>
-      {selectedPage !== -1 && (
-        <Button className="is-danger" component="a" icon="trash" onClick={() => deletePage()}>
-          Delete Sub-Page
+      <Confirmation>
+        {selectedPage !== -1 && (
+          <Button className="is-danger" component="a" icon="trash" onClick={() => handleDelete()}>
+            Delete Sub-Page
+          </Button>
+        )}
+        <InputString label="Name" onChange={onChangePageName} value={currentSubPageName} />
+        <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
+          Save Sub-Page
         </Button>
-      )}
-      <InputString label="Name" onChange={onChangePageName} value={currentSubPageName} />
-      <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
-        Save Sub-Page
-      </Button>
+      </Confirmation>
     </div>
   );
 }

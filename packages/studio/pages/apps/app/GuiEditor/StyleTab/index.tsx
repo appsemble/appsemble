@@ -16,6 +16,7 @@ interface StyleTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
   readonly setCoreStyle: (style: string) => void;
+  readonly selectedResolution: string;
 }
 export function StyleTab({
   coreStyle,
@@ -24,6 +25,7 @@ export function StyleTab({
   isOpenLeft,
   isOpenRight,
   saveStack,
+  selectedResolution,
   setCoreStyle,
 }: StyleTabProps): ReactElement {
   const { app } = useApp();
@@ -58,7 +60,17 @@ export function StyleTab({
           selectedSubParent={selectedSubPage}
         />
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={`${styles.root} ${
+          selectedResolution === 'fullscreen'
+            ? styles.fullscreen
+            : selectedResolution === 'desktop'
+            ? styles.desktop
+            : selectedResolution === 'phone'
+            ? styles.phone
+            : ''
+        }`}
+      >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

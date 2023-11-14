@@ -26,8 +26,8 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  max-width: 19%;
-  width: 19%;
+  max-width: 20%;
+  width: 20%;
 }
 
 .isClosed {
@@ -47,7 +47,7 @@
 .isOpen.rightBar {
   border: hsl(0deg 0% 83%) 1px solid;
   transition: width 0.35s ease-in-out;
-  width: 19%;
+  width: 20%;
 }
 
 .rightBarSlider {

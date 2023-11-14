@@ -52,7 +52,9 @@ export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement
           type="search"
         />
       </div>
-      <BlockList dragEventListener={dragEventListener} filter={filter} />
+      <div className={styles.blocksList}>
+        <BlockList dragEventListener={dragEventListener} filter={filter} />
+      </div>
     </div>
   );
 }

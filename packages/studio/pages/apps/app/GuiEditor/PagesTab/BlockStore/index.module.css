@@ -16,3 +16,9 @@
 .title {
   margin: auto;
 }
+
+/* the div containing the blocks list element */
+.blocksList {
+  height: 65vh;
+  overflow-y: scroll;
+}

@@ -16,6 +16,7 @@ import { TreeList } from '../Components/TreeList/index.js';
 interface SecurityTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly selectedResolution: string;
 }
 
 const Tabs = [
@@ -35,7 +36,11 @@ const Tabs = [
 type LeftSidebar = (typeof Tabs)[number];
 export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as const;
 
-export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): ReactElement {
+export function SecurityTab({
+  isOpenLeft,
+  isOpenRight,
+  selectedResolution,
+}: SecurityTabProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();
@@ -97,7 +102,17 @@ export function SecurityTab({ isOpenLeft, isOpenRight }: SecurityTabProps): Reac
           })}
         </>
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={`${styles.root} ${
+          selectedResolution === 'fullscreen'
+            ? styles.fullscreen
+            : selectedResolution === 'desktop'
+            ? styles.desktop
+            : selectedResolution === 'phone'
+            ? styles.phone
+            : ''
+        }`}
+      >
         <AppPreview app={app} iframeRef={frame} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

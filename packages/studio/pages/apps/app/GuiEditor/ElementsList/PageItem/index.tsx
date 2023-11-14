@@ -52,14 +52,14 @@ export function PageItem({
       onDragStart={(e) => handleDragStart(e, -1, pageIndex)}
       onDrop={(e) => handleDrop(e, -1, pageIndex)}
     >
-      {page}
       {blocks.some((block: any) => block.parent === pageIndex) && (
         <Icon
           className="mx-2"
-          icon={disabledPages.includes(pageIndex) ? 'chevron-up' : 'chevron-down'}
+          icon={disabledPages.includes(pageIndex) ? 'chevron-right' : 'chevron-down'}
           onClick={() => toggleDropdownPages(pageIndex)}
         />
       )}
+      {page}
     </Button>
   );
 }
