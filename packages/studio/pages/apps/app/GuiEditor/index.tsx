@@ -22,6 +22,7 @@ import {
 } from 'yaml';
 
 import { BugButton } from './BugButton/index.js';
+import { InputList } from './Components/InputList/index.js';
 import { GeneralTab } from './GeneralTab/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -109,6 +110,10 @@ export default function EditPage(): ReactElement {
   const { id, lang } = params;
   const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
+  const screenRatios = ['fullscreen', 'desktop', 'phone'];
+  const [selectedRatio, setSelectedRatio] = useState<number>(0);
+  const [propsTabToggle, setPropsTabToggle] = useState(true);
+  const [blocksTabToggle, setBlocksTabToggle] = useState(false);
 
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
 
@@ -271,6 +276,13 @@ export default function EditPage(): ReactElement {
     sharedStyle,
   ]);
 
+  const onChangeScreenRatio = useCallback(
+    (i: number) => {
+      setSelectedRatio(i);
+    },
+    [setSelectedRatio],
+  );
+
   const unsavedChanges = getUnsavedChanges().length !== 1;
 
   useBeforeUnload(unsavedChanges);
@@ -283,125 +295,183 @@ export default function EditPage(): ReactElement {
     return <Navigate to={{ ...location, pathname: `/${lang}/apps/${id}/edit/gui/pages` }} />;
   }
 
+  const handlePropertiesToggle = (): void => {
+    if (!propsTabToggle) {
+      setPropsTabToggle(() => true);
+      setBlocksTabToggle(() => false);
+    }
+  };
+
+  const handleBlocksToggle = (): void => {
+    if (!blocksTabToggle) {
+      setBlocksTabToggle(() => true);
+      setPropsTabToggle(() => false);
+    }
+  };
+
   return (
-    <div className="container is-fluid">
-      <div className={`tabs is-toggle ${styles.editorNavBar} mb-0`}>
-        <div className={styles.panelTopLeft}>
-          <div
-            className={`${styles.panelSliderLeft} ${
-              leftPanelOpen ? styles.isOpen : styles.isClosed
-            }`}
+    <>
+      <div className={styles.ratioPicker}>
+        <InputList
+          onChange={(i: number) => onChangeScreenRatio(i)}
+          options={screenRatios}
+          value={screenRatios[selectedRatio]}
+        />
+      </div>
+      <div className="container is-fluid">
+        <div className={`tabs is-toggle ${styles.editorNavBar} mb-0`}>
+          <div className={styles.panelTopLeft}>
+            <div
+              className={`${styles.panelSliderLeft} ${
+                leftPanelOpen ? styles.isOpen : styles.isClosed
+              }`}
+            />
+            <Button
+              className="is-primary"
+              icon={leftPanelOpen ? 'angles-left' : 'angles-right'}
+              onClick={handleLeftPanelToggle}
+            />
+          </div>
+          <ul>
+            {tabs.map((tab) => (
+              <li className={tab.path === tabPath ? 'is-active' : ''} key={tab.tabName}>
+                <Link to={tab.path}>
+                  <span className="icon">
+                    <i aria-hidden="true" className={tab.icon} />
+                  </span>
+                  <span>{formatMessage(tab.title)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Button
+            disabled={index < 1}
+            icon="rotate-left"
+            onClick={onUndo}
+            title={`${formatMessage(messages.undo)}\n ${unsaved.slice(-1)}`}
           />
           <Button
-            className="is-primary"
-            icon={leftPanelOpen ? 'angles-left' : 'angles-right'}
-            onClick={handleLeftPanelToggle}
+            disabled={index >= saveStack.length - 1}
+            icon="rotate-right"
+            onClick={onRedo}
+            title={`${formatMessage(messages.redo)}\n ${unsaved.slice(-1)}`}
           />
-        </div>
-        <ul>
-          {tabs.map((tab) => (
-            <li className={tab.path === tabPath ? 'is-active' : ''} key={tab.tabName}>
-              <Link to={tab.path}>
-                <span className="icon">
-                  <i aria-hidden="true" className={tab.icon} />
-                </span>
-                <span>{formatMessage(tab.title)}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <Button
-          disabled={index < 1}
-          icon="rotate-left"
-          onClick={onUndo}
-          title={`${formatMessage(messages.undo)}\n ${unsaved.slice(-1)}`}
-        />
-        <Button
-          disabled={index >= saveStack.length - 1}
-          icon="rotate-right"
-          onClick={onRedo}
-          title={`${formatMessage(messages.redo)}\n ${unsaved.slice(-1)}`}
-        />
-        <Button
-          className={
-            unsavedChanges
-              ? `is-align-content-flex-end ${styles.highLight}`
-              : 'is-align-content-flex-end'
-          }
-          icon="save"
-          onClick={handleSave}
-          title={
-            getUnsavedChanges().join('') === `${formatMessage(messages.unsavedChanges)}:\n`
-              ? ''
-              : getUnsavedChanges().join('')
-          }
-        />
-        <BugButton />
-        <div className={styles.panelTopRight}>
           <Button
-            className="is-primary"
-            icon={rightPanelOpen ? 'angles-right' : 'angles-left'}
-            onClick={handleRightPanelToggle}
+            className={
+              unsavedChanges
+                ? `is-align-content-flex-end ${styles.highLight}`
+                : 'is-align-content-flex-end'
+            }
+            icon="save"
+            onClick={handleSave}
+            title={
+              getUnsavedChanges().join('') === `${formatMessage(messages.unsavedChanges)}:\n`
+                ? ''
+                : getUnsavedChanges().join('')
+            }
           />
-          <div
-            className={`${styles.panelSliderRight} ${
-              rightPanelOpen ? styles.isOpen : styles.isClosed
-            }`}
-          />
+          <BugButton />
+          <div className={styles.panelTopRight}>
+            <Button
+              className="is-primary"
+              icon={rightPanelOpen ? 'angles-right' : 'angles-left'}
+              onClick={handleRightPanelToggle}
+            />
+
+            <div
+              className={`${styles.panelSliderRight} ${
+                rightPanelOpen ? styles.isOpen : styles.isClosed
+              }`}
+            >
+              {currentTab.tabName === 'pages' && (
+                <>
+                  <Button
+                    className={`pages-right-tab-btn ${propsTabToggle ? 'toggled' : 'toggle'}`}
+                    icon="sliders"
+                    onClick={handlePropertiesToggle}
+                  >
+                    Properties
+                  </Button>
+                  <Button
+                    className={`pages-right-tab-btn ${blocksTabToggle ? 'toggled' : 'toggle'}`}
+                    icon="cubes"
+                    onClick={handleBlocksToggle}
+                  >
+                    Blocks
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className={`${styles.guiEditorContainer} m-0 p-0`}>
+          {currentTab.tabName === 'general' && (
+            <GeneralTab
+              changeIn={changeIn}
+              deleteIn={deleteIn}
+              docRef={docRef}
+              frameRef={frame}
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              selectedResolution={screenRatios[selectedRatio]}
+            />
+          )}
+          {currentTab.tabName === 'resources' && (
+            <ResourcesTab
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              tab={currentTab}
+            />
+          )}
+          {currentTab.tabName === 'pages' && (
+            <PagesTab
+              addIn={addIn}
+              blocksTabShow={blocksTabToggle}
+              changeIn={changeIn}
+              deleteIn={deleteIn}
+              docRef={docRef}
+              frameRef={frame}
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              propsTabShow={propsTabToggle}
+              saveStack={saveStack[index]}
+              selectedResolution={screenRatios[selectedRatio]}
+              toggleProps={handlePropertiesToggle}
+            />
+          )}
+          {currentTab.tabName === 'theme' && (
+            <ThemeTab
+              changeIn={changeIn}
+              deleteIn={deleteIn}
+              docRef={docRef}
+              frameRef={frame}
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              saveStack={saveStack[index]}
+              selectedResolution={screenRatios[selectedRatio]}
+            />
+          )}
+          {currentTab.tabName === 'style' && (
+            <StyleTab
+              coreStyle={coreStyle}
+              docRef={docRef}
+              frameRef={frame}
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              saveStack={saveStack[index]}
+              selectedResolution={screenRatios[selectedRatio]}
+              setCoreStyle={setCoreStyle}
+            />
+          )}
+          {currentTab.tabName === 'security' && (
+            <SecurityTab
+              isOpenLeft={leftPanelOpen}
+              isOpenRight={rightPanelOpen}
+              selectedResolution={screenRatios[selectedRatio]}
+            />
+          )}
         </div>
       </div>
-      <div className={`${styles.guiEditorContainer} m-0 p-0`}>
-        {currentTab.tabName === 'general' && (
-          <GeneralTab
-            changeIn={changeIn}
-            deleteIn={deleteIn}
-            docRef={docRef}
-            frameRef={frame}
-            isOpenLeft={leftPanelOpen}
-            isOpenRight={rightPanelOpen}
-          />
-        )}
-        {currentTab.tabName === 'resources' && (
-          <ResourcesTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} tab={currentTab} />
-        )}
-        {currentTab.tabName === 'pages' && (
-          <PagesTab
-            addIn={addIn}
-            changeIn={changeIn}
-            deleteIn={deleteIn}
-            docRef={docRef}
-            frameRef={frame}
-            isOpenLeft={leftPanelOpen}
-            isOpenRight={rightPanelOpen}
-            saveStack={saveStack[index]}
-          />
-        )}
-        {currentTab.tabName === 'theme' && (
-          <ThemeTab
-            changeIn={changeIn}
-            deleteIn={deleteIn}
-            docRef={docRef}
-            frameRef={frame}
-            isOpenLeft={leftPanelOpen}
-            isOpenRight={rightPanelOpen}
-            saveStack={saveStack[index]}
-          />
-        )}
-        {currentTab.tabName === 'style' && (
-          <StyleTab
-            coreStyle={coreStyle}
-            docRef={docRef}
-            frameRef={frame}
-            isOpenLeft={leftPanelOpen}
-            isOpenRight={rightPanelOpen}
-            saveStack={saveStack[index]}
-            setCoreStyle={setCoreStyle}
-          />
-        )}
-        {currentTab.tabName === 'security' && (
-          <SecurityTab isOpenLeft={leftPanelOpen} isOpenRight={rightPanelOpen} />
-        )}
-      </div>
-    </div>
+    </>
   );
 }

@@ -13,6 +13,10 @@
   @media screen and (width >= 1024px) {
     margin-left: menu-width;
   }
+
+  &.gui {
+    margin-left: 0;
+  }
 }
 
 .sideMenu {
@@ -38,6 +42,13 @@
   &.open {
     left: 0;
   }
+
+  &.gui {
+    display: none;
+    left: calc(-1 * menu-width);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .backdrop {
@@ -48,7 +59,7 @@
 
   /* This matches the size of the navbar */
   transition: opacity 0.15s;
-  z-index: 4000;
+  z-index: 1400;
 
   @media screen and (width >= 1024px) {
     display: none;
@@ -57,5 +68,10 @@
   &.closed {
     opacity: 0;
     pointer-events: none;
+  }
+
+  &.gui {
+    display: none;
+    left: calc(-1 * menu-width);
   }
 }

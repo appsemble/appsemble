@@ -88,14 +88,28 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
         [enabled, disable, toggle],
       )}
     >
-      <div className={styles.sideMenuWrapper}>
+      <div
+        className={classNames(styles.sideMenuWrapper, {
+          [styles.gui]: location.pathname.includes('gui'),
+        })}
+      >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
-          className={classNames(styles.backdrop, { [styles.closed]: !enabled })}
+          className={classNames(
+            styles.backdrop,
+            { [styles.closed]: !enabled },
+            { [styles.gui]: location.pathname.includes('gui') },
+          )}
           onClick={disable}
           role="presentation"
         />
-        <aside className={classNames(`menu ${styles.sideMenu}`, { [styles.open]: enabled })}>
+        <aside
+          className={classNames(
+            `menu ${styles.sideMenu}`,
+            { [styles.open]: enabled },
+            { [styles.gui]: location.pathname.includes('gui') },
+          )}
+        >
           {base}
           {menu}
           {bottom}

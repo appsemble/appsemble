@@ -19,6 +19,7 @@ interface ThemeTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly selectedResolution: string;
 }
 export function ThemeTab({
   changeIn,
@@ -28,6 +29,7 @@ export function ThemeTab({
   isOpenLeft,
   isOpenRight,
   saveStack,
+  selectedResolution,
 }: ThemeTabProps): ReactElement {
   const { formatMessage } = useIntl();
   const { app } = useApp();
@@ -65,7 +67,17 @@ export function ThemeTab({
           />
         </>
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={`${styles.root} ${
+          selectedResolution === 'fullscreen'
+            ? styles.fullscreen
+            : selectedResolution === 'desktop'
+            ? styles.desktop
+            : selectedResolution === 'phone'
+            ? styles.phone
+            : ''
+        }`}
+      >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

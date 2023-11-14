@@ -1,4 +1,4 @@
-import { Button, useMessages } from '@appsemble/react-components';
+import { Button, Confirmation, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type BlockDefinition, type PageDefinition } from '@appsemble/types';
 import {
   type ChangeEvent,
@@ -219,30 +219,53 @@ export function PageProperty({
     );
   }, [docRef, formatMessage, saveStack, selectedPage]);
 
+  const handleDelete = useConfirmation({
+    title: 'Careful!',
+    body: 'Do you really want to delete this page?',
+    cancelLabel: 'No',
+    confirmLabel: 'Yes',
+    color: 'danger',
+    action: () => deletePage(),
+  });
+
   return (
     <div>
-      {selectedPage !== -1 && (
-        <Button className="is-danger" component="a" icon="trash" onClick={() => deletePage()}>
-          {formatMessage(messages.deletePage)}
+      <Confirmation>
+        {selectedPage !== -1 && (
+          <Button className="is-danger" component="a" icon="trash" onClick={() => handleDelete()}>
+            {formatMessage(messages.deletePage)}
+          </Button>
+        )}
+        <InputString label="Name" onChange={onChangePageName} value={currentPageName} />
+        <InputList
+          label="Type"
+          onChange={onChangePageType}
+          options={pageTypes}
+          value={inputPageType}
+        />
+        <Button
+          className="is-primary"
+          component="a"
+          icon="add"
+          onClick={onChangePage}
+          style={{ margin: '3px' }}
+        >
+          {selectedPage === -1
+            ? formatMessage(messages.createPage)
+            : formatMessage(messages.savePage)}
         </Button>
-      )}
-      <InputString label="Name" onChange={onChangePageName} value={currentPageName} />
-      <InputList
-        label="Type"
-        onChange={onChangePageType}
-        options={pageTypes}
-        value={inputPageType}
-      />
-      <Button className="is-primary" component="a" icon="add" onClick={onChangePage}>
-        {selectedPage === -1
-          ? formatMessage(messages.createPage)
-          : formatMessage(messages.savePage)}
-      </Button>
-      {inputPageType !== 'page' && selectedPage !== -1 && (
-        <Button className="is-primary" component="a" icon="add" onClick={onCreateSubPage}>
-          {formatMessage(messages.createSubPage)}
-        </Button>
-      )}
+        {inputPageType !== 'page' && selectedPage !== -1 && (
+          <Button
+            className="is-primary"
+            component="a"
+            icon="add"
+            onClick={onCreateSubPage}
+            style={{ margin: '3px' }}
+          >
+            {formatMessage(messages.createSubPage)}
+          </Button>
+        )}
+      </Confirmation>
     </div>
   );
 }

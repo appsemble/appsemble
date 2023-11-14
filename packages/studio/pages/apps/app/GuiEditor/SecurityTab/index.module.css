@@ -1,5 +1,4 @@
 .root {
-  flex: 1;
   height: 80vh;
 }
 
@@ -24,4 +23,24 @@
   padding: 0.5rem;
   row-gap: 0.8rem;
   width: 100%;
+}
+
+.fullscreen {
+  flex: 1;
+}
+
+.desktop {
+  aspect-ratio: 16 / 9;
+  border: 20px solid hsl(0deg 0% 0%);
+  border-radius: 15px;
+  margin: auto;
+  max-height: 75%;
+}
+
+.phone {
+  aspect-ratio: 9 / 18;
+  border: 20px solid hsl(0deg 0% 0%);
+  border-radius: 15px;
+  margin: auto;
+  max-height: 80vh;
 }

@@ -42,3 +42,10 @@
 .input {
   height: 2rem;
 }
+
+/* stylelint-disable selector-max-attribute */
+div[class*='dropdown-content'] {
+  max-height: 20vh;
+  overflow: hidden auto;
+  width: 15.2vw;
+}

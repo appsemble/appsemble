@@ -26,6 +26,7 @@ export interface GeneralTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
+  readonly selectedResolution: string;
 }
 
 const languages = [
@@ -64,6 +65,7 @@ export function GeneralTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
+  selectedResolution,
 }: GeneralTabProps): ReactElement {
   const { app } = useApp();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
@@ -166,7 +168,17 @@ export function GeneralTab({
           ))}
         </>
       </Sidebar>
-      <div className={styles.root}>
+      <div
+        className={`${styles.root} ${
+          selectedResolution === 'fullscreen'
+            ? styles.fullscreen
+            : selectedResolution === 'desktop'
+            ? styles.desktop
+            : selectedResolution === 'phone'
+            ? styles.phone
+            : ''
+        }`}
+      >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>
       <Sidebar isOpen={isOpenRight} type="right">

@@ -22,8 +22,8 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  max-width: 19%;
-  width: 19%;
+  max-width: 20%;
+  width: 20%;
 }
 
 .panelSliderLeft {
@@ -35,10 +35,13 @@
 }
 
 .panelSliderRight {
+  align-items: center;
   background-color: hsl(0deg 0% 100%);
   border: hsl(0deg 0% 83%) 1px solid;
   border-radius: 0 4px 0 0;
-  display: block;
+  display: flex;
+  justify-content: space-evenly;
+  overflow: hidden;
 }
 
 .isClosed {
@@ -72,6 +75,14 @@
   animation-name: color;
 }
 
+.ratioPicker {
+  left: 50%;
+  margin: auto;
+
+  /* Bad for resizing */
+  position: absolute;
+}
+
 @keyframes color {
   10% {
     background-color: hsl(0deg 0% 100%);
@@ -84,4 +95,53 @@
   90% {
     background-color: hsl(0deg 0% 100%);
   }
+}
+
+/* Default styles for the right top bar buttons */
+/* stylelint-disable selector-max-attribute */
+button[class*='pages-right-tab-btn'] {
+  height: 32px;
+  transition: all 0.1s ease-out;
+}
+
+/* Styles when the buttons are focused */
+button[class*='pages-right-tab-btn']:focus {
+  color: hsl(0deg 0% 100%);
+}
+
+/* Styles when the button is NOT toggled (i.e., has the 'toggle' class) */
+button[class*='pages-right-tab-btn toggle'] {
+  background-color: hsl(0deg 0% 96%);
+  color: hsl(0deg 0% 21%);
+}
+
+/* .button.pages-right-tab-btn.toggle {
+  background-color: hsl(0deg 0% 96%) !important;
+  color: hsl(0deg 0% 21%) !important;
+} */
+
+/* Styles when the button IS toggled (i.e., has the 'toggled' class) */
+button[class*='pages-right-tab-btn toggled'] {
+  background-color: hsl(219deg 95% 35%);
+  color: hsl(0deg 0% 100%);
+}
+
+/* Hover effect when the button is NOT toggled */
+button[class*='pages-right-tab-btn toggle']:hover {
+  border-color: hsl(0deg 0% 21%);
+}
+
+/* Hover effect when the button IS toggled */
+button[class*='pages-right-tab-btn toggled']:hover {
+  color: hsl(0deg 0% 100%);
+}
+
+/* Styles when the button is NOT toggled but is in focus */
+button[class*='pages-right-tab-btn toggle']:focus {
+  color: hsl(0deg 0% 31%);
+}
+
+/* Styles when the button IS toggled and is in focus */
+button[class*='pages-right-tab-btn toggled']:focus {
+  color: hsl(0deg 0% 100%);
 }
