@@ -191,7 +191,7 @@ declare module '@appsemble/sdk' {
      *
      * This means this field will be displayed directly on the screen instead of in the modal.
      */
-    highlight?: string;
+    highlight?: string[] | string;
   }
 
   interface Messages {
