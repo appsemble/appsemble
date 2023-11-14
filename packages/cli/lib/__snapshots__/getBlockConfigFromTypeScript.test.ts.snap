@@ -1776,6 +1776,17 @@ By setting this to true, an exact match is used.",
         "type": "array",
       },
       "highlight": {
+        "anyOf": [
+          {
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          {
+            "type": "string",
+          },
+        ],
         "description": "The name of a field to highlight.
 
 This means this field will be displayed directly on the screen instead of in the modal.",
