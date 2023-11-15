@@ -2,7 +2,7 @@ import { Loader } from '@appsemble/react-components';
 import { type AppMember, type TeamMember, type UserInfo } from '@appsemble/types';
 import { setUser } from '@sentry/browser';
 import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import {
   createContext,
   type Dispatch,
@@ -130,7 +130,6 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
         ...params,
       }),
     );
-    // @ts-expect-error https://github.com/auth0/jwt-decode/pull/130
     const payload = jwtDecode<JwtPayload>(accessToken);
     localStorage.setItem(REFRESH_TOKEN, rt);
     const auth = `Bearer ${accessToken}`;

@@ -54,9 +54,9 @@
     "type-fest": "^4.0.0"
   },
   "devDependencies": {
-    "@types/langmap": "^0.0.1",
+    "@types/langmap": "^0.0.3",
     "@types/language-tags": "^1.0.0",
-    "@types/lcm": "^0.0.0",
+    "@types/lcm": "^0.0.2",
     "bulma": "0.9.3",
     "koas-core": "^0.7.0",
     "vitest": "^0.34.0",
