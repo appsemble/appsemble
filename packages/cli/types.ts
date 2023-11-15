@@ -1,5 +1,5 @@
 import { type AppVisibility } from '@appsemble/types';
-import { type PackageJson } from 'read-pkg-up';
+import { type PackageJson } from 'read-package-up';
 import { type JsonObject } from 'type-fest';
 
 /**

@@ -55,7 +55,7 @@
     "fast-deep-equal": "^3.0.0",
     "indent-string": "^5.0.0",
     "jsonschema": "^1.0.0",
-    "jwt-decode": "^3.0.0",
+    "jwt-decode": "^4.0.0",
     "monaco-editor": "^0.41.0",
     "monaco-marker-data-provider": "^1.0.0",
     "monaco-worker-manager": "^2.0.0",
