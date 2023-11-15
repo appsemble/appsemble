@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { OAuth2Secrets } from './OAuth2Secrets/index.js';
@@ -189,7 +190,21 @@ export function SecretsPage(): ReactNode {
       <ServiceSecrets />
       <OAuth2Secrets />
       <SamlSecrets />
-      <Collapsible title={<FormattedMessage {...messages.ssl} />}>
+      <Collapsible
+        help={
+          <FormattedMessage
+            {...messages.sslDescription}
+            values={{
+              link: (link) => (
+                <Link rel="noopener noreferrer" target="_blank" to={`/${lang}/docs/03-guide/tls`}>
+                  {link}
+                </Link>
+              ),
+            }}
+          />
+        }
+        title={<FormattedMessage {...messages.ssl} />}
+      >
         <SSLSecrets />
       </Collapsible>
       <Collapsible title="SCIM">
