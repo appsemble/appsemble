@@ -3,7 +3,7 @@ import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
   forwardRef,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -37,7 +37,7 @@ interface JSONFieldProps
  * If the user enters invalid JSON, an error help message will be rendered.
  */
 export const JSONField = forwardRef<HTMLTextAreaElement, JSONFieldProps>(
-  ({ error, onChange, value, ...props }, ref): ReactElement => {
+  ({ error, onChange, value, ...props }, ref): ReactNode => {
     const [oldValue, setOldValue] = useState(JSON.stringify(value, null, 2));
     const [parseError, setParseError] = useState(false);
 

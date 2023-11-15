@@ -1,5 +1,5 @@
 import { Icon, NavbarDropdown, NavbarItem, useToggle } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useParams } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import { useAppDefinition } from '../AppDefinitionProvider/index.js';
 import { DemoLogin } from '../DemoLogin/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function ProfileDropdown(): ReactElement {
+export function ProfileDropdown(): ReactNode {
   const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();

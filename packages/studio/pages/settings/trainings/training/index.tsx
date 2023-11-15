@@ -9,7 +9,7 @@ import {
 import { type Training, type TrainingBlock } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ import { TrainingCard } from '../../../../components/TrainingCard/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
-export function TrainingHomePage(): ReactElement {
+export function TrainingHomePage(): ReactNode {
   const { trainingId } = useParams<{ trainingId: string }>();
   const { organizations, userInfo } = useUser();
 

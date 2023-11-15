@@ -10,7 +10,7 @@ import {
 } from '@appsemble/react-components';
 import { type SSLStatus } from '@appsemble/types';
 import { domainPattern, normalize } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -54,7 +54,7 @@ export function CollectionFields({
   header,
   onExpertPhotoChange,
   onHeaderChange,
-}: CollectionFieldsProps): ReactElement {
+}: CollectionFieldsProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
 
   const avatarModalToggle = useToggle();

@@ -1,12 +1,12 @@
 import { MetaSwitch } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage/index.js';
 import { messages } from './messages.js';
 import { ResourceRoutes } from './resource/index.js';
 
-export function ResourcesRoutes(): ReactElement {
+export function ResourcesRoutes(): ReactNode {
   return (
     <MetaSwitch title={messages.title}>
       <Route element={<IndexPage />} path="/" />

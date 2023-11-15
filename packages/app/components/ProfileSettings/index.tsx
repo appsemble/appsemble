@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ import { PicturePreview } from './PicturePreview/index.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function ProfileSettings(): ReactElement {
+export function ProfileSettings(): ReactNode {
   const { formatMessage } = useIntl();
   const { setUserInfo, userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();

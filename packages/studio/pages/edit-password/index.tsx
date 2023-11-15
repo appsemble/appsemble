@@ -6,12 +6,12 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 
-export function EditPasswordPage(): ReactElement {
+export function EditPasswordPage(): ReactNode {
   useMeta(messages.title);
 
   const qs = useQuery();

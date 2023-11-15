@@ -1,6 +1,6 @@
 import { Modal, useData, useToggle } from '@appsemble/react-components';
 import { type ResourceVersion } from '@appsemble/types';
-import { type ReactElement, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { AsyncDataView } from '../../../../../../../components/AsyncDataView/ind
 import { CodeBlock } from '../../../../../../../components/CodeBlock/index.js';
 import { ListButton } from '../../../../../../../components/ListButton/index.js';
 
-export function ResourceHistory(): ReactElement {
+export function ResourceHistory(): ReactNode {
   const { id, resourceId, resourceName } = useParams<{
     id: string;
     resourceName: string;

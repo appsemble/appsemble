@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 
 import styles from './index.module.css';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -8,7 +8,7 @@ import { useUser } from '../UserProvider/index.js';
 /**
  * Render all different authentication methods for an app.
  */
-export function PermissionRequest(): ReactElement {
+export function PermissionRequest(): ReactNode {
   const { definition } = useAppDefinition();
   const { userInfo } = useUser();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();

@@ -1,6 +1,6 @@
 import { captureMessage } from '@sentry/browser';
 import axios from 'axios';
-import { type ReactElement, type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -58,7 +58,7 @@ export function SentryForm({
   eventId,
   name,
   recovery = null,
-}: SentryFormProps): ReactElement {
+}: SentryFormProps): ReactNode {
   const [submitted, setSubmitted] = useState(false);
 
   const defaultValues = useMemo(
@@ -81,7 +81,7 @@ export function SentryForm({
   );
 
   if (!dsn) {
-    return recovery as ReactElement;
+    return recovery;
   }
 
   if (submitted) {

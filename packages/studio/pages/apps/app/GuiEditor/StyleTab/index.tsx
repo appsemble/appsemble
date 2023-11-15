@@ -1,4 +1,4 @@
-import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
+import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -27,7 +27,7 @@ export function StyleTab({
   saveStack,
   selectedResolution,
   setCoreStyle,
-}: StyleTabProps): ReactElement {
+}: StyleTabProps): ReactNode {
   const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(-1);
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);

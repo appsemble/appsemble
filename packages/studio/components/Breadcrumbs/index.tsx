@@ -1,7 +1,7 @@
 import { useBreadcrumbs } from '@appsemble/react-components';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { type ReactElement } from 'rehype-react/lib';
+import { type ReactNode } from 'rehype-react/lib';
 
 import { messages } from './messages.js';
 import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
@@ -9,7 +9,7 @@ import { useBreadCrumbsDecoration } from '../BreadCrumbsDecoration/index.js';
 /**
  * Render breadcrumbs based on the `<MetaProvider />`.
  */
-export function Breadcrumbs(): ReactElement {
+export function Breadcrumbs(): ReactNode {
   const breadcrumbs = useBreadcrumbs();
   const { formatMessage } = useIntl();
 

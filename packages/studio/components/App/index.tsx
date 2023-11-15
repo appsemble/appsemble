@@ -6,7 +6,7 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -46,7 +46,7 @@ const studioContent = (
   </SideMenuProvider>
 );
 
-function Providers({ content }: { readonly content: ReactElement }): ReactElement {
+function Providers({ content }: { readonly content: ReactNode }): ReactNode {
   return (
     <StudioMessagesProvider>
       <MDXProvider
@@ -77,7 +77,7 @@ function Providers({ content }: { readonly content: ReactElement }): ReactElemen
   );
 }
 
-function TopLevelCollection({ id }: { readonly id: number }): ReactElement {
+function TopLevelCollection({ id }: { readonly id: number }): ReactNode {
   return (
     <>
       <Toolbar />
@@ -90,7 +90,7 @@ function TopLevelCollection({ id }: { readonly id: number }): ReactElement {
   );
 }
 
-export function App(): ReactElement {
+export function App(): ReactNode {
   if (customDomainAppCollection) {
     const content = <TopLevelCollection id={customDomainAppCollection.id} />;
     return (

@@ -6,7 +6,7 @@ import {
   useSideMenu,
 } from '@appsemble/react-components';
 import { normalize, normalized, Permission } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useParams } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ import { checkRole } from '../../../utils/checkRole.js';
 /**
  * Render routes related to apps.
  */
-export function OrganizationRoutes(): ReactElement {
+export function OrganizationRoutes(): ReactNode {
   const { organizations } = useUser();
   const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();
   const url = `/${lang}/organizations/${organizationId}`;

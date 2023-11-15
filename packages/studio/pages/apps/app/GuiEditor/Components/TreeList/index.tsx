@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -19,7 +19,7 @@ export function TreeList({
   onClick,
   options,
   value,
-}: TreeListProps): ReactElement {
+}: TreeListProps): ReactNode {
   return (
     <>
       <Button

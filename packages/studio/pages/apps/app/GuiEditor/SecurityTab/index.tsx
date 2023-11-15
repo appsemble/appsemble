@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { CreateRolePage } from './CreateRolePage/index.js';
@@ -40,7 +40,7 @@ export function SecurityTab({
   isOpenLeft,
   isOpenRight,
   selectedResolution,
-}: SecurityTabProps): ReactElement {
+}: SecurityTabProps): ReactNode {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const frame = useRef<HTMLIFrameElement>();

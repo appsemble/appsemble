@@ -3,7 +3,7 @@ import {
   type ComponentPropsWithoutRef,
   createElement,
   Fragment,
-  type ReactElement,
+  type ReactNode,
   useMemo,
 } from 'react';
 import rehypeReact from 'rehype-react';
@@ -37,11 +37,11 @@ interface PreProps {
   readonly children: string;
 }
 
-function Pre(props: PreProps): ReactElement {
+function Pre(props: PreProps): ReactNode {
   return <CodeBlock {...props} copy />;
 }
 
-function Anchor({ children, ...props }: ComponentPropsWithoutRef<'a'>): ReactElement {
+function Anchor({ children, ...props }: ComponentPropsWithoutRef<'a'>): ReactNode {
   return (
     <a {...props} rel="noopener noreferrer" target="_blank">
       {children}
@@ -70,7 +70,7 @@ const processor = unified()
 /**
  * Render a Markdown document as HTML.
  */
-export function MarkdownContent({ className, content, lang }: MarkdownContentProps): ReactElement {
+export function MarkdownContent({ className, content, lang }: MarkdownContentProps): ReactNode {
   const node = useMemo(() => processor.processSync(content).result, [content]);
 
   return content ? (

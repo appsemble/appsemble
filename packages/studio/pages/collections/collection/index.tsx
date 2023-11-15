@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Route, useParams } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ interface CollectionRoutesProps {
   readonly fallbackCollectionId?: number;
 }
 
-export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps): ReactElement {
+export function CollectionRoutes({ fallbackCollectionId }: CollectionRoutesProps): ReactNode {
   const { collectionId, lang } = useParams<{
     lang: string;
     organizationId: string;

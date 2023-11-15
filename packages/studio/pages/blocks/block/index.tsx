@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, stripBlockName } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { isMap, parseDocument } from 'yaml';
@@ -28,7 +28,7 @@ import { Schema } from '../../../components/Schema/index.js';
 /**
  * Render documentation for blocks.
  */
-export function BlockPage(): ReactElement {
+export function BlockPage(): ReactNode {
   const { formatMessage } = useIntl();
 
   const {

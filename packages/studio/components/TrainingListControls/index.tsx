@@ -1,6 +1,6 @@
 import { InputField, SelectField } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -33,7 +33,7 @@ export function TrainingListControls({
   onSortChange,
   reverse,
   sort,
-}: TrainingListControlsProps): ReactElement {
+}: TrainingListControlsProps): ReactNode {
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
 

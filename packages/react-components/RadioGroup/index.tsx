@@ -1,9 +1,4 @@
-import {
-  type ChangeEvent,
-  type ComponentPropsWithoutRef,
-  type ReactElement,
-  type ReactNode,
-} from 'react';
+import { type ChangeEvent, type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import { FormComponent, ValuePickerProvider } from '../index.js';
 
@@ -41,7 +36,7 @@ export function RadioGroup({
   onChange,
   required,
   value,
-}: RadioGroupProps): ReactElement {
+}: RadioGroupProps): ReactNode {
   return (
     <FormComponent className={className} id={name} label={label} required={required}>
       <ValuePickerProvider name={name} onChange={onChange} value={value}>

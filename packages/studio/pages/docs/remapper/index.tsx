@@ -1,6 +1,6 @@
 import { MetaSwitch, useMeta } from '@appsemble/react-components';
 import { defaultLocale } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Route } from 'react-router-dom';
 
 import StringDocs from './docs/00-strings.mdx';
@@ -15,7 +15,7 @@ import OtherDocs from './docs/other.mdx';
 import Introduction from './introduction.mdx';
 import { messages } from './messages.js';
 
-export function RemapperRoutes(): ReactElement {
+export function RemapperRoutes(): ReactNode {
   // TODO: Incorporate translations into the remapper section files
   useMeta(messages.title, messages.description);
 

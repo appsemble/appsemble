@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -14,7 +14,7 @@ const teamsInviteOptions = ['$team:member', '$team:manager'] as const;
 interface TeamsPageProps {
   readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
-export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactElement {
+export function TeamsPage({ onChangeTab }: TeamsPageProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 

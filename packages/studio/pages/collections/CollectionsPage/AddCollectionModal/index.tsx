@@ -7,7 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -36,7 +36,7 @@ const defaultValues = {
   domain: null as string | null,
 };
 
-export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps): ReactElement {
+export function AddCollectionModal({ onCreated, state }: AddCollectionModalProps): ReactNode {
   const [header, setHeader] = useState<File>();
   const [expertPhoto, setExpertPhoto] = useState<File>();
 

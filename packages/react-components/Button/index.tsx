@@ -1,6 +1,6 @@
 import { type BulmaColor, type BulmaSize } from '@appsemble/types';
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ElementType, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ElementType, type ReactNode } from 'react';
 
 import { ButtonChildren } from '../index.js';
 
@@ -55,7 +55,7 @@ export function Button<C extends ElementType = 'button'>({
   inverted,
   loading,
   ...props
-}: ButtonProps<C> & Omit<ComponentPropsWithoutRef<C>, keyof ButtonProps<C>>): ReactElement {
+}: ButtonProps<C> & Omit<ComponentPropsWithoutRef<C>, keyof ButtonProps<C>>): ReactNode {
   if (Component === 'button') {
     // @ts-expect-error TypeScript can’t statically determine the type from props based on
     // Component.

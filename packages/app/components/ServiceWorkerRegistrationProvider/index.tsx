@@ -2,7 +2,6 @@ import { urlB64ToUint8Array } from '@appsemble/web-utils';
 import axios from 'axios';
 import {
   createContext,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
@@ -28,7 +27,7 @@ export function useServiceWorkerRegistration(): ServiceWorkerRegistrationContext
 export function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
-}: ServiceWorkerRegistrationProviderProps): ReactElement {
+}: ServiceWorkerRegistrationProviderProps): ReactNode {
   const [permission, setPermission] = useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = useState<PushSubscription>();
 

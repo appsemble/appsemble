@@ -1,7 +1,7 @@
 import { SelectField } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
 import { type Schema } from 'jsonschema';
-import { type ChangeEvent, type ReactElement, useCallback, useContext, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useContext, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import { SchemaDefinitionsContext } from '../../index.js';
@@ -19,7 +19,7 @@ export function AnyOfProperty({
   property,
   schema,
   value,
-}: AnyOfPropertyProps): ReactElement {
+}: AnyOfPropertyProps): ReactNode {
   const definitions = useContext(SchemaDefinitionsContext) as Record<string, Schema>;
 
   const resolveReferences = (schemaCheck: Schema): Schema => {

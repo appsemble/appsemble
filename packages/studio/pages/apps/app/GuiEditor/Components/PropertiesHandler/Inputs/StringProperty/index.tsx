@@ -1,7 +1,7 @@
 import { InputField, TextAreaField } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 interface StringPropertyProps {
   readonly value: any;
@@ -15,7 +15,7 @@ export function StringProperty({
   property,
   schema,
   value,
-}: StringPropertyProps): ReactElement {
+}: StringPropertyProps): ReactNode {
   const { example, format, maxLength, minLength, multipleOf } = schema as OpenAPIV3.SchemaObject;
   const commonProps = {
     maxLength,

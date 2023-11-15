@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { JSONSchemaArrayEditor } from '../JSONSchemaArrayEditor/index.js';
 import { JSONSchemaBooleanEditor } from '../JSONSchemaBooleanEditor/index.js';
@@ -9,7 +9,7 @@ import { JSONSchemaStringEditor } from '../JSONSchemaStringEditor/index.js';
 import { JSONSchemaUnknownEditor } from '../JSONSchemaUnknownEditor/index.js';
 import { type CommonJSONSchemaEditorProps } from '../types.js';
 
-export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactElement {
+export function RecursiveJSONSchemaEditor(props: CommonJSONSchemaEditorProps<any>): ReactNode {
   const { schema } = props;
 
   if (schema.enum) {

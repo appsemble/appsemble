@@ -1,7 +1,7 @@
 import { Title, useMeta } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale } from '@appsemble/utils';
 import { type OpenAPIV3 } from 'openapi-types';
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactNode } from 'react';
 
 import { Schema } from '../../../../components/Schema/index.js';
 import { messages } from '../messages.js';
@@ -11,7 +11,7 @@ export function RemapperPage({
   remappers,
 }: {
   readonly remappers: Record<string, OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject>;
-}): ReactElement {
+}): ReactNode {
   useMeta(messages.title, messages.description);
   return (
     <main lang={defaultLocale}>

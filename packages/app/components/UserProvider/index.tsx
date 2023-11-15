@@ -7,7 +7,7 @@ import {
   createContext,
   type Dispatch,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -62,7 +62,7 @@ interface UserContext extends LoginState {
 }
 
 interface UserProviderProps {
-  readonly children: ReactElement;
+  readonly children: ReactNode;
 }
 
 /**
@@ -84,7 +84,7 @@ const REFRESH_TOKEN = 'refresh_token';
 
 const Context = createContext<UserContext>(null);
 
-export function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactNode {
   const { definition } = useAppDefinition();
   // If there is no security definition, don’t even bother going into the loading state.
   const [isLoading, setIsLoading] = useState(Boolean(definition.security));

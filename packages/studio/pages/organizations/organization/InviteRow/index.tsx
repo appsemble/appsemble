@@ -1,7 +1,7 @@
 import { AsyncButton, useConfirmation, useMessages } from '@appsemble/react-components';
 import { type OrganizationInvite } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ interface InviteRowProps {
 /**
  * A single row for managing an organization member from the members table.
  */
-export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): ReactElement {
+export function InviteRow({ invite, mayInvite, onDeleted }: InviteRowProps): ReactNode {
   const { formatMessage } = useIntl();
   const { organizationId } = useParams<{ organizationId: string }>();
   const push = useMessages();

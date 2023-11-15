@@ -1,5 +1,5 @@
 import { type ServiceAuthenticationMethod } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { ClientCertificateFieldset } from './ClientCertificateFieldset/index.js';
 import { ClientCredentialsFieldset } from './ClientCredentialsFieldset/index.js';
@@ -13,7 +13,7 @@ interface SwitchFieldProps {
   readonly method: ServiceAuthenticationMethod;
 }
 
-export function SwitchField({ disabled, method }: SwitchFieldProps): ReactElement {
+export function SwitchField({ disabled, method }: SwitchFieldProps): ReactNode {
   switch (method) {
     case 'http-basic':
       return <HttpBasicFieldset disabled={disabled} />;

@@ -1,7 +1,7 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -25,7 +25,7 @@ interface AppCardProps {
 /**
  * Display the basic information of an app and a link for more details.
  */
-export function AppCard({ app, href }: AppCardProps): ReactElement {
+export function AppCard({ app, href }: AppCardProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const appLang = app.definition.defaultLanguage || defaultLocale;
 

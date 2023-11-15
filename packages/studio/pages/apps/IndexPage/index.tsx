@@ -1,6 +1,6 @@
 import { Content, useData } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import {
 import { Collapsible } from '../../../components/Collapsible/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ name: AppSortFunctionName; reverse: boolean }>({
     name: 'rating',

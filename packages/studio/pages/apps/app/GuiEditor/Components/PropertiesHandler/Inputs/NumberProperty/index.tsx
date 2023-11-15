@@ -1,7 +1,7 @@
 import { InputField } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 interface NumberPropertyProps {
   readonly value: any;
@@ -14,7 +14,7 @@ export function NumberProperty({
   property,
   schema,
   value,
-}: NumberPropertyProps): ReactElement {
+}: NumberPropertyProps): ReactNode {
   const onValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, newValue: number) => {
       onChange(property, newValue);

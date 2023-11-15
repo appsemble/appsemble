@@ -1,7 +1,7 @@
 import { Loader, useLocationString } from '@appsemble/react-components';
 import { defaultLocale, detectLocale, has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { IntlProvider } from 'react-intl';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ interface Messages {
   messages: Record<string, string>;
 }
 
-export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
+export function StudioMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const redirect = useLocationString();
   const [messages, setMessages] = useState<Record<string, string>>();

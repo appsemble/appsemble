@@ -11,7 +11,7 @@ import {
 import { type App, type AppCollection } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -32,7 +32,7 @@ const defaultValues = {
 /**
  * Render a button that can be used to add an app to a collection.
  */
-export function AddToCollectionButton({ app }: AppToCollectionButtonProps): ReactElement {
+export function AddToCollectionButton({ app }: AppToCollectionButtonProps): ReactNode {
   const { organizations, userInfo } = useUser();
 
   const [availableCollections, setAvailableCollections] = useState<AppCollection[]>([]);

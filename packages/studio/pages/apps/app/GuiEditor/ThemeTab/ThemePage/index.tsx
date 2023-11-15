@@ -7,7 +7,7 @@ import {
   type Theme,
 } from '@appsemble/types';
 import { baseTheme, googleFonts } from '@appsemble/utils';
-import { type MutableRefObject, type ReactElement, useCallback } from 'react';
+import { type MutableRefObject, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode, type YAMLMap } from 'yaml';
 
@@ -47,7 +47,7 @@ export function ThemePage({
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: ThemePageProps): ReactElement {
+}: ThemePageProps): ReactNode {
   const { formatMessage } = useIntl();
 
   function getTheme(

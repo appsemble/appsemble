@@ -16,7 +16,7 @@ import { type NamedEvent, serializeResource } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -82,7 +82,7 @@ export function ResourceRow({
   resource,
   schema,
   selected,
-}: ResourceRowProps): ReactElement {
+}: ResourceRowProps): ReactNode {
   const {
     id: appId,
     lang,

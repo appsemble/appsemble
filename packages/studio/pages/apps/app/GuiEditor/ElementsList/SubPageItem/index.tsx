@@ -1,6 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type ReactElement, useCallback, useState } from 'react';
+import { type DragEvent, type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
 import styles from './index.module.css';
@@ -35,7 +35,7 @@ export function SubPageItem({
   selectedPage,
   selectedSubParent,
   subPages,
-}: SubPageItemProps): ReactElement {
+}: SubPageItemProps): ReactNode {
   const [disabledSubParents, setDisabledSubParents] = useState<number[]>([]);
 
   const toggleDropdownSubParents = useCallback(

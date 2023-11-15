@@ -1,5 +1,5 @@
 import { Subtitle, Title } from '@appsemble/react-components';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -58,7 +58,7 @@ export function CardHeaderControl({
   subtitle,
   title,
   titleLevel,
-}: CardHeaderControlProps): ReactElement {
+}: CardHeaderControlProps): ReactNode {
   return (
     <div className="card my-3">
       <div className="is-flex card-content">

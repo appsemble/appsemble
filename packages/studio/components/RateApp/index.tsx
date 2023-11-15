@@ -9,7 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { type App, type Rating } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -21,7 +21,7 @@ interface RateAppProps {
   readonly onRate: (rate: Rating) => void;
 }
 
-export function RateApp({ app, onRate }: RateAppProps): ReactElement {
+export function RateApp({ app, onRate }: RateAppProps): ReactNode {
   const modal = useToggle();
   const { formatMessage } = useIntl();
 

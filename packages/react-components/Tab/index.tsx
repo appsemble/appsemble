@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type MouseEvent, type ReactElement, type ReactNode, useCallback } from 'react';
+import { type MouseEvent, type ReactNode, useCallback } from 'react';
 
 import { useValuePicker } from '../index.js';
 
@@ -33,7 +33,7 @@ interface TabProps {
  * Beware that this renders an anchor element. This means no anchor elements should be rendered as
  * children.
  */
-export function Tab({ children, className, href, value }: TabProps): ReactElement {
+export function Tab({ children, className, href, value }: TabProps): ReactNode {
   const { onChange, value: currentValue } = useValuePicker();
 
   const handleClick = useCallback(

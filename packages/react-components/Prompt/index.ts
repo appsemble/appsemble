@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useContext, useEffect } from 'react';
+import { type ReactNode, useCallback, useContext, useEffect } from 'react';
 import { UNSAFE_NavigationContext as NavigationContext } from 'react-router-dom';
 
 /**
@@ -52,7 +52,7 @@ interface PromptProps {
   readonly when?: boolean;
 }
 
-export function Prompt({ message, when }: PromptProps): ReactElement {
+export function Prompt({ message, when }: PromptProps): ReactNode {
   usePrompt(message, when);
   return null;
 }

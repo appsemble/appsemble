@@ -1,5 +1,5 @@
 import { Button, ModalCard } from '@appsemble/react-components';
-import { type Dispatch, type ReactElement, type SetStateAction, useCallback } from 'react';
+import { type Dispatch, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -31,7 +31,7 @@ function createUrl(origin: string, params: Record<string, string>): string {
 export function ShareDialog({
   setShareDialogParams,
   shareDialogParams,
-}: ShareDialogParams): ReactElement {
+}: ShareDialogParams): ReactNode {
   const rejectShareDialog = useCallback(() => {
     setShareDialogParams((old) => {
       old?.reject('Closed share dialog');

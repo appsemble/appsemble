@@ -7,12 +7,12 @@ import {
 import { type TokenResponse } from '@appsemble/types';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { messages } from './messages.js';
 import { useUser } from '../../components/UserProvider/index.js';
 
-export function RegisterPage(): ReactElement {
+export function RegisterPage(): ReactNode {
   useMeta(messages.title, messages.description);
 
   const { login } = useUser();

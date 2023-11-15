@@ -14,7 +14,7 @@ import { type AppCollection } from '@appsemble/types';
 import axios from 'axios';
 import {
   type Dispatch,
-  type ReactElement,
+  type ReactNode,
   type SetStateAction,
   useCallback,
   useMemo,
@@ -32,7 +32,7 @@ interface SettingsPageProps {
   readonly setCollection: Dispatch<SetStateAction<AppCollection>>;
 }
 
-export function SettingsPage({ collection, setCollection }: SettingsPageProps): ReactElement {
+export function SettingsPage({ collection, setCollection }: SettingsPageProps): ReactNode {
   useMeta(collectionMessages.settings);
   const defaultValues = useMemo(
     () => ({

@@ -13,7 +13,7 @@ import {
 import { type AppSamlSecret } from '@appsemble/types';
 import { stripPem, wrapPem } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -54,12 +54,7 @@ function processCertificate(value: string): string {
 /**
  * Render a modal for editing an Saml app secret.
  */
-export function SamlModal({
-  onDeleted,
-  onSubmit,
-  secret,
-  toggle,
-}: AppSecretCardProps): ReactElement {
+export function SamlModal({ onDeleted, onSubmit, secret, toggle }: AppSecretCardProps): ReactNode {
   const { formatMessage } = useIntl();
   const { app } = useApp();
 

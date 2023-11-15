@@ -1,6 +1,6 @@
 import { Title, useData } from '@appsemble/react-components';
 import { type Snapshot } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedDate, FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { AsyncDataView } from '../../../../../components/AsyncDataView/index.js'
 import { ListButton } from '../../../../../components/ListButton/index.js';
 import { useApp } from '../../index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { app } = useApp();
   const result = useData<Snapshot[]>(`/api/apps/${app.id}/snapshots`);
   const { id, lang } = useParams<{ lang: string; id: string }>();

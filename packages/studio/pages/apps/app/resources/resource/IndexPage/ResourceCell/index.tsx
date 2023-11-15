@@ -1,6 +1,6 @@
 import { Checkbox } from '@appsemble/react-components';
 import { type Schema, Validator } from 'jsonschema';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';
@@ -16,7 +16,7 @@ interface ResourceCellProps {
   readonly value: unknown;
 }
 
-export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactElement {
+export function ResourceCell({ required, schema, value }: ResourceCellProps): ReactNode {
   const { valid } = validator.validate(value, { required, ...schema }, { nestedErrors: true });
   const classes = [styles.root];
   let content: ReactNode;

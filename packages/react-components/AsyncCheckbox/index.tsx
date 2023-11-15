@@ -1,7 +1,7 @@
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react';
@@ -18,7 +18,7 @@ interface AsyncCheckboxProps extends ComponentPropsWithoutRef<typeof Checkbox> {
 /**
  * A checkbox which is disabled while an asynchronous `onChange` event is being run.
  */
-export function AsyncCheckbox({ disabled, onChange, ...props }: AsyncCheckboxProps): ReactElement {
+export function AsyncCheckbox({ disabled, onChange, ...props }: AsyncCheckboxProps): ReactNode {
   const [busy, setBusy] = useState(false);
 
   const handleChange = useCallback(

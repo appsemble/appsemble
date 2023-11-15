@@ -1,5 +1,5 @@
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactElement, type ReactNode, useCallback, useContext } from 'react';
+import { type ReactNode, useCallback, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -37,7 +37,7 @@ interface SideNavLinkProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactElement {
+export function MenuItem({ children, exact, icon, title, to }: SideNavLinkProps): ReactNode {
   const { collapsed, collapsible, setCollapsed } = useContext(CollapsedContext);
   const location = useLocation();
   const clickHideButton = useCallback(() => {

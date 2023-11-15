@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 interface SubtitleProps {
   /**
@@ -43,7 +43,7 @@ export function Subtitle({
   lang,
   size = 5,
   level = Math.max(size - 2, 6) as SubtitleProps['size'],
-}: SubtitleProps): ReactElement {
+}: SubtitleProps): ReactNode {
   const Component = `h${level}` as 'h1';
 
   return (

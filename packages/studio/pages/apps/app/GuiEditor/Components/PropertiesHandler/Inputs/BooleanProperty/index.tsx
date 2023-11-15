@@ -1,6 +1,6 @@
 import { CheckboxField } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 interface BooleanPropertyProps {
   readonly value: any;
@@ -13,7 +13,7 @@ export function BooleanProperty({
   property,
   schema,
   value = false,
-}: BooleanPropertyProps): ReactElement {
+}: BooleanPropertyProps): ReactNode {
   const onValueChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, newValue: boolean) => {
       // eslint-disable-next-line no-console

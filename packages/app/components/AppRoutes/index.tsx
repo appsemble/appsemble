@@ -1,6 +1,6 @@
 import { MetaProvider } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { getDefaultPageName } from '../../utils/getDefaultPageName.js';
@@ -24,7 +24,7 @@ import { Verify } from '../Verify/index.js';
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export function AppRoutes(): ReactElement {
+export function AppRoutes(): ReactNode {
   const { getAppMessage } = useAppMessages();
   const { definition } = useAppDefinition();
   const { isLoggedIn, role } = useUser();

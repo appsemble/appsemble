@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export function Login({
   onPasswordLogin,
   registerLink,
   resetPasswordLink,
-}: LoginProps): ReactElement {
+}: LoginProps): ReactNode {
   const busy = useToggle();
   const location = useLocation();
 

@@ -2,7 +2,7 @@ import { Button, Checkbox, Title, useToggle } from '@appsemble/react-components'
 import { defaultLocale } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -23,7 +23,7 @@ import { useApp } from '../index.js';
 /**
  * Display a more detailed overview of an individual app.
  */
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { organizations } = useUser();
   const descriptionToggle = useToggle();

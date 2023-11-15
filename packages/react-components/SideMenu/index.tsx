@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useCallback,
@@ -24,7 +23,7 @@ interface SideMenuContext {
   isOpen: boolean;
   toggle: () => void;
   disable: () => void;
-  setMenu: Dispatch<SetStateAction<ReactElement>>;
+  setMenu: Dispatch<SetStateAction<ReactNode>>;
 }
 
 const Context = createContext<SideMenuContext>({
@@ -54,9 +53,9 @@ interface SideMenuProviderProps {
 /**
  * A wrapper that renders a responsive side menu.
  */
-export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactElement {
+export function SideMenuProvider({ base, bottom, children }: SideMenuProviderProps): ReactNode {
   const { disable, enabled, toggle } = useToggle();
-  const [menu, setMenu] = useState<ReactElement>(null);
+  const [menu, setMenu] = useState<ReactNode>(null);
 
   const location = useLocation();
   useEffect(() => {
@@ -123,7 +122,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
 /**
  * A Bulma styled menu toggle.
  */
-export function SideMenuButton(): ReactElement {
+export function SideMenuButton(): ReactNode {
   const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
 
@@ -146,7 +145,7 @@ export function SideMenuButton(): ReactElement {
  *
  * @param menu The menu section to add to the side navigation.
  */
-export function useSideMenu(menu: ReactElement): void {
+export function useSideMenu(menu: ReactNode): void {
   const { setMenu } = useContext(Context);
 
   useEffect(() => {

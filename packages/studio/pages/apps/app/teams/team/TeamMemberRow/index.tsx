@@ -1,6 +1,6 @@
 import { AsyncSelect, Button, useConfirmation } from '@appsemble/react-components';
 import { TeamRole } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -18,7 +18,7 @@ export function TeamMemberRow({
   member,
   onEdit,
   onRemove,
-}: TeamMemberRowProps): ReactElement {
+}: TeamMemberRowProps): ReactNode {
   const editRole = useCallback(
     (event: ChangeEvent, role: TeamRole) => onEdit(member, role),
     [member, onEdit],

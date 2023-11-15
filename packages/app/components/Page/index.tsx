@@ -10,7 +10,7 @@ import {
 import { type PageDefinition, type Remapper } from '@appsemble/types';
 import { checkAppRole, createThemeURL, mergeThemes, normalize, remap } from '@appsemble/utils';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, Route, useLocation, useParams } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ import { TabsPage } from '../TabsPage/index.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function Page(): ReactElement {
+export function Page(): ReactNode {
   const { definition } = useAppDefinition();
   const redirect = useLocationString();
   const { isLoggedIn, role, teams, userInfo } = useUser();

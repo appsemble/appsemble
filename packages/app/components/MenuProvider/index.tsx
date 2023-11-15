@@ -5,7 +5,6 @@ import { checkAppRole, noop } from '@appsemble/utils';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useContext,
@@ -47,7 +46,7 @@ export function usePage(): MenuProviderContext {
   return useContext(Context);
 }
 
-export function MenuProvider({ children }: MenuProviderProps): ReactElement {
+export function MenuProvider({ children }: MenuProviderProps): ReactNode {
   const {
     definition: { layout = {}, ...definition },
   } = useAppDefinition();
@@ -86,10 +85,10 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
 
   if (!pages.length) {
     // Don’t display anything if there are no pages to display.
-    return children as ReactElement;
+    return children;
   }
 
-  let navigationElement: ReactElement;
+  let navigationElement: ReactNode;
   const navigation = page?.navigation || layout?.navigation;
 
   switch (navigation) {
@@ -102,7 +101,7 @@ export function MenuProvider({ children }: MenuProviderProps): ReactElement {
       );
       break;
     case 'hidden':
-      navigationElement = children as ReactElement;
+      navigationElement = children;
       break;
     default:
       navigationElement = (

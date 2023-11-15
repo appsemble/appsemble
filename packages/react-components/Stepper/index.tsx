@@ -1,7 +1,7 @@
 import {
   Children,
   createContext,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useContext,
   useMemo,
@@ -15,12 +15,12 @@ import { Button, Form, FormButtons } from '../index.js';
 const Context = createContext<StepperProps>(null);
 
 interface StepperProps {
-  readonly children: ReactElement | ReactElement[];
+  readonly children: ReactNode;
   readonly onFinish: () => void;
   readonly onCancel: () => void;
 }
 
-export function Stepper({ children, onCancel, onFinish }: StepperProps): ReactElement {
+export function Stepper({ children, onCancel, onFinish }: StepperProps): ReactNode {
   const [step, setStep] = useState(0);
   const childArray = Children.toArray(children);
 

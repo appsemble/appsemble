@@ -1,5 +1,5 @@
 import { JSONField } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
@@ -12,7 +12,7 @@ export function JSONSchemaUnknownEditor({
   required,
   schema,
   value = null,
-}: CommonJSONSchemaEditorProps<any>): ReactElement {
+}: CommonJSONSchemaEditorProps<any>): ReactNode {
   return (
     <JSONField
       help={<MarkdownContent content={schema.description} />}

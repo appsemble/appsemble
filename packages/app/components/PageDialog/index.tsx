@@ -1,6 +1,6 @@
 import { ModalCard } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { type ShowDialogParams } from '../../types.js';
@@ -14,7 +14,7 @@ interface PageDialogProps
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps): ReactElement {
+export function PageDialog({ dialog = null, remap, ...props }: PageDialogProps): ReactNode {
   return (
     <ModalCard
       cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}

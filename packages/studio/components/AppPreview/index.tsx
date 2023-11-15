@@ -1,6 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ReactElement, type Ref } from 'react';
+import { type ReactNode, type Ref } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -39,7 +39,7 @@ const allow = [
 /**
  * Render a preview of an app using an iframe.
  */
-export function AppPreview({ app, iframeRef }: AppPreviewProps): ReactElement {
+export function AppPreview({ app, iframeRef }: AppPreviewProps): ReactNode {
   const { formatMessage } = useIntl();
 
   const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;

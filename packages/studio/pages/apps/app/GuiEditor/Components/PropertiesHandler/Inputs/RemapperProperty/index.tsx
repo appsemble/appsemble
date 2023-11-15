@@ -1,7 +1,7 @@
 import { InputField, TextAreaField } from '@appsemble/react-components';
 import { type Schema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 interface RemapperPropertyProps {
   readonly value: any;
@@ -15,7 +15,7 @@ export function RemapperProperty({
   property,
   schema,
   value,
-}: RemapperPropertyProps): ReactElement {
+}: RemapperPropertyProps): ReactNode {
   const { example, format, maxLength, minLength, multipleOf } = schema as OpenAPIV3.SchemaObject;
   const commonProps = {
     maxLength,

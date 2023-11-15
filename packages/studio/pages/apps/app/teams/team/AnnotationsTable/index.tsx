@@ -1,11 +1,5 @@
 import { Input, Table, useSimpleForm } from '@appsemble/react-components';
-import {
-  type ChangeEvent,
-  forwardRef,
-  type ReactElement,
-  type ReactNode,
-  useCallback,
-} from 'react';
+import { type ChangeEvent, forwardRef, type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -21,7 +15,7 @@ interface AnnotationsTableProps {
 
 export const AnnotationsTable = forwardRef<never, AnnotationsTableProps>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ disabled, name, onChange, value }, ref): ReactElement => {
+  ({ disabled, name, onChange, value }, ref): ReactNode => {
     const { setFormError } = useSimpleForm();
 
     const setValue = useCallback(

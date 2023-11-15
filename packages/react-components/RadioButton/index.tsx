@@ -1,7 +1,6 @@
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
-  type ReactElement,
   type ReactNode,
   useCallback,
 } from 'react';
@@ -41,7 +40,7 @@ export function RadioButton<T>({
   valueToString = JSON.stringify,
   wrapperClassName,
   ...props
-}: RadioButtonProps<T>): ReactElement {
+}: RadioButtonProps<T>): ReactNode {
   const { name, onChange, value: currentValue } = useValuePicker();
 
   const handleChange = useCallback(

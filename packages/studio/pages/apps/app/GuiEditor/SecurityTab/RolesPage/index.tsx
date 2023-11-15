@@ -11,7 +11,7 @@ import {
   type ResourceCall,
   type ResourceDefinition,
 } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -38,7 +38,7 @@ interface RoleReferences {
   blockRolesReferences: string[];
 }
 
-export function RolesPage({ selectedRole }: RolesPageProps): ReactElement {
+export function RolesPage({ selectedRole }: RolesPageProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
   const [editRoleName, setEditRoleName] = useState<string>(null);

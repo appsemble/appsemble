@@ -1,5 +1,5 @@
 import { Title, useMeta } from '@appsemble/react-components';
-import { type ReactElement, type ReactNode, useDeferredValue, useMemo } from 'react';
+import { type ReactNode, useDeferredValue, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -30,7 +30,7 @@ for (const doc of docs) {
   }
 }
 
-export function SearchPage(): ReactElement {
+export function SearchPage(): ReactNode {
   useMeta(messages.title);
   const location = useLocation();
 

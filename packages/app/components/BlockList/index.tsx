@@ -9,7 +9,7 @@ import {
   type TeamMember,
 } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { type ShowDialogAction, type ShowShareDialog } from '../../types.js';
@@ -63,7 +63,7 @@ export function BlockList({
   remap,
   showDialog,
   showShareDialog,
-}: BlockListProps): ReactElement {
+}: BlockListProps): ReactNode {
   const { definition, revision } = useAppDefinition();
   const { isLoggedIn, role, teams } = useUser();
   const redirect = useLocationString();

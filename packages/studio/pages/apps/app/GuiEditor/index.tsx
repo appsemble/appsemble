@@ -8,7 +8,7 @@ import {
 import { type App, type AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import {
@@ -84,7 +84,7 @@ const tabs: GuiEditorTabs[] = [
   },
 ];
 
-export default function EditPage(): ReactElement {
+export default function EditPage(): ReactNode {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
   const { app, setApp } = useApp();

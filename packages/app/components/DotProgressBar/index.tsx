@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -8,7 +8,7 @@ interface DotProgressBarProps {
   readonly active: number;
 }
 
-export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactElement {
+export function DotProgressBar({ active, amount }: DotProgressBarProps): ReactNode {
   return (
     <div className={`${styles.dotContainer} mr-1`}>
       {Array.from({ length: amount }, (unused, index) => (

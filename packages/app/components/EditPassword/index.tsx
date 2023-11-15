@@ -7,14 +7,14 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Navigate, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 
-export function EditPassword(): ReactElement {
+export function EditPassword(): ReactNode {
   useMeta(messages.title);
 
   const [success, setSuccess] = useState(false);

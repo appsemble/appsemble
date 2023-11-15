@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type MouseEvent, type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type MouseEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedNumber } from 'react-intl';
 
 import styles from './index.module.css';
@@ -49,7 +49,7 @@ export function StarRating({
   name,
   onChange,
   value,
-}: StarRatingProps): ReactElement {
+}: StarRatingProps): ReactNode {
   const [localRating, setLocalRating] = useState(value);
 
   const onClick = useCallback(

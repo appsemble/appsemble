@@ -1,6 +1,6 @@
 import { Title, useData } from '@appsemble/react-components';
 import { type AppAccount } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ import { messages } from './messages.js';
 import { AppCard } from '../../../../components/AppCard/index.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const result = useData<AppAccount[]>('/api/user/apps/accounts');
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}/settings/apps`;

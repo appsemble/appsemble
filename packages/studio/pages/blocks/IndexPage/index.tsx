@@ -1,6 +1,6 @@
 import { Loader, Message, useData } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -10,7 +10,7 @@ import { BlockCard } from '../../../components/BlockCard/index.js';
 /**
  * Display a list of cards representing the available blocks.
  */
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
   if (error) {

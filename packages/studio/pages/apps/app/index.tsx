@@ -15,7 +15,7 @@ import {
   createContext,
   type Dispatch,
   lazy,
-  type ReactElement,
+  type ReactNode,
   type SetStateAction,
   Suspense,
   useContext,
@@ -61,7 +61,7 @@ const Context = createContext<AppValueContext>(null);
 const EditPage = lazy(() => import('./edit/index.js'));
 const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
 
-export function AppRoutes(): ReactElement {
+export function AppRoutes(): ReactNode {
   const { id, lang } = useParams<{ id: string; lang: string }>();
   const url = `/${lang}/apps/${id}`;
 

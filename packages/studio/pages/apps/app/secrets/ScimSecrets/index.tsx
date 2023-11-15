@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement } from 'react';
+import { type ChangeEvent, type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -20,7 +20,7 @@ interface ScimSecret {
   token: string;
 }
 
-export function ScimSecrets(): ReactElement {
+export function ScimSecrets(): ReactNode {
   const { app } = useApp();
   const push = useMessages();
   const { formatMessage } = useIntl();

@@ -1,5 +1,5 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AppDefinitionProvider } from '../AppDefinitionProvider/index.js';
@@ -21,7 +21,7 @@ interface AppProps {
  *
  * This configures all providers and sets up the global app structure.
  */
-export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactElement {
+export function App({ serviceWorkerRegistrationPromise }: AppProps): ReactNode {
   const appContent = (
     <AppDefinitionProvider>
       <AppMessagesProvider>

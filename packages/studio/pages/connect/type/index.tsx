@@ -2,13 +2,13 @@ import { Content, Loader, Message, useLocationString, useQuery } from '@appsembl
 import { type AppOAuth2Secret } from '@appsemble/types';
 import { startOAuth2Login, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 
-export function TypePage(): ReactElement {
+export function TypePage(): ReactNode {
   const { id, type } = useParams<{ id: string; type: 'oauth2' | 'saml' }>();
   const qs = useQuery();
   const location = useLocationString();

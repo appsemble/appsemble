@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement, useMemo } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode, useMemo } from 'react';
 
 import styles from './index.module.css';
 import { shouldShowMenu } from '../../utils/layout.js';
@@ -8,7 +8,7 @@ import { useUser } from '../UserProvider/index.js';
 
 type MainProps = ComponentPropsWithoutRef<'main'>;
 
-export function Main({ className, ...props }: MainProps): ReactElement {
+export function Main({ className, ...props }: MainProps): ReactNode {
   const { definition } = useAppDefinition();
   const { role, teams } = useUser();
 

@@ -16,7 +16,7 @@ import {
 import { type Team, type TeamMember } from '@appsemble/types';
 import { TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -28,7 +28,7 @@ interface DemoLoginProps {
   readonly modal?: Toggle;
 }
 
-function TeamControls(): ReactElement {
+function TeamControls(): ReactNode {
   type TeamsResponse = (Partial<TeamMember> & Team)[];
 
   const { isLoggedIn, userInfo } = useUser();
@@ -126,7 +126,7 @@ function TeamControls(): ReactElement {
   );
 }
 
-export function DemoLogin({ modal }: DemoLoginProps): ReactElement {
+export function DemoLogin({ modal }: DemoLoginProps): ReactNode {
   const { definition } = useAppDefinition();
   const roles = Object.keys(definition?.security?.roles ?? {});
   const { demoLogin, role: userRole } = useUser();

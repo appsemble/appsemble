@@ -1,7 +1,7 @@
 import { Table, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { MarkdownContent } from '../../../../components/MarkdownContent/index.js';
 
@@ -15,7 +15,7 @@ interface EventTableProps {
 /**
  * Render a table listing the events that can be used for a block.
  */
-export function EventTable({ manifest }: EventTableProps): ReactElement {
+export function EventTable({ manifest }: EventTableProps): ReactNode {
   return (
     <>
       {manifest.events.emit ? (

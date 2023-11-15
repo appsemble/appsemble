@@ -7,7 +7,7 @@ import {
   type Toggle,
   useData,
 } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -25,7 +25,7 @@ export function AddTeamMemberModal({
   onAdd,
   teamMembers,
   toggle,
-}: AddTeamMemberModalProps): ReactElement {
+}: AddTeamMemberModalProps): ReactNode {
   const { app } = useApp();
   const result = useData<Member[]>(`/api/apps/${app.id}/members`);
   const onSubmit = useCallback(({ memberId }: typeof defaultValues) => onAdd(memberId), [onAdd]);

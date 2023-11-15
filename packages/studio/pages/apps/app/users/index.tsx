@@ -1,7 +1,7 @@
 import { Button, Table, Title, useData, useMeta } from '@appsemble/react-components';
 import { convertToCsv } from '@appsemble/utils';
 import { downloadBlob } from '@appsemble/web-utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export interface Member {
   properties?: Record<string, string>;
 }
 
-export function UsersPage(): ReactElement {
+export function UsersPage(): ReactNode {
   useMeta(messages.title);
   const { lang } = useParams<{ lang: string }>();
   const { app } = useApp();

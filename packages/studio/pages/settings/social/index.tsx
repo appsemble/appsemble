@@ -13,7 +13,7 @@ import {
 } from '@appsemble/react-components';
 import { type OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -27,7 +27,7 @@ interface ConnectedAccount {
 /**
  * Managed OAuth2 accounts linked to the current user.
  */
-export function SocialPage(): ReactElement {
+export function SocialPage(): ReactNode {
   useMeta(messages.title);
 
   const { formatMessage } = useIntl();

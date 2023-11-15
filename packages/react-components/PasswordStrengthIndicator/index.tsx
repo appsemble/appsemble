@@ -1,6 +1,6 @@
 import { zxcvbn, type ZxcvbnResult } from '@zxcvbn-ts/core';
 import classNames from 'classnames';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -30,7 +30,7 @@ const emptyResult: PartialResult = {
 export function PasswordStrengthIndicator({
   minLength,
   name,
-}: PasswordStrengthIndicatorProps): ReactElement {
+}: PasswordStrengthIndicatorProps): ReactNode {
   const { pristine, values } = useSimpleForm();
   const [result, setResult] = useState(emptyResult);
 

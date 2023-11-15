@@ -1,5 +1,5 @@
 import { type AppCollection } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -9,7 +9,7 @@ interface ExpertCardProps {
   readonly expert: AppCollection['$expert'];
 }
 
-export function ExpertCard({ expert }: ExpertCardProps): ReactElement {
+export function ExpertCard({ expert }: ExpertCardProps): ReactNode {
   return (
     <section className="has-background-primary p-5 is-flex is-flex-direction-column mx-auto">
       <figure className={`image is-clipped mx-auto mb-4 ${styles.expertFigure}`}>

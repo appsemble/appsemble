@@ -1,12 +1,12 @@
 import { Message } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { ResendEmailButton } from '../ResendEmailButton/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function VerifyBanner(): ReactElement {
+export function VerifyBanner(): ReactNode {
   const { userInfo } = useUser();
 
   if (!userInfo || userInfo.email_verified) {

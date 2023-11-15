@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppsRoutes } from './apps/index.js';
@@ -25,7 +25,7 @@ import { enableRegistration } from '../utils/settings.js';
 /**
  * Render all top level routes.
  */
-export function TopLevelRoutes(): ReactElement {
+export function TopLevelRoutes(): ReactNode {
   return (
     <Routes>
       <Route element={<AppsRoutes />} path="/apps/*" />

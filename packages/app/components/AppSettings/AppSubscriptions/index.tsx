@@ -2,7 +2,7 @@ import { CheckboxField, FormComponent, Loader, useMessages } from '@appsemble/re
 import { type ResourceHooks, type SubscriptionResponse } from '@appsemble/types';
 import { has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useEffect, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -21,7 +21,7 @@ interface SubscriptionState {
   delete?: ExtendedResourceHooks;
 }
 
-export function AppSubscriptions(): ReactElement {
+export function AppSubscriptions(): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = useState<ResourceState>();

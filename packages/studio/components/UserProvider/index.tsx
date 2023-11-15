@@ -11,7 +11,6 @@ import jwtDecode from 'jwt-decode';
 import {
   createContext,
   type Dispatch,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useCallback,
@@ -52,7 +51,7 @@ const Context = createContext<UserContext>(null);
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
 
-export function UserProvider({ children }: UserProviderProps): ReactElement {
+export function UserProvider({ children }: UserProviderProps): ReactNode {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [organizations, setOrganizations] = useState<UserOrganization[]>();
   const [initialized, setInitialized] = useState(false);

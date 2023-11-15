@@ -1,5 +1,5 @@
 import { Content, useMeta } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { AppSubscriptions } from './AppSubscriptions/index.js';
@@ -13,7 +13,7 @@ import { useUser } from '../UserProvider/index.js';
 /**
  * Page containing all the settings configurable for an app
  */
-export function AppSettings(): ReactElement {
+export function AppSettings(): ReactNode {
   useMeta(messages.settings);
   const { isLoggedIn } = useUser();
   return (

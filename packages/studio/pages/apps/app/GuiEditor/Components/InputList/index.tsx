@@ -1,5 +1,5 @@
 import { Dropdown } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
@@ -13,7 +13,7 @@ interface InputStringProps {
   readonly size?: 'large' | 'medium' | 'normal' | 'small';
 }
 
-export function DropDownLabel(size: string, value: string): ReactElement {
+export function DropDownLabel(size: string, value: string): ReactNode {
   const val = value;
   let valueString;
   switch (size) {
@@ -40,7 +40,7 @@ export function InputList({
   options,
   size = 'normal',
   value,
-}: InputStringProps): ReactElement {
+}: InputStringProps): ReactNode {
   const onDropdownChange = useCallback(
     (index: number) => {
       onChange(index);

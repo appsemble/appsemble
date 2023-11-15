@@ -1,12 +1,12 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from '../messages.js';
 
-export function BugButton(): ReactElement {
+export function BugButton(): ReactNode {
   const { formatMessage } = useIntl();
 
   return (

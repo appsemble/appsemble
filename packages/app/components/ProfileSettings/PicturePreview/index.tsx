@@ -1,5 +1,5 @@
 import { useObjectURL, useSimpleForm } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -12,7 +12,7 @@ interface PicturePreviewProps {
   readonly pictureUrl: string;
 }
 
-export function PicturePreview({ pictureUrl }: PicturePreviewProps): ReactElement {
+export function PicturePreview({ pictureUrl }: PicturePreviewProps): ReactNode {
   const { formatMessage } = useIntl();
   const { values } = useSimpleForm();
 

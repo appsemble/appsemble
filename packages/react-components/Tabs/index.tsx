@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { ValuePickerProvider, type ValuePickerProviderProps } from '../index.js';
@@ -38,7 +38,7 @@ export function Tabs<T>({
   className,
   size,
   ...props
-}: TabsProps<T>): ReactElement {
+}: TabsProps<T>): ReactNode {
   return (
     <div
       className={classNames(`tabs ${styles.root}`, className, {

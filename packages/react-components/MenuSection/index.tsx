@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Children, type ReactElement, type ReactNode } from 'react';
+import { Children, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -27,7 +27,7 @@ interface MenuSectionProps {
  *
  * https://bulma.io/documentation/components/menu
  */
-export function MenuSection({ children, className, label }: MenuSectionProps): ReactElement {
+export function MenuSection({ children, className, label }: MenuSectionProps): ReactNode {
   return (
     <>
       {label ? <p className={`menu-label pl-1 ${styles.label}`}>{label}</p> : null}

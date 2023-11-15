@@ -1,7 +1,7 @@
 import { Button, MenuButton, MenuItem, MenuSection } from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ interface SideNavigationProps {
 /**
  * The app navigation that is displayed in the side menu.
  */
-export function SideNavigation({ blockMenus, pages }: SideNavigationProps): ReactElement {
+export function SideNavigation({ blockMenus, pages }: SideNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
 

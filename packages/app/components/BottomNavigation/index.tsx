@@ -1,7 +1,7 @@
 import { Button, Icon } from '@appsemble/react-components';
 import { type PageDefinition } from '@appsemble/types';
 import { normalize, remap } from '@appsemble/utils';
-import { type ReactElement, type ReactNode, useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { NavLink, useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ interface BottomNavigationProps {
 /**
  * The app navigation that is displayed at the bottom of the app.
  */
-export function BottomNavigation({ pages }: BottomNavigationProps): ReactElement {
+export function BottomNavigation({ pages }: BottomNavigationProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const url = `/${lang}`;
   const { isLoggedIn, teams } = useUser();

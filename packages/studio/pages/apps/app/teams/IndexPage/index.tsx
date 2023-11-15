@@ -11,7 +11,7 @@ import {
 import { type Team } from '@appsemble/types';
 import { Permission, type TeamRole } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -42,7 +42,7 @@ const newTeam = {
  *
  * The rendered list items are links to the team settings page.
  */
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { organizations } = useUser();
   const { id, lang } = useParams<{ lang: string; id: string }>();
   const url = `/${lang}/apps/${id}/teams`;

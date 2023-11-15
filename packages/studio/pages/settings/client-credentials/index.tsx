@@ -22,7 +22,7 @@ import {
 import { type OAuth2ClientCredentials } from '@appsemble/types';
 import { has, scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
@@ -45,7 +45,7 @@ interface FormValues {
   'assets:write': boolean;
 }
 
-export function ClientCredentialsPage(): ReactElement {
+export function ClientCredentialsPage(): ReactNode {
   useMeta(messages.title);
   const location = useLocation();
   const search = new URLSearchParams(location.search);

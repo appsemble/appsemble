@@ -1,7 +1,7 @@
 import { Loader, useQuery } from '@appsemble/react-components';
 import { timezone } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactElement, useEffect } from 'react';
+import { type ReactNode, useEffect } from 'react';
 
 import { type ExtendedOAuth2State } from '../../types.js';
 import { oauth2Redirect } from '../../utils/oauth2Utils.js';
@@ -10,7 +10,7 @@ interface OAuth2AppCallbackProps {
   readonly session: ExtendedOAuth2State;
 }
 
-export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactElement {
+export function OAuth2AppCallback({ session }: OAuth2AppCallbackProps): ReactNode {
   const qs = useQuery();
 
   useEffect(() => {

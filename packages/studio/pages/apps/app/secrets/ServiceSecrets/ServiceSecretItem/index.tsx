@@ -1,7 +1,7 @@
 import { Button, Subtitle, Title, useToggle } from '@appsemble/react-components';
 import { type AppServiceSecret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -37,7 +37,7 @@ export function ServiceSecretItem({
   onDeleted,
   onUpdated,
   secret,
-}: ServiceSecretItemProps): ReactElement {
+}: ServiceSecretItemProps): ReactNode {
   const modal = useToggle();
   const { app } = useApp();
 

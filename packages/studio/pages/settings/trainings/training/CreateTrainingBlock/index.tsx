@@ -8,7 +8,7 @@ import {
 } from '@appsemble/react-components';
 import { type TrainingBlock } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export function CreatingTrainingBlockButton({
   className,
 }: {
   readonly className: string;
-}): ReactElement {
+}): ReactNode {
   const { trainingId } = useParams<{ trainingId: string }>();
   const { hash } = useLocation();
   const navigate = useNavigate();

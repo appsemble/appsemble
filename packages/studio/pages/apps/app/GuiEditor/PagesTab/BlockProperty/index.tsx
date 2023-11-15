@@ -7,7 +7,7 @@ import {
 } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { normalizeBlockName } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, parse, type ParsedNode, stringify } from 'yaml';
 
@@ -26,7 +26,7 @@ export function BlockProperty({
   changeType,
   deleteBlock,
   selectedBlock,
-}: BlockPropertyProps): ReactElement {
+}: BlockPropertyProps): ReactNode {
   const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
   const blockName = normalizeBlockName(
     stringify(selectedBlock.getIn(['type']))

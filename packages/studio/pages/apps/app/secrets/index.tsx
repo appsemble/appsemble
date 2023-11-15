@@ -13,7 +13,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -35,7 +35,7 @@ interface EmailFormParameters {
   emailSecure: boolean;
 }
 
-export function SecretsPage(): ReactElement {
+export function SecretsPage(): ReactNode {
   useMeta(messages.title);
   const { app, setApp } = useApp();
   const push = useMessages();

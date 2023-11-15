@@ -1,7 +1,7 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
 import { type AppOAuth2Secret } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -25,7 +25,7 @@ const initialSecret: AppOAuth2Secret = {
 /**
  * Render a CRUD interface for managing OAuth2 secrets.
  */
-export function OAuth2Secrets(): ReactElement {
+export function OAuth2Secrets(): ReactNode {
   const { app } = useApp();
   const modal = useToggle();
 

@@ -6,7 +6,7 @@ import { type BlockDefinition, type PageDefinition, type Remapper } from '@appse
 import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
 import classNames from 'classnames';
-import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -79,7 +79,7 @@ export function Block({
   remap,
   showDialog,
   showShareDialog,
-}: BlockProps): ReactElement {
+}: BlockProps): ReactNode {
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();

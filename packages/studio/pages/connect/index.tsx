@@ -1,11 +1,11 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { IndexPage } from './IndexPage/index.js';
 import { TypePage } from './type/index.js';
 import { ProtectedRoute } from '../../components/ProtectedRoute/index.js';
 
-export function ConnectRoutes(): ReactElement {
+export function ConnectRoutes(): ReactNode {
   return (
     <Routes>
       <Route element={<ProtectedRoute />}>
