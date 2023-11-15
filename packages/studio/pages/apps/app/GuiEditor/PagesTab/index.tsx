@@ -251,10 +251,10 @@ export function PagesTab({
           selectedResolution === 'fullscreen'
             ? styles.fullscreen
             : selectedResolution === 'desktop'
-            ? styles.desktop
-            : selectedResolution === 'phone'
-            ? styles.phone
-            : ''
+              ? styles.desktop
+              : selectedResolution === 'phone'
+                ? styles.phone
+                : ''
         }`}
       >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}

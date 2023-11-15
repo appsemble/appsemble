@@ -95,6 +95,7 @@ bootstrap(
               </figure>
             </button>
             {input ? (
+              /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
               <label className={styles.fileLabel} for="fileInput">
                 <i class="fas fa-pen" />
                 <input

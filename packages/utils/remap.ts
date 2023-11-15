@@ -409,8 +409,8 @@ const mapperImplementations: MapperImplementations = {
       input instanceof Date
         ? input
         : typeof input === 'number'
-        ? new Date(input)
-        : parseISO(String(input));
+          ? new Date(input)
+          : parseISO(String(input));
 
     return args ? format(date, args) : date.toJSON();
   },

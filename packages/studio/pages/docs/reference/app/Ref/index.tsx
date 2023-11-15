@@ -14,8 +14,8 @@ export function Ref({ isArray, jsonRef }: RenderRefProps): ReactElement {
           name === 'ActionDefinition'
             ? './action'
             : name === 'RemapperDefinition'
-            ? './remapper'
-            : `#${camelToHyphen(name)}`
+              ? './remapper'
+              : `#${camelToHyphen(name)}`
         }
       >
         {name}

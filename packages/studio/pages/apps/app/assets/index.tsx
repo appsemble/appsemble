@@ -76,8 +76,8 @@ export function AssetsPage(): ReactElement {
         rowsPerPage === Number.POSITIVE_INFINITY
           ? 1
           : page >= Math.ceil(newCount / rowsPerPage)
-          ? Math.ceil(newCount / rowsPerPage)
-          : page;
+            ? Math.ceil(newCount / rowsPerPage)
+            : page;
       setSearchParams(
         Number.isFinite(rowsPerPage)
           ? { offset: String((newPage - 1) * rowsPerPage), limit: String(rowsPerPage) }
