@@ -1,3 +1,3 @@
-yarn install
-yarn playwright install
-yarn e2e --max-failures 6
+npm install
+npx -- playwright install
+npm --workspace @appsemble/e2e run e2e -- --max-failures 6

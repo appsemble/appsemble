@@ -25,7 +25,7 @@ Next, publish the existing blocks following the instructions from the
 A new block can be bootstrapped by running the following command.
 
 ```sh copy
-yarn appsemble block create
+npx appsemble block create
 ```
 
 This will prompt some questions about the new block. In the final prompt, you will be prompted to
@@ -86,7 +86,7 @@ Make sure the local Appsemble server is running, then run the following to publi
 block.
 
 ```sh copy
-yarn appsemble block publish blocks/test
+npx appsemble block publish blocks/test
 ```
 
 > **Note**: In order to publish a block for an organization, make sure you are in the same

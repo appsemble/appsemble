@@ -15,7 +15,7 @@
 To run end to end tests, run:
 
 ```sh
-yarn e2e
+npm run e2e
 ```
 
 The tests use [Playwright](https://playwright.dev/).

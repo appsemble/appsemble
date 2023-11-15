@@ -176,7 +176,7 @@ The messages are validated and the CLI should give helpful clues as to what need
 order to resolve any potential mistakes that it finds.
 
 ```sh
-$ yarn appsemble app update ./my-app
+npx appsemble app update ./my-app
 ```
 
 [icu]: https://formatjs.io/docs/core-concepts/icu-syntax/

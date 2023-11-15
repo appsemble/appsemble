@@ -87,7 +87,7 @@ myMessage: {
 To generate an ID for the message run:
 
 ```sh
-yarn eslint --fix path/to/my-messages-file
+npx eslint -- --fix path/to/my-messages-file
 ```
 
 This will generate an ID using the [formatjs](https://formatjs.io/docs/tooling/linter/) plugin for
@@ -99,7 +99,7 @@ The pipeline will automatically detect if newly added messages are missing in th
 automatically extract these messages from the source files run:
 
 ```sh
-yarn scripts extract-messages
+npm run scripts extract-messages
 ```
 
 ### Permissions
@@ -117,13 +117,13 @@ the test file has a _.test_ suffix. Not everything is tested yet. However, pleas
 tests keep working. To run tests, simply run the command below. Any Vitest arguments are supported.
 
 ```sh
-yarn test
+npm test
 ```
 
 To run tests for a single file, run
 
 ```sh
-yarn test path/to/file
+npm test -- path/to/file
 ```
 
 Appsemble uses test snapshots to assert large serializable objects like block manifests, HTTP
@@ -134,7 +134,7 @@ mentioned with the `-u` argument. Or when in watch mode by pressing the
 [u key](https://vitest.dev/guide/snapshot.html#updating-snapshots) in the terminal.
 
 ```sh
-yarn test -u
+npm test -- -u
 ```
 
 #### End 2 End Tests
@@ -218,8 +218,8 @@ Before releasing, manually inspect the changelog to be published (quoting from t
 
 ```sh
 # Make sure you're on master, clean working tree.
-yarn scripts release minor
-yarn --silent scripts get-release-notes
+npm run scripts release minor
+npm --silent run scripts get-release-notes
 ```
 
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in
