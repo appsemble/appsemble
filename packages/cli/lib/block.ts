@@ -117,7 +117,7 @@ export async function getBlockConfig(dir: string): Promise<BlockConfig> {
 /**
  * Discover Appsemble blocks based on workspaces in a monorepo.
  *
- * Both Lerna and Yarn workspaces are supported.
+ * npm workspaces are supported.
  *
  * @param root The project root in which to find workspaces.
  * @returns Discovered Appsemble blocks.

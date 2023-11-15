@@ -54,7 +54,6 @@ must be installed.
 - [Docker][]
 - [Docker Compose][]
 - [NodeJS 18][nodejs]
-- [Yarn][]
 
 ### Getting started
 
@@ -65,7 +64,7 @@ Clone and setup the project.
 ```sh
 git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
-yarn
+npm ci
 ```
 
 The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
@@ -78,13 +77,13 @@ docker compose up -d
 The project can be served using the following command.
 
 ```sh
-yarn start
+npm start
 ```
 
 To see additional options, run the following command.
 
 ```sh
-yarn start --help
+npm start -- --help
 ```
 
 #### CLI Login
@@ -101,7 +100,7 @@ you will receive the verification link. Similarly, if you login using `GitHub`, 
 To login using the Appsemble CLI, run the following command.
 
 ```sh
-yarn appsemble login
+npm run appsemble login
 ```
 
 > Note: when using Windows Subsystem for Linux (WSL), this command is **unsupported**. The
@@ -124,7 +123,7 @@ needs to be created. This organization can be created either in Appsemble Studio
 following CLI command.
 
 ```sh
-yarn appsemble organization create --name Appsemble appsemble
+npm run appsemble organization create --name Appsemble appsemble
 ```
 
 #### Publishing Blocks
@@ -133,7 +132,7 @@ After logging in to the CLI, Appsemble blocks can be published locally by runnin
 command.
 
 ```sh
-yarn appsemble block publish blocks/*
+npm run appsemble block publish blocks/*
 ```
 
 If prompted, select the OAuth2 credential you created earlier to proceed. You will now see the
@@ -150,7 +149,7 @@ as a starting point must be marked as templates. This can be done using the Apps
 logging in. To publish these apps, run the following command.
 
 ```sh
-yarn appsemble app publish --context development apps/*
+npm run appsemble app publish --context development apps/*
 ```
 
 The published apps will be displayed on the `App store` page.
@@ -160,7 +159,7 @@ The published apps will be displayed on the `App store` page.
 The development server can be started by running:
 
 ```sh
-yarn appsemble serve <path-to-app-directory>
+npm run appsemble serve <path-to-app-directory>
 ```
 
 See the [CLI readme](packages/cli/README.md#development-server)
@@ -170,7 +169,7 @@ See the [CLI readme](packages/cli/README.md#development-server)
 Tests can be run using the following command.
 
 ```sh
-yarn test
+npm test
 ```
 
 The tests are ran using vitest, meaning all [vitest CLI options][] can be passed.
@@ -181,7 +180,7 @@ By default, database tests are run against the database as specified in
 Multiple test databases are created at runtime.
 
 ```sh
-DATABASE_URL=postgres://admin:password@localhost:5432 yarn test
+DATABASE_URL=postgres://admin:password@localhost:5432 npm test
 ```
 
 ### Building
@@ -208,4 +207,3 @@ Please read our [security policy](./SECURITY.md).
 [docker compose]: https://docs.docker.com/compose
 [vitest cli options]: https://vitest.dev/guide/cli.html#options
 [nodejs]: https://nodejs.org
-[yarn]: https://yarnpkg.com

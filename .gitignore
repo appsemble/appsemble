@@ -21,7 +21,7 @@ junit.xml
 # Use this prefix for GitLab reports
 /gl-*
 
-# Log files by various tools, such as yarn
+# Log files by various tools
 *.log
 
 # Generated npm packages

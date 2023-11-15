@@ -13,13 +13,9 @@
 
 ## Usage
 
-This package allows you to bootstrap an Appsemble project repository structure using `npm init` or
-`yarn create`. The initial command will be followed by a number of interactive questions. Run the
-following command with the package manager of your choice to scaffold a new project.
-
-```sh
-yarn create appsemble
-```
+This package allows you to bootstrap an Appsemble project repository structure using `npm init`. The
+initial command will be followed by a number of interactive questions. Run the following command
+with the package manager of your choice to scaffold a new project.
 
 ```sh
 npm init appsemble

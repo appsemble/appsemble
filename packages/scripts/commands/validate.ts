@@ -26,7 +26,7 @@ const unscopedPackageNames = new Set(['appsemble', 'create-appsemble']);
 const projectLicense = await readFile('LICENSE.md', 'utf8');
 
 /**
- * A representation of a yarn workspace.
+ * A representation of an npm workspace.
  */
 interface Workspace {
   /**
@@ -307,6 +307,6 @@ export async function handler(): Promise<void> {
   }
 
   if (invalid.length) {
-    logger.info('Please use `yarn scripts extract-messages` to resolve the issue(s).');
+    logger.info('Please use `npm run scripts extract-messages` to resolve the issue(s).');
   }
 }
