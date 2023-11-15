@@ -48,6 +48,11 @@ CSS styles are linted using
 Markdown documents are linted using
 [![](https://avatars.githubusercontent.com/u/16309564?s=16) Remark lint](https://github.com/remarkjs/remark-lint)
 
+##### Spelling
+
+Documentation is also spell checked. In case you need to teach the checker new terms, add them to
+`config/retext/personal.dic`
+
 #### Documentation validation
 
 We intend to validate all full and partial app YAML examples in the Appsemble documentation using CI
