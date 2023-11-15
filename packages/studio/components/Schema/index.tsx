@@ -116,16 +116,16 @@ export function Schema({
                     <RenderRef isArray={false} jsonRef={decodeJSONRef(mergedSchema.$ref)} />
                   )
                 : mergedSchema.type === 'array'
-                ? !mergedSchema.items || Array.isArray(mergedSchema.items)
-                  ? 'array'
-                  : mergedSchema.items.type
-                  ? `${mergedSchema.items.type}[]`
-                  : mergedSchema.items.$ref
-                  ? RenderRef && (
-                      <RenderRef isArray jsonRef={decodeJSONRef(mergedSchema.items.$ref)} />
-                    )
-                  : 'array'
-                : mergedSchema.type}
+                  ? !mergedSchema.items || Array.isArray(mergedSchema.items)
+                    ? 'array'
+                    : mergedSchema.items.type
+                      ? `${mergedSchema.items.type}[]`
+                      : mergedSchema.items.$ref
+                        ? RenderRef && (
+                            <RenderRef isArray jsonRef={decodeJSONRef(mergedSchema.items.$ref)} />
+                          )
+                        : 'array'
+                  : mergedSchema.type}
             </code>
           </SchemaDescriptor>
         ) : null

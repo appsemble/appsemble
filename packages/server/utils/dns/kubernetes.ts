@@ -238,8 +238,8 @@ async function createIngressFunction(): Promise<
   const issuerAnnotationKey = clusterIssuer
     ? 'cert-manager.io/cluster-issuer'
     : issuer
-    ? 'cert-manager.io/issuer'
-    : undefined;
+      ? 'cert-manager.io/issuer'
+      : undefined;
   const issuerAnnotationValue = clusterIssuer || issuer;
 
   return async (domain, customSSL) => {

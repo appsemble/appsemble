@@ -17,9 +17,7 @@ export async function up(db: Sequelize): Promise<void> {
 
   // ### Resource
   interface DatabaseResource {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     User_AuthorId: string;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     User_EditorId: string;
     AppId: number;
   }
@@ -174,9 +172,8 @@ export async function down(db: Sequelize): Promise<void> {
 
   // ### Resource
   interface DatabaseResource {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     AppMember_AuthorId: string;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
+
     AppMember_EditorId: string;
     AuthorUser: string;
     EditorUser: string;

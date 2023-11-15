@@ -60,8 +60,8 @@ export function StylePage({
       !currentPage.type || currentPage.type === 'page'
         ? (currentPage as BasicPageDefinition).blocks[selectedBlock]
         : currentPage.type === 'flow'
-        ? (currentPage as FlowPageDefinition).steps[selectedSubParent].blocks[selectedBlock]
-        : (currentPage as TabsPageDefinition).tabs[selectedSubParent].blocks[selectedBlock];
+          ? (currentPage as FlowPageDefinition).steps[selectedSubParent].blocks[selectedBlock]
+          : (currentPage as TabsPageDefinition).tabs[selectedSubParent].blocks[selectedBlock];
     return currentBlock.type;
   }, [currentPage, selectedBlock, selectedSubParent]);
 

@@ -95,8 +95,8 @@ export function MetaProvider({ children, description, title }: MetaProviderProps
     descriptionNode.current.content = descriptions.length
       ? descriptions.at(-1)
       : typeof description === 'string'
-      ? description
-      : formatMessage(description);
+        ? description
+        : formatMessage(description);
   }, [breadcrumbs, description, formatMessage]);
 
   return (

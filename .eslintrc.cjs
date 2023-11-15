@@ -61,6 +61,12 @@ module.exports = {
       },
     },
     {
+      files: ['packages/server/migrations/*'],
+      rules: {
+        '@typescript-eslint/naming-convention': 'off',
+      },
+    },
+    {
       files: ['**/*.md/*.js', '**/*.md/*.ts', '**/*.md/*.tsx'],
       rules: {
         'no-undef': 'off',

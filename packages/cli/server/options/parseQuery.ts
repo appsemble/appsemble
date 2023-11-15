@@ -62,8 +62,8 @@ function processLogicalExpression(token: Token): WhereOptions {
     token.type === TokenType.AndExpression
       ? 'and'
       : token.type === TokenType.OrExpression
-      ? 'or'
-      : undefined;
+        ? 'or'
+        : undefined;
 
   if (!op) {
     return processToken(token) as WhereOptions;

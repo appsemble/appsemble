@@ -41,8 +41,8 @@ export function createAction<T extends ActionDefinition['type']>({
   const actionCreator = has(actionCreators, type)
     ? actionCreators[type]
     : has(extraCreators, type)
-    ? extraCreators[type]
-    : actionCreators.noop;
+      ? extraCreators[type]
+      : actionCreators.noop;
 
   const [dispatch, properties] = actionCreator({
     ...params,
@@ -88,8 +88,8 @@ export function createAction<T extends ActionDefinition['type']>({
       const data = has(definition, 'remapBefore')
         ? localRemap(definition.remapBefore, args, context)
         : has(definition, 'remap')
-        ? localRemap(definition.remap, args, context)
-        : args;
+          ? localRemap(definition.remap, args, context)
+          : args;
 
       updatedContext = { ...context, history: [].concat(context?.history || [], [data]) };
 

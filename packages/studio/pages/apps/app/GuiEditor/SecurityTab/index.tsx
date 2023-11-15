@@ -107,10 +107,10 @@ export function SecurityTab({
           selectedResolution === 'fullscreen'
             ? styles.fullscreen
             : selectedResolution === 'desktop'
-            ? styles.desktop
-            : selectedResolution === 'phone'
-            ? styles.phone
-            : ''
+              ? styles.desktop
+              : selectedResolution === 'phone'
+                ? styles.phone
+                : ''
         }`}
       >
         <AppPreview app={app} iframeRef={frame} />
