@@ -2,7 +2,7 @@ import { Button } from '@appsemble/react-components';
 import {
   type ChangeEvent,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   type Ref,
   useCallback,
   useState,
@@ -66,7 +66,7 @@ export function GeneralTab({
   isOpenLeft,
   isOpenRight,
   selectedResolution,
-}: GeneralTabProps): ReactElement {
+}: GeneralTabProps): ReactNode {
   const { app } = useApp();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();

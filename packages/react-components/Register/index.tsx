@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -25,7 +25,7 @@ interface RegisterProps {
   readonly onRegister: (values: RegistrationFormValues) => Promise<void>;
 }
 
-export function Register({ onRegister }: RegisterProps): ReactElement {
+export function Register({ onRegister }: RegisterProps): ReactNode {
   return (
     <SimpleForm
       defaultValues={{ email: '', name: '', password: '', subscribed: false }}

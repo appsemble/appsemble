@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
+import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type Node, type ParsedNode } from 'yaml';
 
@@ -30,7 +30,7 @@ export function ThemeTab({
   isOpenRight,
   saveStack,
   selectedResolution,
-}: ThemeTabProps): ReactElement {
+}: ThemeTabProps): ReactNode {
   const { formatMessage } = useIntl();
   const { app } = useApp();
   const [selectedPage, setSelectedPage] = useState<number>(-1);

@@ -1,13 +1,13 @@
 import { Button, Content } from '@appsemble/react-components';
 import { type Asset } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { useApp } from '../../index.js';
 
-export function AssetPreview({ asset }: { readonly asset: Asset }): ReactElement {
+export function AssetPreview({ asset }: { readonly asset: Asset }): ReactNode {
   const { app } = useApp();
 
   if (!asset) {

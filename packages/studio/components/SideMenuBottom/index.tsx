@@ -1,11 +1,11 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
 
-export function SideMenuBottom(): ReactElement {
+export function SideMenuBottom(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
 
   return (

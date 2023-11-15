@@ -14,7 +14,7 @@ import axios from 'axios';
 import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
-  type ReactElement,
+  type ReactNode,
   type SyntheticEvent,
   useCallback,
   useEffect,
@@ -35,7 +35,7 @@ import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
 import { useApp } from '../index.js';
 
-export default function EditPage(): ReactElement {
+export default function EditPage(): ReactNode {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();

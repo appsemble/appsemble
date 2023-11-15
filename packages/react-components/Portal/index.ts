@@ -1,4 +1,4 @@
-import { Children, type ReactChild, type ReactElement, useEffect } from 'react';
+import { Children, type ReactChild, type ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PortalProps {
@@ -20,7 +20,7 @@ interface PortalProps {
  *
  * This component doesn’t handle the lifecycle of receiving new props.
  */
-export function Portal({ children, element }: PortalProps): ReactElement {
+export function Portal({ children, element }: PortalProps): ReactNode {
   useEffect(() => {
     const copy = [...element.children].slice(0, element.children.length - 1);
     for (const child of copy) {

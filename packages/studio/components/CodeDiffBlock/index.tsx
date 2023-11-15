@@ -1,5 +1,5 @@
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
-import { type ReactElement, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 
 interface CodeBlockProps {
   /**
@@ -31,7 +31,7 @@ export function CodeDiffBlock({
   language,
   modified,
   original,
-}: CodeBlockProps): ReactElement {
+}: CodeBlockProps): ReactNode {
   const ref = useRef<HTMLDivElement>();
 
   useEffect(() => {

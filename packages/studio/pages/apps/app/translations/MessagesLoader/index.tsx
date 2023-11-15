@@ -1,6 +1,6 @@
 import { useData } from '@appsemble/react-components';
 import { type AppMessages } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -18,7 +18,7 @@ interface MessagesLoaderProps {
 /**
  * Render a form for editing app messages.
  */
-export function MessagesLoader({ languageId }: MessagesLoaderProps): ReactElement {
+export function MessagesLoader({ languageId }: MessagesLoaderProps): ReactNode {
   const { app } = useApp();
 
   const result = useData<AppMessages>(`/api/apps/${app.id}/messages/${languageId}`);

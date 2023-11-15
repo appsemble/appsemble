@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useMemo } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -27,7 +27,7 @@ interface MemberRowProperties {
   readonly onChange: (member: Member) => void;
 }
 
-export function MemberRow({ member, onChange }: MemberRowProperties): ReactElement {
+export function MemberRow({ member, onChange }: MemberRowProperties): ReactNode {
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
   const push = useMessages();

@@ -36,7 +36,8 @@ module.exports = {
           {
             extendDefaults: false,
             types: {
-              'JSX.Element': 'Use ReactElement for React contexts and VNode for Preact contexts',
+              'JSX.Element': 'Use ReactNode for React contexts and VNode for Preact contexts',
+              ReactElement: { fixWith: 'ReactNode', message: 'Use ReactNode instead' },
             },
           },
         ],

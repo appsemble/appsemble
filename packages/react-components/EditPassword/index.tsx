@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -21,7 +21,7 @@ interface EditPasswordProps {
   readonly onSubmit: (values: EditPasswordValues) => Promise<void>;
 }
 
-export function EditPassword({ onSubmit }: EditPasswordProps): ReactElement {
+export function EditPassword({ onSubmit }: EditPasswordProps): ReactNode {
   const [success, setSuccess] = useState(false);
   const submit = useCallback(
     async (value: EditPasswordValues) => {

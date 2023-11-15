@@ -17,7 +17,7 @@ import {
 import { type App, type SSLStatus } from '@appsemble/types';
 import { domainPattern, googleAnalyticsIDPattern, normalize, toUpperCase } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -55,7 +55,7 @@ function getSSLMessage(status: SSLStatus): MessageDescriptor {
 /**
  * Render the app settings view.
  */
-export function SettingsPage(): ReactElement {
+export function SettingsPage(): ReactNode {
   useMeta(messages.title);
 
   const { app, setApp } = useApp();

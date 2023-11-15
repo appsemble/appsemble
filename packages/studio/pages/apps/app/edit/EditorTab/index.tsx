@@ -1,6 +1,6 @@
 import { Icon, Tab } from '@appsemble/react-components';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ReactChild, type ReactElement } from 'react';
+import { type ReactChild, type ReactNode } from 'react';
 
 interface EditorTabProps {
   readonly children: ReactChild;
@@ -9,7 +9,7 @@ interface EditorTabProps {
   readonly value: string;
 }
 
-export function EditorTab({ children, errorCount, icon, value }: EditorTabProps): ReactElement {
+export function EditorTab({ children, errorCount, icon, value }: EditorTabProps): ReactNode {
   return (
     <Tab href={value} value={value}>
       <Icon icon={icon} />

@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
-import { type MutableRefObject, type ReactElement, type Ref, useCallback, useState } from 'react';
+import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
 
@@ -43,7 +43,7 @@ export function PagesTab({
   saveStack,
   selectedResolution,
   toggleProps,
-}: PagesTabProps): ReactElement {
+}: PagesTabProps): ReactNode {
   const { app } = useApp();
   const push = useMessages();
   const [selectedPage, setSelectedPage] = useState<number>(0);

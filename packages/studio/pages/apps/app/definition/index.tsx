@@ -1,5 +1,5 @@
 import { Button, Title, useMeta } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ import { useApp } from '../index.js';
 /**
  * A page for viewing the source code of an app definition.
  */
-export function DefinitionPage(): ReactElement {
+export function DefinitionPage(): ReactNode {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   useMeta(messages.title, formatMessage(messages.description, { appName: app.definition.name }));

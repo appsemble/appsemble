@@ -1,7 +1,7 @@
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react';
@@ -19,7 +19,7 @@ interface AsyncSelectProps extends ComponentPropsWithoutRef<typeof Select> {
  * A select box which when changed, goes into a loading state, performs an asynchronous action, and
  * goes out of the loading state when the action has finished.
  */
-export function AsyncSelect({ disabled, onChange, ...props }: AsyncSelectProps): ReactElement {
+export function AsyncSelect({ disabled, onChange, ...props }: AsyncSelectProps): ReactNode {
   const [isBusy, setIsBusy] = useState(false);
 
   const handleChange = useCallback(

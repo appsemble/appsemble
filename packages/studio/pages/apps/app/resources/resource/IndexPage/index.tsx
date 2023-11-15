@@ -20,7 +20,7 @@ import axios from 'axios';
 import { type OpenAPIV3 } from 'openapi-types';
 import {
   type ChangeEvent,
-  type ReactElement,
+  type ReactNode,
   type SyntheticEvent,
   useCallback,
   useEffect,
@@ -40,7 +40,7 @@ import { useApp } from '../../../index.js';
 
 const defaultHiddenProperties = new Set(['$created', '$updated', '$editor']);
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const { app } = useApp();
   const { formatMessage } = useIntl();
   const { id: appId, resourceName } = useParams<{

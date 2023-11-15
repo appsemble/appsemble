@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Children, type ReactElement, type ReactNode } from 'react';
+import { Children, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -14,7 +14,7 @@ interface FormButtonsProps {
  * If one element is padded, it’s aligned to the right. If more are defined, space is added between
  * them.
  */
-export function FormButtons({ children, className }: FormButtonsProps): ReactElement {
+export function FormButtons({ children, className }: FormButtonsProps): ReactNode {
   const { length } = Children.toArray(children).filter(Boolean);
 
   return (

@@ -21,7 +21,7 @@ import {
 import { type UserEmail } from '@appsemble/types';
 import { defaultLocale, has } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useMatch, useNavigate } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ import { ResendEmailButton } from '../../../components/ResendEmailButton/index.j
 import { useUser } from '../../../components/UserProvider/index.js';
 import { supportedLanguages } from '../../../utils/constants.js';
 
-export function UserPage(): ReactElement {
+export function UserPage(): ReactNode {
   useMeta(messages.title);
   const { formatMessage } = useIntl();
   const navigate = useNavigate();

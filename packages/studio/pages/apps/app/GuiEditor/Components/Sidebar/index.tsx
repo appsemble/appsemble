@@ -1,14 +1,14 @@
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
 interface SidebarProps {
-  readonly children: ReactElement | ReactElement[];
+  readonly children: ReactNode;
   readonly type: 'left' | 'right';
   readonly isOpen: boolean;
 }
 
-export function Sidebar({ children, isOpen, type }: SidebarProps): ReactElement {
+export function Sidebar({ children, isOpen, type }: SidebarProps): ReactNode {
   return (
     <div
       className={`${type === 'left' ? styles.leftBar : styles.rightBar}  ${

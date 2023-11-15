@@ -14,7 +14,7 @@ import {
 import { type App, type Template } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -34,7 +34,7 @@ interface CloneButtonProps {
 /**
  * Display a more detailed overview of an individual app.
  */
-export function CloneButton({ app }: CloneButtonProps): ReactElement {
+export function CloneButton({ app }: CloneButtonProps): ReactNode {
   const navigate = useNavigate();
   const { formatMessage } = useIntl();
   const { lang } = useParams<{ lang: string }>();

@@ -1,5 +1,5 @@
 import { type Training } from '@appsemble/types';
-import { type ElementType, type MouseEventHandler, type ReactElement, type ReactNode } from 'react';
+import { type ElementType, type MouseEventHandler, type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -30,7 +30,7 @@ export function TrainingListCard({
   onClick,
   title,
   to,
-}: TrainingListCardProps): ReactElement {
+}: TrainingListCardProps): ReactNode {
   const { formatMessage } = useIntl();
   const Wrapper: ElementType = to ? Link : 'button';
   const props = to ? { to } : ({ type: 'button', onClick } as const);

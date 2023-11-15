@@ -9,13 +9,13 @@ import {
 } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
 
-export function CreateTrainingButton({ className }: { readonly className: string }): ReactElement {
+export function CreateTrainingButton({ className }: { readonly className: string }): ReactNode {
   const navigate = useNavigate();
   const { hash } = useLocation();
   const [competence, setCompetence] = useState('accuracy');

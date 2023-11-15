@@ -1,7 +1,7 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { fa } from '@appsemble/web-utils';
 import { type IconName } from '@fortawesome/fontawesome-common-types';
-import { type ElementType, type MouseEventHandler, type ReactElement, type ReactNode } from 'react';
+import { type ElementType, type MouseEventHandler, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -26,7 +26,7 @@ export function ListButton({
   subtitle,
   title,
   to,
-}: ListButtonProps): ReactElement {
+}: ListButtonProps): ReactNode {
   const Wrapper: ElementType = to ? Link : 'button';
   const props = to ? { to } : ({ type: 'button', onClick } as const);
 

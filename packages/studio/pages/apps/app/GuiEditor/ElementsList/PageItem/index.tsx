@@ -1,6 +1,6 @@
 import { Button, Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type DragEvent, type ReactElement, useCallback } from 'react';
+import { type DragEvent, type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { type Block } from '../../../../../../types.js';
@@ -28,7 +28,7 @@ export function PageItem({
   selectedBlock,
   selectedPage,
   setDisabledPages,
-}: PagesItemProps): ReactElement {
+}: PagesItemProps): ReactNode {
   const toggleDropdownPages = useCallback(
     (index: number) => {
       if (disabledPages.includes(pageIndex)) {

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -41,7 +41,7 @@ export function Content({
   fullwidth,
   main,
   padding,
-}: ContentProps): ReactElement {
+}: ContentProps): ReactNode {
   const Component = main ? 'main' : 'div';
 
   return (

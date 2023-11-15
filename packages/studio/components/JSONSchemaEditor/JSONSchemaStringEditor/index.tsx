@@ -6,7 +6,7 @@ import {
   TextAreaField,
 } from '@appsemble/react-components';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import { MarkdownContent } from '../../MarkdownContent/index.js';
 import { JSONSchemaLabel } from '../JSONSchemaLabel/index.js';
@@ -20,7 +20,7 @@ export function JSONSchemaStringEditor({
   required,
   schema,
   value = '',
-}: CommonJSONSchemaEditorProps<string>): ReactElement {
+}: CommonJSONSchemaEditorProps<string>): ReactNode {
   const { description, example, format, maxLength, minLength, multipleOf } =
     schema as OpenAPIV3.SchemaObject;
 

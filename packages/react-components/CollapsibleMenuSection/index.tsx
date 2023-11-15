@@ -3,7 +3,6 @@ import {
   createContext,
   type Dispatch,
   isValidElement,
-  type ReactElement,
   type ReactNode,
   type SetStateAction,
   useMemo,
@@ -30,7 +29,7 @@ export const CollapsedContext = createContext<CollapsedContextInterface>({
   collapsible: false,
 });
 
-export function CollapsibleMenuSection({ children }: CollapsibleMenuSectionProps): ReactElement {
+export function CollapsibleMenuSection({ children }: CollapsibleMenuSectionProps): ReactNode {
   const [collapsed, setCollapsed] = useState(false);
   // Checks if there are any sub-sections
   const collapsible = useMemo(() => Boolean(Children.toArray(children)[1]), [children]);

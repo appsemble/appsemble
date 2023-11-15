@@ -1,5 +1,5 @@
 import { InputField, SelectField } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -32,8 +32,8 @@ export interface AppListControlsProps {
   readonly reverse: boolean;
   readonly onFilterChange: (filter: string) => void;
   readonly onSortChange: (sortName: AppSortFunctionName, reverse: boolean) => void;
-  readonly actionControl?: ReactElement;
-  readonly actionControlImport?: ReactElement;
+  readonly actionControl?: ReactNode;
+  readonly actionControlImport?: ReactNode;
 }
 
 export function AppListControls({
@@ -44,7 +44,7 @@ export function AppListControls({
   onSortChange,
   reverse,
   sort,
-}: AppListControlsProps): ReactElement {
+}: AppListControlsProps): ReactNode {
   const { formatMessage } = useIntl();
   const { userInfo } = useUser();
 

@@ -24,6 +24,7 @@ export interface SharedFormComponentProps {
   /**
    * An additional control node to render right of the form field.
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   readonly control?: ReactElement;
 
   /**
@@ -87,7 +88,7 @@ export function FormComponent({
   id,
   label,
   required,
-}: FormComponentProps): ReactElement {
+}: FormComponentProps): ReactNode {
   const helpContent = (
     <span className={classNames(`help ${styles.help}`, { 'is-danger': error })}>
       {isValidElement(error) ? error : help}

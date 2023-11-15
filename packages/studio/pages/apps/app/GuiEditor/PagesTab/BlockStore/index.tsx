@@ -1,7 +1,7 @@
 import { InputField, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale } from '@appsemble/utils';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { BlockList } from './BlockList/index.js';
@@ -19,7 +19,7 @@ interface BlockStoreProps {
   readonly dragEventListener: (data: BlockManifest) => void;
 }
 
-export function BlockStore({ dragEventListener }: BlockStoreProps): ReactElement {
+export function BlockStore({ dragEventListener }: BlockStoreProps): ReactNode {
   const [filter, setFilter] = useState('');
   const { formatMessage } = useIntl();
 

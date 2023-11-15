@@ -8,7 +8,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { type ReactElement } from 'rehype-react/lib';
 
 type BreadCrumbsDecorationContext = [ReactNode, Dispatch<SetStateAction<ReactNode>>];
 
@@ -20,7 +19,7 @@ export interface BreadCrumbsDecorationProviderProps {
 
 export function BreadCrumbsDecorationProvider({
   children,
-}: BreadCrumbsDecorationProviderProps): ReactElement {
+}: BreadCrumbsDecorationProviderProps): ReactNode {
   const [value, setValue] = useState<ReactNode>(null);
 
   return (

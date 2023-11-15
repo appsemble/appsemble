@@ -15,7 +15,7 @@ import {
 } from '@appsemble/react-components';
 import { compareStrings, getLanguageDisplayName, langmap } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ interface LanguageFormValues {
 /**
  * The page for translating app messages.
  */
-export function TranslationsPage(): ReactElement {
+export function TranslationsPage(): ReactNode {
   useMeta(messages.title);
 
   let { lang: pageLanguage } = useParams<{ lang: string }>();

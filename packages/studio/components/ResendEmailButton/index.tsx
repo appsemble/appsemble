@@ -1,6 +1,6 @@
 import { Button, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ComponentProps, type ReactElement, useCallback } from 'react';
+import { type ComponentProps, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -15,7 +15,7 @@ interface ResendEmailButtonProps extends ComponentProps<typeof Button> {
 /**
  * Render a button that can be used to resend verification emails.
  */
-export function ResendEmailButton({ email, ...props }: ResendEmailButtonProps): ReactElement {
+export function ResendEmailButton({ email, ...props }: ResendEmailButtonProps): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
 

@@ -2,7 +2,7 @@ import { Button, CardFooterButton, ModalCard } from '@appsemble/react-components
 import { generateDataFromSchema } from '@appsemble/utils';
 import { type NamedEvent } from '@appsemble/web-utils';
 import { type OpenAPIV3 } from 'openapi-types';
-import { type MouseEvent, type ReactElement, useCallback, useState } from 'react';
+import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -19,7 +19,7 @@ export function JSONSchemaArrayEditor({
   prefix,
   schema,
   value = [],
-}: CommonJSONSchemaEditorProps<any[]>): ReactElement {
+}: CommonJSONSchemaEditorProps<any[]>): ReactNode {
   const { formatMessage } = useIntl();
   const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
   const [removingItem, setRemovingItem] = useState<number>();

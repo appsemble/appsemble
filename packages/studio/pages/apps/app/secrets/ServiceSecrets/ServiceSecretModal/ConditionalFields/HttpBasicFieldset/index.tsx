@@ -1,5 +1,5 @@
 import { PasswordField, SimpleFormField } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -8,7 +8,7 @@ interface HttpBasicFieldsetProps {
   readonly disabled: boolean;
 }
 
-export function HttpBasicFieldset({ disabled }: HttpBasicFieldsetProps): ReactElement {
+export function HttpBasicFieldset({ disabled }: HttpBasicFieldsetProps): ReactNode {
   return (
     <>
       <SimpleFormField

@@ -1,5 +1,5 @@
 import { Button, Loader, Message, type UseAxiosResult } from '@appsemble/react-components';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -49,7 +49,7 @@ export function AsyncDataView<T>({
   errorMessage,
   loadingMessage,
   result: { data, error, loading, refresh },
-}: AsyncDataViewProps<T>): ReactElement {
+}: AsyncDataViewProps<T>): ReactNode {
   if (loading) {
     return (
       <div className={`my-3 ${styles.loading}`}>
@@ -71,8 +71,8 @@ export function AsyncDataView<T>({
   }
 
   if (Array.isArray(data) && !data.length) {
-    return emptyMessage as ReactElement;
+    return emptyMessage;
   }
 
-  return children(data) as ReactElement;
+  return children(data);
 }

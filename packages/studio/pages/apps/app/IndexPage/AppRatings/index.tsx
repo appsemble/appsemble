@@ -1,6 +1,6 @@
 import { useData, useMessages } from '@appsemble/react-components';
 import { type Rating } from '@appsemble/types';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedDate, FormattedMessage, FormattedNumber, useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -12,7 +12,7 @@ import { StarRating } from '../../../../../components/StarRating/index.js';
 import { useUser } from '../../../../../components/UserProvider/index.js';
 import { useApp } from '../../index.js';
 
-export function AppRatings(): ReactElement {
+export function AppRatings(): ReactNode {
   const { app, setApp } = useApp();
   const result = useData<Rating[]>(`/api/apps/${app.id}/ratings`);
   const { formatMessage } = useIntl();

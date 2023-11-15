@@ -1,6 +1,6 @@
 import { NavbarDropdown, NavbarItem } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { supportedLanguages } from '../../../utils/constants.js';
@@ -13,7 +13,7 @@ interface LanguageDropdownProps {
   readonly className?: string;
 }
 
-export function LanguageDropdown({ className }: LanguageDropdownProps): ReactElement {
+export function LanguageDropdown({ className }: LanguageDropdownProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   const { pathname } = useLocation();
   const navigate = useNavigate();

@@ -10,7 +10,7 @@ import {
 } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
-export function ImportAppButton(): ReactElement {
+export function ImportAppButton(): ReactNode {
   const { organizations } = useUser();
   const [uploadingImportFile, setUploadingImportFile] = useState<File>(null);
 

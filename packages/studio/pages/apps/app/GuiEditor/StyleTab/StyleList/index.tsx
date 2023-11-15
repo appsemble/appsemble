@@ -5,7 +5,7 @@ import {
   type TabsPageDefinition,
 } from '@appsemble/types';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { type Document, type ParsedNode, type YAMLMap, type YAMLSeq } from 'yaml';
 
 import styles from './index.module.css';
@@ -30,7 +30,7 @@ export function StyleList({
   selectedPage,
   selectedProp,
   selectedSubParent,
-}: StyleListProps): ReactElement {
+}: StyleListProps): ReactNode {
   const { app } = useApp();
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
 

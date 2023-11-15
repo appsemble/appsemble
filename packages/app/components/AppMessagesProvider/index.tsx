@@ -14,7 +14,6 @@ import axios from 'axios';
 import { type Formatters, IntlMessageFormat } from 'intl-messageformat';
 import {
   createContext,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
@@ -58,7 +57,7 @@ const formatters = {
   ),
 } as Formatters;
 
-export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactElement {
+export function AppMessagesProvider({ children }: IntlMessagesProviderProps): ReactNode {
   const { definition } = useAppDefinition();
   const navigate = useNavigate();
   const redirect = useLocationString();

@@ -1,7 +1,7 @@
 import { Button, Content, Loader, Message, useMeta, useQuery } from '@appsemble/react-components';
 import { type LoginCodeResponse } from '@appsemble/types';
 import axios from 'axios';
-import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../../utils/oauth2U
 /**
  * Handle login to apps using OAuth2.
  */
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const qs = useQuery();
   const { lang } = useParams<{ lang: string }>();
   const { formatMessage } = useIntl();

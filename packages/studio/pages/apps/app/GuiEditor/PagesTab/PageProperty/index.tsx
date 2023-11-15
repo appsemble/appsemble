@@ -3,7 +3,7 @@ import { type BlockDefinition, type PageDefinition } from '@appsemble/types';
 import {
   type ChangeEvent,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -36,7 +36,7 @@ export function PageProperty({
   saveStack,
   selectedPage,
   selectedSubPage,
-}: PagePropertyProps): ReactElement {
+}: PagePropertyProps): ReactNode {
   const push = useMessages();
   const { formatMessage } = useIntl();
   const [currentPageName, setCurrentPageName] = useState(

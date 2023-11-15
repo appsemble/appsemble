@@ -1,5 +1,5 @@
 import { Button, Icon } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ export function TrainingCard({
   linkToDocumentation,
   linkToVideo,
   title,
-}: TrainingCardProps): ReactElement {
+}: TrainingCardProps): ReactNode {
   const copyToClipboard = useCallback(async (value: string) => {
     await navigator.clipboard.writeText(value);
   }, []);

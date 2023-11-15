@@ -1,6 +1,6 @@
 import { useLocationString, useQuery } from '@appsemble/react-components';
 import { type Permission } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { type Organization } from '../../types.js';
@@ -12,7 +12,7 @@ interface ProtectedRouteProps {
   readonly organization?: Organization;
 }
 
-export function ProtectedRoute({ organization, permission }: ProtectedRouteProps): ReactElement {
+export function ProtectedRoute({ organization, permission }: ProtectedRouteProps): ReactNode {
   const redirect = useLocationString();
   const { userInfo } = useUser();
   const qs = useQuery();

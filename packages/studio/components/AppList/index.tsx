@@ -1,6 +1,6 @@
 import { type Toggle, type UseAxiosResult } from '@appsemble/react-components';
 import { type App } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -39,9 +39,9 @@ export interface AppListProps<TApp extends App = App> {
   /**
    * A function that returns the controls to be displayed in edit mode for each app.
    */
-  readonly editModeCardControls?: (app: TApp) => ReactElement;
+  readonly editModeCardControls?: (app: TApp) => ReactNode;
 
-  readonly decorate?: (app: TApp) => ReactElement;
+  readonly decorate?: (app: TApp) => ReactNode;
 }
 
 export function AppList<TApp extends App = App>({
@@ -52,7 +52,7 @@ export function AppList<TApp extends App = App>({
   result,
   reverse,
   sortFunction,
-}: AppListProps<TApp>): ReactElement {
+}: AppListProps<TApp>): ReactNode {
   return (
     <AsyncDataView
       emptyMessage={<FormattedMessage {...messages.emptyApps} />}

@@ -1,7 +1,7 @@
 import { Button, Icon, Subtitle, Title } from '@appsemble/react-components';
 import { type BlockManifest } from '@appsemble/types';
 import { defaultLocale, parseBlockName } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -17,10 +17,7 @@ interface BlockStoreElementProps {
   readonly block: BlockManifest;
   readonly dragEventListener: (data: BlockManifest) => void;
 }
-export function BlockStoreElement({
-  block,
-  dragEventListener,
-}: BlockStoreElementProps): ReactElement {
+export function BlockStoreElement({ block, dragEventListener }: BlockStoreElementProps): ReactNode {
   const [org, name] = parseBlockName(block.name);
 
   // Transfer the block manifest to the pages tab and activate dropzone

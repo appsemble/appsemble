@@ -8,7 +8,7 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Navigate, useParams } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ import { OpenIDLogin } from '../OpenIDLogin/index.js';
 import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 
-export function Login(): ReactElement {
+export function Login(): ReactNode {
   useMeta(messages.login);
 
   const { definition } = useAppDefinition();

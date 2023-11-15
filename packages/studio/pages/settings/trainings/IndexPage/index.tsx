@@ -1,6 +1,6 @@
 import { Content, useData } from '@appsemble/react-components';
 import { type Training } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ import {
 } from '../../../../components/TrainingListControls/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState<{ name: TrainingSortFunctionName; reverse: boolean }>({
     name: 'difficulty',

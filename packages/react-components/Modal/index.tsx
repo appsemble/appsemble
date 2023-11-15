@@ -4,7 +4,6 @@ import {
   type ElementType,
   type KeyboardEvent,
   type MouseEvent,
-  type ReactElement,
   type ReactNode,
   useCallback,
 } from 'react';
@@ -76,7 +75,7 @@ export function Modal<T extends ElementType = 'div'>({
   isActive,
   onClose,
   ...props
-}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactElement {
+}: ModalProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): ReactNode {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,

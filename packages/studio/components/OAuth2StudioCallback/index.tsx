@@ -10,7 +10,7 @@ import { type TokenResponse, type UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State, timezone } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, type MessageDescriptor } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ interface OAuth2StudioCallbackProps {
  * - If the user has logged in using an unknown account, they are prompted if they want to link the
  * OAuth2 account to a new or an existing Appsemble account.
  */
-export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactElement {
+export function OAuth2StudioCallback({ session }: OAuth2StudioCallbackProps): ReactNode {
   const navigate = useNavigate();
   const redirect = useLocationString();
   const qs = useQuery();

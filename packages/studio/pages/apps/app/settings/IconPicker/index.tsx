@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, type ReactNode, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 
@@ -10,7 +10,7 @@ interface IconPickerProps {
   readonly disabled?: boolean;
 }
 
-export function IconPicker({ children, disabled, name, onChange }: IconPickerProps): ReactElement {
+export function IconPicker({ children, disabled, name, onChange }: IconPickerProps): ReactNode {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       onChange(event, event.currentTarget.files[0]);

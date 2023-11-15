@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
@@ -12,7 +12,7 @@ interface NavLinkProps extends ComponentPropsWithoutRef<typeof Link> {
 /**
  * A Bulma styles navigation link.
  */
-export function NavLink({ className, exact, to, ...props }: NavLinkProps): ReactElement {
+export function NavLink({ className, exact, to, ...props }: NavLinkProps): ReactNode {
   const location = useLocation();
 
   return (

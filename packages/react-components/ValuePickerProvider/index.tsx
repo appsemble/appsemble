@@ -1,11 +1,4 @@
-import {
-  createContext,
-  type ReactElement,
-  type ReactNode,
-  type SyntheticEvent,
-  useContext,
-  useMemo,
-} from 'react';
+import { createContext, type ReactNode, type SyntheticEvent, useContext, useMemo } from 'react';
 
 interface ValuePickerContext<T> {
   /**
@@ -41,7 +34,7 @@ export function ValuePickerProvider<T>({
   name,
   onChange,
   value,
-}: ValuePickerProviderProps<T>): ReactElement {
+}: ValuePickerProviderProps<T>): ReactNode {
   const context = useMemo(() => ({ name, onChange, value }), [name, onChange, value]);
 
   return <Context.Provider value={context}>{children}</Context.Provider>;

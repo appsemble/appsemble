@@ -1,7 +1,7 @@
 import { Checkbox, Title, useMeta, useToggle } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, iterJSONSchema, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { stringify } from 'yaml';
 
@@ -32,7 +32,7 @@ resolveJsonReferences(schemas.AppDefinition, 'AppDefinition');
 
 const entries = [...allSchemas.entries()];
 
-export function AppPage(): ReactElement {
+export function AppPage(): ReactNode {
   useMeta(messages.title, messages.description);
 
   const showYaml = useToggle();

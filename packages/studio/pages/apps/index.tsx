@@ -1,5 +1,5 @@
 import { MetaSwitch } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, Route } from 'react-router-dom';
 
 import { AppRoutes } from './app/index.js';
@@ -9,7 +9,7 @@ import { messages } from './messages.js';
 /**
  * Render routes related to apps.
  */
-export function AppsRoutes(): ReactElement {
+export function AppsRoutes(): ReactNode {
   return (
     <MetaSwitch description={messages.description} title={messages.title}>
       <Route element={<IndexPage />} path="/" />

@@ -4,7 +4,7 @@ import {
   type FlowPageDefinition,
   type TabsPageDefinition,
 } from '@appsemble/types';
-import { type MutableRefObject, type ReactElement, useCallback, useState } from 'react';
+import { type MutableRefObject, type ReactNode, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { type Document, type ParsedNode } from 'yaml';
 
@@ -42,7 +42,7 @@ export function StylePage({
   selectedProp,
   selectedSubParent,
   setCoreStyle,
-}: StylePageProps): ReactElement {
+}: StylePageProps): ReactNode {
   const regex = /\s*(\d+})\s*/g;
   const { formatMessage } = useIntl();
   const [borderType, setBorderType] = useState<string>(borderTypes[0]);

@@ -1,6 +1,6 @@
 import { Button, Message, useData } from '@appsemble/react-components';
 import { type App, type Quota } from '@appsemble/types';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -29,7 +29,7 @@ interface BannerProps {
   readonly onDismiss: (d: Dismissal) => void;
 }
 
-function Banner({ app, onDismiss }: BannerProps): ReactElement {
+function Banner({ app, onDismiss }: BannerProps): ReactNode {
   const { data } = useData<Quota | null>(`/api/apps/${app.id}/quotas/email`);
 
   if (!data || data.used < data.limit) {
@@ -53,7 +53,7 @@ function Banner({ app, onDismiss }: BannerProps): ReactElement {
   );
 }
 
-export function EmailQuotaBanners(): ReactElement {
+export function EmailQuotaBanners(): ReactNode {
   const [dismissed, setDismissed] = useState(getDismissedApps());
 
   const { data } = useData<App[]>('/api/user/apps');

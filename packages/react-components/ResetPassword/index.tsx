@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -19,7 +19,7 @@ interface ResetPasswordProps {
   readonly onSubmit: (email: string) => Promise<void>;
 }
 
-export function ResetPassword({ onSubmit }: ResetPasswordProps): ReactElement {
+export function ResetPassword({ onSubmit }: ResetPasswordProps): ReactNode {
   const [success, setSuccess] = useState(false);
 
   const submit = useCallback(

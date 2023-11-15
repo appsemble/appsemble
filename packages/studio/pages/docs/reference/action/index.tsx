@@ -2,7 +2,7 @@ import { Title, useMeta } from '@appsemble/react-components';
 import { camelToHyphen, defaultLocale, schemas } from '@appsemble/utils';
 import { type Schema as JSONSchema } from 'jsonschema';
 import { type OpenAPIV3 } from 'openapi-types';
-import { Fragment, type ReactElement } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Introduction from './introduction.md';
@@ -37,7 +37,7 @@ const entries = (definitions as OpenAPIV3.NonArraySchemaObject).anyOf
   })
   .sort(([a], [b]) => a.localeCompare(b));
 
-export function ActionPage(): ReactElement {
+export function ActionPage(): ReactNode {
   useMeta(messages.title, messages.description);
 
   return (

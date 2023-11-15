@@ -1,7 +1,7 @@
 import { Button, Content, Icon, useData } from '@appsemble/react-components';
 import { type App, type BlockManifest } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ interface IndexPageProps {
   readonly organization: Organization;
 }
 
-export function IndexPage({ organization }: IndexPageProps): ReactElement {
+export function IndexPage({ organization }: IndexPageProps): ReactNode {
   const { formatMessage } = useIntl();
   const { organizations } = useUser();
   const { lang, organizationId } = useParams<{ lang: string; organizationId: string }>();

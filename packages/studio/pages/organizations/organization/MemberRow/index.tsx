@@ -6,7 +6,7 @@ import {
 } from '@appsemble/react-components';
 import { type Role, roles } from '@appsemble/utils';
 import axios from 'axios';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -57,7 +57,7 @@ export function MemberRow({
   onChanged,
   onDeleted,
   ownerCount,
-}: MemberRowProps): ReactElement {
+}: MemberRowProps): ReactNode {
   const { id, name, primaryEmail } = member;
   const { formatMessage } = useIntl();
   const { organizationId } = useParams<{ organizationId: string }>();

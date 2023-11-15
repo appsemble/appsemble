@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 interface TableProps {
   /**
@@ -49,7 +49,7 @@ export function Table({
   hoverable = true,
   narrow,
   striped = true,
-}: TableProps): ReactElement {
+}: TableProps): ReactNode {
   return (
     <div className={classNames('table-container', className)}>
       <table

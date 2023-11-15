@@ -1,5 +1,5 @@
 import { Button } from '@appsemble/react-components';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -12,7 +12,7 @@ const policyOptions = ['everyone', 'organization', 'invite'] as const;
 interface DefaultPageProps {
   readonly onChangeTab: (tab: (typeof tabChangeOptions)[number]) => void;
 }
-export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactElement {
+export function DefaultPage({ onChangeTab }: DefaultPageProps): ReactNode {
   const { app, setApp } = useApp();
   const { formatMessage } = useIntl();
 

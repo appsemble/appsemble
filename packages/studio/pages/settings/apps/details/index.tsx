@@ -17,7 +17,7 @@ import {
 } from '@appsemble/react-components';
 import { type AppAccount } from '@appsemble/types';
 import axios from 'axios';
-import { Fragment, type ReactElement, useCallback } from 'react';
+import { Fragment, type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
@@ -28,7 +28,7 @@ import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 
-export function DetailsPage(): ReactElement {
+export function DetailsPage(): ReactNode {
   const { appId, lang } = useParams<{ appId: string; lang: string }>();
   const navigate = useNavigate();
   const result = useData<AppAccount>(`/api/user/apps/${appId}/account`);

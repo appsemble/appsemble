@@ -1,4 +1,4 @@
-import { Children, Fragment, type ReactElement, type ReactNode } from 'react';
+import { Children, Fragment, type ReactNode } from 'react';
 
 interface JoinProps {
   children: ReactNode;
@@ -8,7 +8,7 @@ interface JoinProps {
 /**
  * Join React JSX children using a separator node.
  */
-export function Join({ children, separator }: JoinProps): ReactElement {
+export function Join({ children, separator }: JoinProps): ReactNode {
   let count = 0;
   return Children.map(children, (child) => {
     if (typeof child !== 'object') {
@@ -27,5 +27,5 @@ export function Join({ children, separator }: JoinProps): ReactElement {
         {child}
       </Fragment>
     );
-  }) as ReactNode as ReactElement;
+  });
 }

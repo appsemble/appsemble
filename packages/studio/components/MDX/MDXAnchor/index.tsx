@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 interface MDXAnchorProps {
@@ -16,7 +16,7 @@ interface MDXAnchorProps {
 /**
  * Render a markdown link element.
  */
-export function MDXAnchor({ children, href }: MDXAnchorProps): ReactElement {
+export function MDXAnchor({ children, href }: MDXAnchorProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
 
   if (/^https?:\/\//.test(href) || href === '/api-explorer') {

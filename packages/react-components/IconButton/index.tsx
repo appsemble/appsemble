@@ -2,7 +2,7 @@ import { type BulmaColor } from '@appsemble/types';
 import { fa } from '@appsemble/web-utils';
 import { type IconName, type IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -28,7 +28,7 @@ interface IconButtonProps extends ComponentPropsWithoutRef<'button'> {
  *
  * The button type is set to `button` by default.
  */
-export function IconButton({ className, color, icon, ...props }: IconButtonProps): ReactElement {
+export function IconButton({ className, color, icon, ...props }: IconButtonProps): ReactNode {
   return (
     <button
       className={classNames('icon', styles.root, className, { [`has-text-${color}`]: color })}

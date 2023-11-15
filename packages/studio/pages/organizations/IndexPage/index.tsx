@@ -1,6 +1,6 @@
 import { Button, useData, useToggle } from '@appsemble/react-components';
 import { type Organization } from '@appsemble/types';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ import { HeaderControl } from '../../../components/HeaderControl/index.js';
 import { ListButton } from '../../../components/ListButton/index.js';
 import { useUser } from '../../../components/UserProvider/index.js';
 
-export function IndexPage(): ReactElement {
+export function IndexPage(): ReactNode {
   const result = useData<Organization[]>('/api/organizations');
   const { organizations, userInfo } = useUser();
   const { lang } = useParams<{ lang: string }>();

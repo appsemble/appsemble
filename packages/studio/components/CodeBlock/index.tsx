@@ -2,7 +2,7 @@ import { Button, useMessages } from '@appsemble/react-components';
 import { downloadBlob } from '@appsemble/web-utils';
 import classNames from 'classnames';
 import indentString from 'indent-string';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactElement, type ReactNode, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
@@ -23,6 +23,7 @@ interface CodeBlockProps {
   /**
    * The code to render.
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   readonly children: ReactElement<HighlightedCodeProps> | string;
 
   /**
@@ -51,7 +52,7 @@ export function CodeBlock({
   filename,
   indent,
   language,
-}: CodeBlockProps): ReactElement {
+}: CodeBlockProps): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
 

@@ -4,7 +4,6 @@ import {
   type ElementType,
   type KeyboardEvent,
   type MouseEvent,
-  type ReactElement,
   type ReactNode,
   useCallback,
 } from 'react';
@@ -85,7 +84,7 @@ export function ModalCard<T extends ElementType = 'div'>({
   title,
   wrapperClassName,
   ...props
-}: ModalCardProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalCardProps<T>>): ReactElement {
+}: ModalCardProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof ModalCardProps<T>>): ReactNode {
   const openClass = useAnimation(isActive, 300, {
     opening: styles.opening,
     open: styles.open,

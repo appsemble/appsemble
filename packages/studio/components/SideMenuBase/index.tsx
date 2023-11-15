@@ -1,5 +1,5 @@
 import { MenuItem, MenuSection } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { messages } from './messages.js';
 /**
  * The side menu section that’s rendered in Appsemble Studio by default.
  */
-export function SideMenuBase(): ReactElement {
+export function SideMenuBase(): ReactNode {
   const { lang } = useParams<{ lang: string }>();
 
   return (

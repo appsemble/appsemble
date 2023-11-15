@@ -1,5 +1,5 @@
 import { Portal, SideMenuButton } from '@appsemble/react-components';
-import { type ReactChild, type ReactElement } from 'react';
+import { type ReactChild, type ReactNode } from 'react';
 
 import { shouldShowMenu } from '../../utils/layout.js';
 import { useAppDefinition } from '../AppDefinitionProvider/index.js';
@@ -17,7 +17,7 @@ interface AppBarProps {
  *
  * This displays the app name,
  */
-export function AppBar({ children, hideName }: AppBarProps): ReactElement {
+export function AppBar({ children, hideName }: AppBarProps): ReactNode {
   const { definition } = useAppDefinition();
   const { role, teams } = useUser();
   const { page } = usePage();

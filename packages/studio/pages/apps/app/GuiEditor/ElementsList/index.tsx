@@ -2,7 +2,7 @@ import { Button, Icon } from '@appsemble/react-components';
 import {
   type DragEvent,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react';
@@ -35,7 +35,7 @@ export function ElementsList({
   selectedBlock,
   selectedPage,
   selectedSubParent,
-}: ElementsListProps): ReactElement {
+}: ElementsListProps): ReactNode {
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
   const [dragItem, setDragItem] = useState<number>(-1);
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);

@@ -1,5 +1,5 @@
 import { SelectField } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { useIntl } from 'react-intl';
 
 import { messages } from './messages.js';
@@ -15,7 +15,7 @@ export function JSONSchemaEnumEditor({
   required,
   schema,
   value = '',
-}: CommonJSONSchemaEditorProps<any>): ReactElement {
+}: CommonJSONSchemaEditorProps<any>): ReactNode {
   const { formatMessage } = useIntl();
 
   return (

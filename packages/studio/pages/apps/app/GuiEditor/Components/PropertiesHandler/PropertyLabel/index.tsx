@@ -1,5 +1,5 @@
 import { Box, Icon } from '@appsemble/react-components';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -12,7 +12,7 @@ interface PropertyLabelProps {
   readonly required: boolean;
 }
 
-export function PropertyLabel({ description, label, required }: PropertyLabelProps): ReactElement {
+export function PropertyLabel({ description, label, required }: PropertyLabelProps): ReactNode {
   const [isHovering, setIsHovering] = useState(false);
   const [hoveringOnBox, setHoveringOnBox] = useState(false);
 

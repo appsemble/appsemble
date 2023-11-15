@@ -2,7 +2,7 @@ import { Button, Confirmation, useConfirmation, useMessages } from '@appsemble/r
 import {
   type ChangeEvent,
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -27,7 +27,7 @@ export function SubPageProperty({
   saveStack,
   selectedPage,
   selectedSubPage,
-}: SubPagePropertyProps): ReactElement {
+}: SubPagePropertyProps): ReactNode {
   const push = useMessages();
   const [currentSubPageName, setCurrentSubPageName] = useState<string>(
     (

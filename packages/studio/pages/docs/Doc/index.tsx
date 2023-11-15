@@ -1,5 +1,5 @@
 import { useMeta } from '@appsemble/react-components';
-import { type ComponentType, type ReactElement } from 'react';
+import { type ComponentType, type ReactNode } from 'react';
 
 interface DocProps {
   /**
@@ -16,7 +16,7 @@ interface DocProps {
 /**
  * Render documentation in with a breadcrumb.
  */
-export function Doc({ component: Component, title }: DocProps): ReactElement {
+export function Doc({ component: Component, title }: DocProps): ReactNode {
   useMeta(title);
 
   return <Component />;

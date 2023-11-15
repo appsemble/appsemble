@@ -2,7 +2,6 @@ import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
   type ComponentType,
-  type ReactElement,
   type ReactNode,
   useCallback,
   useEffect,
@@ -48,7 +47,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   preprocess,
   validityMessages = {},
   ...props
-}: SimpleFormFieldProps<C>): ReactElement {
+}: SimpleFormFieldProps<C>): ReactNode {
   const { formErrors, id, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
   const prevNameValueRef = useRef<string>(values.name);
   const ref = useRef<MinimalHTMLElement>(null);

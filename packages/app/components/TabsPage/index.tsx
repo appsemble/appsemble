@@ -4,7 +4,7 @@ import { normalize } from '@appsemble/utils';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
-  type ReactElement,
+  type ReactNode,
   useCallback,
 } from 'react';
 import { Navigate, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -22,7 +22,7 @@ export function TabsPage({
   prefix,
   prefixIndex,
   ...blockListProps
-}: TabsPageProps): ReactElement {
+}: TabsPageProps): ReactNode {
   const {
     '*': wildcard,
     lang,

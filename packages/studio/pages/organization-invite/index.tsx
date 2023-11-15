@@ -12,7 +12,7 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ import { messages } from './messages.js';
 import { useUser } from '../../components/UserProvider/index.js';
 import { type Organization } from '../../types.js';
 
-export function OrganizationInvitePage(): ReactElement {
+export function OrganizationInvitePage(): ReactNode {
   const { formatMessage } = useIntl();
   const push = useMessages();
   const qs = useQuery();

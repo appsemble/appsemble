@@ -1,6 +1,6 @@
 import { Subtitle, Title } from '@appsemble/react-components';
 import { type AppCollection } from '@appsemble/types';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import styles from './index.module.css';
@@ -12,7 +12,7 @@ interface CollectionCardProps {
   readonly collection: AppCollection;
 }
 
-export function CollectionCard({ collection }: CollectionCardProps): ReactElement {
+export function CollectionCard({ collection }: CollectionCardProps): ReactNode {
   const { lang } = useParams<{ lang: string }>();
   return (
     <Link className="card" title={collection.name} to={`/${lang}/collections/${collection.id}`}>

@@ -1,5 +1,5 @@
 import { Input } from '@appsemble/react-components';
-import { type ChangeEvent, type ReactElement, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { getAllowedChars, getCheckedString } from '../../../../../../utils/stringValidator.js';
@@ -34,7 +34,7 @@ export function InputString({
   pattern,
   readonly = false,
   value,
-}: InputStringProps): ReactElement {
+}: InputStringProps): ReactNode {
   const charsRegex = getAllowedChars(allowSpaces, allowSymbols, allowNumbers, allowUpperChars);
 
   const onInputChange = useCallback(

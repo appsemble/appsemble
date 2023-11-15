@@ -11,7 +11,7 @@ import {
 } from '@appsemble/types';
 import {
   type MutableRefObject,
-  type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -56,7 +56,7 @@ export function FlowPage({
   showDialog,
   showShareDialog,
   stepRef,
-}: FlowPageProps): ReactElement {
+}: FlowPageProps): ReactNode {
   const navigate = useNavigate();
   const params = useParams();
   const [currentStep, setCurrentStep] = useState(0);

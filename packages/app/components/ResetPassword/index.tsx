@@ -5,14 +5,14 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { type ReactElement, useCallback, useState } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { apiUrl, appId } from '../../utils/settings.js';
 
-export function ResetPassword(): ReactElement {
+export function ResetPassword(): ReactNode {
   useMeta(messages.title);
 
   const [success, setSuccess] = useState(false);

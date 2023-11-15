@@ -1,6 +1,6 @@
 import { Button, Checkbox, ModalCard, useToggle } from '@appsemble/react-components';
 import { type Asset } from '@appsemble/types';
-import { type ChangeEvent, type ReactElement } from 'react';
+import { type ChangeEvent, type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ interface AssetRowProps {
 /**
  * Render a table row in the asset overview.
  */
-export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactElement {
+export function AssetRow({ asset, isSelected, onSelect }: AssetRowProps): ReactNode {
   const { app } = useApp();
   const preview = useToggle();
 

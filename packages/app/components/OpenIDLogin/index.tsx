@@ -1,5 +1,5 @@
 import { OAuth2LoginButton, useQuery, useToggle } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.module.css';
@@ -11,7 +11,7 @@ interface OpenIDLoginProps {
   readonly disabled: boolean;
 }
 
-export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactElement {
+export function OpenIDLogin({ disabled }: OpenIDLoginProps): ReactNode {
   const qs = useQuery();
   const busy = useToggle();
 

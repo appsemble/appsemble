@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { type ComponentPropsWithoutRef, type ReactElement } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import styles from './index.module.css';
 import { Button } from '../index.js';
@@ -8,7 +8,7 @@ export function CardFooterButton({
   className,
   color = 'white',
   ...props
-}: ComponentPropsWithoutRef<typeof Button>): ReactElement {
+}: ComponentPropsWithoutRef<typeof Button>): ReactNode {
   return (
     <Button
       className={classNames(`card-footer-item ${styles.root}`, className)}

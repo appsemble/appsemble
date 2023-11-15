@@ -5,7 +5,7 @@ import {
   useLocationString,
   useQuery,
 } from '@appsemble/react-components';
-import { type ReactElement } from 'react';
+import { type ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
@@ -21,7 +21,7 @@ interface LanguageDropdownProps {
   readonly className?: string;
 }
 
-export function ProfileDropdown({ className }: LanguageDropdownProps): ReactElement {
+export function ProfileDropdown({ className }: LanguageDropdownProps): ReactNode {
   const { formatMessage } = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();

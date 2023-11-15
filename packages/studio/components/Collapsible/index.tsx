@@ -1,6 +1,6 @@
 import { Button, Title, useToggle } from '@appsemble/react-components';
 import classNames from 'classnames';
-import { type ReactElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import styles from './index.module.css';
 
@@ -50,7 +50,7 @@ export function Collapsible({
   level = 2,
   size = 4,
   title,
-}: CollapsibleProps): ReactElement {
+}: CollapsibleProps): ReactNode {
   const collapsed = useToggle(defaultValue);
 
   return (

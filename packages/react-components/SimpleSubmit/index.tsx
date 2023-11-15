@@ -1,4 +1,4 @@
-import { type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react';
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
 
 import { Button, useSimpleForm } from '../index.js';
 
@@ -17,7 +17,7 @@ export function SimpleSubmit({
   allowPristine = true,
   disabled,
   ...props
-}: SimpleSubmitProps): ReactElement {
+}: SimpleSubmitProps): ReactNode {
   const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (

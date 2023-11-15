@@ -1,5 +1,5 @@
 import { type Schema } from 'jsonschema';
-import { type ReactElement, useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { type JsonObject } from 'type-fest';
 
 import PropertyLabel from '../../PropertyLabel/index.js';
@@ -16,7 +16,7 @@ export function ObjectProperty({
   property,
   schema,
   value,
-}: ObjectPropertyProps): ReactElement {
+}: ObjectPropertyProps): ReactNode {
   const onValueChange = useCallback(
     (currentProperty: string, newValue: JsonObject) => {
       onChange(property, {
