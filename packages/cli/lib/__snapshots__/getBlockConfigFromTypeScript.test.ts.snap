@@ -1790,7 +1790,6 @@ By setting this to true, an exact match is used.",
         "description": "The name of a field to highlight.
 
 This means this field will be displayed directly on the screen instead of in the modal.",
-        "type": "string",
       },
     },
     "required": [
