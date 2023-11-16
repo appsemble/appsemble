@@ -34,8 +34,11 @@ export function MemberTable(): ReactNode {
   const addMembersModal = useToggle();
 
   const onInvited = useCallback(
-    (newInvites: OrganizationInvite[]) => setInvites([...invites, ...newInvites]),
-    [invites, setInvites],
+    (newInvites: OrganizationInvite[]) => {
+      setInvites([...invites, ...newInvites]);
+      addMembersModal.disable();
+    },
+    [addMembersModal, invites, setInvites],
   );
 
   const onMemberChanged = useCallback(
