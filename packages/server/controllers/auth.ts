@@ -10,14 +10,7 @@ import { argv } from '../utils/argv.js';
 import { createJWTResponse } from '../utils/createJWTResponse.js';
 
 function mayRegister(ctx: Context): void {
-  if (argv.disableRegistration) {
-    ctx.response.status = 403;
-    ctx.response.body = {
-      statusCode: 403,
-      error: 'Forbidden',
-      message: 'Registration is disabled',
-    };
-  }
+  assertKoaError(argv.disableRegistration, ctx, 403, 'Registration is disabled');
 }
 
 export async function registerEmail(ctx: Context): Promise<void> {
