@@ -324,6 +324,7 @@ export async function getAppById(ctx: Context): Promise<void> {
 
   applyAppMessages(app, language, baseLanguage);
 
+  ctx.status = 200;
   ctx.body = app.toJSON(propertyFilters);
 }
 
