@@ -14,6 +14,8 @@
   - [GitHub](#github)
   - [GitLab](#gitlab)
   - [Google](#google)
+  - [SMTP](#smtp)
+    - [Server configuration](#server-configuration)
 - [License](#license)
 
 ## Installation
@@ -127,6 +129,37 @@ _Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST`
 **Example**: `https://example.com/callback`.
 
 Check the `read_user` scope, and click _Save application_.
+
+### SMTP
+
+To be able to send emails from your local environment, you need to set up or connect to an SMTP
+server.
+
+A project that provides an email testing environment for developers is
+[Mailpit](https://github.com/axllent/mailpit). It acts as an SMTP server where you can view and test
+captured emails.
+
+For connecting to the SMTP server, you need to obtain the following settings:
+
+- Host
+- Port
+- Username
+- Password
+
+#### Server configuration
+
+In the project’s root `package.json` you can define the following properties under
+`"appsembleServer"`:
+
+```json
+"smtp-host": "(SMTP Server)",
+"smtp-port": "(SMTP Port)",
+"smtp-user": "(SMTP Username)",
+"smtp-pass": "(SMTP Password)",
+"smtp-from": "(Standard email address to put as sender)"
+```
+
+These can also be used as CLI parameters.
 
 ## License
 

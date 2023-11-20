@@ -185,6 +185,13 @@ DATABASE_URL=postgres://admin:password@localhost:5432 npm test
 
 ### Building
 
+The Appsemble Docker image can be configured using environment variables. Each variable can also be
+passed as a command line parameter instead, if desired. This includes adding variables for
+connecting to an SMTP server.
+
+The full explanation of setting up your local server, including a full list of environment
+variables, can be found at [packages/server/README.md](packages/server/README.md).
+
 The resulting Docker image can be built using the Docker CLI.
 
 ```sh
