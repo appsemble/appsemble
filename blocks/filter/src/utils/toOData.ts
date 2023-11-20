@@ -19,10 +19,10 @@ export function toOData(fields: Field[], values: FilterValues): string {
         case 'date-range': {
           const filters = [];
           if ((value as string[])[0]) {
-            filters.push(`${field.name} ge '${value as string[][0]}'`);
+            filters.push(`${field.name} ge '${(value as string[])[0]}'`);
           }
           if ((value as string[])[1]) {
-            filters.push(`${field.name} le '${value as string[][1]}'`);
+            filters.push(`${field.name} le '${(value as string[])[1]}'`);
           }
           if (!filters.length) {
             return null;

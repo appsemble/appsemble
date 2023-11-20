@@ -27,8 +27,9 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
   }, [fields]);
   const [values, setValues] = useState(defaultValues);
 
-  const highlightedField = fields.find((field) => field.name === highlight);
-
+  const highlightedFields = fields.filter((field) =>
+    typeof highlight === 'string' ? field.name === highlight : highlight.includes(field.name),
+  );
   const fetchData = useCallback(
     async (submitValues: FilterValues) => {
       setLoading(true);
@@ -53,7 +54,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
         [name]: value,
       };
       setValues(newValues);
-      if (name === highlight) {
+      if (typeof highlight === 'string' ? name === highlight : highlight.includes(name)) {
         fetchData(newValues);
       }
     },
@@ -99,20 +100,27 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
   return (
     <Form
       className={classNames(`is-flex mb-1 ${styles.root}`, {
-        [styles.highlighted]: highlightedField,
+        [styles.highlighted]: highlightedFields[0],
       })}
       onSubmit={onSubmit}
     >
-      {highlightedField ? (
-        <FieldComponent
-          className="mx-2 my-2"
-          field={highlightedField}
-          highlight
-          loading={loading}
-          onChange={onChange}
-          value={values[highlightedField.name]}
-        />
-      ) : null}
+      {highlightedFields?.map((highlightedField) => (
+        <div className="field" key={highlightedField.name}>
+          {highlightedField.label ? (
+            <label className="label">{utils.remap(highlightedField.label, {}) as string}</label>
+          ) : null}
+          <div className="control">
+            <FieldComponent
+              className="mx-2 my-2"
+              field={highlightedField}
+              highlight
+              loading={loading}
+              onChange={onChange}
+              value={values[highlightedField.name]}
+            />
+          </div>
+        </div>
+      ))}
       {showModal ? (
         <>
           <Button
@@ -138,7 +146,7 @@ bootstrap(({ actions, events, parameters: { fields, highlight }, ready, utils })
           >
             {fields.map(
               (field) =>
-                field === highlightedField || (
+                highlightedFields.includes(field) || (
                   <div className="field" key={field.name}>
                     {field.label ? (
                       <label className="label">{utils.remap(field.label, {}) as string}</label>
