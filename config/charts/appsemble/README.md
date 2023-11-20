@@ -69,14 +69,14 @@ Now the chart can be installed.
 ```sh
 helm repo add appsemble https://charts.appsemble.com
 helm repo update
-helm install my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret'
+helm install my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
 ### Upgrading
 
 ```sh
 helm repo update
-helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret'
+helm upgrade my-appsemble appsemble/appsemble --set 'global.postgresql.auth.existingSecret=postgresql-secret' --set 'ingress.host=my-appsemble.example.com'
 ```
 
 ## Variables
