@@ -1,1 +1,0 @@
-Add range input field.

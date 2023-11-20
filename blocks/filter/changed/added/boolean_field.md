@@ -1,1 +1,0 @@
-Add boolean field support.
