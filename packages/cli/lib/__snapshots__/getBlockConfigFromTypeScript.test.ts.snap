@@ -1775,6 +1775,11 @@ By setting this to true, an exact match is used.",
         },
         "type": "array",
       },
+      "fullscreen": {
+        "default": false,
+        "description": "Whether the modal should fill the whole page or not.",
+        "type": "boolean",
+      },
       "highlight": {
         "anyOf": [
           {
@@ -1790,6 +1795,12 @@ By setting this to true, an exact match is used.",
         "description": "The name of a field to highlight.
 
 This means this field will be displayed directly on the screen instead of in the modal.",
+      },
+      "icon": {
+        "default": "filter",
+        "description": "The name of the fontawesome icon to display on the button to open the filter modal.",
+        "format": "fontawesome",
+        "type": "string",
       },
     },
     "required": [

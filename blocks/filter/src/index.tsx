@@ -10,7 +10,7 @@ import { toOData } from './utils/toOData.js';
 import { type FilterValue, type FilterValues } from '../block.js';
 
 bootstrap(
-  ({ actions, events, parameters: { icon, fields, fullscreen, highlight }, ready, utils }) => {
+  ({ actions, events, parameters: { fields, fullscreen, highlight, icon }, ready, utils }) => {
     const modal = useToggle();
     const [loading, setLoading] = useState(false);
     const defaultValues = useMemo(() => {
