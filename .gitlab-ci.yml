@@ -63,7 +63,7 @@ workflow:
     - gpg --import "$GPG_PRIVATE_KEY"
     - npm run scripts -- release "$INCREMENT"
     - npm install
-    - VERSION="$(npm --silent run appsemble --version)"
+    - VERSION="$(npm --silent run appsemble -- --version)"
     - |
       MESSAGE="$VERSION
 
