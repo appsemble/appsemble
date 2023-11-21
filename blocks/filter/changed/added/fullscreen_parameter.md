@@ -1,0 +1,1 @@
+Add `fullscreen` optional parameter

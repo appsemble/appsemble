@@ -192,6 +192,20 @@ declare module '@appsemble/sdk' {
      * This means this field will be displayed directly on the screen instead of in the modal.
      */
     highlight?: string[] | string;
+
+    /**
+     * Whether the modal should fill the whole page or not.
+     *
+     * @default false
+     */
+    fullscreen?: boolean;
+
+    /**
+     * The name of the fontawesome icon to display on the button to open the filter modal.
+     *
+     * @default 'filter'
+     */
+    icon?: IconName;
   }
 
   interface Messages {
