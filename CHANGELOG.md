@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.23.4](https://gitlab.com/appsemble/appsemble/-/releases/0.23.4)] - 2023-11-24
+
+### Added
+
+- Block(`filter`): Add `fullscreen` optional parameter.
+- Block(`filter`): Add boolean field support.
+- Block(`filter`): Add icon optional parameter.
+- Block(`filter`): Add list field support.
+- Block(`filter`): Add range field support.
+- Block(`form`): Add help text for all fields.
+- Block(`form`): Add list input field.
+- Block(`form`): Add range input field.
+- Cli: Add app export command to export an app as a zip file.
+- Cli: Add import app command to support importing an app from a zip file.
+
+### Fixed
+
+- App: Implement storage.append action in a way that prevents race conditions.
+
 ## \[[0.23.3](https://gitlab.com/appsemble/appsemble/-/releases/0.23.3)] - 2023-11-03
 
 ## \[[0.23.2](https://gitlab.com/appsemble/appsemble/-/releases/0.23.2)] - 2023-11-03

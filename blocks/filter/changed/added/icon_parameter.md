@@ -1,1 +1,0 @@
-Add icon optional parameter
