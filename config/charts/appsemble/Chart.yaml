@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.23.4
-appVersion: 0.23.4
+version: 0.23.5
+appVersion: 0.23.5
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,30 +23,8 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: >
-    - kind: added
-      description: "Block(filter): Add fullscreen optional parameter."
-    - kind: added
-      description: "Block(filter): Add boolean field support."
-    - kind: added
-      description: "Block(filter): Add icon optional parameter."
-    - kind: added
-      description: "Block(filter): Add list field support."
-    - kind: added
-      description: "Block(filter): Add range field support."
-    - kind: added
-      description: "Block(form): Add help text for all fields."
-    - kind: added
-      description: "Block(form): Add list input field."
-    - kind: added
-      description: "Block(form): Add range input field."
-    - kind: added
-      description: "Cli: Add app export command to export an app as a zip file."
-    - kind: added
-      description: "Cli: Add import app command to support importing an app from a zip file."
-    - kind: fixed
-      description: "App: Implement storage.append action in a way that prevents race
-        conditions."
+  artifacthub.io/changes: |
+    []
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
