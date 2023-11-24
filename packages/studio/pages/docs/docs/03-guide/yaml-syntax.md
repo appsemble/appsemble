@@ -1,12 +1,15 @@
-# Different types of YAML syntax
+# YAML syntax
 
-YAML supports different types of syntax. The following piece of code
+[YAML](https://en.wikipedia.org/wiki/YAML) is a is a human-readable data serialization language.
+Within Appsemble, YAML is used as language to write an app definition in, for example.
+
+YAML supports different types of syntax. The following piece of code:
 
 ```yaml
 condition: { equals: [1, 1] }
 ```
 
-can also be written as
+can also be written as:
 
 ```yaml
 condition:
