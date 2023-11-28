@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 RUN npm ci
 RUN npx playwright install --with-deps chromium
-RUN npm run scripts build
+RUN npm run scripts -- build
 RUN npm --workspace @appsemble/types run prepack
 RUN npm --workspace @appsemble/sdk run prepack
 RUN npm --workspace @appsemble/utils run prepack

@@ -100,7 +100,7 @@ you will receive the verification link. Similarly, if you login using `GitHub`, 
 To login using the Appsemble CLI, run the following command.
 
 ```sh
-npm run appsemble login
+npm run appsemble -- login
 ```
 
 > Note: when using Windows Subsystem for Linux (WSL), this command is **unsupported**. The
@@ -123,7 +123,7 @@ needs to be created. This organization can be created either in Appsemble Studio
 following CLI command.
 
 ```sh
-npm run appsemble organization create --name Appsemble appsemble
+npm run appsemble -- organization create --name Appsemble appsemble
 ```
 
 #### Publishing Blocks
@@ -132,7 +132,7 @@ After logging in to the CLI, Appsemble blocks can be published locally by runnin
 command.
 
 ```sh
-npm run appsemble block publish blocks/*
+npm run appsemble -- block publish blocks/*
 ```
 
 If prompted, select the OAuth2 credential you created earlier to proceed. You will now see the
@@ -149,7 +149,7 @@ as a starting point must be marked as templates. This can be done using the Apps
 logging in. To publish these apps, run the following command.
 
 ```sh
-npm run appsemble app publish --context development apps/*
+npm run appsemble -- app publish --context development apps/*
 ```
 
 The published apps will be displayed on the `App store` page.
@@ -159,7 +159,7 @@ The published apps will be displayed on the `App store` page.
 The development server can be started by running:
 
 ```sh
-npm run appsemble serve <path-to-app-directory>
+npm run appsemble -- serve <path-to-app-directory>
 ```
 
 See the [CLI readme](packages/cli/README.md#development-server)
