@@ -24,7 +24,7 @@ import { compareStrings } from '@appsemble/utils';
  * Now running the following command will fix the message keys:
  * @example
  * ```sh
- * npm run scripts rewrite-messages
+ * npm run scripts -- rewrite-messages
  * ```
  */
 const replacements: [RegExp, string][] = [];

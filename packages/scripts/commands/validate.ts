@@ -307,6 +307,6 @@ export async function handler(): Promise<void> {
   }
 
   if (invalid.length) {
-    logger.info('Please use `npm run scripts extract-messages` to resolve the issue(s).');
+    logger.info('Please use `npm run scripts -- extract-messages` to resolve the issue(s).');
   }
 }
