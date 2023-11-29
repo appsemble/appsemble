@@ -1,0 +1,12 @@
+{
+  "app": {
+    "description": "App controller demonstration",
+    "name": "Controller",
+    "pages.example-page-a": "Example Page A"
+  },
+  "messageIds": {
+    "firstNumber": "First Number",
+    "operation": "Operation",
+    "secondNumber": "Second Number"
+  }
+}

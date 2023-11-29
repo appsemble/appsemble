@@ -1,6 +1,7 @@
 import {
   type AppDefinition,
   type BlockManifest,
+  type ProjectImplementations,
   type ResourceGetActionDefinition,
   type RoleDefinition,
 } from '@appsemble/types';
@@ -131,6 +132,87 @@ function validateResourceSchemas(definition: AppDefinition, report: Report): voi
       }
     }
   }
+}
+
+function validateController(
+  definition: AppDefinition,
+  controllerImplementations: ProjectImplementations,
+  report: Report,
+): void {
+  if (!definition.controller || !controllerImplementations) {
+    return;
+  }
+
+  iterApp(definition, {
+    onController(controller, path) {
+      const actionParameters = new Set<string>();
+
+      if (controller.actions) {
+        if (controllerImplementations.actions) {
+          for (const [key, action] of Object.entries(controller.actions)) {
+            if (
+              action.type in
+              [
+                'link',
+                'link.back',
+                'link.next',
+                'dialog',
+                'dialog.ok',
+                'dialog.error',
+                'flow.back',
+                'flow.cancel',
+                'flow.finish',
+                'flow.next',
+                'flow.to',
+              ]
+            ) {
+              report(action, 'cannot be used in controllers', [...path, 'actions', key]);
+            }
+
+            if (controllerImplementations.actions.$any) {
+              if (actionParameters.has(key)) {
+                continue;
+              }
+
+              if (!has(controllerImplementations.actions, key)) {
+                report(action, 'is unused', [...path, 'actions', key]);
+              }
+            } else if (!has(controllerImplementations.actions, key)) {
+              report(action, 'is an unknown action for this controller', [...path, 'actions', key]);
+            }
+          }
+        } else {
+          report(controller.actions, 'is not allowed on this controller', [...path, 'actions']);
+        }
+      }
+
+      if (!controller.events) {
+        return;
+      }
+
+      if (controller.events.emit) {
+        for (const [key, value] of Object.entries(controller.events.emit)) {
+          if (
+            !controllerImplementations.events?.emit?.$any &&
+            !has(controllerImplementations.events?.emit, key)
+          ) {
+            report(value, 'is an unknown event emitter', [...path, 'events', 'emit', key]);
+          }
+        }
+      }
+
+      if (controller.events.listen) {
+        for (const [key, value] of Object.entries(controller.events.listen)) {
+          if (
+            !controllerImplementations.events?.listen?.$any &&
+            !has(controllerImplementations.events?.listen, key)
+          ) {
+            report(value, 'is an unknown event listener', [...path, 'events', 'listen', key]);
+          }
+        }
+      }
+    },
+  });
 }
 
 function validateBlocks(
@@ -618,7 +700,7 @@ function validateEvents(
   report: Report,
 ): void {
   const indexMap = new Map<
-    number,
+    number | string,
     {
       emitters: Map<string, Prefix[]>;
       listeners: Map<string, Prefix[]>;
@@ -628,27 +710,66 @@ function validateEvents(
   function collect(prefix: Prefix, name: string, isEmitter: boolean): void {
     const [firstKey, pageIndex] = prefix;
 
-    // Ignore anything not part of a page. For example cron actions never support events.
-    if (firstKey !== 'pages') {
-      return;
+    let mapAtKey;
+
+    // Ignore anything not part of controller or a page.
+    // For example cron actions never support events.
+    switch (firstKey) {
+      case 'controller':
+        if (!indexMap.has('controller')) {
+          indexMap.set('controller', { emitters: new Map(), listeners: new Map() });
+        }
+
+        mapAtKey = indexMap.get('controller')!;
+
+        break;
+      case 'pages':
+        if (typeof pageIndex !== 'number') {
+          return;
+        }
+
+        if (!indexMap.has(pageIndex)) {
+          indexMap.set(pageIndex, { emitters: new Map(), listeners: new Map() });
+        }
+
+        mapAtKey = indexMap.get(pageIndex)!;
+
+        break;
+      default:
+        return;
     }
 
-    if (typeof pageIndex !== 'number') {
-      return;
-    }
-    if (!indexMap.has(pageIndex)) {
-      indexMap.set(pageIndex, { emitters: new Map(), listeners: new Map() });
-    }
-    const { emitters, listeners } = indexMap.get(pageIndex)!;
+    const { emitters, listeners } = mapAtKey;
+
     const context = isEmitter ? emitters : listeners;
+
     if (!context.has(name)) {
       context.set(name, []);
     }
+
     const prefixes = context.get(name)!;
     prefixes.push(prefix);
   }
 
   iterApp(definition, {
+    onController(controller, path) {
+      if (!controller.events) {
+        return;
+      }
+
+      if (controller.events.emit) {
+        for (const [prefix, name] of Object.entries(controller.events.emit)) {
+          collect([...path, 'events', 'emit', prefix], name, true);
+        }
+      }
+
+      if (controller.events.listen) {
+        for (const [prefix, name] of Object.entries(controller.events.listen)) {
+          collect([...path, 'events', 'listen', prefix], name, false);
+        }
+      }
+    },
+
     onAction(action, path) {
       if (action.type === 'dialog') {
         for (const block of action.blocks) {
@@ -705,16 +826,55 @@ function validateEvents(
     },
   });
 
+  let controllerEvents = {
+    emitters: new Map<string, Prefix[]>(),
+    listeners: new Map<string, Prefix[]>(),
+  };
+
+  if (indexMap.has('controller')) {
+    controllerEvents = { ...indexMap.get('controller') };
+  }
+
+  indexMap.delete('controller');
+
+  for (const [name, prefixes] of controllerEvents.emitters.entries()) {
+    let found = false;
+    for (const { listeners } of indexMap.values()) {
+      if (listeners.has(name)) {
+        found = true;
+      }
+    }
+    if (!found) {
+      for (const prefix of prefixes) {
+        report(name, 'does not match any listeners', prefix);
+      }
+    }
+  }
+
+  for (const [name, prefixes] of controllerEvents.listeners.entries()) {
+    let found = false;
+    for (const { emitters } of indexMap.values()) {
+      if (emitters.has(name)) {
+        found = true;
+      }
+    }
+    if (!found) {
+      for (const prefix of prefixes) {
+        report(name, 'does not match any emitters', prefix);
+      }
+    }
+  }
+
   for (const { emitters, listeners } of indexMap.values()) {
     for (const [name, prefixes] of listeners.entries()) {
-      if (!emitters.has(name)) {
+      if (!emitters.has(name) && !controllerEvents.emitters.has(name)) {
         for (const prefix of prefixes) {
           report(name, 'does not match any event emitters', prefix);
         }
       }
     }
     for (const [name, prefixes] of emitters.entries()) {
-      if (!listeners.has(name)) {
+      if (!listeners.has(name) && !controllerEvents.listeners.has(name)) {
         for (const prefix of prefixes) {
           report(name, 'does not match any event listeners', prefix);
         }
@@ -732,6 +892,7 @@ export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<
  *
  * @param definition The app validation to check.
  * @param getBlockVersions A function for getting block manifests from block versions.
+ * @param controllerImplementations App controller implementations of interfaces.
  * @param validatorResult If specified, error messages will be applied to this existing validator
  *   result.
  * @returns A validator result which contains all app validation violations.
@@ -739,6 +900,7 @@ export type BlockVersionsGetter = (blockMap: IdentifiableBlock[]) => Promisable<
 export async function validateAppDefinition(
   definition: AppDefinition,
   getBlockVersions: BlockVersionsGetter,
+  controllerImplementations?: ProjectImplementations,
   validatorResult?: ValidatorResult,
 ): Promise<ValidatorResult> {
   let result = validatorResult;
@@ -750,6 +912,7 @@ export async function validateAppDefinition(
   if (!definition) {
     return result;
   }
+
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
 
@@ -766,6 +929,7 @@ export async function validateAppDefinition(
   };
 
   try {
+    validateController(definition, controllerImplementations, report);
     validateCronJobs(definition, report);
     validateDefaultPage(definition, report);
     validateHooks(definition, report);

@@ -171,7 +171,9 @@ export interface Utils {
     data: unknown,
     context?: Record<string, unknown>,
   ) => unknown;
+}
 
+export interface BlockUtils extends Utils {
   /**
    * Show a bulma style message.
    */
@@ -241,19 +243,11 @@ export interface Events {
   };
 }
 
-/**
- * The parameters that get passed to the bootstrap function.
- */
-export interface BootstrapParams {
+export interface EventParams {
   /**
    * The actions that may be dispatched by the block.
    */
   actions: { [K in keyof Actions]: Action };
-
-  /**
-   * The parameters as they are defined in the app definition.
-   */
-  parameters: Parameters;
 
   /**
    * Any kind of data that has been passed in by some context.
@@ -265,6 +259,16 @@ export interface BootstrapParams {
    */
   events: Events;
 
+  /**
+   * Some utility functions provided by the Appsemble app framework.
+   */
+  utils: Utils;
+}
+
+/**
+ * The parameters that get passed to the bootstrap function.
+ */
+export interface BootstrapParams extends EventParams {
   /**
    * URL parameters of the current route.
    *
@@ -298,7 +302,12 @@ export interface BootstrapParams {
   /**
    * Some utility functions provided by the Appsemble app framework.
    */
-  utils: Utils;
+  utils: BlockUtils;
+
+  /**
+   * The parameters as they are defined in the app definition.
+   */
+  parameters: Parameters;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
@@ -320,6 +329,36 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
  */
 export function bootstrap(fn: BootstrapFunction): void {
   const event: AppsembleBootstrapEvent = new CustomEvent('AppsembleBootstrap', {
+    detail: {
+      fn,
+      document,
+    },
+  });
+  if (document.currentScript) {
+    document.currentScript.dispatchEvent(event);
+  }
+}
+
+export type HandlerFunction = (...params: unknown[]) => Promisable<unknown>;
+
+export type ControllerFunction = (
+  params: EventParams,
+) => Promisable<Record<keyof Actions, HandlerFunction>>;
+
+export interface AppsembleControllerEvent extends CustomEvent {
+  detail: {
+    fn: ControllerFunction;
+    document: Document;
+  };
+}
+
+/**
+ * Register a controller function.
+ *
+ * @param fn The controller function to register
+ */
+export function controller(fn: ControllerFunction): void {
+  const event: AppsembleControllerEvent = new CustomEvent('AppsembleController', {
     detail: {
       fn,
       document,

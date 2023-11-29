@@ -1,4 +1,4 @@
-import { type Remapper, type Utils } from '@appsemble/sdk';
+import { type BlockUtils, type Remapper } from '@appsemble/sdk';
 
 import { getValueByNameSequence } from './getNested.js';
 import { isRequired } from './requirements.js';
@@ -8,7 +8,7 @@ import { type Field, type FieldErrorMap, type Values } from '../../block.js';
 export function generateDefaultValidity(
   fields: Field[],
   data: any,
-  utils: Utils,
+  utils: BlockUtils,
   defaultError: Remapper,
   defaultValues: Values,
   prefix = '',

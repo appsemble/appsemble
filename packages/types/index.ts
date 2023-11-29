@@ -40,26 +40,48 @@ export interface OAuth2AuthorizationCode {
 }
 
 /**
+ * A project that is loaded in an app
+ */
+export interface ControllerDefinition {
+  /**
+   * A mapping of actions that can be fired by the project to action handlers.
+   *
+   * The exact meaning of the parameters depends on the project.
+   */
+  actions?: Record<string, ActionDefinition>;
+
+  /**
+   * Mapping of the events the project can listen to and emit.
+   *
+   * The exact meaning of the parameters depends on the project.
+   */
+  events?: {
+    listen?: Record<string, string>;
+    emit?: Record<string, string>;
+  };
+}
+
+/**
  * A block that is displayed on a page.
  */
-export interface BlockDefinition {
+export interface BlockDefinition extends ControllerDefinition {
   /**
-   * The type of the block.
+   * The type of the controller.
    *
-   * A block type follow the format `@organization/name`.
+   * A block type follow the format `@organization/project`.
    * If the organization is _appsemble_, it may be omitted.
    *
    * Pattern:
    * ^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$
    *
    * Examples:
-   * - `form`
-   * - `@amsterdam/splash`
+   * - `empty`
+   * - `@amsterdam/empty`
    */
   type: string;
 
   /**
-   * A [semver](https://semver.org) representation of the block version.
+   * A [semver](https://semver.org) representation of the project version.
    *
    * Pattern:
    * ^\d+\.\d+\.\d+$
@@ -95,33 +117,16 @@ export interface BlockDefinition {
   theme?: Partial<Theme>;
 
   /**
-   * A free form mapping of named parameters.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  parameters?: JsonObject;
-
-  /**
-   * A mapping of actions that can be fired by the block to action handlers.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  actions?: Record<string, ActionDefinition>;
-
-  /**
-   * Mapping of the events the block can listen to and emit.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  events?: {
-    listen?: Record<string, string>;
-    emit?: Record<string, string>;
-  };
-
-  /**
    * A list of roles that are allowed to view this block.
    */
   roles?: string[];
+
+  /**
+   * A free form mapping of named parameters.
+   *
+   * The exact meaning of the parameters depends on the project type.
+   */
+  parameters?: JsonObject;
 }
 
 /**
@@ -1336,6 +1341,10 @@ interface ViewResourceDefinition {
   view?: string;
 }
 
+export interface ControllerActionDefinition extends BaseActionDefinition<'controller'> {
+  handler: string;
+}
+
 export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
 export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
 export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
@@ -1449,6 +1458,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'team.list'>
   | BaseActionDefinition<'throw'>
   | ConditionActionDefinition
+  | ControllerActionDefinition
   | DialogActionDefinition
   | DownloadActionDefinition
   | EachActionDefinition
@@ -1504,97 +1514,6 @@ export interface EventType {
    * The description of the action.
    */
   description?: string;
-}
-
-export interface BlockManifest {
-  /**
-   * A block manifest as it is available to the app and in the SDK.
-   * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
-   * The name of a block.
-   */
-  name: string;
-
-  /**
-   * The description of the block.
-   */
-  description?: string;
-
-  /**
-   * The long description of the block.
-   *
-   * This is displayed when rendering block documentation and supports Markdown.
-   */
-  longDescription?: string;
-
-  /**
-   * A [semver](https://semver.org) representation of the block version.
-   *
-   * Pattern:
-   * ^\d+\.\d+\.\d+$
-   */
-  version: string;
-
-  /**
-   * The type of layout to be used for the block.
-   */
-  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
-
-  /**
-   * Array of urls associated to the files of the block.
-   */
-  files: string[];
-
-  /**
-   * The actions that are supported by a block.
-   */
-  actions?: Record<string, ActionType>;
-
-  /**
-   * The messages that are supported by a block.
-   */
-  messages?: Record<string, Record<string, any> | never>;
-
-  /**
-   * The events that are supported by a block.
-   */
-  events?: {
-    listen?: Record<string, EventType>;
-    emit?: Record<string, EventType>;
-  };
-
-  /**
-   * A JSON schema to validate block parameters.
-   */
-  parameters?: Schema;
-
-  /**
-   * The URL that can be used to fetch this block’s icon.
-   */
-  iconUrl?: string;
-
-  /**
-   * The languages that are supported by the block by default.
-   *
-   * If the block has no messages, this property is `null`.
-   */
-  languages: string[] | null;
-
-  examples?: string[];
-
-  /**
-   * Whether the block should be listed publicly
-   * for users who aren’t part of the block’s organization.
-   *
-   * - **`public`**: The block is visible for everyone.
-   * - **`unlisted`**: The block will only be visible if the user is
-   * logged in and is part of the block’s organization.
-   */
-  visibility?: 'public' | 'unlisted';
-
-  /**
-   * Whether action validation for wildcard action is skipped.
-   */
-  wildcardActions?: boolean;
 }
 
 /**
@@ -1833,6 +1752,8 @@ export interface AppDefinition {
    */
   pages: PageDefinition[];
 
+  controller?: ControllerDefinition;
+
   /**
    * Resource definitions that may be used by the app.
    */
@@ -2013,6 +1934,16 @@ export interface App {
   messages?: AppsembleMessages;
 
   /**
+   * The build app controller's code
+   */
+  controllerCode?: string;
+
+  /**
+   * The build app controller's manifest
+   */
+  controllerImplementations?: ProjectImplementations;
+
+  /**
    * Any app styles that are shared.
    */
   sharedStyle?: string;
@@ -2116,7 +2047,7 @@ export interface OrganizationInvite {
 }
 
 /**
- * A member of an app.
+ * The controller of an app.
  */
 export interface AppMember {
   id: string;
@@ -2451,38 +2382,111 @@ export type SAMLStatus =
   | 'missingnameid'
   | 'missingsubject';
 
-/**
- * The block configuration that’s used by the CLI when building a block.
- *
- * This configuration is also passed to the Webpack configuration function as the `env` variable.
- */
-export interface BlockConfig
-  extends Pick<
-    BlockManifest,
-    | 'actions'
-    | 'description'
-    | 'events'
-    | 'layout'
-    | 'longDescription'
-    | 'messages'
-    | 'name'
-    | 'parameters'
-    | 'version'
-    | 'visibility'
-    | 'wildcardActions'
-  > {
+export interface ProjectConfig {
   /**
-   * The path to the webpack configuration file relative to the block project directory.
+   * The name of the project.
    */
-  webpack: string;
+  name: string;
 
   /**
-   * The build output directory relative to the block project directory.
+   * The description of the project.
    */
-  output: string;
+  description?: string;
 
   /**
-   * The absolute directory of the block project.
+   * The long description of the project.
+   *
+   * This is displayed when rendering documentation and supports Markdown.
+   */
+  longDescription?: string;
+
+  /**
+   * A [semver](https://semver.org) representation of the project version.
+   *
+   * Pattern:
+   * ^\d+\.\d+\.\d+$
+   */
+  version: string;
+
+  [key: string]: any;
+}
+
+export interface ProjectBuildConfig extends ProjectConfig {
+  /**
+   * The build output directory relative to the project directory.
+   */
+  output?: string;
+
+  /**
+   * The absolute directory of the project.
    */
   dir: string;
+}
+
+export interface ProjectImplementations {
+  /**
+   * The actions that are supported by a project.
+   */
+  actions?: Record<string, ActionType>;
+
+  /**
+   * The events that are supported by a project.
+   */
+  events?: {
+    listen?: Record<string, EventType>;
+    emit?: Record<string, EventType>;
+  };
+
+  /**
+   * The messages that are supported by a project.
+   */
+  messages?: Record<string, Record<string, any> | never>;
+
+  /**
+   * A JSON schema to validate project parameters.
+   */
+  parameters?: Schema;
+}
+
+export interface ProjectManifest extends ProjectConfig, ProjectImplementations {
+  /**
+   * Array of urls associated to the files of the project.
+   */
+  files: string[];
+}
+
+export interface BlockManifest extends ProjectManifest {
+  /**
+   * The URL that can be used to fetch this block’s icon.
+   */
+  iconUrl?: string;
+
+  /**
+   * The languages that are supported by the block by default.
+   *
+   * If the block has no messages, this property is `null`.
+   */
+  languages: string[] | null;
+
+  examples?: string[];
+
+  /**
+   * Whether the block should be listed publicly
+   * for users who aren’t part of the block’s organization.
+   *
+   * - **`public`**: The block is visible for everyone.
+   * - **`unlisted`**: The block will only be visible if the user is
+   * logged in and is part of the block’s organization.
+   */
+  visibility?: 'public' | 'unlisted';
+
+  /**
+   * Whether action validation for wildcard action is skipped.
+   */
+  wildcardActions?: boolean;
+
+  /**
+   * The type of layout to be used for the block.
+   */
+  layout?: 'float' | 'grow' | 'hidden' | 'static' | null;
 }

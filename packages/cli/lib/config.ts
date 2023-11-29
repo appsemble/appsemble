@@ -1,11 +1,144 @@
-import { relative } from 'node:path';
+import { existsSync } from 'node:fs';
+import { readFile, stat } from 'node:fs/promises';
+import { dirname, join, relative } from 'node:path';
+import { inspect } from 'node:util';
 
-import { AppsembleError, logger } from '@appsemble/node-utils';
-import { type BlockConfig, type BlockManifest } from '@appsemble/types';
+import { AppsembleError, getWorkspaces, logger, readData } from '@appsemble/node-utils';
+import { type ProjectBuildConfig, type ProjectImplementations } from '@appsemble/types';
+import { prefixBlockURL } from '@appsemble/utils';
+import chalk from 'chalk';
 import { parse } from 'comment-parser';
+import { cosmiconfig } from 'cosmiconfig';
 import { type Schema } from 'jsonschema';
 import normalizePath from 'normalize-path';
 import { createFormatter, createParser, SchemaGenerator, ts } from 'ts-json-schema-generator';
+import { type PackageJson } from 'type-fest';
+import { type Configuration } from 'webpack';
+
+/**
+ * Get the build configuration from a project directory.
+ *
+ * @param dir The directory in which to search for the configuration file.
+ * @returns The configuration.
+ */
+export async function getProjectBuildConfig(dir: string): Promise<ProjectBuildConfig> {
+  const explorer = cosmiconfig('appsemble', { stopDir: dir });
+  const found = await explorer.search(dir);
+
+  let foundInParent;
+  if (!found) {
+    foundInParent = await explorer.search(dirname(dir));
+    if (!foundInParent) {
+      throw new AppsembleError(`No Appsemble configuration file found searching ${dir}`);
+    }
+  }
+
+  const { config, filepath } = found || foundInParent;
+  logger.info(`Found configuration file: ${filepath}`);
+
+  const [pkg] = await readData<PackageJson>(join(dir, 'package.json'));
+  if (!pkg.private) {
+    logger.warn(
+      `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
+        '"private"',
+      )}: ${chalk.cyan('true')}” in package.json`,
+    );
+  }
+
+  let longDescription: string;
+  if (existsSync(join(dir, 'README.md'))) {
+    longDescription = await readFile(join(dir, 'README.md'), 'utf8');
+  }
+
+  const result: ProjectBuildConfig = {
+    description: pkg.description,
+    longDescription,
+    name: pkg.name,
+    version: pkg.version,
+    dir,
+    ...config,
+  };
+
+  logger.verbose(`Resolved project configuration: ${inspect(result, { colors: true })}`);
+  return result;
+}
+
+/**
+ * Discover Appsemble projects based on workspaces in a monorepo.
+ *
+ * Both Lerna and Yarn workspaces are supported.
+ *
+ * @param root The project root in which to find workspaces.
+ * @returns Discovered Appsemble projects.
+ */
+export async function getProjectsBuildConfigs(root: string): Promise<ProjectBuildConfig[]> {
+  const dirs = await getWorkspaces(root);
+  const projectBuildConfigs = await Promise.all(
+    dirs
+      .concat(root)
+      .map((path) => getProjectBuildConfig(path))
+      // Ignore non-project workspaces.
+      .map((p) => p.catch(() => null)),
+  );
+  return projectBuildConfigs.filter(Boolean);
+}
+
+/**
+ * Get the TypeScript program for a given path.
+ *
+ * @param path The path for which to get the TypeScript program.
+ * @returns The TypeScript program.
+ */
+function getProgram(path: string): ts.Program {
+  const diagnosticHost = {
+    getNewLine: () => ts.sys.newLine,
+    getCurrentDirectory: ts.sys.getCurrentDirectory,
+    getCanonicalFileName: (x) => x,
+  } as ts.FormatDiagnosticsHost;
+
+  const tsConfigPath = ts.findConfigFile(path, ts.sys.fileExists);
+  const { config, error } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
+
+  if (error) {
+    throw new AppsembleError(ts.formatDiagnostic(error, diagnosticHost));
+  }
+
+  if (!config.files || !config.include) {
+    config.files = ts.sys.readDirectory(path, ['.ts', '.tsx']).map((f) => relative(path, f));
+  }
+
+  const { errors, fileNames, options } = ts.parseJsonConfigFileContent(
+    config,
+    ts.sys,
+    path,
+    undefined,
+    tsConfigPath,
+  );
+
+  // Filter: 'rootDir' is expected to contain all source files.
+  const diagnostics = errors.filter(({ code }) => code !== 6059);
+  if (diagnostics.length) {
+    throw new AppsembleError(ts.formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
+  }
+
+  options.noEmit = true;
+  delete options.out;
+  delete options.outDir;
+  delete options.outFile;
+  delete options.declaration;
+  delete options.declarationDir;
+  delete options.declarationMap;
+
+  const program = ts.createProgram(fileNames, options);
+  const preEmitDiagnostics = ts.getPreEmitDiagnostics(program);
+  if (preEmitDiagnostics.length) {
+    throw new AppsembleError(
+      ts.formatDiagnosticsWithColorAndContext(preEmitDiagnostics, diagnosticHost),
+    );
+  }
+
+  return program;
+}
 
 /**
  * Get the tsdoc comment for a TypeScript node.
@@ -114,7 +247,7 @@ function processInterface<T>(
 function processActions(
   iface: ts.InterfaceDeclaration,
   checker: ts.TypeChecker,
-): BlockManifest['actions'] {
+): ProjectImplementations['actions'] {
   return processInterface(iface, checker, (name, description) => [name ?? '$any', { description }]);
 }
 
@@ -130,11 +263,12 @@ function processEvents(
   eventListenerInterface: ts.InterfaceDeclaration,
   eventEmitterInterface: ts.InterfaceDeclaration,
   checker: ts.TypeChecker,
-): BlockManifest['events'] {
+): ProjectImplementations['events'] {
   const listen = processInterface(eventListenerInterface, checker, (name, description) => [
     name ?? '$any',
     { description },
   ]);
+
   const emit = processInterface(eventEmitterInterface, checker, (name, description) => [
     name ?? '$any',
     { description },
@@ -148,7 +282,7 @@ function processEvents(
  *
  * @param program The TypeScript program from which to extract parameters.
  * @param iface The interface node from which to extract parameters.
- * @returns The JSON schema for the block parameters.
+ * @returns The JSON schema for the project parameters.
  */
 function processParameters(program: ts.Program, iface: ts.InterfaceDeclaration): Schema {
   if (!iface) {
@@ -172,7 +306,7 @@ function processParameters(program: ts.Program, iface: ts.InterfaceDeclaration):
   if (schema.definitions && !Object.keys(schema.definitions).length) {
     delete schema.definitions;
   }
-  // This is the tsdoc that has been added to the SDK to aid the block developer.
+  // This is the tsdoc that has been added to the SDK to aid the developer.
   delete schema.description;
   return schema;
 }
@@ -187,85 +321,28 @@ function processParameters(program: ts.Program, iface: ts.InterfaceDeclaration):
 function processMessages(
   iface: ts.InterfaceDeclaration,
   checker: ts.TypeChecker,
-): BlockManifest['messages'] {
+): ProjectImplementations['messages'] {
   return processInterface(iface, checker, (name, description) => [name, { description }]);
 }
 
 /**
- * Get the TypeScript program for a given path.
+ * Generate project implementations from the project metadata and TypeScript project.
  *
- * @param blockPath The path for which to get the TypeScript program.
- * @returns The TypeScript program.
+ * Uses the .appsemblerc file and the type definitions of the project.
+ *
+ * @param buildConfig The project build configuration
+ * @returns The project implementations from the TypeScript project.
  */
-function getProgram(blockPath: string): ts.Program {
-  const diagnosticHost: ts.FormatDiagnosticsHost = {
-    getNewLine: () => ts.sys.newLine,
-    getCurrentDirectory: ts.sys.getCurrentDirectory,
-    getCanonicalFileName: (x) => x,
-  };
-  const tsConfigPath = ts.findConfigFile(blockPath, ts.sys.fileExists);
-  const { config, error } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
-  if (error) {
-    throw new AppsembleError(ts.formatDiagnostic(error, diagnosticHost));
-  }
-  if (!config.files || !config.include) {
-    config.files = ts.sys
-      .readDirectory(blockPath, ['.ts', '.tsx'])
-      .map((f) => relative(blockPath, f));
-  }
-  const { errors, fileNames, options } = ts.parseJsonConfigFileContent(
-    config,
-    ts.sys,
-    blockPath,
-    undefined,
-    tsConfigPath,
-  );
-  // Filter: 'rootDir' is expected to contain all source files.
-  const diagnostics = errors.filter(({ code }) => code !== 6059);
-  if (diagnostics.length) {
-    throw new AppsembleError(ts.formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
-  }
-
-  options.noEmit = true;
-  delete options.out;
-  delete options.outDir;
-  delete options.outFile;
-  delete options.declaration;
-  delete options.declarationDir;
-  delete options.declarationMap;
-  const program = ts.createProgram(fileNames, options);
-  const preEmitDiagnostics = ts.getPreEmitDiagnostics(program);
-  if (preEmitDiagnostics.length) {
-    throw new AppsembleError(
-      ts.formatDiagnosticsWithColorAndContext(preEmitDiagnostics, diagnosticHost),
-    );
-  }
-  return program;
-}
-
-/**
- * Generate a block manifest from the block metadata and TypeScript project.
- *
- * Uses the .appsemblerc file and the type definitions of the block.
- *
- * @param blockConfig The block configuration
- * @returns The block configuration appended from the TypeScript project.
- */
-export function getBlockConfigFromTypeScript(
-  blockConfig: BlockConfig,
-): Pick<BlockManifest, 'actions' | 'events' | 'messages' | 'parameters'> {
-  if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
-    return blockConfig;
-  }
-  logger.info(`Extracting data from TypeScript project ${blockConfig.dir}`);
-  const program = getProgram(blockConfig.dir);
+export function getProjectImplementations(buildConfig: ProjectBuildConfig): ProjectImplementations {
+  logger.info(`Extracting data from TypeScript project ${buildConfig.dir}`);
+  const program = getProgram(buildConfig.dir);
   const checker = program.getTypeChecker();
 
   let actionInterface: ts.InterfaceDeclaration;
   let eventEmitterInterface: ts.InterfaceDeclaration;
   let eventListenerInterface: ts.InterfaceDeclaration;
   let messagesInterface: ts.InterfaceDeclaration;
-  let patametersInterface: ts.InterfaceDeclaration;
+  let parametersInterface: ts.InterfaceDeclaration;
 
   for (const sourceFile of program.getSourceFiles()) {
     const fileName = relative(process.cwd(), sourceFile.fileName);
@@ -318,10 +395,10 @@ export function getBlockConfigFromTypeScript(
             break;
           case 'Parameters':
             logger.info(`Found augmented interface 'Parameters' in '${loc}'`);
-            if (patametersInterface) {
+            if (parametersInterface) {
               throw new AppsembleError(`Found duplicate interface 'Parameters' in '${loc}'`);
             }
-            patametersInterface = iface;
+            parametersInterface = iface;
             break;
           case 'Messages':
             logger.info(`Found augmented interface 'Messages' in '${loc}'`);
@@ -336,18 +413,64 @@ export function getBlockConfigFromTypeScript(
 
   return {
     actions:
-      'actions' in blockConfig ? blockConfig.actions : processActions(actionInterface, checker),
+      'actions' in buildConfig ? buildConfig.actions : processActions(actionInterface, checker),
     events:
-      'events' in blockConfig
-        ? blockConfig.events
+      'events' in buildConfig
+        ? buildConfig.events
         : processEvents(eventListenerInterface, eventEmitterInterface, checker),
     parameters:
-      'parameters' in blockConfig
-        ? blockConfig.parameters
-        : processParameters(program, patametersInterface),
+      'parameters' in buildConfig
+        ? buildConfig.parameters
+        : processParameters(program, parametersInterface),
     messages:
-      'messages' in blockConfig
-        ? blockConfig.messages
+      'messages' in buildConfig
+        ? buildConfig.messages
         : processMessages(messagesInterface, checker),
   };
+}
+
+/**
+ * Load a webpack configuration file.
+ *
+ * A webpack configuration file may export either an webpack configuration object, or a synchronous
+ * or asynchronous function which returns a webpack configuration object. This function supports
+ * all 3 use cases.
+ *
+ * @param buildConfig The project build config.
+ * @param mode The env that would be passed to webpack by invoking `webpack --env $env`.
+ * @param outputPath The path where the build will be output on disk.
+ * @returns The webpack configuration as exposed by the webpack configuration file.
+ */
+export async function getProjectWebpackConfig(
+  buildConfig: ProjectBuildConfig,
+  mode?: 'development' | 'production',
+  outputPath?: string,
+): Promise<Configuration> {
+  let configPath: string;
+  if (buildConfig.webpack) {
+    configPath = join(buildConfig.dir, buildConfig.webpack);
+  } else {
+    configPath = join(buildConfig.dir, 'webpack.config.js');
+    try {
+      await stat(configPath);
+    } catch {
+      configPath = '@appsemble/webpack-config';
+    }
+  }
+  logger.info(`Using webpack config from ${configPath}`);
+  const publicPath = prefixBlockURL({ type: buildConfig.name, version: buildConfig.version }, '');
+  let config = await import(String(configPath));
+  config = await (config.default || config);
+  config = config instanceof Function ? await config(buildConfig, { mode, publicPath }) : config;
+
+  // Koa-webpack serves assets on the `output.path` path. Normally this field describes where to
+  // output the files on the file system. This is monkey patched to support usage with our dev
+  // server.
+  config.output = config.output || {};
+  config.output.path = outputPath || publicPath;
+  logger.verbose(`Patched webpack config output.path to ${config.output.path}`);
+  config.output.publicPath = publicPath;
+  logger.verbose(`Patched webpack config output.publicPath to ${config.output.publicPath}`);
+
+  return config;
 }

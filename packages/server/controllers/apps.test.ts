@@ -126,6 +126,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -154,6 +156,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Another Page",
             "name": "Another App",
@@ -227,6 +231,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -316,6 +322,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -348,6 +356,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Another Page",
             "name": "Another App",
@@ -380,6 +390,8 @@ describe('queryApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -446,6 +458,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -524,6 +538,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -573,6 +589,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -625,6 +643,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -673,6 +693,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -721,6 +743,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -772,6 +796,8 @@ describe('getAppById', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -848,6 +874,8 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -883,6 +911,8 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -911,6 +941,8 @@ describe('queryMyApps', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganizationb",
           "OrganizationName": "Test Organization B",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App B",
@@ -968,6 +1000,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1046,6 +1080,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1107,6 +1143,88 @@ describe('createApp', () => {
     });
   });
 
+  it('should accept controller', async () => {
+    authorizeStudio();
+
+    const createdResponse = await request.post(
+      '/api/apps',
+      createFormData({
+        OrganizationId: organization.id,
+        yaml: stripIndent(`
+          name: Test App
+          defaultPage: Test Page
+          pages:
+            - name: Test Page
+              blocks:
+                - type: test
+                  version: 0.0.0
+        `),
+        icon: createFixtureStream('nodejs-logo.png'),
+        controllerCode:
+          '(()=>{function a(t){let n=new CustomEvent("AppsembleController",{detail:{fn:t,document}});document.currentScript&&document.currentScript.dispatchEvent(n)}a(({events:t})=>({calculate(n){let{a:o,b:r,operation:s}=n,e;switch(s){case"addition":e=o+r;break;case"multiplication":e=o*r;break;default:e=Number.NaN;break}t.emit.data({result:e})}}));})();',
+        controllerImplementations:
+          '{"description":"A controller for the controller-demo app.","events":{"emit":{"data":{"description":"Event that gets emitted when the calculation result is available."}}},"name":"@appsemble/controller-demo","version":"0.22.10","files":["index.js","index.js.map"]}',
+      }),
+    );
+
+    expect(createdResponse).toMatchInlineSnapshot(`
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": "(()=>{function a(t){let n=new CustomEvent(\\"AppsembleController\\",{detail:{fn:t,document}});document.currentScript&&document.currentScript.dispatchEvent(n)}a(({events:t})=>({calculate(n){let{a:o,b:r,operation:s}=n,e;switch(s){case\\"addition\\":e=o+r;break;case\\"multiplication\\":e=o*r;break;default:e=Number.NaN;break}t.emit.data({result:e})}}));})();",
+        "controllerImplementations": "{\\"description\\":\\"A controller for the controller-demo app.\\",\\"events\\":{\\"emit\\":{\\"data\\":{\\"description\\":\\"Event that gets emitted when the calculation result is available.\\"}}},\\"name\\":\\"@appsemble/controller-demo\\",\\"version\\":\\"0.22.10\\",\\"files\\":[\\"index.js\\",\\"index.js.map\\"]}",
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+          "pages": [
+            {
+              "blocks": [
+                {
+                  "type": "test",
+                  "version": "0.0.0",
+                },
+              ],
+              "name": "Test Page",
+            },
+          ],
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "googleAnalyticsID": null,
+        "hasIcon": true,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": "/api/apps/1/icon?maskable=true&updated=1970-01-01T00%3A00%3A00.000Z",
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "test-app",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": true,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "
+      name: Test App
+      defaultPage: Test Page
+      pages:
+        - name: Test Page
+          blocks:
+            - type: test
+              version: 0.0.0
+              ",
+      }
+    `);
+  });
+
   it('should not allow an upload without an app when creating an app', async () => {
     authorizeStudio();
     const response = await request.post(
@@ -1133,6 +1251,14 @@ describe('createApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -1209,6 +1335,14 @@ describe('createApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -1320,6 +1454,14 @@ describe('createApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -1606,6 +1748,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1691,6 +1835,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -1769,6 +1915,8 @@ describe('createApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "coreStyle": "body { color: blue; }",
         "definition": {
           "defaultPage": "Test Page",
@@ -1869,6 +2017,14 @@ describe('createApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -1978,6 +2134,14 @@ describe('createApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -2282,6 +2446,8 @@ describe('createApp', () => {
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "testorganization",
           "OrganizationName": "Test Organization",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "definition": {
             "defaultPage": "Test Page",
             "name": "Test App",
@@ -2440,6 +2606,9 @@ describe('createApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -2612,6 +2781,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Foobar",
@@ -2692,6 +2863,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -2838,6 +3011,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -2892,6 +3067,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -2946,6 +3123,69 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
+        "definition": {
+          "defaultPage": "Test Page",
+          "name": "Test App",
+        },
+        "demoMode": false,
+        "domain": null,
+        "emailName": null,
+        "googleAnalyticsID": null,
+        "hasIcon": false,
+        "hasMaskableIcon": false,
+        "iconBackground": "#ffffff",
+        "iconUrl": null,
+        "id": 1,
+        "locked": false,
+        "longDescription": null,
+        "path": "foo",
+        "screenshotUrls": [],
+        "sentryDsn": null,
+        "sentryEnvironment": null,
+        "showAppDefinition": false,
+        "showAppsembleLogin": false,
+        "showAppsembleOAuth2Login": true,
+        "visibility": "unlisted",
+        "yaml": "name: Test App
+      defaultPage: Test Page
+      ",
+      }
+    `);
+  });
+
+  it('should delete app controller', async () => {
+    const app = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organization.id,
+        controllerCode: 'test',
+        controllerImplementations: 'test',
+      },
+      { raw: true },
+    );
+
+    authorizeStudio();
+    const response = await request.patch(
+      `/api/apps/${app.id}`,
+      createFormData({ controllerCode: '', controllerImplementations: '' }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 200 OK
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "$created": "1970-01-01T00:00:00.000Z",
+        "$updated": "1970-01-01T00:00:00.000Z",
+        "OrganizationId": "testorganization",
+        "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -3039,6 +3279,14 @@ describe('patchApp', () => {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
                 },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
+                },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
                   "type": "string",
@@ -3114,6 +3362,14 @@ describe('patchApp', () => {
               "properties": {
                 "OrganizationId": {
                   "$ref": "#/components/schemas/Organization/properties/id",
+                },
+                "controllerCode": {
+                  "description": "Custom app logic as a JavaScript string",
+                  "type": "string",
+                },
+                "controllerImplementations": {
+                  "description": "Appsemble SDK interfaces implementations",
+                  "type": "string",
                 },
                 "coreStyle": {
                   "description": "The custom style to apply to the core app.",
@@ -3227,6 +3483,9 @@ describe('patchApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -3367,6 +3626,9 @@ describe('patchApp', () => {
                     "items": {},
                     "minItems": 1,
                     "type": "array",
+                  },
+                  "controller": {
+                    "$ref": "#/components/schemas/ControllerDefinition",
                   },
                   "cron": {
                     "additionalProperties": {
@@ -3536,6 +3798,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "coreStyle": "body { color: yellow; }",
         "definition": {
           "defaultPage": "Test Page",
@@ -3728,6 +3992,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",
@@ -3771,6 +4037,8 @@ describe('patchApp', () => {
         "$updated": "1970-01-01T00:00:00.000Z",
         "OrganizationId": "testorganization",
         "OrganizationName": "Test Organization",
+        "controllerCode": null,
+        "controllerImplementations": null,
         "definition": {
           "defaultPage": "Test Page",
           "name": "Test App",

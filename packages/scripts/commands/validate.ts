@@ -133,6 +133,7 @@ async function validate(
    */
   const pkgNameMatch = pkg.name.match(/^(@(?<scope>[a-z-]+)\/)?(?<name>[a-z-]+[\da-z-]+)$/);
   const isBlock = basename(dirname(dir)) === 'blocks';
+  const isController = basename(dir) === 'controller';
 
   assert(
     basename(dir) === pkgNameMatch?.groups.name,
@@ -145,7 +146,7 @@ async function validate(
     'package.json',
     'Name should use the @appsemble scope',
   );
-  if (!isBlock) {
+  if (!isBlock && !isController) {
     for (const keyword of ['app', 'apps', 'framework', 'low-code', 'lowcode']) {
       assert(
         pkg.keywords.includes(keyword),
@@ -218,7 +219,7 @@ async function validate(
   const tsConfig = await fsExtra.readJson(join(dir, 'tsconfig.json')).catch(() => null);
   assert(tsConfig, 'tsconfig.json', 'The workspace should have a TypeScript configuration');
   if (tsConfig) {
-    if (isBlock) {
+    if (isBlock || isController) {
       assert(
         tsConfig.extends?.startsWith('@appsemble/tsconfig'),
         'tsconfig.json',

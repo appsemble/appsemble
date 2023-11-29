@@ -1,4 +1,4 @@
-import { type Utils } from '@appsemble/sdk';
+import { type BlockUtils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
@@ -15,7 +15,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );
@@ -40,7 +40,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );
@@ -66,7 +66,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );
@@ -137,7 +137,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );
@@ -203,7 +203,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );
@@ -254,7 +254,7 @@ describe('generate default validity', () => {
     const errors = generateDefaultValidity(
       fields,
       data,
-      { remap } as unknown as Utils,
+      { remap } as unknown as BlockUtils,
       defaultError,
       defaultValues,
     );

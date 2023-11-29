@@ -3,7 +3,8 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
-import { getBlockConfig, processBlockMessages } from '../../lib/block.js';
+import { processBlockMessages } from '../../lib/block.js';
+import { getProjectBuildConfig } from '../../lib/config.js';
 import { type BaseArguments } from '../../types.js';
 
 interface BuildBlockArguments extends BaseArguments {
@@ -33,9 +34,9 @@ export async function handler({ languages, paths }: BuildBlockArguments): Promis
   logger.info(`Extracting messages from ${directories.length} Blocks`);
   for (const dir of directories) {
     logger.info('');
-    const config = await getBlockConfig(dir);
-    logger.info(`Processing ${config.name}`);
+    const buildConfig = await getProjectBuildConfig(dir);
+    logger.info(`Processing ${buildConfig.name}`);
 
-    await processBlockMessages(config, langs);
+    await processBlockMessages(buildConfig, langs);
   }
 }
