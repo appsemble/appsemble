@@ -3,7 +3,9 @@ import fg from 'fast-glob';
 import normalizePath from 'normalize-path';
 import { type Argv } from 'yargs';
 
-import { buildBlock, getBlockConfig, publishBlock } from '../../lib/block.js';
+import { buildBlock } from '../../lib/block.js';
+import { getProjectBuildConfig } from '../../lib/config.js';
+import { publishProject } from '../../lib/project.js';
 import { type BaseArguments } from '../../types.js';
 
 interface PublishBlockArguments extends BaseArguments {
@@ -46,12 +48,12 @@ export async function handler({
   logger.info(`Publishing ${directories.length} Blocks`);
   for (const dir of directories) {
     logger.info('');
-    const config = await getBlockConfig(dir);
+    const buildConfig = await getProjectBuildConfig(dir);
 
     if (build) {
-      await buildBlock(config);
+      await buildBlock(buildConfig);
     }
 
-    await publishBlock(config, ignoreConflict);
+    await publishProject(buildConfig, '/api/blocks', ignoreConflict);
   }
 }

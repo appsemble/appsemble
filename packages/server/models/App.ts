@@ -3,6 +3,7 @@ import {
   type AppsembleMessages,
   type App as AppType,
   type AppVisibility,
+  type ProjectImplementations,
 } from '@appsemble/types';
 import { omit } from 'lodash-es';
 import {
@@ -166,6 +167,12 @@ export class App extends Model {
   @Column(DataType.BLOB)
   scimToken: Buffer;
 
+  @Column(DataType.TEXT)
+  controllerCode: string;
+
+  @Column(DataType.JSON)
+  controllerImplementations: ProjectImplementations;
+
   @UpdatedAt
   updated: Date;
 
@@ -280,6 +287,8 @@ export class App extends Model {
       ),
       messages: this.messages,
       demoMode: this.demoMode,
+      controllerCode: this.controllerCode,
+      controllerImplementations: this.controllerImplementations,
     };
 
     return omit(result, omittedValues) as AppType;

@@ -32,6 +32,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
     {
       anyOf: [
         { $ref: '#/components/schemas/AnalyticsActionDefinition' },
+        { $ref: '#/components/schemas/ControllerActionDefinition' },
         { $ref: '#/components/schemas/ConditionActionDefinition' },
         { $ref: '#/components/schemas/DialogActionDefinition' },
         { $ref: '#/components/schemas/DialogErrorActionDefinition' },

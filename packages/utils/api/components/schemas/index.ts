@@ -2,6 +2,8 @@ export * from './ActionDefinition.js';
 export * from './AnalyticsActionDefinition.js';
 export * from './App.js';
 export * from './AppCollection.js';
+export * from './ControllerDefinition.js';
+export * from './ControllerActionDefinition.js';
 export * from './AppCollectionDefinition.js';
 export * from './AppAccount.js';
 export * from './AppDefinition.js';

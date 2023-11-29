@@ -6,22 +6,23 @@ import { AppsembleError, resolveFixture } from '@appsemble/node-utils';
 import { ts } from 'ts-json-schema-generator';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getBlockConfigFromTypeScript } from './getBlockConfigFromTypeScript.js';
+import { getProjectImplementations } from './config.js';
 
 beforeEach(() => {
   vi.spyOn(process, 'cwd').mockReturnValue(resolveFixture('.'));
 });
 
-describe('getBlockConfigFromTypeScript', () => {
+describe('getProjectImplementations', () => {
   it('should extract configuration from a TypeScript project', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       name: '',
       layout: 'float',
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
+      dir: resolveFixture('getProjectImplementations/valid'),
     });
+
     expect(result).toStrictEqual({
       actions: { testAction: { description: undefined } },
       events: {
@@ -67,22 +68,22 @@ describe('getBlockConfigFromTypeScript', () => {
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
+      dir: resolveFixture('getProjectImplementations/valid'),
       name: '',
     } as const;
-    const result = getBlockConfigFromTypeScript(input);
+    const result = getProjectImplementations(input);
 
     expect(result).toBe(input);
     expect(ts.createProgram).not.toHaveBeenCalled();
   });
 
   it('should prefer actions overrides over TypeScript actions', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       actions: {},
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
+      dir: resolveFixture('getProjectImplementations/valid'),
       name: '',
     });
 
@@ -90,12 +91,12 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   it('should prefer events overrides over TypeScript events', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       events: { emit: { onSuccess: {} } },
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
+      dir: resolveFixture('getProjectImplementations/valid'),
       name: '',
     });
 
@@ -103,12 +104,12 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   it('should prefer parameters overrides over TypeScript parameters', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       parameters: { type: 'object' },
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/valid'),
+      dir: resolveFixture('getProjectImplementations/valid'),
       name: '',
     });
 
@@ -117,73 +118,73 @@ describe('getBlockConfigFromTypeScript', () => {
 
   it('should throw if duplicate Actions are found', () => {
     expect(() =>
-      getBlockConfigFromTypeScript({
+      getProjectImplementations({
         webpack: '',
         output: '',
-        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateActions'),
+        dir: resolveFixture('getProjectImplementations/duplicateActions'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Actions' in 'getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
+        "Found duplicate interface 'Actions' in 'getProjectImplementations/duplicateActions/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate EventEmitters are found', () => {
     expect(() =>
-      getBlockConfigFromTypeScript({
+      getProjectImplementations({
         webpack: '',
         output: '',
-        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateEventEmitters'),
+        dir: resolveFixture('getProjectImplementations/duplicateEventEmitters'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventEmitters' in 'getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
+        "Found duplicate interface 'EventEmitters' in 'getProjectImplementations/duplicateEventEmitters/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate EventListeners are found', () => {
     expect(() =>
-      getBlockConfigFromTypeScript({
+      getProjectImplementations({
         webpack: '',
         output: '',
-        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateEventListeners'),
+        dir: resolveFixture('getProjectImplementations/duplicateEventListeners'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventListeners' in 'getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
+        "Found duplicate interface 'EventListeners' in 'getProjectImplementations/duplicateEventListeners/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate Parameters are found', () => {
     expect(() =>
-      getBlockConfigFromTypeScript({
+      getProjectImplementations({
         webpack: '',
         output: '',
-        dir: resolveFixture('getBlockConfigFromTypeScript/duplicateParameters'),
+        dir: resolveFixture('getProjectImplementations/duplicateParameters'),
         name: '',
         version: '1.33.7',
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Parameters' in 'getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
+        "Found duplicate interface 'Parameters' in 'getProjectImplementations/duplicateParameters/index.ts:31'",
       ),
     );
   });
 
   it('should handle fontawesome icons', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/fontawesomeParameters'),
+      dir: resolveFixture('getProjectImplementations/fontawesomeParameters'),
       name: '',
       version: '1.33.7',
     });
@@ -205,13 +206,13 @@ describe('getBlockConfigFromTypeScript', () => {
 
   it('should handle TypeScript pre emit diagnostics', () => {
     function fn(): void {
-      getBlockConfigFromTypeScript({
+      getProjectImplementations({
         name: '',
         layout: 'float',
         version: '1.33.7',
         webpack: '',
         output: '',
-        dir: resolveFixture('getBlockConfigFromTypeScript/tsError'),
+        dir: resolveFixture('getProjectImplementations/tsError'),
       });
     }
     expect(fn).toThrow(AppsembleError);
@@ -219,13 +220,13 @@ describe('getBlockConfigFromTypeScript', () => {
   });
 
   it('should extract comments', () => {
-    const result = getBlockConfigFromTypeScript({
+    const result = getProjectImplementations({
       name: '',
       layout: 'float',
       version: '1.33.7',
       webpack: '',
       output: '',
-      dir: resolveFixture('getBlockConfigFromTypeScript/comments'),
+      dir: resolveFixture('getProjectImplementations/comments'),
     });
 
     expect(result).toStrictEqual({
@@ -271,7 +272,7 @@ describe('getBlockConfigFromTypeScript', () => {
     it.each(readdirSync(blocksDir))('%s', (name) => {
       const dir = fileURLToPath(new URL(name, blocksDir));
 
-      const result = getBlockConfigFromTypeScript({
+      const result = getProjectImplementations({
         name,
         version: '',
         output: '',

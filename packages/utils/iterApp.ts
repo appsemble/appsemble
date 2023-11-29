@@ -2,6 +2,7 @@ import {
   type ActionDefinition,
   type AppDefinition,
   type BlockDefinition,
+  type ControllerDefinition,
   type PageDefinition,
 } from '@appsemble/types';
 
@@ -15,6 +16,7 @@ interface IterCallbacks {
   onBlockList?: IterCallback<BlockDefinition[]>;
   onBlock?: IterCallback<BlockDefinition>;
   onAction?: IterCallback<ActionDefinition>;
+  onController?: IterCallback<ControllerDefinition>;
 }
 
 /**
@@ -58,6 +60,24 @@ export function iterAction(
   if ('blocks' in action) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return iterBlockList(action.blocks, callbacks, [...prefix, 'blocks']);
+  }
+
+  return false;
+}
+
+export function iterController(
+  controller: ControllerDefinition,
+  callbacks: IterCallbacks,
+  prefix: Prefix = [],
+): boolean {
+  if (callbacks.onController?.(controller, prefix)) {
+    return true;
+  }
+
+  if (controller.actions) {
+    return Object.entries(controller.actions).some(([key, action]) =>
+      iterAction(action, callbacks, [...prefix, 'actions', key]),
+    );
   }
 
   return false;
@@ -182,6 +202,9 @@ export function iterApp(app: AppDefinition, callbacks: IterCallbacks): boolean {
     Array.isArray(app.pages) &&
     app.pages.some((page, index) => iterPage(page, callbacks, ['pages', index]))
   ) {
+    return true;
+  }
+  if (app.controller && iterController(app.controller, callbacks, ['controller'])) {
     return true;
   }
   if (app.cron) {

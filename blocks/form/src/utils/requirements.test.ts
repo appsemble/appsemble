@@ -1,4 +1,4 @@
-import { type Utils } from '@appsemble/sdk';
+import { type BlockUtils } from '@appsemble/sdk';
 import { remap } from '@appsemble/utils';
 import { describe, expect, it } from 'vitest';
 
@@ -13,7 +13,7 @@ import { type Field, type Values } from '../../block.js';
 
 type FieldWithRequirements = Field & { requirements?: any[] };
 
-const utils = { remap } as unknown as Utils;
+const utils = { remap } as unknown as BlockUtils;
 
 describe('is required', () => {
   it('should be required', () => {
