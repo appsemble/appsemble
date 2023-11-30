@@ -1,7 +1,7 @@
 apiVersion: v2
 name: appsemble
-version: 0.23.5
-appVersion: 0.23.5
+version: 0.23.6
+appVersion: 0.23.6
 kubeVersion: '>=1.21.0'
 type: application
 description: The open source low-code app building platform
@@ -23,8 +23,28 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
 annotations:
-  artifacthub.io/changes: |
-    []
+  artifacthub.io/changes: >
+    - kind: added
+      description: "Studio: #Add a full screen button to code and GUI editor pages."
+    - kind: added
+      description: "Studio: #Add support for multiple screen aspect ratios and resolutions."
+    - kind: added
+      description: "Studio: #Add the ability to choose the device’s screen format."
+    - kind: added
+      description: "Studio: #Keep full screen state reference."
+    - kind: changed
+      description: "Studio: #Automatically hide the side menu on code and GUI editor
+        pages - use burger menu to reveal it."
+    - kind: changed
+      description: "Studio: #Hide app preview when the screen width is too small."
+    - kind: changed
+      description: "Studio: #support multiple devices for app preview."
+    - kind: fixed
+      description: "React-components: #Fix the position of the dropdown button icon."
+    - kind: fixed
+      description: "Studio: #Fix CSS class selectors for indentation pseudo components."
+    - kind: fixed
+      description: "Studio: #Resize Monaco editor and app preview."
   artifacthub.io/license: LGPL-3.0-only
   artifacthub.io/links: |
     - name: Appsemble Studio
