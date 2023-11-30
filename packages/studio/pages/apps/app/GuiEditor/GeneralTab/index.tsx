@@ -1,4 +1,5 @@
 import { Button } from '@appsemble/react-components';
+import classNames from 'classnames';
 import {
   type ChangeEvent,
   type MutableRefObject,
@@ -13,6 +14,7 @@ import { type Document, type Node, type ParsedNode } from 'yaml';
 import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
 import { InputList } from '../Components/InputList/index.js';
 import { InputString } from '../Components/InputString/index.js';
@@ -70,6 +72,7 @@ export function GeneralTab({
   const { app } = useApp();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const { formatMessage } = useIntl();
+  const { fullscreen } = useFullscreenContext();
 
   const onNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, value: string) => {
@@ -169,15 +172,9 @@ export function GeneralTab({
         </>
       </Sidebar>
       <div
-        className={`${styles.root} ${
-          selectedResolution === 'fullscreen'
-            ? styles.fullscreen
-            : selectedResolution === 'desktop'
-              ? styles.desktop
-              : selectedResolution === 'phone'
-                ? styles.phone
-                : ''
-        }`}
+        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
       >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>

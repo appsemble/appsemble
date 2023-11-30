@@ -19,6 +19,7 @@ import { BreadCrumbsDecorationProvider } from '../BreadCrumbsDecoration/index.js
 import { CodeBlock } from '../CodeBlock/index.js';
 import { EmailQuotaBanners } from '../EmailQuotaBanners/index.js';
 import { ErrorFallback } from '../ErrorFallback/index.js';
+import { FullscreenProvider, useFullscreenContext } from '../FullscreenProvider/index.js';
 import { HighlightedCode } from '../HighlightedCode/index.js';
 import { MDXAnchor, MDXWrapper } from '../MDX/index.js';
 import { createHeader } from '../MDX/MDXHeader/index.js';
@@ -30,50 +31,59 @@ import { Toolbar } from '../Toolbar/index.js';
 import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 
-const studioContent = (
-  <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
-    <Toolbar />
-    <div className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}>
-      <VerifyBanner />
-      <EmailQuotaBanners />
-      <BreadCrumbsDecorationProvider>
-        <PageHeaderProvider>
-          <Breadcrumbs />
-          <TopLevelRoutes />
-        </PageHeaderProvider>
-      </BreadCrumbsDecorationProvider>
-    </div>
-  </SideMenuProvider>
-);
+function StudioContent(): ReactNode {
+  const { fullscreenRef } = useFullscreenContext();
+
+  return (
+    <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
+      <Toolbar />
+      <div
+        className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}
+        ref={fullscreenRef}
+      >
+        <VerifyBanner />
+        <EmailQuotaBanners />
+        <BreadCrumbsDecorationProvider>
+          <PageHeaderProvider>
+            <Breadcrumbs />
+            <TopLevelRoutes />
+          </PageHeaderProvider>
+        </BreadCrumbsDecorationProvider>
+      </div>
+    </SideMenuProvider>
+  );
+}
 
 function Providers({ content }: { readonly content: ReactNode }): ReactNode {
   return (
-    <StudioMessagesProvider>
-      <MDXProvider
-        components={{
-          a: MDXAnchor,
-          pre: CodeBlock,
-          code: HighlightedCode,
-          wrapper: MDXWrapper,
-          h1: createHeader('h1'),
-          h2: createHeader('h2'),
-          h3: createHeader('h3'),
-          h4: createHeader('h4'),
-          h5: createHeader('h5'),
-          h6: createHeader('h6'),
-        }}
-      >
-        <UserProvider>
-          <MetaProvider description={messages.description} title="Appsemble">
-            <ErrorHandler fallback={ErrorFallback}>
-              <Confirmation>
-                <MessagesProvider>{content}</MessagesProvider>
-              </Confirmation>
-            </ErrorHandler>
-          </MetaProvider>
-        </UserProvider>
-      </MDXProvider>
-    </StudioMessagesProvider>
+    <FullscreenProvider>
+      <StudioMessagesProvider>
+        <MDXProvider
+          components={{
+            a: MDXAnchor,
+            pre: CodeBlock,
+            code: HighlightedCode,
+            wrapper: MDXWrapper,
+            h1: createHeader('h1'),
+            h2: createHeader('h2'),
+            h3: createHeader('h3'),
+            h4: createHeader('h4'),
+            h5: createHeader('h5'),
+            h6: createHeader('h6'),
+          }}
+        >
+          <UserProvider>
+            <MetaProvider description={messages.description} title="Appsemble">
+              <ErrorHandler fallback={ErrorFallback}>
+                <Confirmation>
+                  <MessagesProvider>{content}</MessagesProvider>
+                </Confirmation>
+              </ErrorHandler>
+            </MetaProvider>
+          </UserProvider>
+        </MDXProvider>
+      </StudioMessagesProvider>
+    </FullscreenProvider>
   );
 }
 
@@ -91,22 +101,15 @@ function TopLevelCollection({ id }: { readonly id: number }): ReactNode {
 }
 
 export function App(): ReactNode {
-  if (customDomainAppCollection) {
-    const content = <TopLevelCollection id={customDomainAppCollection.id} />;
-    return (
-      <Routes>
-        <Route element={<Providers content={content} />} path="/:lang/" />
-        <Route element={<Providers content={content} />} path="/" />
-        <Route element={<Providers content={studioContent} />} path="/:lang/*" />
-        <Route element={<Providers content={studioContent} />} path="/*" />
-      </Routes>
-    );
-  }
+  const content: ReactNode = customDomainAppCollection ? (
+    <TopLevelCollection id={customDomainAppCollection.id} />
+  ) : (
+    <StudioContent />
+  );
   return (
     <Routes>
-      {/* Simple way to get optional parameters back */}
-      <Route element={<Providers content={studioContent} />} path="/:lang/*" />
-      <Route element={<Providers content={studioContent} />} path="/*" />
+      <Route element={<Providers content={content} />} path="/:lang/*" />
+      <Route element={<Providers content={content} />} path="/*" />
     </Routes>
   );
 }

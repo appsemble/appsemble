@@ -71,7 +71,7 @@ export function Dropdown({
           onKeyDown={onKeyDown}
         >
           {label}
-          <Icon icon={dropdownIcon} size="small" />
+          <Icon className="ml-1" icon={dropdownIcon} size="small" />
         </Button>
       </div>
       <div

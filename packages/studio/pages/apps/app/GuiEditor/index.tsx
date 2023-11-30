@@ -8,7 +8,8 @@ import {
 import { type App, type AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type MessageDescriptor, useIntl } from 'react-intl';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import {
@@ -32,6 +33,7 @@ import { SecurityTab } from './SecurityTab/index.js';
 import { StyleTab } from './StyleTab/index.js';
 import { ThemeTab } from './ThemeTab/index.js';
 import { useBreadCrumbsDecoration } from '../../../../components/BreadCrumbsDecoration/index.js';
+import { useFullscreenContext } from '../../../../components/FullscreenProvider/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 // This import is required to prevent the 'unexpected usage' bug.
 import '../../../../components/MonacoEditor/custom.js';
@@ -110,8 +112,10 @@ export default function EditPage(): ReactNode {
   const { id, lang } = params;
   const tabPath = Object.values(params)[0];
   const currentTab = tabs.find((tab) => tab.path === tabPath) || tabs[2];
-  const screenRatios = ['fullscreen', 'desktop', 'phone'];
-  const [selectedRatio, setSelectedRatio] = useState<number>(0);
+  const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'], []);
+  const { enterFullscreen, exitFullscreen, fullscreen } = useFullscreenContext();
+
+  const [selectedRatio, setSelectedRatio] = useState<string>('fill');
   const [propsTabToggle, setPropsTabToggle] = useState(true);
   const [blocksTabToggle, setBlocksTabToggle] = useState(false);
 
@@ -278,9 +282,9 @@ export default function EditPage(): ReactNode {
 
   const onChangeScreenRatio = useCallback(
     (i: number) => {
-      setSelectedRatio(i);
+      setSelectedRatio(screenRatios[i]);
     },
-    [setSelectedRatio],
+    [screenRatios, setSelectedRatio],
   );
 
   const unsavedChanges = getUnsavedChanges().length !== 1;
@@ -311,12 +315,23 @@ export default function EditPage(): ReactNode {
 
   return (
     <>
-      <div className={styles.ratioPicker}>
+      <div className={`is-flex ${styles.controls}`}>
         <InputList
+          label={String(formatMessage(messages.previewFormat))}
+          labelPosition="left"
           onChange={(i: number) => onChangeScreenRatio(i)}
           options={screenRatios}
-          value={screenRatios[selectedRatio]}
+          value={selectedRatio}
         />
+        {fullscreen.enabled ? (
+          <Button icon="compress" iconSize="medium" onClick={exitFullscreen}>
+            {String(formatMessage(messages.exitFullscreen))}
+          </Button>
+        ) : (
+          <Button icon="expand" iconSize="medium" onClick={enterFullscreen}>
+            {String(formatMessage(messages.enterFullscreen))}
+          </Button>
+        )}
       </div>
       <div className="container is-fluid">
         <div className={`tabs is-toggle ${styles.editorNavBar} mb-0`}>
@@ -404,7 +419,11 @@ export default function EditPage(): ReactNode {
             </div>
           </div>
         </div>
-        <div className={`${styles.guiEditorContainer} m-0 p-0`}>
+        <div
+          className={classNames(`${styles.guiEditorContainer} m-0 p-0`, {
+            [String(styles.fullscreen)]: fullscreen.enabled,
+          })}
+        >
           {currentTab.tabName === 'general' && (
             <GeneralTab
               changeIn={changeIn}
@@ -413,7 +432,7 @@ export default function EditPage(): ReactNode {
               frameRef={frame}
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
-              selectedResolution={screenRatios[selectedRatio]}
+              selectedResolution={selectedRatio}
             />
           )}
           {currentTab.tabName === 'resources' && (
@@ -435,7 +454,7 @@ export default function EditPage(): ReactNode {
               isOpenRight={rightPanelOpen}
               propsTabShow={propsTabToggle}
               saveStack={saveStack[index]}
-              selectedResolution={screenRatios[selectedRatio]}
+              selectedResolution={selectedRatio}
               toggleProps={handlePropertiesToggle}
             />
           )}
@@ -448,7 +467,7 @@ export default function EditPage(): ReactNode {
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
               saveStack={saveStack[index]}
-              selectedResolution={screenRatios[selectedRatio]}
+              selectedResolution={selectedRatio}
             />
           )}
           {currentTab.tabName === 'style' && (
@@ -459,7 +478,7 @@ export default function EditPage(): ReactNode {
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
               saveStack={saveStack[index]}
-              selectedResolution={screenRatios[selectedRatio]}
+              selectedResolution={selectedRatio}
               setCoreStyle={setCoreStyle}
             />
           )}
@@ -467,7 +486,7 @@ export default function EditPage(): ReactNode {
             <SecurityTab
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
-              selectedResolution={screenRatios[selectedRatio]}
+              selectedResolution={selectedRatio}
             />
           )}
         </div>

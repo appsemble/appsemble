@@ -1,5 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import { type BlockDefinition, type BlockManifest } from '@appsemble/types';
+import classNames from 'classnames';
 import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 import { type Document, type Node, type ParsedNode, type YAMLSeq } from 'yaml';
@@ -10,6 +11,7 @@ import styles from './index.module.css';
 import { PageProperty } from './PageProperty/index.js';
 import SubPageProperty from './SubPageProperty/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { generateData } from '../../../../../utils/schemaGenerator.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
@@ -55,6 +57,7 @@ export function PagesTab({
   const [dragOver, setDragOver] = useState<Boolean>(false);
   const [blockManifest, setBlockManifest] = useState<BlockManifest>(null);
   const [dropzoneActive, setDropzoneActive] = useState<boolean>(false);
+  const { fullscreen } = useFullscreenContext();
 
   const onDragEvent = (data: BlockManifest): void => {
     setBlockManifest(data);
@@ -247,15 +250,9 @@ export function PagesTab({
         />
       </Sidebar>
       <div
-        className={`${styles.root} ${
-          selectedResolution === 'fullscreen'
-            ? styles.fullscreen
-            : selectedResolution === 'desktop'
-              ? styles.desktop
-              : selectedResolution === 'phone'
-                ? styles.phone
-                : ''
-        }`}
+        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
       >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div

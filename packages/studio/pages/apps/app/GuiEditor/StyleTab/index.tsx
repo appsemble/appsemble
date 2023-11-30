@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { type MutableRefObject, type ReactNode, type Ref, useCallback, useState } from 'react';
 import { type Document, type ParsedNode } from 'yaml';
 
@@ -5,6 +6,7 @@ import styles from './index.module.css';
 import { StyleList } from './StyleList/index.js';
 import { StylePage } from './StylePage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 
@@ -15,8 +17,8 @@ interface StyleTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
-  readonly setCoreStyle: (style: string) => void;
   readonly selectedResolution: string;
+  readonly setCoreStyle: (style: string) => void;
 }
 export function StyleTab({
   coreStyle,
@@ -33,6 +35,7 @@ export function StyleTab({
   const [selectedBlock, setSelectedBlock] = useState<number>(-1);
   const [selectedSubPage, setSelectedSubPage] = useState<number>(-1);
   const [selectedProp, setSelectedProp] = useState<string>(null);
+  const { fullscreen } = useFullscreenContext();
 
   const onChangePagesBlocks = useCallback(
     (page: number, subParent: number, block: number, propName?: string) => {
@@ -61,15 +64,9 @@ export function StyleTab({
         />
       </Sidebar>
       <div
-        className={`${styles.root} ${
-          selectedResolution === 'fullscreen'
-            ? styles.fullscreen
-            : selectedResolution === 'desktop'
-              ? styles.desktop
-              : selectedResolution === 'phone'
-                ? styles.phone
-                : ''
-        }`}
+        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
       >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>

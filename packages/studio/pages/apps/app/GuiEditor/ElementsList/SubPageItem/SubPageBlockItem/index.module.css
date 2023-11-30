@@ -45,8 +45,7 @@
 /* adds indentation line before the selected child item
   but the line is white for better readibility
 */
-/* stylelint-disable selector-max-attribute */
-[class*='childItem is-link']::before {
+.childItem:global(.is-link)::before {
   border-left: 2px solid hsl(0deg 0% 100%);
   content: '';
   height: 98%;
@@ -55,19 +54,10 @@
   width: 5px;
 }
 
-/* button.button.packages-studio-pages-apps-app-GuiEditor-ElementsList-SubPageItem-SubPageBlockItem-index-module_childItem.is-link::before{
-  border-left: 2px solid hsl(0deg 0% 100%);
-  content: '';
-  height: 98%;
-  left: 17px;
-  position: absolute;
-  width: 5px;
-} */
-
 /* adds a second indentation line before the selected child item that is part of a sub-page parent
   but the line is white for better readibility
 */
-[class*='SubPageItem-SubPageBlockItem-index-module_childItem is-link']::after {
+.childItem:global(.is-link)::after {
   border-left: 2px solid hsl(0deg 0% 100%);
   content: '';
   height: 98%;

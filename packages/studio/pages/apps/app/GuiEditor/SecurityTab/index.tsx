@@ -1,4 +1,5 @@
 import { Button } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type ReactNode, useCallback, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -9,6 +10,7 @@ import { messages } from './messages.js';
 import { RolesPage } from './RolesPage/index.js';
 import { TeamsPage } from './TeamsPage/index.js';
 import { AppPreview } from '../../../../../components/AppPreview/index.js';
+import { useFullscreenContext } from '../../../../../components/FullscreenProvider/index.js';
 import { useApp } from '../../index.js';
 import { Sidebar } from '../Components/Sidebar/index.js';
 import { TreeList } from '../Components/TreeList/index.js';
@@ -46,6 +48,7 @@ export function SecurityTab({
   const frame = useRef<HTMLIFrameElement>();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
   const [selectedRole, setSelectedRole] = useState<string>(null);
+  const { fullscreen } = useFullscreenContext();
 
   const onChangeTab = useCallback(
     (tab: (typeof tabChangeOptions)[number]) => {
@@ -103,15 +106,9 @@ export function SecurityTab({
         </>
       </Sidebar>
       <div
-        className={`${styles.root} ${
-          selectedResolution === 'fullscreen'
-            ? styles.fullscreen
-            : selectedResolution === 'desktop'
-              ? styles.desktop
-              : selectedResolution === 'phone'
-                ? styles.phone
-                : ''
-        }`}
+        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+          [String(styles.fullscreen)]: fullscreen.enabled,
+        })}
       >
         <AppPreview app={app} iframeRef={frame} />
       </div>

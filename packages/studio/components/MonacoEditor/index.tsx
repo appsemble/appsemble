@@ -231,7 +231,7 @@ export const MonacoEditor = forwardRef<editor.IStandaloneCodeEditor, MonacoEdito
     return (
       <div className={classNames('is-flex is-flex-direction-column', className)}>
         <div
-          className="is-flex-grow-1 is-flex-shrink-1"
+          className={classNames(`${styles.overflow} is-flex-grow-1 is-flex-shrink-1 `)}
           ref={(node) => {
             if (!editorRef.current) {
               applyRefs(

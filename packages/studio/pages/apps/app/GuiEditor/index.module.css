@@ -67,6 +67,10 @@
   margin: 0;
   overflow: hidden;
   padding: 0;
+
+  &.fullscreen {
+    height: 90vh;
+  }
 }
 
 .highLight {
@@ -75,9 +79,10 @@
   animation-name: color;
 }
 
-.ratioPicker {
-  left: 50%;
+.controls {
+  left: 21%;
   margin: auto;
+  margin-left: 25rem;
 
   /* Bad for resizing */
   position: absolute;

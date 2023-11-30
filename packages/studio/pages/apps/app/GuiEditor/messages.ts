@@ -105,4 +105,16 @@ export const messages = defineMessages({
     id: 'studio.d1OBbT',
     defaultMessage: 'Report Bug',
   },
+  enterFullscreen: {
+    id: 'studio.li2TA0',
+    defaultMessage: 'Enter fullscreen',
+  },
+  exitFullscreen: {
+    id: 'studio.3OrdgP',
+    defaultMessage: 'Exit fullscreen',
+  },
+  previewFormat: {
+    id: 'studio.fTTNTo',
+    defaultMessage: 'Preview format:',
+  },
 });

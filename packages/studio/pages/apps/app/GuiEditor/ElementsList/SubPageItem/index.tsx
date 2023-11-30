@@ -77,12 +77,14 @@ export function SubPageItem({
             {blocks.some(
               (blockItem) =>
                 blockItem.parent === subPage.index && blockItem.subParent === subPageIndex,
-            ) && (
+            ) ? (
               <Icon
                 className="mx-2"
                 icon={disabledSubParents.includes(subPageIndex) ? 'chevron-right' : 'chevron-down'}
                 onClick={() => toggleDropdownSubParents(subPageIndex)}
               />
+            ) : (
+              <Icon className="mx-2" icon="minus" />
             )}
             {subPage.name}
           </Button>

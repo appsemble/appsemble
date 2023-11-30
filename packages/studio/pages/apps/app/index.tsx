@@ -64,7 +64,6 @@ const GuiEditorPage = lazy(() => import('./GuiEditor/index.js'));
 export function AppRoutes(): ReactNode {
   const { id, lang } = useParams<{ id: string; lang: string }>();
   const url = `/${lang}/apps/${id}`;
-
   const { organizations } = useUser();
   const {
     data: app,
@@ -72,7 +71,7 @@ export function AppRoutes(): ReactNode {
     loading,
     setData: setApp,
   } = useData<App>(`/api/apps/${id}?language=${lang}`);
-  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
+
   const { formatMessage } = useIntl();
 
   const organization = organizations?.find((org) => org.id === app?.OrganizationId);
@@ -87,6 +86,8 @@ export function AppRoutes(): ReactNode {
   const mayViewResources = organization && checkRole(organization.role, Permission.ReadResources);
   const mayViewAssets = organization && checkRole(organization.role, Permission.ReadAssets);
   const canViewResources = Boolean(mayViewResources && resourceNames?.length);
+
+  const value = useMemo(() => ({ app, setApp }), [app, setApp]);
 
   useSideMenu(
     app && (

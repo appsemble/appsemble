@@ -5,17 +5,37 @@
   border: none;
   color: hsl(0deg 0% 100%);
   outline: none;
+
+  &.code,
+  &.gui {
+    @media screen and (width >=1024px) {
+      display: block;
+    }
+  }
 }
 
 .sideMenuWrapper {
   height: 100%;
 
-  @media screen and (width >= 1024px) {
+  @media screen and (width >=1024px) {
     margin-left: menu-width;
   }
 
-  &.gui {
+  /* &.gui {
     margin-left: 0;
+  } */
+
+  &.code,
+  &.gui {
+    @media screen and (width >=1024px) {
+      margin-left: 0;
+      transition: ease-out 0.15s;
+
+      &.open {
+        margin-left: menu-width;
+        transition: ease-in 0.15s;
+      }
+    }
   }
 }
 
@@ -33,21 +53,38 @@
   top: 3.25rem;
   transition: left 0.15s;
   width: menu-width;
-  z-index: 1500; /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
+  z-index: 1500;
 
-  @media screen and (width >= 1024px) {
+  /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
+
+  @media screen and (width >=1024px) {
+    /* Shows the side menu  when on a big screen */
     left: 0;
   }
 
+  /* Shows the side menu when opened on a small screen */
   &.open {
     left: 0;
   }
 
+  /* Overrides the side menu behaviour on the code and GUI editor pages */
+  &.code,
   &.gui {
-    display: none;
-    left: calc(-1 * menu-width);
-    opacity: 0;
-    pointer-events: none;
+    @media screen and (width >=1024px) {
+      left: calc(-1 * menu-width);
+      transition: ease-out 0.1s;
+
+      /* Shows the side menu  when opened on a big screen */
+      &.open {
+        left: 0;
+        transition: ease-in 0.1s;
+      }
+    }
+
+    /* Shows the side menu when opened on a small screen */
+    &.open {
+      left: 0;
+    }
   }
 }
 
@@ -61,7 +98,7 @@
   transition: opacity 0.15s;
   z-index: 1400;
 
-  @media screen and (width >= 1024px) {
+  @media screen and (width >=1024px) {
     display: none;
   }
 
@@ -70,8 +107,8 @@
     pointer-events: none;
   }
 
-  &.gui {
+  /* &.gui {
     display: none;
     left: calc(-1 * menu-width);
-  }
+  } */
 }

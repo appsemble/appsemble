@@ -35,8 +35,7 @@
 /* adds indentation line before the selected sub-page parent
   but the line is white for better readibility
 */
-/* stylelint-disable selector-max-attribute */
-[class*='subParent is-link']::before {
+.subParent:global(.is-link)::before {
   border-left: 2px solid hsl(0deg 0% 100%);
   content: '';
   height: 98%;

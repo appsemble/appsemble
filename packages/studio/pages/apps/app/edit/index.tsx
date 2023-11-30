@@ -11,6 +11,7 @@ import {
 import { type App, type AppDefinition } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import equal from 'fast-deep-equal';
 import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 import {
@@ -18,6 +19,7 @@ import {
   type SyntheticEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -30,9 +32,11 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { AppPreview } from '../../../../components/AppPreview/index.js';
 import { useBreadCrumbsDecoration } from '../../../../components/BreadCrumbsDecoration/index.js';
+import { useFullscreenContext } from '../../../../components/FullscreenProvider/index.js';
 import { getCachedBlockVersions } from '../../../../components/MonacoEditor/appValidation/index.js';
 import { MonacoEditor } from '../../../../components/MonacoEditor/index.js';
 import { getAppUrl } from '../../../../utils/getAppUrl.js';
+import { InputList } from '../GuiEditor/Components/InputList/index.js';
 import { useApp } from '../index.js';
 
 export default function EditPage(): ReactNode {
@@ -60,12 +64,21 @@ export default function EditPage(): ReactNode {
   const navigate = useNavigate();
   const push = useMessages();
   const { lang } = useParams();
-
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
+  const screenRatios = useMemo(() => ['desktop', 'fill', 'phone', 'tablet'], []);
+  const [selectedRatio, setSelectedRatio] = useState<string>('fill');
+  const { enterFullscreen, exitFullscreen, fullscreen } = useFullscreenContext();
+
+  const onChangeScreenRatio = useCallback(
+    (i: number) => {
+      setSelectedRatio(screenRatios[i]);
+    },
+    [screenRatios, setSelectedRatio],
+  );
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link className="my-2 mx-1" to={`/${lang}/apps/${id}/edit/gui`}>
+      <Link className="my-1 mx-1" to={`/${lang}/apps/${id}/edit/gui`}>
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {`${formatMessage(messages.switchToGuiEditor)} ${formatMessage(messages.experimental)}`}
         </Button>
@@ -209,7 +222,11 @@ export default function EditPage(): ReactNode {
   );
 
   return (
-    <div className={`${styles.root} is-flex`}>
+    <div
+      className={classNames(`${styles.root} is-flex has-background-white`, {
+        [String(styles.fullscreen)]: fullscreen.enabled,
+      })}
+    >
       <div className={`is-flex is-flex-direction-column ${styles.leftPanel}`}>
         <div className="buttons">
           <Button disabled={disabled} icon="vial" onClick={onSave}>
@@ -230,6 +247,15 @@ export default function EditPage(): ReactNode {
           <Button icon="keyboard" onClick={openShortcuts}>
             <FormattedMessage {...messages.shortcuts} />
           </Button>
+          {fullscreen.enabled ? (
+            <Button icon="compress" iconSize="medium" onClick={exitFullscreen}>
+              {String(formatMessage(messages.exitFullscreen))}
+            </Button>
+          ) : (
+            <Button icon="expand" iconSize="medium" onClick={enterFullscreen}>
+              {String(formatMessage(messages.enterFullscreen))}
+            </Button>
+          )}
         </div>
         <Tabs boxed className="mb-0" onChange={changeTab} value={location.hash}>
           <EditorTab errorCount={appDefinitionErrorCount} icon="file-code" value="#editor">
@@ -255,8 +281,17 @@ export default function EditPage(): ReactNode {
         </div>
       </div>
       <Prompt message={formatMessage(messages.notification)} when={appDefinition !== app.yaml} />
-      <div className={`${styles.previewRoot} is-flex ml-1 px-5 py-5`}>
-        <AppPreview app={app} iframeRef={frame} />
+      <div className={`mx-3 ${styles.rightPanel} ${styles[selectedRatio]}`}>
+        <InputList
+          label={String(formatMessage(messages.previewFormat))}
+          labelPosition="left"
+          onChange={(i: number) => onChangeScreenRatio(i)}
+          options={screenRatios}
+          value={selectedRatio}
+        />
+        <div className={`${styles.previewRoot} is-flex ml-1 px-5 py-5 ${styles[selectedRatio]}`}>
+          <AppPreview app={app} iframeRef={frame} />
+        </div>
       </div>
     </div>
   );
