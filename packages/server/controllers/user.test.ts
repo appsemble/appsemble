@@ -1,5 +1,6 @@
 import { type User as APIUser } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
+import { hash } from 'bcrypt';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
@@ -372,6 +373,50 @@ describe('unsubscribe', () => {
 
     expect(response.status).toBe(201);
     expect(response.data).toContain(user.primaryEmail);
+  });
+
+  it('should return 304 if the user is not subscribed', async () => {
+    const user2 = await User.create({
+      password: await hash('password', 10),
+      name: 'Test User 2',
+      primaryEmail: 'test2@example.com',
+      subscribed: false,
+      timezone: 'Europe/Amsterdam',
+    });
+    user2.EmailAuthorizations = [
+      await EmailAuthorization.create({
+        UserId: user2.id,
+        email: 'test2@example.com',
+        verified: true,
+      }),
+    ];
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: user2.primaryEmail },
+      {
+        headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+      },
+    );
+    expect(response.status).toBe(422);
+    expect(response.data).toBe("User wasn't subscribed");
+  });
+
+  it('should return 404 if user to unsubscribe does not exist', async () => {
+    const response = await request.post(
+      '/api/unsubscribe',
+      { email: 'test@bot.com' },
+      {
+        headers: { authorization: `Bearer ${argv.adminApiSecret}` },
+      },
+    );
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'User does not exist',
+      },
+    });
   });
 
   it('should return 401 if the admin api secret is missing', async () => {

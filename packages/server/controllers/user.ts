@@ -258,8 +258,10 @@ export async function unsubscribe(ctx: Context): Promise<void> {
   );
 
   const user = await User.findOne({ where: { primaryEmail: email } });
+  assertKoaError(!user, ctx, 404, 'User does not exist');
   if (!user?.subscribed) {
-    ctx.body = 'User is already unsubscribed';
+    ctx.status = 422;
+    ctx.body = "User wasn't subscribed";
     return;
   }
 
