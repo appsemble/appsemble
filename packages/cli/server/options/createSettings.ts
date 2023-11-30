@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
@@ -16,12 +17,18 @@ export async function createSettings({
   const { appBlocks, appPath, appsembleApp } = context;
 
   const controllerPath = join(appPath, 'controller');
-  const controllerBuildConfig = await getProjectBuildConfig(controllerPath);
 
-  const controllerBuildResult = await buildProject(controllerBuildConfig);
-  const [, controllerImplementations] = await makeProjectPayload(controllerBuildConfig);
+  let controllerCode;
+  let controllerImplementations;
 
-  const controllerCode = controllerBuildResult.outputFiles[0].text;
+  if (existsSync(controllerPath)) {
+    const controllerBuildConfig = await getProjectBuildConfig(controllerPath);
+
+    const controllerBuildResult = await buildProject(controllerBuildConfig);
+    [, controllerImplementations] = await makeProjectPayload(controllerBuildConfig);
+
+    controllerCode = controllerBuildResult.outputFiles[0].text;
+  }
 
   return createUtilsSettings({
     apiUrl: host,

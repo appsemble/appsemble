@@ -35,9 +35,10 @@ import globalCacheDir from 'global-cache-dir';
 import { type Argv } from 'yargs';
 
 import { traverseAppDirectory } from '../lib/app.js';
+import { buildBlock } from '../lib/block.js';
 import { getProjectBuildConfig, getProjectWebpackConfig } from '../lib/config.js';
 import { createApiServer, createStaticServer } from '../lib/createServers.js';
-import { buildProject, makeProjectPayload } from '../lib/project.js';
+import { makeProjectPayload } from '../lib/project.js';
 import { setArgv } from '../server/argv.js';
 import { setAppName } from '../server/db/methods.js';
 import { Resource } from '../server/models/Resource.js';
@@ -173,7 +174,7 @@ export async function handler(argv: ServeArguments): Promise<void> {
   );
 
   const localBlocksPromises = localBlocksConfigs.map(async (blockConfig) => {
-    await buildProject(blockConfig);
+    await buildBlock(blockConfig);
     const [, blockImplementations] = await makeProjectPayload(blockConfig);
 
     return {
