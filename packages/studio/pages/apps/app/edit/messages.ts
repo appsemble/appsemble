@@ -21,6 +21,18 @@ export const messages = defineMessages({
     id: 'studio.zoSzG+',
     defaultMessage: 'Switch to GUI Editor',
   },
+  enterFullscreen: {
+    id: 'studio.li2TA0',
+    defaultMessage: 'Enter fullscreen',
+  },
+  exitFullscreen: {
+    id: 'studio.3OrdgP',
+    defaultMessage: 'Exit fullscreen',
+  },
+  previewFormat: {
+    id: 'studio.fTTNTo',
+    defaultMessage: 'Preview format:',
+  },
   experimental: {
     id: 'studio.R1RMax',
     defaultMessage: '- Experimental',

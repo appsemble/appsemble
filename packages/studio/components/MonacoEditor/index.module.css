@@ -3,3 +3,7 @@
   height: 15vh;
   overflow: auto scroll;
 }
+
+.overflow {
+  overflow: hidden;
+}

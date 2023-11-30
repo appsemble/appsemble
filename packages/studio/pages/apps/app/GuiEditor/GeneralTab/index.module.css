@@ -1,5 +1,9 @@
 .root {
   height: 80vh;
+
+  &.fullscreen {
+    height: 100%;
+  }
 }
 
 .leftBarButton {
@@ -20,7 +24,7 @@
   width: 100%;
 }
 
-.fullscreen {
+.fill {
   flex: 1;
 }
 
@@ -29,7 +33,7 @@
   border: 20px solid hsl(0deg 0% 0%);
   border-radius: 15px;
   margin: auto;
-  max-height: 75%;
+  max-height: 35vw;
 }
 
 .phone {
@@ -37,5 +41,13 @@
   border: 20px solid hsl(0deg 0% 0%);
   border-radius: 15px;
   margin: auto;
-  max-height: 80vh;
+  max-height: 100%;
+}
+
+.tablet {
+  aspect-ratio: 3/4;
+  border: 20px solid hsl(0deg 0% 0%);
+  border-radius: 15px;
+  margin: auto;
+  max-height: 100%;
 }

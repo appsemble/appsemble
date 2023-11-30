@@ -88,16 +88,22 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
       )}
     >
       <div
-        className={classNames(styles.sideMenuWrapper, {
-          [styles.gui]: location.pathname.includes('gui'),
-        })}
+        className={classNames(
+          styles.sideMenuWrapper,
+          { [styles.open]: enabled },
+          {
+            [styles.gui]: location.pathname.includes('gui'),
+          },
+          { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+        )}
       >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
           className={classNames(
             styles.backdrop,
             { [styles.closed]: !enabled },
-            { [styles.gui]: location.pathname.includes('gui') },
+            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
+            { [styles.gui]: location.pathname.match(/gui/) },
           )}
           onClick={disable}
           role="presentation"
@@ -106,6 +112,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           className={classNames(
             `menu ${styles.sideMenu}`,
             { [styles.open]: enabled },
+            { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
             { [styles.gui]: location.pathname.includes('gui') },
           )}
         >
@@ -125,8 +132,31 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
 export function SideMenuButton(): ReactNode {
   const { isOpen, toggle } = useContext(Context);
   const { formatMessage } = useIntl();
+  const location = useLocation();
 
-  return (
+  return /edit/.test(location.pathname) && location.hash.length > 0 ? (
+    <button
+      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.code)}
+      onClick={toggle}
+      type="button"
+    >
+      <span aria-hidden />
+      <span aria-hidden />
+      <span aria-hidden />
+    </button>
+  ) : location.pathname.includes('gui') ? (
+    <button
+      aria-label={formatMessage(isOpen ? messages.close : messages.open)}
+      className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}
+      onClick={toggle}
+      type="button"
+    >
+      <span aria-hidden />
+      <span aria-hidden />
+      <span aria-hidden />
+    </button>
+  ) : (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button)}
