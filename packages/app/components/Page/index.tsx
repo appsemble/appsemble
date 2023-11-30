@@ -32,8 +32,8 @@ import { AppBar } from '../TitleBar/index.js';
 import { useUser } from '../UserProvider/index.js';
 
 export function Page(): ReactNode {
-  const { definition } = useAppDefinition();
   const redirect = useLocationString();
+  const { definition } = useAppDefinition();
   const { isLoggedIn, role, teams, userInfo } = useUser();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
@@ -47,10 +47,10 @@ export function Page(): ReactNode {
 
   const [shareDialogParams, setShareDialogParams] = useState<ShareDialogState>();
   const showShareDialog: ShowShareDialog = useCallback(
-    (params) =>
+    (showShareDialogParams) =>
       new Promise<void>((resolve, reject) => {
         setShareDialogParams({
-          params,
+          params: showShareDialogParams,
           resolve,
           reject,
         });

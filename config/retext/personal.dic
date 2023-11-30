@@ -12,6 +12,7 @@ Eindhoven
 enum/kitten
 Fontys
 ICT
+IMAP
 Manny
 maskable/editable
 MDX
@@ -176,8 +177,19 @@ whitespace
 4d1
 GPL
 LGPL
+
 macOS
 i18n
 vitest
 combinators
 clonable
+namespace
+namespaces
+balancer
+hostname
+hostnames
+templating
+add-ons
+HSTS
+microk8s
+init

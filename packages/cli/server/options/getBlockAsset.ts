@@ -2,10 +2,7 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import {
-  type BlockAsset as BlockAssetInterface,
-  type GetBlockAssetParams,
-} from '@appsemble/node-utils';
+import { type GetBlockAssetParams, type ProjectAsset } from '@appsemble/node-utils';
 import { parseBlockName } from '@appsemble/utils';
 import globalCacheDir from 'global-cache-dir';
 import { lookup } from 'mime-types';
@@ -15,7 +12,7 @@ export async function getBlockAsset({
   filename,
   name,
   version,
-}: GetBlockAssetParams): Promise<BlockAssetInterface> {
+}: GetBlockAssetParams): Promise<ProjectAsset> {
   const { blockConfigs } = context;
 
   const [organisation, blockName] = parseBlockName(name);
@@ -28,6 +25,7 @@ export async function getBlockAsset({
 
     return {
       content: asset,
+      filename,
       mime,
     };
   }
@@ -48,6 +46,7 @@ export async function getBlockAsset({
 
   return {
     content: asset,
+    filename,
     mime,
   };
 }

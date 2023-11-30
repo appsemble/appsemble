@@ -112,6 +112,8 @@ export async function createApp(ctx: Context): Promise<void> {
     request: {
       body: {
         OrganizationId,
+        controllerCode,
+        controllerImplementations,
         coreStyle,
         demoMode,
         domain,
@@ -148,7 +150,11 @@ export async function createApp(ctx: Context): Promise<void> {
     );
     handleValidatorResult(
       ctx,
-      await validateAppDefinition(definition, getBlockVersions),
+      await validateAppDefinition(
+        definition,
+        getBlockVersions,
+        controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
+      ),
       'App validation failed',
     );
 
@@ -174,6 +180,8 @@ export async function createApp(ctx: Context): Promise<void> {
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
+      controllerCode,
+      controllerImplementations,
     };
 
     if (icon) {
@@ -202,9 +210,11 @@ export async function createApp(ctx: Context): Promise<void> {
     try {
       await transactional(async (transaction) => {
         record = await App.create(result, { transaction });
+
         record.AppSnapshots = [
           await AppSnapshot.create({ AppId: record.id, yaml }, { transaction }),
         ];
+
         logger.verbose(`Storing ${screenshots?.length ?? 0} screenshots`);
         record.AppScreenshots = screenshots?.length
           ? await AppScreenshot.bulkCreate(
@@ -455,6 +465,8 @@ export async function patchApp(ctx: Context): Promise<void> {
     pathParams: { appId },
     request: {
       body: {
+        controllerCode,
+        controllerImplementations,
         coreStyle,
         demoMode,
         domain,
@@ -533,7 +545,11 @@ export async function patchApp(ctx: Context): Promise<void> {
       );
       handleValidatorResult(
         ctx,
-        await validateAppDefinition(definition, getBlockVersions),
+        await validateAppDefinition(
+          definition,
+          getBlockVersions,
+          controllerImplementations ? JSON.parse(controllerImplementations) : undefined,
+        ),
         'App validation failed',
       );
       result.definition = definition;
@@ -633,6 +649,11 @@ export async function patchApp(ctx: Context): Promise<void> {
     if (iconBackground) {
       result.iconBackground = iconBackground;
     }
+
+    result.controllerCode = ['', undefined].includes(controllerCode) ? null : controllerCode;
+    result.controllerImplementations = ['', undefined].includes(controllerImplementations)
+      ? null
+      : controllerImplementations;
 
     if (
       domain !== undefined ||

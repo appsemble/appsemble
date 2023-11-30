@@ -107,5 +107,13 @@ domain fall back to use the Appsemble server Sentry DSN.
 
   This is only applied when \`sentryDsn\` is specified.`,
     },
+    controllerCode: {
+      type: 'string',
+      description: 'Custom app logic as a JavaScript string',
+    },
+    controllerImplementations: {
+      type: 'string',
+      description: 'Appsemble SDK interfaces implementations',
+    },
   },
 };

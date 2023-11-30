@@ -1,5 +1,7 @@
 export const {
   apiUrl,
+  appControllerCode,
+  appControllerImplementations,
   appUpdated,
   blockManifests,
   definition,

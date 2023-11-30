@@ -15,6 +15,8 @@ URL.revokeObjectURL = noop;
 
 window.settings = {
   apiUrl: 'https://appsemble.dev',
+  appControllerCode: '',
+  appControllerImplementations: {},
   blockManifests: [],
   definition: null,
   development: false,

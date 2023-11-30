@@ -19,15 +19,20 @@ import {
   type AppsembleRC,
   type AppVisibility,
   type Messages,
+  type ProjectBuildConfig,
+  type ProjectImplementations,
 } from '@appsemble/types';
 import { extractAppMessages, has, normalizeBlockName } from '@appsemble/utils';
 import axios from 'axios';
+import { type BuildResult } from 'esbuild';
 import FormData from 'form-data';
 
 import { traverseBlockThemes } from './block.js';
 import { coerceRemote } from './coercers.js';
+import { getProjectBuildConfig } from './config.js';
 import { printAxiosError } from './output.js';
 import { processCss } from './processCss.js';
+import { buildProject, makeProjectPayload } from './project.js';
 import { publishResource } from './resource.js';
 
 interface PublishAppParams {
@@ -213,6 +218,12 @@ export async function traverseAppDirectory(
   let iconPath: string;
   let maskableIconPath: string;
   let yaml: string;
+  let controllerPath: string;
+  let controllerBuildConfig: ProjectBuildConfig;
+  let controllerBuildResult: BuildResult;
+  let controllerCode: string;
+  let controllerImplementations: ProjectImplementations;
+
   const gatheredData: App = {
     screenshotUrls: [],
   } as App;
@@ -294,13 +305,30 @@ export async function traverseAppDirectory(
           gatheredData[`${name}Style`] = css;
         });
 
+      case 'controller':
+        controllerPath = join(path, 'controller');
+        controllerBuildConfig = await getProjectBuildConfig(controllerPath);
+        controllerBuildResult = await buildProject(controllerBuildConfig);
+
+        controllerCode = controllerBuildResult.outputFiles[0].text;
+
+        formData.append('controllerCode', controllerCode);
+        gatheredData.controllerCode = controllerCode;
+
+        [, controllerImplementations] = await makeProjectPayload(controllerBuildConfig);
+
+        formData.append('controllerImplementations', JSON.stringify(controllerImplementations));
+        gatheredData.controllerImplementations = controllerImplementations;
+        break;
       default:
         logger.warn(`Found unused file ${filepath}`);
     }
   });
+
   if (yaml === undefined) {
     throw new AppsembleError('No app definition found');
   }
+
   discoveredContext ||= {};
   discoveredContext.icon = discoveredContext.icon
     ? resolve(path, discoveredContext.icon)
@@ -713,51 +741,62 @@ export async function publishApp({
   const sentryDsn = appsembleContext.sentryDsn ?? options.sentryDsn;
   const sentryEnvironment = appsembleContext.sentryEnvironment ?? options.sentryEnvironment;
   const googleAnalyticsId = appsembleContext.googleAnalyticsId ?? options.googleAnalyticsId;
+
   logger.verbose(`App remote: ${remote}`);
   logger.verbose(`App organization: ${organizationId}`);
   logger.verbose(`App is template: ${inspect(template, { colors: true })}`);
   logger.verbose(`App visibility: ${visibility}`);
   logger.verbose(`Icon background: ${iconBackground}`);
+
   if (!organizationId) {
     throw new AppsembleError(
       'An organization id must be passed as a command line flag or in the context',
     );
   }
+
   formData.append('OrganizationId', organizationId);
   formData.append('template', String(template));
   formData.append('demoMode', String(demoMode));
   formData.append('visibility', visibility);
   formData.append('iconBackground', iconBackground);
+
   if (icon) {
     const realIcon = typeof icon === 'string' ? createReadStream(icon) : icon;
     logger.info(`Using icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('icon', realIcon);
   }
+
   if (maskableIcon) {
     const realIcon =
       typeof maskableIcon === 'string' ? createReadStream(maskableIcon) : maskableIcon;
     logger.info(`Using maskable icon from ${(realIcon as ReadStream).path ?? 'stdin'}`);
     formData.append('maskableIcon', realIcon);
   }
+
   if (sentryDsn) {
     logger.info(
       `Using custom Sentry DSN ${sentryEnvironment ? `with environment ${sentryEnvironment}` : ''}`,
     );
     formData.append('sentryDsn', sentryDsn);
+
     if (sentryEnvironment) {
       formData.append('sentryEnvironment', sentryEnvironment);
     }
   }
+
   if (googleAnalyticsId) {
     logger.info('Using Google Analytics');
     formData.append('googleAnalyticsID', googleAnalyticsId);
   }
 
-  await authenticate(
-    remote,
-    resources ? 'apps:write resources:write' : 'apps:write',
-    clientCredentials,
-  );
+  let authScope = 'apps:write';
+
+  if (resources) {
+    authScope += ' resources:write';
+  }
+
+  await authenticate(remote, authScope, clientCredentials);
+
   let data: App;
   try {
     ({ data } = await axios.post<App>('/api/apps', formData, {

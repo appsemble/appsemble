@@ -49,6 +49,8 @@ export async function createSettings({
       'showAppsembleOAuth2Login',
       'demoMode',
       'googleAnalyticsID',
+      'controllerCode',
+      'controllerImplementations',
     ],
     where: { id: app.id },
     include: [
@@ -72,6 +74,8 @@ export async function createSettings({
   return createUtilsSettings(
     {
       apiUrl: host,
+      appControllerCode: persistedApp.controllerCode,
+      appControllerImplementations: persistedApp.controllerImplementations,
       blockManifests: blockManifests.map(
         ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
           name: `@${OrganizationId}/${name}`,

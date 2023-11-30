@@ -9,7 +9,7 @@
   docker compose --project-name pipeline --file docker-compose-pipeline.yaml up -d
 
   # cspell
-  npx -- cspell .
+  npx -- cspell
 
   # eslint
   npx -- eslint --format gitlab .
@@ -18,10 +18,10 @@
   docker exec helm sh -c 'helm lint charts/*'
 
   # i18n
-  npx -- appsemble app extract-messages --verify nl 'apps/*'
+  npm run appsemble -- app extract-messages --verify nl apps/*
 
   # prettier
-  npx -- prettier --check .
+  npx -- prettier .
 
   # remark lint
   npx -- remark --frail --no-stdout .
@@ -30,10 +30,10 @@
   npx -- stylelint .
 
   # tsc
-  npm --workspaces exec -- tsc
+  npx --workspaces tsc
 
   # validate
-  npx run scripts -- validate
+  npm run scripts -- validate
 
   # test node
   npm test -- --coverage --shard=1/3 --watch false

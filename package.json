@@ -3,7 +3,8 @@
   "type": "module",
   "workspaces": [
     "blocks/*",
-    "packages/*"
+    "packages/*",
+    "apps/*/controller"
   ],
   "scripts": {
     "appsemble": "ts-node-esm -T packages/cli/index.ts",

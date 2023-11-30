@@ -3,9 +3,9 @@ import {
   type AppMember,
   type AppMessages,
   type Asset,
-  type BlockConfig,
   type BlockDefinition,
   type BlockManifest,
+  type ControllerDefinition,
   type EmailActionDefinition,
   type Resource,
   type ResourceDefinition,
@@ -78,6 +78,8 @@ declare module 'koas-parameters' {
     assetId: string;
     blockId: string;
     blockVersion: string;
+    controllerName: string;
+    controllerVersion: string;
     clientId: string;
     language: string;
     memberId: string;
@@ -132,7 +134,7 @@ export interface FindOptions {
   include?: any[];
 }
 
-export interface ContextBlockConfig extends BlockConfig {
+export interface ContextBlockConfig extends BlockManifest {
   OrganizationId: string;
 }
 
@@ -196,6 +198,13 @@ export interface GetBlockAssetParams {
   version: string;
 }
 
+export interface GetControllerVersionAssetParams {
+  controllerName: string;
+  controllerVersion: string;
+  organizationId: string;
+  filename: string[] | string;
+}
+
 export interface GetBlocksAssetsPathsParams {
   context: ParameterizedContext<DefaultState, DefaultContextInterface, any>;
   identifiableBlocks: IdentifiableBlock[];
@@ -224,6 +233,7 @@ export interface CreateSettingsParams {
   app: App;
   host: string;
   identifiableBlocks: IdentifiableBlock[];
+  controllerDefinition?: ControllerDefinition;
   hostname: string;
   languages: string[];
 }
@@ -369,7 +379,8 @@ export interface AppAsset extends Asset {
   data: Buffer;
 }
 
-export interface BlockAsset {
+export interface ProjectAsset {
+  filename: string;
   mime: string;
   content: Buffer;
 }
@@ -403,7 +414,7 @@ export interface Options {
   getAppUrl: (params: GetAppSubEntityParams) => Promise<URL>;
   getDbUpdated: (params: GetDbUpdatedParams) => Promise<Date | number>;
   getBlockMessages: (params: GetBlockMessagesParams) => Promise<BlockMessages[]>;
-  getBlockAsset: (params: GetBlockAssetParams) => Promise<BlockAsset>;
+  getBlockAsset: (params: GetBlockAssetParams) => Promise<ProjectAsset>;
   getBlocksAssetsPaths: (params: GetBlocksAssetsPathsParams) => Promise<string[]>;
   getTheme: (params: GetThemeParams) => Promise<Theme>;
   createTheme: (params: CreateThemeParams) => Promise<Theme>;

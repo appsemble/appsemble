@@ -354,6 +354,29 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should validate controller actions', async () => {
+    const app = createTestApp();
+    app.controller = {
+      actions: {
+        onClick: { type: 'noop' },
+        onSubmit: { type: 'noop' },
+      },
+    };
+    const result = await validateAppDefinition(app, () => [], {
+      actions: {
+        onClick: {},
+      },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is an unknown action for this controller', { type: 'noop' }, undefined, [
+        'controller',
+        'actions',
+        'onSubmit',
+      ]),
+    ]);
+  });
+
   it('should report if a block doesn’t support actions', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -376,6 +399,21 @@ describe('validateAppDefinition', () => {
         0,
         'blocks',
         0,
+        'actions',
+      ]),
+    ]);
+  });
+
+  it('should report if a controller doesn’t support actions', async () => {
+    const app = createTestApp();
+    app.controller = {
+      actions: {},
+    };
+    const result = await validateAppDefinition(app, () => [], {});
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is not allowed on this controller', {}, undefined, [
+        'controller',
         'actions',
       ]),
     ]);
@@ -464,7 +502,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
   });
 
-  it('should report unknown event emitters', async () => {
+  it('should report unknown event emitters on blocks', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -505,7 +543,56 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should allow $any matching unknown event emitters', async () => {
+  it('should report unknown event emitters on controller', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      events: {
+        listen: {
+          foo: 'bar',
+        },
+      },
+    });
+    app.controller = {
+      events: {
+        emit: {
+          foo: 'bar',
+        },
+      },
+    };
+    const result = await validateAppDefinition(
+      app,
+      () => [
+        {
+          name: '@appsemble/test',
+          version: '1.2.3',
+          files: [],
+          languages: [],
+          wildcardActions: true,
+          events: {
+            listen: { foo: {} },
+          },
+        },
+      ],
+      {
+        events: {
+          emit: {},
+        },
+      },
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is an unknown event emitter', 'bar', undefined, [
+        'controller',
+        'events',
+        'emit',
+        'foo',
+      ]),
+    ]);
+  });
+
+  it('should allow $any matching unknown event emitters on blocks', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -535,7 +622,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
   });
 
-  it('should report unknown event listeners', async () => {
+  it('should report unknown event listeners on blocks', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -576,6 +663,55 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
+  it('should report unknown event listeners on controller', async () => {
+    const app = createTestApp();
+    (app.pages[0] as BasicPageDefinition).blocks.push({
+      type: 'test',
+      version: '1.2.3',
+      events: {
+        emit: {
+          foo: 'bar',
+        },
+      },
+    });
+    app.controller = {
+      events: {
+        listen: {
+          foo: 'bar',
+        },
+      },
+    };
+    const result = await validateAppDefinition(
+      app,
+      () => [
+        {
+          name: '@appsemble/test',
+          version: '1.2.3',
+          files: [],
+          languages: [],
+          wildcardActions: true,
+          events: {
+            emit: { foo: {} },
+          },
+        },
+      ],
+      {
+        events: {
+          listen: {},
+        },
+      },
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('is an unknown event listener', 'bar', undefined, [
+        'controller',
+        'events',
+        'listen',
+        'foo',
+      ]),
+    ]);
+  });
+
   it('should allow $any matching unknown event listener', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -606,7 +742,7 @@ describe('validateAppDefinition', () => {
     expect(result.valid).toBe(true);
   });
 
-  it('should report unmatched event listeners', async () => {
+  it('should report unmatched event listeners when there is no controller present', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -643,7 +779,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report unmatched event emitters', async () => {
+  it('should report unmatched event emitters when there is no controller present', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -680,7 +816,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report unmatched event from event actions', async () => {
+  it('should report unmatched event from event actions when there is no controller present', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -732,6 +868,13 @@ describe('validateAppDefinition', () => {
     const app = createTestApp();
     delete app.security;
     const result = await validateAppDefinition(app, () => []);
+    expect(result.valid).toBe(true);
+  });
+
+  it('should not crash if controller is undefined', async () => {
+    const app = createTestApp();
+    app.controller = undefined;
+    const result = await validateAppDefinition(app, () => [], {});
     expect(result.valid).toBe(true);
   });
 
@@ -1703,7 +1846,7 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report an error if a resource action refers to a non-existent resource', async () => {
+  it('should report an error if a resource action on a block refers to a non-existent resource', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -1741,7 +1884,33 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report an error if a resource action refers to a private resource action', async () => {
+  it('should report an error if a resource action on the controller refers to a non-existent resource', async () => {
+    const app = createTestApp();
+    app.controller = {
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'Nonexistent',
+        },
+      },
+    };
+    const result = await validateAppDefinition(app, () => [], {
+      actions: {
+        onWhatever: {},
+      },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError('refers to a resource that doesn’t exist', 'resource.get', undefined, [
+        'controller',
+        'actions',
+        'onWhatever',
+        'resource',
+      ]),
+    ]);
+  });
+
+  it('should report an error if a resource action on a block refers to a private resource action', async () => {
     const app = createTestApp();
     (app.pages[0] as BasicPageDefinition).blocks.push({
       type: 'test',
@@ -1776,7 +1945,33 @@ describe('validateAppDefinition', () => {
     ]);
   });
 
-  it('should report an error if a resource action refers is private action without a security definition', async () => {
+  it('should report an error if a resource action on the controller refers to a private resource action', async () => {
+    const app = createTestApp();
+    app.controller = {
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    };
+    const result = await validateAppDefinition(app, () => [], {
+      actions: {
+        onWhatever: {},
+      },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is currently set to private',
+        'resource.get',
+        undefined,
+        ['controller', 'actions', 'onWhatever', 'resource'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a resource action on a block refers is private action without a security definition', async () => {
     const { security, ...app } = createTestApp();
     app.resources.person.roles = [];
     (app.pages[0] as BasicPageDefinition).blocks.push({
@@ -1808,6 +2003,33 @@ describe('validateAppDefinition', () => {
         'resource.get',
         undefined,
         ['pages', 0, 'blocks', 0, 'actions', 'onWhatever', 'resource'],
+      ),
+    ]);
+  });
+
+  it('should report an error if a resource action on the controller refers is private action without a security definition', async () => {
+    const { security, ...app } = createTestApp();
+    app.resources.person.roles = [];
+    app.controller = {
+      actions: {
+        onWhatever: {
+          type: 'resource.get',
+          resource: 'person',
+        },
+      },
+    };
+    const result = await validateAppDefinition(app, () => [], {
+      actions: {
+        onWhatever: {},
+      },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors).toStrictEqual([
+      new ValidationError(
+        'refers to a resource action that is accessible when logged in, but the app has no security definitions',
+        'resource.get',
+        undefined,
+        ['controller', 'actions', 'onWhatever', 'resource'],
       ),
     ]);
   });

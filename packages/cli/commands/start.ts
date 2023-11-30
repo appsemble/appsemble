@@ -1,7 +1,6 @@
 import { type Argv } from 'yargs';
 
-import { discoverBlocks } from '../lib/block.js';
-import { loadWebpackConfig } from '../lib/loadWebpackConfig.js';
+import { getProjectsBuildConfigs, getProjectWebpackConfig } from '../lib/config.js';
 import { serverImport } from '../lib/serverImport.js';
 import { type BaseArguments } from '../types.js';
 
@@ -132,9 +131,11 @@ export function builder(yargs: Argv): Argv<any> {
 export async function handler(argv: BaseArguments): Promise<void> {
   const { setArgv, start } = await serverImport('setArgv', 'start');
   setArgv(argv);
-  const blocks = await discoverBlocks(process.cwd());
+  const projectsBuildConfigs = await getProjectsBuildConfigs(process.cwd());
   const webpackConfigs = await Promise.all(
-    blocks.map((block) => loadWebpackConfig(block, 'development')),
+    projectsBuildConfigs.map((projectBuildConfig) =>
+      getProjectWebpackConfig(projectBuildConfig, 'development'),
+    ),
   );
   return start({ webpackConfigs });
 }

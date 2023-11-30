@@ -27,7 +27,7 @@ services:
       POSTGRES_DB: *database-name
       POSTGRES_USER: *database-user
       POSTGRES_PASSWORD: *database-password
-    ports: ['5433:5432']
+    ports: ['5434:5432']
 
   appsemble:
     container_name: appsemble
@@ -82,6 +82,7 @@ services:
       BOT_ACCOUNT_EMAIL: *bot-account-email
       BOT_ACCOUNT_PASSWORD: *bot-account-password
       E2E_HOST: *appsemble-remote
+      CI: true
     tty: true
     stdin_open: true
     entrypoint: /bin/bash
@@ -90,6 +91,7 @@ services:
       - ./:/app
       - /app/node_modules
     links:
+      - 'appsemble:controller.appsemble.appsemble'
       - 'appsemble:empty.appsemble.appsemble'
       - 'appsemble:holidays.appsemble.appsemble'
       - 'appsemble:notes.appsemble.appsemble'
@@ -97,4 +99,5 @@ services:
       - 'appsemble:remappers.appsemble.appsemble'
       - 'appsemble:soundboard.appsemble.appsemble'
       - 'appsemble:survey.appsemble.appsemble'
+      - 'appsemble:triggers.appsemble.appsemble'
       - 'appsemble:unlittered.appsemble.appsemble'

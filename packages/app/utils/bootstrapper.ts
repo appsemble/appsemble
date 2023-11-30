@@ -1,15 +1,28 @@
 import {
   type AppsembleBootstrapEvent,
+  type AppsembleControllerEvent,
   type BootstrapFunction,
   type BootstrapParams,
+  type ControllerFunction,
+  type EventParams,
+  type HandlerFunction,
 } from '@appsemble/sdk';
 import { type BlockManifest } from '@appsemble/types';
 import { prefixBlockURL } from '@appsemble/utils';
 import { type Promisable } from 'type-fest';
 
-const bootstrappers = new Map<string, BootstrapFunction>();
-const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
+import { appControllerCode } from './settings.js';
+
+const bootstrapFunctions = new Map<string, BootstrapFunction>();
+const controllerFunctions = new Map<string, ControllerFunction>();
+const handlerFunctions = new Map<string, HandlerFunction>();
+
+const bootstrapResolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
+const controllerResolvers = new Map<string, ((fn: ControllerFunction) => void)[]>();
+const handlerResolvers = new Map<string, ((fn: HandlerFunction) => void)[]>();
+
 const loadedBlocks = new Set<string>();
+const loadedControllers = new Set<string>();
 
 /**
  * Register a bootstrap function for a block.
@@ -19,7 +32,7 @@ const loadedBlocks = new Set<string>();
  * @param blockDefId The id of the block definition for which a boostrap function is being
  *   registered.
  */
-export function register(
+export function registerBlock(
   scriptNode: HTMLScriptElement,
   event: AppsembleBootstrapEvent,
   blockDefId: string,
@@ -30,19 +43,19 @@ export function register(
       'Block bootstrapper was registered from within an unhandled node. What’s going on?',
     );
   }
-  if (bootstrappers.has(blockDefId)) {
+  if (bootstrapFunctions.has(blockDefId)) {
     throw new Error(
-      'It appears this block has already been bootstrapped. Did you call bootstrap twice?',
+      'It appears this block has already been mounted. Did you call bootstrap twice?',
     );
   }
   if (!(fn instanceof Function)) {
     throw new TypeError(
-      'No function was passed to bootstrap(). It takes a function as its first argument.',
+      'No function was passed to bootstrap function. It takes a function as its first argument.',
     );
   }
-  bootstrappers.set(blockDefId, fn);
-  const callbacks = resolvers.get(blockDefId);
-  resolvers.delete(blockDefId);
+  bootstrapFunctions.set(blockDefId, fn);
+  const callbacks = bootstrapResolvers.get(blockDefId);
+  bootstrapResolvers.delete(blockDefId);
   if (!callbacks) {
     throw new Error('This block shouldn’t have been loaded. What’s going on?');
   }
@@ -51,14 +64,81 @@ export function register(
   }
 }
 
-function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
-  if (bootstrappers.has(blockDefId)) {
-    return bootstrappers.get(blockDefId);
+export function registerController(
+  scriptNode: HTMLScriptElement,
+  event: AppsembleControllerEvent,
+): void {
+  const { document, fn } = event.detail;
+  if (scriptNode !== event.currentTarget || scriptNode !== document.currentScript) {
+    throw new Error(
+      'Controller mount was registered from within an unhandled node. What’s going on?',
+    );
   }
-  if (!resolvers.has(blockDefId)) {
-    resolvers.set(blockDefId, []);
+  if (controllerFunctions.has('app-controller')) {
+    throw new Error(
+      'It appears this controller has already been mounted. Did you call controller twice?',
+    );
   }
-  const waiting = resolvers.get(blockDefId);
+  if (!(fn instanceof Function)) {
+    throw new TypeError(
+      'No function was passed to controller function. It takes a function as its first argument.',
+    );
+  }
+  controllerFunctions.set('app-controller', fn);
+  const callbacks = controllerResolvers.get('app-controller');
+  controllerResolvers.delete('app-controller');
+  for (const resolve of callbacks) {
+    resolve(fn);
+  }
+}
+
+function registerHandler(handler: string, fn: HandlerFunction): void {
+  const callbacks = handlerResolvers.get(handler);
+  controllerResolvers.delete(handler);
+  if (!callbacks) {
+    throw new Error('This handler shouldn’t have been loaded. What’s going on?');
+  }
+  for (const resolve of callbacks) {
+    resolve(fn);
+  }
+}
+
+function getBootstrapFunction(blockDefId: string): Promisable<BootstrapFunction> {
+  if (bootstrapFunctions.has(blockDefId)) {
+    return bootstrapFunctions.get(blockDefId);
+  }
+  if (!bootstrapResolvers.has(blockDefId)) {
+    bootstrapResolvers.set(blockDefId, []);
+  }
+  const waiting = bootstrapResolvers.get(blockDefId);
+  return new Promise((resolve) => {
+    waiting.push(resolve);
+  });
+}
+
+function getControllerFunction(): Promisable<ControllerFunction> {
+  if (controllerFunctions.has('app-controller')) {
+    return controllerFunctions.get('app-controller');
+  }
+  if (!controllerResolvers.has('app-controller')) {
+    controllerResolvers.set('app-controller', []);
+  }
+  const waiting = controllerResolvers.get('app-controller');
+  return new Promise((resolve) => {
+    waiting.push(resolve);
+  });
+}
+
+export function getHandlerFunction(handler: string): Promisable<HandlerFunction> {
+  if (handlerFunctions.has(handler)) {
+    return handlerFunctions.get(handler);
+  }
+
+  if (!handlerResolvers.has(handler)) {
+    handlerResolvers.set(handler, []);
+  }
+
+  const waiting = handlerResolvers.get(handler);
   return new Promise((resolve) => {
     waiting.push(resolve);
   });
@@ -78,20 +158,54 @@ export async function callBootstrap(
     for (const url of manifest.files) {
       if (url.endsWith('.js')) {
         const script = document.createElement('script');
+
         script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
+
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
-          register(script, event, manifest.name);
+          registerBlock(script, event, manifest.name);
         });
         document.head.append(script);
       }
     }
     loadedBlocks.add(manifest.name);
   }
-  const bootstrap = await getBootstrap(manifest.name);
+  const bootstrap = await getBootstrapFunction(manifest.name);
   const result = await bootstrap(params);
   if (result instanceof Element) {
     params.shadowRoot.append(result);
+  }
+}
+
+/**
+ * Call the controller function for a controller definition
+ *
+ * @param params any named parameters that will be passed to the controller function.
+ */
+export async function callController(params: EventParams): Promise<void> {
+  if (!loadedControllers.has('app-controller')) {
+    const script = document.getElementById('app-controller') as HTMLScriptElement;
+
+    if (!script || !appControllerCode) {
+      return;
+    }
+
+    const blob = new Blob([appControllerCode], { type: 'application/javascript' });
+    script.src = URL.createObjectURL(blob);
+
+    script.addEventListener('AppsembleController', (event: AppsembleControllerEvent) => {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      registerController(script, event);
+    });
+
+    loadedControllers.add('app-controller');
+  }
+  const controller = await getControllerFunction();
+  const actions = await controller(params);
+
+  for (const [name, handlerFunction] of Object.entries(actions)) {
+    registerHandler(name, handlerFunction);
   }
 }

@@ -1,7 +1,7 @@
 import { type EventEmitter } from 'events';
 
 import { Title, useMessages } from '@appsemble/react-components';
-import { type Utils } from '@appsemble/sdk';
+import { type BlockUtils } from '@appsemble/sdk';
 import { type BlockDefinition, type PageDefinition, type Remapper } from '@appsemble/types';
 import { createThemeURL, mergeThemes, normalizeBlockName, prefixBlockURL } from '@appsemble/utils';
 import { fa } from '@appsemble/web-utils';
@@ -149,7 +149,7 @@ export function Block({
 
     const bulmaUrl = createThemeURL(theme);
 
-    const utils: Utils = {
+    const utils: BlockUtils = {
       remap,
       showMessage: push,
       addCleanup(fn) {

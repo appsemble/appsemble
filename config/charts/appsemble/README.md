@@ -23,7 +23,7 @@ kubectl create secret generic postgresql-secret \
 
 > **Caution**: Make sure not to lose the PostgreSQL passwords!
 
-Next an SMTP secret is needed for sending emails.
+Next, an SMTP and IMAP secret are needed for sending emails.
 
 ```sh
 kubectl create secret generic smtp \
@@ -34,6 +34,19 @@ kubectl create secret generic smtp \
   --from-literal 'pass=my-smtp-pass'
   --from-literal 'from=my-smtp-from'
 ```
+
+```sh
+kubectl create secret generic imap \
+  --from-literal 'imap-host=my-imap-host' \
+  --from-literal 'imap-port=my-imap-port' \
+  --from-literal 'imap-secure=my-imap-secure' \
+  --from-literal 'imap-user=my-imap-user' \
+  --from-literal 'imap-pass=my-imap-pass' \
+  --from-literal 'imap-copy-to-sent-folder=my-imap-copy-to-sent-folder'
+```
+
+You can leave those empty by writing e.g. `--from-literal 'smtp-host='`, but you won’t be able to
+send any mail, and Appsemble will output mails in the logs instead.
 
 **Optional**
 

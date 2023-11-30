@@ -1,4 +1,4 @@
-import { type Remapper, type Utils } from '@appsemble/sdk';
+import { type BlockUtils, type Remapper } from '@appsemble/sdk';
 import { has } from '@appsemble/utils';
 
 import { validateDateTime } from './validateDateTime.js';
@@ -46,7 +46,7 @@ type Validator = (
 export function validate(
   field: Field,
   values: any,
-  utils: Utils,
+  utils: BlockUtils,
   defaultError: Remapper,
   defaultValue: any,
   prefix = '',

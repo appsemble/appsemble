@@ -54,6 +54,7 @@ export type ResourcePatchAction = RequestLikeAction<'resource.patch'>;
 export type Action =
   | BaseAction<'analytics'>
   | BaseAction<'condition'>
+  | BaseAction<'controller'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
   | BaseAction<'dialog'>

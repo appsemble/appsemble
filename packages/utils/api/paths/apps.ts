@@ -80,6 +80,14 @@ export const paths: OpenAPIV3.PathsObject = {
                     format: 'binary',
                   },
                 },
+                controllerCode: {
+                  type: 'string',
+                  description: 'Custom app logic as a JavaScript string',
+                },
+                controllerImplementations: {
+                  type: 'string',
+                  description: 'Appsemble SDK interfaces implementations',
+                },
               },
             },
             encoding: {
@@ -220,6 +228,14 @@ export const paths: OpenAPIV3.PathsObject = {
                     type: 'string',
                     format: 'binary',
                   },
+                },
+                controllerCode: {
+                  type: 'string',
+                  description: 'Custom app logic as a JavaScript string',
+                },
+                controllerImplementations: {
+                  type: 'string',
+                  description: 'Appsemble SDK interfaces implementations',
                 },
                 showAppsembleLogin: {
                   type: 'boolean',

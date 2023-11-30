@@ -99,7 +99,7 @@ The pipeline will automatically detect if newly added messages are missing in th
 automatically extract these messages from the source files run:
 
 ```sh
-npm run scripts extract-messages
+npm run scripts -- extract-messages
 ```
 
 ### Permissions
@@ -218,8 +218,8 @@ Before releasing, manually inspect the changelog to be published (quoting from t
 
 ```sh
 # Make sure you're on master, clean working tree.
-npm run scripts release minor
-npm --silent run scripts get-release-notes
+npm run scripts -- release minor
+npm --silent run scripts -- get-release-notes
 ```
 
 A release can be created by a maintainer triggering the `release patch` or `release minor` job in

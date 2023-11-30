@@ -2,6 +2,7 @@ import { type Action, type ActionDefinition } from '@appsemble/types';
 
 import { analytics } from './analytics.js';
 import { condition } from './condition.js';
+import { controller } from './controller.js';
 import { dialog } from './dialog.js';
 import { download } from './download.js';
 import { each } from './each.js';
@@ -52,6 +53,7 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   analytics,
   condition,
+  controller,
   download,
   dialog,
   each,

@@ -221,7 +221,7 @@ it('should render the index page', async () => {
 
   expect(response).toMatchInlineSnapshot(`
     HTTP/1.1 200 OK
-    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-/viH+soaOlvi31haShPn9EqMDYXHr2ucPSVFD8Ru/RE=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
+    Content-Security-Policy: connect-src * blob: data:; default-src 'self'; font-src * data:; frame-src 'self' *.vimeo.com *.youtube.com; img-src * blob: data: http://host.example; media-src * blob: data: http://host.example; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-0xWuwSEf0GbzMgXmpxNxpHz1SHvEhI7C2fJXaGNEDVg=' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com
     Content-Type: text/html; charset=utf-8
 
     {
@@ -230,6 +230,8 @@ it('should render the index page', async () => {
           "$created": "1970-01-01T00:00:00.000Z",
           "$updated": "1970-01-01T00:00:00.000Z",
           "OrganizationId": "test",
+          "controllerCode": null,
+          "controllerImplementations": null,
           "coreStyle": "",
           "definition": {
             "name": "Test App",
@@ -335,7 +337,7 @@ it('should render the index page', async () => {
           "nl",
         ],
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"apiUrl\\":\\"http://host.example\\",\\"blockManifests\\":[{\\"name\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"b2.js\\",\\"b2.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.1\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a1.js\\",\\"a1.css\\"]}],\\"id\\":1,\\"languages\\":[\\"en\\",\\"nl\\"],\\"logins\\":[],\\"vapidPublicKey\\":\\"\\",\\"definition\\":{\\"name\\":\\"Test App\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"}]},{\\"name\\":\\"Test Page with Flow\\",\\"type\\":\\"flow\\",\\"steps\\":[{\\"blocks\\":[{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.1\\",\\"actions\\":{\\"whatever\\":{\\"blocks\\":[{\\"type\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\"}]}}}]}]}]},\\"showAppsembleLogin\\":false,\\"showAppsembleOAuth2Login\\":true,\\"showDemoLogin\\":false,\\"appUpdated\\":\\"1970-01-01T00:00:00.000Z\\"}</script>",
+        "settings": "<script>window.settings={\\"apiUrl\\":\\"http://host.example\\",\\"appControllerCode\\":null,\\"appControllerImplementations\\":null,\\"blockManifests\\":[{\\"name\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"b2.js\\",\\"b2.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.1\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a1.js\\",\\"a1.css\\"]}],\\"id\\":1,\\"languages\\":[\\"en\\",\\"nl\\"],\\"logins\\":[],\\"vapidPublicKey\\":\\"\\",\\"definition\\":{\\"name\\":\\"Test App\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"}]},{\\"name\\":\\"Test Page with Flow\\",\\"type\\":\\"flow\\",\\"steps\\":[{\\"blocks\\":[{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.1\\",\\"actions\\":{\\"whatever\\":{\\"blocks\\":[{\\"type\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\"}]}}}]}]}]},\\"showAppsembleLogin\\":false,\\"showAppsembleOAuth2Login\\":true,\\"showDemoLogin\\":false,\\"appUpdated\\":\\"1970-01-01T00:00:00.000Z\\"}</script>",
         "themeColor": "#ffffff",
       },
       "filename": "app/index.html",
