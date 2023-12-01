@@ -101,15 +101,23 @@ function TopLevelCollection({ id }: { readonly id: number }): ReactNode {
 }
 
 export function App(): ReactNode {
-  const content: ReactNode = customDomainAppCollection ? (
-    <TopLevelCollection id={customDomainAppCollection.id} />
-  ) : (
-    <StudioContent />
-  );
+  if (customDomainAppCollection) {
+    const collectionContent = <TopLevelCollection id={customDomainAppCollection.id} />;
+    return (
+      <Routes>
+        {/* This is intentional - the two top-level routes should serve a collection at the top of the element tree, while any other route should serve the studio as-is */}
+        {/* Make sure to preserve this functionality and test it works with custom domain collections in review if you change this */}
+        <Route element={<Providers content={collectionContent} />} path="/:lang/" />
+        <Route element={<Providers content={collectionContent} />} path="/" />
+        <Route element={<Providers content={<StudioContent />} />} path="/:lang/*" />
+        <Route element={<Providers content={<StudioContent />} />} path="/*" />
+      </Routes>
+    );
+  }
   return (
     <Routes>
-      <Route element={<Providers content={content} />} path="/:lang/*" />
-      <Route element={<Providers content={content} />} path="/*" />
+      <Route element={<Providers content={<StudioContent />} />} path="/:lang/*" />
+      <Route element={<Providers content={<StudioContent />} />} path="/*" />
     </Routes>
   );
 }
