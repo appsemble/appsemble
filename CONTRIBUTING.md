@@ -167,9 +167,16 @@ Every block and package has a `changed` directory. This directory contains the f
 - `fixed`
 - `security`
 
-A single line changelog entry should be placed in one of these folders for any significant change. A
-single imperative sentence is preferred. Changelog entries are added to the
-[changelog](CHANGELOG.md) on a release.
+A single line changelog entry should be placed as markdown file in one of these folders for any
+significant change. A single imperative sentence is preferred. Changelog entries are parsed form
+these files and added to the [changelog](CHANGELOG.md) on a release. For example a changelog entry
+from a file `blocks/filter/changed/added/fullscreen.md` with the content `Add boolean field support`
+is parsed into Block(`filter`): Add boolean field support in the `Added` section of the changelog
+file. Similarly, a changelog entry from file `packages/cli/changed/export_command.md` with the
+content `Add app export command to export an app as a zip file` is parsed into
+`Cli: Add app export command to export an app as a zip file.`. Files added by you are removed after
+being parsed by the system at the time of release. Folders containing the changelog files are left
+with the single `.gitkeep` file.
 
 The format is based on the [keep a changelog] format.
 
