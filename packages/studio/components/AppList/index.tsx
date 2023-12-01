@@ -65,6 +65,7 @@ export function AppList<TApp extends App = App>({
           filter
             ? apps.filter(
                 (app) =>
+                  app.messages.app?.name.toLowerCase().includes(filter.toLowerCase()) ||
                   app.definition.name.toLowerCase().includes(filter.toLowerCase()) ||
                   app.OrganizationId.toLowerCase().includes(
                     filter.toLowerCase().replaceAll('@', ''),
