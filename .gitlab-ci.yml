@@ -544,7 +544,7 @@ staging:
     - job: helm package
       artifacts: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_PIPELINE_SOURCE == 'schedule' || $CI_MERGE_REQUEST_ID
   environment:
     name: staging
     url: https://staging.appsemble.review
@@ -659,7 +659,7 @@ provision staging:
   extends: .npm
   stage: provision
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'schedule'
+    - if: $CI_PIPELINE_SOURCE == 'schedule' || $CI_MERGE_REQUEST_ID
   needs:
     - staging
   script:
@@ -692,7 +692,7 @@ provision production:
     - npm run appsemble -- config set remote https://appsemble.app
     - npm run appsemble -- config set ignore-conflict true
     - npm run appsemble -- -vv block publish blocks/*
-    - npm run appsemble -- -vv app update --force apps/*
+    - ./scripts/publish-or-update-apps.sh production
 
 ###################################################################################################
 #  Performance Stage                                                                               #
