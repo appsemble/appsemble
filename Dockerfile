@@ -1,5 +1,5 @@
 # Build production files
-FROM node:18-bookworm-slim AS build
+FROM node:18.18.0-bookworm-slim AS build
 WORKDIR /app
 COPY . .
 RUN npm ci
@@ -12,7 +12,7 @@ RUN npm --workspace @appsemble/node-utils run prepack
 RUN npm --workspace @appsemble/server run prepack
 
 # Install production dependencies
-FROM node:18-bookworm-slim AS prod
+FROM node:18.18.0-bookworm-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -27,7 +27,7 @@ RUN find . -name '*.ts' -delete
 RUN rm -r package-lock.json
 
 # Setup the production docker image.
-FROM node:18-bookworm-slim
+FROM node:18.18.0-bookworm-slim
 ARG version=0.23.6
 ARG date
 

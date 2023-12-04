@@ -1,5 +1,5 @@
 default:
-  image: node:18-bookworm-slim
+  image: node:18.18.0-bookworm-slim
 
 stages:
   - test
