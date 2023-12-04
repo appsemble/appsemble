@@ -339,7 +339,7 @@ export function bootstrap(fn: BootstrapFunction): void {
   }
 }
 
-export type HandlerFunction = (...params: unknown[]) => Promisable<unknown>;
+export type HandlerFunction = (...params: any[]) => Promisable<unknown>;
 
 export type ControllerFunction = (
   params: EventParams,

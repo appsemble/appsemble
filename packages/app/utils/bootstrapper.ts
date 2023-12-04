@@ -95,9 +95,11 @@ export function registerController(
 function registerHandler(handler: string, fn: HandlerFunction): void {
   const callbacks = handlerResolvers.get(handler);
   controllerResolvers.delete(handler);
+
   if (!callbacks) {
-    throw new Error('This handler shouldn’t have been loaded. What’s going on?');
+    return;
   }
+
   for (const resolve of callbacks) {
     resolve(fn);
   }

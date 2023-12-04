@@ -335,7 +335,7 @@ parameters:
 `,
   },
   user: {
-    enum: ['sub', 'name', 'email', 'email_verified', 'picture', 'profile', 'locale'],
+    enum: ['sub', 'name', 'email', 'email_verified', 'picture', 'profile', 'locale', 'properties'],
     description: `
 > **Note:** For this remapper to work, the user that activated the remapper has to be logged in to
 > the app
@@ -349,6 +349,7 @@ Provides some fields of user information taken from the OpenID user info. These 
 - \`name\`: The user’s name
 - \`picture\`: Full URL to the user’s profile picture web address
 - \`sub\`: The user’s identifier
+- \`properties\`: Custom properties defined on the user
 
 Example:
 
@@ -359,7 +360,8 @@ Example:
   "locale": "en",
   "name": "Test User",
   "picture": "https://www.gravatar.com/avatar/f46b82357ce29bcd1099915946cda468?s=128&d=mp",
-  "sub": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd"
+  "sub": "5c6270e2-ad31-414f-bcab-6752a2c4dcfd",
+  "properties": {}
 }
 \`\`\`
     `,
