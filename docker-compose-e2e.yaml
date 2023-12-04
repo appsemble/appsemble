@@ -50,7 +50,7 @@ services:
 
   seeder:
     container_name: seeder
-    image: node:18-alpine
+    image: node:18.18.0-bookworm-slim
     networks: [appsemble-e2e]
     depends_on: [database]
     environment:
