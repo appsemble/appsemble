@@ -19,8 +19,17 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
             responseType: 'arraybuffer',
           }
         : formatRequestAction(definition, data, remap, context);
+
       if (method === 'PUT' || method === 'POST' || method === 'PATCH') {
-        req.data = serializeResource(body ? remap(body, data, context) : data);
+        const requestData = body ? remap(body, data, context) : data;
+        if (requestData instanceof Blob) {
+          req.headers = {
+            'Content-Type': requestData.type,
+          };
+          req.data = requestData;
+        } else {
+          req.data = serializeResource(body ? remap(body, data, context) : data);
+        }
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
       }
@@ -67,7 +76,6 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
       ) {
         responseBody = xmlToJson(responseBody, schema);
       }
-
       return responseBody;
     },
     {

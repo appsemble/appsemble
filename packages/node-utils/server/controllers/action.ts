@@ -109,7 +109,7 @@ async function handleRequestProxy(
   const {
     method,
     query,
-    request: { body },
+    request: { body, headers },
     user,
   } = ctx;
 
@@ -156,6 +156,10 @@ async function handleRequestProxy(
 
   if (useBody) {
     axiosConfig.data = data;
+
+    if (headers['content-type']) {
+      axiosConfig.headers['Content-Type'] = headers['content-type'];
+    }
   }
 
   (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${version}`;

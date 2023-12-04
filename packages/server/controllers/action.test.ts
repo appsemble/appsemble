@@ -267,6 +267,38 @@ describe('handleRequestProxy', () => {
     expect(proxiedContext.path).toBe('/');
   });
 
+  it('should proxy binary POST requests', async () => {
+    const blob = new Blob(['New binary image'], { type: 'image/jpeg' });
+    proxiedBody = blob;
+    responseHeaders = {
+      'Content-Type': 'image/jpeg',
+    };
+    const response = await request.post(
+      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      undefined,
+      {
+        data: blob,
+        headers: responseHeaders,
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: image/jpeg
+
+      {}
+    `);
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      'content-type': 'image/jpeg',
+      'content-length': '0',
+      connection: 'close',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${version}`,
+    });
+    expect(proxiedContext.path).toBe('/');
+  });
+
   it('should proxy simple PUT request actions', async () => {
     const response = await request.put('/api/apps/1/action/pages.0.blocks.0.actions.put', {});
     expect(response).toMatchInlineSnapshot(`
