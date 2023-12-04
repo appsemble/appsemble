@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## \[[0.23.7](https://gitlab.com/appsemble/appsemble/-/releases/0.23.7)] - 2023-12-04
+
+### Added
+
+- App: Add binary file support to the request action.
+
 ## \[[0.23.6](https://gitlab.com/appsemble/appsemble/-/releases/0.23.6)] - 2023-11-30
 
 ### Added
