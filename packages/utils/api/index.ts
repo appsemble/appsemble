@@ -34,22 +34,33 @@ export function api(
   version: string,
   { port = 9999, ssl, host = `${ssl ? 'https' : 'http'}://localhost:${port}` }: APIParams = {},
 ): OpenAPIV3.Document {
+  let hostToBeLogged: string = host;
+  if (port) {
+    const splitHost = hostToBeLogged.split(':');
+    if (Number.isNaN(Number(splitHost.at(-1))) === false) {
+      splitHost[splitHost.length - 1] = String(port);
+      hostToBeLogged = splitHost.join(':');
+    } else {
+      splitHost.push(String(port));
+      hostToBeLogged = splitHost.join(':');
+    }
+  }
   return {
     openapi: '3.0.2',
     components,
     externalDocs: {
       description: 'Appsemble developer documentation',
-      url: `${host}/docs`,
+      url: `${hostToBeLogged}/docs`,
     },
     info: {
       title: 'Appsemble',
       description: `Welcome to the Appsemble API.
 
 The app studio can be found on
-> ${host}
+> ${hostToBeLogged}
 
 The OpenAPI explorer can be found on
-> ${host}/api-explorer
+> ${hostToBeLogged}/api-explorer
 `,
       license: {
         name: 'LGPL',

@@ -120,6 +120,10 @@ export function builder(yargs: Argv): Argv {
       desc: 'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
       required: true,
     })
+    .option('port', {
+      desc: 'The port to use for the server. Default is 9999',
+      default: 9999,
+    })
     .option('remote', {
       desc: 'The remote that will be used for downloading unknown blocks. For example: https://appsemble.app',
     })
