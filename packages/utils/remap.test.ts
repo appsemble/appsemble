@@ -849,6 +849,26 @@ describe('array', () => {
   });
 });
 
+describe('array.find', () => {
+  runTests({
+    'return object with specified value from array': {
+      input: [{ name: 'Craig' }, { name: 'Joey' }, { name: 'Stuart' }],
+      mappers: [{ 'array.find': { equals: [{ prop: 'name' }, 'Craig'] } }],
+      expected: { name: 'Craig' },
+    },
+    'return undefined when condition doesn’t match anything': {
+      input: [{ name: 'Craig' }],
+      mappers: [{ 'array.find': { equals: [{ prop: 'name' }, 'foo'] } }],
+      expected: undefined,
+    },
+    'return single value when the array does not include objects': {
+      input: ['Craig', 'Stuart'],
+      mappers: [{ 'array.find': 'Craig' }],
+      expected: 'Craig',
+    },
+  });
+});
+
 describe('array.from', () => {
   runTests({
     'create new array with remapped values': {

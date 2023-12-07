@@ -421,6 +421,11 @@ export interface Remappers {
   array: 'index' | 'length';
 
   /**
+   * Returns an object based on the specified condition
+   */
+  'array.find': Remapper;
+
+  /**
    * Create a new array with an array of predefined remappers.
    */
   'array.from': Remapper[];

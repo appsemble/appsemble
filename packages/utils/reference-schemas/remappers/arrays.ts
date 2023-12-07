@@ -170,6 +170,31 @@ remapper is a filtered list:
 \`\`\`
     `,
   },
+  'array.find': {
+    $ref: '#/components/schemas/RemapperDefinition',
+    description: `
+Returns a single object or value from an array based on the given condition.
+
+For example:
+
+Input:
+
+\`\`\`json
+[{ name: "Craig" }, { name: "Joey" }, { name: "Stuart" }]
+\`\`\`
+\`\`\`yaml
+array.find:
+  equals: [{ prop: "name" }, "Craig" ]
+\`\`\`
+
+Result:
+
+\`\`\`json
+{ name: "Craig" }
+\`\`\`
+
+`,
+  },
   'array.from': {
     type: 'array',
     items: {

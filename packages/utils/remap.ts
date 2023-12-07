@@ -358,6 +358,9 @@ const mapperImplementations: MapperImplementations = {
 
   array: (prop, input, context) => context.array?.[prop],
 
+  'array.find': (mapper, input: any[], context) =>
+    input?.find((item) => (remap(mapper, item, context) ? item : null)),
+
   'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
 
   'array.append': (mappers, input, context) =>
