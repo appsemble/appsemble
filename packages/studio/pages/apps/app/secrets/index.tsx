@@ -51,6 +51,13 @@ export function SecretsPage(): ReactNode {
     setApp({ ...app, showAppsembleOAuth2Login: !app.showAppsembleOAuth2Login });
   }, [app, setApp]);
 
+  const onClickSelfRegistrationCheckbox = useCallback(async () => {
+    const formData = new FormData();
+    formData.set('enableSelfRegistration', String(!app.enableSelfRegistration));
+    await axios.patch(`/api/apps/${app.id}`, formData);
+    setApp({ ...app, enableSelfRegistration: !app.enableSelfRegistration });
+  }, [app, setApp]);
+
   const onSaveEmailSettings = useCallback(
     async (values: EmailFormParameters) => {
       const formData = new FormData();
@@ -92,11 +99,20 @@ export function SecretsPage(): ReactNode {
           value={app.showAppsembleOAuth2Login}
         />
         <AsyncCheckbox
+          className="is-block mb-2"
           disabled={app.locked}
           label={<FormattedMessage {...messages.displayAppsembleLogin} />}
           name="enableAppsembleLogin"
           onChange={onClickCheckbox}
           value={app.showAppsembleLogin}
+        />
+        <AsyncCheckbox
+          className="is-block mb-2"
+          disabled={app.locked}
+          label={<FormattedMessage {...messages.displaySelfRegistration} />}
+          name="enableSelfRegistration"
+          onChange={onClickSelfRegistrationCheckbox}
+          value={app.enableSelfRegistration}
         />
       </div>
       <Collapsible collapsed={false} title={<FormattedMessage {...messages.emailSettings} />}>

@@ -19,7 +19,7 @@ import {
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
-import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
+import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
@@ -672,6 +672,7 @@ describe('getAppAccounts', () => {
             "demoMode": false,
             "domain": null,
             "emailName": null,
+            "enableSelfRegistration": true,
             "googleAnalyticsID": null,
             "hasIcon": false,
             "hasMaskableIcon": false,
@@ -710,6 +711,7 @@ describe('getAppAccounts', () => {
             "demoMode": false,
             "domain": null,
             "emailName": null,
+            "enableSelfRegistration": true,
             "googleAnalyticsID": null,
             "hasIcon": false,
             "hasMaskableIcon": false,
@@ -779,6 +781,7 @@ describe('getAppAccount', () => {
           "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -888,6 +891,7 @@ describe('patchAppAccount', () => {
           "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -962,6 +966,7 @@ describe('patchAppAccount', () => {
           "demoMode": false,
           "domain": null,
           "emailName": null,
+          "enableSelfRegistration": true,
           "googleAnalyticsID": null,
           "hasIcon": false,
           "hasMaskableIcon": false,
@@ -1041,6 +1046,168 @@ describe('patchAppAccount', () => {
         "error": "Not Found",
         "message": "App account not found",
         "statusCode": 404,
+      }
+    `);
+  });
+});
+
+describe('createMemberEmail', () => {
+  it('should create valid email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+
+    expect(m.password).not.toBe('password');
+    expect(await compare('password', m.password)).toBe(true);
+  });
+
+  it('should accept a display name', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        name: 'Me',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(
+      {
+        data: {
+          access_token: expect.stringMatching(jwtPattern),
+          refresh_token: expect.stringMatching(jwtPattern),
+        },
+      },
+      `
+      HTTP/1.1 201 Created
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "access_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "expires_in": 3600,
+        "refresh_token": StringMatching /\\^\\[\\\\w-\\]\\+\\(\\?:\\\\\\.\\[\\\\w-\\]\\+\\)\\{2\\}\\$/,
+        "token_type": "bearer",
+      }
+    `,
+    );
+
+    const m = await AppMember.findOne({ where: { email: 'test@example.com' } });
+    expect(m.name).toBe('Me');
+  });
+
+  it('should not register invalid email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({ email: 'foo', password: 'bar', timezone: 'Europe/Amsterdam' }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "errors": [
+          {
+            "argument": "email",
+            "instance": "foo",
+            "message": "does not conform to the \\"email\\" format",
+            "name": "format",
+            "path": [
+              "email",
+            ],
+            "property": "instance.email",
+            "schema": {
+              "format": "email",
+              "type": "string",
+            },
+            "stack": "instance.email does not conform to the \\"email\\" format",
+          },
+          {
+            "argument": 8,
+            "instance": "bar",
+            "message": "does not meet minimum length of 8",
+            "name": "minLength",
+            "path": [
+              "password",
+            ],
+            "property": "instance.password",
+            "schema": {
+              "minLength": 8,
+              "type": "string",
+            },
+            "stack": "instance.password does not meet minimum length of 8",
+          },
+        ],
+        "message": "Invalid content types found",
+      }
+    `);
+  });
+
+  it('should not register duplicate email addresses', async () => {
+    const app = await createDefaultApp(organization);
+    authorizeApp(app);
+
+    await AppMember.create({
+      AppId: app.id,
+      UserId: user.id,
+      role: 'User',
+      email: 'test@example.com',
+    });
+
+    const response = await request.post(
+      `/api/user/apps/${app.id}/accounts`,
+      createFormData({
+        email: 'test@example.com',
+        password: 'password',
+        timezone: 'Europe/Amsterdam',
+      }),
+    );
+
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 409 Conflict
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Conflict",
+        "message": "User with this email address already exists.",
+        "statusCode": 409,
       }
     `);
   });

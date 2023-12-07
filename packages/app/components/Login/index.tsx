@@ -20,6 +20,7 @@ import {
   appId,
   appUpdated,
   development,
+  enableSelfRegistration,
   logins,
   showAppsembleLogin,
   showAppsembleOAuth2Login,
@@ -100,7 +101,7 @@ export function Login(): ReactNode {
           <>
             {showAppsembleLogin ? (
               <PasswordLogin
-                enableRegistration
+                enableRegistration={enableSelfRegistration}
                 onPasswordLogin={onPasswordLogin}
                 registerLink={`/${lang}/Register`}
                 resetPasswordLink={`/${lang}/Reset-Password`}
