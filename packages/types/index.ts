@@ -1258,6 +1258,35 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
   properties?: Remapper;
 }
 
+export interface UserCreateAction extends BaseActionDefinition<'user.create'> {
+  /**
+   * The email address to login with.
+   */
+  email: Remapper;
+
+  /**
+   * The password to login with.
+   */
+  password: Remapper;
+
+  /**
+   * The display name of the user.
+   */
+  displayName: Remapper;
+
+  /**
+   * The role of the created user
+   */
+  role?: Remapper;
+
+  /**
+   * Custom properties that can be assigned freely.
+   *
+   * Every value will be converted to a string.
+   */
+  properties?: Remapper;
+}
+
 export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
   /**
    * The email address to update.
@@ -1273,6 +1302,11 @@ export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
    * The display name to update.
    */
   displayName?: Remapper;
+
+  /**
+   * The role of the created user
+   */
+  role?: Remapper;
 
   /**
    * The profile picture to update.
@@ -1492,6 +1526,7 @@ export type ActionDefinition =
   | StorageWriteActionDefinition
   | TeamInviteActionDefinition
   | TeamMembersActionDefinition
+  | UserCreateAction
   | UserLoginAction
   | UserLogoutAction
   | UserRegisterAction
@@ -1852,6 +1887,11 @@ export interface App {
    * Whether the Appsemble OAuth2 login method should be shown.
    */
   showAppsembleOAuth2Login: boolean;
+
+  /**
+   * Whether new users should be able to register themselves.
+   */
+  enableSelfRegistration: boolean;
 
   /**
    * The Sentry DSN of the app.

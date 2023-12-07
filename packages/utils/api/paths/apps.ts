@@ -245,6 +245,10 @@ export const paths: OpenAPIV3.PathsObject = {
                   type: 'boolean',
                   description: 'Whether the Appsemble OAuth2 login method should be shown.',
                 },
+                enableSelfRegistration: {
+                  type: 'boolean',
+                  description: 'Whether new users should be able to register themselves.',
+                },
                 emailName: {
                   type: 'string',
                   description: 'The name used for emails.',

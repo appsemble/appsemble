@@ -6,6 +6,7 @@ export const {
   blockManifests,
   definition,
   development,
+  enableSelfRegistration,
   id: appId,
   languages,
   logins,

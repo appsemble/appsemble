@@ -177,6 +177,7 @@ export async function createApp(ctx: Context): Promise<void> {
       sentryEnvironment,
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
+      enableSelfRegistration: true,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
       demoMode: Boolean(demoMode),
@@ -476,6 +477,7 @@ export async function patchApp(ctx: Context): Promise<void> {
         emailPort,
         emailSecure,
         emailUser,
+        enableSelfRegistration,
         googleAnalyticsID,
         icon,
         iconBackground,
@@ -628,6 +630,10 @@ export async function patchApp(ctx: Context): Promise<void> {
 
     if (showAppsembleOAuth2Login !== undefined) {
       result.showAppsembleOAuth2Login = showAppsembleOAuth2Login;
+    }
+
+    if (enableSelfRegistration !== undefined) {
+      result.enableSelfRegistration = enableSelfRegistration;
     }
 
     if (coreStyle) {
@@ -1035,6 +1041,7 @@ export async function importApp(ctx: Context): Promise<void> {
       vapidPrivateKey: keys.privateKey,
       showAppsembleLogin: false,
       showAppsembleOAuth2Login: true,
+      enableSelfRegistration: true,
       showAppDefinition: true,
       template: false,
       iconBackground: '#ffffff',

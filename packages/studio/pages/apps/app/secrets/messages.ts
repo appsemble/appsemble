@@ -17,6 +17,10 @@ export const messages = defineMessages({
     id: 'studio.NbKWvJ',
     defaultMessage: 'Display Appsemble OAuth2 login method',
   },
+  displaySelfRegistration: {
+    id: 'studio.mK9mKF',
+    defaultMessage: 'Enable self registration',
+  },
   emailSettings: {
     id: 'studio.ONdhzp',
     defaultMessage: 'Email settings',

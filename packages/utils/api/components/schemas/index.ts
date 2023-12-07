@@ -121,6 +121,7 @@ export * from './UserEmail.js';
 export * from './UserLogoutActionDefinition.js';
 export * from './UserLoginActionDefinition.js';
 export * from './UserRegisterActionDefinition.js';
+export * from './UserCreateActionDefinition.js';
 export * from './UserUpdateActionDefinition.js';
 export * from './LoopPageDefinition.js';
 export * from './LoopPageActionsDefinition.js';

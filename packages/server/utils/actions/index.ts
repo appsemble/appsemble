@@ -77,6 +77,7 @@ export const actions = {
   'team.members': noop,
   throw: throwAction,
   'user.register': noop,
+  'user.create': noop,
   'user.login': noop,
   'user.logout': noop,
   'user.update': noop,

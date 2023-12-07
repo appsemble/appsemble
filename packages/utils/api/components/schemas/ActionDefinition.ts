@@ -81,6 +81,7 @@ export const ActionDefinition: OpenAPIV3.NonArraySchemaObject = {
         { $ref: '#/components/schemas/UserLoginActionDefinition' },
         { $ref: '#/components/schemas/UserLogoutActionDefinition' },
         { $ref: '#/components/schemas/UserRegisterActionDefinition' },
+        { $ref: '#/components/schemas/UserCreateActionDefinition' },
         { $ref: '#/components/schemas/UserUpdateActionDefinition' },
       ],
     },

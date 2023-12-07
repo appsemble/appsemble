@@ -354,6 +354,56 @@ export const paths: OpenAPIV3.PathsObject = {
       },
     },
   },
+  '/api/user/apps/{appId}/accounts': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['appMember'],
+      description: 'Create a new app account using an email address and a password.',
+      operationId: 'createMemberEmail',
+      security: [{ app: [] }],
+      requestBody: {
+        description: 'The user account to create.',
+        required: true,
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['email', 'password', 'timezone'],
+              properties: {
+                name: {
+                  type: 'string',
+                },
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+                password: {
+                  type: 'string',
+                  minLength: 8,
+                },
+                properties: {
+                  type: 'object',
+                  additionalProperties: { type: 'string' },
+                  description: 'The member’s custom properties.',
+                },
+                timezone: { type: 'string' },
+                role: {
+                  type: 'string',
+                  description:
+                    "The role for the created account. Defaults to the default role in the app's security definition.",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The account that was created.',
+        },
+      },
+    },
+  },
   '/api/user/apps/{appId}/account/verify': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {

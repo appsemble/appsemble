@@ -130,6 +130,10 @@ export class App extends Model {
   @Column(DataType.BOOLEAN)
   showAppsembleLogin: boolean;
 
+  @Default(true)
+  @Column(DataType.BOOLEAN)
+  enableSelfRegistration: boolean;
+
   @Column(DataType.STRING)
   emailName: string;
 
@@ -275,6 +279,7 @@ export class App extends Model {
       sentryEnvironment: this.sentryEnvironment,
       showAppsembleLogin: this.showAppsembleLogin ?? false,
       showAppsembleOAuth2Login: this.showAppsembleOAuth2Login ?? true,
+      enableSelfRegistration: this.enableSelfRegistration ?? true,
       rating:
         this.RatingAverage == null
           ? undefined

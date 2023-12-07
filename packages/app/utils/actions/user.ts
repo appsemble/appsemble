@@ -59,6 +59,58 @@ export const register: ActionCreator<'user.register'> = ({
   },
 ];
 
+export const create: ActionCreator<'user.create'> = ({
+  definition,
+  getUserInfo,
+  params,
+  remap,
+}) => [
+  async (data) => {
+    const userInfo = getUserInfo();
+
+    const email = remap(definition.email, data);
+
+    if (userInfo?.sub && userInfo.email === email) {
+      // User is already logged in, do nothing.
+      return data;
+    }
+
+    const password = remap(definition.password, data);
+    const name = remap(definition.displayName, data);
+    const properties = remap(definition.properties, data);
+    const role = remap(definition.role, data);
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('locale', params.lang);
+    formData.append('timezone', timezone);
+
+    if (name) {
+      formData.append('name', name);
+    }
+
+    if (role) {
+      formData.append('role', role);
+    }
+
+    if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
+      formData.append(
+        'properties',
+        JSON.stringify(
+          Object.fromEntries(
+            Object.entries(properties).map(([key, value]) => [key, JSON.stringify(value)]),
+          ),
+        ),
+      );
+    }
+
+    await axios.post(`${apiUrl}/api/user/apps/${appId}/accounts`, formData);
+
+    return data;
+  },
+];
+
 export const login: ActionCreator<'user.login'> = ({
   definition,
   getUserInfo,

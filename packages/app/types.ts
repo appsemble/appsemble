@@ -80,6 +80,7 @@ declare global {
       sentryEnvironment: string;
       showAppsembleLogin: boolean;
       showAppsembleOAuth2Login: boolean;
+      enableSelfRegistration: boolean;
       showDemoLogin: boolean;
       appUpdated: string;
       development: boolean;
