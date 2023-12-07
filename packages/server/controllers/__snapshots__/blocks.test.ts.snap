@@ -3647,7 +3647,7 @@ Does nothing if the user is already logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property "email"",
+                "message": "requires property \\"email\\"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3693,14 +3693,14 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property "email"",
+                "stack": "instance.actions.onSubmit requires property \\"email\\"",
               },
               {
                 "argument": "password",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property "password"",
+                "message": "requires property \\"password\\"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3746,7 +3746,7 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property "password"",
+                "stack": "instance.actions.onSubmit requires property \\"password\\"",
               },
               {
                 "argument": [
@@ -8028,7 +8028,7 @@ Does nothing if the user is already logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property "email"",
+        "message": "requires property \\"email\\"",
         "name": "required",
         "path": [
           "actions",
@@ -8074,14 +8074,14 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property "email"",
+        "stack": "instance.actions.onSubmit requires property \\"email\\"",
       },
       {
         "argument": "password",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property "password"",
+        "message": "requires property \\"password\\"",
         "name": "required",
         "path": [
           "actions",
@@ -8127,7 +8127,7 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property "password"",
+        "stack": "instance.actions.onSubmit requires property \\"password\\"",
       },
       {
         "argument": [
