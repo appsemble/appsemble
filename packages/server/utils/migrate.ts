@@ -24,8 +24,19 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
   let meta: Meta;
   if (metas.length === 0) {
     logger.warn('No old database meta information was found.');
-    logger.info('Synchronizing database models as-is.');
-    await db.sync();
+    // Ignore
+    // logger.info('Synchronizing database models as-is.');
+    logger.info('Migrating from 0.23.11.');
+    const migrationsToApply = migrations.filter(
+      ({ key }) => semver.gte(key, '0.23.11') && semver.lte(key, to),
+    );
+    for (const migration of migrationsToApply) {
+      logger.info(`Upgrade to ${migration.key} started`);
+      await migration.up(db);
+      logger.info(`Upgrade to ${migration.key} successful`);
+    }
+    // Ignore
+    // await db.sync();
     meta = await Meta.create({ version: migrations.at(-1).key });
   } else {
     [meta] = metas;

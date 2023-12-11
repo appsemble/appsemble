@@ -2,6 +2,7 @@
 import { configureAxios, configureLogger, handleError, version } from '@appsemble/node-utils';
 import yargs, { type CommandModule } from 'yargs';
 
+import * as checkMigrations from './commands/checkMigrations.js';
 import * as cleanup from './commands/cleanup.js';
 import * as cleanupDemoUsers from './commands/cleanupDemoUsers.js';
 import * as cleanupResourcesAndAssets from './commands/cleanupResourcesAndAssets.js';
@@ -42,6 +43,7 @@ const parser = yargs()
   .command(cleanup as CommandModule)
   .command(cleanupResourcesAndAssets as CommandModule)
   .command(cleanupDemoUsers as CommandModule)
+  .command(checkMigrations as CommandModule)
   .command(runCronJobs as CommandModule)
   .command(health as CommandModule)
   .command(start as CommandModule)
