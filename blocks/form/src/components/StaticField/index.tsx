@@ -1,5 +1,5 @@
 import { useBlock } from '@appsemble/preact';
-import { FormComponent } from '@appsemble/preact-components';
+import { FormComponent, Icon } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { type VNode } from 'preact';
 
@@ -17,7 +17,7 @@ export function StaticField({ className, field, formValues }: StaticFieldProps):
   const content = utils.remap(field.content, value) as string;
   const tag = utils.remap(field.tag, value) as string;
   const label = utils.remap(field.label, value) as string;
-
+  const { icon } = field;
   return (
     <FormComponent
       className={classNames('appsemble-static', className)}
@@ -28,7 +28,16 @@ export function StaticField({ className, field, formValues }: StaticFieldProps):
       required
       tag={utils.remap(tag, value) as string}
     >
-      <div>{content}</div>
+      <div class="is-flex is-justify-content-flex-start">
+        {icon ? (
+          <>
+            <Icon className="is-left" icon={icon} />
+            {content}
+          </>
+        ) : (
+          { content }
+        )}
+      </div>
     </FormComponent>
   );
 }

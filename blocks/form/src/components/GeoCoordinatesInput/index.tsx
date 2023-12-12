@@ -1,4 +1,5 @@
 import { useBlock } from '@appsemble/preact';
+import { FormComponent, Icon, type SharedFormComponentProps } from '@appsemble/preact-components';
 import { CircleMarker, type LocationEvent, Map, TileLayer } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { type VNode } from 'preact';
@@ -6,8 +7,10 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import styles from './index.module.css';
 import { type GeoCoordinatesField, type InputProps } from '../../../block.js';
+import { isRequired } from '../../utils/requirements.js';
 
-type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField>;
+type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinatesField> &
+  SharedFormComponentProps;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
@@ -15,6 +18,7 @@ type GeoCoordinatesInputProps = InputProps<Record<string, number>, GeoCoordinate
 export function GeoCoordinatesInput({
   disabled,
   field,
+  formValues,
   name,
   onChange,
 }: GeoCoordinatesInputProps): VNode {
@@ -22,10 +26,13 @@ export function GeoCoordinatesInput({
   const ref = useRef<HTMLDivElement>();
   const [map, setMap] = useState<Map>(null);
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
+  const { icon, label, tag } = field;
+  const required = isRequired(field, utils, formValues);
+  // Const value = getValueByNameSequence(name, formValues);
 
   const {
-    defaultLocation: [defaultLat = 51.476_852, defaultLng = 0] = [],
-    locationError = 'Couldn’t find your location. Are location services enabled?',
+    defaultLocation: [defaultLat = 51.449_107, defaultLng = 5.457_96] = [],
+    locationError = 'Couldn`t find your location. Are location services enabled?',
   } = field;
 
   const onReset = useCallback((): void => {
@@ -108,21 +115,51 @@ export function GeoCoordinatesInput({
   }, [disabled, map]);
 
   return (
-    <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
-      <div className={styles.map} ref={ref} />
-      <div className={styles.crossHairsOverlay}>
-        <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
+    <FormComponent required={required}>
+      <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
+        {icon ? (
+          //
+          /* Icon is present, render icon and/or label and/or tag.
+           ** Nested divs are required to properly space the content.
+           */
+          <div class="is-flex is-justify-content-space-between">
+            <div class="is-flex">
+              <Icon className="is-left" icon={icon} />
+              {label ? <label className="label">{utils.remap(label, {}) as string}</label> : null}
+            </div>
+            {!required || tag ? (
+              <span className="is-pulled-right has-text-weight-normal">
+                {(utils.remap(tag, {}) as string) || '(Optional)'}
+              </span>
+            ) : null}
+          </div>
+        ) : label ? (
+          // No icon present, render label and/or tag if present
+          <div class="is-flex is-justify-content-space-between">
+            <label className="label">{utils.remap(label, {}) as string}</label>
+            {!required || tag ? (
+              <span className="is-pulled-right has-text-weight-normal">
+                {(utils.remap(tag, {}) as string) || '(Optional)'}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+
+        <div className={styles.map} ref={ref} />
+        <div className={styles.crossHairsOverlay}>
+          <i className={`fas fa-crosshairs ${styles.crossHairs}`} />
+        </div>
+        <button
+          className={`button ${styles.resetButton}`}
+          disabled={disabled}
+          onClick={onReset}
+          type="button"
+        >
+          <span className={`icon ${styles.currentlocation}`}>
+            <i className="fas fa-crosshairs" />
+          </span>
+        </button>
       </div>
-      <button
-        className={`button ${styles.resetButton}`}
-        disabled={disabled}
-        onClick={onReset}
-        type="button"
-      >
-        <span className={`icon ${styles.currentlocation}`}>
-          <i className="fas fa-crosshairs" />
-        </span>
-      </button>
-    </div>
+    </FormComponent>
   );
 }

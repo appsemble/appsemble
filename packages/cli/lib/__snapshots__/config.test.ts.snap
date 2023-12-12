@@ -2611,6 +2611,15 @@ Fields are combined in order if set to true.",
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
           "show": {
             "description": "Displays field only if condition is true.
 
@@ -2625,6 +2634,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "type": {
             "const": "list",
+            "description": "The type of the field.",
             "type": "string",
           },
         },
@@ -2960,7 +2970,7 @@ This can be used to set the location to something that is more relevant to the u
             "format": "remapper",
           },
           "locationError": {
-            "default": "Couldn’t find your location. Are location services enabled?",
+            "default": "Couldn\`t find your location. Are location services enabled?",
             "description": "The error message to display when the location couldn’t be determined.",
             "format": "remapper",
           },
@@ -2976,6 +2986,15 @@ This can be used to set the location to something that is more relevant to the u
             "default": false,
             "description": "Whether the field should be read-only.",
             "format": "remapper",
+          },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/GeocoordinateRequirement",
+            },
+            "type": "array",
           },
           "show": {
             "description": "Displays field only if condition is true.
@@ -3000,6 +3019,9 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           "type",
         ],
         "type": "object",
+      },
+      "GeocoordinateRequirement": {
+        "$ref": "#/definitions/RequiredRequirement",
       },
       "HiddenField": {
         "additionalProperties": false,
@@ -3850,6 +3872,15 @@ Fields are combined in order if set to true.",
             "description": "Whether the field should be read-only.",
             "format": "remapper",
           },
+          "requirements": {
+            "description": "The requirements that are used to validate the field with.
+
+These are evaluated in the order they are defined in.",
+            "items": {
+              "$ref": "#/definitions/RequiredRequirement",
+            },
+            "type": "array",
+          },
           "show": {
             "description": "Displays field only if condition is true.
 
@@ -3864,6 +3895,7 @@ Replaces the optional label if the field is optional. Won’t display if the fie
           },
           "type": {
             "const": "list",
+            "description": "The type of the field.",
             "type": "string",
           },
         },

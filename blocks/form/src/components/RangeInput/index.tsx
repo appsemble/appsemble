@@ -56,16 +56,16 @@ export function RangeInput({
     const minValue = String(commonProps.from || 0);
     const maxValue = String(commonProps.to || 100);
 
-    setCustomTopLabels((prevValues) => [...prevValues, `${minValue} - ${maxValue}`]);
+    setCustomTopLabels((prevValues) => [...prevValues, `${minValue} | ${maxValue}`]);
   }, [commonProps.from, commonProps.to]);
 
   useEffect(() => {
-    const minValue = Number(commonProps.value?.[0] || 0);
-    const maxValue = Number(commonProps.value?.[1] || 100);
+    const minValue = Number(commonProps.value?.[0] || commonProps.from);
+    const maxValue = Number(commonProps.value?.[1] || commonProps.to);
 
     setCustomTopLabels((prevValues) => {
       const values = [...prevValues];
-      values[values.length - 1] = `${Math.round(minValue)} - ${Math.round(maxValue)}`;
+      values[values.length - 1] = `${Math.round(minValue)} | ${Math.round(maxValue)}`;
       return values;
     });
   }, [commonProps.from, commonProps.to, commonProps.value]);

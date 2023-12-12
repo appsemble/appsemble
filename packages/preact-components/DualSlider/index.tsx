@@ -17,6 +17,11 @@ export interface DualSliderProps
   readonly error?: boolean;
 
   /**
+   * Whether there is an icon next to the slider.
+   */
+  readonly hasIcon?: boolean;
+
+  /**
    * This is fired when the input value has changed.
    *
    * If the input type is `number`, the value is a number, otherwise it is a string.
@@ -32,6 +37,7 @@ export function DualSlider({
   name,
   id = name,
   from = 0,
+  hasIcon,
   onChange,
   to = 100,
 }: DualSliderProps): VNode {
@@ -74,6 +80,7 @@ export function DualSlider({
     <div
       className={classNames(styles.dual_slider, {
         'is-error': error,
+        [styles.sliderWithIcon]: hasIcon,
       })}
       id={id}
       ref={sliderRef}
