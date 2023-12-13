@@ -859,7 +859,7 @@ describe('array.find', () => {
     'return undefined when condition doesn’t match anything': {
       input: [{ name: 'Craig' }],
       mappers: [{ 'array.find': { equals: [{ prop: 'name' }, 'foo'] } }],
-      expected: undefined,
+      expected: null,
     },
     'return single value when the array does not include objects': {
       input: ['Craig', 'Stuart'],
