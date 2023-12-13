@@ -3952,7 +3952,7 @@ If this is set to \`true\`, any help text appearing will cause the form input to
         "default": false,
         "description": "Whether or not to disable populating fields with default data values.
 
-If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/guide/storage#app-storage).",
+If this is set to \`true\`, the default values for the fields won't contain data from [page storage](../../../docs/03-guide/storage#app-storage).",
         "type": "boolean",
       },
       "disabled": {

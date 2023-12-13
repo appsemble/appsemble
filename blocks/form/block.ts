@@ -1134,7 +1134,7 @@ declare module '@appsemble/sdk' {
      * Whether or not to disable populating fields with default data values.
      *
      * If this is set to `true`, the default values for the fields won't contain
-     * data from [page storage](../../../docs/guide/storage#app-storage).
+     * data from [page storage](../../../docs/03-guide/storage#app-storage).
      *
      * @default false
      */
