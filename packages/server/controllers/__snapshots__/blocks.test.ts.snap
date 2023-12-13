@@ -19,7 +19,7 @@ Content-Type: application/json; charset=utf-8
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"target\\"",
+                "message": "requires property "target"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -57,7 +57,7 @@ It returns the input data.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"target\\"",
+                "stack": "instance.actions.onSubmit requires property "target"",
               },
               {
                 "argument": [
@@ -88,7 +88,7 @@ It returns the input data.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"handler\\"",
+                "message": "requires property "handler"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -119,7 +119,7 @@ It returns the input data.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"handler\\"",
+                "stack": "instance.actions.onSubmit requires property "handler"",
               },
               {
                 "argument": [
@@ -147,7 +147,7 @@ It returns the input data.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"if\\"",
+                "message": "requires property "if"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -190,7 +190,7 @@ called.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"if\\"",
+                "stack": "instance.actions.onSubmit requires property "if"",
               },
               {
                 "argument": [
@@ -218,7 +218,7 @@ called.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"blocks\\"",
+                "message": "requires property "blocks"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -273,7 +273,7 @@ Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in th
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"blocks\\"",
+                "stack": "instance.actions.onSubmit requires property "blocks"",
               },
               {
                 "argument": [
@@ -356,7 +356,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"filename\\"",
+                "message": "requires property "filename"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -368,7 +368,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
                   "properties": {
                     "filename": {
                       "description": "The filename to save the file as. This must include a file extension.",
-                      "pattern": "\\\\.",
+                      "pattern": "\\.",
                       "type": "string",
                     },
                     "onError": {},
@@ -388,7 +388,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"filename\\"",
+                "stack": "instance.actions.onSubmit requires property "filename"",
               },
               {
                 "argument": [
@@ -416,7 +416,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"do\\"",
+                "message": "requires property "do"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -455,7 +455,7 @@ If the input is not an array, the action will be applied to the input instead.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"do\\"",
+                "stack": "instance.actions.onSubmit requires property "do"",
               },
               {
                 "argument": [
@@ -487,7 +487,7 @@ If the input is not an array, the action will be applied to the input instead.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"subject\\"",
+                "message": "requires property "subject"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -555,14 +555,14 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"subject\\"",
+                "stack": "instance.actions.onSubmit requires property "subject"",
               },
               {
                 "argument": "body",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"body\\"",
+                "message": "requires property "body"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -630,7 +630,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"body\\"",
+                "stack": "instance.actions.onSubmit requires property "body"",
               },
               {
                 "argument": [
@@ -661,7 +661,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"event\\"",
+                "message": "requires property "event"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -701,7 +701,7 @@ listening to.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"event\\"",
+                "stack": "instance.actions.onSubmit requires property "event"",
               },
               {
                 "argument": [
@@ -804,7 +804,7 @@ be called instead.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"step\\"",
+                "message": "requires property "step"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -838,7 +838,7 @@ This is a remapper which gets called with the action input and context.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"step\\"",
+                "stack": "instance.actions.onSubmit requires property "step"",
               },
               {
                 "argument": [
@@ -866,7 +866,7 @@ This is a remapper which gets called with the action input and context.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"to\\"",
+                "message": "requires property "to"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -907,7 +907,7 @@ This is a remapper which gets called with the action input and context.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"to\\"",
+                "stack": "instance.actions.onSubmit requires property "to"",
               },
               {
                 "argument": [
@@ -1001,7 +1001,7 @@ This is mostly useful for debugging blocks during development.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"match\\"",
+                "message": "requires property "match"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1052,7 +1052,7 @@ Only the first case that equals true is called.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"match\\"",
+                "stack": "instance.actions.onSubmit requires property "match"",
               },
               {
                 "argument": [
@@ -1082,7 +1082,7 @@ Only the first case that equals true is called.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"body\\"",
+                "message": "requires property "body"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1146,7 +1146,7 @@ This is useful in combination with action chaining to notify users they have per
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"body\\"",
+                "stack": "instance.actions.onSubmit requires property "body"",
               },
               {
                 "argument": [
@@ -1201,7 +1201,7 @@ This is the default action for block actions that are not required.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"title\\"",
+                "message": "requires property "title"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1248,14 +1248,14 @@ Nothing is sent if the value is **not** a valid user id.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"title\\"",
+                "stack": "instance.actions.onSubmit requires property "title"",
               },
               {
                 "argument": "body",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"body\\"",
+                "message": "requires property "body"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1302,14 +1302,14 @@ Nothing is sent if the value is **not** a valid user id.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"body\\"",
+                "stack": "instance.actions.onSubmit requires property "body"",
               },
               {
                 "argument": "to",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"to\\"",
+                "message": "requires property "to"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1356,7 +1356,7 @@ Nothing is sent if the value is **not** a valid user id.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"to\\"",
+                "stack": "instance.actions.onSubmit requires property "to"",
               },
               {
                 "argument": [
@@ -1384,7 +1384,7 @@ Nothing is sent if the value is **not** a valid user id.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"url\\"",
+                "message": "requires property "url"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1462,7 +1462,7 @@ Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, o
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"url\\"",
+                "stack": "instance.actions.onSubmit requires property "url"",
               },
               {
                 "argument": [
@@ -1498,7 +1498,7 @@ converted to JSON.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1565,7 +1565,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -1593,7 +1593,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1660,7 +1660,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -1688,7 +1688,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1755,7 +1755,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -1783,7 +1783,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1854,7 +1854,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -1882,7 +1882,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -1953,7 +1953,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -1981,7 +1981,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2020,7 +2020,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2048,7 +2048,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2087,7 +2087,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2115,7 +2115,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2154,7 +2154,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2182,7 +2182,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2221,7 +2221,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2249,7 +2249,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2316,7 +2316,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2344,7 +2344,7 @@ disabled by setting this to \`false\`
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"resource\\"",
+                "message": "requires property "resource"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2411,7 +2411,7 @@ disabled by setting this to \`false\`
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+                "stack": "instance.actions.onSubmit requires property "resource"",
               },
               {
                 "argument": [
@@ -2464,7 +2464,7 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"value\\"",
+                "message": "requires property "value"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2497,7 +2497,7 @@ This is useful for example for stubbing data.
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+                "stack": "instance.actions.onSubmit requires property "value"",
               },
               {
                 "argument": [
@@ -2528,7 +2528,7 @@ This is useful for example for stubbing data.
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2590,14 +2590,14 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": "value",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"value\\"",
+                "message": "requires property "value"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2659,7 +2659,7 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+                "stack": "instance.actions.onSubmit requires property "value"",
               },
               {
                 "argument": [
@@ -2703,7 +2703,7 @@ remapBefore:
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2756,7 +2756,7 @@ storage: localStorage
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": [
@@ -2796,7 +2796,7 @@ storage: localStorage
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2846,7 +2846,7 @@ storage: localStorage
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": [
@@ -2883,7 +2883,7 @@ storage: localStorage
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -2944,14 +2944,14 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": "value",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"value\\"",
+                "message": "requires property "value"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3012,7 +3012,7 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+                "stack": "instance.actions.onSubmit requires property "value"",
               },
               {
                 "argument": [
@@ -3055,7 +3055,7 @@ remapBefore:
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3101,7 +3101,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
                       "enum": [
@@ -3120,14 +3120,14 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": "value",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"value\\"",
+                "message": "requires property "value"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3173,7 +3173,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
                       "enum": [
@@ -3192,7 +3192,7 @@ remapBefore:
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"value\\"",
+                "stack": "instance.actions.onSubmit requires property "value"",
               },
               {
                 "argument": [
@@ -3221,7 +3221,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
                   "enum": [
@@ -3235,7 +3235,7 @@ remapBefore:
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"key\\"",
+                "message": "requires property "key"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3284,7 +3284,7 @@ storage: localStorage
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"key\\"",
+                "stack": "instance.actions.onSubmit requires property "key"",
               },
               {
                 "argument": [
@@ -3383,7 +3383,7 @@ storage: localStorage
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"id\\"",
+                "message": "requires property "id"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3414,7 +3414,7 @@ storage: localStorage
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"id\\"",
+                "stack": "instance.actions.onSubmit requires property "id"",
               },
               {
                 "argument": [
@@ -3510,7 +3510,7 @@ Does nothing if the user is already logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"email\\"",
+                "message": "requires property "email"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3560,14 +3560,14 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"email\\"",
+                "stack": "instance.actions.onSubmit requires property "email"",
               },
               {
                 "argument": "password",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"password\\"",
+                "message": "requires property "password"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3617,7 +3617,7 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"password\\"",
+                "stack": "instance.actions.onSubmit requires property "password"",
               },
               {
                 "argument": [
@@ -3647,7 +3647,7 @@ Does nothing if the user is already logged in.",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"email\\"",
+                "message": "requires property "email"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3693,14 +3693,14 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"email\\"",
+                "stack": "instance.actions.onSubmit requires property "email"",
               },
               {
                 "argument": "password",
                 "instance": {
                   "type": "invalid",
                 },
-                "message": "requires property \\"password\\"",
+                "message": "requires property "password"",
                 "name": "required",
                 "path": [
                   "actions",
@@ -3746,7 +3746,7 @@ Does nothing if the user is already logged in.",
                   ],
                   "type": "object",
                 },
-                "stack": "instance.actions.onSubmit requires property \\"password\\"",
+                "stack": "instance.actions.onSubmit requires property "password"",
               },
               {
                 "argument": [
@@ -4400,7 +4400,7 @@ Does nothing if the user isn’t logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"target\\"",
+        "message": "requires property "target"",
         "name": "required",
         "path": [
           "actions",
@@ -4438,7 +4438,7 @@ It returns the input data.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"target\\"",
+        "stack": "instance.actions.onSubmit requires property "target"",
       },
       {
         "argument": [
@@ -4469,7 +4469,7 @@ It returns the input data.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"handler\\"",
+        "message": "requires property "handler"",
         "name": "required",
         "path": [
           "actions",
@@ -4500,7 +4500,7 @@ It returns the input data.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"handler\\"",
+        "stack": "instance.actions.onSubmit requires property "handler"",
       },
       {
         "argument": [
@@ -4528,7 +4528,7 @@ It returns the input data.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"if\\"",
+        "message": "requires property "if"",
         "name": "required",
         "path": [
           "actions",
@@ -4571,7 +4571,7 @@ called.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"if\\"",
+        "stack": "instance.actions.onSubmit requires property "if"",
       },
       {
         "argument": [
@@ -4599,7 +4599,7 @@ called.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"blocks\\"",
+        "message": "requires property "blocks"",
         "name": "required",
         "path": [
           "actions",
@@ -4654,7 +4654,7 @@ Blocks with the layout type \`float\` (e.g. \`action-button\`) do not work in th
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"blocks\\"",
+        "stack": "instance.actions.onSubmit requires property "blocks"",
       },
       {
         "argument": [
@@ -4737,7 +4737,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"filename\\"",
+        "message": "requires property "filename"",
         "name": "required",
         "path": [
           "actions",
@@ -4749,7 +4749,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
           "properties": {
             "filename": {
               "description": "The filename to save the file as. This must include a file extension.",
-              "pattern": "\\\\.",
+              "pattern": "\\.",
               "type": "string",
             },
             "onError": {},
@@ -4769,7 +4769,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"filename\\"",
+        "stack": "instance.actions.onSubmit requires property "filename"",
       },
       {
         "argument": [
@@ -4797,7 +4797,7 @@ The dialog action that opened the dialog will be rejected with the data passed t
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"do\\"",
+        "message": "requires property "do"",
         "name": "required",
         "path": [
           "actions",
@@ -4836,7 +4836,7 @@ If the input is not an array, the action will be applied to the input instead.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"do\\"",
+        "stack": "instance.actions.onSubmit requires property "do"",
       },
       {
         "argument": [
@@ -4868,7 +4868,7 @@ If the input is not an array, the action will be applied to the input instead.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"subject\\"",
+        "message": "requires property "subject"",
         "name": "required",
         "path": [
           "actions",
@@ -4936,14 +4936,14 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"subject\\"",
+        "stack": "instance.actions.onSubmit requires property "subject"",
       },
       {
         "argument": "body",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"body\\"",
+        "message": "requires property "body"",
         "name": "required",
         "path": [
           "actions",
@@ -5011,7 +5011,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"body\\"",
+        "stack": "instance.actions.onSubmit requires property "body"",
       },
       {
         "argument": [
@@ -5042,7 +5042,7 @@ If \`to\`, \`cc\`, and \`bcc\` all end up being empty, no emails will be sent bu
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"event\\"",
+        "message": "requires property "event"",
         "name": "required",
         "path": [
           "actions",
@@ -5082,7 +5082,7 @@ listening to.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"event\\"",
+        "stack": "instance.actions.onSubmit requires property "event"",
       },
       {
         "argument": [
@@ -5185,7 +5185,7 @@ be called instead.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"step\\"",
+        "message": "requires property "step"",
         "name": "required",
         "path": [
           "actions",
@@ -5219,7 +5219,7 @@ This is a remapper which gets called with the action input and context.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"step\\"",
+        "stack": "instance.actions.onSubmit requires property "step"",
       },
       {
         "argument": [
@@ -5247,7 +5247,7 @@ This is a remapper which gets called with the action input and context.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"to\\"",
+        "message": "requires property "to"",
         "name": "required",
         "path": [
           "actions",
@@ -5288,7 +5288,7 @@ This is a remapper which gets called with the action input and context.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"to\\"",
+        "stack": "instance.actions.onSubmit requires property "to"",
       },
       {
         "argument": [
@@ -5382,7 +5382,7 @@ This is mostly useful for debugging blocks during development.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"match\\"",
+        "message": "requires property "match"",
         "name": "required",
         "path": [
           "actions",
@@ -5433,7 +5433,7 @@ Only the first case that equals true is called.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"match\\"",
+        "stack": "instance.actions.onSubmit requires property "match"",
       },
       {
         "argument": [
@@ -5463,7 +5463,7 @@ Only the first case that equals true is called.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"body\\"",
+        "message": "requires property "body"",
         "name": "required",
         "path": [
           "actions",
@@ -5527,7 +5527,7 @@ This is useful in combination with action chaining to notify users they have per
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"body\\"",
+        "stack": "instance.actions.onSubmit requires property "body"",
       },
       {
         "argument": [
@@ -5582,7 +5582,7 @@ This is the default action for block actions that are not required.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"title\\"",
+        "message": "requires property "title"",
         "name": "required",
         "path": [
           "actions",
@@ -5629,14 +5629,14 @@ Nothing is sent if the value is **not** a valid user id.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"title\\"",
+        "stack": "instance.actions.onSubmit requires property "title"",
       },
       {
         "argument": "body",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"body\\"",
+        "message": "requires property "body"",
         "name": "required",
         "path": [
           "actions",
@@ -5683,14 +5683,14 @@ Nothing is sent if the value is **not** a valid user id.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"body\\"",
+        "stack": "instance.actions.onSubmit requires property "body"",
       },
       {
         "argument": "to",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"to\\"",
+        "message": "requires property "to"",
         "name": "required",
         "path": [
           "actions",
@@ -5737,7 +5737,7 @@ Nothing is sent if the value is **not** a valid user id.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"to\\"",
+        "stack": "instance.actions.onSubmit requires property "to"",
       },
       {
         "argument": [
@@ -5765,7 +5765,7 @@ Nothing is sent if the value is **not** a valid user id.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"url\\"",
+        "message": "requires property "url"",
         "name": "required",
         "path": [
           "actions",
@@ -5843,7 +5843,7 @@ Can be a relative URL (E.g. \`/api/health\`) for usage with the Appsemble API, o
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"url\\"",
+        "stack": "instance.actions.onSubmit requires property "url"",
       },
       {
         "argument": [
@@ -5879,7 +5879,7 @@ converted to JSON.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -5946,7 +5946,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -5974,7 +5974,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6041,7 +6041,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6069,7 +6069,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6136,7 +6136,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6164,7 +6164,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6235,7 +6235,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6263,7 +6263,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6334,7 +6334,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6362,7 +6362,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6401,7 +6401,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6429,7 +6429,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6468,7 +6468,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6496,7 +6496,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6535,7 +6535,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6563,7 +6563,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6602,7 +6602,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6630,7 +6630,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6697,7 +6697,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6725,7 +6725,7 @@ disabled by setting this to \`false\`
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"resource\\"",
+        "message": "requires property "resource"",
         "name": "required",
         "path": [
           "actions",
@@ -6792,7 +6792,7 @@ disabled by setting this to \`false\`
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"resource\\"",
+        "stack": "instance.actions.onSubmit requires property "resource"",
       },
       {
         "argument": [
@@ -6845,7 +6845,7 @@ native dialog for sharing links, or display a more limited fallback in a dialog.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"value\\"",
+        "message": "requires property "value"",
         "name": "required",
         "path": [
           "actions",
@@ -6878,7 +6878,7 @@ This is useful for example for stubbing data.
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+        "stack": "instance.actions.onSubmit requires property "value"",
       },
       {
         "argument": [
@@ -6909,7 +6909,7 @@ This is useful for example for stubbing data.
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -6971,14 +6971,14 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": "value",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"value\\"",
+        "message": "requires property "value"",
         "name": "required",
         "path": [
           "actions",
@@ -7040,7 +7040,7 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+        "stack": "instance.actions.onSubmit requires property "value"",
       },
       {
         "argument": [
@@ -7084,7 +7084,7 @@ remapBefore:
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -7137,7 +7137,7 @@ storage: localStorage
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": [
@@ -7177,7 +7177,7 @@ storage: localStorage
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -7227,7 +7227,7 @@ storage: localStorage
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": [
@@ -7264,7 +7264,7 @@ storage: localStorage
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -7325,14 +7325,14 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": "value",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"value\\"",
+        "message": "requires property "value"",
         "name": "required",
         "path": [
           "actions",
@@ -7393,7 +7393,7 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+        "stack": "instance.actions.onSubmit requires property "value"",
       },
       {
         "argument": [
@@ -7436,7 +7436,7 @@ remapBefore:
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -7482,7 +7482,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
               "enum": [
@@ -7501,14 +7501,14 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": "value",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"value\\"",
+        "message": "requires property "value"",
         "name": "required",
         "path": [
           "actions",
@@ -7554,7 +7554,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
               "enum": [
@@ -7573,7 +7573,7 @@ remapBefore:
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"value\\"",
+        "stack": "instance.actions.onSubmit requires property "value"",
       },
       {
         "argument": [
@@ -7602,7 +7602,7 @@ remapBefore:
   object.from:
     text: { prop: text }
     value: { prop: value }
-    newField: \\"New field\\"
+    newField: "New field"
 \`\`\`
       ",
           "enum": [
@@ -7616,7 +7616,7 @@ remapBefore:
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"key\\"",
+        "message": "requires property "key"",
         "name": "required",
         "path": [
           "actions",
@@ -7665,7 +7665,7 @@ storage: localStorage
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"key\\"",
+        "stack": "instance.actions.onSubmit requires property "key"",
       },
       {
         "argument": [
@@ -7764,7 +7764,7 @@ storage: localStorage
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"id\\"",
+        "message": "requires property "id"",
         "name": "required",
         "path": [
           "actions",
@@ -7795,7 +7795,7 @@ storage: localStorage
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"id\\"",
+        "stack": "instance.actions.onSubmit requires property "id"",
       },
       {
         "argument": [
@@ -7891,7 +7891,7 @@ Does nothing if the user is already logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"email\\"",
+        "message": "requires property "email"",
         "name": "required",
         "path": [
           "actions",
@@ -7941,14 +7941,14 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"email\\"",
+        "stack": "instance.actions.onSubmit requires property "email"",
       },
       {
         "argument": "password",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"password\\"",
+        "message": "requires property "password"",
         "name": "required",
         "path": [
           "actions",
@@ -7998,7 +7998,7 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"password\\"",
+        "stack": "instance.actions.onSubmit requires property "password"",
       },
       {
         "argument": [
@@ -8028,7 +8028,7 @@ Does nothing if the user is already logged in.",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"email\\"",
+        "message": "requires property "email"",
         "name": "required",
         "path": [
           "actions",
@@ -8074,14 +8074,14 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"email\\"",
+        "stack": "instance.actions.onSubmit requires property "email"",
       },
       {
         "argument": "password",
         "instance": {
           "type": "invalid",
         },
-        "message": "requires property \\"password\\"",
+        "message": "requires property "password"",
         "name": "required",
         "path": [
           "actions",
@@ -8127,7 +8127,7 @@ Does nothing if the user is already logged in.",
           ],
           "type": "object",
         },
-        "stack": "instance.actions.onSubmit requires property \\"password\\"",
+        "stack": "instance.actions.onSubmit requires property "password"",
       },
       {
         "argument": [

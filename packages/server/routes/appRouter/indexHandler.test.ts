@@ -307,7 +307,7 @@ it('should render the index page', async () => {
     pages:
       - name: Test Page
         blocks:
-          - type: \\"@test/a\\"
+          - type: "@test/a"
             version: 0.0.0
           - type: a
             version: 0.1.0
@@ -324,7 +324,7 @@ it('should render the index page', async () => {
                 actions:
                   whatever:
                     blocks:
-                      - type: \\"@test/b\\"
+                      - type: "@test/b"
                         version: 0.0.2
     ",
         },
@@ -338,7 +338,7 @@ it('should render the index page', async () => {
           "nl",
         ],
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"apiUrl\\":\\"http://host.example\\",\\"appControllerCode\\":null,\\"appControllerImplementations\\":null,\\"blockManifests\\":[{\\"name\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"b2.js\\",\\"b2.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.0\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a0.js\\",\\"a0.css\\"]},{\\"name\\":\\"@appsemble/a\\",\\"version\\":\\"0.1.1\\",\\"layout\\":null,\\"actions\\":null,\\"events\\":null,\\"files\\":[\\"a1.js\\",\\"a1.css\\"]}],\\"id\\":1,\\"languages\\":[\\"en\\",\\"nl\\"],\\"logins\\":[],\\"vapidPublicKey\\":\\"\\",\\"definition\\":{\\"name\\":\\"Test App\\",\\"pages\\":[{\\"name\\":\\"Test Page\\",\\"blocks\\":[{\\"type\\":\\"@test/a\\",\\"version\\":\\"0.0.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"}]},{\\"name\\":\\"Test Page with Flow\\",\\"type\\":\\"flow\\",\\"steps\\":[{\\"blocks\\":[{\\"type\\":\\"a\\",\\"version\\":\\"0.1.0\\"},{\\"type\\":\\"a\\",\\"version\\":\\"0.1.1\\",\\"actions\\":{\\"whatever\\":{\\"blocks\\":[{\\"type\\":\\"@test/b\\",\\"version\\":\\"0.0.2\\"}]}}}]}]}]},\\"showAppsembleLogin\\":false,\\"showAppsembleOAuth2Login\\":true,\\"enableSelfRegistration\\":true,\\"showDemoLogin\\":false,\\"appUpdated\\":\\"1970-01-01T00:00:00.000Z\\"}</script>",
+        "settings": "<script>window.settings={"apiUrl":"http://host.example","appControllerCode":null,"appControllerImplementations":null,"blockManifests":[{"name":"@test/a","version":"0.0.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@test/b","version":"0.0.2","layout":null,"actions":null,"events":null,"files":["b2.js","b2.css"]},{"name":"@appsemble/a","version":"0.1.0","layout":null,"actions":null,"events":null,"files":["a0.js","a0.css"]},{"name":"@appsemble/a","version":"0.1.1","layout":null,"actions":null,"events":null,"files":["a1.js","a1.css"]}],"id":1,"languages":["en","nl"],"logins":[],"vapidPublicKey":"","definition":{"name":"Test App","pages":[{"name":"Test Page","blocks":[{"type":"@test/a","version":"0.0.0"},{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.0"}]},{"name":"Test Page with Flow","type":"flow","steps":[{"blocks":[{"type":"a","version":"0.1.0"},{"type":"a","version":"0.1.1","actions":{"whatever":{"blocks":[{"type":"@test/b","version":"0.0.2"}]}}}]}]}]},"showAppsembleLogin":false,"showAppsembleOAuth2Login":true,"enableSelfRegistration":true,"showDemoLogin":false,"appUpdated":"1970-01-01T00:00:00.000Z"}</script>",
         "themeColor": "#ffffff",
       },
       "filename": "app/index.html",

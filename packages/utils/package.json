@@ -59,7 +59,7 @@
     "@types/lcm": "^0.0.2",
     "bulma": "0.9.3",
     "koas-core": "^0.7.0",
-    "vitest": "^0.34.0",
+    "vitest": "^1.0.0",
     "yaml": "^2.0.0"
   },
   "engines": {
