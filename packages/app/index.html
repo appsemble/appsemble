@@ -7,79 +7,79 @@
       name="viewport"
       content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,width=device-width"
     />
-    <meta name="theme-color" content="{{{ themeColor }}}" />
-    <meta name="author" content="{{{ app.OrganizationId }}}" />
+    <meta name="theme-color" content="{{ themeColor }}" />
+    <meta name="author" content="{{ app.OrganizationId }}" />
     <meta name="generator" content="Appsemble 0.20.6" />
-    <meta name="og:title" content="{{{ app.definition.name }}}" />
+    <meta name="og:title" content="{{ app.definition.name }}" />
     <meta name="og:type" content="website" />
-    <meta name="og:locale" content="{{{ locale }}}" />
-    <meta name="og:url" content="{{{ appUrl }}}" />
+    <meta name="og:locale" content="{{ locale }}" />
+    <meta name="og:url" content="{{ appUrl }}" />
     {{ #locales }}
     <meta name="og:locale:alternate" content="{{.}}" />
     {{ /locales }}
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content="@appsemble_" />
-    <meta name="og:description" content="{{{ app.definition.description }}}" />
-    <meta name="description" content="{{{ app.definition.description }}}" />
-    <meta name="og:image" content="{{{ host }}}/api/apps/{{{ app.id }}}/icon" />
-    <meta name="twitter:image" content="{{{ host }}}/api/apps/{{{ app.id }}}/icon" />
-    <link rel="icon" sizes="16x16" href="/icon-16.png?updated={{{ appUpdated }}}" />
-    <link rel="icon" sizes="32x32" href="/icon-32.png?updated={{{ appUpdated }}}" />
-    <link rel="icon" sizes="96x96" href="/icon-96.png?updated={{{ appUpdated }}}" />
-    <link rel="icon" sizes="128x128" href="/icon-128.png?updated={{{ appUpdated }}}" />
-    <link rel="icon" sizes="192x192" href="/icon-192.png?updated={{{ appUpdated }}}" />
+    <meta name="og:description" content="{{ app.definition.description }}" />
+    <meta name="description" content="{{ app.definition.description }}" />
+    <meta name="og:image" content="{{ host }}/api/apps/{{ app.id }}/icon" />
+    <meta name="twitter:image" content="{{ host }}/api/apps/{{ app.id }}/icon" />
+    <link rel="icon" sizes="16x16" href="/icon-16.png?updated={{ appUpdated }}" />
+    <link rel="icon" sizes="32x32" href="/icon-32.png?updated={{ appUpdated }}" />
+    <link rel="icon" sizes="96x96" href="/icon-96.png?updated={{ appUpdated }}" />
+    <link rel="icon" sizes="128x128" href="/icon-128.png?updated={{ appUpdated }}" />
+    <link rel="icon" sizes="192x192" href="/icon-192.png?updated={{ appUpdated }}" />
     <link
       rel="apple-touch-icon"
       sizes="76x76"
-      href="/icon-76.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-76.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="120x120"
-      href="/icon-120.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-120.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="152x152"
-      href="/icon-152.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-152.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="144x144"
-      href="/icon-144.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-144.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="152x152"
-      href="/icon-152.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-152.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="167x167"
-      href="/icon-167.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-167.png?maskable=true&updated={{ appUpdated }}"
     />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/icon-180.png?maskable=true&updated={{{ appUpdated }}}"
+      href="/icon-180.png?maskable=true&updated={{ appUpdated }}"
     />
     <!-- This *must* be the bottom one. -->
-    <link rel="apple-touch-icon" href="/icon-57.png?maskable=true&updated={{{ appUpdated }}}" />
+    <link rel="apple-touch-icon" href="/icon-57.png?maskable=true&updated={{ appUpdated }}" />
     <link rel="manifest" href="/manifest.json" />
     <title>{{ app.definition.name }}</title>
-    <link rel="stylesheet" href="{{{ bulmaURL }}}" id="bulma-style-app" />
-    <link rel="stylesheet" href="{{{ faURL }}}" />
+    <link rel="stylesheet" href="{{ bulmaURL }}" id="bulma-style-app" />
+    <link rel="stylesheet" href="{{ faURL }}" />
     {{#app.coreStyle}}
-    <link rel="stylesheet" href="/core.css?updated={{{ appUpdated }}}" />
+    <link rel="stylesheet" href="/core.css?updated={{ appUpdated }}" />
     {{/app.coreStyle}} {{#app.sharedStyle}}
-    <link rel="stylesheet" href="/shared.css?updated={{{ appUpdated }}}" />
+    <link rel="stylesheet" href="/shared.css?updated={{ appUpdated }}" />
     {{/app.sharedStyle}} {{#app.googleAnalyticsID}}
     <script
       async
-      src="https://www.googletagmanager.com/gtag/js?id={{{ app.googleAnalyticsID }}}"
+      src="https://www.googletagmanager.com/gtag/js?id={{ app.googleAnalyticsID }}"
     ></script>
     {{/app.googleAnalyticsID}}
-    <script nonce="{{{ nonce }}}">
+    <script nonce="{{ nonce }}">
       window.addEventListener('load', function () {
         if (!window.appsembleHasLoaded) {
           document.getElementById('app').innerHTML =
@@ -87,7 +87,7 @@
         }
       });
     </script>
-    <script id="app-controller" nonce="{{{ nonce }}}"></script>
+    <script id="app-controller" nonce="{{ nonce }}"></script>
     {{{ settings }}}
   </head>
   <body class="has-navbar-fixed-top">
