@@ -358,8 +358,24 @@ const mapperImplementations: MapperImplementations = {
 
   array: (prop, input, context) => context.array?.[prop],
 
-  'array.find': (mapper, input: any[], context) =>
-    input?.find((item) => (remap(mapper, item, context) ? item : null)),
+  'array.find'(mapper, input: any[], context) {
+    if (!Array.isArray(input)) {
+      console.error(`${input} is not an array!`);
+      return null;
+    }
+
+    return (
+      input?.find((item) => {
+        const remapped = remap(mapper, item, context);
+        switch (typeof remapped) {
+          case 'boolean':
+            return remap(mapper, item, context) ? item : null;
+          default:
+            return equal(remapped, item) ? item : null;
+        }
+      }) ?? null
+    );
+  },
 
   'array.from': (mappers, input, context) => mappers.map((mapper) => remap(mapper, input, context)),
 

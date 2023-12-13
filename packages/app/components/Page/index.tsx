@@ -34,7 +34,7 @@ import { useUser } from '../UserProvider/index.js';
 export function Page(): ReactNode {
   const redirect = useLocationString();
   const { definition } = useAppDefinition();
-  const { isLoggedIn, role, teams, userInfo } = useUser();
+  const { isLoggedIn, role, teams, userInfoRef } = useUser();
   const { lang, pageId } = useParams<{ lang: string; pageId: string }>();
 
   const { pathname } = useLocation();
@@ -97,14 +97,14 @@ export function Page(): ReactNode {
         appUrl: window.location.origin,
         getMessage,
         pageData: data,
-        userInfo,
+        userInfo: userInfoRef.current,
         context,
         history: context?.history,
         root: input,
         locale: lang,
         stepRef,
       }),
-    [data, getMessage, lang, stepRef, userInfo],
+    [data, getMessage, lang, stepRef, userInfoRef],
   );
 
   const showDialog = useCallback((d: ShowDialogParams) => {

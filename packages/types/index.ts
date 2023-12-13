@@ -180,7 +180,7 @@ export interface UserInfo {
   /**
    * The end-user's additional properties
    */
-  properties?: Record<string, string>;
+  properties?: Record<string, any>;
 
   /**
    * If the user is subscribed to the newsletter

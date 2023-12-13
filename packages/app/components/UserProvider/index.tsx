@@ -168,8 +168,14 @@ export function UserProvider({ children }: UserProviderProps): ReactNode {
           ),
           axios.get<TeamMember[]>(`${apiUrl}/api/apps/${appId}/teams`, config),
         ]);
+
+        const parsedUserProperties: Record<string, any> = {};
+        for (const [key, value] of Object.entries(user.properties)) {
+          parsedUserProperties[key] = JSON.parse(value);
+        }
+
         setUser({ id: user.sub });
-        setUserInfo(user);
+        setUserInfo({ ...user, properties: parsedUserProperties });
         setState({
           isLoggedIn: true,
           role,

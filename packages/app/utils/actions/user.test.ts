@@ -154,7 +154,7 @@ describe('user.update', () => {
       email_verified: false,
       name: 'name',
       picture: `${apiUrl}/api/apps/${appId}/members/some-user-id/picture`,
-      properties: { test: '[1,2,3]', property: 'Property', bool: 'true' },
+      properties: { test: [1, 2, 3], property: 'Property', bool: true },
     });
   });
 

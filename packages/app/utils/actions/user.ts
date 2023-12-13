@@ -191,6 +191,7 @@ export const update: ActionCreator<'user.update'> = ({
       name: response.name,
       picture: response.picture,
       email_verified: response.emailVerified,
+      properties,
     });
 
     return data;
