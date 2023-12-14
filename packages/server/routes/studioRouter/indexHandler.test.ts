@@ -32,7 +32,7 @@ it('should serve the studio index page with correct headers', async () => {
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"enableRegistration\\":true,\\"logins\\":[],\\"customDomainAppCollection\\":null}</script>",
+        "settings": "<script>window.settings={"enableRegistration":true,"logins":[],"customDomainAppCollection":null}</script>",
       },
       "filename": "studio/index.html",
     }
@@ -57,7 +57,7 @@ it('should pass login options from argv to the studio', async () => {
     {
       "data": {
         "nonce": "AAAAAAAAAAAAAAAAAAAAAA==",
-        "settings": "<script>window.settings={\\"enableRegistration\\":false,\\"logins\\":[{\\"authorizationUrl\\":\\"https://gitlab.com/oauth/authorize\\",\\"clientId\\":\\"GitLab secret\\",\\"icon\\":\\"gitlab\\",\\"name\\":\\"GitLab\\",\\"scope\\":\\"email openid profile\\"},{\\"authorizationUrl\\":\\"https://accounts.google.com/o/oauth2/auth\\",\\"clientId\\":\\"Google secret\\",\\"icon\\":\\"google\\",\\"name\\":\\"Google\\",\\"scope\\":\\"email openid profile\\"}],\\"sentryDsn\\":\\"https://secret@sentry.io/path\\",\\"customDomainAppCollection\\":null}</script>",
+        "settings": "<script>window.settings={"enableRegistration":false,"logins":[{"authorizationUrl":"https://gitlab.com/oauth/authorize","clientId":"GitLab secret","icon":"gitlab","name":"GitLab","scope":"email openid profile"},{"authorizationUrl":"https://accounts.google.com/o/oauth2/auth","clientId":"Google secret","icon":"google","name":"Google","scope":"email openid profile"}],"sentryDsn":"https://secret@sentry.io/path","customDomainAppCollection":null}</script>",
       },
       "filename": "studio/index.html",
     }
