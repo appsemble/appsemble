@@ -34,7 +34,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
     svgContent = iconDefinition.html[0];
     svgContent = svgContent.replace('fill="currentColor"', 'fill="#FFFFFF"');
     const viewBoxMatch = svgContent.match(
-      /viewBox="(\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/,
+      /viewbox="(\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/,
     );
     const originalViewBoxValues = viewBoxMatch.slice(1).map(Number);
     const [xMin, yMin, originalWidth, originalHeight] = originalViewBoxValues;
@@ -42,12 +42,12 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
     /* Constants for the plus sign */
     // Radius of the circle
     const circleRadius = 120;
-    // How much the circle should overflow the viewBox
+    // How much the circle should overflow the view box
     const overflow = circleRadius / 2;
     // Total enlargement of the viewBox
     const enlargement = overflow * 2;
 
-    /* Calculate the new viewBox values */
+    /* Calculate the new view box values */
     const newWidth = originalWidth + enlargement;
     const newHeight = originalHeight + enlargement;
     const newViewBox = `${xMin - enlargement / 2} ${

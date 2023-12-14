@@ -145,7 +145,7 @@ export function SideMenuButton(): ReactNode {
       <span aria-hidden />
       <span aria-hidden />
     </button>
-  ) : location.pathname.includes('gui') ? (
+  ) : /(?<=\/)gui(?=\/)/.test(location.pathname) ? (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}
