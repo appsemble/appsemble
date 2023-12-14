@@ -74,7 +74,8 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
     /* Insert the plus sign before the closing </svg> tag of the original content */
     svgContent = svgContent.replace('</svg>', `${plusSignSvg}</svg>`);
 
-    /* Enlarge and add padding to the viewbox. */
+    /* Enlarge and add padding to the view box. */
+    // cspell:disable-next-line
     svgContent = svgContent.replace(/viewbox="[\d\s.-]+"/i, `viewBox="${newViewBox}"`);
 
     /* Take the html/svg field and encode it. */
