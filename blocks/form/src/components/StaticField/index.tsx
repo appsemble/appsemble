@@ -35,7 +35,7 @@ export function StaticField({ className, field, formValues }: StaticFieldProps):
             {content}
           </>
         ) : (
-          { content }
+          content
         )}
       </div>
     </FormComponent>

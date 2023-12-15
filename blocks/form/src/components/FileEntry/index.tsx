@@ -34,7 +34,7 @@ export function FileEntry({ field, formValues: value, name, onChange }: FileEntr
     svgContent = iconDefinition.html[0];
     svgContent = svgContent.replace('fill="currentColor"', 'fill="#FFFFFF"');
     const viewBoxMatch = svgContent.match(
-      /viewbox="(\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/,
+      /viewBox="(\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)/,
     );
     const originalViewBoxValues = viewBoxMatch.slice(1).map(Number);
     const [xMin, yMin, originalWidth, originalHeight] = originalViewBoxValues;
