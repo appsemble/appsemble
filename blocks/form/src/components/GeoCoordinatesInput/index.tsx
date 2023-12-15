@@ -28,7 +28,6 @@ export function GeoCoordinatesInput({
   const [locationMarker, setLocationMarker] = useState<CircleMarker>(null);
   const { icon, label, tag } = field;
   const required = isRequired(field, utils, formValues);
-  // Const value = getValueByNameSequence(name, formValues);
 
   const {
     defaultLocation: [defaultLat = 51.449_107, defaultLng = 5.457_96] = [],

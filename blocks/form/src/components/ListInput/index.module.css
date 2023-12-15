@@ -68,9 +68,3 @@
 .option:is(:focus-within, :hover) {
   background-color: hsl(0deg 0% 95%);
 }
-
-.placeholder {
-  left: 2rem;
-  position: absolute;
-  top: 0.4rem;
-}

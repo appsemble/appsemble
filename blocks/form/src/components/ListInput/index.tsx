@@ -156,9 +156,14 @@ export function ListInput({
       tag={tag}
     >
       <Button
-        className={classNames('is-fullwidth', styles.button, 'is-justify-content-center', {
-          'is-loading': loading,
-        })}
+        className={classNames(
+          'is-fullwidth',
+          styles.button,
+          icon ? 'is-justify-content-center' : 'is-justify-content-flex-start',
+          {
+            'is-loading': loading,
+          },
+        )}
         data-field={field.name}
         disabled={disabled || readOnly || loading || !options.length}
         icon="chevron-down"
@@ -167,18 +172,7 @@ export function ListInput({
         onClick={showDropDown}
       >
         {/* Render placeholder text if present, otherwise render hardcoded text and style it if icon is present. */}
-        <em className={icon ? 'placeholder' : ''}>{placeholder || '— Select Options —'}</em>
-        {/* {Boolean(placeholder) ? (
-          icon ? (
-            <em className={`${styles.placeholder}`}>{placeholder}</em>
-          ) : (
-            <em>{placeholder}</em>
-          )
-        ) : icon ? (
-          <em className={`${styles.placeholder}`}>&mdash; Select Options &mdash;</em>
-        ) : (
-          <em>&mdash; Select Options &mdash;</em>
-        )} */}
+        <em>{placeholder || '— Select Options —'}</em>
       </Button>
       {isDropdownOpen ? (
         <Form

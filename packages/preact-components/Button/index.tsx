@@ -71,7 +71,7 @@ export function Button({
           </div>
         ) : (
           <>
-            <Icon className={styles.leftIcon} icon={icon} />
+            <Icon icon={icon} />
             {children ? <span>{children}</span> : null}
           </>
         )
