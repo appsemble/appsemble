@@ -68,3 +68,7 @@
 .option:is(:focus-within, :hover) {
   background-color: hsl(0deg 0% 95%);
 }
+
+.noIcon {
+  gap: 7rem;
+}

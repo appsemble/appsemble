@@ -31,7 +31,7 @@ export function GeoCoordinatesInput({
 
   const {
     defaultLocation: [defaultLat = 51.449_107, defaultLng = 5.457_96] = [],
-    locationError = 'Couldn`t find your location. Are location services enabled?',
+    locationError = 'Couldn’t find your location. Are location services enabled?',
   } = field;
 
   const onReset = useCallback((): void => {
@@ -117,10 +117,7 @@ export function GeoCoordinatesInput({
     <FormComponent required={required}>
       <div className={`appsemble-geocoordinates ${styles.root} is-relative mb-5`}>
         {icon ? (
-          //
-          /* Icon is present, render icon and/or label and/or tag.
-           ** Nested divs are required to properly space the content.
-           */
+          // Nested divs are required to properly space the content.
           <div class="is-flex is-justify-content-space-between">
             <div class="is-flex">
               <Icon className="is-left" icon={icon} />
@@ -133,7 +130,6 @@ export function GeoCoordinatesInput({
             ) : null}
           </div>
         ) : label ? (
-          // No icon present, render label and/or tag if present
           <div class="is-flex is-justify-content-space-between">
             <label className="label">{utils.remap(label, {}) as string}</label>
             {!required || tag ? (

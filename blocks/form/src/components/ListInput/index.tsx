@@ -159,7 +159,7 @@ export function ListInput({
         className={classNames(
           'is-fullwidth',
           styles.button,
-          icon ? 'is-justify-content-center' : 'is-justify-content-flex-start',
+          icon ? 'is-justify-content-center' : String(styles.noIcon),
           {
             'is-loading': loading,
           },

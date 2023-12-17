@@ -2970,7 +2970,7 @@ This can be used to set the location to something that is more relevant to the u
             "format": "remapper",
           },
           "locationError": {
-            "default": "Couldn\`t find your location. Are location services enabled?",
+            "default": "Couldn’t find your location. Are location services enabled?",
             "description": "The error message to display when the location couldn’t be determined.",
             "format": "remapper",
           },
