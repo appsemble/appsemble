@@ -740,7 +740,7 @@ export interface GeoCoordinatesField extends AbstractField {
   /**
    * The error message to display when the location couldn’t be determined.
    *
-   * @default 'Couldn`t find your location. Are location services enabled?'
+   * @default 'Couldn’t find your location. Are location services enabled?'
    */
   locationError?: Remapper;
 
