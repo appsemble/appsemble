@@ -1,7 +1,7 @@
 import { type ComponentProps } from 'preact';
 import { forwardRef } from 'preact/compat';
 
-import { FormComponent, type SharedFormComponentProps, Slider } from '../index.js';
+import { FormComponent, Icon, type SharedFormComponentProps, Slider } from '../index.js';
 
 type SliderFieldProps = Omit<ComponentProps<typeof Slider>, keyof SharedFormComponentProps> &
   SharedFormComponentProps & {
@@ -49,7 +49,6 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
       error={error}
       help={help}
       helpExtra={maxLength ? `${value == null ? 0 : String(value).length} / ${maxLength}` : null}
-      icon={icon}
       id={id}
       inline={inline}
       label={label}
@@ -58,23 +57,41 @@ export const SliderField = forwardRef<HTMLInputElement, SliderFieldProps>(
       tag={tag}
     >
       {topLabels?.length ? (
-        <div class="is-flex is-justify-content-space-between">
+        <div class={`is-flex is-justify-content-space-between${icon ? ' ml-5' : ''}`}>
           {topLabels.map((topLabel) => (
             <span key={topLabel}>{topLabel}</span>
           ))}
         </div>
       ) : null}
-      <Slider
-        {...props}
-        error={Boolean(error)}
-        id={id}
-        maxLength={maxLength}
-        name={name}
-        ref={ref}
-        value={value}
-      />
-      {bottomLabels?.length ? (
+      {icon ? (
         <div class="is-flex is-justify-content-space-between">
+          <Icon className="is-left" icon={icon} />
+          <Slider
+            {...props}
+            error={Boolean(error)}
+            hasIcon
+            id={id}
+            maxLength={maxLength}
+            name={name}
+            ref={ref}
+            value={value}
+          />
+        </div>
+      ) : (
+        <Slider
+          {...props}
+          error={Boolean(error)}
+          hasIcon={false}
+          id={id}
+          maxLength={maxLength}
+          name={name}
+          ref={ref}
+          value={value}
+        />
+      )}
+
+      {bottomLabels?.length ? (
+        <div class={`is-flex is-justify-content-space-between${icon ? ' ml-5' : ''}`}>
           {bottomLabels.map((bottomLabel) => (
             <span key={bottomLabel}>{bottomLabel}</span>
           ))}

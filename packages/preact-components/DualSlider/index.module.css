@@ -21,3 +21,8 @@
 .handle::after {
   display: none;
 }
+
+.sliderWithIcon {
+  margin-top: 0.45rem;
+  width: 94.6%;
+}

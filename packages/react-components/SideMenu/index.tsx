@@ -92,7 +92,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           styles.sideMenuWrapper,
           { [styles.open]: enabled },
           {
-            [styles.gui]: location.pathname.includes('gui'),
+            [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/),
           },
           { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
         )}
@@ -103,7 +103,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
             styles.backdrop,
             { [styles.closed]: !enabled },
             { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
-            { [styles.gui]: location.pathname.match(/gui/) },
+            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
           onClick={disable}
           role="presentation"
@@ -113,7 +113,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
             `menu ${styles.sideMenu}`,
             { [styles.open]: enabled },
             { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
-            { [styles.gui]: location.pathname.includes('gui') },
+            { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
         >
           {base}
@@ -145,7 +145,7 @@ export function SideMenuButton(): ReactNode {
       <span aria-hidden />
       <span aria-hidden />
     </button>
-  ) : location.pathname.includes('gui') ? (
+  ) : /(?<=\/)gui(?=\/)/.test(location.pathname) ? (
     <button
       aria-label={formatMessage(isOpen ? messages.close : messages.open)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.button, styles.gui)}

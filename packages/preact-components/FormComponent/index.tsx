@@ -138,8 +138,8 @@ export const FormComponent = forwardRef<HTMLDivElement, FormComponentProps>(
           'has-icons-right': control,
         })}
       >
-        {children}
         {icon ? <Icon className="is-left" icon={icon} /> : null}
+        {children}
         {control ? cloneElement(control, { className: 'is-right' }) : null}
       </div>
     );

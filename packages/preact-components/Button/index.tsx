@@ -3,6 +3,7 @@ import { type IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { type ComponentProps, type VNode } from 'preact';
 
+import styles from './index.module.css';
 import { Icon } from '../index.js';
 
 interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
@@ -20,6 +21,11 @@ interface ButtonProps extends Omit<ComponentProps<'button'>, 'loading'> {
    * A Font Awesome icon name to render left of the button text.
    */
   readonly icon?: IconName;
+
+  /**
+   * Whether to set the icon's position right.
+   */
+  readonly iconRight?: boolean;
 
   /**
    * Set to true to invert the colors.
@@ -42,6 +48,7 @@ export function Button({
   className,
   color,
   icon,
+  iconRight = false,
   inverted,
   loading,
   ...props
@@ -57,10 +64,17 @@ export function Button({
       {...props}
     >
       {icon ? (
-        <>
-          <Icon icon={icon} />
-          {children ? <span>{children}</span> : null}
-        </>
+        iconRight ? (
+          <div class="mr-5">
+            {children ? <span>{children}</span> : null}
+            <Icon className={styles.rightIcon} icon={icon} />
+          </div>
+        ) : (
+          <>
+            <Icon icon={icon} />
+            {children ? <span>{children}</span> : null}
+          </>
+        )
       ) : (
         children
       )}

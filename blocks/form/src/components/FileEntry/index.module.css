@@ -11,7 +11,7 @@
 .empty {
   align-items: flex-end !important;
   background-color: var(--primary-color) !important;
-  background-image: url(./addpicture.svg) !important;
+  background-image: url(./addpicture.svg);
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-size: 60px !important;

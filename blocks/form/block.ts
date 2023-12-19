@@ -241,6 +241,8 @@ export type DateTimeRequirement =
  */
 export type FieldsetRequirement = LengthRequirement;
 
+export type GeocoordinateRequirement = RequiredRequirement;
+
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
@@ -634,7 +636,17 @@ interface EventEnumField extends AbstractEnumField {
 export type EnumField = ActionEnumField | EventEnumField | SyncEnumField;
 
 export interface AbstractListField extends AbstractField, InlineField {
+  /**
+   * The type of the field.
+   */
   type: 'list';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: RequiredRequirement[];
 }
 
 export interface EventListField extends AbstractListField {
@@ -736,6 +748,13 @@ export interface GeoCoordinatesField extends AbstractField {
    * The type of the field.
    */
   type: 'geocoordinates';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: GeocoordinateRequirement[];
 }
 
 /**
