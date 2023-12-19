@@ -427,7 +427,6 @@ cleanup k8s jobs:
 
 # Update lockfile and fix formatting where possible
 update dependencies:
-  extends: .npm
   stage: deploy
   variables:
     GIT_STRATEGY: none
