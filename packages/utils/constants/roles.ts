@@ -4,6 +4,12 @@ const member = [Permission.ViewApps, Permission.ViewMembers];
 const Translator = [...member, Permission.EditAppMessages];
 const APIReader = [...member, Permission.ReadAssets, Permission.ReadResources];
 const APIUser = [...APIReader, Permission.ManageAssets, Permission.ManageResources];
+const AccountManager = [
+  Permission.CreateAppAccounts,
+  Permission.ReadAppAccounts,
+  Permission.DeleteAppAccounts,
+  Permission.EditAppAccounts,
+];
 
 const AppEditor = [
   ...member,
@@ -17,6 +23,7 @@ const AppEditor = [
 ];
 const Maintainer = [
   ...AppEditor,
+  ...AccountManager,
   Permission.CreateApps,
   Permission.DeleteApps,
   Permission.EditAppSettings,
@@ -44,6 +51,7 @@ export const roles = {
   AppEditor,
   Maintainer,
   Owner,
+  AccountManager,
 } as const;
 
 export type Role = keyof typeof roles;

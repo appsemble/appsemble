@@ -123,5 +123,7 @@ export * from './UserLoginActionDefinition.js';
 export * from './UserRegisterActionDefinition.js';
 export * from './UserCreateActionDefinition.js';
 export * from './UserUpdateActionDefinition.js';
+export * from './UserQueryActionDefinition.js';
+export * from './UserRemoveActionDefinition.js';
 export * from './LoopPageDefinition.js';
 export * from './LoopPageActionsDefinition.js';

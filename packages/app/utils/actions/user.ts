@@ -75,8 +75,8 @@ export const create: ActionCreator<'user.create'> = ({
       return data;
     }
 
+    const name = remap(definition.name, data);
     const password = remap(definition.password, data);
-    const name = remap(definition.displayName, data);
     const properties = remap(definition.properties, data);
     const role = remap(definition.role, data);
 
@@ -138,35 +138,55 @@ export const logout: ActionCreator<'user.logout'> = ({ passwordLogout }) => [
   },
 ];
 
+export const query: ActionCreator<'user.query'> = ({ definition, getUserInfo, remap }) => [
+  async (data) => {
+    const userInfo = getUserInfo();
+    if (!userInfo?.sub) {
+      // User is not logged in, do nothing.
+      return data;
+    }
+
+    const roles = remap(definition.roles, data);
+
+    const { data: response } = await axios.get<AppAccount[]>(
+      `${apiUrl}/api/user/apps/${appId}/accounts?roles=${roles}`,
+    );
+
+    return response;
+  },
+];
+
 export const update: ActionCreator<'user.update'> = ({
   definition,
   getUserInfo,
-  params,
   remap,
   setUserInfo,
 }) => [
   async (data) => {
     const userInfo = getUserInfo();
     if (!userInfo?.sub) {
-      // User is already logged in, do nothing.
+      // User is not logged in, do nothing.
       return data;
     }
 
-    const email = remap(definition.email, data);
-    const name = remap(definition.displayName, data);
-    const picture = remap(definition.picture, data);
+    const name = remap(definition.name, data);
+    const currentEmail = remap(definition.currentEmail, data);
+    const newEmail = remap(definition.newEmail, data);
+    const password = remap(definition.password, data);
     const properties = remap(definition.properties, data);
+    const role = remap(definition.role, data);
 
     const formData = new FormData();
     if (name) {
       formData.append('name', name);
     }
-    if (email) {
-      formData.append('email', email);
+    if (newEmail) {
+      formData.append('email', newEmail);
     }
-    if (picture && picture instanceof File) {
-      formData.append('picture', picture);
+    if (role) {
+      formData.append('role', role);
     }
+    formData.append('password', password);
     if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
       formData.append(
         'properties',
@@ -178,22 +198,41 @@ export const update: ActionCreator<'user.update'> = ({
       );
     }
 
-    formData.append('locale', params.lang);
-
     const { data: response } = await axios.patch<AppAccount>(
-      `${apiUrl}/api/user/apps/${appId}/account`,
+      `${apiUrl}/api/user/apps/${appId}/accounts/${currentEmail}`,
       formData,
     );
-    setUserInfo({
-      ...userInfo,
-      email: response.email,
-      sub: response.id,
-      name: response.name,
-      picture: response.picture,
-      email_verified: response.emailVerified,
-      properties,
-    });
 
-    return data;
+    if (userInfo.email === currentEmail) {
+      setUserInfo({
+        ...userInfo,
+        email: response.email,
+        sub: response.id,
+        name: response.name,
+        picture: response.picture,
+        email_verified: response.emailVerified,
+        properties,
+      });
+    }
+
+    return response;
+  },
+];
+
+export const remove: ActionCreator<'user.remove'> = ({ definition, getUserInfo, remap }) => [
+  async (data) => {
+    const userInfo = getUserInfo();
+    if (!userInfo?.sub) {
+      // User is not logged in, do nothing.
+      return data;
+    }
+
+    const email = remap(definition.email, data);
+
+    const { data: response } = await axios.delete<AppAccount>(
+      `${apiUrl}/api/user/apps/${appId}/accounts/${email}`,
+    );
+
+    return response;
   },
 ];

@@ -1265,6 +1265,11 @@ export interface UserRegisterAction extends BaseActionDefinition<'user.register'
 
 export interface UserCreateAction extends BaseActionDefinition<'user.create'> {
   /**
+   * The display name of the user.
+   */
+  name: Remapper;
+
+  /**
    * The email address to login with.
    */
   email: Remapper;
@@ -1275,28 +1280,40 @@ export interface UserCreateAction extends BaseActionDefinition<'user.create'> {
   password: Remapper;
 
   /**
-   * The display name of the user.
-   */
-  displayName: Remapper;
-
-  /**
-   * The role of the created user
-   */
-  role?: Remapper;
-
-  /**
    * Custom properties that can be assigned freely.
    *
    * Every value will be converted to a string.
    */
   properties?: Remapper;
+
+  /**
+   * The role of the created user
+   */
+  role?: Remapper;
+}
+
+export interface UserQueryAction extends BaseActionDefinition<'user.query'> {
+  /**
+   * The roles of the users to fetch.
+   */
+  roles?: Remapper;
 }
 
 export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
   /**
-   * The email address to update.
+   * The display name to update.
    */
-  email?: Remapper;
+  name?: Remapper;
+
+  /**
+   * The email address of the user to update.
+   */
+  currentEmail: Remapper;
+
+  /**
+   * The new email address of the user.
+   */
+  newEmail?: Remapper;
 
   /**
    * The password to update.
@@ -1304,28 +1321,23 @@ export interface UserUpdateAction extends BaseActionDefinition<'user.update'> {
   password?: Remapper;
 
   /**
-   * The display name to update.
-   */
-  displayName?: Remapper;
-
-  /**
-   * The role of the created user
-   */
-  role?: Remapper;
-
-  /**
-   * The profile picture to update.
-   *
-   * This must be a file, otherwise it’s ignored.
-   */
-  picture?: Remapper;
-
-  /**
    * Custom properties that can be assigned freely.
    *
    * Every value will be converted to a string.
    */
   properties?: Remapper;
+
+  /**
+   * The role of the created user
+   */
+  role?: Remapper;
+}
+
+export interface UserRemoveAction extends BaseActionDefinition<'user.remove'> {
+  /**
+   * The email address of the account to delete.
+   */
+  email: Remapper;
 }
 
 export interface RequestLikeActionDefinition<T extends Action['type'] = Action['type']>
@@ -1534,7 +1546,9 @@ export type ActionDefinition =
   | UserCreateAction
   | UserLoginAction
   | UserLogoutAction
+  | UserQueryAction
   | UserRegisterAction
+  | UserRemoveAction
   | UserUpdateAction;
 
 export interface ActionType {

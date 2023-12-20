@@ -81,4 +81,6 @@ export const actions = {
   'user.login': noop,
   'user.logout': noop,
   'user.update': noop,
+  'user.remove': noop,
+  'user.query': noop,
 };
