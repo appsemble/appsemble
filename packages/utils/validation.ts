@@ -2,6 +2,7 @@ import {
   type AppDefinition,
   type BlockManifest,
   type ProjectImplementations,
+  type Remapper,
   type ResourceGetActionDefinition,
   type RoleDefinition,
 } from '@appsemble/types';
@@ -24,7 +25,7 @@ type Report = (instance: unknown, message: string, path: (number | string)[]) =>
  * @param link The link to check
  * @returns Whether or not the given link represents a link related to the Appsemble core.
  */
-export function isAppLink(link: string[] | string): boolean {
+export function isAppLink(link: Remapper | string[] | string): boolean {
   return link === '/Login' || link === '/Settings';
 }
 
@@ -658,6 +659,15 @@ function validateActions(definition: AppDefinition, report: Report): void {
 
       if (action.type === 'link') {
         const { to } = action;
+
+        if (
+          typeof to === 'object' &&
+          (!Array.isArray(to) ||
+            (Array.isArray(to) && to.every((entry) => typeof entry === 'object')))
+        ) {
+          return;
+        }
+
         if (typeof to === 'string' && urlRegex.test(to)) {
           return;
         }

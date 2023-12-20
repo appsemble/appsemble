@@ -1,4 +1,4 @@
-import { type SubPage } from '@appsemble/types';
+import { type Remapper, type SubPage } from '@appsemble/types';
 import { isAppLink, normalize, partialNormalized } from '@appsemble/utils';
 
 import { type ActionCreator } from './index.js';
@@ -11,6 +11,7 @@ export const link: ActionCreator<'link'> = ({
   getAppMessage,
   navigate,
   params,
+  remap,
 }) => {
   let href: (data: any) => string;
 
@@ -19,30 +20,35 @@ export const link: ActionCreator<'link'> = ({
   } else if (isAppLink(to)) {
     href = () => `/${params.lang}${to}`;
   } else {
-    const [toBase, toSub] = [].concat(to);
-
-    const toPage = pages.find(({ name }) => name === toBase);
-    let subPage: SubPage;
-    let index: number;
-
-    if (toPage?.type === 'tabs') {
-      subPage = toPage.tabs.find(({ name }) => name === toSub) ?? toPage.tabs[0];
-      index = toPage.tabs.findIndex(({ name }) => name === subPage.name);
-    }
-
-    if (toPage == null || (toSub && subPage == null)) {
-      throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
-    }
-
-    const normalizedPageName = normalize(toPage.name);
-    const translatedPageName = normalize(
-      getAppMessage({
-        id: `pages.${normalizedPageName}`,
-        defaultMessage: normalizedPageName,
-      }).format() as string,
-    );
-
     href = (data = {}) => {
+      const [toBase, toSub] =
+        typeof to === 'object' &&
+        (!Array.isArray(to) ||
+          (Array.isArray(to) && to.every((entry) => typeof entry === 'object')))
+          ? [].concat(remap(to as Remapper, data))
+          : [].concat(to);
+
+      const toPage = pages.find(({ name }) => name === toBase);
+      let subPage: SubPage;
+      let index: number;
+
+      if (toPage?.type === 'tabs') {
+        subPage = toPage.tabs.find(({ name }) => name === toSub) ?? toPage.tabs[0];
+        index = toPage.tabs.findIndex(({ name }) => name === subPage.name);
+      }
+
+      if (toPage == null || (toSub && subPage == null)) {
+        throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);
+      }
+
+      const normalizedPageName = normalize(toPage.name);
+      const translatedPageName = normalize(
+        getAppMessage({
+          id: `pages.${normalizedPageName}`,
+          defaultMessage: normalizedPageName,
+        }).format() as string,
+      );
+
       if (typeof data === 'string' && urlRegex.test(data)) {
         return data;
       }
