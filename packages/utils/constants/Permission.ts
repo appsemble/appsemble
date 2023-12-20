@@ -117,4 +117,24 @@ export enum Permission {
    * The permission to edit collections.
    */
   EditCollections,
+
+  /**
+   * The permission to create app accounts.
+   */
+  CreateAppAccounts,
+
+  /**
+   * The permission to read app accounts.
+   */
+  ReadAppAccounts,
+
+  /**
+   * The permission to delete app accounts.
+   */
+  DeleteAppAccounts,
+
+  /**
+   * The permission to edit app accounts.
+   */
+  EditAppAccounts,
 }

@@ -19,3 +19,5 @@ export * from './appServiceId.js';
 export * from './view.js';
 export * from './trainingId.js';
 export * from './trainingBlockId.js';
+export * from './memberEmail.js';
+export * from './roles.js';

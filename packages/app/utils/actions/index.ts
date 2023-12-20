@@ -22,7 +22,7 @@ import { staticAction } from './static.js';
 import * as storage from './storage.js';
 import { teamInvite, teamJoin, teamList, teamMembers } from './team.js';
 import { throwAction } from './throw.js';
-import { create, login, logout, register, update } from './user.js';
+import { create, login, logout, query, register, remove, update } from './user.js';
 import { type MakeActionParameters } from '../../types.js';
 
 type ActionProperties<T extends ActionDefinition['type']> = Omit<
@@ -102,4 +102,6 @@ export const actionCreators: ActionCreators = {
   'user.create': create,
   'user.update': update,
   'user.logout': logout,
+  'user.query': query,
+  'user.remove': remove,
 };

@@ -12,14 +12,14 @@ export const UserCreateActionDefinition = extendJSONSchema(BaseActionDefinition,
 
 Does nothing if the user is already logged in.`,
     },
-    password: {
-      description: 'The password to login with.',
+    name: {
+      description: 'The display name of the user.',
     },
     email: {
       description: 'The email to login with.',
     },
-    displayName: {
-      description: 'The display name of the user.',
+    password: {
+      description: 'The password to login with.',
     },
     properties: {
       description: `The custom properties for the user.

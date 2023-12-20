@@ -93,7 +93,9 @@ export type Action =
   | BaseAction<'user.create'>
   | BaseAction<'user.login'>
   | BaseAction<'user.logout'>
+  | BaseAction<'user.query'>
   | BaseAction<'user.register'>
+  | BaseAction<'user.remove'>
   | BaseAction<'user.update'>
   | LinkAction
   | LogAction

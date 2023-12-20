@@ -197,6 +197,56 @@ export async function getAppMembers(ctx: Context): Promise<void> {
   ctx.body = appMembers;
 }
 
+export async function getAppMembersByRoles(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId },
+    queryParams: { roles },
+  } = ctx;
+
+  const app = await App.findByPk(appId, { attributes: ['OrganizationId', 'definition'] });
+
+  const supportedAppRoles = Object.keys(app.definition.security.roles);
+  const passedRolesAreSupported = roles.every((role) => supportedAppRoles.includes(role));
+
+  assertKoaError(passedRolesAreSupported, ctx, 400, 'Unsupported role in filter!');
+
+  const rolesFilter =
+    Array.isArray(roles) && roles.length > 0 && passedRolesAreSupported
+      ? roles
+      : supportedAppRoles.filter((role) => role !== app.definition.security.default.role);
+
+  assertKoaError(!app, ctx, 404, 'App not found');
+
+  await checkRole(ctx, app.OrganizationId, Permission.ReadAppAccounts);
+
+  const appMembersWithUser = await AppMember.findAll({
+    attributes: {
+      exclude: ['picture'],
+    },
+    where: {
+      AppId: appId,
+      role: {
+        [Op.in]: rolesFilter,
+      },
+    },
+    include: [User],
+  });
+
+  ctx.body = appMembersWithUser.map((member) => {
+    const parsedMemberProperties: Record<string, any> = {};
+    for (const [key, value] of Object.entries(member.properties)) {
+      parsedMemberProperties[key] = JSON.parse(value);
+    }
+    return {
+      id: member.UserId,
+      name: member.name,
+      primaryEmail: member.email,
+      role: member.role,
+      properties: parsedMemberProperties,
+    };
+  });
+}
+
 export const getAppMember = createGetAppMember(options);
 
 export async function setAppMember(ctx: Context): Promise<void> {
@@ -223,7 +273,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
 
   assertKoaError(!app, ctx, 404, 'App not found');
 
-  await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+  await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
 
   const user = await User.findByPk(memberId);
 
@@ -257,7 +307,7 @@ export async function setAppMember(ctx: Context): Promise<void> {
     name: member.name,
     primaryEmail: member.email,
     role,
-    properties,
+    properties: member.properties,
   };
 }
 
@@ -285,6 +335,114 @@ export async function getAppAccount(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App account not found');
 
   ctx.body = outputAppMember(app, language, baseLanguage);
+}
+
+export async function updateAppMemberByEmail(ctx: Context): Promise<void> {
+  const {
+    mailer,
+    pathParams: { appId, memberEmail },
+    request: {
+      body: { email, name, password, properties, role },
+    },
+    user,
+  } = ctx;
+
+  const { query } = parseLanguage(ctx, ctx.query?.language);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user as User, query),
+  });
+
+  assertKoaError(!app, ctx, 404, 'App account not found!');
+
+  const [userMember] = app.AppMembers;
+
+  if (userMember.email !== memberEmail) {
+    assertKoaError(
+      !app.definition?.security?.default?.role,
+      ctx,
+      404,
+      'This app has no security definition!',
+    );
+
+    assertKoaError(
+      !app.enableSelfRegistration && userMember.role !== app.definition.security.default.role,
+      ctx,
+      401,
+    );
+
+    await checkRole(ctx, app.OrganizationId, Permission.EditAppAccounts);
+  }
+
+  if (role) {
+    assertKoaError(
+      !Object.keys(app.definition?.security?.roles).includes(role),
+      ctx,
+      400,
+      'This role is not allowed!',
+    );
+  }
+
+  const appMember = await AppMember.findOne({
+    attributes: {
+      exclude: ['picture', 'password'],
+    },
+    where: {
+      AppId: appId,
+      email: memberEmail,
+    },
+  });
+
+  const result: Partial<AppMember> = {};
+  if (email != null && memberEmail !== email) {
+    result.email = email;
+    result.emailVerified = false;
+    result.emailKey = randomBytes(40).toString('hex');
+
+    const verificationUrl = new URL('/Verify', getAppUrl(app));
+    verificationUrl.searchParams.set('token', result.emailKey);
+
+    mailer
+      .sendTranslatedEmail({
+        appId,
+        to: { email, name },
+        locale: appMember.locale,
+        emailName: 'appMemberEmailChange',
+        values: {
+          link: (text) => `[${text}](${verificationUrl})`,
+          name: appMember.name || 'null',
+          appName: app.definition.name,
+        },
+        app,
+      })
+      .catch((error: Error) => {
+        logger.error(error);
+      });
+  }
+
+  if (name != null) {
+    result.name = name;
+  }
+
+  if (properties) {
+    result.properties = properties;
+  }
+
+  if (password) {
+    result.password = await hash(password, 10);
+  }
+
+  if (role) {
+    result.role = role;
+  }
+
+  await appMember.update(result);
+
+  delete appMember.dataValues.password;
+  delete appMember.dataValues.emailKey;
+
+  ctx.body = appMember;
 }
 
 export async function patchAppAccount(ctx: Context): Promise<void> {
@@ -544,6 +702,8 @@ export async function createMemberEmail(ctx: Context): Promise<void> {
       required: false,
     },
   });
+
+  await checkRole(ctx, app.OrganizationId, Permission.CreateAppAccounts);
 
   assertKoaError(!app, ctx, 404, 'App could not be found.');
   assertKoaError(
@@ -828,7 +988,7 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   assertKoaError(!app, ctx, 404, 'App not found');
 
   if (user.id !== memberId) {
-    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
+    await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
   }
 
   const member = app.AppMembers?.[0];
@@ -836,4 +996,53 @@ export async function deleteAppMember(ctx: Context): Promise<void> {
   assertKoaError(!member, ctx, 404, 'App member not found');
 
   await member.destroy();
+}
+
+export async function deleteAppMemberByEmail(ctx: Context): Promise<void> {
+  const {
+    pathParams: { appId, memberEmail },
+    user,
+  } = ctx;
+
+  const { query } = parseLanguage(ctx, ctx.query?.language);
+
+  const app = await App.findOne({
+    where: { id: appId },
+    ...createAppAccountQuery(user as User, query),
+  });
+
+  assertKoaError(!app, ctx, 404, 'App account not found!');
+
+  const [userMember] = app.AppMembers;
+
+  if (userMember.email !== memberEmail) {
+    assertKoaError(
+      !app.definition?.security?.default?.role,
+      ctx,
+      404,
+      'This app has no security definition!',
+    );
+
+    assertKoaError(
+      !app.enableSelfRegistration && userMember.role !== app.definition.security.default.role,
+      ctx,
+      401,
+    );
+
+    await checkRole(ctx, app.OrganizationId, Permission.DeleteAppAccounts);
+  }
+
+  const appMember = await AppMember.findOne({
+    attributes: {
+      exclude: ['picture'],
+    },
+    where: {
+      AppId: appId,
+      email: memberEmail,
+    },
+  });
+
+  assertKoaError(!appMember, ctx, 404, 'App member not found');
+
+  await appMember.destroy();
 }

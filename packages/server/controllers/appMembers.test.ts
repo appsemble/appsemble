@@ -1611,3 +1611,435 @@ describe('getAppMemberPicture', () => {
     `);
   });
 });
+
+describe('updateAppMemberByEmail', () => {
+  it('should update another app member', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    const readerUser = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    const readerMember = await AppMember.create({
+      UserId: readerUser.id,
+      AppId: app.id,
+      name: 'Reader',
+      email: 'reader@gmail.com',
+      role: 'Reader',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const formData = createFormData({
+      email: 'reader.updated@gmail.com',
+      password: 'new-password',
+    });
+    const { data } = await request.patch(
+      `/api/user/apps/${app.id}/accounts/reader@gmail.com`,
+      formData,
+    );
+    expect(data).toStrictEqual({
+      email: 'reader.updated@gmail.com',
+      AppId: 1,
+      UserId: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      consent: null,
+      created: '1970-01-01T00:00:00.000Z',
+      emailVerified: false,
+      id: readerMember.id,
+      locale: null,
+      name: 'Reader',
+      properties: {},
+      resetKey: null,
+      role: 'Reader',
+      scimActive: null,
+      scimExternalId: null,
+      updated: '1970-01-01T00:00:00.000Z',
+    });
+  });
+
+  it('should self update', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    const adminMember = await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    authorizeApp(app);
+    const formData = createFormData({
+      email: 'admin.updated@gmail.com',
+      password: 'new-password',
+    });
+    const { data } = await request.patch(
+      `/api/user/apps/${app.id}/accounts/admin@gmail.com`,
+      formData,
+    );
+    expect(data).toStrictEqual({
+      email: 'admin.updated@gmail.com',
+      AppId: 1,
+      UserId: user.id,
+      consent: null,
+      created: '1970-01-01T00:00:00.000Z',
+      emailVerified: false,
+      id: adminMember.id,
+      locale: null,
+      name: 'Admin',
+      properties: null,
+      resetKey: null,
+      role: 'Admin',
+      scimActive: null,
+      scimExternalId: null,
+      updated: '1970-01-01T00:00:00.000Z',
+    });
+  });
+});
+
+describe('getAppMembersByRoles', () => {
+  it('should fetch app members by supported roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Role1: {},
+            Role2: {},
+            Role3: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+      properties: {},
+    });
+
+    const user1 = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member 1',
+      email: 'role1@gmail.com',
+      role: 'Role1',
+      properties: {},
+    });
+
+    const user2 = await User.create({
+      id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member 2',
+      email: 'role2@gmail.com',
+      role: 'Role2',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const { data } = await request.get(`/api/user/apps/${app.id}/accounts?roles=Role1,Role2`);
+
+    expect(data).toStrictEqual([
+      {
+        id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        name: 'Test Member 2',
+        primaryEmail: 'role2@gmail.com',
+        properties: {},
+        role: 'Role2',
+      },
+      {
+        id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        name: 'Test Member 1',
+        primaryEmail: 'role1@gmail.com',
+        properties: {},
+        role: 'Role1',
+      },
+    ]);
+  });
+
+  it('should fetch all app members except the default role when provided with unsupported roles', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Role1: {},
+            Role2: {},
+            Role3: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Test Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+      properties: {},
+    });
+
+    const user1 = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: user1.id,
+      AppId: app.id,
+      name: 'Test Member 1',
+      email: 'role1@gmail.com',
+      role: 'Role1',
+      properties: {},
+    });
+
+    const user2 = await User.create({
+      id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: user2.id,
+      AppId: app.id,
+      name: 'Test Member 2',
+      email: 'role2@gmail.com',
+      role: 'Role2',
+      properties: {},
+    });
+
+    const user3 = await User.create({
+      id: '5659cad5-7618-4a74-b03d-691d97ba6461',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: user3.id,
+      AppId: app.id,
+      name: 'Test Member 3',
+      email: 'role3@gmail.com',
+      role: 'Role3',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    const { data } = await request.get(`/api/user/apps/${app.id}/accounts?roles=`);
+
+    expect(data).toStrictEqual([
+      {
+        id: '5659cad5-7618-4a74-b03d-691d97ba6461',
+        name: 'Test Member 3',
+        primaryEmail: 'role3@gmail.com',
+        properties: {},
+        role: 'Role3',
+      },
+      {
+        id: 'cbf06bd7-5b5f-40b2-aba1-1a55edc237e2',
+        name: 'Test Member 2',
+        primaryEmail: 'role2@gmail.com',
+        properties: {},
+        role: 'Role2',
+      },
+      {
+        id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+        name: 'Test Member 1',
+        primaryEmail: 'role1@gmail.com',
+        properties: {},
+        role: 'Role1',
+      },
+    ]);
+  });
+});
+
+describe('deleteAppMemberByEmail', () => {
+  it('should delete another app member by email', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    const readerUser = await User.create({
+      id: 'd5949885-9b31-4f4f-b842-f3ce80c03287',
+      name: 'Foo',
+      primaryEmail: 'foo@example.com',
+      timezone: 'Europe/Amsterdam',
+    });
+
+    await AppMember.create({
+      UserId: readerUser.id,
+      AppId: app.id,
+      name: 'Reader',
+      email: 'reader@gmail.com',
+      role: 'Reader',
+      properties: {},
+    });
+
+    authorizeApp(app);
+    await request.delete(`/api/user/apps/${app.id}/accounts/reader@gmail.com`);
+
+    const readerAfterDeletion = await AppMember.findOne({
+      where: {
+        email: 'reader@gmail.com',
+      },
+    });
+
+    expect(readerAfterDeletion).toBeNull();
+  });
+
+  it('should delete own account by email', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Admin',
+            policy: 'everyone',
+          },
+          roles: {
+            Admin: {},
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organization.id,
+    });
+
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      name: 'Admin',
+      email: 'admin@gmail.com',
+      role: 'Admin',
+    });
+
+    authorizeApp(app);
+    await request.delete(`/api/user/apps/${app.id}/accounts/admin@gmail.com`);
+
+    const readerAfterDeletion = await AppMember.findOne({
+      where: {
+        email: 'admin@gmail.com',
+      },
+    });
+
+    expect(readerAfterDeletion).toBeNull();
+  });
+});

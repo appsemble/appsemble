@@ -1591,7 +1591,7 @@ describe('validateAppDefinition', () => {
       actions: {
         onWhatever: {
           type: 'user.update',
-          email: 'example@example.com',
+          currentEmail: 'example@example.com',
           password: 'password',
         },
       },

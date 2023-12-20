@@ -95,6 +95,7 @@ declare module 'koas-parameters' {
     token: string;
     appServiceId: number;
     userId: string;
+    memberEmail: string;
     trainingBlockId: number;
     trainingId: number;
   }
@@ -112,6 +113,7 @@ declare module 'koas-parameters' {
     startIndex: number;
     view: string;
     resources: boolean;
+    roles: string[];
   }
 }
 

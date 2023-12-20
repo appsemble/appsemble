@@ -58,4 +58,8 @@ export const messages = defineMessages({
     id: 'studio.yvZLHk',
     defaultMessage: 'Translator',
   },
+  AccountManager: {
+    id: 'studio.Sa1VZo',
+    defaultMessage: 'AccountManager',
+  },
 });
