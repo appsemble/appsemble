@@ -1037,7 +1037,7 @@ export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
    *
    * This should be a page name.
    */
-  to: string[] | string;
+  to: Remapper | string[] | string;
 }
 
 export interface NotifyActionDefinition extends BaseActionDefinition<'notify'> {
