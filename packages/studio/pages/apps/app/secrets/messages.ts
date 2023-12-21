@@ -101,4 +101,9 @@ export const messages = defineMessages({
     id: 'studio.WhIybZ',
     defaultMessage: 'SSL',
   },
+  sslDescription: {
+    id: 'studio./32Rj2',
+    defaultMessage:
+      'Bring your own SSL certificate to secure your app. Find out more from the <link>documentation</link>.',
+  },
 });
