@@ -8,8 +8,8 @@
 
 ## Introduction
 
-TLS stands for Transport Layer Security. It’s predecessor was Secure Sockets Layer (SSL). The
-protocol is widely used in securing HTTPS websites.
+TLS stands for Transport Layer Security. It’s successor to the widely known Secure Sockets Layer
+(SSL). The protocol is widely used in securing HTTPS websites.
 
 Appsemble supports securing your app using TLS/SSL certificates.
 

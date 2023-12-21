@@ -38,6 +38,11 @@ interface CollapsibleProps {
    * The content to display.
    */
   readonly children: ReactNode;
+
+  /**
+   * Help content to display
+   */
+  readonly help?: ReactNode;
 }
 
 /**
@@ -47,6 +52,7 @@ export function Collapsible({
   children,
   className,
   collapsed: defaultValue = false,
+  help,
   level = 2,
   size = 4,
   title,
@@ -67,6 +73,7 @@ export function Collapsible({
           </Title>
         </Button>
       </div>
+      <div className="is-size-7">{help}</div>
       <div className={classNames(styles.list, { 'is-hidden': collapsed.enabled })}>{children}</div>
     </>
   );
