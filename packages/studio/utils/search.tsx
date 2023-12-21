@@ -3,7 +3,7 @@ import { type ReactNode } from 'react';
 /**
  * The minimum required length of a character range to highlight
  */
-const minRangeLength = 2;
+const minRangeLength = 3;
 
 // Remove two letter words, the word `the`, and whitespace
 const normalizeRegex = /\b(\w{1,2}|the)\b|\s+/gi;
