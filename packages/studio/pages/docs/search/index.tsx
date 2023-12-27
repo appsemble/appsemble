@@ -46,7 +46,7 @@ export function SearchPage(): ReactNode {
     for (const { haystack, title, url } of index) {
       const result = highlight(haystack, needle);
 
-      if(result) {
+      if (result) {
         const { match, matchLength } = result;
 
         if (!match) {
@@ -56,7 +56,7 @@ export function SearchPage(): ReactNode {
       }
     }
     // Sort matches based on match char length
-    matches.sort((a,b) => b.matchLength - a.matchLength);
+    matches.sort((a, b) => b.matchLength - a.matchLength);
 
     return matches;
   }, [needle]);
