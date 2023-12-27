@@ -47,7 +47,7 @@ export function SearchPage(): ReactNode {
       const result = highlight(haystack, needle);
 
       if(result) {
-        const match = result;
+        const {match, matchLength} = result;
 
         if (!match) {
           continue;
