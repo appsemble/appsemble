@@ -8,7 +8,7 @@ const minRangeLength = 2;
 // Remove two letter words, the word `the`, and whitespace
 const normalizeRegex = /\b(\w{1,2}|the)\b|\s+/gi;
 
-export function highlight(haystack: string, needle: string): {match:ReactNode[], matchLength: number} | undefined {
+export function highlight( haystack: string, needle: string ): { match:ReactNode[]; matchLength: number } | undefined {
   const match: ReactNode[] = [];
   let start = 0;
   let matchLength = 0;
@@ -90,5 +90,5 @@ export function highlight(haystack: string, needle: string): {match:ReactNode[],
     match.push(haystack.slice(start, haystack.length));
   }
 
-  return {match, matchLength};
+  return { match, matchLength };
 }

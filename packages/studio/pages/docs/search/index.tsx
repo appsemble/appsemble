@@ -47,12 +47,11 @@ export function SearchPage(): ReactNode {
       const result = highlight(haystack, needle);
 
       if(result) {
-        const {match, matchLength} = result;
+        const { match, matchLength } = result;
 
         if (!match) {
           continue;
         }
-        
         matches.push({ match, url, title, matchLength });
       }
     }
