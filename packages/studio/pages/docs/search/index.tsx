@@ -17,6 +17,7 @@ interface SearchResult {
   url: string;
   title: string;
   match: ReactNode[];
+  matchLength: number;
 }
 
 const index: SearchEntry[] = [];
@@ -43,15 +44,21 @@ export function SearchPage(): ReactNode {
     }
 
     for (const { haystack, title, url } of index) {
-      const match = highlight(haystack, needle);
-      if (!match) {
-        continue;
-      }
+      const result = highlight(haystack, needle);
 
-      matches.push({ match, url, title });
+      if(result) {
+        const match = result;
+
+        if (!match) {
+          continue;
+        }
+        
+        matches.push({ match, url, title, matchLength });
+      }
     }
-    // Fewer matches means longer matches, which means a higher relevance.
-    matches.sort((a, b) => a.match.length - b.match.length);
+    // Sort matches based on match char length
+    matches.sort((a,b) => b.matchLength - a.matchLength);
+
     return matches;
   }, [needle]);
 
