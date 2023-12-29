@@ -583,7 +583,7 @@ export const paths: OpenAPIV3.PathsObject = {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/Member',
+                  $ref: '#/components/schemas/OrganizationMember',
                 },
               },
             },
@@ -614,7 +614,7 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -653,7 +653,7 @@ export const paths: OpenAPIV3.PathsObject = {
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1243,7 +1243,7 @@ This will return a 404 if the user has not uploaded one.`,
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/Member',
+                  $ref: '#/components/schemas/OrganizationMember',
                 },
               },
             },
@@ -1277,7 +1277,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1314,7 +1314,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1349,7 +1349,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1415,7 +1415,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1445,7 +1445,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },
@@ -1475,7 +1475,7 @@ This will return a 404 if the user has not uploaded one.`,
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/Member',
+                $ref: '#/components/schemas/OrganizationMember',
               },
             },
           },

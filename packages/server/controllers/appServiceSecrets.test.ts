@@ -1,7 +1,13 @@
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppServiceSecret, Member, Organization, type User } from '../models/index.js';
+import {
+  App,
+  AppServiceSecret,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -53,7 +59,11 @@ beforeEach(async () => {
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
   authorizeStudio();
 });
 

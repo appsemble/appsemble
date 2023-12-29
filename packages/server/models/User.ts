@@ -18,10 +18,10 @@ import {
 import {
   AppMember,
   EmailAuthorization,
-  Member,
   OAuth2AuthorizationCode,
   OAuthAuthorization,
   Organization,
+  OrganizationMember,
   ResetPasswordToken,
   Training,
   UserTraining,
@@ -65,7 +65,7 @@ export class User extends Model {
   @Column(DataType.BOOLEAN)
   demoLoginUser: boolean;
 
-  @BelongsToMany(() => Organization, () => Member)
+  @BelongsToMany(() => Organization, () => OrganizationMember)
   Organizations: Organization[];
 
   @BelongsToMany(() => Training, () => UserTraining)
@@ -97,5 +97,5 @@ export class User extends Model {
 
   AppMember: AppMember;
 
-  Member: Member;
+  OrganizationMember: OrganizationMember;
 }

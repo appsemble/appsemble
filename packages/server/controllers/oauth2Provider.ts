@@ -2,7 +2,13 @@ import { assertKoaError, createGetUserInfo, throwKoaError } from '@appsemble/nod
 import { type Context } from 'koa';
 import { Op } from 'sequelize';
 
-import { App, AppMember, EmailAuthorization, Member, type User } from '../models/index.js';
+import {
+  App,
+  AppMember,
+  EmailAuthorization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { options } from '../options/options.js';
 import { createOAuth2AuthorizationCode } from '../utils/model.js';
 
@@ -18,7 +24,7 @@ async function checkIsAllowed(app: App, user: User): Promise<boolean> {
 
   if (policy === 'organization') {
     return Boolean(
-      await Member.count({
+      await OrganizationMember.count({
         where: { OrganizationId: app.OrganizationId, UserId: user.id },
       }),
     );

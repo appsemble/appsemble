@@ -125,7 +125,7 @@ export const paths: OpenAPIV3.PathsObject = {
                   properties: {
                     id: { $ref: '#/components/schemas/Organization/properties/id' },
                     name: { $ref: '#/components/schemas/Organization/properties/name' },
-                    role: { $ref: '#/components/schemas/Member/properties/role' },
+                    role: { $ref: '#/components/schemas/OrganizationMember/properties/role' },
                   },
                 },
               },

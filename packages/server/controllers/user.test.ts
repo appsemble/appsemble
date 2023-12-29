@@ -3,7 +3,7 @@ import { request, setTestApp } from 'axios-test-instance';
 import { hash } from 'bcrypt';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { EmailAuthorization, Member, Organization, User } from '../models/index.js';
+import { EmailAuthorization, Organization, OrganizationMember, User } from '../models/index.js';
 import { argv, setArgv, updateArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -26,7 +26,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 describe('getUser', () => {
@@ -55,7 +59,7 @@ describe('getUser', () => {
 describe('getUserOrganizations', () => {
   it('should fetch all user organizations', async () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
-    await Member.create({ OrganizationId: organizationB.id, UserId: user.id });
+    await OrganizationMember.create({ OrganizationId: organizationB.id, UserId: user.id });
 
     authorizeStudio();
     const response = await request.get('/api/user/organizations');

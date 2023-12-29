@@ -11,7 +11,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import { App, BlockVersion, Member, OrganizationInvite, User } from './index.js';
+import { App, BlockVersion, OrganizationInvite, OrganizationMember, User } from './index.js';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export class Organization extends Model {
@@ -34,7 +34,7 @@ export class Organization extends Model {
   @Column(DataType.BLOB)
   icon: Buffer;
 
-  @BelongsToMany(() => User, () => Member)
+  @BelongsToMany(() => User, () => OrganizationMember)
   Users: User[];
 
   @HasMany(() => OrganizationInvite)
@@ -55,5 +55,5 @@ export class Organization extends Model {
   @DeletedAt
   deleted: Date;
 
-  Member: Awaited<Member>;
+  OrganizationMember: Awaited<OrganizationMember>;
 }

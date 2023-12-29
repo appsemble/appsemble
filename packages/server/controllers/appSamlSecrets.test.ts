@@ -2,14 +2,14 @@ import { type AppSamlSecret as AppSamlSecretType } from '@appsemble/types';
 import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, AppSamlSecret, Member, Organization } from '../models/index.js';
+import { App, AppSamlSecret, Organization, OrganizationMember } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let app: App;
-let member: Member;
+let member: OrganizationMember;
 let organization: Organization;
 
 useTestDatabase(import.meta);
@@ -36,7 +36,11 @@ beforeEach(async () => {
     vapidPrivateKey: '',
     definition: {},
   });
-  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 afterAll(() => {

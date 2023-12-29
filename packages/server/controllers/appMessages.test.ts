@@ -8,8 +8,8 @@ import {
   AppMessages,
   BlockMessages,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
   type User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -38,7 +38,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'AppEditor' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'AppEditor',
+  });
   app = await App.create({
     path: 'test-app',
     vapidPublicKey: 'a',
@@ -456,7 +460,11 @@ describe('getMessages', () => {
       id: 'xkcd',
       name: 'xkcd',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Maintainer',
+    });
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');
@@ -539,7 +547,11 @@ describe('getMessages', () => {
       id: 'xkcd',
       name: 'xkcd',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Maintainer',
+    });
     const formData = new FormData();
     formData.append('name', '@xkcd/standing');
     formData.append('version', '1.32.9');

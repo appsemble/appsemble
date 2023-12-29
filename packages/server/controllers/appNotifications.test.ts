@@ -4,8 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   App,
   AppSubscription,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   ResourceSubscription,
   type User,
@@ -77,7 +77,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 describe('getSubscription', () => {

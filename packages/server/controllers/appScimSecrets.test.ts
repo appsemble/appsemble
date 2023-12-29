@@ -1,7 +1,7 @@
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App, Member, Organization } from '../models/index.js';
+import { App, Organization, OrganizationMember } from '../models/index.js';
 import { argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { decrypt, encrypt } from '../utils/crypto.js';
@@ -31,7 +31,11 @@ beforeEach(async () => {
     vapidPrivateKey: '',
     definition: {},
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 describe('getAppScimSecret', () => {

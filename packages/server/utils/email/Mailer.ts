@@ -22,7 +22,14 @@ import { Op } from 'sequelize';
 
 import { renderEmail } from './renderEmail.js';
 import { AppEmailQuotaLog } from '../../models/AppEmailQuotaLog.js';
-import { App, AppMessages, Member, Organization, transactional, User } from '../../models/index.js';
+import {
+  App,
+  AppMessages,
+  Organization,
+  OrganizationMember,
+  transactional,
+  User,
+} from '../../models/index.js';
 import { argv } from '../argv.js';
 import { decrypt } from '../crypto.js';
 import { readAsset } from '../readAsset.js';
@@ -315,7 +322,7 @@ export class Mailer {
             include: [Organization],
             transaction,
           });
-          const members = await Member.findAll({
+          const members = await OrganizationMember.findAll({
             where: {
               role: 'Owner',
               OrganizationId: fullApp.OrganizationId,

@@ -137,6 +137,7 @@ hassubsequence
 tolower
 toupper
 fractionalseconds
+fkey
 maxdatetime
 mindatetime
 totaloffsetminutes
