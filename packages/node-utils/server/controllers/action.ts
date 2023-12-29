@@ -13,8 +13,8 @@ import {
   type NotifyActionDefinition,
   type RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { defaultLocale, formatRequestAction, remap } from '@appsemble/utils';
-import axios from 'axios';
+import { defaultLocale, remap } from '@appsemble/utils';
+import axios, { type RawAxiosRequestConfig } from 'axios';
 import { type Context, type Middleware } from 'koa';
 import { get, pick } from 'lodash-es';
 
@@ -141,12 +141,22 @@ async function handleRequestProxy(
     ctx,
   );
 
-  let axiosConfig = formatRequestAction(
-    action,
-    data,
-    (remapper, d) => remap(remapper, d, remapperContext),
-    remapperContext.context,
-  );
+  let params;
+  try {
+    if (query.params) {
+      params = JSON.parse(query.params as string);
+    }
+  } catch {
+    throwKoaError(ctx, 400, 'params should be a JSON object.');
+  }
+
+  let axiosConfig: RawAxiosRequestConfig = {
+    method: action.method ?? 'GET',
+    url: String(remap(action.url, data, remapperContext)),
+    params,
+    responseType: 'arraybuffer',
+    headers: {},
+  };
 
   axiosConfig = await applyAppServiceSecrets({ axiosConfig, context: ctx, app });
 
@@ -162,7 +172,7 @@ async function handleRequestProxy(
     }
   }
 
-  (axiosConfig.headers as Record<string, string>)['user-agent'] = `AppsembleServer/${version}`;
+  axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
   axiosConfig.responseType = 'stream';
   axiosConfig.validateStatus = () => true;
   axiosConfig.decompress = false;

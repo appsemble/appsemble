@@ -32,7 +32,13 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         }
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
+        if (definition.query) {
+          Object.assign(req.params, {
+            params: JSON.stringify(remap(definition.query, data, context)),
+          });
+        }
       }
+
       if (
         typeof definition.query === 'string' ||
         typeof definition.query === 'number' ||
@@ -41,6 +47,7 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         req.url = `${req.url}/${definition.query}`;
         req.params = null;
       }
+
       const response = await axios(req);
       let responseBody = response.data;
       // Check if it's safe to represent the response as a string (i.e. not a binary file)
