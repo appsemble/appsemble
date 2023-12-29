@@ -387,6 +387,34 @@ describe('handleRequestProxy', () => {
     `);
   });
 
+  it('should assign incoming content-type when present', async () => {
+    const response = await request.post(
+      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      await new Blob([], { type: 'image/png' }).arrayBuffer(),
+      {
+        headers: {
+          'Content-Type': 'image/png',
+        },
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('POST');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${version}`,
+      'content-type': 'image/png',
+    });
+  });
+
   it('should remap url on server', async () => {
     const response = await request.get(
       '/api/apps/1/action/pages.0.blocks.0.actions.remap?data={"dynamic": "path"}',

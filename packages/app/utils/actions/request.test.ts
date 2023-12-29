@@ -124,14 +124,13 @@ describe('request', () => {
     expect(result).toStrictEqual({ hello: 'data' });
   });
 
-  it('should support POST with image/* content type', async () => {
+  it('should inherit content-type when the request data is a single binary blob', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
       return [200, { hello: 'data' }, {}];
     });
 
-    const imageData = new Blob(['image binary data'], { type: 'image/jpeg' });
-
+    const imageData = new Blob([], { type: 'image/jpeg' });
     const action = createTestAction({
       definition: {
         type: 'request',
@@ -142,14 +141,15 @@ describe('request', () => {
       prefixIndex: 'pages.0.blocks.0.actions.onClick',
     });
 
-    const result = await action(imageData);
+    await action(imageData);
 
     expect(request.method).toBe('post');
     expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
     expect(request.params).toBeUndefined();
-    expect(request.headers['Content-Type']).toBe('image/jpeg');
-
-    expect(result).toStrictEqual({ hello: 'data' });
+    expect({ ...request.headers }).toMatchObject({
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'image/jpeg',
+    });
   });
 
   it('should support PUT', async () => {
