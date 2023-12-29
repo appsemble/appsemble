@@ -16,49 +16,23 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Studio: #
-
-  Add a full screen button to code and GUI editor pages.
-
-- Studio: #
-
-  Add support for multiple screen aspect ratios and resolutions.
-
-- Studio: #
-
-  Add the ability to choose the device’s screen format.
-
-- Studio: #
-
-  Keep full screen state reference.
+- Studio: Add a full screen button to code and GUI editor pages.
+- Studio: Add support for multiple screen aspect ratios and resolutions.
+- Studio: Add the ability to choose the device’s screen format.
+- Studio: Keep full screen state reference.
 
 ### Changed
 
-- Studio: #
-
-  Automatically hide the side menu on code and GUI editor pages - use burger menu to reveal it.
-
-- Studio: #
-
-  Hide app preview when the screen width is too small.
-
-- Studio: #
-
-  support multiple devices for app preview.
+- Studio: Automatically hide the side menu on code and GUI editor pages - use burger menu to reveal
+  it.
+- Studio: Hide app preview when the screen width is too small.
+- Studio: support multiple devices for app preview.
 
 ### Fixed
 
-- React-components: #
-
-  Fix the position of the dropdown button icon.
-
-- Studio: #
-
-  Fix CSS class selectors for indentation pseudo components.
-
-- Studio: #
-
-  Resize Monaco editor and app preview.
+- React-components: Fix the position of the dropdown button icon.
+- Studio: Fix CSS class selectors for indentation pseudo components.
+- Studio: Resize Monaco editor and app preview.
 
 ## \[[0.23.5](https://gitlab.com/appsemble/appsemble/-/releases/0.23.5)] - 2023-11-24
 
