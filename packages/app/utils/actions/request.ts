@@ -32,11 +32,13 @@ export const request: ActionCreator<'request'> = ({ definition, prefixIndex, rem
         }
       } else if (proxy) {
         req.params = { data: JSON.stringify(data) };
-        if (definition.query) {
-          Object.assign(req.params, {
-            params: JSON.stringify(remap(definition.query, data, context)),
-          });
-        }
+      }
+
+      if (proxy && definition.query) {
+        req.params ??= {};
+        Object.assign(req.params, {
+          params: JSON.stringify(remap(definition.query, data, context)),
+        });
       }
 
       if (

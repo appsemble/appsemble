@@ -492,6 +492,38 @@ describe('request', () => {
     expect(result).toStrictEqual(blob);
   });
 
+  it.each`
+    requestType | expectedResult
+    ${'GET'}    | ${{ data: '{"hello":"data"}', params: '{"key":"value"}' }}
+    ${'DELETE'} | ${{ data: '{"hello":"data"}', params: '{"key":"value"}' }}
+    ${'POST'}   | ${{ params: '{"key":"value"}' }}
+    ${'PUT'}    | ${{ params: '{"key":"value"}' }}
+    ${'PATCH'}  | ${{ params: '{"key":"value"}' }}
+  `(
+    'should support query parameters for $requestType requests when proxy is true',
+    async ({ expectedResult, requestType }) => {
+      mock.onAny(/.*/).reply((req) => {
+        request = req;
+        return [200, { hello: 'data' }, {}];
+      });
+      const action = createTestAction({
+        definition: {
+          type: 'request',
+          method: requestType,
+          proxy: true,
+          query: { 'object.from': { key: 'value' } },
+        },
+        prefix: 'pages.test.blocks.0.actions.onClick',
+        prefixIndex: 'pages.0.blocks.0.actions.onClick',
+      });
+      const result = await action({ hello: 'data' });
+      expect(request.method).toBe(requestType.toLocaleLowerCase());
+      expect(request.url).toBe(`${apiUrl}/api/apps/42/action/pages.0.blocks.0.actions.onClick`);
+      expect(request.params).toStrictEqual(expectedResult);
+      expect(result).toStrictEqual({ hello: 'data' });
+    },
+  );
+
   it('should set parameter as end of URL when presented as a single string', async () => {
     mock.onAny(/.*/).reply((req) => {
       request = req;
