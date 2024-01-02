@@ -9,7 +9,7 @@ import styles from './index.module.css';
 import { messages } from './messages.js';
 import { HeaderControl } from '../../../../components/HeaderControl/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { type Member } from '../../../../types.js';
+import { type OrganizationMember } from '../../../../types.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 import { AddMembersModal } from '../AddMembersModal/index.js';
 import { InviteRow } from '../InviteRow/index.js';
@@ -25,7 +25,7 @@ export function MemberTable(): ReactNode {
     error: membersError,
     loading: membersLoading,
     setData: setMembers,
-  } = useData<Member[]>(`/api/organizations/${organizationId}/members`);
+  } = useData<OrganizationMember[]>(`/api/organizations/${organizationId}/members`);
   const {
     data: invites,
     loading: invitesLoading,
@@ -42,12 +42,13 @@ export function MemberTable(): ReactNode {
   );
 
   const onMemberChanged = useCallback(
-    (member: Member) => setMembers(members.map((m) => (m.id === member.id ? member : m))),
+    (member: OrganizationMember) =>
+      setMembers(members.map((m) => (m.id === member.id ? member : m))),
     [members, setMembers],
   );
 
   const onMemberDeleted = useCallback(
-    (member: Member) => setMembers(members.filter((m) => m.id !== member.id)),
+    (member: OrganizationMember) => setMembers(members.filter((m) => m.id !== member.id)),
     [members, setMembers],
   );
 

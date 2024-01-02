@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../../../components/AsyncDataView/index.js';
-import { type Member, type TeamMember } from '../../../../../../types.js';
+import { type OrganizationMember, type TeamMember } from '../../../../../../types.js';
 import { useApp } from '../../../index.js';
 
 interface AddTeamMemberModalProps {
@@ -27,7 +27,7 @@ export function AddTeamMemberModal({
   toggle,
 }: AddTeamMemberModalProps): ReactNode {
   const { app } = useApp();
-  const result = useData<Member[]>(`/api/apps/${app.id}/members`);
+  const result = useData<OrganizationMember[]>(`/api/apps/${app.id}/members`);
   const onSubmit = useCallback(({ memberId }: typeof defaultValues) => onAdd(memberId), [onAdd]);
 
   const defaultValues = {

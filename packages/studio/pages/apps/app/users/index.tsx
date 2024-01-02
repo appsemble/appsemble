@@ -10,7 +10,7 @@ import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { useApp } from '../index.js';
 
-export interface Member {
+export interface AppMember {
   id: string;
   name?: string;
   primaryEmail?: string;
@@ -22,9 +22,9 @@ export function UsersPage(): ReactNode {
   useMeta(messages.title);
   const { lang } = useParams<{ lang: string }>();
   const { app } = useApp();
-  const result = useData<Member[]>(`/api/apps/${app.id}/members`);
+  const result = useData<AppMember[]>(`/api/apps/${app.id}/members`);
 
-  const onMemberChange = (member: Member): void => {
+  const onMemberChange = (member: AppMember): void => {
     result.setData(result.data.map((m) => (m.id === member.id ? member : m)));
   };
 

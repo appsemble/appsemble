@@ -20,14 +20,14 @@ import { useUser } from '../../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../../utils/checkRole.js';
 import { useApp } from '../../index.js';
 import { AnnotationsTable } from '../../teams/team/AnnotationsTable/index.js';
-import { type Member } from '../index.js';
+import { type AppMember } from '../index.js';
 
-interface MemberRowProperties {
-  readonly member: Member;
-  readonly onChange: (member: Member) => void;
+interface AppMemberRowProperties {
+  readonly member: AppMember;
+  readonly onChange: (member: AppMember) => void;
 }
 
-export function MemberRow({ member, onChange }: MemberRowProperties): ReactNode {
+export function MemberRow({ member, onChange }: AppMemberRowProperties): ReactNode {
   const { app } = useApp();
   const { organizations, userInfo } = useUser();
   const push = useMessages();
@@ -43,7 +43,7 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactNode 
       const { value: role } = event.currentTarget;
 
       try {
-        const { data } = await axios.post<Member>(`/api/apps/${app.id}/members/${member.id}`, {
+        const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.id}`, {
           role,
         });
 
@@ -71,7 +71,7 @@ export function MemberRow({ member, onChange }: MemberRowProperties): ReactNode 
 
   const editProperties = useCallback(
     async ({ annotations }: typeof defaultValues) => {
-      const { data } = await axios.post<Member>(`/api/apps/${app.id}/members/${member.id}`, {
+      const { data } = await axios.post<AppMember>(`/api/apps/${app.id}/members/${member.id}`, {
         role: member.role,
         properties: Object.fromEntries(annotations),
       });
