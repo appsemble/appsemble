@@ -158,6 +158,17 @@ describe('handleRequestProxy', () => {
                     subject: [{ static: 'Test title' }],
                     body: [{ prop: 'body' }],
                   } as EmailActionDefinition,
+                  remap: {
+                    type: 'request',
+                    url: {
+                      'string.format': {
+                        template: `${baseURL}{dynamic}`,
+                        values: {
+                          dynamic: { prop: 'dynamic' },
+                        },
+                      },
+                    },
+                  },
                   path: {
                     type: 'request',
                     url: String(new URL('/pour?drink=coffee', baseURL)),
@@ -371,6 +382,96 @@ describe('handleRequestProxy', () => {
       {
         "error": "Bad Request",
         "message": "Method does not match the request action method",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should assign incoming content-type when present', async () => {
+    const response = await request.post(
+      '/api/apps/1/action/pages.0.blocks.0.actions.post',
+      await new Blob([], { type: 'image/png' }).arrayBuffer(),
+      {
+        headers: {
+          'Content-Type': 'image/png',
+        },
+      },
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('POST');
+    expect({ ...proxiedContext.headers }).toMatchObject({
+      accept: 'application/json, text/plain, */*',
+      'accept-encoding': 'gzip, compress, deflate, br',
+      host: new URL(proxiedRequest.defaults.baseURL).host,
+      'user-agent': `AppsembleServer/${version}`,
+      'content-type': 'image/png',
+    });
+  });
+
+  it('should remap url on server', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.remap?data={"dynamic": "path"}',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect(proxiedContext.url).toBe('/path');
+  });
+
+  it('should throw if data is not a JSON object', async () => {
+    const response = await request.get('/api/apps/1/action/pages.0.blocks.0.actions.get?data=test');
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "data should be a JSON object.",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  it('should proxy query parameters', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params={"key": "value"}',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 418 I'm a teapot
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "message": "I’m a teapot",
+      }
+    `);
+    expect(proxiedContext.method).toBe('GET');
+    expect(proxiedContext.querystring).toBe('key=value');
+  });
+
+  it('should throw if params is not a JSON object', async () => {
+    const response = await request.get(
+      '/api/apps/1/action/pages.0.blocks.0.actions.get?data={}&params=test',
+    );
+    expect(response).toMatchInlineSnapshot(`
+      HTTP/1.1 400 Bad Request
+      Content-Type: application/json; charset=utf-8
+
+      {
+        "error": "Bad Request",
+        "message": "params should be a JSON object.",
         "statusCode": 400,
       }
     `);
