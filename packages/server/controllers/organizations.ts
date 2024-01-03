@@ -598,14 +598,18 @@ export async function resendInvitation(ctx: Context): Promise<void> {
 
   const user = await User.findByPk(invite.UserId);
 
-  await mailer.sendTemplateEmail(
-    { email, ...(user && { name: user.name }) },
-    'organizationInvite',
-    {
-      organization: organization.id,
-      url: `${argv.host}/organization-invite?token=${invite.key}`,
-    },
-  );
+  try {
+    await mailer.sendTemplateEmail(
+      { email, ...(user && { name: user.name }) },
+      'organizationInvite',
+      {
+        organization: organization.id,
+        url: `${argv.host}/organization-invite?token=${invite.key}`,
+      },
+    );
+  } catch (error: any) {
+    throwKoaError(ctx, 400, error.message || 'Something went wrong when sending the invite.');
+  }
 
   ctx.body = 204;
 }
