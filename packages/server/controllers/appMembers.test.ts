@@ -13,8 +13,8 @@ import {
   AppSamlAuthorization,
   AppSamlSecret,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
   User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -23,7 +23,7 @@ import { authorizeApp, authorizeStudio, createTestUser } from '../utils/test/aut
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let member: Member;
+let member: OrganizationMember;
 let user: User;
 
 function createDefaultApp(org: Organization): Promise<App> {
@@ -67,7 +67,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  member = await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  member = await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({

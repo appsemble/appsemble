@@ -12,7 +12,7 @@ import { useParams } from 'react-router-dom';
 
 import { messages } from './messages.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
-import { type Member } from '../../../../types.js';
+import { type OrganizationMember } from '../../../../types.js';
 
 interface MemberRowProps {
   /**
@@ -28,21 +28,21 @@ interface MemberRowProps {
   /**
    * The member represented by this row.
    */
-  readonly member: Member;
+  readonly member: OrganizationMember;
 
   /**
    * This is called when the member data has changed.
    *
    * @param member The member that has been changed.
    */
-  readonly onChanged: (member: Member) => void;
+  readonly onChanged: (member: OrganizationMember) => void;
 
   /**
    * This is called when the member has been deleted.
    *
    * @param member The member that has been deleted.
    */
-  readonly onDeleted: (member: Member) => void;
+  readonly onDeleted: (member: OrganizationMember) => void;
 
   readonly ownerCount: number;
 }
@@ -68,7 +68,7 @@ export function MemberRow({
 
   const onChangeRole = useCallback(
     async (event: ChangeEvent<HTMLSelectElement>, role: string) => {
-      const { data } = await axios.put<Member>(
+      const { data } = await axios.put<OrganizationMember>(
         `/api/organizations/${organizationId}/members/${id}/role`,
         { role },
       );

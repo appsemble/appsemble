@@ -8,8 +8,8 @@ import {
   AppBlockStyle,
   AppMessages,
   AppSnapshot,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -41,7 +41,11 @@ beforeEach(async () => {
     id: 'test-organization-2',
     name: 'Test Organization 2',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Maintainer',
+  });
 
   // Ensure formatting is preserved.
   const yaml1 = "'name': Test Template\n'description': Description\n\n# comment\n\npages: []\n\n\n";

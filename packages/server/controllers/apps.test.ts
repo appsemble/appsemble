@@ -17,8 +17,8 @@ import {
   BlockAsset,
   BlockMessages,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   User,
 } from '../models/index.js';
@@ -55,7 +55,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
@@ -873,7 +877,11 @@ describe('queryMyApps', () => {
     authorizeStudio();
     const responseA = await request.get('/api/user/apps');
 
-    await Member.create({ OrganizationId: organizationB.id, UserId: user.id, role: 'Member' });
+    await OrganizationMember.create({
+      OrganizationId: organizationB.id,
+      UserId: user.id,
+      role: 'Member',
+    });
 
     const responseB = await request.get('/api/user/apps');
 
@@ -4137,7 +4145,7 @@ describe('setAppLock', () => {
   });
 
   it('should not be possible to set the lock status as an app editor', async () => {
-    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const app = await App.create({
@@ -4334,7 +4342,7 @@ describe('getAppEmailSettings', () => {
       password: encrypt('password', 'key'),
     });
 
-    await Member.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'AppEditor' }, { where: { UserId: user.id } });
 
     authorizeStudio(user);
     const response = await request.get(`/api/apps/${app.id}/email`);
@@ -4977,7 +4985,7 @@ describe('exportApp', () => {
       type: 'testResource',
       data: { foo: 'bar' },
     });
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.get(`/api/apps/${appWithResources.id}/export?resources=true`);
     expect(response).toMatchInlineSnapshot(`
@@ -5117,7 +5125,7 @@ describe('importApp', () => {
     const zip = new JSZip();
     zip.file('app-definition.yaml', stringify(appDefinition));
     const content = zip.generateNodeStream();
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.post(
       `/api/apps/import/organization/${organization.id}`,

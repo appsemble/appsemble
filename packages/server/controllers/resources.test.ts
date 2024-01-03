@@ -11,8 +11,8 @@ import {
   AppMember,
   AppSubscription,
   Asset,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   ResourceVersion,
   Team,
@@ -30,7 +30,7 @@ import {
 import { useTestDatabase } from '../utils/test/testSchema.js';
 
 let organization: Organization;
-let orgMember: Member;
+let orgMember: OrganizationMember;
 let user: User;
 let app: App;
 let originalSendNotification: typeof webpush.sendNotification;
@@ -330,7 +330,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  orgMember = await Member.create({
+  orgMember = await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: organization.id,
     role: 'Maintainer',

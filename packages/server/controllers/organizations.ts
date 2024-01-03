@@ -408,7 +408,7 @@ export async function getMembers(ctx: Context): Promise<void> {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
-    role: user.Member.role,
+    role: user.OrganizationMember.role,
   }));
 }
 
@@ -684,7 +684,7 @@ export async function setRole(ctx: Context): Promise<void> {
 
   assertKoaError(!member, ctx, 400, 'This member is not part of this organization.');
 
-  await member.Member.update({ role });
+  await member.OrganizationMember.update({ role });
   ctx.body = {
     id: member.id,
     role,

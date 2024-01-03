@@ -8,8 +8,8 @@ import {
   App,
   AppMember,
   Asset,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   type User,
 } from '../models/index.js';
@@ -36,7 +36,11 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 
   app = await App.create({
     definition: {
@@ -643,7 +647,7 @@ describe('deleteAsset', () => {
   });
 
   it('should not delete assets if the user has insufficient permissions', async () => {
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
 
     const asset = await Asset.create({
       AppId: app.id,

@@ -15,7 +15,13 @@ import {
 } from 'vitest';
 
 import { Mailer } from './Mailer.js';
-import { App, AppMessages, Member, Organization, type User } from '../../models/index.js';
+import {
+  App,
+  AppMessages,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../../models/index.js';
 import { type Argv, argv, setArgv } from '../argv.js';
 import { createServer } from '../createServer.js';
 import { createTestUser } from '../test/authorization.js';
@@ -561,7 +567,7 @@ describe('emailQuota', () => {
       id: 'testorganization',
       name: 'Test Organization',
     });
-    await Member.create({
+    await OrganizationMember.create({
       OrganizationId: organization.id,
       UserId: user.id,
       role: 'Owner',

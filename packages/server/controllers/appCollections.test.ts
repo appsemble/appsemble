@@ -2,12 +2,14 @@ import { createFixtureStream, createFormData, readFixture } from '@appsemble/nod
 import { request, setTestApp } from 'axios-test-instance';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { App } from '../models/App.js';
-import { AppCollection } from '../models/AppCollection.js';
-import { AppCollectionApp } from '../models/AppCollectionApp.js';
-import { Member } from '../models/Member.js';
-import { Organization } from '../models/Organization.js';
-import { type User } from '../models/User.js';
+import {
+  App,
+  AppCollection,
+  AppCollectionApp,
+  Organization,
+  OrganizationMember,
+  type User,
+} from '../models/index.js';
 import { type Argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
@@ -46,8 +48,12 @@ beforeEach(async () => {
     id: 'otherOrganization',
     name: 'Other Organization',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
-  await Member.create({
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
+  await OrganizationMember.create({
     OrganizationId: otherOrganization.id,
     UserId: unprivilegedUser.id,
     role: 'Owner',

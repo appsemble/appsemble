@@ -3,8 +3,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { App } from '../models/App.js';
 import { AppEmailQuotaLog } from '../models/AppEmailQuotaLog.js';
-import { Member } from '../models/Member.js';
 import { Organization } from '../models/Organization.js';
+import { OrganizationMember } from '../models/OrganizationMember.js';
 import { type User } from '../models/User.js';
 import { type Argv, setArgv } from '../utils/argv.js';
 import { createServer } from '../utils/createServer.js';
@@ -60,7 +60,11 @@ beforeEach(async () => {
     vapidPrivateKey: 'b',
     OrganizationId: organization.id,
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
   authorizeStudio();
 });
 

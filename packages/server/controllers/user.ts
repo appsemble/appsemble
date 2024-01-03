@@ -70,7 +70,7 @@ export async function getUserOrganizations(ctx: Context): Promise<void> {
   ctx.body = organizations.map((org: Organization) => ({
     id: org.id,
     name: org.name,
-    role: org.Users[0].Member.role,
+    role: org.Users[0].OrganizationMember.role,
     description: org.description,
     website: org.website,
     email: org.email,

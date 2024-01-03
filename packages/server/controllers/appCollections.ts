@@ -6,12 +6,12 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import { App } from '../models/App.js';
 import { AppCollection } from '../models/AppCollection.js';
 import { AppCollectionApp } from '../models/AppCollectionApp.js';
-import { AppRating, Member, Organization } from '../models/index.js';
+import { AppRating, Organization, OrganizationMember } from '../models/index.js';
 import { compareApps } from '../utils/app.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function queryCollections(ctx: Context): Promise<void> {
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: ctx.user?.id ?? null,
     },
@@ -49,7 +49,7 @@ export async function queryOrganizationCollections(ctx: Context): Promise<void> 
   } = ctx;
 
   const isUserMember =
-    (await Member.count({
+    (await OrganizationMember.count({
       where: {
         UserId: ctx.user?.id ?? null,
         OrganizationId: organizationId,
@@ -79,7 +79,7 @@ export async function getCollection(ctx: Context): Promise<void> {
   } = ctx;
   const collection = await AppCollection.findByPk(appCollectionId);
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: user?.id ?? null,
     },
@@ -157,7 +157,7 @@ export async function queryCollectionApps(ctx: Context): Promise<void> {
     user,
   } = ctx;
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     where: {
       UserId: user?.id ?? null,
     },

@@ -7,12 +7,14 @@ import { request, setTestApp } from 'axios-test-instance';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setArgv } from '../index.js';
-import { Member } from '../models/Member.js';
-import { Organization } from '../models/Organization.js';
-import { Training } from '../models/Training.js';
-import { TrainingBlock } from '../models/TrainingBlock.js';
-import { type User } from '../models/User.js';
-import { UserTraining } from '../models/UserTraining.js';
+import {
+  Organization,
+  OrganizationMember,
+  Training,
+  TrainingBlock,
+  type User,
+  UserTraining,
+} from '../models/index.js';
 import { createServer } from '../utils/createServer.js';
 import { authorizeStudio, createTestUser } from '../utils/test/authorization.js';
 import { useTestDatabase } from '../utils/test/testSchema.js';
@@ -38,7 +40,11 @@ beforeEach(async () => {
     id: 'appsemble',
     name: 'Appsemble',
   });
-  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+  await OrganizationMember.create({
+    OrganizationId: organization.id,
+    UserId: user.id,
+    role: 'Owner',
+  });
 });
 
 afterAll(() => {
@@ -88,7 +94,7 @@ describe('getTrainings', () => {
 
 describe('createTraining', () => {
   it('should not allow anyone without enough permissions to create trainings', async () => {
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
@@ -113,7 +119,7 @@ describe('createTraining', () => {
       id: 'test',
       name: 'test organization',
     });
-    await Member.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
@@ -158,7 +164,7 @@ describe('createTraining', () => {
 
 describe('deleteTraining', () => {
   it('should not allow anyone without sufficient permissions to delete trainings', async () => {
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     await Training.create({
       id: 1,
       title: 'test',
@@ -214,7 +220,7 @@ describe('patchTraining', () => {
       competence: 'basics',
       difficultyLevel: 2,
     });
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
 
     const response = await request.patch<TrainingType>('/api/trainings/1', {
@@ -246,7 +252,7 @@ describe('patchTraining', () => {
       id: 'testorg',
       name: 'Test Organization',
     });
-    await Member.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
     authorizeStudio();
 
     const response = await request.patch<TrainingType>('/api/trainings/1', {
@@ -297,7 +303,7 @@ describe('patchTraining', () => {
 
 describe('createTrainingBlock', () => {
   it('should not allow anyone without enough permissions to create training blocks', async () => {
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     await Training.create({
       id: 1,
       title: 'test',
@@ -339,7 +345,7 @@ describe('createTrainingBlock', () => {
       competence: 'basics',
       difficultyLevel: 2,
     });
-    await Member.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
     authorizeStudio();
     const response = await request.post<TrainingBlockType>(
       '/api/trainings/1/blocks',
@@ -472,7 +478,7 @@ describe('patchTrainingBlock', () => {
       title: 'testblock',
       TrainingId: 1,
     });
-    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const response = await request.patch<TrainingBlockType>(
@@ -509,7 +515,7 @@ describe('patchTrainingBlock', () => {
       title: 'testblock',
       TrainingId: 1,
     });
-    await Member.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
+    await OrganizationMember.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const response = await request.patch<TrainingBlockType>(
@@ -574,7 +580,7 @@ describe('deleteTrainingBlock', () => {
       title: 'test block 1',
     });
 
-    Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+    OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const response = await request.delete(`/api/training/blocks/${block1.id}`);
@@ -609,7 +615,7 @@ describe('deleteTrainingBlock', () => {
       name: 'Test Organization',
     });
 
-    Member.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
+    OrganizationMember.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
 
     authorizeStudio();
     const response = await request.delete(`/api/training/blocks/${block1.id}`);

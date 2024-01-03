@@ -5,8 +5,8 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import {
   App,
   AppMember,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   ResourceVersion,
   type User,
@@ -32,7 +32,7 @@ beforeEach(async () => {
     id: 'testorganization',
     name: 'Test Organization',
   });
-  await Member.create({
+  await OrganizationMember.create({
     UserId: user.id,
     OrganizationId: 'testorganization',
     role: 'Maintainer',

@@ -6,9 +6,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import {
   App,
   AppMember,
-  Member,
   OAuth2AuthorizationCode,
   Organization,
+  OrganizationMember,
   type User,
 } from '../models/index.js';
 import { setArgv } from '../utils/argv.js';
@@ -182,7 +182,11 @@ describe('verifyOAuth2Consent', () => {
       id: 'org',
       name: 'Test Organization',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
   });
 
   it('should create an authorization code for the user and app on a default domain if the user has previously agreed', async () => {
@@ -388,7 +392,11 @@ describe('agreeOAuth2Consent', () => {
       id: 'org',
       name: 'Test Organization',
     });
-    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+    await OrganizationMember.create({
+      OrganizationId: organization.id,
+      UserId: user.id,
+      role: 'Owner',
+    });
   });
 
   it('should create an authorization code linked to the user and app on a default domain', async () => {

@@ -5,5 +5,5 @@ export const memberEmail: OpenAPIV3.ParameterObject = {
   in: 'path',
   description: 'The email of the member on which to perform an operation',
   required: true,
-  schema: { $ref: '#/components/schemas/Member/properties/primaryEmail' },
+  schema: { $ref: '#/components/schemas/OrganizationMember/properties/primaryEmail' },
 };

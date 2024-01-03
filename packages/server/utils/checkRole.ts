@@ -3,7 +3,7 @@ import { type Permission, roles } from '@appsemble/utils';
 import { type Context } from 'koa';
 import { type FindOptions } from 'sequelize';
 
-import { Member } from '../models/index.js';
+import { OrganizationMember } from '../models/index.js';
 
 /**
  * Check if the authenticated user has permission to perform an action within an organization.
@@ -20,13 +20,13 @@ export async function checkRole(
   organizationId: string,
   permissions: Permission | Permission[],
   { attributes = [], ...queryOptions }: FindOptions = {},
-): Promise<Member> {
+): Promise<OrganizationMember> {
   const { user } = ctx;
   if (!user) {
     ctx.throw(401);
   }
 
-  const member = await Member.findOne({
+  const member = await OrganizationMember.findOne({
     attributes: [...new Set([...(attributes as string[]), 'role'])],
     ...queryOptions,
     where: { OrganizationId: organizationId, UserId: user.id },

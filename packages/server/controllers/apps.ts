@@ -37,8 +37,8 @@ import {
   AppScreenshot,
   AppSnapshot,
   BlockVersion,
-  Member,
   Organization,
+  OrganizationMember,
   Resource,
   transactional,
   User,
@@ -400,7 +400,7 @@ export async function queryMyApps(ctx: Context): Promise<void> {
   const { user } = ctx;
   const { baseLanguage, language, query: languageQuery } = parseLanguage(ctx, ctx.query?.language);
 
-  const memberships = await Member.findAll({
+  const memberships = await OrganizationMember.findAll({
     attributes: ['OrganizationId'],
     raw: true,
     where: { UserId: user.id },
