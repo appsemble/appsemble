@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 npm run appsemble -- organization create appsemble \
   --description "The open source low-code app building platform" \
   --email support@appsemble.com \

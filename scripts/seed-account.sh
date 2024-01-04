@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 npm run scripts -- seed-account \
   --name "$BOT_ACCOUNT_NAME" \
   --email "$BOT_ACCOUNT_EMAIL" \
