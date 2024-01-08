@@ -42,7 +42,7 @@ export class AppCollection extends Model {
   @Column(DataType.STRING)
   expertName: string;
 
-  @Column(DataType.STRING)
+  @Column(DataType.STRING(4000))
   expertDescription?: string;
 
   @AllowNull(false)

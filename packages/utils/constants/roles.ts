@@ -49,8 +49,8 @@ export const roles = {
   APIReader,
   APIUser,
   AppEditor,
-  Maintainer,
   Owner,
+  Maintainer,
   AccountManager,
 } as const;
 

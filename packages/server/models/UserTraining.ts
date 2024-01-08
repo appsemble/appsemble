@@ -22,10 +22,12 @@ export class UserTraining extends Model {
   @Column(DataType.INTEGER)
   id: number;
 
+  @AllowNull(false)
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   UserId: string;
 
+  @AllowNull(false)
   @ForeignKey(() => Training)
   @Column(DataType.INTEGER)
   TrainingId: number;

@@ -20,7 +20,7 @@ export class ResourceVersion extends Model {
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)
-  @Column(DataType.STRING)
+  @Column(DataType.UUID)
   id: string;
 
   @Column(DataType.JSON)

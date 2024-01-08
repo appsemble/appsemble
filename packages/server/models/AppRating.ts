@@ -5,10 +5,10 @@ import {
   CreatedAt,
   DataType,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -25,7 +25,7 @@ export class AppRating extends Model {
 
   @PrimaryKey
   @AllowNull(false)
-  @Unique('UniqueRatingIndex')
+  @Index({ name: 'UniqueRatingIndex', unique: true })
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
   AppId: number;
@@ -35,7 +35,7 @@ export class AppRating extends Model {
 
   @PrimaryKey
   @AllowNull(false)
-  @Unique('UniqueRatingIndex')
+  @Index({ name: 'UniqueRatingIndex', unique: true })
   @ForeignKey(() => User)
   @Column(DataType.UUID)
   UserId: string;

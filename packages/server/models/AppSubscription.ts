@@ -34,6 +34,7 @@ export class AppSubscription extends Model {
   @Column(DataType.STRING)
   auth: string;
 
+  @AllowNull(false)
   @ForeignKey(() => App)
   @Column(DataType.INTEGER)
   AppId: number;

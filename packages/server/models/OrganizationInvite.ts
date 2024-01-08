@@ -7,10 +7,10 @@ import {
   DataType,
   Default,
   ForeignKey,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 
@@ -33,7 +33,7 @@ export class OrganizationInvite extends Model {
   role: Role;
 
   @ForeignKey(() => User)
-  @Unique('EmailOrganizationIndex')
+  @Index({ name: 'EmailOrganizationIndex', unique: true })
   @Column(DataType.UUID)
   UserId: string;
 
@@ -42,7 +42,7 @@ export class OrganizationInvite extends Model {
 
   @PrimaryKey
   @ForeignKey(() => Organization)
-  @Unique('EmailOrganizationIndex')
+  @Index({ name: 'EmailOrganizationIndex', unique: true })
   @Column(DataType.STRING)
   OrganizationId: string;
 

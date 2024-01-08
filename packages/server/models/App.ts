@@ -18,10 +18,10 @@ import {
   DeletedAt,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   PrimaryKey,
   Table,
-  Unique,
   UpdatedAt,
 } from 'sequelize-typescript';
 import { stringify } from 'yaml';
@@ -80,7 +80,7 @@ export class App extends Model {
   @Column(DataType.STRING)
   iconBackground: string;
 
-  @Unique('UniquePathIndex')
+  @Index({ name: 'UniquePathIndex', unique: true })
   @Column(DataType.STRING)
   path: string;
 
@@ -192,7 +192,7 @@ export class App extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Organization)
-  @Unique('UniquePathIndex')
+  @Index({ name: 'UniquePathIndex', unique: true })
   @Column(DataType.STRING)
   OrganizationId: string;
 

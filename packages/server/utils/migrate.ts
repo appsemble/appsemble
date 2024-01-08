@@ -5,6 +5,8 @@ import { type Promisable } from 'type-fest';
 
 import { getDB, Meta } from '../models/index.js';
 
+const firstDeterministicMigration = '0.23.11';
+
 export interface Migration {
   key: string;
 
@@ -26,17 +28,19 @@ export async function migrate(toVersion: string, migrations: Migration[]): Promi
     logger.warn('No old database meta information was found.');
     // Ignore
     // logger.info('Synchronizing database models as-is.');
-    logger.info('Migrating from 0.23.11.');
     const migrationsToApply = migrations.filter(
-      ({ key }) => semver.gte(key, '0.23.11') && semver.lte(key, to),
+      ({ key }) => semver.gte(key, firstDeterministicMigration) && semver.lte(key, to),
     );
-    for (const migration of migrationsToApply) {
-      logger.info(`Upgrade to ${migration.key} started`);
-      await migration.up(db);
-      logger.info(`Upgrade to ${migration.key} successful`);
+    if (migrations.some(({ key }) => semver.eq(key, firstDeterministicMigration))) {
+      logger.info(`Migrating from ${firstDeterministicMigration}.`);
+      for (const migration of migrationsToApply) {
+        logger.info(`Upgrade to ${migration.key} started`);
+        await migration.up(db);
+        logger.info(`Upgrade to ${migration.key} successful`);
+      }
+    } else {
+      await db.sync();
     }
-    // Ignore
-    // await db.sync();
     meta = await Meta.create({ version: migrations.at(-1).key });
   } else {
     [meta] = metas;
