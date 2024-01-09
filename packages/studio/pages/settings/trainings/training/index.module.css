@@ -18,6 +18,13 @@
   margin: 0 auto 1.5rem;
 }
 
+.isPositionedBottomRight {
+  bottom: 2rem;
+  margin: 10px;
+  position: fixed;
+  right: 2rem;
+}
+
 /* stack things on top of each other */
 .stack {
   display: grid;
@@ -25,16 +32,4 @@
 
 .stack > * {
   grid-area: 1 / 1 / 1;
-}
-
-.stack > *:nth-child(1) {
-  z-index: 1;
-}
-
-.stack > *:nth-child(2) {
-  z-index: 2;
-}
-
-.stack > *:nth-child(3) {
-  z-index: 3;
 }

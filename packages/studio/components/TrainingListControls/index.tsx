@@ -91,7 +91,7 @@ export function TrainingListControls({
           {`${formatMessage(messages.updated)} (${formatMessage(messages.ascending)})`}
         </option>
         <option value="$updated.desc">
-          {`${formatMessage(messages.updated)} (${formatMessage(messages.ascending)})`}
+          {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
         </option>
       </SelectField>
 

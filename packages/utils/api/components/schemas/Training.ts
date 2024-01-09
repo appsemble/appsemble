@@ -19,9 +19,12 @@ export const Training: OpenAPIV3.NonArraySchemaObject = {
       type: 'string',
       description: 'A brief overview of the training.',
     },
-    competence: {
-      type: 'string',
-      description: 'Tag for the training',
+    competences: {
+      type: 'array',
+      description: 'Competence tags for the training',
+      items: {
+        type: 'string',
+      },
     },
     difficultyLevel: {
       type: 'number',

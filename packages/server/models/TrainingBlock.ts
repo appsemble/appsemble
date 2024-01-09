@@ -35,7 +35,7 @@ export class TrainingBlock extends Model {
   @Column(DataType.STRING)
   videoLink?: string;
 
-  @Column(DataType.STRING)
+  @Column(DataType.TEXT)
   exampleCode?: string;
 
   @Column(DataType.STRING)

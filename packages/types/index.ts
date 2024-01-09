@@ -2376,7 +2376,7 @@ export interface Training {
   /**
    * Tags related to competence of the training.
    */
-  competence: string;
+  competences: string[];
 
   /**
    * Difficulty level of the training.

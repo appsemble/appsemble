@@ -8,10 +8,11 @@ import {
 } from '@appsemble/react-components';
 import { type Training, type TrainingBlock } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
+import { randomString } from '@appsemble/web-utils';
 import axios from 'axios';
-import { type ReactNode, useCallback } from 'react';
+import { type ChangeEvent, type ReactNode, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { CreatingTrainingBlockButton } from './CreateTrainingBlock/index.js';
 import styles from './index.module.css';
@@ -19,24 +20,35 @@ import { messages } from './messages.js';
 import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
 import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
 import { StarRating } from '../../../../components/StarRating/index.js';
-import { TrainingCard } from '../../../../components/TrainingCard/index.js';
+import { TrainingBlockCard } from '../../../../components/TrainingBlockCard/index.js';
+import {
+  type defaultTrainingValues,
+  TrainingModal,
+} from '../../../../components/TrainingModal/index.js';
 import { useUser } from '../../../../components/UserProvider/index.js';
 import { checkRole } from '../../../../utils/checkRole.js';
 
 export function TrainingHomePage(): ReactNode {
+  const { formatMessage } = useIntl();
   const { trainingId } = useParams<{ trainingId: string }>();
   const { organizations, userInfo } = useUser();
-
+  const push = useMessages();
+  const navigate = useNavigate();
+  const { hash } = useLocation();
   const trainingInfo = useData<Training>(`/api/trainings/${trainingId}`);
+  const [comp, setComp] = useState(null);
   const trainingBlocks = useData<TrainingBlock[]>(`/api/trainings/${trainingId}/blocks`);
   const isEnrolled = useData<{ enrolled: boolean; completed: boolean }>(
     `/api/trainings/${trainingId}/enroll`,
   );
-  const push = useMessages();
-  const navigate = useNavigate();
-  const { formatMessage } = useIntl();
 
   const isAppsembleMember = organizations?.find((org) => org.id === 'appsemble');
+
+  useEffect(() => {
+    if (trainingInfo) {
+      setComp(trainingInfo?.data?.competences);
+    }
+  }, [trainingInfo]);
 
   const markAsCompleted = useCallback(async () => {
     const formData = new FormData();
@@ -44,6 +56,56 @@ export function TrainingHomePage(): ReactNode {
     await axios.patch(`/api/trainings/${trainingId}/enroll`, formData);
     window.location.reload();
   }, [trainingId]);
+
+  const onEnroll = useCallback(async () => {
+    await axios.post(`/api/trainings/${trainingId}/enroll`);
+    window.location.reload();
+  }, [trainingId]);
+
+  const mayDeleteTraining =
+    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
+
+  const handleSelectChange = useCallback(
+    ({ currentTarget }: ChangeEvent<HTMLSelectElement>) => {
+      const selectedValue = currentTarget.value;
+      setComp((prevCompetence: string[]) => {
+        if (prevCompetence.includes(selectedValue)) {
+          return prevCompetence.filter((value) => value !== selectedValue);
+        }
+        return [...prevCompetence, selectedValue];
+      });
+    },
+    [setComp],
+  );
+
+  const onEdit = useCallback(() => {
+    navigate({ hash: 'edit' }, { replace: true });
+  }, [navigate]);
+
+  const closeEditDialog = useCallback(() => {
+    navigate({ hash: null }, { replace: true });
+  }, [navigate]);
+
+  const isEditModalActive = hash === '#edit';
+
+  const onEditTraining = useCallback(
+    async ({
+      description: trainingDescription,
+      difficultyLevel: trainingDifficultyLevel,
+      title: trainingTitle,
+    }: typeof defaultTrainingValues) => {
+      const formData = new FormData();
+      formData.set('title', trainingTitle);
+      formData.set('description', trainingDescription);
+      formData.set('difficultyLevel', String(trainingDifficultyLevel));
+      formData.set('competences', JSON.stringify(comp));
+      await axios.patch<Training>(`/api/trainings/${trainingId}`, formData);
+      closeEditDialog();
+      window.location.reload();
+    },
+    [closeEditDialog, comp, trainingId],
+  );
+
   const onDeleteTraining = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
     body: <FormattedMessage {...messages.deleteWarning} />,
@@ -51,10 +113,10 @@ export function TrainingHomePage(): ReactNode {
     confirmLabel: <FormattedMessage {...messages.delete} />,
     async action() {
       try {
-        await axios.delete(`/api/trainings/${trainingInfo.data.id}`);
+        await axios.delete(`/api/trainings/${trainingId}`);
         push({
           body: formatMessage(messages.deleteSuccess, {
-            name: trainingInfo.data.title,
+            name: String(trainingInfo?.data.title),
           }),
           color: 'info',
         });
@@ -65,13 +127,6 @@ export function TrainingHomePage(): ReactNode {
     },
   });
 
-  const onEnroll = useCallback(async () => {
-    await axios.post(`/api/trainings/${trainingId}/enroll`);
-    window.location.reload();
-  }, [trainingId]);
-
-  const mayDeleteTraining =
-    isAppsembleMember && checkRole(isAppsembleMember.role, Permission.DeleteApps);
   return (
     <Content className={`pb-2 ${styles.root}`}>
       <AsyncDataView
@@ -85,18 +140,40 @@ export function TrainingHomePage(): ReactNode {
             controls={
               <>
                 {mayDeleteTraining ? (
-                  <>
-                    <Button className="mb-3 ml-4 is-danger" onClick={onDeleteTraining}>
-                      <FormattedMessage {...messages.deleteTraining} />
-                    </Button>
-                    <CreatingTrainingBlockButton className="mb-3" />
-                  </>
+                  <CreatingTrainingBlockButton className="mx-3 my-1 is-flex" />
+                ) : null}
+                {mayDeleteTraining ? (
+                  <Button className="button is-primary mx-3 my-1" icon="edit" onClick={onEdit}>
+                    <FormattedMessage {...messages.editTraining} />
+                  </Button>
+                ) : null}
+                {mayDeleteTraining ? (
+                  <Button
+                    className="button is-danger is-light mx-3 my-1"
+                    icon="trash"
+                    onClick={onDeleteTraining}
+                  >
+                    <FormattedMessage {...messages.deleteTraining} />
+                  </Button>
                 ) : null}
                 {userInfo && isEnrolled.data && !isEnrolled.data.enrolled ? (
-                  <Button className="is-primary" onClick={onEnroll}>
+                  <Button className="is-primary mx-3 my-1" onClick={onEnroll}>
                     <FormattedMessage {...messages.enroll} />
                   </Button>
                 ) : null}
+                <TrainingModal
+                  defaultValues={{
+                    title: trainingInfo?.data.title,
+                    description: trainingInfo?.data.description,
+                    difficultyLevel: trainingInfo?.data.difficultyLevel,
+                    competences: comp,
+                  }}
+                  isActive={isEditModalActive}
+                  modalTitle={<FormattedMessage {...messages.editTraining} />}
+                  onClose={closeEditDialog}
+                  onSelectChange={handleSelectChange}
+                  onSubmit={onEditTraining}
+                />
               </>
             }
             description={trainingInfoData?.description}
@@ -105,9 +182,13 @@ export function TrainingHomePage(): ReactNode {
                 <div>
                   <StarRating value={trainingInfoData?.difficultyLevel} />
                 </div>
-                <span className="tag is-primary is-medium is-rounded is-capitalized">
-                  {trainingInfoData.competence}
-                </span>
+                <div>
+                  {trainingInfoData.competences.map((tag) => (
+                    <span className="tag is-primary is-capitalized ml-2" key={randomString()}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </>
             }
             icon={<Icon className={`px-4 py-4 card fa-light ${styles.icon}`} icon="book-open" />}
@@ -126,7 +207,8 @@ export function TrainingHomePage(): ReactNode {
           <div className={styles.list}>
             {trainingBlocksData.map((block) => (
               <div className={styles.stack} key={block.id}>
-                <TrainingCard
+                <TrainingBlockCard
+                  blockId={block.id}
                   exampleCode={block.exampleCode}
                   externalResource={block.externalResource}
                   linkToDocumentation={block.documentationLink}
@@ -138,7 +220,7 @@ export function TrainingHomePage(): ReactNode {
           </div>
         )}
       </AsyncDataView>
-      <div className="mt-2 is-flex is-justify-content-flex-end">
+      <div className={styles.isPositionedBottomRight}>
         {isEnrolled.data && isEnrolled.data.enrolled && !isEnrolled.data.completed ? (
           <Button className="is-primary" onClick={markAsCompleted}>
             <FormattedMessage {...messages.markAsCompleted} />

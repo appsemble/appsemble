@@ -53,13 +53,13 @@ export function IndexPage(): ReactNode {
                   .filter((training) => training.title.toLowerCase().includes(filter.toLowerCase()))
                   .sort((a, b) => {
                     const sortFunction = sortFunctions[sort?.name];
-                    return sort.reverse ? sortFunction(a, b) : sortFunction(b, a);
+                    return sort.reverse ? sortFunction(b, a) : sortFunction(a, b);
                   });
                 return (
                   <div>
                     {filteredTrainings.map((training) => (
                       <TrainingListCard
-                        competence={training.competence}
+                        competences={training.competences}
                         description={training.description}
                         difficultyLevel={training.difficultyLevel}
                         id={String(training.id)}
