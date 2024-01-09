@@ -8,7 +8,7 @@
   align-items: center;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: flex-end;
   width: 100%;
 }
 
@@ -25,4 +25,8 @@
 .label {
   font-size: 1rem;
   font-weight: bold;
+}
+
+.hide {
+  display: none !important;
 }

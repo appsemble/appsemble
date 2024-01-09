@@ -108,8 +108,10 @@ export function AppListControls({
           {`${formatMessage(messages.updated)} (${formatMessage(messages.descending)})`}
         </option>
       </SelectField>
-      <div className="ml-auto">{userInfo && actionButton ? actionButton : null}</div>
-      <div className="ml-auto">{userInfo && actionImportButton ? actionImportButton : null}</div>
+      <div className="ml-auto mb-2">{userInfo && actionButton ? actionButton : null}</div>
+      <div className="ml-auto mb-2">
+        {userInfo && actionImportButton ? actionImportButton : null}
+      </div>
     </div>
   );
 }

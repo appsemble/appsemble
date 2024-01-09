@@ -1,6 +1,6 @@
 import { SelectField } from '@appsemble/react-components';
 import { generateDataFromSchema } from '@appsemble/utils';
-import { type Schema } from 'jsonschema';
+import { type Schema, validate } from 'jsonschema';
 import { type ChangeEvent, type ReactNode, useCallback, useContext, useState } from 'react';
 import { type JsonObject } from 'type-fest';
 
@@ -83,7 +83,10 @@ export function AnyOfProperty({
     if (schemaCheck?.$ref) {
       return findSchema(schemaValue, resolveReferences(schemaCheck));
     }
-    return checkKeys(schemaValue, schemaCheck);
+    if (typeof schemaValue === 'object') {
+      return checkKeys(schemaValue, schemaCheck);
+    }
+    return validate(schemaValue, resolveReferences(schemaCheck)).valid;
   };
   const getSelectedIndex = (): number => {
     if (value && Object.keys(value).length > 0) {

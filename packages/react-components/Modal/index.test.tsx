@@ -21,7 +21,11 @@ it('should not render a bulma modal when it is inactive', () => {
 });
 
 it('should render a bulma modal when it is active', () => {
-  const { container } = render(<Modal isActive>test</Modal>);
+  const { container } = render(
+    <Modal extraClassName="is-hidden-desktop" isActive>
+      test
+    </Modal>,
+  );
   expect(container).toMatchSnapshot();
 });
 

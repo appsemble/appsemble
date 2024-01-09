@@ -67,6 +67,7 @@ export function StyleTab({
         className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
           [String(styles.fullscreen)]: fullscreen.enabled,
         })}
+        id="appPreviewDiv"
       >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>

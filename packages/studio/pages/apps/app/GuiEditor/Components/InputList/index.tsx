@@ -1,10 +1,13 @@
 import { Dropdown } from '@appsemble/react-components';
+import classNames from 'classnames';
 import { type ReactNode, useCallback } from 'react';
 
 import styles from './index.module.css';
 import { ListItem } from './ListItem/index.js';
 
 interface InputStringProps {
+  readonly hideLabel?: boolean;
+  readonly isRight?: boolean;
   readonly label?: string;
   readonly labelPosition?: 'left' | 'top';
   readonly onChange: (index: number) => void;
@@ -34,6 +37,8 @@ export function DropDownLabel(size: string, value: string): ReactNode {
 }
 
 export function InputList({
+  hideLabel,
+  isRight,
   label,
   labelPosition = 'top',
   onChange,
@@ -51,7 +56,7 @@ export function InputList({
   if (!label) {
     return (
       <div className={`${styles.root} field`}>
-        <Dropdown className={styles.dropDown} label={DropDownLabel(size, value)}>
+        <Dropdown className={String(isRight ? 'is-right' : '')} label={DropDownLabel(size, value)}>
           {options.map((option, index) => (
             <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
           ))}
@@ -66,8 +71,15 @@ export function InputList({
         labelPosition === 'left' ? styles.leftLabel : styles.topLabel
       }`}
     >
-      <label className={styles.label}>{label}</label>
-      <Dropdown className={styles.dropDown} label={DropDownLabel(size, value)}>
+      <label
+        className={classNames(String(styles.label), {
+          [styles.hide]: hideLabel,
+        })}
+        id="inputListLabel"
+      >
+        {label}
+      </label>
+      <Dropdown className={String(isRight ? 'is-right' : '')} label={DropDownLabel(size, value)}>
         {options.map((option, index) => (
           <ListItem index={index} key={option} onChange={onDropdownChange} value={option} />
         ))}

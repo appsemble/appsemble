@@ -96,6 +96,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
           },
           { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
         )}
+        id="sideMenuWrapper"
       >
         {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <div
@@ -115,6 +116,7 @@ export function SideMenuProvider({ base, bottom, children }: SideMenuProviderPro
             { [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0 },
             { [styles.gui]: location.pathname.match(/(?<=\/)gui(?=\/)/) },
           )}
+          id="sideMenu"
         >
           {base}
           {menu}

@@ -16,10 +16,11 @@ export function Breadcrumbs(): ReactNode {
   const [decoration] = useBreadCrumbsDecoration();
 
   return (
-    <div className="is-flex-tablet">
+    <div className="breadcrumbs is-flex-tablet" id="breadcrumbsDiv">
       <nav
         aria-label={formatMessage(messages.breadcrumbs)}
-        className="breadcrumb is-flex-grow-0 is-flex-shrink-0 mr-4 my-0 py-2"
+        className="breadcrumb is-flex-grow-0 is-flex-shrink-0 mb-3"
+        id="breadcrumbs"
       >
         <ul>
           {breadcrumbs.map(({ title, url }, index) => {

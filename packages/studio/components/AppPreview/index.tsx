@@ -18,6 +18,11 @@ interface AppPreviewProps {
    * A ref to the iframe. This allows to update the app.
    */
   readonly iframeRef: Ref<HTMLIFrameElement>;
+
+  /**
+   * Event handler for when the iframe has completed loading.
+   */
+  readonly onIframeLoad?: () => void;
 }
 
 /**
@@ -39,7 +44,7 @@ const allow = [
 /**
  * Render a preview of an app using an iframe.
  */
-export function AppPreview({ app, iframeRef }: AppPreviewProps): ReactNode {
+export function AppPreview({ app, iframeRef, onIframeLoad }: AppPreviewProps): ReactNode {
   const { formatMessage } = useIntl();
 
   const appDomain = `${app.path}.${app.OrganizationId}.${window.location.hostname}`;
@@ -50,10 +55,11 @@ export function AppPreview({ app, iframeRef }: AppPreviewProps): ReactNode {
   return (
     <div className={styles.root}>
       {window.location.protocol === 'http:' || sslStatus?.[appDomain] === 'ready' ? (
-        // eslint-disable-next-line react/iframe-missing-sandbox
+        /* eslint-disable-next-line react/iframe-missing-sandbox, jsx-a11y/no-noninteractive-element-interactions */
         <iframe
           allow={allow.map((feature) => `${feature} ${src}`).join('; ')}
           className={styles.appFrame}
+          onLoad={onIframeLoad}
           ref={iframeRef}
           src={src}
           title={formatMessage(messages.iframeTitle)}
