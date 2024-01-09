@@ -15,7 +15,12 @@ interface SubPageItemProps {
   readonly saveStack: Document<ParsedNode, true>;
   readonly subPages: Page[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
-  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly handleDragStart?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    dragIndex: number,
+  ) => void;
   readonly onSelectSubPage?: (index: number, subParentIndex: number) => void;
   readonly handleDrop?: (
     e: DragEvent,
@@ -71,7 +76,7 @@ export function SubPageItem({
             key={subPage.index}
             onClick={() => onSelectSubPage(subPage.index, subPageIndex)}
             onDragOver={(e) => e.preventDefault()}
-            onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index)}
+            onDragStart={(e) => handleDragStart(e, subPageIndex, subPage.index, 1)}
             onDrop={(e) => handleDrop(e, subPageIndex, subPage.index, selectedSubParent)}
           >
             {blocks.some(
@@ -98,6 +103,7 @@ export function SubPageItem({
                 .map((subBlock) => (
                   <SubPageBlockItem
                     block={subBlock}
+                    handleDrop={handleDrop}
                     key={`${subBlock.parent}-${subBlock.subParent}-${subBlock.block}`}
                     onChange={onChange}
                     pageIndex={subPage.index}

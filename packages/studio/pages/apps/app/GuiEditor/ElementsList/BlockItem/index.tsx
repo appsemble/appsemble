@@ -13,7 +13,12 @@ interface BlockItemProps {
   readonly pageIndex: number;
   readonly blocks: Block[];
   readonly onChange: (page: number, subParent: number, block: number) => void;
-  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly handleDragStart?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    dragIndex: number,
+  ) => void;
   readonly handleDrop?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
 }
 export function BlockItem({
@@ -46,7 +51,7 @@ export function BlockItem({
             key={block.block}
             onClick={() => onSelectBlock(block.parent, -1, block.block)}
             onDragOver={(e) => e.preventDefault()}
-            onDragStart={(e) => handleDragStart(e, block.block, pageIndex)}
+            onDragStart={(e) => handleDragStart(e, block.block, pageIndex, 1)}
             onDrop={(e) => handleDrop(e, block.block, pageIndex)}
           >
             {saveStack.getIn(['pages', block.parent, 'blocks', block.block, 'type']) as string}
