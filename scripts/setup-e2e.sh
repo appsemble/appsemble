@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 npm ci
 
 . scripts/seed-account.sh

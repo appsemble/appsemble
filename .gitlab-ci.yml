@@ -100,6 +100,13 @@ helm lint:
   script:
     - helm lint config/charts/*
 
+# Lint shell scripts
+shellcheck:
+  image: koalaman/shellcheck-alpine
+  script:
+    - printf "Evaluating:\n$(find . -name '*.sh')"
+    - find . -name '*.sh' | xargs shellcheck
+
 # Verify app messages are in sync with the app definition.
 i18n:
   extends: .npm
