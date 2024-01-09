@@ -449,7 +449,6 @@ export default function EditPage(): ReactNode {
               changeIn={changeIn}
               deleteIn={deleteIn}
               docRef={docRef}
-              frameRef={frame}
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
               propsTabShow={propsTabToggle}

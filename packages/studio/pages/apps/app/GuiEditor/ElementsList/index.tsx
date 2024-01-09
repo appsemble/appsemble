@@ -39,6 +39,7 @@ export function ElementsList({
   const [disabledPages, setDisabledPages] = useState<number[]>([]);
   const [dragItem, setDragItem] = useState<number>(-1);
   const [dragPageIndex, setDragPageIndex] = useState<number>(-1);
+  const [dragIndex, setDragIndex] = useState<number>(0);
   const { formatMessage } = useIntl();
 
   const pageNames: string[] = (saveStack.getIn(['pages']) as YAMLSeq).items.map(
@@ -118,7 +119,13 @@ export function ElementsList({
         );
   };
 
-  const handleDragStart = (e: DragEvent, blockIndex: number, pageIndex: number): void => {
+  const handleDragStart = (
+    e: DragEvent,
+    blockIndex: number,
+    pageIndex: number,
+    dIndex: number,
+  ): void => {
+    setDragIndex(dIndex);
     setDragItem(blockIndex);
     setDragPageIndex(pageIndex);
   };
@@ -129,6 +136,10 @@ export function ElementsList({
     targetPageIndex: number,
     targetSubPageIndex?: number,
   ): void => {
+    if (dragIndex !== 1) {
+      return;
+    }
+
     const doc = docRef.current;
     if (targetPageIndex === dragPageIndex && dragItem !== -1) {
       const blockList = getBlocks(dragPageIndex);
@@ -165,7 +176,6 @@ export function ElementsList({
         changeIn(['pages', targetPageIndex, 'blocks'], doc.createNode(targetBlockList));
         changeIn(['pages', dragPageIndex, 'blocks'], doc.createNode(blockList));
       } else if (doc.getIn(['pages', targetPageIndex, 'type']) === 'flow') {
-        // TODO: change subParent index (0) to match actual subParent
         changeIn(
           ['pages', targetPageIndex, 'steps', targetSubPageIndex, 'blocks'],
           doc.createNode(targetBlockList),

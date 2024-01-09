@@ -163,6 +163,7 @@ export function StyleList({
               <SubPageItem
                 blocks={blocks}
                 onChange={onChange}
+                onSelectSubPage={onSelectPage}
                 saveStack={saveStack}
                 selectedBlock={selectedBlock}
                 selectedPage={selectedPage}

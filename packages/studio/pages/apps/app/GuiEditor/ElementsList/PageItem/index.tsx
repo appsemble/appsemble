@@ -14,7 +14,12 @@ interface PagesItemProps {
   readonly blocks: Block[];
   readonly onSelectPage: (index: number, subParentIndex: number) => void;
   readonly setDisabledPages: (pageList: number[]) => void;
-  readonly handleDragStart?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
+  readonly handleDragStart?: (
+    e: DragEvent,
+    subPageIndex: number,
+    pageIndex: number,
+    dragIndex: number,
+  ) => void;
   readonly handleDrop?: (e: DragEvent, subPageIndex: number, pageIndex: number) => void;
 }
 export function PageItem({
@@ -49,7 +54,7 @@ export function PageItem({
       draggable={handleDragStart != null}
       onClick={() => onSelectPage(pageIndex, -1)}
       onDragOver={(e) => e.preventDefault()}
-      onDragStart={(e) => handleDragStart(e, -1, pageIndex)}
+      onDragStart={(e) => handleDragStart(e, -1, pageIndex, 1)}
       onDrop={(e) => handleDrop(e, -1, pageIndex)}
     >
       {blocks.some((block: any) => block.parent === pageIndex) ? (

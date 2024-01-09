@@ -1,0 +1,34 @@
+.root {
+  height: 100%;
+  width: 100%;
+}
+
+.appFrame {
+  background-color: hsl(0deg 0% 100%);
+  border: none;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+.sslLoader {
+  height: initial;
+  text-align: center;
+
+  &::after {
+    height: 6em;
+    width: 6em;
+  }
+}
+
+.pageContainer {
+  background-color: hsl(218deg 100% 66%);
+  height: 10%;
+  margin: auto;
+  padding: 1%;
+  position: relative;
+}
+
+.pageButton {
+  margin-right: 1vw;
+}
