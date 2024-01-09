@@ -72,7 +72,7 @@ export function highlight(
       // We use the original haystack to append to the slice, because it has the correct casing.
       slice += haystack.charAt(start + index + sliceIndex);
       sliceIndex += 1;
-      matchLength += 1;
+      matchLength = slice.length;
     } while (
       remainingNeedle.length &&
       remainingHaystack.length &&
