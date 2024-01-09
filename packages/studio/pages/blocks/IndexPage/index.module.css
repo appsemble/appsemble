@@ -7,5 +7,5 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   justify-content: space-around;
   margin: 0 auto;
-  max-width: 960px;
+  max-width: 100%;
 }

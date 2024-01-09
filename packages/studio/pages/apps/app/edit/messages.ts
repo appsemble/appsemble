@@ -78,4 +78,8 @@ export const messages = defineMessages({
     id: 'studio.5PF1nV',
     defaultMessage: 'You have unsaved changes. Do you wish to continue?',
   },
+  openPreview: {
+    id: 'studio.97zyiz',
+    defaultMessage: 'Open preview',
+  },
 });

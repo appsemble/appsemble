@@ -18,7 +18,7 @@ import { TreeList } from '../Components/TreeList/index.js';
 interface SecurityTabProps {
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
-  readonly selectedResolution: string;
+  readonly selectedAspectRatio: string;
 }
 
 const Tabs = [
@@ -41,7 +41,7 @@ export const tabChangeOptions = ['default', 'teams', 'roles', 'createRole'] as c
 export function SecurityTab({
   isOpenLeft,
   isOpenRight,
-  selectedResolution,
+  selectedAspectRatio: selectedRatio,
 }: SecurityTabProps): ReactNode {
   const { formatMessage } = useIntl();
   const { app } = useApp();
@@ -106,9 +106,10 @@ export function SecurityTab({
         </>
       </Sidebar>
       <div
-        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
           [String(styles.fullscreen)]: fullscreen.enabled,
         })}
+        id="appPreviewDiv"
       >
         <AppPreview app={app} iframeRef={frame} />
       </div>

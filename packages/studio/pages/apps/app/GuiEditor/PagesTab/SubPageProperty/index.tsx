@@ -38,7 +38,7 @@ export function SubPageProperty({
         selectedSubPage,
         'name',
       ]) as string
-    ).trim(),
+    )?.trim(),
   );
 
   const onChangePageName = useCallback(
@@ -58,7 +58,7 @@ export function SubPageProperty({
           selectedSubPage,
           'name',
         ]) as string
-      ).trim(),
+      )?.trim(),
     );
   }, [docRef, saveStack, selectedPage, selectedSubPage]);
 

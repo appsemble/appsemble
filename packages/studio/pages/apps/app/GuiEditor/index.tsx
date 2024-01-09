@@ -6,7 +6,7 @@ import {
   useMeta,
 } from '@appsemble/react-components';
 import { type App, type AppDefinition } from '@appsemble/types';
-import { getAppBlocks } from '@appsemble/utils';
+import { getAppBlocks, noop } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -118,12 +118,17 @@ export default function EditPage(): ReactNode {
   const [selectedRatio, setSelectedRatio] = useState<string>('fill');
   const [propsTabToggle, setPropsTabToggle] = useState(true);
   const [blocksTabToggle, setBlocksTabToggle] = useState(false);
+  const [hideInputListLabel, setHideInputListLabel] = useState(false);
 
   const [, setBreadCrumbsDecoration] = useBreadCrumbsDecoration();
 
   useEffect(() => {
     setBreadCrumbsDecoration(
-      <Link className="my-2 mx-1" to={`/${lang}/apps/${id}/edit`}>
+      <Link
+        className={`mb-3 mr-1 ${styles.codeEditorSwitch}`}
+        id="codeEditorSwitch"
+        to={`/${lang}/apps/${id}/edit`}
+      >
         <Button className="button is-fullwidth is-rounded is-transparent is-bordered is-small">
           {formatMessage(messages.switchToCodeEditor)}
         </Button>
@@ -134,6 +139,231 @@ export default function EditPage(): ReactNode {
       setBreadCrumbsDecoration(null);
     };
   }, [formatMessage, location, lang, setBreadCrumbsDecoration, id]);
+
+  const guiEditorContainer = document?.querySelector(
+    `.${styles.guiEditorContainer}`,
+  ) as HTMLElement;
+  const appPreviewDiv = document?.querySelector('#appPreviewDiv') as HTMLElement;
+  const breadcrumbs = document?.querySelector('#breadcrumbs') as HTMLElement;
+  const breadcrumbsDiv = document?.querySelector('#breadcrumbsDiv') as HTMLElement;
+  const codeEditorSwitch = document?.querySelector('#codeEditorSwitch') as HTMLElement;
+  const controlsDiv = document?.querySelector(`.${styles.controls}`) as HTMLElement;
+  const rightBar = document?.querySelector('#rightBar') as HTMLElement;
+  const leftBar = document?.querySelector('#leftBar') as HTMLElement;
+  const sideMenu = document?.querySelector('#sideMenu') as HTMLElement;
+  const sideMenuWrapper = document?.querySelector('#sideMenuWrapper') as HTMLElement;
+  const tabButtonTexts = document?.querySelectorAll('.tab-btn-text') as NodeListOf<HTMLElement>;
+  const tabButtonLinks = document?.querySelectorAll('.tab-btn-link') as NodeListOf<HTMLElement>;
+  const tabButtonIcons = document?.querySelectorAll('.tab-btn-icon') as NodeListOf<HTMLElement>;
+  const rightSliderPanel = document?.querySelector(`.${styles.panelSliderRight}`) as HTMLElement;
+  const pagesTabTopRightPanelButtons = document?.querySelectorAll(
+    "[class*='pages-right-tab-btn']",
+  ) as NodeListOf<HTMLElement>;
+
+  useEffect(() => {
+    const setInputListLabelVisibility = (): void => {
+      const totalWidth = breadcrumbsDiv?.clientWidth;
+      const breadcrumbsWidth = breadcrumbs?.clientWidth;
+      const switchButtonWidth = codeEditorSwitch?.clientWidth;
+      const controlsWidth = controlsDiv?.clientWidth;
+      const freeSpace = totalWidth - (breadcrumbsWidth + switchButtonWidth);
+      if (freeSpace < controlsWidth) {
+        if (!hideInputListLabel) {
+          setHideInputListLabel(true);
+        }
+      } else {
+        if (hideInputListLabel && freeSpace >= controlsWidth + 127) {
+          setHideInputListLabel(false);
+        }
+      }
+    };
+
+    const setContainerSize = (): void => {
+      if (guiEditorContainer) {
+        const windowHeight =
+          window?.innerHeight ||
+          document?.documentElement.clientHeight ||
+          document?.body?.clientHeight;
+
+        guiEditorContainer.style.height = `${windowHeight - 165}px`;
+      }
+    };
+
+    const setAppPreviewSize = (): void => {
+      if (selectedRatio && appPreviewDiv && guiEditorContainer && leftBar && rightBar) {
+        const windowHeight = guiEditorContainer.clientHeight;
+        const windowWidth = guiEditorContainer.clientWidth;
+
+        switch (selectedRatio) {
+          case 'phone':
+            appPreviewDiv.style.removeProperty('width');
+            appPreviewDiv.style.height = `${windowHeight - 70}px`;
+            break;
+          case 'tablet':
+            appPreviewDiv.style.removeProperty('width');
+            appPreviewDiv.style.height = `${windowHeight - 90}px`;
+            break;
+          case 'desktop':
+            appPreviewDiv.style.removeProperty('height');
+            appPreviewDiv.style.width = `${
+              windowWidth - leftBar.clientWidth - rightBar.clientWidth - 70
+            }px`;
+            break;
+          case 'fill':
+            appPreviewDiv.style.removeProperty('width');
+            appPreviewDiv.style.height = '100%';
+            break;
+          default:
+            noop();
+            break;
+        }
+      }
+    };
+
+    const handleTransitionEnd = (event: TransitionEvent): void => {
+      if (event.propertyName === 'width') {
+        setAppPreviewSize();
+      } else {
+        setInputListLabelVisibility();
+      }
+    };
+
+    setContainerSize();
+    setAppPreviewSize();
+    setInputListLabelVisibility();
+
+    const onResize = (): void => {
+      setInputListLabelVisibility();
+      setContainerSize();
+      setAppPreviewSize();
+    };
+
+    window.addEventListener('resize', onResize);
+    leftBar?.addEventListener('transitionend', handleTransitionEnd);
+    rightBar?.addEventListener('transitionend', handleTransitionEnd);
+    if (window?.innerWidth > 1024) {
+      sideMenu?.addEventListener('transitionend', handleTransitionEnd);
+      sideMenuWrapper?.addEventListener('transitionend', handleTransitionEnd);
+    }
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === guiEditorContainer) {
+          setContainerSize();
+          setAppPreviewSize();
+
+          if (tabButtonTexts && tabButtonLinks) {
+            if (guiEditorContainer.clientWidth < 1100) {
+              if (guiEditorContainer.clientWidth < 900) {
+                for (const element of tabButtonIcons) {
+                  if (element.classList.contains('shrink')) {
+                    element.classList.remove('shrink');
+                  }
+                  element.classList.add('no-text');
+                }
+                for (const element of tabButtonLinks) {
+                  if (element.classList.contains('shrink')) {
+                    element.classList.remove('shrink');
+                  }
+                  element.classList.add('no-text');
+                }
+                for (const element of tabButtonTexts) {
+                  if (element.classList.contains('shrink')) {
+                    element.classList.remove('shrink');
+                  }
+                  element.classList.add('no-text');
+                }
+              } else {
+                for (const element of tabButtonIcons) {
+                  if (element.classList.contains('no-text')) {
+                    element.classList.remove('no-text');
+                  }
+                  element.classList.add('shrink');
+                }
+                for (const element of tabButtonLinks) {
+                  if (element.classList.contains('no-text')) {
+                    element.classList.remove('no-text');
+                  }
+                  element.classList.add('shrink');
+                }
+                for (const element of tabButtonTexts) {
+                  if (element.classList.contains('no-text')) {
+                    element.classList.remove('no-text');
+                  }
+                }
+              }
+            } else {
+              for (const element of tabButtonIcons) {
+                if (element.classList.contains('no-text')) {
+                  element.classList.remove('no-text');
+                }
+                if (element.classList.contains('shrink')) {
+                  element.classList.remove('shrink');
+                }
+              }
+              for (const element of tabButtonLinks) {
+                if (element.classList.contains('no-text')) {
+                  element.classList.remove('no-text');
+                }
+                if (element.classList.contains('shrink')) {
+                  element.classList.remove('shrink');
+                }
+              }
+              for (const element of tabButtonTexts) {
+                if (element.classList.contains('no-text')) {
+                  element.classList.remove('no-text');
+                }
+              }
+            }
+          }
+
+          if (rightSliderPanel?.clientWidth < 242) {
+            for (const button of pagesTabTopRightPanelButtons) {
+              button.classList.add('no-text');
+            }
+          } else {
+            for (const button of pagesTabTopRightPanelButtons) {
+              button.classList.remove('no-text');
+            }
+          }
+        }
+      }
+    });
+
+    if (guiEditorContainer) {
+      resizeObserver.observe(guiEditorContainer);
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      leftBar?.removeEventListener('transitionend', handleTransitionEnd);
+      rightBar?.removeEventListener('transitionend', handleTransitionEnd);
+      if (window?.innerWidth > 1024) {
+        sideMenu?.removeEventListener('transitionend', handleTransitionEnd);
+        sideMenuWrapper?.removeEventListener('transitionend', handleTransitionEnd);
+      }
+      if (guiEditorContainer) {
+        resizeObserver.unobserve(guiEditorContainer);
+      }
+    };
+  }, [
+    appPreviewDiv,
+    breadcrumbs,
+    breadcrumbsDiv,
+    codeEditorSwitch,
+    controlsDiv,
+    guiEditorContainer,
+    hideInputListLabel,
+    leftBar,
+    pagesTabTopRightPanelButtons,
+    rightBar,
+    rightSliderPanel,
+    selectedRatio,
+    sideMenu,
+    sideMenuWrapper,
+    tabButtonIcons,
+    tabButtonLinks,
+    tabButtonTexts,
+  ]);
 
   const handleLeftPanelToggle = useCallback(() => {
     setLeftPanelOpen((open) => !open);
@@ -317,6 +547,8 @@ export default function EditPage(): ReactNode {
     <>
       <div className={`is-flex ${styles.controls}`}>
         <InputList
+          hideLabel={hideInputListLabel}
+          isRight
           label={String(formatMessage(messages.previewFormat))}
           labelPosition="left"
           onChange={(i: number) => onChangeScreenRatio(i)}
@@ -333,7 +565,7 @@ export default function EditPage(): ReactNode {
           </Button>
         )}
       </div>
-      <div className="container is-fluid">
+      <div className="container is-fluid px-1" id="contentContainer">
         <div className={`tabs is-toggle ${styles.editorNavBar} mb-0`}>
           <div className={styles.panelTopLeft}>
             <div
@@ -350,11 +582,11 @@ export default function EditPage(): ReactNode {
           <ul>
             {tabs.map((tab) => (
               <li className={tab.path === tabPath ? 'is-active' : ''} key={tab.tabName}>
-                <Link to={tab.path}>
-                  <span className="icon">
+                <Link className="tab-btn-link" to={tab.path}>
+                  <span className="icon tab-btn-icon">
                     <i aria-hidden="true" className={tab.icon} />
                   </span>
-                  <span>{formatMessage(tab.title)}</span>
+                  <span className="tab-btn-text">{formatMessage(tab.title)}</span>
                 </Link>
               </li>
             ))}
@@ -432,7 +664,7 @@ export default function EditPage(): ReactNode {
               frameRef={frame}
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
-              selectedResolution={selectedRatio}
+              selectedScreenRatio={selectedRatio}
             />
           )}
           {currentTab.tabName === 'resources' && (
@@ -466,7 +698,7 @@ export default function EditPage(): ReactNode {
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
               saveStack={saveStack[index]}
-              selectedResolution={selectedRatio}
+              selectedAspectRatio={selectedRatio}
             />
           )}
           {currentTab.tabName === 'style' && (
@@ -485,7 +717,7 @@ export default function EditPage(): ReactNode {
             <SecurityTab
               isOpenLeft={leftPanelOpen}
               isOpenRight={rightPanelOpen}
-              selectedResolution={selectedRatio}
+              selectedAspectRatio={selectedRatio}
             />
           )}
         </div>

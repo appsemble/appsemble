@@ -6,6 +6,10 @@
   color: hsl(0deg 0% 100%);
   outline: none;
 
+  @media screen and (width <=1024px) {
+    display: block;
+  }
+
   &.code,
   &.gui {
     @media screen and (width >=1024px) {
@@ -17,7 +21,7 @@
 .sideMenuWrapper {
   height: 100%;
 
-  @media screen and (width >=1024px) {
+  @media screen and (width >1024px) {
     margin-left: menu-width;
   }
 
@@ -27,7 +31,7 @@
 
   &.code,
   &.gui {
-    @media screen and (width >=1024px) {
+    @media screen and (width >1024px) {
       margin-left: 0;
       transition: ease-out 0.15s;
 
@@ -57,7 +61,7 @@
 
   /* Should be less than the z-index of the modal component and should be more than the main screen of the app */
 
-  @media screen and (width >=1024px) {
+  @media screen and (width >1024px) {
     /* Shows the side menu  when on a big screen */
     left: 0;
   }
@@ -70,11 +74,11 @@
   /* Overrides the side menu behaviour on the code and GUI editor pages */
   &.code,
   &.gui {
-    @media screen and (width >=1024px) {
+    @media screen and (width >1024px) {
       left: calc(-1 * menu-width);
       transition: ease-out 0.1s;
 
-      /* Shows the side menu  when opened on a big screen */
+      /* Shows the side menu when opened on a big screen */
       &.open {
         left: 0;
         transition: ease-in 0.1s;
@@ -98,7 +102,7 @@
   transition: opacity 0.15s;
   z-index: 1400;
 
-  @media screen and (width >=1024px) {
+  @media screen and (width >1024px) {
     display: none;
   }
 

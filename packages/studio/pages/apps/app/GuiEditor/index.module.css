@@ -10,6 +10,28 @@
   padding: 0;
 }
 
+.codeEditorSwitch {
+  margin-left: -5px !important;
+}
+
+/* stylelint-disable selector-max-attribute */
+[class*='tab-btn-link shrink'] {
+  padding: 0.5em 0.3em 0.5em 0 !important;
+}
+
+[class*='tab-btn-icon shrink'],
+[class*='tab-btn-icon no-text'] {
+  margin-right: 0 !important;
+}
+
+[class*='tab-btn-link no-text'] {
+  padding: 0.5rem;
+}
+
+[class*='tab-btn-text no-text'] {
+  display: none;
+}
+
 .panelTopLeft {
   display: flex;
   flex-direction: row;
@@ -63,14 +85,9 @@
   border-radius: 4px;
   display: flex;
   flex-direction: row;
-  height: 80vh;
   margin: 0;
   overflow: hidden;
   padding: 0;
-
-  &.fullscreen {
-    height: 90vh;
-  }
 }
 
 .highLight {
@@ -80,12 +97,10 @@
 }
 
 .controls {
-  left: 21%;
-  margin: auto;
-  margin-left: 25rem;
-
   /* Bad for resizing */
   position: absolute;
+  right: 1rem;
+  top: 3.7rem;
 }
 
 @keyframes color {
@@ -103,10 +118,19 @@
 }
 
 /* Default styles for the right top bar buttons */
-/* stylelint-disable selector-max-attribute */
 button[class*='pages-right-tab-btn'] {
   height: 32px;
   transition: all 0.1s ease-out;
+}
+
+/* This removes the text span from the right top panel buttons */
+.panelSliderRight > button[class*='no-text'] {
+  padding-right: 3.5px;
+
+  /* stylelint-disable selector-max-type */
+  > span:not([class='icon']) {
+    display: none !important;
+  }
 }
 
 /* Styles when the buttons are focused */
@@ -119,11 +143,6 @@ button[class*='pages-right-tab-btn toggle'] {
   background-color: hsl(0deg 0% 96%);
   color: hsl(0deg 0% 21%);
 }
-
-/* .button.pages-right-tab-btn.toggle {
-  background-color: hsl(0deg 0% 96%) !important;
-  color: hsl(0deg 0% 21%) !important;
-} */
 
 /* Styles when the button IS toggled (i.e., has the 'toggled' class) */
 button[class*='pages-right-tab-btn toggled'] {

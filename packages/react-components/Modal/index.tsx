@@ -33,6 +33,11 @@ interface ModalProps<T extends ElementType> {
   readonly component?: T;
 
   /**
+   * Extra class name parameter to apply to the root of the component.
+   */
+  readonly extraClassName?: string;
+
+  /**
    * Wether or not the modal is currently active.
    */
   readonly isActive: boolean;
@@ -72,6 +77,7 @@ export function Modal<T extends ElementType = 'div'>({
   closable = true,
   closeButtonLabel,
   component: Component = 'div' as T,
+  extraClassName,
   isActive,
   onClose,
   ...props
@@ -96,7 +102,7 @@ export function Modal<T extends ElementType = 'div'>({
   }
 
   return (
-    <div className={`is-active modal ${styles.root} ${openClass}`}>
+    <div className={`is-active modal ${styles.root} ${extraClassName} ${openClass}`}>
       {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <div
         className="modal-background"

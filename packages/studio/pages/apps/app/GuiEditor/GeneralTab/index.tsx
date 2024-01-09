@@ -28,7 +28,7 @@ export interface GeneralTabProps {
   readonly frameRef: Ref<HTMLIFrameElement>;
   readonly isOpenLeft: boolean;
   readonly isOpenRight: boolean;
-  readonly selectedResolution: string;
+  readonly selectedScreenRatio: string;
 }
 
 const languages = [
@@ -67,7 +67,7 @@ export function GeneralTab({
   frameRef,
   isOpenLeft,
   isOpenRight,
-  selectedResolution,
+  selectedScreenRatio: selectedRatio,
 }: GeneralTabProps): ReactNode {
   const { app } = useApp();
   const [currentSideBar, setCurrentSideBar] = useState<LeftSidebar>(Tabs[0]);
@@ -172,9 +172,10 @@ export function GeneralTab({
         </>
       </Sidebar>
       <div
-        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
           [String(styles.fullscreen)]: fullscreen.enabled,
         })}
+        id="appPreviewDiv"
       >
         <AppPreview app={app} iframeRef={frameRef} />
       </div>

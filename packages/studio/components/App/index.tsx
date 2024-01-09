@@ -6,8 +6,9 @@ import {
   SideMenuProvider,
 } from '@appsemble/react-components';
 import { MDXProvider } from '@mdx-js/react';
+import classNames from 'classnames';
 import { type ReactNode } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
@@ -32,25 +33,31 @@ import { UserProvider } from '../UserProvider/index.js';
 import { VerifyBanner } from '../VerifyBanner/index.js';
 
 function StudioContent(): ReactNode {
-  const { fullscreenRef } = useFullscreenContext();
+  const { fullscreen, fullscreenRef } = useFullscreenContext();
+  const location = useLocation();
 
   return (
-    <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
-      <Toolbar />
-      <div
-        className={`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`}
-        ref={fullscreenRef}
-      >
-        <VerifyBanner />
-        <EmailQuotaBanners />
-        <BreadCrumbsDecorationProvider>
-          <PageHeaderProvider>
-            <Breadcrumbs />
-            <TopLevelRoutes />
-          </PageHeaderProvider>
-        </BreadCrumbsDecorationProvider>
-      </div>
-    </SideMenuProvider>
+    <div ref={fullscreenRef}>
+      <SideMenuProvider base={<SideMenuBase />} bottom={<SideMenuBottom />}>
+        <Toolbar />
+        <div
+          className={classNames(`px-3 py-3 is-flex is-flex-direction-column ${styles.content}`, {
+            [styles.fullscreen]: fullscreen.enabled,
+            [styles.code]: location.pathname.match(/edit/) && location.hash.length > 0,
+          })}
+          id="appDiv"
+        >
+          <VerifyBanner />
+          <EmailQuotaBanners />
+          <BreadCrumbsDecorationProvider>
+            <PageHeaderProvider>
+              <Breadcrumbs />
+              <TopLevelRoutes />
+            </PageHeaderProvider>
+          </BreadCrumbsDecorationProvider>
+        </div>
+      </SideMenuProvider>
+    </div>
   );
 }
 

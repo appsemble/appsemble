@@ -21,6 +21,11 @@ interface TabsProps<T> extends ValuePickerProviderProps<T> {
   readonly className?: string;
 
   /**
+   * An additional id to apply to the root element.
+   */
+  readonly id?: string;
+
+  /**
    * An optional size for the tabs
    */
   readonly size?: 'large' | 'medium' | 'small';
@@ -36,6 +41,7 @@ export function Tabs<T>({
   centered,
   children,
   className,
+  id,
   size,
   ...props
 }: TabsProps<T>): ReactNode {
@@ -46,6 +52,7 @@ export function Tabs<T>({
         'is-centered': centered,
         [`is-${size}`]: size,
       })}
+      id={id}
     >
       <ul>
         <ValuePickerProvider {...props}>{children}</ValuePickerProvider>

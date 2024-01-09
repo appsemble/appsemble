@@ -40,7 +40,7 @@ export function PagesTab({
   isOpenRight,
   propsTabShow,
   saveStack,
-  selectedResolution,
+  selectedResolution: selectedRatio,
   toggleProps,
 }: PagesTabProps): ReactNode {
   const push = useMessages();
@@ -252,9 +252,10 @@ export function PagesTab({
         />
       </Sidebar>
       <div
-        className={classNames(`${styles.root} ${styles[selectedResolution]}`, {
+        className={classNames(`${styles.root} ${styles[selectedRatio]}`, {
           [String(styles.fullscreen)]: fullscreen.enabled,
         })}
+        id="appPreviewDiv"
       >
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div

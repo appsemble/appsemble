@@ -14,6 +14,7 @@ export function Sidebar({ children, isOpen, type }: SidebarProps): ReactNode {
       className={`${type === 'left' ? styles.leftBar : styles.rightBar}  ${
         isOpen ? styles.isOpen : styles.isClosed
       }`}
+      id={String(type === 'left' ? 'leftBar' : 'rightBar')}
     >
       <div
         className={`${styles.root} ${

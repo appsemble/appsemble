@@ -19,6 +19,6 @@
 
 /* the div containing the blocks list element */
 .blocksList {
-  height: 65vh;
+  height: calc(100vh - 19rem);
   overflow-y: scroll;
 }
