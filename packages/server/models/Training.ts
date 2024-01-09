@@ -1,5 +1,6 @@
 import { type Training as TrainingType } from '@appsemble/types';
 import { omit } from 'lodash-es';
+import { DataTypes } from 'sequelize';
 import {
   AllowNull,
   AutoIncrement,
@@ -32,9 +33,11 @@ export class Training extends Model {
   @Column(DataType.TEXT)
   description: string;
 
-  @Column(DataType.STRING)
-  competence: string;
+  @AllowNull(false)
+  @Column(DataTypes.ARRAY(DataType.STRING))
+  competences: string[];
 
+  @AllowNull(false)
   @Column(DataType.INTEGER)
   difficultyLevel: number;
 
@@ -62,7 +65,7 @@ export class Training extends Model {
       id: this.id,
       title: this.title,
       description: this.description || '',
-      competence: this.competence,
+      competences: this.competences,
       difficultyLevel: this.difficultyLevel,
       $created: this.created?.toISOString(),
       $updated: this.updated?.toISOString(),

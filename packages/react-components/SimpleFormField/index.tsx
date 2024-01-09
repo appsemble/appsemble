@@ -33,10 +33,11 @@ type SimpleFormFieldProps<C extends ComponentType> = Omit<
 > & {
   readonly component?: C;
   readonly disabled?: boolean;
-  readonly name: string;
+  readonly name?: string;
   readonly onChange?: (event: ChangeEvent<MinimalHTMLElement>, value: any) => void;
   readonly preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
   readonly validityMessages?: ValidityMessages;
+  readonly value?: any;
 };
 
 export function SimpleFormField<C extends ComponentType = typeof InputField>({
@@ -46,6 +47,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   onChange,
   preprocess,
   validityMessages = {},
+  value,
   ...props
 }: SimpleFormFieldProps<C>): ReactNode {
   const { formErrors, id, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
@@ -53,7 +55,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
   const ref = useRef<MinimalHTMLElement>(null);
 
   const validateValue = useCallback(
-    (input: MinimalHTMLElement, key: string, value: string) => {
+    (input: MinimalHTMLElement, key: string, val: string) => {
       const validity = input?.validity;
       let message: ReactNode;
       if (validity && !validity.valid) {
@@ -62,14 +64,14 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
         );
         message = reason ? reason[1] : true;
       }
-      setValue(key, value, message);
+      setValue(key, val, message);
     },
     [setValue, validityMessages],
   );
 
   const internalOnChange = useCallback(
-    (event: ChangeEvent<MinimalHTMLElement>, value = event.currentTarget.value) => {
-      const val = preprocess ? preprocess(value, values) : value;
+    (event: ChangeEvent<MinimalHTMLElement>, currentValue = event.currentTarget.value) => {
+      const val = preprocess ? preprocess(currentValue, values) : currentValue;
       if (onChange) {
         onChange(event, val);
       }
@@ -105,7 +107,7 @@ export function SimpleFormField<C extends ComponentType = typeof InputField>({
       name={name}
       onChange={internalOnChange}
       ref={ref}
-      value={values[name]}
+      value={value || values[name]}
       {...props}
     />
   );

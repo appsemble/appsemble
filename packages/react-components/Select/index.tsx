@@ -27,7 +27,10 @@ export interface SelectProps extends Omit<ComponentPropsWithoutRef<'select'>, 'o
  * A Bulma styled form select element.
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, error, fullWidth, loading, name, onChange, id = name, ...props }, ref) => {
+  (
+    { className, error, fullWidth, loading, multiple, name, onChange, id = name, ...props },
+    ref,
+  ) => {
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLSelectElement>) => {
         onChange(event, event.currentTarget.value);
@@ -41,11 +44,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           'is-danger': error,
           'is-loading': loading,
           'is-fullwidth': fullWidth,
+          'is-multiple': multiple,
         })}
       >
         <select
           className={classNames({ 'is-fullwidth': fullWidth })}
           id={id}
+          multiple={multiple}
           name={name}
           onChange={handleChange}
           ref={ref}

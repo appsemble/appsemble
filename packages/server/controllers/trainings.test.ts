@@ -57,14 +57,14 @@ describe('getTrainings', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 1,
     });
     await Training.create({
       id: 2,
       title: 'test 2',
       description: 'test description 2',
-      competence: 'creativity',
+      competences: ['creativity', 'basics'],
       difficultyLevel: 3,
     });
 
@@ -77,14 +77,14 @@ describe('getTrainings', () => {
           id: 1,
           title: 'test',
           description: 'test description',
-          competence: 'basics',
+          competences: ['basics'],
           difficultyLevel: 1,
         },
         {
           id: 2,
           title: 'test 2',
           description: 'test description 2',
-          competence: 'creativity',
+          competences: ['creativity', 'basics'],
           difficultyLevel: 3,
         },
       ],
@@ -99,7 +99,7 @@ describe('createTraining', () => {
     const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     expect(response).toMatchInlineSnapshot(`
@@ -124,7 +124,7 @@ describe('createTraining', () => {
     const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     expect(response).toMatchInlineSnapshot(`
@@ -144,7 +144,7 @@ describe('createTraining', () => {
     const response = await request.post<TrainingType>('/api/trainings', {
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     expect(response.status).toBe(201);
@@ -155,7 +155,7 @@ describe('createTraining', () => {
         id: 1,
         title: 'test',
         description: 'test description',
-        competence: 'basics',
+        competences: ['basics'],
         difficultyLevel: 2,
       },
     });
@@ -169,7 +169,7 @@ describe('deleteTraining', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 1,
     });
     authorizeStudio();
@@ -191,7 +191,7 @@ describe('deleteTraining', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 1,
     });
     authorizeStudio();
@@ -217,15 +217,18 @@ describe('patchTraining', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     await OrganizationMember.update({ role: 'Member' }, { where: { UserId: user.id } });
     authorizeStudio();
 
-    const response = await request.patch<TrainingType>('/api/trainings/1', {
-      title: 'test5',
-    });
+    const response = await request.patch<TrainingType>(
+      '/api/trainings/1',
+      createFormData({
+        title: 'test5',
+      }),
+    );
     expect(response).toMatchInlineSnapshot(
       `
         HTTP/1.1 403 Forbidden
@@ -245,7 +248,7 @@ describe('patchTraining', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     await Organization.create({
@@ -255,9 +258,12 @@ describe('patchTraining', () => {
     await OrganizationMember.update({ OrganizationId: 'testorg' }, { where: { UserId: user.id } });
     authorizeStudio();
 
-    const response = await request.patch<TrainingType>('/api/trainings/1', {
-      title: 'test5',
-    });
+    const response = await request.patch<TrainingType>(
+      '/api/trainings/1',
+      createFormData({
+        title: 'test5',
+      }),
+    );
     expect(response).toMatchInlineSnapshot(
       `
         HTTP/1.1 403 Forbidden
@@ -277,24 +283,26 @@ describe('patchTraining', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
     authorizeStudio();
 
-    const response = await request.patch<TrainingType>('/api/trainings/1', {
+    const formData = createFormData({
       title: 'test 2',
       description: 'Updated description',
       difficultyLevel: 3,
+      competences: JSON.stringify(['basics', 'analyze']),
     });
+    const response = await request.patch<TrainingType>('/api/trainings/1', formData);
     expect(response).toMatchObject({
       status: 200,
       data: {
         id: 1,
         title: 'test 2',
         description: 'Updated description',
-        competence: 'basics',
+        competences: ['basics', 'analyze'],
         difficultyLevel: 3,
       },
     });
@@ -308,7 +316,7 @@ describe('createTrainingBlock', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
 
@@ -342,7 +350,7 @@ describe('createTrainingBlock', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     await OrganizationMember.update({ OrganizationId: 'test' }, { where: { UserId: user.id } });
@@ -372,7 +380,7 @@ describe('createTrainingBlock', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 2,
     });
     authorizeStudio();
@@ -428,7 +436,7 @@ describe('getTrainingBlocksByTrainingId', () => {
       id: 1,
       title: 'test',
       description: 'test description',
-      competence: 'analyze',
+      competences: ['analyze'],
       difficultyLevel: 5,
     });
 
@@ -471,7 +479,7 @@ describe('patchTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
     const block = await TrainingBlock.create({
@@ -503,7 +511,7 @@ describe('patchTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -540,7 +548,7 @@ describe('patchTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
     const block = await TrainingBlock.create({
@@ -571,7 +579,7 @@ describe('deleteTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -601,7 +609,7 @@ describe('deleteTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -636,7 +644,7 @@ describe('deleteTrainingBlock', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -673,7 +681,7 @@ describe('enrollUserInTraining', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -695,7 +703,7 @@ describe('enrollUserInTraining', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 3,
     });
 
@@ -723,7 +731,7 @@ describe('enrollUserInTraining', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 4,
     });
 
@@ -738,7 +746,7 @@ describe('updateTrainingCompletionStatus', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 3,
     });
 
@@ -765,7 +773,7 @@ describe('updateTrainingCompletionStatus', () => {
     await Training.create({
       id: 1,
       title: 'test',
-      competence: 'basics',
+      competences: ['basics'],
       difficultyLevel: 3,
     });
 
@@ -805,7 +813,7 @@ describe('getTrainedUsers', () => {
       title: 'test',
       description: 'Test description',
       difficultyLevel: 3,
-      competence: 'basics',
+      competences: ['basics'],
     });
     await UserTraining.create({
       UserId: user.id,
@@ -832,7 +840,7 @@ describe('getTrainedUsers', () => {
       title: 'test',
       description: 'Test description',
       difficultyLevel: 3,
-      competence: 'basics',
+      competences: ['basics'],
     });
     const userTraining = await UserTraining.create({
       UserId: user.id,
@@ -872,7 +880,7 @@ describe('isUserEnrolled', () => {
       title: 'test',
       description: 'Test description',
       difficultyLevel: 3,
-      competence: 'basics',
+      competences: ['basics'],
     });
 
     await createTestUser('test2@email.com');
@@ -897,7 +905,7 @@ describe('isUserEnrolled', () => {
       title: 'test',
       description: 'Test description',
       difficultyLevel: 3,
-      competence: 'basics',
+      competences: ['basics'],
     });
 
     const localUser = await createTestUser('test2@email.com');

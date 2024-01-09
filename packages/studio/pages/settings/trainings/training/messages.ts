@@ -2,8 +2,16 @@ import { defineMessages } from 'react-intl';
 
 export const messages = defineMessages({
   deleteTraining: {
-    id: 'studio.h4U2f3',
-    defaultMessage: 'Delete Training',
+    id: 'studio.K3r6DQ',
+    defaultMessage: 'Delete',
+  },
+  deleteSuccess: {
+    id: 'studio.a/flL4',
+    defaultMessage: 'Successfully deleted training {name}',
+  },
+  editTraining: {
+    id: 'studio.wEQDC6',
+    defaultMessage: 'Edit',
   },
   addTrainingBlock: {
     id: 'studio.3wiKqI',
@@ -24,10 +32,6 @@ export const messages = defineMessages({
   enroll: {
     id: 'studio.nz3jzj',
     defaultMessage: 'Enroll',
-  },
-  deleteSuccess: {
-    id: 'studio.a/flL4',
-    defaultMessage: 'Successfully deleted training {name}',
   },
   delete: {
     id: 'studio.LutOY0',

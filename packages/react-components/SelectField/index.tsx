@@ -20,6 +20,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       className,
       help,
       label,
+      multiple,
       name,
       required,
       icon,
@@ -38,7 +39,16 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       label={label}
       required={required}
     >
-      <Select fullWidth={fullWidth} id={id} name={name} ref={ref} required={required} {...props} />
+      <Select
+        fullWidth={fullWidth}
+        id={id}
+        multiple={multiple}
+        name={name}
+        ref={ref}
+        required={required}
+        size={multiple ? 5 : 1}
+        {...props}
+      />
     </FormComponent>
   ),
 );

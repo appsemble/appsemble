@@ -22,7 +22,7 @@ export async function getTrainings(ctx: Context): Promise<void> {
 export async function createTraining(ctx: Context): Promise<void> {
   const {
     request: {
-      body: { competence, description, difficultyLevel, title },
+      body: { competences, description, difficultyLevel, title },
     },
   } = ctx;
 
@@ -30,7 +30,7 @@ export async function createTraining(ctx: Context): Promise<void> {
   const training = await Training.create({
     title,
     description,
-    competence,
+    competences,
     difficultyLevel,
   });
   ctx.status = 201;
@@ -41,7 +41,7 @@ export async function patchTraining(ctx: Context): Promise<void> {
   const {
     pathParams: { trainingId },
     request: {
-      body: { competence, description, difficultyLevel, title },
+      body: { competences, description, difficultyLevel, title },
     },
   } = ctx;
 
@@ -51,8 +51,8 @@ export async function patchTraining(ctx: Context): Promise<void> {
   await checkRole(ctx, 'appsemble', Permission.EditApps);
   const result: Partial<Training> = {};
 
-  if (competence !== undefined) {
-    result.competence = competence || null;
+  if (competences !== undefined) {
+    result.competences = JSON.parse(competences) || [];
   }
 
   if (description !== undefined) {
@@ -70,7 +70,7 @@ export async function patchTraining(ctx: Context): Promise<void> {
   const updated = await training.update(result);
   ctx.body = {
     id: trainingId,
-    competence: updated.competence,
+    competences: updated.competences,
     description: updated.description,
     difficultyLevel: updated.difficultyLevel,
     title: updated.title,
@@ -94,6 +94,7 @@ export async function deleteTraining(ctx: Context): Promise<void> {
   trainingBlocks.map(async (trainingBlock) => {
     await trainingBlock.destroy();
   });
+  await UserTraining.destroy({ where: { TrainingId: trainingId } });
   await training.destroy();
 
   ctx.status = 204;

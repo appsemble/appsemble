@@ -19,6 +19,7 @@
 
 .ellipsis {
   overflow: hidden;
+  padding-bottom: 0.4rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
