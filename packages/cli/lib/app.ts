@@ -863,7 +863,7 @@ export async function publishApp({
 
   if (modifyContext && appsembleContext && context && !dryRun) {
     rc.context[context].id = data.id;
-    await writeData(join(path, '.appsemblerc.yaml'), rc);
+    await writeData(join(path, '.appsemblerc.yaml'), rc, { sort: false });
 
     logger.info(`Updated .appsemblerc: Set context.${context}.id to ${data.id}`);
   }
