@@ -8,9 +8,13 @@ const minRangeLength = 2;
 // Remove two letter words, the word `the`, and whitespace
 const normalizeRegex = /\b(\w{1,2}|the)\b|\s+/gi;
 
-export function highlight(haystack: string, needle: string): ReactNode[] | undefined {
+export function highlight(
+  haystack: string,
+  needle: string,
+): { match: ReactNode[]; matchLength: number } | undefined {
   const match: ReactNode[] = [];
   let start = 0;
+  let matchLength = 0;
 
   /**
    * The remaining haystack to search.
@@ -68,6 +72,7 @@ export function highlight(haystack: string, needle: string): ReactNode[] | undef
       // We use the original haystack to append to the slice, because it has the correct casing.
       slice += haystack.charAt(start + index + sliceIndex);
       sliceIndex += 1;
+      matchLength = slice.length;
     } while (
       remainingNeedle.length &&
       remainingHaystack.length &&
@@ -87,5 +92,5 @@ export function highlight(haystack: string, needle: string): ReactNode[] | undef
     match.push(haystack.slice(start, haystack.length));
   }
 
-  return match;
+  return { match, matchLength };
 }
