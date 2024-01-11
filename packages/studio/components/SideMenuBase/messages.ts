@@ -17,4 +17,8 @@ export const messages = defineMessages({
     id: 'studio.isGKnz',
     defaultMessage: 'Documentation',
   },
+  training: {
+    id: 'studio./+axU7',
+    defaultMessage: 'Training',
+  },
 });

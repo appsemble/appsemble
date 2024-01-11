@@ -25,6 +25,9 @@ export function SideMenuBase(): ReactNode {
       <MenuItem icon="book" to={`/${lang}/docs`}>
         <FormattedMessage {...messages.documentation} />
       </MenuItem>
+      <MenuItem icon="graduation-cap" to={`/${lang}/trainings`}>
+        <FormattedMessage {...messages.training} />
+      </MenuItem>
     </MenuSection>
   );
 }

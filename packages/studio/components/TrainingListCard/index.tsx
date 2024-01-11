@@ -99,14 +99,14 @@ export function TrainingListCard({
   const onEdit = useCallback(async () => {
     const { data: fetchedTrainingData } = await axios.get<Training>(`/api/trainings/${id}`);
     setTrainingData(fetchedTrainingData);
-    navigate({ hash: 'edit' }, { replace: true });
+    navigate({ hash: `edit-${id}` }, { replace: true });
   }, [navigate, id]);
 
   const closeEditDialog = useCallback(() => {
     navigate({ hash: null }, { replace: true });
   }, [navigate]);
 
-  const isEditModalActive = hash === '#edit';
+  const isEditModalActive = hash === `#edit-${id}`;
 
   const onEditTraining = useCallback(
     async ({
