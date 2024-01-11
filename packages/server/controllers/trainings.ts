@@ -9,10 +9,6 @@ import { UserTraining } from '../models/UserTraining.js';
 import { checkRole } from '../utils/checkRole.js';
 
 export async function getTrainings(ctx: Context): Promise<void> {
-  const { user } = ctx;
-
-  assertKoaError(!user, ctx, 401, 'User is not logged in');
-
   const trainings = await Training.findAll();
 
   ctx.status = 200;
@@ -103,10 +99,8 @@ export async function deleteTraining(ctx: Context): Promise<void> {
 export async function getTrainingById(ctx: Context): Promise<void> {
   const {
     pathParams: { trainingId },
-    user,
   } = ctx;
 
-  assertKoaError(!user, ctx, 401, 'User is not logged in');
   const training = await Training.findByPk(trainingId);
   assertKoaError(!training, ctx, 404, 'Training not found');
 
@@ -117,9 +111,7 @@ export async function getTrainingById(ctx: Context): Promise<void> {
 export async function getTrainingBlocksByTrainingId(ctx: Context): Promise<void> {
   const {
     pathParams: { trainingId },
-    user,
   } = ctx;
-  assertKoaError(!user, ctx, 401, 'User is not logged in');
 
   const trainingBlocks = await TrainingBlock.findAll({
     where: {

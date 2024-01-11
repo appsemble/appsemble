@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl';
 
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { CreateTrainingButton } from '../../pages/settings/trainings/CreateTrainingButton/index.js';
+import { CreateTrainingButton } from '../../pages/trainings/CreateTrainingButton/index.js';
 import { checkRole } from '../../utils/checkRole.js';
 import { type TrainingSortFunction } from '../TrainingListCard/index.js';
 import { useUser } from '../UserProvider/index.js';

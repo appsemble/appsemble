@@ -149,7 +149,7 @@ export function TrainingBlockCard({
     <div className={`card ${styles.block} mb-3`}>
       <div className={`card-content ${styles.content}`}>
         {mayDeleteTraining ? (
-          <div className="dropdown is-pulled-right is-active" ref={dropdownRef}>
+          <div className="dropdown is-pulled-right is-right is-active" ref={dropdownRef}>
             <div className="dropdown-trigger">
               <Button
                 aria-controls="dropdown-menu"

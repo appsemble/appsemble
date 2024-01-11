@@ -6,10 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { messages } from './messages.js';
-import {
-  defaultTrainingValues,
-  TrainingModal,
-} from '../../../../components/TrainingModal/index.js';
+import { defaultTrainingValues, TrainingModal } from '../../../components/TrainingModal/index.js';
 
 export function CreateTrainingButton({ className }: { readonly className: string }): ReactNode {
   const navigate = useNavigate();

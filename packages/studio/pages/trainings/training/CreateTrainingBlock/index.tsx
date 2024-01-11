@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { messages } from './messages.js';
 import TrainingBlockModal, {
   type defaults,
-} from '../../../../../components/TrainingBlockModal/index.js';
+} from '../../../../components/TrainingBlockModal/index.js';
 
 export function CreatingTrainingBlockButton({
   className,

@@ -17,6 +17,7 @@ import { RegisterPage } from './register/index.js';
 import { ResetPasswordPage } from './reset-password/index.js';
 import { SAMLResponsePage } from './saml/index.js';
 import { SettingsRoutes } from './settings/index.js';
+import { TrainingRoutes } from './trainings/index.js';
 import { VerifyPage } from './verify/index.js';
 import { AnonymousRoute } from '../components/AnonymousRoute/index.js';
 import { ProtectedRoute } from '../components/ProtectedRoute/index.js';
@@ -49,6 +50,7 @@ export function TopLevelRoutes(): ReactNode {
       <Route element={<SAMLResponsePage />} path="/saml/response/:code" />
       <Route element={<SAMLResponsePage />} path="/saml/response/*" />
       <Route element={<DocsRoutes />} path="/docs/*" />
+      <Route element={<TrainingRoutes />} path="/trainings/*" />
       <Route element={<PrivacyPolicyPage />} path="/privacy" />
       <Route element={<Navigate to="/apps" />} path="*" />
     </Routes>

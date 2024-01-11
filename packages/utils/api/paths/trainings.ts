@@ -19,7 +19,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, {}],
     },
     post: {
       tags: ['training', 'learning', 'docs'],
@@ -62,7 +62,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, {}],
     },
     patch: {
       tags: ['training', 'learning', 'docs'],
@@ -148,7 +148,7 @@ export const paths: OpenAPIV3.PathsObject = {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, {}],
     },
     post: {
       tags: ['training', 'trainingBlocks', 'learning', 'docs'],

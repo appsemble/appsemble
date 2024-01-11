@@ -17,16 +17,16 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CreatingTrainingBlockButton } from './CreateTrainingBlock/index.js';
 import styles from './index.module.css';
 import { messages } from './messages.js';
-import { AsyncDataView } from '../../../../components/AsyncDataView/index.js';
-import { CardHeaderControl } from '../../../../components/CardHeaderControl/index.js';
-import { StarRating } from '../../../../components/StarRating/index.js';
-import { TrainingBlockCard } from '../../../../components/TrainingBlockCard/index.js';
+import { AsyncDataView } from '../../../components/AsyncDataView/index.js';
+import { CardHeaderControl } from '../../../components/CardHeaderControl/index.js';
+import { StarRating } from '../../../components/StarRating/index.js';
+import { TrainingBlockCard } from '../../../components/TrainingBlockCard/index.js';
 import {
   type defaultTrainingValues,
   TrainingModal,
-} from '../../../../components/TrainingModal/index.js';
-import { useUser } from '../../../../components/UserProvider/index.js';
-import { checkRole } from '../../../../utils/checkRole.js';
+} from '../../../components/TrainingModal/index.js';
+import { useUser } from '../../../components/UserProvider/index.js';
+import { checkRole } from '../../../utils/checkRole.js';
 
 export function TrainingHomePage(): ReactNode {
   const { formatMessage } = useIntl();
@@ -221,11 +221,11 @@ export function TrainingHomePage(): ReactNode {
         )}
       </AsyncDataView>
       <div className={styles.isPositionedBottomRight}>
-        {isEnrolled.data && isEnrolled.data.enrolled && !isEnrolled.data.completed ? (
+        {isEnrolled.data?.enrolled && !isEnrolled.data?.completed ? (
           <Button className="is-primary" onClick={markAsCompleted}>
             <FormattedMessage {...messages.markAsCompleted} />
           </Button>
-        ) : isEnrolled.data && !isEnrolled.data.enrolled ? null : (
+        ) : (isEnrolled.data && !isEnrolled.data.enrolled) || !userInfo ? null : (
           <div className="tag is-large is-success">
             <FormattedMessage {...messages.completed} />
           </div>
