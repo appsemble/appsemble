@@ -124,7 +124,7 @@ security:
 ```
 
 For more details, see the [teams guide](teams.md) and the
-[teams reference documentation](https://appsemble.app/en/docs/reference/app#teams-definition)
+[teams reference documentation](https://appsemble.app/docs/reference/app#teams-definition)
 
 ## Root app roles
 
