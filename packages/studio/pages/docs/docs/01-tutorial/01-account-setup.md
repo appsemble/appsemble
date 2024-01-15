@@ -2,13 +2,13 @@
 
 To start using Appsemble you have to create an account.
 
-Go to [register](https://appsemble.app/nl/register)
+Go to [register](https://appsemble.app/register)
 
 ![Appsemble Account Registration](../../tutorial-assets/register-account.png 'Appsemble Account Registration')
 
 Fill out the information. After your account is created you can _login_.
 
-Go to [login](https://appsemble.app/nl/login)
+Go to [login](https://appsemble.app/login)
 
 After you login you will get redirected to the app store. From here you can browse through existing
 apps, access the documentation and of course create a new app.
